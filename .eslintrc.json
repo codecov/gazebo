@@ -33,5 +33,15 @@
         ]
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*-test.js","*.spec.js", "*.test.js"],
+      "rules": {
+        "max-nested-callbacks": "off",
+        "max-statements": "off",
+        "complexity": "off"
+      }
+    }
+  ]
 }
