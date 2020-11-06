@@ -13,10 +13,10 @@ jobs:
           command: yarn
       - run:
           name: Run tests
-          command: yarn test
+          command: yarn test:ci
       - run:
           name: Upload coverage to codecov
-          command: npx codecov
+          command: bash <(curl -s https://codecov.io/bash)
       - run:
           name: Run eslint
           command: yarn lint
