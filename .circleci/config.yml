@@ -18,6 +18,9 @@ jobs:
           name: Upload coverage to codecov
           command: bash <(curl -s https://codecov.io/bash)
       - run:
+          name: Upload coverage to codecov staging
+          command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
+      - run:
           name: Run eslint
           command: yarn lint
 
