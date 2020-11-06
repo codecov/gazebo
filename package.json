@@ -21,8 +21,20 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
-    ]
+      "react-app/jest",
+      "plugin:react/recommended"
+    ],
+    "rules": {
+      "react/react-in-jsx-scope": "off",
+      "complexity": ["error", 5],
+      "max-statements": ["error", 10],
+      "max-nested-callbacks": ["error", 2],
+      "react/prefer-stateless-function": ["error"],
+      "react/prop-types": [
+        "error",
+        { "ignore": ["children", "context", "className"] }
+      ]
+    }
   },
   "husky": {
     "hooks": {
