@@ -1,8 +1,41 @@
-import { render, screen } from '@testing-library/react'
-import App from './App'
+import { waitFor, render, screen } from '@testing-library/react';
+import App from './App';
 
-test('renders learn react link', () => {
-  render(<App />)
-  const linkElement = screen.getByText(/learn react/i)
-  expect(linkElement).toBeInTheDocument()
+jest.mock('./pages/Home', () => () => 'HomeComponent')
+jest.mock('./pages/About', () => () => 'AboutComponent')
+
+describe('App', () => {
+
+  describe('when rendering the App on homepage', () => {
+    beforeEach(() => {
+      window.history.pushState({}, 'Test page', '/')
+      render(<App />)
+    })
+
+    it('renders the loading state', () => {
+      const loading = screen.getByText(/loading.../i)
+      expect(loading).toBeInTheDocument()
+    })
+
+    it('renders the homepage', () => {
+      return waitFor(() => {
+        const page = screen.getByText(/HomeComponent/i)
+        expect(page).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('when visiting the about page', () => {
+    beforeEach(() => {
+      window.history.pushState({}, 'Test page', '/about')
+      render(<App />)
+    })
+
+    it('renders the homepage', () => {
+      return waitFor(() => {
+        const page = screen.getByText(/AboutComponent/i)
+        expect(page).toBeInTheDocument()
+      })
+    })
+  })
 })
