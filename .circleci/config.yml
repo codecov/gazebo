@@ -1,12 +1,45 @@
-version: 2.1
+
+version: 2.1 # using 2.1 provides access to orbs and other features
 
 jobs:
+
+  test:
+    docker:
+      - image: circleci/node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install deps
+          command: yarn
+      - run:
+          name: Run tests
+          command: yarn test
+      - run:
+          name: Upload coverage to codecov
+          command: npx codecov
+      - run:
+          name: Run eslint
+          command: yarn lint
+
   build:
     docker:
-      - image: circleci/node:12.9.1-browsers
-    working_directory: ~/repo
+      - image: circleci/node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install deps
+          command: yarn
+      - run:
+          name: Build the image
+          command: yarn build
 
-steps:
-  - checkout
-  - run: yarn install
-  - run: yarn test
+workflows:
+  version: 2
+  test-and-build:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
