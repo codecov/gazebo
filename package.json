@@ -15,7 +15,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "npx eslint --no-ignore --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'"
   },
   "eslintConfig": {
     "extends": [
@@ -30,7 +31,12 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "prettier --write"
+      "prettier --write",
+      "git add"
+    ],
+    "src/**/*.{js,jsx,ts,tsx,json}": [
+      "eslint --fix --no-ignore --max=warnings=0",
+      "git add"
     ]
   },
   "browserslist": {
