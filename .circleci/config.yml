@@ -7,8 +7,7 @@ jobs:
     docker:
       - image: circleci/node
     steps:
-      - attach_workspace:
-          at: .
+      - checkout
       - run:
           name: Install deps
           command: yarn
@@ -26,8 +25,7 @@ jobs:
     docker:
       - image: circleci/node
     steps:
-      - attach_workspace:
-          at: .
+      - checkout
       - run:
           name: Install deps
           command: yarn
