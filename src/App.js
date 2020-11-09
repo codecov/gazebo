@@ -1,7 +1,23 @@
+import { useEffect } from 'React'
+import Service from './test'
+
 import logo from './logo.svg'
 import './App.css'
 
 function App() {
+  useEffect(() => {
+    Service.get({
+      path: '/profile',
+    })
+      .then(console.log)
+      .error(console.error)
+    Service.get({
+      path: '/github/codecov/repos/java-standard/',
+    })
+      .then(console.log)
+      .error(console.error)
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header">
