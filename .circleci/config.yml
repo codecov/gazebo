@@ -13,7 +13,7 @@ jobs:
           command: yarn
       - run:
           name: Run tests
-          command: yarn test
+          command: yarn
       - run:
           name: Upload coverage to codecov
           command: npx codecov
