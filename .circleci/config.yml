@@ -20,6 +20,9 @@ jobs:
       - run:
           name: Run eslint
           command: yarn lint
+      - run:
+          name: Check bundlesize
+          command: yarn bundlesize
 
   build:
     docker:
