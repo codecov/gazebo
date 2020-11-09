@@ -28,7 +28,7 @@
       "prettier --write"
     ],
     "src/**/*.{js,jsx,ts,tsx,json}": [
-      "eslint --fix --no-ignore --max=warnings=0"
+      "eslint --fix --no-ignore --max-warnings=0"
     ]
   },
   "browserslist": {
