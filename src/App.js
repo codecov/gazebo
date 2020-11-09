@@ -1,4 +1,4 @@
-import { useEffect } from 'React'
+import { useEffect } from 'react'
 import Service from './test'
 
 import logo from './logo.svg'
