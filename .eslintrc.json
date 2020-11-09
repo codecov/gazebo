@@ -42,6 +42,12 @@
         "max-statements": "off",
         "complexity": "off"
       }
+    },
+    {
+      "files": ["*.stories.js"],
+      "rules": {
+        "import/no-anonymous-default-export": "off"
+      }
     }
   ]
 }
