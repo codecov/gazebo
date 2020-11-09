@@ -20,9 +20,6 @@ jobs:
       - run:
           name: Run eslint
           command: yarn lint
-      - run:
-          name: Check bundlesize
-          command: yarn bundlesize
 
   build:
     docker:
@@ -33,8 +30,11 @@ jobs:
           name: Install deps
           command: yarn
       - run:
-          name: Build the image
+          name: Build the spa
           command: yarn build
+      - run:
+          name: Check bundlesize
+          command: yarn bundlesize
 
 workflows:
   version: 2
