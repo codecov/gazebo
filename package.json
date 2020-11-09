@@ -18,7 +18,8 @@
     "test": "react-scripts test",
     "test:ci": "react-scripts test --collectCoverage ",
     "eject": "react-scripts eject",
-    "lint": "npx eslint --no-ignore --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'"
+    "lint": "npx eslint --no-ignore --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'",
+    "bundlesize": "npx bundlesize"
   },
   "husky": {
     "hooks": {
@@ -45,7 +46,18 @@
       "last 1 safari version"
     ]
   },
+  "bundlesize": [
+    {
+      "path": "./build/static/js/*.js",
+      "maxSize": "100 kB"
+    },
+    {
+      "path": "./build/static/css/*.css",
+      "maxSize": "50 kB"
+    }
+  ],
   "devDependencies": {
+    "bundlesize": "^0.18.0",
     "eslint-config-prettier": "^6.15.0",
     "husky": "^4.3.0",
     "lint-staged": "^10.5.1",
