@@ -22,7 +22,8 @@
     "lint": "npx eslint --no-ignore --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'",
     "bundlesize": "npx bundlesize",
     "storybook": "start-storybook -p 6006 -s public --no-dll",
-    "build-storybook": "build-storybook -s public --no-dll"
+    "build-storybook": "build-storybook -s public --no-dll",
+    "chromatic": "npx chromatic --exit-zero-on-changes -ci"
   },
   "husky": {
     "hooks": {

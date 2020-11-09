@@ -64,7 +64,7 @@ jobs:
           command: yarn
       - run:
           name: Deploy to Chromatic
-          command: npx chromatic --project-token=${CHROMATIC_TOKEN} --build-script-name=build-storybook  --exit-zero-on-changes -ci
+          command: yarn chromatic
 
 workflows:
   version: 2
