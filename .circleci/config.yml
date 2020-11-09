@@ -14,7 +14,7 @@ jobs:
       - save_cache:
           key: npm-deps-{{ checksum "package-lock.json" }}
           paths:
-            - node_modules      
+            - node_modules
   test:
     docker:
       - image: circleci/node
@@ -51,14 +51,29 @@ jobs:
           name: Check bundlesize
           command: npm run bundlesize
 
+  storybook:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
+      - run:
+          name: Deploy to Chromatic
+          command: npx chromatic --project-token=${CHROMATIC_TOKEN} --build-script-name=build-storybook  --exit-zero-on-changes -ci
+
 workflows:
   version: 2
   test-and-build:
     jobs:
       - install
+      - storybook:
+          requires:
+            - install
       - test:
           requires:
             - install
       - build:
           requires:
-            - test
+            - install
