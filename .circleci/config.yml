@@ -53,7 +53,7 @@ jobs:
 
   storybook:
     docker:
-      - image: circleci/node
+      - image: circleci/node:14
     steps:
       - checkout
       - restore_cache:
