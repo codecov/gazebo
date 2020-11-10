@@ -12,6 +12,15 @@ function Home() {
       .catch(console.error)
   }, [])
 
+  useEffect(() => {
+    Server.get({
+      path: '/github/codecov/repos/java-standard/',
+      provider: 'gh',
+    })
+      .then(console.log)
+      .catch(console.error)
+  }, [])
+
   return <div>Im the home page</div>
 }
 
