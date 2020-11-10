@@ -6,7 +6,11 @@ import { ReactComponent as Logo } from './logo.svg'
 function LogoSpinner({ size = 100 }) {
   const height = `${size}px`
   return (
-    <div className={styles.spinner} style={{ height }}>
+    <div
+      className={styles.spinner}
+      style={{ height }}
+      data-testid="logo-spinner"
+    >
       <Logo />
     </div>
   )
