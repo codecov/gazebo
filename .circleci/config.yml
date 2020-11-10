@@ -3,17 +3,29 @@ version: 2.1 # using 2.1 provides access to orbs and other features
 
 jobs:
 
-  test:
+  install:
     docker:
       - image: circleci/node:14.5.0
     steps:
       - checkout
       - run:
           name: Install deps
-          command: yarn
+          command: npm ci
+      - save_cache:
+          key: npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules      
+  test:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
       - run:
           name: Run tests
-          command: yarn test:ci
+          command: npm run test:ci
       - run:
           name: Upload coverage to codecov
           command: bash <(curl -s https://codecov.io/bash)
@@ -22,28 +34,31 @@ jobs:
           command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
       - run:
           name: Run eslint
-          command: yarn lint
+          command: npm run lint
 
   build:
     docker:
       - image: circleci/node:14.5.0
     steps:
       - checkout
-      - run:
-          name: Install deps
-          command: yarn
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
       - run:
           name: Build the spa
-          command: yarn build
+          command: npm run build
       - run:
           name: Check bundlesize
-          command: yarn bundlesize
+          command: npm run bundlesize
 
 workflows:
   version: 2
   test-and-build:
     jobs:
-      - test
+      - install
+      - test:
+          requires:
+            - install
       - build:
           requires:
             - test
