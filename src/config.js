@@ -1,4 +1,6 @@
-const defaultConfig = {}
+const defaultConfig = {
+  API_URL: '',
+}
 
 const config = {
   ...defaultConfig,

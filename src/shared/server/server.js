@@ -12,7 +12,7 @@ export async function get({ path, query, provider = 'gh', extraHeaders = {} }) {
 
   return {
     data,
-    ...res,
+    res,
   }
 }
 
