@@ -8,9 +8,13 @@ const Home = lazy(() => import('./pages/Home'))
 const About = lazy(() => import('./pages/About'))
 const BreakingPage = lazy(() => import('./pages/BreakingPage'))
 
+function FallbackComponent() {
+  return <div>An error has occurred</div>
+}
+
 function App() {
   return (
-    <Sentry.ErrorBoundary fallback={'An error has occured'}>
+    <Sentry.ErrorBoundary fallback={FallbackComponent}>
       <Suspense fallback="loading...">
         <BrowserRouter>
           <Switch>
@@ -18,10 +22,10 @@ function App() {
               <About />
             </Route>
             <Route path="/breaking">
-              <BreakingPage />
+              <Home />
             </Route>
             <Route path="/">
-              <Home />
+              <BreakingPage />
             </Route>
           </Switch>
         </BrowserRouter>

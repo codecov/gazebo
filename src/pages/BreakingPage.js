@@ -1,5 +1,13 @@
-export default function BreakingPage() {
+function RandomComponent() {
   const test = window.test.truc
 
-  return <div>{test}</div>
+  return 'bro' + test
+}
+
+export default function BreakingPage() {
+  return (
+    <div>
+      <RandomComponent />
+    </div>
+  )
 }
