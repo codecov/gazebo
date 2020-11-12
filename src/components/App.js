@@ -1,6 +1,6 @@
 import { Suspense, lazy } from 'react'
 
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 const Home = lazy(() => import('./pages/Home'))
 const About = lazy(() => import('./pages/About'))
@@ -19,7 +19,7 @@ function App() {
         </Switch>
       </BrowserRouter>
     </Suspense>
-  );
+  )
 }
 
 export default App
