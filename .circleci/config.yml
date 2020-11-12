@@ -60,11 +60,8 @@ jobs:
           keys:
             - npm-deps-{{ checksum "package-lock.json" }}
       - run:
-          name: Install deps
-          command: yarn
-      - run:
           name: Deploy to Chromatic
-          command: yarn chromatic
+          command: npm run chromatic
 
 workflows:
   version: 2
