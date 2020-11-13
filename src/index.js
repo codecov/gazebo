@@ -4,6 +4,8 @@ import App from './components/App'
 import './globals.css'
 import reportWebVitals from './reportWebVitals'
 
+import 'sentry.js'
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
