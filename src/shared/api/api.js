@@ -16,8 +16,8 @@ export async function get({ path, query, provider = 'gh', extraHeaders = {} }) {
   }
 }
 
-const Service = {
+const Api = {
   get,
 }
 
-export default Service
+export default Api

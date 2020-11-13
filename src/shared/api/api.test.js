@@ -2,7 +2,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import * as Cookie from 'js-cookie'
 
-import Service from './server'
+import Api from './api'
 
 const rawUserData = {
   profile: {
@@ -42,7 +42,7 @@ let result, error
 function callApi() {
   result = null
   error = null
-  return Service.get({
+  return Api.get({
     path: '/test',
   })
     .then((data) => {
