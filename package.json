@@ -9,16 +9,13 @@
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.0",
-    "web-vitals": "^0.2.4"
+    "react-router-dom": "^5.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:ci": "react-scripts test --collectCoverage ",
-    "eject": "react-scripts eject",
+    "start": "next dev",
+    "build": "next export",
+    "test": "npx jest",
+    "test:ci": "npx jest --collectCoverage ",
     "lint": "npx eslint --no-ignore --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'",
     "bundlesize": "npx bundlesize",
     "storybook": "start-storybook -p 6006 -s public --no-dll",
