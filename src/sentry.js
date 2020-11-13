@@ -46,10 +46,12 @@ const denyUrls = [
   /metrics\.itunes\.apple\.com\.edgesuite\.net\//i,
 ]
 
+console.log(config)
+
 Sentry.init({
-  dsn: config.SENTRY_DSN,
-  // debug: config.node_env !== 'production',
-  release: `gazebo@${config.COMMIT_SHA}`,
+  dsn: config.REACT_APP_SENTRY_DSN,
+  debug: config.node_env !== 'production',
+  release: config.REACT_APP_SENTRY_RELEASE,
   ignoreErrors,
   denyUrls,
 })

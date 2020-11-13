@@ -36,7 +36,7 @@ jobs:
           name: Run eslint
           command: npm run lint
 
-  build:
+  sentry:
     docker:
       - image: circleci/node:14.5.0
     steps:
@@ -45,11 +45,9 @@ jobs:
           keys:
             - npm-deps-{{ checksum "package-lock.json" }}
       - run:
-          name: Build the spa
-          command: npm run build
-      - run:
-          name: Check bundlesize
-          command: npm run bundlesize
+          name: Sentry Release
+          command: npm run sentry
+
 
   storybook:
     docker:
@@ -74,6 +72,6 @@ workflows:
       - test:
           requires:
             - install
-      - build:
+      - sentry:
           requires:
             - install
