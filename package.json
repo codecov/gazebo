@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "next dev",
-    "build": "next build && next export",
+    "build": "next build && next export -o build",
     "test": "npx jest",
     "test:ci": "npx jest --collectCoverage ",
     "lint": "npx eslint --no-ignore --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'",
