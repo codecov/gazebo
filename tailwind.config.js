@@ -1,15 +1,21 @@
+const plugin = require('tailwindcss/plugin')
+
 module.exports = {
   future: {
     removeDeprecatedGapUtilities: true,
     purgeLayersByDefault: true,
   },
   purge: {
-    content: ['./src/**/*.js', './src/**/*.jsx', 'public/**/*.html'],
+    content: [
+      './src/components/**/*.js',
+      './src/components/**.js',
+      './public/*.html',
+    ],
   },
   theme: {
     fontFamily: {
-      body: ['Lato'],
-      display: ['Lato'],
+      body: ['sans-serif', 'Lato'],
+      display: ['sans-serif', 'Lato'],
     },
     container: {
       center: true,
@@ -113,4 +119,15 @@ module.exports = {
     cursor: ['default', 'responsive', 'disabled'],
     textOpacity: ['default', 'responsive', 'hover', 'focus', 'disabled'],
   },
+  plugins: [
+    plugin(function ({ addBase, config }) {
+      addBase({
+        html: {
+          fontFamily: config('theme.fontFamily.body'),
+          fontSize: '16px',
+          fontSize: '1rem',
+        },
+      })
+    }),
+  ],
 }

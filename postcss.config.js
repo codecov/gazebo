@@ -1,10 +1,10 @@
-const tailwindcss = require('tailwindcss')
+const pfm = require('postcss-font-magician')
 
 module.exports = {
   map: true,
   plugins: [
-    tailwindcss('./tailwind.config.js'),
+    require('tailwindcss'),
     require('autoprefixer'),
-    require('postcss-font-magician'),
+    pfm({ foundries: ['google'] }),
   ],
 }

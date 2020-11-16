@@ -1,5 +1,5 @@
 function About() {
-  return <div className="bg-purple">Im the about page</div>
+  return <div className="p-4 bg-gray-200">Im the about page</div>
 }
 
 export default About
