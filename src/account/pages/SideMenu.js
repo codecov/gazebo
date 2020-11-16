@@ -4,18 +4,11 @@ import { Link } from 'react-router-dom'
 function SideMenu({ baseUrl }) {
   return (
     <div>
-      <Link to={baseUrl}>General</Link>
+      <Link to={baseUrl}>Billing & Users</Link>
       <br />
-      <Link to={baseUrl + 'billing'}>Billing</Link>
+      <Link to={baseUrl + 'yaml'}>YAML</Link>
       <br />
-      <Link to={baseUrl + 'users'}>Users</Link>
-      <br />
-      <Link to={baseUrl + 'invoices'}>Invoices</Link>
-      <br />
-      <Link to={baseUrl + 'yaml'}>Yaml</Link>
-      <br />
-      <Link to={baseUrl + 'yaml/history'}>Yaml history</Link>
-      <br />
+      <Link to={baseUrl + 'admin'}>Admin</Link>
     </div>
   )
 }
