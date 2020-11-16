@@ -1,11 +1,10 @@
-import { waitFor, render, screen } from '@testing-library/react';
-import App from './App';
+import { waitFor, render, screen } from '@testing-library/react'
+import App from './App'
 
 jest.mock('./pages/Home', () => () => 'HomeComponent')
 jest.mock('./pages/About', () => () => 'AboutComponent')
 
 describe('App', () => {
-
   describe('when rendering the App on homepage', () => {
     beforeEach(() => {
       window.history.pushState({}, 'Test page', '/')

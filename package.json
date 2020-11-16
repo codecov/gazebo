@@ -13,15 +13,16 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.0",
+    "react-scripts": "^4.0.0",
+    "tailwindcss": "^1.9.6",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:ci": "react-scripts test --collectCoverage ",
-    "eject": "react-scripts eject",
+    "start": "rescripts start",
+    "build": "rescripts build",
+    "test": "rescripts test",
+    "test:ci": "rescripts test --collectCoverage ",
+    "eject": "rescripts eject",
     "lint": "npx eslint --no-ignore --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'",
     "bundlesize": "npx bundlesize",
     "storybook": "start-storybook -p 6006 -s public --no-dll",
@@ -64,20 +65,24 @@
     }
   ],
   "devDependencies": {
-    "bundlesize": "^0.18.0",
     "@babel/core": "^7.12.3",
+    "@rescripts/cli": "0.0.14",
     "@storybook/addon-actions": "^6.0.28",
     "@storybook/addon-essentials": "^6.0.28",
     "@storybook/addon-links": "^6.0.28",
     "@storybook/node-logger": "^6.0.28",
     "@storybook/preset-create-react-app": "^3.1.4",
     "@storybook/react": "^6.0.28",
+    "autoprefixer": "9.8.6",
+    "bundlesize": "^0.18.0",
     "eslint-config-prettier": "^6.15.0",
     "http-proxy-middleware": "^1.0.6",
     "husky": "^4.3.0",
     "lint-staged": "^10.5.1",
+    "postcss-font-magician": "2.3.1",
     "msw": "^0.21.3",
     "prettier": "^2.1.2",
-    "react-is": "^17.0.1"
+    "react-is": "^17.0.1",
+    "rescript-use-postcss-config": "^1.0.0"
   }
 }

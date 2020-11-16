@@ -1,7 +1,6 @@
 .spinner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply flex items-center justify-center;
+  /* Check Tailwind can be used with css modules */
 }
 
 @keyframes draw {
@@ -14,9 +13,8 @@
 }
 
 .spinner svg {
-  display: inline-block;
-  width: 100%;
-  height: 100%;
+  @apply inline-block w-full h-full;
+
   fill: none;
 }
 
