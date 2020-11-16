@@ -1,13 +1,12 @@
 import { waitFor, render, screen } from '@testing-library/react'
 import App from './App'
 
-jest.mock('./pages/Home', () => () => 'HomeComponent')
-jest.mock('./pages/About', () => () => 'AboutComponent')
+jest.mock('./account/pages', () => () => 'AccountSettings')
 
 describe('App', () => {
-  describe('when rendering the App on homepage', () => {
+  describe('when rendering', () => {
     beforeEach(() => {
-      window.history.pushState({}, 'Test page', '/')
+      window.history.pushState({}, 'Test page', '/account/gh/codecov/')
       render(<App />)
     })
 
@@ -16,23 +15,9 @@ describe('App', () => {
       expect(loading).toBeInTheDocument()
     })
 
-    it('renders the homepage', () => {
+    it('renders the AccountSettings page', () => {
       return waitFor(() => {
-        const page = screen.getByText(/HomeComponent/i)
-        expect(page).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('when visiting the about page', () => {
-    beforeEach(() => {
-      window.history.pushState({}, 'Test page', '/about')
-      render(<App />)
-    })
-
-    it('renders the homepage', () => {
-      return waitFor(() => {
-        const page = screen.getByText(/AboutComponent/i)
+        const page = screen.getByText(/AccountSettings/i)
         expect(page).toBeInTheDocument()
       })
     })
