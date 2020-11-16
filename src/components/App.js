@@ -1,12 +1,18 @@
-import { Suspense } from 'react'
+import { Suspense, lazy } from 'react'
 
-import { BrowserRouter, Switch } from 'react-router-dom'
+import { BrowserRouter, Switch, Route } from 'react-router-dom'
+
+const AccountSettings = lazy(() => import('./account/pages'))
 
 function App() {
   return (
     <Suspense fallback="loading...">
       <BrowserRouter>
-        <Switch></Switch>
+        <Switch>
+          <Route path="/account/:provider/:owner/">
+            <AccountSettings />
+          </Route>
+        </Switch>
       </BrowserRouter>
     </Suspense>
   )
