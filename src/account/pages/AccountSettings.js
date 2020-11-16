@@ -3,6 +3,9 @@ import { Switch, Route } from 'react-router-dom'
 import { useBaseUrl } from 'shared/router'
 
 import SideMenu from './SideMenu'
+import AdminTab from './tabs/Admin'
+import BillingAndUsersTab from './tabs/BillingAndUsers'
+import YAMLTab from './tabs/YAML'
 
 function AccountSettings() {
   const baseUrl = useBaseUrl()
@@ -18,9 +21,15 @@ function AccountSettings() {
       </div>
       <div>
         <Switch>
-          <Route path={baseUrl + ''}>Billing & Users</Route>
-          <Route path={baseUrl + 'yaml'}>YAML</Route>
-          <Route path={baseUrl + 'admin'}>Admin</Route>
+          <Route path={baseUrl + ''} exact>
+            <BillingAndUsersTab />
+          </Route>
+          <Route path={baseUrl + 'yaml'}>
+            <YAMLTab />
+          </Route>
+          <Route path={baseUrl + 'admin'}>
+            <AdminTab />
+          </Route>
         </Switch>
       </div>
     </>
