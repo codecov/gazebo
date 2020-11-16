@@ -21,3 +21,6 @@ site:
 
   ignore:
     - "**/*.stories.js"
+    - ./src/setupTests.js
+    - ./src/setupProxy.js
+    - ./src/reportWebVitals.js
