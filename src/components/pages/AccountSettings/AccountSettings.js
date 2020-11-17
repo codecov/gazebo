@@ -15,11 +15,11 @@ function AccountSettings() {
   // and render different UI according to the type of user
 
   return (
-    <>
-      <div>
+    <div className="flex space-between">
+      <div className="mr-8">
         <SideMenu baseUrl={baseUrl} />
       </div>
-      <div>
+      <div className="flex-grow ">
         <Switch>
           <Route path={baseUrl + ''} exact>
             <BillingAndUsersTab />
@@ -32,7 +32,7 @@ function AccountSettings() {
           </Route>
         </Switch>
       </div>
-    </>
+    </div>
   )
 }
 
