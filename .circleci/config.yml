@@ -48,6 +48,20 @@ jobs:
           name: Sentry Release
           command: npm run sentry
 
+  build:
+    docker:
+      - image: circleci/node:14.5.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
+      - run:
+          name: Build the spa
+          command: npm run build
+      - run:
+          name: Check bundlesize
+          command: npm run bundlesize
 
   storybook:
     docker:
@@ -73,5 +87,8 @@ workflows:
           requires:
             - install
       - sentry:
+          requires:
+            - install
+      - build:
           requires:
             - install
