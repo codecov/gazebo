@@ -19,7 +19,11 @@ module.exports = {
     container: {
       center: true,
     },
-    extend: {},
+    extend: {
+      boxShadow: {
+        card: "0 7px 20px 0 rgba(34,47,61,0.05)",
+      },
+    },
   },
   variants: {},
   plugins: [
