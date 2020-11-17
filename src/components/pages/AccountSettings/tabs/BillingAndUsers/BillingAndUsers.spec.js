@@ -13,7 +13,7 @@ describe('BillingAndUsersTab', () => {
     })
 
     it('renders something', () => {
-      const tab = screen.getByText(/BillingAndUsers/)
+      const tab = screen.getByText(/Current plan/)
       expect(tab).toBeInTheDocument()
     })
   })
