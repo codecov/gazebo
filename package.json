@@ -16,7 +16,6 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "get-version": "echo gazebo@`git log --format=\"%H\" -n 1`",
     "start": "rescripts start",
     "build": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build",
     "test": "rescripts test",
