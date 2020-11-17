@@ -15,7 +15,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.0",
     "tailwindcss": "^1.9.6",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^1.0.1"
   },
   "scripts": {
     "start": "rescripts start",
