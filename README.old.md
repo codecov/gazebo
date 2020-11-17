@@ -1,2 +1,0 @@
-# gazebo
-React SPA

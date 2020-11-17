@@ -1,70 +1,72 @@
-# Getting Started with Create React App
+[![codecov](https://codecov.io/gh/codecov/gazebo/branch/main/graph/badge.svg?token=UAP786D58M)](https://codecov.io/gh/codecov/gazebo)
+
+# Gazebo
+
+Gazebo is the Front-end SPA of Codecov. It's a greenfield project we kicked off in November 2020 with the ambition of rewriting all the legacy pages from [codecov.io](https://github.com/codecov/codecov.io) and [codecov-client](https://github.com/codecov/codecov-client) in a single repository with a more modern approach.
+
+We decided to use React from our investigation [here](https://codecovio.atlassian.net/wiki/spaces/ENG/pages/825393161/React+investigation)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Prerequisites
 
-In the project directory, you can run:
+We recommend using the same Node version as in CircleCI: [Node (Latest LTS)](https://nodejs.org/en/download/).
+You can refer to the .nvmrc in the root folder.
 
-### `yarn start`
+## Run the project
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+To run the project in development mode
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+> npm install
+> npm run start
+```
 
-### `yarn test`
+The page will reload when you make edits. There is a local proxy to the staging API so you can develop against it. You can overwrite it by creating a `.env.local` file with it with the following:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+PROXY_TO=http://localhost:5100
+```
 
-### `yarn build`
+## Run tests
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+You can run the tests with
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+> npm run test
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This script is using Jest, so any valid Jest options can be added to the command.
 
-### `yarn eject`
+We are using the [Testing Library](https://testing-library.com/docs/react-testing-library/intro) to test the React components.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Linting
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+> npm run test
+```
+will lint the whole project.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+We have some extra rules to keep the code more maintainable:
 
-## Learn More
+- Complexity of max 5 per function: to prevent functions with a lot of of different outcome
+- 10 max statements per function: to prevent a function doing too much
+- 2 level of nested callbacks: to prevent complexity within nested functions
+- Mandatory prop-types: as we don't have a Type system, this rule will help us have documented components
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Build the application for production
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+> npm run build
+```
 
-### Code Splitting
+will build the application in the `build` folder. We currently use Netlify for deployment, which will be subject to change.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Config
 
-### Analyzing the Bundle Size
+The config are centralized in one place in the file `config.js`. The file merges multiple configuration in one object:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- hardcoded configuration in that file
+- the configuration from `process.env` [documentation here](https://create-react-app.dev/docs/adding-custom-environment-variables) which is set on build-time
+- the configuration from `window.configEnv` which can be set on start-time 
