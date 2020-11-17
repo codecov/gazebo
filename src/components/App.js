@@ -2,7 +2,7 @@ import { Suspense, lazy } from 'react'
 
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
-const AccountSettings = lazy(() => import('./account/pages'))
+const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 
 function App() {
   return (
