@@ -40,7 +40,8 @@
       "rules": {
         "max-nested-callbacks": "off",
         "max-statements": "off",
-        "complexity": "off"
+        "complexity": "off",
+        "react/display-name": "off"
       }
     },
     {

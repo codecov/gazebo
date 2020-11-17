@@ -2,19 +2,15 @@ import { Suspense, lazy } from 'react'
 
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
-const Home = lazy(() => import('./pages/Home'))
-const About = lazy(() => import('./pages/About'))
+const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 
 function App() {
   return (
     <Suspense fallback="loading...">
       <BrowserRouter>
         <Switch>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/">
-            <Home />
+          <Route path="/account/:provider/:owner/">
+            <AccountSettings />
           </Route>
         </Switch>
       </BrowserRouter>
