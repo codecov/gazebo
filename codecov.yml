@@ -25,3 +25,5 @@ site:
     - ./src/setupProxy.js
     - ./src/reportWebVitals.js
     - ./scripts/*
+    - ./src/index.js
+    - ./src/sentry.js
