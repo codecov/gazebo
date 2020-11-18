@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 
 import Card from 'components/Card'
-import BenefitList from 'components/BenefitList'
+
+import BenefitList from '../../../shared/BenefitList'
 
 function CurrentPlanCard() {
   const accountDetails = {
