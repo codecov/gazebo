@@ -10,11 +10,9 @@ jest.mock('./tabs/YAML', () => () => 'YAMLTab')
 
 describe('AccountSettings', () => {
   function setup() {
-    render(
-      <MemoryRouter>
-        <AccountSettings />
-      </MemoryRouter>
-    )
+    render(<AccountSettings />, {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('when rendering on base url', () => {
