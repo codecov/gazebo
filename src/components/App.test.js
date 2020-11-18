@@ -11,7 +11,7 @@ describe('App', () => {
     })
 
     it('renders the loading state', () => {
-      const loading = screen.getByText(/loading.../i)
+      const loading = screen.getByTestId('logo-spinner')
       expect(loading).toBeInTheDocument()
     })
 
