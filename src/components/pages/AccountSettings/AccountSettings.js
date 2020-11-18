@@ -1,4 +1,4 @@
-import { Switch, Route } from 'react-router-dom'
+import { useParams, Switch, Route } from 'react-router-dom'
 
 import { useBaseUrl } from 'shared/router'
 
@@ -8,6 +8,7 @@ import BillingAndUsersTab from './tabs/BillingAndUsers'
 import YAMLTab from './tabs/YAML'
 
 function AccountSettings() {
+  const { provider, owner } = useParams()
   const baseUrl = useBaseUrl()
 
   // it's a slightly different menu / pages if the owner is a Org or a user
@@ -22,7 +23,7 @@ function AccountSettings() {
       <div className="flex-grow ">
         <Switch>
           <Route path={baseUrl + ''} exact>
-            <BillingAndUsersTab />
+            <BillingAndUsersTab provider={provider} owner={owner} />
           </Route>
           <Route path={baseUrl + 'yaml'}>
             <YAMLTab />

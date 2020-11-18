@@ -2,21 +2,10 @@ import { Link } from 'react-router-dom'
 
 import Card from 'components/Card'
 
+import { accountDetailsPropType } from 'services/account'
 import BenefitList from '../../../shared/BenefitList'
 
-function CurrentPlanCard() {
-  const accountDetails = {
-    plan: {
-      marketingName: 'Basic',
-      baseUnitPrice: 0,
-      benefits: ['Up to 5 users', 'Unlimited repos'],
-      quantity: 5,
-      value: 'users-free',
-    },
-    activatedUserCount: 2,
-    inactiveUserCount: 1,
-  }
-
+function CurrentPlanCard({ accountDetails }) {
   const isFreePlan = accountDetails.plan.value === 'users-free'
 
   return (
@@ -50,7 +39,7 @@ function CurrentPlanCard() {
         >
           {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
         </Link>
-        {isFreePlan && (
+        {!isFreePlan && (
           <Link
             to="#"
             className="btn text-base text-gray-900 underline hover:underline mt-4"
@@ -61,6 +50,10 @@ function CurrentPlanCard() {
       </div>
     </Card>
   )
+}
+
+CurrentPlanCard.propTypes = {
+  accountDetails: accountDetailsPropType.isRequired,
 }
 
 export default CurrentPlanCard

@@ -1,12 +1,17 @@
+import PropType from 'prop-types'
+
 import Card from 'components/Card'
+import { useAccountDetails } from 'services/account'
 
 import CurrentPlanCard from './CurrentPlanCard'
 
-function BillingAndUsers() {
+function BillingAndUsers({ provider, owner }) {
+  const accountDetails = useAccountDetails({ provider, owner }).data.data
+
   return (
     <div className="grid grid-cols-12 gap-4">
       <div className="col-start-1 col-end-4">
-        <CurrentPlanCard />
+        <CurrentPlanCard accountDetails={accountDetails} />
         <Card className="mt-4">Credit card information</Card>
         <Card className="mt-4">Latest invoice</Card>
       </div>
@@ -15,6 +20,11 @@ function BillingAndUsers() {
       </div>
     </div>
   )
+}
+
+BillingAndUsers.propTypes = {
+  provider: PropType.string.isRequired,
+  owner: PropType.string.isRequired,
 }
 
 export default BillingAndUsers
