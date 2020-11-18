@@ -1,6 +1,8 @@
+import { Suspense } from 'react'
 import { useParams, Switch, Route } from 'react-router-dom'
 
 import { useBaseUrl } from 'shared/router'
+import LogoSpinner from 'components/LogoSpinner'
 
 import SideMenu from './SideMenu'
 import AdminTab from './tabs/Admin'
@@ -20,18 +22,20 @@ function AccountSettings() {
       <div className="mr-8">
         <SideMenu baseUrl={baseUrl} />
       </div>
-      <div className="flex-grow ">
-        <Switch>
-          <Route path={baseUrl + ''} exact>
-            <BillingAndUsersTab provider={provider} owner={owner} />
-          </Route>
-          <Route path={baseUrl + 'yaml'}>
-            <YAMLTab />
-          </Route>
-          <Route path={baseUrl + 'admin'}>
-            <AdminTab />
-          </Route>
-        </Switch>
+      <div className="flex-grow">
+        <Suspense fallback={<LogoSpinner />}>
+          <Switch>
+            <Route path={baseUrl + ''} exact>
+              <BillingAndUsersTab provider={provider} owner={owner} />
+            </Route>
+            <Route path={baseUrl + 'yaml'}>
+              <YAMLTab />
+            </Route>
+            <Route path={baseUrl + 'admin'}>
+              <AdminTab />
+            </Route>
+          </Switch>
+        </Suspense>
       </div>
     </div>
   )
