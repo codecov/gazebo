@@ -1,7 +1,8 @@
 import { Suspense, lazy } from 'react'
 import { QueryCache, ReactQueryCacheProvider } from 'react-query'
-
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
+
+import LogoSpinner from 'components/LogoSpinner'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 
@@ -14,8 +15,14 @@ const queryCache = new QueryCache({
 })
 
 function App() {
+  const fullPageLoader = (
+    <div className="h-screen w-screen flex items-center justify-center">
+      <LogoSpinner />
+    </div>
+  )
+
   return (
-    <Suspense fallback="loading...">
+    <Suspense fallback={fullPageLoader}>
       <ReactQueryCacheProvider queryCache={queryCache}>
         <BrowserRouter>
           <Switch>
