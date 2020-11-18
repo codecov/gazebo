@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 
 import BillingAndUsers from './BillingAndUsers'
 
+jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
+
 describe('BillingAndUsersTab', () => {
   function setup(url) {
     render(<BillingAndUsers />)
@@ -12,8 +14,8 @@ describe('BillingAndUsersTab', () => {
       setup('/')
     })
 
-    it('renders something', () => {
-      const tab = screen.getByText(/Current plan/)
+    it('renders the CurrentPlanCard', () => {
+      const tab = screen.getByText(/CurrentPlanCard/)
       expect(tab).toBeInTheDocument()
     })
   })
