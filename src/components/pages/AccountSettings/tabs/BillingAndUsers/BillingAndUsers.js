@@ -6,7 +6,7 @@ import { useAccountDetails } from 'services/account'
 import CurrentPlanCard from './CurrentPlanCard'
 
 function BillingAndUsers({ provider, owner }) {
-  const accountDetails = useAccountDetails({ provider, owner }).data.data
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
 
   return (
     <div className="grid grid-cols-12 gap-4">

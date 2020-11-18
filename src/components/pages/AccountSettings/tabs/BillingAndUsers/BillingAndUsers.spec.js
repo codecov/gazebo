@@ -1,12 +1,20 @@
 import { render, screen } from '@testing-library/react'
 
 import BillingAndUsers from './BillingAndUsers'
+import { useAccountDetails } from 'services/account'
 
 jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
+jest.mock('services/account/hooks')
+
+const provider = 'gh'
+const owner = 'codecov'
 
 describe('BillingAndUsersTab', () => {
   function setup(url) {
-    render(<BillingAndUsers />)
+    useAccountDetails.mockReturnValue({
+      data: null,
+    })
+    render(<BillingAndUsers provider={provider} owner={owner} />)
   }
 
   describe('when rendering on base url', () => {
