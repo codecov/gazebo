@@ -64,7 +64,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@rescripts/cli": "0.0.14",
-    "@storybook/addon-actions": "^6.0.28",
+    "@storybook/addon-actions": "^6.1.0",
     "@storybook/addon-essentials": "^6.0.28",
     "@storybook/addon-links": "^6.0.28",
     "@storybook/node-logger": "^6.0.28",
