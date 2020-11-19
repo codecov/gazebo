@@ -24,7 +24,7 @@
       "error"
     ],
     "react/prop-types": [
-      "error",
+      "warn",
       {
         "ignore": [
           "children",
