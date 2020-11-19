@@ -80,6 +80,7 @@
     "@testing-library/user-event": "^12.2.2",
     "autoprefixer": "9.8.6",
     "bundlesize": "^0.18.0",
+    "date-fns": "^2.16.1",
     "eslint-config-prettier": "^6.15.0",
     "http-proxy-middleware": "^1.0.6",
     "husky": "^4.3.0",
