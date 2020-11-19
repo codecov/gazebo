@@ -18,11 +18,11 @@ comment:
   require_base: no
   require_head: yes
 
-  ignore:
-    - ./src/**/*.stories.js
-    - ./src/setupTests.js
-    - ./src/setupProxy.js
-    - ./src/reportWebVitals.js
-    - ./scripts/*
-    - ./src/index.js
-    - ./src/sentry.js
+ignore:
+  - ./src/**/*.stories.js
+  - ./src/setupTests.js
+  - ./src/setupProxy.js
+  - ./src/reportWebVitals.js
+  - ./scripts/*
+  - ./src/index.js
+  - ./src/sentry.js
