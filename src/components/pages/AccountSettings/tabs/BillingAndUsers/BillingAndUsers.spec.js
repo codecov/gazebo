@@ -4,6 +4,7 @@ import BillingAndUsers from './BillingAndUsers'
 import { useAccountDetails } from 'services/account'
 
 jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
+jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')
 jest.mock('services/account/hooks')
 
 const provider = 'gh'
@@ -12,7 +13,7 @@ const owner = 'codecov'
 describe('BillingAndUsersTab', () => {
   function setup(url) {
     useAccountDetails.mockReturnValue({
-      data: null,
+      data: {},
     })
     render(<BillingAndUsers provider={provider} owner={owner} />)
   }
@@ -24,6 +25,11 @@ describe('BillingAndUsersTab', () => {
 
     it('renders the CurrentPlanCard', () => {
       const tab = screen.getByText(/CurrentPlanCard/)
+      expect(tab).toBeInTheDocument()
+    })
+
+    it('renders the LatestInvoiceCard', () => {
+      const tab = screen.getByText(/LatestInvoiceCard/)
       expect(tab).toBeInTheDocument()
     })
   })
