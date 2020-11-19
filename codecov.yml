@@ -1,23 +1,22 @@
-site:
-  codecov:
-    require_ci_to_pass: yes
+codecov:
+  require_ci_to_pass: yes
 
-  coverage:
-    precision: 2
-    round: down
-    range: "70...100"
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
 
-    status:
-      project: yes
-      patch: yes
-      changes: no
+  status:
+    project: yes
+    patch: yes
+    changes: no
 
-  comment:
-    layout: "reach, diff, flags, files, footer"
-    behavior: default
-    require_changes: no
-    require_base: no
-    require_head: yes
+comment:
+  layout: "reach, diff, flags, files, footer"
+  behavior: default
+  require_changes: no
+  require_base: no
+  require_head: yes
 
   ignore:
     - ./src/**/*.stories.js
