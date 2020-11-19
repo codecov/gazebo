@@ -36,6 +36,18 @@ jobs:
           name: Run eslint
           command: npm run lint
 
+  sentry:
+    docker:
+      - image: circleci/node:14.5.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
+      - run:
+          name: Sentry Release
+          command: npm run sentry
+
   build:
     docker:
       - image: circleci/node:14.5.0
@@ -72,6 +84,9 @@ workflows:
           requires:
             - install
       - test:
+          requires:
+            - install
+      - sentry:
           requires:
             - install
       - build:

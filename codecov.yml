@@ -20,7 +20,10 @@ site:
     require_head: yes
 
   ignore:
-    - "**/*.stories.js"
+    - ./src/**/*.stories.js
     - ./src/setupTests.js
     - ./src/setupProxy.js
     - ./src/reportWebVitals.js
+    - ./scripts/*
+    - ./src/index.js
+    - ./src/sentry.js

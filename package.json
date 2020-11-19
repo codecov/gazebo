@@ -5,6 +5,7 @@
   "dependencies": {
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.20",
+    "@sentry/react": "^5.27.3",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
     "react": "^17.0.1",
@@ -16,8 +17,9 @@
   },
   "scripts": {
     "start": "rescripts start",
-    "build": "rescripts build",
+    "build": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build",
     "test": "rescripts test",
+    "sentry": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build && node scripts/sentry.js",
     "test:ci": "rescripts test --collectCoverage ",
     "eject": "rescripts eject",
     "lint": "npx eslint --no-ignore --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'",
@@ -64,6 +66,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@rescripts/cli": "0.0.14",
+    "@sentry/cli": "^1.59.0",
     "@storybook/addon-actions": "^6.1.0",
     "@storybook/addon-essentials": "^6.1.0",
     "@storybook/addon-links": "^6.1.0",
