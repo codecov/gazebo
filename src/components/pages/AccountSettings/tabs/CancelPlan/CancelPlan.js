@@ -1,4 +1,5 @@
-import { useParams, Link } from 'react-router-dom'
+import PropType from 'prop-types'
+import { Link } from 'react-router-dom'
 import difference from 'lodash/difference'
 
 import Card from 'components/Card'
@@ -6,10 +7,9 @@ import Icon from 'components/Icon'
 import { useAccountsAndPlans } from 'services/account'
 
 import umbrellaImg from './umbrella.svg'
-import BenefitList from '../AccountSettings/shared/BenefitList'
+import BenefitList from '../../shared/BenefitList'
 
-function CancelPlan() {
-  const { provider, owner } = useParams()
+function CancelPlan({ provider, owner }) {
   const { data } = useAccountsAndPlans({ provider, owner })
   const { accountDetails, plans } = data
 
@@ -28,7 +28,7 @@ function CancelPlan() {
         </span>
         Back to:
         <Link
-          to=".."
+          to={`/account/${provider}/${owner}`}
           className="underline text-gray-500 hover:text-gray-600 visited:text-gray-500 hover:underline ml-1"
         >
           Billing & Users
@@ -86,6 +86,11 @@ function CancelPlan() {
       </div>
     </div>
   )
+}
+
+CancelPlan.propTypes = {
+  provider: PropType.string.isRequired,
+  owner: PropType.string.isRequired,
 }
 
 export default CancelPlan

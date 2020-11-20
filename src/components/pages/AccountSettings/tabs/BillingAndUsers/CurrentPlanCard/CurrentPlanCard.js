@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom'
 
 import Card from 'components/Card'
-
+import { useBaseUrl } from 'shared/router'
 import { accountDetailsPropType } from 'services/account'
+
 import BenefitList from '../../../shared/BenefitList'
 
 function CurrentPlanCard({ accountDetails }) {
   const isFreePlan = accountDetails.plan.value === 'users-free'
+  const baseUrl = useBaseUrl()
 
   return (
     <Card className="px-12 py-10 pb-4">
@@ -41,7 +43,7 @@ function CurrentPlanCard({ accountDetails }) {
         </Link>
         {!isFreePlan && (
           <Link
-            to="#"
+            to={`${baseUrl}billing/cancel`}
             className="btn text-base text-gray-900 underline hover:underline mt-4"
           >
             Cancel
