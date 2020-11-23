@@ -30,6 +30,8 @@ export function ToastNotificationProvider({ children }) {
       ...oldNotifications,
       mergedNotification,
     ])
+
+    return mergedNotification
   }
 
   function removeNotification(id) {
