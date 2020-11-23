@@ -23,6 +23,7 @@ module.exports = {
       colors: {
         codecov: {
           red: "#CE2019",
+          orange: "#FFC273",
         },
         gray: {
           100: "#F7F8FB",
@@ -44,6 +45,26 @@ module.exports = {
           600: "#0071C2",
           800: "#015896",
           900: "#002D4D",
+        },
+        warning: {
+          900: "#473610",
+          500: "#CA8E00",
+          100: "#FFEBD2",
+        },
+        success: {
+          100: "#DEFFE8",
+          500: "#73FF9E",
+          900: "#0E1B29",
+        },
+        error: {
+          100: "#FFEDF0",
+          500: "#FF9B9B",
+          900: "#590808",
+        },
+        info: {
+          100: "#DFF2FF",
+          500: "#A3D9FF",
+          900: "#013B65",
         },
       },
       boxShadow: {
