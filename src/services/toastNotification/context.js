@@ -8,14 +8,7 @@ const ToastContext = React.createContext({
 })
 
 export function ToastNotificationProvider({ children }) {
-  const [notifications, setNotifications] = React.useState([
-    {
-      id: 1,
-      type: 'error',
-      text: 'enter the text',
-      disappearAfter: 5000,
-    },
-  ])
+  const [notifications, setNotifications] = React.useState([])
   const currentId = React.useRef(0)
 
   function addNofitication(newNotification) {

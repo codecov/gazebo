@@ -46,7 +46,7 @@ function NotificationItem({ notification, removeNotification }) {
   }, [removeNotification, notification])
 
   const className = [
-    'rounded-full p-2 flex w-full max-w-lg mx-auto flex items-center',
+    'rounded-full p-2 flex w-full max-w-lg mx-auto flex items-center mt-4',
     style.text,
     style.background,
   ].join(' ')
