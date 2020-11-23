@@ -1,5 +1,5 @@
 import PropType from 'prop-types'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 
 import Icon from 'components/Icon'
 import { notificationPropType } from 'services/toastNotification'
@@ -34,16 +34,20 @@ const typeToStyle = {
 function NotificationItem({ notification, removeNotification }) {
   const style = typeToStyle[notification.type]
 
+  const close = useCallback(() => {
+    return removeNotification(notification.id)
+  }, [notification.id, removeNotification])
+
   // remove notification after the delay
   useEffect(() => {
     // infinite notification
     if (notification.disappearAfter === 0) return
-    const timeout = setTimeout(() => {
-      removeNotification(notification.id)
-    }, notification.disappearAfter)
+
+    const timeout = setTimeout(close, notification.disappearAfter)
+
     // cleanup if unmounted before the time
     return () => clearTimeout(timeout)
-  }, [removeNotification, notification])
+  }, [close, notification])
 
   const className = [
     'rounded-full p-2 flex w-full max-w-lg mx-auto flex items-center mt-4',
@@ -58,7 +62,8 @@ function NotificationItem({ notification, removeNotification }) {
       </div>
       {notification.text}
       <button
-        onClick={() => removeNotification(notification.id)}
+        data-testid="close-notification"
+        onClick={close}
         className="ml-auto inline-flex items-center"
       >
         <Icon name="times" />
