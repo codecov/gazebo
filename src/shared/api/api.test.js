@@ -31,6 +31,9 @@ const server = setupServer(
   rest.get('/internal/test', (req, res, ctx) => {
     const hasToken = Boolean(req.headers.map['authorization'])
     return res(ctx.status(hasToken ? 200 : 401), ctx.json(rawUserData))
+  }),
+  rest.post('/internal/test', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(JSON.parse(req.body)))
   })
 )
 
@@ -74,5 +77,27 @@ describe('when calling an endpoint with a token', () => {
   it('has the data and no error', () => {
     expect(error).toBeNull()
     expect(result.data).toEqual(userData)
+  })
+})
+
+describe('when using a post erquest', () => {
+  const data = {
+    test: 'foo',
+    camel_case: 'snakeCase',
+  }
+  beforeEach(() => {
+    return Api.post({
+      path: '/test',
+      data,
+    }).then((data) => {
+      result = data
+    })
+  })
+
+  it('returns the data, and transform to camelCase', () => {
+    expect(result.data).toEqual({
+      test: 'foo',
+      camelCase: 'snakeCase',
+    })
   })
 })
