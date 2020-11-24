@@ -6,6 +6,7 @@ import Icon from 'components/Icon'
 import { useAccountsAndPlans } from 'services/account'
 
 import parasolImg from './parasol.png'
+import UpgradePlanForm from './UpgradePlanForm'
 import BenefitList from '../../shared/BenefitList'
 
 function UpgradePlanTab({ provider, owner }) {
@@ -42,7 +43,11 @@ function UpgradePlanTab({ provider, owner }) {
               <h2 className="text-5xl bold mb-8">
                 ${proPlanYear.baseUnitPrice}*
               </h2>
-              <BenefitList benefits={proPlanYear.benefits} />
+              <BenefitList
+                benefits={proPlanYear.benefits}
+                iconName="check"
+                iconColor="text-pink-500"
+              />
               <p className="text-gray-400 mt-4">
                 *${proPlanMonth.baseUnitPrice} per user / month if paid monthly
               </p>
@@ -50,16 +55,14 @@ function UpgradePlanTab({ provider, owner }) {
           </Card>
         </div>
         <div className="col-span-7">
-          <Card>
-            <div className="p-4">
-              <div
-                proPlanYear={proPlanYear}
-                proPlanMonth={proPlanMonth}
-                accountDetails={accountDetails}
-                provider={provider}
-                owner={owner}
-              />
-            </div>
+          <Card className="p-4">
+            <UpgradePlanForm
+              proPlanYear={proPlanYear}
+              proPlanMonth={proPlanMonth}
+              accountDetails={accountDetails}
+              provider={provider}
+              owner={owner}
+            />
           </Card>
         </div>
       </div>
