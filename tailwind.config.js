@@ -75,7 +75,9 @@ module.exports = {
     },
   },
   variants: {
-    margin: ['responsive', 'last']
+    margin: ['responsive', 'last'],
+    opacity: ['disabled'],
+    cursor: ['disabled'],
   },
   plugins: [
     plugin(function ({ addBase, config }) {
