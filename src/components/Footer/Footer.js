@@ -3,7 +3,7 @@ import PropType from 'prop-types'
 
 function FooterLink({ label, to }) {
   return (
-    <li classNames="flex justify-center">
+    <li className="flex justify-center">
       {to ? (
         <a
           className="p-4 no-underline hover:underline hover:text-blue-400"
@@ -40,7 +40,7 @@ function Footer() {
   ]
   return (
     <footer className="flex-none bg-codecov-footer">
-      <div className="container flex flex-col sm:flex-row justify-center sm:justify-between text-white py-6 px-3">
+      <div className="container flex flex-wrap flex-col sm:flex-row justify-center sm:justify-between text-white py-6 px-3">
         <ul className="flex-1 flex justify-center sm:justify-start items-center">
           {leftMenu.map((data, i) => (
             <FooterLink key={i} {...data} />
@@ -51,7 +51,7 @@ function Footer() {
           color="text-pink-500"
           name="codecov"
         />
-        <ul className="flex-1 flex justify-center sm:justify-end items-center">
+        <ul className="flex-1 flex flex-wrap justify-center sm:justify-end items-center">
           {rightMenu.map((data, i) => (
             <FooterLink key={i} {...data} />
           ))}
