@@ -5,6 +5,7 @@ import Card from 'components/Card'
 import Icon from 'components/Icon'
 import { useAccountsAndPlans } from 'services/account'
 
+import parasolImg from './parasol.png'
 import BenefitList from '../../shared/BenefitList'
 
 function UpgradePlanTab({ provider, owner }) {
@@ -33,7 +34,7 @@ function UpgradePlanTab({ provider, owner }) {
           <Card>
             <div className="flex flex-col items-center pb-8">
               <div className="-mt-16 mb-4">
-                <img src="@/assets/imgs/parasol.png" alt="parasol" />
+                <img src={parasolImg} alt="parasol" />
               </div>
               <h3 className="text-2xl text-pink-500 bold">
                 {proPlanYear.marketingName}
