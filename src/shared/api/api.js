@@ -10,6 +10,8 @@ async function _fetch({
 }) {
   const uri = generatePath({ path, query })
   const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
     ...getHeaders(provider),
     ...extraHeaders,
   }
@@ -20,10 +22,11 @@ async function _fetch({
     body: data ? JSON.stringify(data) : null,
   })
 
-  return {
-    data: camelizeKeys(await res.json()),
-    res,
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
   }
+
+  return camelizeKeys(await res.json())
 }
 
 export function get(config) {
@@ -37,9 +40,17 @@ export function post(config) {
   })
 }
 
+export function patch(config) {
+  return _fetch({
+    ...config,
+    method: 'PATCH',
+  })
+}
+
 const Api = {
   get,
   post,
+  patch,
 }
 
 export default Api
