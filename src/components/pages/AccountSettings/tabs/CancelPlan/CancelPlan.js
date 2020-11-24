@@ -9,6 +9,7 @@ import { useAccountsAndPlans } from 'services/account'
 
 import umbrellaImg from './umbrella.svg'
 import BenefitList from '../../shared/BenefitList'
+import DowngradeToFree from './DowngradeToFree'
 
 function CancelPlan({ provider, owner }) {
   const { data } = useAccountsAndPlans({ provider, owner })
@@ -62,9 +63,11 @@ function CancelPlan({ provider, owner }) {
               auto activate is enabled in your plan settings.
             </p>
             <div className="text-center mt-4">
-              <Button onClick={console.log} color="red">
-                Downgrade to Free
-              </Button>
+              <DowngradeToFree
+                accountDetails={accountDetails}
+                provider={provider}
+                owner={owner}
+              />
             </div>
           </Card>
         </div>
