@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+import Button from 'components/Button'
 import Card from 'components/Card'
 import { useBaseUrl } from 'shared/router'
 import { accountDetailsPropType } from 'services/account'
@@ -35,19 +36,19 @@ function CurrentPlanCard({ accountDetails }) {
       </p>
 
       <div className="flex flex-col items-center mt-6">
-        <Link
-          to="#"
-          className="bg-blue-400 hover:bg-blue-700 hover:text-white visited:text-white text-white py-2 px-4 rounded-full"
-        >
+        <Button Component={Link} to="#">
           {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
-        </Link>
+        </Button>
         {!isFreePlan && (
-          <Link
+          <Button
             to={`${baseUrl}billing/cancel`}
-            className="btn text-base text-gray-900 underline hover:underline mt-4"
+            Component={Link}
+            variant="text"
+            color="gray"
+            className="mt-4"
           >
-            Cancel
-          </Link>
+            Cancel Plan
+          </Button>
         )}
       </div>
     </Card>
