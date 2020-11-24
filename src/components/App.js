@@ -3,6 +3,7 @@ import { QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 import LogoSpinner from 'components/LogoSpinner'
+import Footer from 'components/Footer'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 
@@ -30,6 +31,7 @@ function App() {
               <AccountSettings />
             </Route>
           </Switch>
+          <Footer />
         </BrowserRouter>
       </ReactQueryCacheProvider>
     </Suspense>
