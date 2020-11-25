@@ -1,10 +1,10 @@
 import { camelizeKeys, generatePath, getHeaders } from './helpers'
 
-async function _fetch({
+function _fetch({
   path,
   query,
   method = 'GET',
-  data,
+  body,
   provider = 'gh',
   extraHeaders = {},
 }) {
@@ -16,17 +16,20 @@ async function _fetch({
     ...extraHeaders,
   }
 
-  const res = await fetch(uri, {
+  return fetch(uri, {
     headers,
     method,
-    body: data ? JSON.stringify(data) : null,
+    body: body ? JSON.stringify(body) : null,
+  }).then(async (res) => {
+    const data = camelizeKeys(await res.json())
+
+    return res.ok
+      ? data
+      : Promise.reject({
+          status: res.status,
+          data,
+        })
   })
-
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-
-  return camelizeKeys(await res.json())
 }
 
 export function get(config) {

@@ -18,12 +18,12 @@ function fetchPlan(provider) {
 
 function cancelPlan({ provider, owner }) {
   const path = getPathAccountDetails({ provider, owner })
-  const data = {
+  const body = {
     plan: {
       value: 'users-free',
     },
   }
-  return Api.patch({ path, provider, data })
+  return Api.patch({ path, provider, body })
 }
 
 export function useAccountDetails({ provider, owner }) {

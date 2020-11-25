@@ -33,7 +33,10 @@ const server = setupServer(
     return res(ctx.status(hasToken ? 200 : 401), ctx.json(rawUserData))
   }),
   rest.post('/internal/test', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(JSON.parse(req.body)))
+    return res(ctx.status(200), ctx.json(req.body))
+  }),
+  rest.patch('/internal/test', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(req.body))
   })
 )
 
@@ -60,7 +63,7 @@ describe('when calling an endpoint without a token', () => {
   beforeEach(callApi)
 
   it('has a 401 error', () => {
-    expect(result.res.status).toBe(401)
+    expect(error.status).toBe(401)
   })
 })
 
@@ -76,26 +79,48 @@ describe('when calling an endpoint with a token', () => {
 
   it('has the data and no error', () => {
     expect(error).toBeNull()
-    expect(result.data).toEqual(userData)
+    expect(result).toEqual(userData)
   })
 })
 
-describe('when using a post erquest', () => {
-  const data = {
+describe('when using a post request', () => {
+  const body = {
     test: 'foo',
     camel_case: 'snakeCase',
   }
   beforeEach(() => {
     return Api.post({
       path: '/test',
-      data,
+      body,
     }).then((data) => {
       result = data
     })
   })
 
   it('returns the data, and transform to camelCase', () => {
-    expect(result.data).toEqual({
+    expect(result).toEqual({
+      test: 'foo',
+      camelCase: 'snakeCase',
+    })
+  })
+})
+
+describe('when using a patch request', () => {
+  const body = {
+    test: 'foo',
+    camel_case: 'snakeCase',
+  }
+  beforeEach(() => {
+    return Api.patch({
+      path: '/test',
+      body,
+    }).then((data) => {
+      result = data
+    })
+  })
+
+  it('returns the data, and transform to camelCase', () => {
+    expect(result).toEqual({
       test: 'foo',
       camelCase: 'snakeCase',
     })
