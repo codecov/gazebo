@@ -28,20 +28,17 @@ describe('Error Boundary', () => {
     )
   }
 
-  describe('Catches a js error', () => {
+  describe('when a child component throw an error', () => {
     beforeEach(() => {
       setup()
     })
     afterEach(() => mockError.mockRestore())
 
-    it('console.error is thrown', () => {
+    it('displays it in the console', () => {
       expect(spy).toHaveBeenCalled()
       expect(mockError).toHaveBeenCalledTimes(2)
       expect(mockError.mock.calls[0]).toContain('Alice in wonderland')
     })
-  })
-  describe('Provides UI feedback that an error has occured.', () => {
-    afterEach(() => mockError.mockRestore())
 
     it('renders the default error UI', () => {
       setup()
@@ -51,6 +48,10 @@ describe('Error Boundary', () => {
 
       expect(defaultErrorUI).toBeInTheDocument()
     })
+  })
+  describe('when given a custom error component', () => {
+    afterEach(() => mockError.mockRestore())
+
     it('renders a custom error component', () => {
       const customMessage = 'Whoopsie'
       setup({ errorComponent: () => <p>{customMessage}</p> })
