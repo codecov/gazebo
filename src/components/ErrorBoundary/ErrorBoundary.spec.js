@@ -2,22 +2,20 @@ import { render, screen } from '@testing-library/react'
 import ErrorBoundary from './ErrorBoundary'
 import * as Sentry from '@sentry/browser'
 
+const thrownError = 'Alice in wonderland'
 function BadComponent() {
   // eslint-disable-next-line no-throw-literal
-  throw 'Alice in wonderland'
+  throw thrownError
 }
 
-const mockError = jest.fn()
-const spy = jest.spyOn(console, 'error')
-
 describe('Error Boundary', () => {
+  let mockError
   beforeAll(() => jest.disableAutomock())
   afterAll(() => jest.enableAutomock())
   beforeEach(() => {
+    mockError = jest.fn()
+    const spy = jest.spyOn(console, 'error')
     spy.mockImplementation(mockError)
-  })
-  afterEach(() => {
-    jest.resetAllMocks()
   })
 
   function setup(props) {
@@ -32,17 +30,18 @@ describe('Error Boundary', () => {
     beforeEach(() => {
       setup()
     })
-    afterEach(() => mockError.mockRestore())
 
     it('displays it in the console', () => {
-      expect(spy).toHaveBeenCalled()
       expect(mockError).toHaveBeenCalledTimes(2)
-      expect(mockError.mock.calls[0]).toContain('Alice in wonderland')
+      expect(mockError.mock.calls[0]).toContain(thrownError)
     })
 
     it('renders the default error UI', () => {
+      // @sentry/react seems to have undocumented difference in behavior when not passing fallback.
+      // No fallback looks like multiple error message UIs vs a single UI if fallback is set. Not ideal
       setup()
-      const defaultErrorUI = screen.getByText(
+      // Get first error message
+      const [defaultErrorUI] = screen.getAllByText(
         /Well this is embarassing, looks like we had an error./
       )
 
@@ -50,11 +49,18 @@ describe('Error Boundary', () => {
     })
   })
   describe('when given a custom error component', () => {
-    afterEach(() => mockError.mockRestore())
+    const customMessage = 'Whoopsie'
+
+    beforeEach(() => {
+      setup({ errorComponent: <p>{customMessage}</p> })
+    })
+
+    it('displays it in the console', () => {
+      expect(mockError).toHaveBeenCalledTimes(2)
+      expect(mockError.mock.calls[0]).toContain(thrownError)
+    })
 
     it('renders a custom error component', () => {
-      const customMessage = 'Whoopsie'
-      setup({ errorComponent: () => <p>{customMessage}</p> })
       const CustomError = screen.getByText(customMessage)
 
       expect(CustomError).toBeInTheDocument()
@@ -62,15 +68,14 @@ describe('Error Boundary', () => {
   })
   describe('You can set the scope to sent to Sentry.io', () => {
     // https://docs.sentry.io/platforms/javascript/guides/react/components/errorboundary/#using-multiple-error-boundaries
-    let spySentry
-    const sentryMockScope = { setTag: jest.fn() }
+    const sentryMockScope = jest.fn()
 
     beforeEach(() => {
       // @sentry/react uses @sentry/browser under the hood to set scope.
       jest.mock('@sentry/browser')
-      spySentry = jest.spyOn(Sentry, 'withScope')
+      const spySentry = jest.spyOn(Sentry, 'withScope')
       spySentry.mockImplementation((callback) => {
-        callback(sentryMockScope)
+        callback({ setTag: sentryMockScope })
       })
 
       setup({ beforeCapture: (scope) => scope.setTag('wonderland', 'alice') })
@@ -81,9 +86,8 @@ describe('Error Boundary', () => {
     })
 
     it('The beforeCapture prop correctly sets tags.', () => {
-      expect(spySentry).toHaveBeenCalled()
-      expect(sentryMockScope.setTag).toHaveBeenCalledTimes(1)
-      expect(sentryMockScope.setTag).toHaveBeenCalledWith('wonderland', 'alice')
+      expect(sentryMockScope).toHaveBeenCalledTimes(1)
+      expect(sentryMockScope).toHaveBeenCalledWith('wonderland', 'alice')
     })
   })
 })
