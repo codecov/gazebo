@@ -13,7 +13,6 @@ function SidebarLayout({ sidebar, children }) {
 
 SidebarLayout.propTypes = {
   sidebar: PropType.element.isRequired,
-  children: PropType.element.isRequired,
 }
 
 export default SidebarLayout
