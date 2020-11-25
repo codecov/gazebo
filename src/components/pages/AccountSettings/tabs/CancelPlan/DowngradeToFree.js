@@ -31,7 +31,7 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
 
   return (
     <Button color="red" onClick={cancelPlan} disabled={isDisabled}>
-      Downgrade to Free
+      {isAlreadyFreeUser ? 'Already free user' : 'Downgrade to Free'}
     </Button>
   )
 }
