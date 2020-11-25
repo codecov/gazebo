@@ -7,14 +7,16 @@ export const invoicePropType = PropType.shape({
   invoicePdf: PropType.string.isRequired,
 })
 
+export const planPropType = PropType.shape({
+  marketingName: PropType.string.isRequired,
+  baseUnitPrice: PropType.number.isRequired,
+  benefits: PropType.arrayOf(PropType.string).isRequired,
+  quantity: PropType.number,
+  value: PropType.string.isRequired,
+})
+
 export const accountDetailsPropType = PropType.shape({
-  plan: PropType.shape({
-    marketingName: PropType.string.isRequired,
-    baseUnitPrice: PropType.number.isRequired,
-    benefits: PropType.arrayOf(PropType.string).isRequired,
-    quantity: PropType.number.isRequired,
-    value: PropType.string.isRequired,
-  }).isRequired,
+  plan: planPropType,
   activatedUserCount: PropType.number.isRequired,
   inactiveUserCount: PropType.number.isRequired,
   latestInvoice: invoicePropType,
