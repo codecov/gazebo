@@ -36,7 +36,7 @@ describe('Error Boundary', () => {
 
     it('console.error is thrown', () => {
       expect(spy).toHaveBeenCalled()
-      expect(mockError.mock.calls.length).toBe(2)
+      expect(mockError).toHaveBeenCalledTimes(2)
       expect(mockError.mock.calls[0]).toContain('Alice in wonderland')
     })
   })
@@ -52,9 +52,9 @@ describe('Error Boundary', () => {
       expect(defaultErrorUI).toBeInTheDocument()
     })
     it('renders a custom error component', () => {
-      const ec = () => <p>Whoopsie</p>
-      setup({ errorComponent: ec })
-      const CustomError = screen.getByText(/Whoopsie/)
+      const customMessage = 'Whoopsie'
+      setup({ errorComponent: () => <p>{customMessage}</p> })
+      const CustomError = screen.getByText(customMessage)
 
       expect(CustomError).toBeInTheDocument()
     })
@@ -81,9 +81,8 @@ describe('Error Boundary', () => {
 
     it('The beforeCapture prop correctly sets tags.', () => {
       expect(spySentry).toHaveBeenCalled()
-      expect(sentryMockScope.setTag.mock.calls.length).toBe(1)
-      expect(sentryMockScope.setTag.mock.calls[0]).toContain('wonderland')
-      expect(sentryMockScope.setTag.mock.calls[0]).toContain('alice')
+      expect(sentryMockScope.setTag).toHaveBeenCalledTimes(1)
+      expect(sentryMockScope.setTag).toHaveBeenCalledWith('wonderland', 'alice')
     })
   })
 })
