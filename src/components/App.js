@@ -3,7 +3,6 @@ import { QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 import LogoSpinner from 'components/LogoSpinner'
-import ErrorBoundary from 'components/ErrorBoundary'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 
@@ -23,19 +22,17 @@ function App() {
   )
 
   return (
-    <ErrorBoundary>
-      <Suspense fallback={fullPageLoader}>
-        <ReactQueryCacheProvider queryCache={queryCache}>
-          <BrowserRouter>
-            <Switch>
-              <Route path="/account/:provider/:owner/">
-                <AccountSettings />
-              </Route>
-            </Switch>
-          </BrowserRouter>
-        </ReactQueryCacheProvider>
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense fallback={fullPageLoader}>
+      <ReactQueryCacheProvider queryCache={queryCache}>
+        <BrowserRouter>
+          <Switch>
+            <Route path="/account/:provider/:owner/">
+              <AccountSettings />
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </ReactQueryCacheProvider>
+    </Suspense>
   )
 }
 

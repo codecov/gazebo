@@ -4,11 +4,15 @@ import App from './components/App'
 import './globals.css'
 import reportWebVitals from './reportWebVitals'
 
+import ErrorBoundary from 'components/ErrorBoundary'
+
 import 'sentry.js'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById('root')
 )
