@@ -2,4 +2,13 @@
 
 @tailwind components;
 
+html,
+body {
+  @apply h-full;
+}
+
+#root {
+  @apply flex flex-col h-full;
+}
+
 @tailwind utilities;

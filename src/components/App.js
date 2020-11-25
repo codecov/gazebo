@@ -3,6 +3,7 @@ import { QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 import LogoSpinner from 'components/LogoSpinner'
+import Footer from 'components/Footer'
 import ToastNotifications from 'components/ToastNotifications'
 import { ToastNotificationProvider } from 'services/toastNotification'
 
@@ -34,6 +35,7 @@ function App() {
               </Route>
             </Switch>
           </BrowserRouter>
+          <Footer />
           <ToastNotifications />
         </ReactQueryCacheProvider>
       </Suspense>
