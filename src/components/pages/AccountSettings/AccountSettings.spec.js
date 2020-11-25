@@ -7,6 +7,7 @@ import AccountSettings from './AccountSettings'
 jest.mock('./tabs/Admin', () => () => 'AdminTab')
 jest.mock('./tabs/BillingAndUsers', () => () => 'BillingAndUsersTab')
 jest.mock('./tabs/YAML', () => () => 'YAMLTab')
+jest.mock('./tabs/CancelPlan', () => () => 'CancelPlanTab')
 
 describe('AccountSettings', () => {
   function setup() {
