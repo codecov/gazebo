@@ -1,11 +1,19 @@
 import PropType from 'prop-types'
+import ErrorBoundary from 'components/ErrorBoundary'
 
 function SidebarLayout({ sidebar, children }) {
   return (
     <div className="flex-grow grid grid-cols-1 sm:grid-cols-7 p-4 bg-gray-200">
       {sidebar}
       <article className="col-span-6 grid sm:grid-cols-12 grid-cols-1 sm:gap-4 gap-0 p-0 sm:p-4 px-4 sm:px-0">
-        {children}
+        <ErrorBoundary
+          beforeCapture={(scope) => {
+            scope.setTag('layout', 'sidebar')
+          }}
+          errorComponent={<p>Opps. Looks like we hit a snag.</p>}
+        >
+          {children}
+        </ErrorBoundary>
       </article>
     </div>
   )
