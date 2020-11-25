@@ -1,8 +1,8 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 
-import { useAccountDetails, useAccountsAndPlans } from './hooks'
+import { useAccountDetails, useAccountsAndPlans, useCancelPlan } from './hooks'
 
 const provider = 'gh'
 const owner = 'codecov'
@@ -28,7 +28,13 @@ const server = setupServer(
   ),
   rest.get(`/internal/plans`, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(getPlans()))
-  })
+  }),
+  rest.patch(
+    `/internal/${provider}/${owner}/account-details/`,
+    (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(accountDetails))
+    }
+  )
 )
 
 beforeAll(() => server.listen())
@@ -89,6 +95,36 @@ describe('useAccountsAndPlans', () => {
           accountDetails,
           plans: getPlans(),
         })
+      })
+    })
+  })
+})
+
+describe('useCancelPlan', () => {
+  let hookData
+
+  function setup(currentUrl) {
+    hookData = renderHook(() => useCancelPlan({ provider, owner }))
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('returns isLoading false', () => {
+      expect(hookData.result.current[1].isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation', () => {
+      beforeEach(() => {
+        act(() => {
+          hookData.result.current[0]()
+        })
+      })
+
+      it('returns isLoading true', () => {
+        expect(hookData.result.current[1].isLoading).toBeTruthy()
       })
     })
   })
