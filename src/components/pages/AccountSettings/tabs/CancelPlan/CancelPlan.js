@@ -2,6 +2,7 @@ import PropType from 'prop-types'
 import { Link } from 'react-router-dom'
 import difference from 'lodash/difference'
 
+import Button from 'components/Button'
 import Card from 'components/Card'
 import Icon from 'components/Icon'
 import { useAccountsAndPlans } from 'services/account'
@@ -27,12 +28,15 @@ function CancelPlan({ provider, owner }) {
           <Icon name="arrowLeft" />
         </span>
         Back to:
-        <Link
+        <Button
+          Component={Link}
           to={`/account/${provider}/${owner}`}
-          className="underline text-gray-500 hover:text-gray-600 visited:text-gray-500 hover:underline ml-1"
+          color="gray"
+          variant="text"
+          className="ml-1"
         >
           Billing & Users
-        </Link>
+        </Button>
       </div>
       <div className="grid grid-cols-12 gap-8 mt-10">
         <div className="col-span-7">
@@ -58,12 +62,9 @@ function CancelPlan({ provider, owner }) {
               auto activate is enabled in your plan settings.
             </p>
             <div className="text-center mt-4">
-              <button
-                className="btn text-base text-white bg-codecov-red py-2 px-4 rounded-full"
-                onClick={console.log}
-              >
+              <Button onClick={console.log} color="red">
                 Downgrade to Free
-              </button>
+              </Button>
             </div>
           </Card>
         </div>
