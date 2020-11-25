@@ -4,6 +4,7 @@ import Card from 'components/Card'
 import { useAccountDetails } from 'services/account'
 
 import CurrentPlanCard from './CurrentPlanCard'
+import LatestInvoiceCard from './LatestInvoiceCard'
 
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -13,7 +14,9 @@ function BillingAndUsers({ provider, owner }) {
       <div className="col-start-1 col-end-4">
         <CurrentPlanCard accountDetails={accountDetails} />
         <Card className="mt-4">Credit card information</Card>
-        <Card className="mt-4">Latest invoice</Card>
+        <div className="mt-4">
+          <LatestInvoiceCard invoice={accountDetails.latestInvoice} />
+        </div>
       </div>
       <div className="col-start-4 col-end-13">
         <Card>Users</Card>
