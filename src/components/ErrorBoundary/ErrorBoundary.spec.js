@@ -20,9 +20,9 @@ describe('Error Boundary', () => {
     jest.resetAllMocks()
   })
 
-  function setup({ errorComponent, scopeFn } = {}) {
+  function setup(props) {
     render(
-      <ErrorBoundary errorComponent={errorComponent} scopeFn={scopeFn}>
+      <ErrorBoundary {...props}>
         <BadComponent />
       </ErrorBoundary>
     )
@@ -72,14 +72,14 @@ describe('Error Boundary', () => {
         callback(sentryMockScope)
       })
 
-      setup({ scopeFn: (scope) => scope.setTag('wonderland', 'alice') })
+      setup({ beforeCapture: (scope) => scope.setTag('wonderland', 'alice') })
     })
     afterEach(() => {
       jest.resetAllMocks()
       jest.unmock('@sentry/browser')
     })
 
-    it('The scopeFn prop correctly sets tags.', () => {
+    it('The beforeCapture prop correctly sets tags.', () => {
       expect(spySentry).toHaveBeenCalled()
       expect(sentryMockScope.setTag.mock.calls.length).toBe(1)
       expect(sentryMockScope.setTag.mock.calls[0]).toContain('wonderland')
