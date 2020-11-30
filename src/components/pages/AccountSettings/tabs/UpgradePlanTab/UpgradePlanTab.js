@@ -17,7 +17,7 @@ function UpgradePlanTab({ provider, owner }) {
   const proPlanYear = plans.find((plan) => plan.value === 'users-pr-inappy')
 
   return (
-    <div>
+    <div className="col-start-1 col-end-13">
       <div className="text-center flex items-center justify-center text-gray-500 bold mt-8">
         <span className="text-blue-400 inline-block mr-1">
           <Icon name="arrowLeft" />

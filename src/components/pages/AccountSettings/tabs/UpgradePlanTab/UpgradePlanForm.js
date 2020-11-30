@@ -1,12 +1,20 @@
 import PropType from 'prop-types'
+import { useForm, Controller } from 'react-hook-form'
 
 import Button from 'components/Button'
+import Select from 'components/Select'
 import { accountDetailsPropType, planPropType } from 'services/account'
 
-function getInitialActivePlan({ currentPlan, planOptions }) {
+function getInitialDataForm(planOptions, accountDetails) {
+  const currentPlan = accountDetails.plan
   const proPlan = planOptions.find((plan) => plan.value === currentPlan?.value)
-  // if the current plan is a proplan, we return it, otherwise select by default the first pro plan
-  return proPlan ? proPlan : planOptions.value[0]
+
+  return {
+    // if the current plan is a proplan, we return it, otherwise select by default the first pro plan
+    activePlan: proPlan ? proPlan : planOptions.value[0],
+    // get the number of seats of the current plan, but minimum 6 seats
+    seats: Math.max(accountDetails.plan?.quantity, 6),
+  }
 }
 
 function formatNumber(value) {
@@ -22,32 +30,37 @@ function UpgradePlanForm({
   owner,
 }) {
   const planOptions = [proPlanYear, proPlanMonth]
+  const { register, handleSubmit, watch, control } = useForm({
+    defaultValues: getInitialDataForm(planOptions, accountDetails),
+  })
 
-  const formData = {
-    activePlan: getInitialActivePlan({
-      currentPlan: accountDetails.plan,
-      planOptions,
-    }),
-    seats: Math.max(accountDetails.plan?.quantity ?? 0, 6),
-  }
+  const seats = watch('seats')
+  const activePlan = watch('activePlan')
 
-  const perYearPrice = formData.seats * proPlanYear.baseUnitPrice * 12
-  const perMonthPrice = formData.seats * proPlanMonth.baseUnitPrice * 12
+  const perYearPrice = seats * proPlanYear.baseUnitPrice * 12
+  const perMonthPrice = seats * proPlanMonth.baseUnitPrice * 12
 
   const nextBillingDate = null
 
-  /* <Dropdown :options="planOptions" @select="selectPlan">
-    <PricingElement :plan="formData.activePlan" />
-    <template v-slot:option="{ option }">
-      <PricingElement :plan="option" />
-    </template>
-  </Dropdown> */
-
   return (
-    <div className="text-gray-900">
+    <form className="text-gray-900" onSubmit={handleSubmit(console.log)}>
       <h2 className="text-2xl text-pink-500 bold mb-8">
         {proPlanMonth.marketingName}
       </h2>
+      <Controller
+        name="activePlan"
+        control={control}
+        render={({ onChange, value }) => {
+          return (
+            <Select
+              items={planOptions}
+              renderItem={(plan) => plan.value}
+              onChange={onChange}
+              value={value}
+            />
+          )
+        }}
+      />
       <div className="mt-8 pt-8 border-gray-200 border-t">
         <p className="mb-4">
           {accountDetails.activatedUserCount} active users.{' '}
@@ -58,36 +71,36 @@ function UpgradePlanForm({
             User Seats:
           </label>
           <input
+            ref={register}
             id="nb-seats"
+            name="seats"
             size="40"
             className="bg-gray-100 p-2 rounded border"
             type="number"
           />
         </div>
       </div>
-      <div
-        className="mt-8 pt-8 border-gray-200 border-t"
-        v-if="formData.activePlan.value === 'users-pr-inappy'"
-      >
-        <p className="flex">
-          Per month pricing ({formData.seats} users x
-          {proPlanMonth.baseUnitPrice})
-          <span className="ml-auto" data-test="normal-price-month">
-            ${formatNumber(perMonthPrice)}
-          </span>
-        </p>
-        <p className="flex mt-1">
-          - 16.67% Annual Discount
-          <span className="ml-auto" data-test="year-discount-value">
-            ${formatNumber(perMonthPrice - perYearPrice)}
-          </span>
-        </p>
-      </div>
+      {activePlan?.value === 'users-pr-inappy' && (
+        <div className="mt-8 pt-8 border-gray-200 border-t">
+          <p className="flex">
+            Per month pricing ({seats} users x{proPlanMonth.baseUnitPrice})
+            <span className="ml-auto" data-test="normal-price-month">
+              ${formatNumber(perMonthPrice)}
+            </span>
+          </p>
+          <p className="flex mt-1">
+            - 16.67% Annual Discount
+            <span className="ml-auto" data-test="year-discount-value">
+              ${formatNumber(perMonthPrice - perYearPrice)}
+            </span>
+          </p>
+        </div>
+      )}
       <div className="mt-8 pt-8 border-gray-200 border-t bold">
-        {formData.activePlan.value === 'users-pr-inappy' ? (
+        {activePlan?.value === 'users-pr-inappy' ? (
           <p className="flex">
             Annual price
-            <span className="ml-auto">{formatNumber(perYearPrice)}</span>
+            <span className="ml-auto">${formatNumber(perYearPrice)}</span>
           </p>
         ) : (
           <p className="flex">
@@ -112,7 +125,7 @@ function UpgradePlanForm({
       <Button onClick={console.log} className="w-full block mt-4">
         Continue to Payment
       </Button>
-    </div>
+    </form>
   )
 }
 
