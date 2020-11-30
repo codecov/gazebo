@@ -22,7 +22,7 @@ function CancelPlan({ provider, owner }) {
   )
 
   return (
-    <div>
+    <div className="col-start-1 col-end-13">
       <div className="mt-8">
         <BackLink
           to={`/account/${provider}/${owner}`}
