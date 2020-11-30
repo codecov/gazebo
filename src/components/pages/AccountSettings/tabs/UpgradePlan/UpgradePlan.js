@@ -9,7 +9,7 @@ import parasolImg from './parasol.png'
 import UpgradePlanForm from './UpgradePlanForm'
 import BenefitList from '../../shared/BenefitList'
 
-function UpgradePlanTab({ provider, owner }) {
+function UpgradePlan({ provider, owner }) {
   const { data } = useAccountsAndPlans({ provider, owner })
   const { accountDetails, plans } = data
 
@@ -70,9 +70,9 @@ function UpgradePlanTab({ provider, owner }) {
   )
 }
 
-UpgradePlanTab.propTypes = {
+UpgradePlan.propTypes = {
   provider: PropType.string.isRequired,
   owner: PropType.string.isRequired,
 }
 
-export default UpgradePlanTab
+export default UpgradePlan

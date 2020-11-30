@@ -10,7 +10,7 @@ import AdminTab from './tabs/Admin'
 import BillingAndUsersTab from './tabs/BillingAndUsers'
 import YAMLTab from './tabs/YAML'
 import CancelPlanTab from './tabs/CancelPlan'
-import UpgradePlanTab from './tabs/UpgradePlanTab'
+import UpgradePlanTab from './tabs/UpgradePlan'
 
 function AccountSettings() {
   const { provider, owner } = useParams()
