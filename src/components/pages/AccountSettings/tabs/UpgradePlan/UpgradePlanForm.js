@@ -1,4 +1,5 @@
 import PropType from 'prop-types'
+import { format, fromUnixTime } from 'date-fns'
 import { useForm, Controller } from 'react-hook-form'
 
 import Button from 'components/Button'
@@ -22,6 +23,11 @@ function formatNumber(value) {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
+function getNextBillingDate(accountDetails) {
+  const timestamp = accountDetails.latest_invoice?.period_end
+  return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
+}
+
 function UpgradePlanForm({
   proPlanYear,
   proPlanMonth,
@@ -40,7 +46,7 @@ function UpgradePlanForm({
   const perYearPrice = seats * proPlanYear.baseUnitPrice * 12
   const perMonthPrice = seats * proPlanMonth.baseUnitPrice * 12
 
-  const nextBillingDate = null
+  const nextBillingDate = getNextBillingDate(accountDetails)
 
   return (
     <form className="text-gray-900" onSubmit={handleSubmit(console.log)}>
@@ -115,13 +121,6 @@ function UpgradePlanForm({
           <span className="ml-auto">{nextBillingDate}</span>
         </p>
       )}
-      {/* <p
-        className="bg-error-500 text-error-900 p-3 mt-4 rounded-md"
-        :key="error.$property + error.$validator"
-        v-for="error of $v.$errors"
-      >
-        {{ error | formatError }}
-      </p> */}
       <Button onClick={console.log} className="w-full block mt-4">
         Continue to Payment
       </Button>
