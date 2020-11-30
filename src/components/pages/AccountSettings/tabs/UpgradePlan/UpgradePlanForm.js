@@ -10,11 +10,13 @@ function getInitialDataForm(planOptions, accountDetails) {
   const currentPlan = accountDetails.plan
   const proPlan = planOptions.find((plan) => plan.value === currentPlan?.value)
 
+  const currentNbSeats = accountDetails.plan?.quantity ?? 6
+
   return {
     // if the current plan is a proplan, we return it, otherwise select by default the first pro plan
-    activePlan: proPlan ? proPlan : planOptions.value[0],
+    activePlan: proPlan ? proPlan : planOptions[0],
     // get the number of seats of the current plan, but minimum 6 seats
-    seats: Math.max(accountDetails.plan?.quantity, 6),
+    seats: Math.max(currentNbSeats, 6),
   }
 }
 
@@ -24,7 +26,7 @@ function formatNumber(value) {
 }
 
 function getNextBillingDate(accountDetails) {
-  const timestamp = accountDetails.latest_invoice?.period_end
+  const timestamp = accountDetails.latestInvoice?.periodEnd
   return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
 }
 
@@ -47,6 +49,7 @@ function UpgradePlanForm({
   const perMonthPrice = seats * proPlanMonth.baseUnitPrice * 12
 
   const nextBillingDate = getNextBillingDate(accountDetails)
+  const isPerYear = activePlan?.value === 'users-pr-inappy'
 
   return (
     <form className="text-gray-900" onSubmit={handleSubmit(console.log)}>
@@ -56,16 +59,14 @@ function UpgradePlanForm({
       <Controller
         name="activePlan"
         control={control}
-        render={({ onChange, value }) => {
-          return (
-            <Select
-              items={planOptions}
-              renderItem={(plan) => plan.value}
-              onChange={onChange}
-              value={value}
-            />
-          )
-        }}
+        render={({ onChange, value }) => (
+          <Select
+            items={planOptions}
+            renderItem={(plan) => plan.value}
+            onChange={onChange}
+            value={value}
+          />
+        )}
       />
       <div className="mt-8 pt-8 border-gray-200 border-t">
         <p className="mb-4">
@@ -86,7 +87,7 @@ function UpgradePlanForm({
           />
         </div>
       </div>
-      {activePlan?.value === 'users-pr-inappy' && (
+      {isPerYear && (
         <div className="mt-8 pt-8 border-gray-200 border-t">
           <p className="flex">
             Per month pricing ({seats} users x{proPlanMonth.baseUnitPrice})
@@ -103,7 +104,7 @@ function UpgradePlanForm({
         </div>
       )}
       <div className="mt-8 pt-8 border-gray-200 border-t bold">
-        {activePlan?.value === 'users-pr-inappy' ? (
+        {isPerYear ? (
           <p className="flex">
             Annual price
             <span className="ml-auto">${formatNumber(perYearPrice)}</span>

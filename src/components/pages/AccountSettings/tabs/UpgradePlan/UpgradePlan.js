@@ -17,12 +17,10 @@ function UpgradePlan({ provider, owner }) {
 
   return (
     <div className="col-start-1 col-end-13">
-      <div className="mt-8">
-        <BackLink
-          to={`/account/${provider}/${owner}`}
-          textLink="Billing & Users"
-        />
-      </div>
+      <BackLink
+        to={`/account/${provider}/${owner}`}
+        textLink="Billing & Users"
+      />
       <div className="grid grid-cols-12 gap-8 mt-10">
         <div className="col-span-5">
           <Card className="flex flex-col items-center px-12 py-10">
