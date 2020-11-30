@@ -1,13 +1,12 @@
 import PropType from 'prop-types'
-import { Link } from 'react-router-dom'
 
 import Card from 'components/Card'
-import Icon from 'components/Icon'
 import { useAccountsAndPlans } from 'services/account'
 
 import parasolImg from './parasol.png'
 import UpgradePlanForm from './UpgradePlanForm'
 import BenefitList from '../../shared/BenefitList'
+import BackLink from '../../shared/BackLink'
 
 function UpgradePlan({ provider, owner }) {
   const { data } = useAccountsAndPlans({ provider, owner })
@@ -18,17 +17,11 @@ function UpgradePlan({ provider, owner }) {
 
   return (
     <div className="col-start-1 col-end-13">
-      <div className="text-center flex items-center justify-center text-gray-500 bold mt-8">
-        <span className="text-blue-400 inline-block mr-1">
-          <Icon name="arrowLeft" />
-        </span>
-        Back to:
-        <Link
+      <div className="mt-8">
+        <BackLink
           to={`/account/${provider}/${owner}`}
-          className="underline text-gray-500 hover:text-gray-600 visited:text-gray-500 hover:underline ml-1"
-        >
-          Billing & Users
-        </Link>
+          textLink="Billing & Users"
+        />
       </div>
       <div className="grid grid-cols-12 gap-8 mt-10">
         <div className="col-span-5">
