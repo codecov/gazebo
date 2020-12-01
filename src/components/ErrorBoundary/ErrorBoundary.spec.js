@@ -78,7 +78,12 @@ describe('Error Boundary', () => {
         callback({ setTag: sentryMockScope })
       })
 
-      setup({ beforeCapture: (scope) => scope.setTag('wonderland', 'alice') })
+      setup({
+        sentryScopes: [
+          ['wonderland', 'alice'],
+          ['mad', 'hatter'],
+        ],
+      })
     })
     afterEach(() => {
       jest.resetAllMocks()
@@ -86,8 +91,9 @@ describe('Error Boundary', () => {
     })
 
     it('The beforeCapture prop correctly sets tags.', () => {
-      expect(sentryMockScope).toHaveBeenCalledTimes(1)
+      expect(sentryMockScope).toHaveBeenCalledTimes(2)
       expect(sentryMockScope).toHaveBeenCalledWith('wonderland', 'alice')
+      expect(sentryMockScope).toHaveBeenCalledWith('mad', 'hatter')
     })
   })
 })

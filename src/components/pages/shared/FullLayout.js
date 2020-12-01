@@ -8,9 +8,7 @@ function FullLayout({ children }) {
         data-testid="full-layout"
       >
         <ErrorBoundary
-          beforeCapture={(scope) => {
-            scope.setTag('layout', 'full')
-          }}
+          sentryScopes={[['layout', 'full']]}
           errorComponent={<p>Opps. Looks like we hit a snag.</p>}
         >
           {children}

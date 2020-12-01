@@ -6,21 +6,24 @@ function DefaultUI() {
 }
 
 export default function ErrorBoundary({
-  beforeCapture,
+  sentryScopes = [],
   errorComponent = DefaultUI,
   children,
 }) {
   return (
     <Sentry.ErrorBoundary
-      beforeCapture={beforeCapture}
+      beforeCapture={(scope) =>
+        sentryScopes.forEach(([key, value]) => scope.setTag(key, value))
+      }
       fallback={errorComponent}
     >
       {children}
     </Sentry.ErrorBoundary>
   )
 }
+
 ErrorBoundary.propTypes = {
   children: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
   errorComponent: PropTypes.element,
-  beforeCapture: PropTypes.func, // https://docs.sentry.io/platforms/javascript/guides/react/components/errorboundary/#using-multiple-error-boundaries
+  sentryScopes: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)), // https://docs.sentry.io/platforms/javascript/guides/react/components/errorboundary/#using-multiple-error-boundaries
 }

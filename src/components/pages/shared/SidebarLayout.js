@@ -7,9 +7,7 @@ function SidebarLayout({ sidebar, children }) {
       {sidebar}
       <article className="col-span-6 grid sm:grid-cols-12 grid-cols-1 sm:gap-4 gap-0 p-0 sm:p-4 px-4 sm:px-0">
         <ErrorBoundary
-          beforeCapture={(scope) => {
-            scope.setTag('layout', 'sidebar')
-          }}
+          sentryScopes={[['layout', 'sidebar']]}
           errorComponent={<p>Opps. Looks like we hit a snag.</p>}
         >
           {children}
