@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@headlessui/react": "^0.2.0",
     "@sentry/react": "^5.27.3",
     "classnames": "^2.2.6",
     "downshift": "^6.0.6",
@@ -15,6 +16,7 @@
     "react-query": "^2.26.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
+    "react-use": "^15.3.4",
     "tailwindcss": "^1.9.6",
     "web-vitals": "^1.0.1"
   },

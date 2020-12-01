@@ -28,6 +28,7 @@ module.exports = {
           red: '#CE2019',
           orange: '#FFC273',
           footer: '#07111b',
+          header: '#0e1b29',
         },
         gray: {
           100: '#F7F8FB',
@@ -60,6 +61,7 @@ module.exports = {
         success: {
           100: '#DEFFE8',
           500: '#73FF9E',
+          700: '#27B340',
           900: '#0E1B29',
         },
         error: {
@@ -80,8 +82,9 @@ module.exports = {
   },
   variants: {
     margin: ['responsive', 'last'],
-    opacity: ['disabled'],
+    opacity: ['disabled', 'hover'],
     cursor: ['disabled'],
+    transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
   },
   plugins: [],
 }

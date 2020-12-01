@@ -1,0 +1,42 @@
+<svg
+  width="30px"
+  height="10px"
+  viewBox="0 0 30 10"
+  version="1.1"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+>
+  <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+    <g transform="translate(-1086.000000, -24.000000)">
+      <g transform="translate(-16.000000, -23.000000)">
+        <g transform="translate(16.000000, 23.000000)">
+          <g transform="translate(1086.000000, 24.000000)">
+            <rect
+              stroke="currentColor"
+              x="0.5"
+              y="0.5"
+              width="29"
+              height="9"
+              rx="2.916"
+            ></rect>
+            <ellipse
+              fill="currentColor"
+              cx="24.2307692"
+              cy="5"
+              rx="1.92307692"
+              ry="1.85714286"
+            ></ellipse>
+            <rect
+              fill="currentColor"
+              x="3.10344828"
+              y="4"
+              width="16.5517241"
+              height="2"
+              rx="1"
+            ></rect>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
