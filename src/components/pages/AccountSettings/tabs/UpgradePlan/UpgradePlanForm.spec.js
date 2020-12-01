@@ -1,7 +1,11 @@
+import { MemoryRouter, Route } from 'react-router-dom'
 import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import UpgradePlanForm from './UpgradePlanForm'
+import { useUpgradePlan } from 'services/account'
+
+jest.mock('services/account/hooks')
 
 const freePlan = {
   marketingName: 'Basic',
@@ -45,6 +49,9 @@ const proPlanYear = {
 }
 
 describe('UpgradePlanForm', () => {
+  const mutate = jest.fn()
+  const addNotification = jest.fn()
+  let testLocation
   let props
 
   const defaultProps = {
@@ -69,7 +76,21 @@ describe('UpgradePlanForm', () => {
         latestInvoice: invoice,
       },
     }
-    render(<UpgradePlanForm {...props} />)
+    useUpgradePlan.mockReturnValue([mutate, { isLoading: false }])
+    render(
+      <MemoryRouter initialEntries={['/my/initial/route']}>
+        <UpgradePlanForm {...props} />
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            console.log(testLocation)
+            console.log(addNotification)
+            return null
+          }}
+        />
+      </MemoryRouter>
+    )
   }
 
   function clearSeatsInput() {
