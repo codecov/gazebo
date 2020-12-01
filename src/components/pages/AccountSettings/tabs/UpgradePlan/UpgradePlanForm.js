@@ -1,6 +1,8 @@
 import PropType from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
 import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
 import Button from 'components/Button'
 import Select from 'components/Select'
@@ -30,6 +32,22 @@ function getNextBillingDate(accountDetails) {
   return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
 }
 
+function getSchema(accountDetails) {
+  return yup.object().shape({
+    seats: yup
+      .number()
+      .positive()
+      .integer()
+      .required('Number of seats is required')
+      .min(6, 'You cannot purchase a per user plan for less than 6 users')
+      .test({
+        name: 'between',
+        test: (nbSeats) => nbSeats >= accountDetails.activatedUserCount,
+        message: 'Must deactivate more users before downgrading plans',
+      }),
+  })
+}
+
 function UpgradePlanForm({
   proPlanYear,
   proPlanMonth,
@@ -38,8 +56,9 @@ function UpgradePlanForm({
   owner,
 }) {
   const planOptions = [proPlanYear, proPlanMonth]
-  const { register, handleSubmit, watch, control } = useForm({
+  const { register, handleSubmit, watch, control, errors } = useForm({
     defaultValues: getInitialDataForm(planOptions, accountDetails),
+    resolver: yupResolver(getSchema(accountDetails)),
   })
 
   const seats = watch('seats')
@@ -122,7 +141,12 @@ function UpgradePlanForm({
           <span className="ml-auto">{nextBillingDate}</span>
         </p>
       )}
-      <Button onClick={console.log} className="w-full block mt-4">
+      {errors.seats && (
+        <p className="bg-error-500 text-error-900 p-3 mt-4 rounded-md">
+          {errors.seats?.message}
+        </p>
+      )}
+      <Button Component="button" type="submit" className="w-full block mt-4">
         Continue to Payment
       </Button>
     </form>
