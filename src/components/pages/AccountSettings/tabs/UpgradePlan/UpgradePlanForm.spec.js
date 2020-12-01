@@ -4,8 +4,10 @@ import userEvent from '@testing-library/user-event'
 
 import UpgradePlanForm from './UpgradePlanForm'
 import { useUpgradePlan } from 'services/account'
+import { useAddNotification } from 'services/toastNotification'
 
 jest.mock('services/account/hooks')
+jest.mock('services/toastNotification')
 
 const freePlan = {
   marketingName: 'Basic',
@@ -76,6 +78,7 @@ describe('UpgradePlanForm', () => {
         latestInvoice: invoice,
       },
     }
+    useAddNotification.mockReturnValue(addNotification)
     useUpgradePlan.mockReturnValue([mutate, { isLoading: false }])
     render(
       <MemoryRouter initialEntries={['/my/initial/route']}>
@@ -84,8 +87,6 @@ describe('UpgradePlanForm', () => {
           path="*"
           render={({ location }) => {
             testLocation = location
-            console.log(testLocation)
-            console.log(addNotification)
             return null
           }}
         />
@@ -239,6 +240,55 @@ describe('UpgradePlanForm', () => {
         / deactivate more users before downgrading plans/
       )
       expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('when clicking on the button to upgrade', () => {
+    beforeEach(() => {
+      setup()
+      return act(async () => {
+        clearSeatsInput()
+        userEvent.type(screen.getByRole('spinbutton'), '80')
+        userEvent.click(screen.getByText('Continue to Payment'))
+      })
+    })
+
+    it('calls the mutation', () => {
+      expect(mutate).toHaveBeenCalled()
+    })
+  })
+
+  describe('when mutation is successful', () => {
+    beforeEach(() => {
+      setup()
+      // simulating the onSuccess callback given to useCancelPlan
+      useUpgradePlan.mock.calls[0][0].onSuccess()
+    })
+
+    it('adds a success notification', () => {
+      expect(addNotification).toHaveBeenCalledWith({
+        type: 'success',
+        text: 'Plan successfully upgraded',
+      })
+    })
+
+    it('redirects the user to the billing page', () => {
+      expect(testLocation.pathname).toEqual('/account/gh/codecov')
+    })
+  })
+
+  describe('when mutation is not successful', () => {
+    beforeEach(() => {
+      setup()
+      // simulating the onError callback given to useCancelPlan
+      useUpgradePlan.mock.calls[0][0].onError()
+    })
+
+    it('adds an error notification', () => {
+      expect(addNotification).toHaveBeenCalledWith({
+        type: 'error',
+        text: 'Something went wrong',
+      })
     })
   })
 })

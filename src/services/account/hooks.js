@@ -61,7 +61,7 @@ export function useUpgradePlan({ provider, owner, ...rest }) {
   function redirectToStripe(sessionId) {
     return stripe.redirectToCheckout({ sessionId }).then((e) => {
       // error from Stripe SDK
-      throw new Error(e)
+      return Promise.reject(new Error(e))
     })
   }
 

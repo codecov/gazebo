@@ -1,8 +1,14 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
+import { waitFor } from '@testing-library/react'
 
-import { useAccountDetails, useAccountsAndPlans, useCancelPlan } from './hooks'
+import {
+  useAccountDetails,
+  useAccountsAndPlans,
+  useCancelPlan,
+  useUpgradePlan,
+} from './hooks'
 
 const provider = 'gh'
 const owner = 'codecov'
@@ -136,6 +142,98 @@ describe('useCancelPlan', () => {
 
       it('returns isLoading true', () => {
         expect(hookData.result.current[1].isLoading).toBeTruthy()
+      })
+    })
+  })
+})
+
+describe('useUpgradePlan', () => {
+  let hookData, redirectToCheckout
+
+  function setupStripe() {
+    redirectToCheckout = jest.fn().mockResolvedValue()
+    window['Stripe'] = jest.fn(() => ({
+      redirectToCheckout,
+    }))
+  }
+
+  function setup(currentUrl) {
+    setupStripe()
+    hookData = renderHook(() => useUpgradePlan({ provider, owner }))
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('returns isLoading false', () => {
+      expect(hookData.result.current[1].isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation, which return a checkoutSessionId', () => {
+      beforeEach(() => {
+        server.use(
+          rest.patch(
+            `/internal/${provider}/${owner}/account-details/`,
+            (req, res, ctx) => {
+              return res(
+                ctx.status(200),
+                ctx.json({
+                  ...accountDetails,
+                  checkoutSessionId: '1234',
+                })
+              )
+            }
+          )
+        )
+        return act(() => {
+          return hookData.result.current[0]({
+            seats: 12,
+            newPlan: {
+              value: 'users-pr-inappy',
+            },
+          })
+        })
+      })
+
+      it('calls redirectToCheckout on the Stripe client', () => {
+        return waitFor(() => {
+          expect(redirectToCheckout).toHaveBeenCalledWith({
+            sessionId: '1234',
+          })
+        })
+      })
+    })
+
+    describe('when calling the mutation, which doesnt return a checkoutSessionId', () => {
+      beforeEach(() => {
+        server.use(
+          rest.patch(
+            `/internal/${provider}/${owner}/account-details/`,
+            (req, res, ctx) => {
+              return res(
+                ctx.status(200),
+                ctx.json({
+                  ...accountDetails,
+                  checkoutSessionId: null,
+                })
+              )
+            }
+          )
+        )
+        return act(() =>
+          hookData.result.current[0]({
+            seats: 12,
+            newPlan: {
+              value: 'users-pr-inappy',
+            },
+          })
+        )
+      })
+
+      it('doesnt call redirectToCheckout on the Stripe client', () => {
+        expect(redirectToCheckout).not.toHaveBeenCalled()
       })
     })
   })
