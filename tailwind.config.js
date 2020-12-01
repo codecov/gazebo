@@ -80,6 +80,8 @@ module.exports = {
   },
   variants: {
     margin: ['responsive', 'last'],
+    opacity: ['disabled'],
+    cursor: ['disabled'],
   },
   plugins: [],
 }

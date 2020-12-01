@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types'
 
+const basicClass =
+  'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50'
+
 const variantToClass = {
   normal:
     'py-2 px-4 rounded-full hover:text-white visited:text-white text-white',
@@ -39,6 +42,7 @@ function Button({
 }) {
   // concat all the different classNames
   const classes = [
+    basicClass,
     variantToClass[variant],
     colorToClass[color][variant],
     className,
