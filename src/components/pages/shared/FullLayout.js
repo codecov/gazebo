@@ -7,10 +7,7 @@ function FullLayout({ children }) {
         className="container py-10 px-4 sm:px-0"
         data-testid="full-layout"
       >
-        <ErrorBoundary
-          sentryScopes={[['layout', 'full']]}
-          errorComponent={<p>Opps. Looks like we hit a snag.</p>}
-        >
+        <ErrorBoundary sentryScopes={[['layout', 'full']]}>
           {children}
         </ErrorBoundary>
       </article>
