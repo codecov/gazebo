@@ -1,3 +1,5 @@
+import ErrorBoundary from 'components/ErrorBoundary'
+
 function FullLayout({ children }) {
   return (
     <div className="flex-grow bg-gray-200">
@@ -5,7 +7,9 @@ function FullLayout({ children }) {
         className="container py-10 px-4 sm:px-0"
         data-testid="full-layout"
       >
-        {children}
+        <ErrorBoundary sentryScopes={[['layout', 'full']]}>
+          {children}
+        </ErrorBoundary>
       </article>
     </div>
   )
