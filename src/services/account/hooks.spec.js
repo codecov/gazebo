@@ -19,23 +19,7 @@ const accountDetails = {
   inactiveUserCount: 1,
 }
 
-const server = setupServer(
-  rest.get(
-    `/internal/${provider}/${owner}/account-details/`,
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(accountDetails))
-    }
-  ),
-  rest.get(`/internal/plans`, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(getPlans()))
-  }),
-  rest.patch(
-    `/internal/${provider}/${owner}/account-details/`,
-    (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(accountDetails))
-    }
-  )
-)
+const server = setupServer()
 
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
@@ -45,6 +29,14 @@ describe('useAccountDetails', () => {
   let hookData
 
   function setup() {
+    server.use(
+      rest.get(
+        `/internal/${provider}/${owner}/account-details/`,
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(accountDetails))
+        }
+      )
+    )
     hookData = renderHook(() => useAccountDetails({ provider, owner }))
   }
 
@@ -73,6 +65,17 @@ describe('useAccountsAndPlans', () => {
   let hookData
 
   function setup(currentUrl) {
+    server.use(
+      rest.get(
+        `/internal/${provider}/${owner}/account-details/`,
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(accountDetails))
+        }
+      ),
+      rest.get(`/internal/plans`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(getPlans()))
+      })
+    )
     hookData = renderHook(() => useAccountsAndPlans({ provider, owner }))
   }
 
@@ -104,6 +107,14 @@ describe('useCancelPlan', () => {
   let hookData
 
   function setup(currentUrl) {
+    server.use(
+      rest.patch(
+        `/internal/${provider}/${owner}/account-details/`,
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(accountDetails))
+        }
+      )
+    )
     hookData = renderHook(() => useCancelPlan({ provider, owner }))
   }
 
