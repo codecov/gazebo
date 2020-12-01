@@ -1,7 +1,6 @@
 import PropType from 'prop-types'
 import difference from 'lodash/difference'
 
-import Button from 'components/Button'
 import Card from 'components/Card'
 import { useAccountsAndPlans } from 'services/account'
 
