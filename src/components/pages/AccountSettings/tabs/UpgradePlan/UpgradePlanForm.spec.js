@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import UpgradePlanForm from './UpgradePlanForm'
@@ -72,6 +72,11 @@ describe('UpgradePlanForm', () => {
     render(<UpgradePlanForm {...props} />)
   }
 
+  function clearSeatsInput() {
+    const input = screen.getByRole('spinbutton')
+    return userEvent.type(input, '{backspace}{backspace}{backspace}')
+  }
+
   describe('when the user doesnt have any plan', () => {
     beforeEach(() => {
       setup()
@@ -100,7 +105,7 @@ describe('UpgradePlanForm', () => {
     })
 
     it('renders the seat input with 6 seats', () => {
-      expect(screen.getByRole('spinbutton').value).toBe('6')
+      expect(screen.getByRole('spinbutton')).toHaveValue(6)
     })
   })
 
@@ -116,7 +121,7 @@ describe('UpgradePlanForm', () => {
     })
 
     it('renders the seat input with 17 seats (existing subscription)', () => {
-      expect(screen.getByRole('spinbutton').value).toBe('17')
+      expect(screen.getByRole('spinbutton')).toHaveValue(17)
     })
 
     it('has the pricing information of the month price and discount', () => {
@@ -162,6 +167,57 @@ describe('UpgradePlanForm', () => {
     it('renders the next billing period', () => {
       expect(screen.getByText(/Next Billing Date/)).toBeInTheDocument()
       expect(screen.getByText(/August 20th, 2020/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user leave the nb of seats blank', () => {
+    beforeEach(() => {
+      setup()
+      return act(async () => {
+        clearSeatsInput()
+        userEvent.click(screen.getByText('Continue to Payment'))
+      })
+    })
+
+    it('displays an error', () => {
+      const error = screen.getByText(/Number of seats is required/)
+      expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user chooses less than 6 seats', () => {
+    beforeEach(() => {
+      setup()
+      return act(async () => {
+        clearSeatsInput()
+        userEvent.type(screen.getByRole('spinbutton'), '1')
+        userEvent.click(screen.getByText('Continue to Payment'))
+      })
+    })
+
+    it('displays an error', () => {
+      const error = screen.getByText(
+        /You cannot purchase a per user plan for less than 6 users/
+      )
+      expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user chooses less than the number of active users', () => {
+    beforeEach(() => {
+      setup()
+      return act(async () => {
+        clearSeatsInput()
+        userEvent.type(screen.getByRole('spinbutton'), '8')
+        userEvent.click(screen.getByText('Continue to Payment'))
+      })
+    })
+
+    it('displays an error', () => {
+      const error = screen.getByText(
+        / deactivate more users before downgrading plans/
+      )
+      expect(error).toBeInTheDocument()
     })
   })
 })

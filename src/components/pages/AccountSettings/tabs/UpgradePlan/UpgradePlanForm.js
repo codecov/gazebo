@@ -36,15 +36,18 @@ function getSchema(accountDetails) {
   return yup.object().shape({
     seats: yup
       .number()
-      .positive()
-      .integer()
       .required('Number of seats is required')
+      .integer()
       .min(6, 'You cannot purchase a per user plan for less than 6 users')
       .test({
         name: 'between',
         test: (nbSeats) => nbSeats >= accountDetails.activatedUserCount,
         message: 'Must deactivate more users before downgrading plans',
-      }),
+      })
+      .nullable()
+      .transform((value, originalValue) =>
+        String(originalValue).trim() === '' ? null : value
+      ),
   })
 }
 
@@ -64,8 +67,8 @@ function UpgradePlanForm({
   const seats = watch('seats')
   const activePlan = watch('activePlan')
 
-  const perYearPrice = seats * proPlanYear.baseUnitPrice * 12
-  const perMonthPrice = seats * proPlanMonth.baseUnitPrice * 12
+  const perYearPrice = Math.floor(seats) * proPlanYear.baseUnitPrice * 12
+  const perMonthPrice = Math.floor(seats) * proPlanMonth.baseUnitPrice * 12
 
   const nextBillingDate = getNextBillingDate(accountDetails)
   const isPerYear = activePlan?.value === 'users-pr-inappy'
@@ -146,7 +149,7 @@ function UpgradePlanForm({
           {errors.seats?.message}
         </p>
       )}
-      <Button Component="button" type="submit" className="w-full block mt-4">
+      <Button type="submit" className="w-full block mt-4">
         Continue to Payment
       </Button>
     </form>
