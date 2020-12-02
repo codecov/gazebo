@@ -148,7 +148,14 @@ function UpgradePlanForm({
         render={({ onChange, value }) => (
           <Select
             items={planOptions}
-            renderItem={(plan) => plan.value}
+            renderItem={(plan) => (
+              <div className="flex justify-between flex-1 p-2 text-base w-full">
+                <span className="capitalize text-gray-600">
+                  {plan.billingRate} User Pricing
+                </span>
+                <span>${plan.baseUnitPrice}* /month</span>
+              </div>
+            )}
             onChange={onChange}
             value={value}
           />

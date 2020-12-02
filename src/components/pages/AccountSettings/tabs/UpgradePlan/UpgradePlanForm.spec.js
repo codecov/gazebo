@@ -106,7 +106,7 @@ describe('UpgradePlanForm', () => {
 
     it('renders Dropdown with the year plan selected', () => {
       expect(screen.getAllByRole('button')[0]).toHaveTextContent(
-        'users-pr-inappy'
+        'annually User Pricing'
       )
     })
 
@@ -122,7 +122,7 @@ describe('UpgradePlanForm', () => {
 
     it('renders Dropdown with the year plan selected', () => {
       expect(screen.getAllByRole('button')[0]).toHaveTextContent(
-        'users-pr-inappy'
+        'annually User Pricing'
       )
     })
 
@@ -138,7 +138,7 @@ describe('UpgradePlanForm', () => {
 
     it('renders Dropdown with the year plan selected', () => {
       expect(screen.getAllByRole('button')[0]).toHaveTextContent(
-        'users-pr-inappy'
+        'annually User Pricing'
       )
     })
 
