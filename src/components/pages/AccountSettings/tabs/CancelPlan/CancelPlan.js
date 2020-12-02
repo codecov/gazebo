@@ -1,15 +1,13 @@
 import PropType from 'prop-types'
-import { Link } from 'react-router-dom'
 import difference from 'lodash/difference'
 
-import Button from 'components/Button'
 import Card from 'components/Card'
-import Icon from 'components/Icon'
 import { useAccountsAndPlans } from 'services/account'
 
 import umbrellaImg from './umbrella.svg'
-import BenefitList from '../../shared/BenefitList'
 import DowngradeToFree from './DowngradeToFree'
+import BenefitList from '../../shared/BenefitList'
+import BackLink from '../../shared/BackLink'
 
 function CancelPlan({ provider, owner }) {
   const { data } = useAccountsAndPlans({ provider, owner })
@@ -23,22 +21,11 @@ function CancelPlan({ provider, owner }) {
   )
 
   return (
-    <div>
-      <div className="text-center flex items-center justify-center text-gray-500 bold mt-8">
-        <span className="text-blue-400 inline-block mr-1">
-          <Icon name="arrowLeft" />
-        </span>
-        Back to:
-        <Button
-          Component={Link}
-          to={`/account/${provider}/${owner}`}
-          color="gray"
-          variant="text"
-          className="ml-1"
-        >
-          Billing & Users
-        </Button>
-      </div>
+    <div className="col-start-1 col-end-13">
+      <BackLink
+        to={`/account/${provider}/${owner}`}
+        textLink="Billing & Users"
+      />
       <div className="grid grid-cols-12 gap-8 mt-10">
         <div className="col-span-7">
           <Card className="border border-codecov-red px-12 py-10">

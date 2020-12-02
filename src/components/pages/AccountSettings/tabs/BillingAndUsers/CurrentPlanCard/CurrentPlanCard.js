@@ -36,7 +36,7 @@ function CurrentPlanCard({ accountDetails }) {
       </p>
 
       <div className="flex flex-col items-center mt-6">
-        <Button Component={Link} to="#">
+        <Button Component={Link} to={`${baseUrl}billing/upgrade`}>
           {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
         </Button>
         {!isFreePlan && (
