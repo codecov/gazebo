@@ -27,7 +27,13 @@ function Header() {
 
   return (
     <header className="fixed top-0 w-full">
-      <div className="bg-gray-900 text-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-50 absolute w-full">
+      <div
+        className={cs(
+          'z-50 absolute w-full max-w-7xl mx-auto px-4',
+          'bg-gray-900 text-white',
+          'sm:px-6 lg:px-8'
+        )}
+      >
         <nav className="flex items-center justify-between h-16">
           <DesktopMenu mainNav={mainNav} userNav={userNav} />
           <div className="-mr-2 flex md:hidden">

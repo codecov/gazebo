@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import PropType from 'prop-types'
 import ServerStatus from './ServerStatus'
 
-// Temp
+// TODO
 const username = 'TerrySmithDC'
 const avatarUrl =
   'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
@@ -20,29 +20,27 @@ const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
         </a>
       ))}
     </div>
-    <div className="pt-4 pb-3 border-t border-gray-700">
-      <div className="flex items-center px-5">
-        <div className="flex-shrink-0">
-          <img
-            className="h-10 w-10 rounded-full"
-            src={avatarUrl}
-            alt="User Avatar"
-          />
-        </div>
-        <div className="flex-1 ml-3">{username}</div>
-        <ServerStatus />
+    <div className="flex items-center px-5 py-4 border-t border-gray-800">
+      <div className="flex-shrink-0">
+        <img
+          className="h-10 w-10 rounded-full"
+          src={avatarUrl}
+          alt="User Avatar"
+        />
       </div>
-      <div className="mt-3 px-2 space-y-1">
-        {userNav.map(({ to, label }, i) => (
-          <a
-            key={i}
-            href={to}
-            className="block px-3 py-2 rounded-md text-base text-gray-300 hover:text-white hover:bg-gray-700"
-          >
-            {label}
-          </a>
-        ))}
-      </div>
+      <div className="flex-1 ml-3">{username}</div>
+      <ServerStatus />
+    </div>
+    <div className="py-3 px-2 space-y-1">
+      {userNav.map(({ to, label }, i) => (
+        <a
+          key={i}
+          href={to}
+          className="block px-3 py-2 rounded-md text-base text-gray-300 hover:text-white hover:bg-gray-700"
+        >
+          {label}
+        </a>
+      ))}
     </div>
   </nav>
 ))

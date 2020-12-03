@@ -18,7 +18,7 @@ function Dropdown({ userNav }) {
   return (
     <div
       ref={dropdownRef}
-      className={cs('ml-3 relative', 'border border-solid border-gray-900')}
+      className="ml-3 relative border border-solid border-gray-900"
     >
       <button
         tabIndex="0"
