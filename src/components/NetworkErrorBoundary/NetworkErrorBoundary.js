@@ -10,11 +10,7 @@ import styles from './NetworkErrorBoundary.module.css'
 const errorToUI = {
   401: {
     illustration: img401,
-    title: (
-      <>
-        Please <a href="/login">log in.</a>
-      </>
-    ),
+    title: <a href="/login">Please log in.</a>,
     description: (data) => data.detail,
   },
   403: {
@@ -53,7 +49,6 @@ class NetworkErrorBoundary extends Component {
   }
 
   renderError() {
-    console.log(this.state.error)
     const { status, data } = this.state.error
     const { illustration, title, description } = errorToUI[status]
 
