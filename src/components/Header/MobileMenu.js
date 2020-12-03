@@ -1,6 +1,8 @@
 import { forwardRef } from 'react'
 import PropType from 'prop-types'
+
 import ServerStatus from './ServerStatus'
+import { UserNavA, MainNavLink } from './NavLink'
 
 // TODO
 const username = 'TerrySmithDC'
@@ -10,14 +12,12 @@ const avatarUrl =
 const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
   <nav ref={ref} className="md:hidden bg-gray-900 z-40 mt-12 text-white">
     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-      {mainNav.map(({ to, label }, i) => (
-        <a
-          key={i}
-          href={to}
+      {mainNav.map((props, i) => (
+        <MainNavLink
+          key={`mobile-mainnav-${i}`}
           className="block px-3 py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
-        >
-          {label}
-        </a>
+          {...props}
+        />
       ))}
     </div>
     <div className="flex items-center px-5 py-4 border-t border-gray-800">
@@ -25,6 +25,8 @@ const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
         <img
           className="h-10 w-10 rounded-full"
           src={avatarUrl}
+          width="40px"
+          height="auto"
           alt="User Avatar"
         />
       </div>
@@ -32,14 +34,12 @@ const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
       <ServerStatus />
     </div>
     <div className="py-3 px-2 space-y-1">
-      {userNav.map(({ to, label }, i) => (
-        <a
-          key={i}
-          href={to}
-          className="block px-3 py-2 rounded-md text-base text-gray-300 hover:text-white hover:bg-gray-700"
-        >
-          {label}
-        </a>
+      {userNav.map((props, i) => (
+        <UserNavA
+          key={`mobile-usernav-${i}`}
+          className="px-3 py-2 text-gray-300 hover:text-white"
+          {...props}
+        />
       ))}
     </div>
   </nav>

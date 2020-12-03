@@ -13,16 +13,26 @@ function Header() {
   useClickAway(mobileMenuRef, () => setIsOpen(false))
 
   // Todo
+  const testUrl =
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
   const mainNav = [
-    { label: 'github', to: '/gh' },
-    { label: 'codecov', to: '/gh/codecov' },
-    { label: 'gazebo', to: '/gh/codecov/gazebo' },
+    { label: 'github', to: '/gh', iconName: 'infoCircle' },
+    { label: 'codecov', to: '/gh/codecov', imageUrl: testUrl },
+    { label: 'gazebo', to: '/gh/codecov/gazebo', imageUrl: testUrl },
   ]
   const userNav = [
-    { label: 'Organizations', to: '/account/gh/codecov' },
-    { label: 'Codecov Settings', to: '/account/gh/codecov' },
-    { label: 'Personal Settings', to: '/account/gh/TerrySmithDC' },
-    { label: 'Sign Out', to: '/sign-out' },
+    { label: 'Organizations', to: '/account/gh/codecov', iconName: 'building' },
+    {
+      label: 'Codecov Settings',
+      to: '/account/gh/codecov',
+      imageUrl: testUrl,
+    },
+    {
+      label: 'Personal Settings',
+      to: '/account/gh/TerrySmithDC',
+      imageUrl: testUrl,
+    },
+    { label: 'Sign Out', to: '/sign-out', iconName: 'signout' },
   ]
 
   return (

@@ -1,10 +1,11 @@
 import { Fragment } from 'react'
 import Icon from 'components/Icon'
-import { NavLink, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PropType from 'prop-types'
 
 import ServerStatus from './ServerStatus'
 import Dropdown from './Dropdown'
+import { MainNavLink } from './NavLink'
 
 const DesktopMenu = ({ mainNav, userNav }) => (
   <>
@@ -15,8 +16,8 @@ const DesktopMenu = ({ mainNav, userNav }) => (
       </Link>
       <div className="hidden md:block">
         <div className="ml-10 flex items-center space-x-2">
-          {mainNav.map(({ to, label }, i) => (
-            <Fragment key={i}>
+          {mainNav.map((props, i) => (
+            <Fragment key={`desktopMenu-${i}`}>
               {i !== 0 && (
                 <Icon
                   name="rightChevron"
@@ -24,14 +25,12 @@ const DesktopMenu = ({ mainNav, userNav }) => (
                   className="flex-shrink-0 h-5 w-5"
                 />
               )}
-              <NavLink
-                to={to}
+              <MainNavLink
                 className="opacity-50 px-3 py-2 rounded-md hover:opacity-100 transition-opacity"
                 activeClassName="opacity-100"
                 exact={true}
-              >
-                {label}
-              </NavLink>
+                {...props}
+              />
             </Fragment>
           ))}
         </div>

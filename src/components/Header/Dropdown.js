@@ -4,6 +4,7 @@ import PropType from 'prop-types'
 import cs from 'classnames'
 
 import Icon from 'components/Icon'
+import { UserNavA } from './NavLink'
 
 function Dropdown({ userNav }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -36,8 +37,6 @@ function Dropdown({ userNav }) {
         <img
           className="h-8 w-8 rounded-full"
           src={avatarUrl}
-          width="30px"
-          height="auto"
           alt="user avatar"
         />
         <p className="mx-2">{username}</p>
@@ -67,22 +66,16 @@ function Dropdown({ userNav }) {
         aria-orientation="vertical"
         aria-labelledby="user-menu"
       >
-        {userNav.map(({ label, to }, i) => (
-          <a
-            key={i}
-            href={to}
-            className={cs(
-              'block px-4 py-2 text-sm',
-              'bg-gray-800 hover:bg-gray-600',
-              {
-                'border-t border-solid border-gray-900': i === 0,
-                'rounded-b-3xl pb-3': i === userNav.length - 1,
-              }
-            )}
-            role="menuitem"
-          >
-            {label}
-          </a>
+        {userNav.map(({ to, ...props }, i) => (
+          <UserNavA
+            key={`${i}-${to}`}
+            className={cs('bg-gray-800 hover:bg-gray-600', {
+              'border-t border-solid border-gray-900': i === 0,
+              'rounded-b-3xl pb-3': i === userNav.length - 1,
+            })}
+            to={to}
+            {...props}
+          />
         ))}
       </div>
     </div>
