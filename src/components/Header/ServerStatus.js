@@ -25,10 +25,15 @@ function ServerStatus() {
   }
 
   return (
-    <button className="bg-gray-800 p-1 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+    <a
+      rel="noreferrer"
+      target="_blank"
+      href="https://status.codecov.io/"
+      className="bg-gray-800 p-1 rounded-full hover:gray-500 focus:bg-gray-800"
+    >
       <span className="sr-only">{mode[status].sr}</span>
       <Icon name="serverStatus" color={mode[status].textColor} />
-    </button>
+    </a>
   )
 }
 

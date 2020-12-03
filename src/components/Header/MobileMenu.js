@@ -1,25 +1,23 @@
 import { forwardRef } from 'react'
-import { Link, NavLink } from 'react-router-dom'
 import PropType from 'prop-types'
 import ServerStatus from './ServerStatus'
 
 // Temp
-const username = 'Tom'
+const username = 'TerrySmithDC'
 const avatarUrl =
   'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
 
 const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
-  <nav ref={ref} className="md:hidden bg-header">
+  <nav ref={ref} className="md:hidden bg-gray-900 z-40">
     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
       {mainNav.map(({ to, label }, i) => (
-        <NavLink
+        <a
           key={i}
-          to={to}
+          href={to}
           className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
-          activeClassName="text-white bg-gray-900"
         >
           {label}
-        </NavLink>
+        </a>
       ))}
     </div>
     <div className="pt-4 pb-3 border-t border-gray-700">
@@ -34,13 +32,13 @@ const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
       </div>
       <div className="mt-3 px-2 space-y-1">
         {userNav.map(({ to, label }, i) => (
-          <Link
+          <a
             key={i}
-            to={to}
+            href={to}
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
           >
             {label}
-          </Link>
+          </a>
         ))}
       </div>
     </div>
