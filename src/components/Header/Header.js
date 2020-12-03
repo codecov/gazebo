@@ -64,7 +64,7 @@ function Header() {
       </div>
       <Transition
         show={isOpen}
-        enter="transform transition-opacity transition-transform duration-300"
+        enter="transform transition-opacity transition-transform duration-300 motion-reduce:transition-none motion-reduce:transform-none"
         enterFrom="opacity-0 -translate-y-full"
         enterTo="opacity-100 translate-y-0"
       >
