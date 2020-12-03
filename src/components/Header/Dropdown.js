@@ -18,10 +18,7 @@ function Dropdown({ userNav }) {
   return (
     <div
       ref={dropdownRef}
-      className={cs(
-        'ml-3 relative text-white',
-        'border border-solid border-gray-900'
-      )}
+      className={cs('ml-3 relative', 'border border-solid border-gray-900')}
     >
       <button
         tabIndex="0"
@@ -39,7 +36,7 @@ function Dropdown({ userNav }) {
         <img
           className="h-8 w-8 rounded-full"
           src={avatarUrl}
-          width="50px"
+          width="30px"
           height="auto"
           alt="user avatar"
         />

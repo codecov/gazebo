@@ -8,13 +8,13 @@ const avatarUrl =
   'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
 
 const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
-  <nav ref={ref} className="md:hidden bg-gray-900 z-40">
+  <nav ref={ref} className="md:hidden bg-gray-900 z-40 mt-12 text-white">
     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
       {mainNav.map(({ to, label }, i) => (
         <a
           key={i}
           href={to}
-          className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
+          className="block px-3 py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
         >
           {label}
         </a>
@@ -23,11 +23,13 @@ const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
     <div className="pt-4 pb-3 border-t border-gray-700">
       <div className="flex items-center px-5">
         <div className="flex-shrink-0">
-          <img className="h-10 w-10 rounded-full" src={avatarUrl} alt="" />
+          <img
+            className="h-10 w-10 rounded-full"
+            src={avatarUrl}
+            alt="User Avatar"
+          />
         </div>
-        <div className="flex-1 ml-3">
-          <div className="text-base font-medium text-white">{username}</div>
-        </div>
+        <div className="flex-1 ml-3">{username}</div>
         <ServerStatus />
       </div>
       <div className="mt-3 px-2 space-y-1">
@@ -35,7 +37,7 @@ const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
           <a
             key={i}
             href={to}
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+            className="block px-3 py-2 rounded-md text-base text-gray-300 hover:text-white hover:bg-gray-700"
           >
             {label}
           </a>

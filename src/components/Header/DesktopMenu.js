@@ -14,7 +14,7 @@ const DesktopMenu = ({ mainNav, userNav }) => (
         <Icon alt="Codecov Logo" name="codecov" color="text-white" />
       </Link>
       <div className="hidden md:block">
-        <div className="ml-10 flex items-center space-x-4">
+        <div className="ml-10 flex items-center space-x-2">
           {mainNav.map(({ to, label }, i) => (
             <Fragment key={i}>
               {i !== 0 && (
@@ -26,7 +26,7 @@ const DesktopMenu = ({ mainNav, userNav }) => (
               )}
               <NavLink
                 to={to}
-                className="opacity-50 px-3 py-2 rounded-md text-sm font-medium text-white hover:opacity-100 transition-opacity"
+                className="opacity-50 px-3 py-2 rounded-md hover:opacity-100 transition-opacity"
                 activeClassName="opacity-100"
                 exact={true}
               >
