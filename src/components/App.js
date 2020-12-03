@@ -13,6 +13,20 @@ const queryCache = new QueryCache({
   defaultConfig: {
     queries: {
       suspense: true,
+      retry: (failureCount, error) => {
+        const status = error?.status
+
+        // retries only thrice
+        const hasReachedLimit = failureCount > 3
+
+        // not a network error with a status
+        if (typeof status !== 'number') return !hasReachedLimit
+
+        // dont retry 400 errors
+        if (status >= 400 && status < 500) return false
+
+        return hasReachedLimit
+      },
     },
   },
 })
