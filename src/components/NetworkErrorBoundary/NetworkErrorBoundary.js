@@ -2,6 +2,9 @@ import { Component } from 'react'
 import cs from 'classnames'
 
 import img401 from './assets/error-401.svg'
+import img403 from './assets/error-403.svg'
+import img404 from './assets/error-404.svg'
+import img500 from './assets/error-500.svg'
 import styles from './NetworkErrorBoundary.module.css'
 
 const errorToUI = {
@@ -12,14 +15,22 @@ const errorToUI = {
         Please <a href="/login">log in.</a>
       </>
     ),
+    description: (data) => data.detail,
   },
   403: {
-    illustration: img401,
-    title: (
-      <>
-        Please <a href="/login">log in.</a>
-      </>
-    ),
+    illustration: img403,
+    title: 'Unauthorized',
+    description: (data) => data.detail,
+  },
+  404: {
+    illustration: img404,
+    title: 'Not found',
+    description: null,
+  },
+  500: {
+    illustration: img500,
+    title: 'Server error',
+    description: null,
   },
 }
 
@@ -34,16 +45,17 @@ class NetworkErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    if (Object.keys(errorToUI).includes(String(error.status))) {
-      return { hasNetworkError: true, error }
-    }
-    return {}
+    // if the error isnt a network error, we don't do anything and
+    // another error boundary will take it from there
+    return Object.keys(errorToUI).includes(String(error.status))
+      ? { hasNetworkError: true, error }
+      : {}
   }
 
   renderError() {
     console.log(this.state.error)
     const { status, data } = this.state.error
-    const { illustration, title } = errorToUI[status]
+    const { illustration, title, description } = errorToUI[status]
 
     return (
       <div className="col-start-1 col-end-13 flex items-center justify-center flex-col">
@@ -52,8 +64,8 @@ class NetworkErrorBoundary extends Component {
           className={cs(styles.illustrationError, 'mx-auto')}
           src={illustration}
         />
-        <h1 className="text-2xl my-6">{title}</h1>
-        <p>{data.detail}</p>
+        <h1 className="text-2xl mt-6">{title}</h1>
+        {description && <p className="mt-6">{description(data)}</p>}
         <p className="my-4">
           Check on{' '}
           <a
