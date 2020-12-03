@@ -1,4 +1,3 @@
-import { forwardRef } from 'react'
 import PropType from 'prop-types'
 
 import ServerStatus from './ServerStatus'
@@ -9,8 +8,8 @@ const username = 'TerrySmithDC'
 const avatarUrl =
   'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
 
-const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
-  <nav ref={ref} className="md:hidden bg-gray-900 z-40 mt-12 text-white">
+const MobileMenu = ({ mainNav = [], userNav = [] }) => (
+  <nav className="md:hidden bg-gray-900 z-40 mt-12 text-white">
     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
       {mainNav.map((props, i) => (
         <MainNavLink
@@ -33,7 +32,7 @@ const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
       <div className="flex-1 ml-3">{username}</div>
       <ServerStatus />
     </div>
-    <div className="py-3 px-2 space-y-1">
+    <div className="py-3 px-2 sm:px-3 space-y-1">
       {userNav.map((props, i) => (
         <UserNavA
           key={`mobile-usernav-${i}`}
@@ -43,9 +42,7 @@ const MobileMenu = forwardRef(({ mainNav = [], userNav = [] }, ref) => (
       ))}
     </div>
   </nav>
-))
-
-MobileMenu.displayName = 'MobileMenu'
+)
 
 MobileMenu.propTypes = {
   mainNav: PropType.arrayOf(

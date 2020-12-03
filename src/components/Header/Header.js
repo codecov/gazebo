@@ -36,7 +36,7 @@ function Header() {
   ]
 
   return (
-    <header className="fixed top-0 w-full">
+    <header ref={mobileMenuRef} className="fixed top-0 w-full">
       <div
         className={cs(
           'z-50 absolute w-full max-w-7xl mx-auto px-4',
@@ -78,7 +78,7 @@ function Header() {
         enterFrom="opacity-0 -translate-y-full"
         enterTo="opacity-100 translate-y-0"
       >
-        <MobileMenu ref={mobileMenuRef} mainNav={mainNav} userNav={userNav} />
+        <MobileMenu mainNav={mainNav} userNav={userNav} />
       </Transition>
     </header>
   )
