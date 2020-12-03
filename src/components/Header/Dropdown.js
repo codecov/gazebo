@@ -1,20 +1,19 @@
 import React, { useRef, useState } from 'react'
 import { useClickAway } from 'react-use'
-import PropType from 'prop-types'
 import cs from 'classnames'
 
+import { useNav } from 'services/header'
+import { useUser } from 'services/user'
 import Icon from 'components/Icon'
 import { UserNavA } from './NavLink'
 
-function Dropdown({ userNav }) {
+function Dropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef()
-  useClickAway(dropdownRef, () => setIsOpen(false))
+  const { user } = useNav()
+  const [{ username, avatarUrl }] = useUser()
 
-  //TODO
-  const username = 'TerrySmithDC'
-  const avatarUrl =
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+  useClickAway(dropdownRef, () => setIsOpen(false))
 
   return (
     <div
@@ -66,14 +65,13 @@ function Dropdown({ userNav }) {
         aria-orientation="vertical"
         aria-labelledby="user-menu"
       >
-        {userNav.map(({ to, ...props }, i) => (
+        {user.map((props, i) => (
           <UserNavA
-            key={`${i}-${to}`}
+            key={`dropdown-${i}`}
             className={cs('bg-gray-800 hover:bg-gray-600', {
               'border-t border-solid border-gray-900': i === 0,
-              'rounded-b-3xl pb-3': i === userNav.length - 1,
+              'rounded-b-3xl pb-3': i === user.length - 1,
             })}
-            to={to}
             {...props}
           />
         ))}
@@ -82,13 +80,4 @@ function Dropdown({ userNav }) {
   )
 }
 
-Dropdown.propTypes = {
-  userNav: PropType.arrayOf(
-    PropType.shape({
-      label: PropType.string.isRequired,
-      to: PropType.string.isRequired,
-      active: PropType.bool,
-    })
-  ).isRequired,
-}
 export default Dropdown

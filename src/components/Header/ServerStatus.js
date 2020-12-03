@@ -1,9 +1,9 @@
 import Icon from 'components/Icon'
+import { useServerStatus } from 'services/status'
 
-// Todo add tooltip / link to serve status page
+// Todo add tooltip
 function ServerStatus() {
-  // TODO
-  const status = 'up'
+  const [status] = useServerStatus()
 
   const mode = {
     unknown: {

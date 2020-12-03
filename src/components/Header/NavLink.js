@@ -1,9 +1,15 @@
 import PropType from 'prop-types'
-import Icon from 'components/Icon'
 import cs from 'classnames'
 import { NavLink } from 'react-router-dom'
 
-//TODO Add Link and NavLink varrients
+import Icon from 'components/Icon'
+
+const UserNav = {
+  to: PropType.string.isRequired,
+  label: PropType.string.isRequired,
+  imageUrl: PropType.string,
+  iconName: PropType.string,
+}
 
 export function UserNavA({
   to,
@@ -30,12 +36,7 @@ export function UserNavA({
   )
 }
 
-UserNavA.propTypes = {
-  to: PropType.string.isRequired,
-  label: PropType.string.isRequired,
-  imageUrl: PropType.string,
-  iconName: PropType.string,
-}
+UserNavA.propTypes = UserNav
 
 export function MainNavLink({
   label,
@@ -57,9 +58,4 @@ export function MainNavLink({
   )
 }
 
-MainNavLink.propTypes = {
-  to: PropType.string.isRequired,
-  label: PropType.string.isRequired,
-  imageUrl: PropType.string,
-  iconName: PropType.string,
-}
+MainNavLink.propTypes = UserNav

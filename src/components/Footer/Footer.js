@@ -43,7 +43,7 @@ function Footer() {
       <nav className="container flex flex-wrap flex-col lg:flex-row justify-center sm:justify-between text-white py-6 px-3">
         <ul className="flex-1 flex justify-center lg:justify-start items-center">
           {leftMenu.map((data, i) => (
-            <FooterItem key={i} {...data} />
+            <FooterItem key={`footer-left-${i}`} {...data} />
           ))}
         </ul>
         <Icon
@@ -53,7 +53,7 @@ function Footer() {
         />
         <ul className="flex-1 flex justify-center lg:justify-end items-center">
           {rightMenu.map((data, i) => (
-            <FooterItem key={i} {...data} />
+            <FooterItem key={`footer-right-${i}`} {...data} />
           ))}
         </ul>
       </nav>
