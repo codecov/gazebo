@@ -28,7 +28,6 @@ module.exports = {
           red: '#CE2019',
           orange: '#FFC273',
           footer: '#07111b',
-          header: '#0e1b29',
         },
         gray: {
           100: '#F7F8FB',
@@ -85,6 +84,7 @@ module.exports = {
     opacity: ['disabled', 'hover'],
     cursor: ['disabled'],
     transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
+    borderRadius: ['focus'],
   },
   plugins: [],
 }

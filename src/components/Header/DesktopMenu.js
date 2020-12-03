@@ -9,8 +9,9 @@ import Dropdown from './Dropdown'
 const DesktopMenu = ({ mainNav, userNav }) => (
   <>
     <div className="flex items-center">
-      <Link to="/" className="flex-shrink-0">
-        <Icon name="codecov" color="text-white" />
+      <Link to="/" tabIndex="0" className="flex-shrink-0">
+        <span className="sr-only">Link to Homepage</span>
+        <Icon alt="Codecov Logo" name="codecov" color="text-white" />
       </Link>
       <div className="hidden md:block">
         <div className="ml-10 flex items-center space-x-4">

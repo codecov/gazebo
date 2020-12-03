@@ -18,15 +18,16 @@ function Header() {
     { label: 'gazebo', to: '/gh/codecov/gazebo' },
   ]
   const userNav = [
-    { label: 'User Settings', to: '/account/gh/TerrySmithDC' },
-    { label: 'Team Settings', to: '/account/gh/codecov' },
-    { label: 'Logout', to: '/logout' },
+    { label: 'Organizations', to: '/account/gh/codecov' },
+    { label: 'Codecov Settings', to: '/account/gh/codecov' },
+    { label: 'Personal Settings', to: '/account/gh/TerrySmithDC' },
+    { label: 'Sign Out', to: '/sign-out' },
   ]
 
   return (
-    <header className="bg-codecov-header fixed top-0 w-full z-50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="fixed top-0 w-full">
+      <div className="bg-gray-900 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-50 absolute w-full">
+        <nav className="flex items-center justify-between h-16">
           <DesktopMenu mainNav={mainNav} userNav={userNav} />
           <div className="-mr-2 flex md:hidden">
             {/* <!-- Mobile menu button --> */}
@@ -61,22 +62,13 @@ function Header() {
               </Transition>
             </button>
           </div>
-        </div>
-      </nav>
-
-      {/* <!--
-      Mobile menu, toggle classes based on menu state.
-
-      Open: "block", closed: "hidden"
-    --> */}
+        </nav>
+      </div>
       <Transition
         show={isOpen}
-        enter="block"
-        // enterFrom=""
-        // enterTo=""
-        leave="hidden"
-        // leaveFrom=""
-        // leaveTo=""
+        enter="transform transition-opacity transition-transform duration-300"
+        enterFrom="opacity-0 -translate-y-full"
+        enterTo="opacity-100 translate-y-0"
       >
         <MobileMenu ref={mobileMenuRef} mainNav={mainNav} userNav={userNav} />
       </Transition>

@@ -2,7 +2,7 @@ import ErrorBoundary from 'components/ErrorBoundary'
 
 function FullLayout({ children }) {
   return (
-    <div className="flex-grow bg-gray-200 mt-16">
+    <main className="flex-grow bg-gray-200 mt-16">
       <article
         className="container py-10 px-4 sm:px-0"
         data-testid="full-layout"
@@ -11,7 +11,7 @@ function FullLayout({ children }) {
           {children}
         </ErrorBoundary>
       </article>
-    </div>
+    </main>
   )
 }
 
