@@ -1,10 +1,14 @@
 <svg
+aria-labelledby="mobileMenuButtonTitleId mobileMenuButtonDescId"
   xmlns="http://www.w3.org/2000/svg"
   fill="none"
   viewBox="0 0 24 24"
   stroke="currentColor"
-  aria-hidden="true"
+  width="24px"
+  height="24px"
 >
+  <title id="mobileMenuButtonTitleId">A Hamburger Icon</title>
+  <desc id="mobileMenuButtonDescId">This icon is a button which opens the mobile main navigation.</desc>
   <path
     strokeLinecap="round"
     strokeLinejoin="round"
