@@ -16,7 +16,7 @@ describe('useServerStatus', () => {
 
     it('has default', () => {
       const [status] = hookData.result.current
-      expect(status).toBe(UNKNOWN)
+      expect(status).toBe(UP)
     })
   })
 

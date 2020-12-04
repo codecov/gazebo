@@ -29,7 +29,12 @@ export function UserNavA({
         <img className="h-4 w-4 rounded-full" src={imageUrl} alt={label} />
       )}
       {iconName && (
-        <Icon name={iconName} className="h-4 w-4" color="text-white" />
+        <Icon
+          testId="nav-link-icon"
+          name={iconName}
+          className="h-4 w-4"
+          color="text-white"
+        />
       )}
       <span className="pl-3">{label}</span>
     </a>
@@ -39,19 +44,25 @@ export function UserNavA({
 UserNavA.propTypes = UserNav
 
 export function MainNavLink({
+  to,
   label,
-  className,
   imageUrl,
   iconName,
+  className,
   ...props
 }) {
   return (
-    <NavLink className={cs('flex items-center', className)} {...props}>
+    <NavLink className={cs('flex items-center', className)} to={to} {...props}>
       {imageUrl && (
         <img className="h-6 w-6 rounded-full" src={imageUrl} alt={label} />
       )}
       {iconName && (
-        <Icon name={iconName} className="h-6 w-6" color="text-white" />
+        <Icon
+          testId="nav-link-icon"
+          name={iconName}
+          className="h-6 w-6"
+          color="text-white"
+        />
       )}
       <span className="pl-3">{label}</span>
     </NavLink>

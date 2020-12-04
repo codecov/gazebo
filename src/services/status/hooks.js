@@ -6,7 +6,7 @@ export const DOWN = 'down'
 export const WARNING = 'warning'
 
 // TODO Setup API
-const status = UNKNOWN
+const status = UP
 
 export function useServerStatus() {
   const [privateStatus, setPrivateStatus] = useState(status)
