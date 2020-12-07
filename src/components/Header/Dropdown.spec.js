@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { useUser } from 'services/user'
 import { useNav } from 'services/header'
 
-import DropDown from './DropDown'
+import Dropdown from './Dropdown'
 
 jest.mock('services/header')
 jest.mock('services/user')
@@ -14,11 +14,11 @@ const mockNavContext = {
 }
 const mockUseUser = [{ username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }]
 
-describe('DropDown', () => {
+describe('Dropdown', () => {
   function setup() {
     render(
       <MemoryRouter>
-        <DropDown />
+        <Dropdown />
       </MemoryRouter>
     )
   }
@@ -39,14 +39,14 @@ describe('DropDown', () => {
     })
   })
 
-  describe('opens dropdown', () => {
+  describe('opens Dropdown', () => {
     beforeEach(() => {
       useNav.mockReturnValue(mockNavContext)
       useUser.mockReturnValue(mockUseUser)
 
       setup()
     })
-    it('clicking on user opens the dropdown', () => {
+    it('clicking on user opens the Dropdown', () => {
       const toggle = screen.getByRole('button')
 
       expect(screen.getByRole('menu')).toHaveClass('hidden')
