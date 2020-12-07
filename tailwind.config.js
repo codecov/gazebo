@@ -84,7 +84,11 @@ module.exports = {
     opacity: ['disabled', 'hover'],
     cursor: ['disabled'],
     transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
-    borderRadius: ['focus'],
+    borderRadius: ['focus', 'last'],
+    borderStyle: ['first'],
+    borderColor: ['first'],
+    borderWidth: ['first'],
+    padding: ['last'],
   },
   plugins: [],
 }

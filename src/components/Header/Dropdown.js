@@ -68,10 +68,11 @@ function Dropdown() {
         {user.map((props, i) => (
           <UserNavA
             key={`dropdown-${i}`}
-            className={cs('bg-gray-800 hover:bg-gray-600', {
-              'border-t border-solid border-gray-900': i === 0,
-              'rounded-b-3xl pb-3': i === user.length - 1,
-            })}
+            className={cs(
+              'bg-gray-800 hover:bg-gray-600',
+              'first:border-t first:border-solid first:border-gray-900',
+              'last:rounded-b-3xl last:pb-3'
+            )}
             {...props}
           />
         ))}
