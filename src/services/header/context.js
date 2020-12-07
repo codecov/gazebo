@@ -21,7 +21,7 @@ const navigation = {
       to: '/account/gh/TerrySmithDC',
       imageUrl: testUrl,
     },
-    { label: 'Sign Out', to: '/sign-out', iconName: 'signout' },
+    { label: 'Sign Out', to: '/sign-out', iconName: 'signOut' },
   ],
 }
 

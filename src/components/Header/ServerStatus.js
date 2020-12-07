@@ -1,5 +1,5 @@
-import Icon from 'components/Icon'
 import { useServerStatus } from 'services/status'
+import { ReactComponent as Server } from './server.svg'
 
 export const MODE = {
   unknown: {
@@ -32,11 +32,7 @@ function ServerStatus() {
       className="bg-gray-800 p-1 rounded-full hover:gray-500 focus:bg-gray-800"
     >
       <span className="sr-only">{MODE[status].sr}</span>
-      <Icon
-        testId="server-icon"
-        name="serverStatus"
-        color={MODE[status].textColor}
-      />
+      <Server data-testid="server-icon" className={MODE[status].textColor} />
     </a>
   )
 }
