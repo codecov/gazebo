@@ -8,7 +8,10 @@ function MobileMenu() {
   const [{ username, avatarUrl }] = useUser()
 
   return (
-    <nav className="md:hidden bg-gray-900 z-40 mt-12 text-white">
+    <nav
+      data-testid="mobile-menu"
+      className="md:hidden bg-gray-900 z-40 mt-12 text-white"
+    >
       <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
         {main.map((props, i) => (
           <MainNavLink

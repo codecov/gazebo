@@ -28,6 +28,7 @@ function Header() {
             <div className="-mr-2 flex md:hidden">
               <button
                 tabIndex="0"
+                data-testid="toggle-mobile"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cs(
                   'inline-flex items-center justify-center p-2 h-10 w-10 rounded-md',
@@ -41,11 +42,13 @@ function Header() {
                   name="hamburger"
                   color="text-white"
                   className={cs({ hidden: isOpen })}
+                  testId="hamburger-icon"
                 />
                 <Icon
                   name="times"
                   color="text-white"
                   className={cs({ hidden: !isOpen })}
+                  testId="times-icon"
                 />
               </button>
             </div>

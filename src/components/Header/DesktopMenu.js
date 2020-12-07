@@ -12,7 +12,7 @@ function DesktopMenu() {
 
   return (
     <>
-      <div className="flex items-center">
+      <div data-testid="desktop-menu" className="flex items-center">
         <Link to="/" tabIndex="0" className="flex-shrink-0">
           <span className="sr-only">Link to Homepage</span>
           <Icon alt="Codecov Logo" name="codecov" color="text-white" />
