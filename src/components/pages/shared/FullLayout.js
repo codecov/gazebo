@@ -1,4 +1,5 @@
 import ErrorBoundary from 'components/ErrorBoundary'
+import NetworkErrorBoundary from 'components/NetworkErrorBoundary'
 
 function FullLayout({ children }) {
   return (
@@ -8,7 +9,7 @@ function FullLayout({ children }) {
         data-testid="full-layout"
       >
         <ErrorBoundary sentryScopes={[['layout', 'full']]}>
-          {children}
+          <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
         </ErrorBoundary>
       </article>
     </div>

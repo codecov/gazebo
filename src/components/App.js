@@ -13,6 +13,7 @@ const queryCache = new QueryCache({
   defaultConfig: {
     queries: {
       suspense: true,
+      retry: false,
     },
   },
 })

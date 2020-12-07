@@ -1,5 +1,6 @@
 import PropType from 'prop-types'
 import ErrorBoundary from 'components/ErrorBoundary'
+import NetworkErrorBoundary from 'components/NetworkErrorBoundary'
 
 function SidebarLayout({ sidebar, children }) {
   return (
@@ -7,7 +8,7 @@ function SidebarLayout({ sidebar, children }) {
       {sidebar}
       <article className="col-span-6 grid sm:grid-cols-12 grid-cols-1 sm:gap-4 gap-0 p-0 sm:p-4 px-4 sm:px-0">
         <ErrorBoundary sentryScopes={[['layout', 'sidebar']]}>
-          {children}
+          <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
         </ErrorBoundary>
       </article>
     </div>
