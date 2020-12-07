@@ -1,6 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import NetworkErrorBoundary from './NetworkErrorBoundary'
 
+// silence all verbose console.error
+jest.spyOn(console, 'error').mockImplementation()
+
 describe('NetworkErrorBoundary', () => {
   function setup(ToRender) {
     render(
