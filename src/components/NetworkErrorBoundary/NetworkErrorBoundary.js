@@ -91,7 +91,7 @@ class NetworkErrorBoundary extends Component {
 
   render() {
     if (this.state.hasNetworkError) return this.renderError()
-    return this.props.children
+    return <>{this.props.children}</>
   }
 }
 
