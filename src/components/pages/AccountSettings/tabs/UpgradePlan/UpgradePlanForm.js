@@ -1,22 +1,32 @@
 import PropType from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
 import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import { useHistory } from 'react-router-dom'
 
 import Button from 'components/Button'
 import Select from 'components/Select'
-import { accountDetailsPropType, planPropType } from 'services/account'
+import {
+  accountDetailsPropType,
+  planPropType,
+  useUpgradePlan,
+} from 'services/account'
+import { useAddNotification } from 'services/toastNotification'
+
+const MIN_NB_SEATS = 6
 
 function getInitialDataForm(planOptions, accountDetails) {
   const currentPlan = accountDetails.plan
   const proPlan = planOptions.find((plan) => plan.value === currentPlan?.value)
 
-  const currentNbSeats = accountDetails.plan?.quantity ?? 6
+  const currentNbSeats = accountDetails.plan?.quantity ?? MIN_NB_SEATS
 
   return {
     // if the current plan is a proplan, we return it, otherwise select by default the first pro plan
-    activePlan: proPlan ? proPlan : planOptions[0],
+    newPlan: proPlan ? proPlan : planOptions[0],
     // get the number of seats of the current plan, but minimum 6 seats
-    seats: Math.max(currentNbSeats, 6),
+    seats: Math.max(currentNbSeats, MIN_NB_SEATS),
   }
 }
 
@@ -30,6 +40,80 @@ function getNextBillingDate(accountDetails) {
   return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
 }
 
+function getSchema(accountDetails) {
+  return yup.object().shape({
+    seats: yup
+      .number()
+      .required('Number of seats is required')
+      .integer()
+      .min(
+        MIN_NB_SEATS,
+        `You cannot purchase a per user plan for less than ${MIN_NB_SEATS} users`
+      )
+      .test({
+        name: 'between',
+        test: (nbSeats) => nbSeats >= accountDetails.activatedUserCount,
+        message: 'Must deactivate more users before downgrading plans',
+      })
+      .nullable()
+      .transform((value, originalValue) =>
+        String(originalValue).trim() === '' ? null : value
+      ),
+  })
+}
+
+function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
+  const planOptions = [proPlanYear, proPlanMonth]
+
+  const { register, handleSubmit, watch, control, errors } = useForm({
+    defaultValues: getInitialDataForm(planOptions, accountDetails),
+    resolver: yupResolver(getSchema(accountDetails)),
+  })
+
+  const seats = watch('seats')
+  const newPlan = watch('newPlan')
+
+  const perYearPrice = Math.floor(seats) * proPlanYear.baseUnitPrice * 12
+  const perMonthPrice = Math.floor(seats) * proPlanMonth.baseUnitPrice * 12
+
+  const isPerYear = newPlan?.value === 'users-pr-inappy'
+
+  return {
+    seats,
+    newPlan,
+    perYearPrice,
+    perMonthPrice,
+    register,
+    handleSubmit,
+    control,
+    isPerYear,
+    errors,
+    planOptions,
+  }
+}
+
+function useSubmit({ owner, provider }) {
+  const redirect = useHistory().push
+  const addToast = useAddNotification()
+  return useUpgradePlan({
+    provider,
+    owner,
+    onSuccess: () => {
+      addToast({
+        type: 'success',
+        text: 'Plan successfully upgraded',
+      })
+      redirect(`/account/${provider}/${owner}`)
+    },
+    onError: () =>
+      addToast({
+        type: 'error',
+        text: 'Something went wrong',
+      }),
+    useErrorBoundary: false,
+  })
+}
+
 function UpgradePlanForm({
   proPlanYear,
   proPlanMonth,
@@ -37,32 +121,41 @@ function UpgradePlanForm({
   provider,
   owner,
 }) {
-  const planOptions = [proPlanYear, proPlanMonth]
-  const { register, handleSubmit, watch, control } = useForm({
-    defaultValues: getInitialDataForm(planOptions, accountDetails),
-  })
-
-  const seats = watch('seats')
-  const activePlan = watch('activePlan')
-
-  const perYearPrice = seats * proPlanYear.baseUnitPrice * 12
-  const perMonthPrice = seats * proPlanMonth.baseUnitPrice * 12
-
   const nextBillingDate = getNextBillingDate(accountDetails)
-  const isPerYear = activePlan?.value === 'users-pr-inappy'
+
+  const {
+    seats,
+    perYearPrice,
+    perMonthPrice,
+    register,
+    handleSubmit,
+    control,
+    isPerYear,
+    errors,
+    planOptions,
+  } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
+
+  const [upgrade] = useSubmit({ owner, provider })
 
   return (
-    <form className="text-gray-900" onSubmit={handleSubmit(console.log)}>
+    <form className="text-gray-900" onSubmit={handleSubmit(upgrade)}>
       <h2 className="text-2xl text-pink-500 bold mb-8">
         {proPlanMonth.marketingName}
       </h2>
       <Controller
-        name="activePlan"
+        name="newPlan"
         control={control}
         render={({ onChange, value }) => (
           <Select
             items={planOptions}
-            renderItem={(plan) => plan.value}
+            renderItem={(plan) => (
+              <div className="flex justify-between flex-1 p-2 text-base w-full">
+                <span className="capitalize text-gray-600">
+                  {plan.billingRate} User Pricing
+                </span>
+                <span>${plan.baseUnitPrice}* /month</span>
+              </div>
+            )}
             onChange={onChange}
             value={value}
           />
@@ -122,7 +215,12 @@ function UpgradePlanForm({
           <span className="ml-auto">{nextBillingDate}</span>
         </p>
       )}
-      <Button onClick={console.log} className="w-full block mt-4">
+      {errors.seats && (
+        <p className="bg-error-500 text-error-900 p-3 mt-4 rounded-md">
+          {errors.seats?.message}
+        </p>
+      )}
+      <Button type="submit" className="w-full block mt-4">
         Continue to Payment
       </Button>
     </form>

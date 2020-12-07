@@ -2,6 +2,7 @@ import mapKeys from 'lodash/mapKeys'
 
 const defaultConfig = {
   API_URL: '',
+  STRIPE_KEY: '',
 }
 
 function removeReactAppPrefix(obj) {

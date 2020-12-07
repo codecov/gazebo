@@ -1,7 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
+import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import UpgradePlanForm from './UpgradePlanForm'
+import { useUpgradePlan } from 'services/account'
+import { useAddNotification } from 'services/toastNotification'
+
+jest.mock('services/account/hooks')
+jest.mock('services/toastNotification')
 
 const freePlan = {
   marketingName: 'Basic',
@@ -45,6 +51,9 @@ const proPlanYear = {
 }
 
 describe('UpgradePlanForm', () => {
+  const mutate = jest.fn()
+  const addNotification = jest.fn()
+  let testLocation
   let props
 
   const defaultProps = {
@@ -69,7 +78,25 @@ describe('UpgradePlanForm', () => {
         latestInvoice: invoice,
       },
     }
-    render(<UpgradePlanForm {...props} />)
+    useAddNotification.mockReturnValue(addNotification)
+    useUpgradePlan.mockReturnValue([mutate, { isLoading: false }])
+    render(
+      <MemoryRouter initialEntries={['/my/initial/route']}>
+        <UpgradePlanForm {...props} />
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
+      </MemoryRouter>
+    )
+  }
+
+  function clearSeatsInput() {
+    const input = screen.getByRole('spinbutton')
+    return userEvent.type(input, '{backspace}{backspace}{backspace}')
   }
 
   describe('when the user doesnt have any plan', () => {
@@ -79,7 +106,7 @@ describe('UpgradePlanForm', () => {
 
     it('renders Dropdown with the year plan selected', () => {
       expect(screen.getAllByRole('button')[0]).toHaveTextContent(
-        'users-pr-inappy'
+        'annually User Pricing'
       )
     })
 
@@ -95,12 +122,12 @@ describe('UpgradePlanForm', () => {
 
     it('renders Dropdown with the year plan selected', () => {
       expect(screen.getAllByRole('button')[0]).toHaveTextContent(
-        'users-pr-inappy'
+        'annually User Pricing'
       )
     })
 
     it('renders the seat input with 6 seats', () => {
-      expect(screen.getByRole('spinbutton').value).toBe('6')
+      expect(screen.getByRole('spinbutton')).toHaveValue(6)
     })
   })
 
@@ -111,12 +138,12 @@ describe('UpgradePlanForm', () => {
 
     it('renders Dropdown with the year plan selected', () => {
       expect(screen.getAllByRole('button')[0]).toHaveTextContent(
-        'users-pr-inappy'
+        'annually User Pricing'
       )
     })
 
     it('renders the seat input with 17 seats (existing subscription)', () => {
-      expect(screen.getByRole('spinbutton').value).toBe('17')
+      expect(screen.getByRole('spinbutton')).toHaveValue(17)
     })
 
     it('has the pricing information of the month price and discount', () => {
@@ -162,6 +189,106 @@ describe('UpgradePlanForm', () => {
     it('renders the next billing period', () => {
       expect(screen.getByText(/Next Billing Date/)).toBeInTheDocument()
       expect(screen.getByText(/August 20th, 2020/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user leave the nb of seats blank', () => {
+    beforeEach(() => {
+      setup()
+      return act(async () => {
+        clearSeatsInput()
+        userEvent.click(screen.getByText('Continue to Payment'))
+      })
+    })
+
+    it('displays an error', () => {
+      const error = screen.getByText(/Number of seats is required/)
+      expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user chooses less than 6 seats', () => {
+    beforeEach(() => {
+      setup()
+      return act(async () => {
+        clearSeatsInput()
+        userEvent.type(screen.getByRole('spinbutton'), '1')
+        userEvent.click(screen.getByText('Continue to Payment'))
+      })
+    })
+
+    it('displays an error', () => {
+      const error = screen.getByText(
+        /You cannot purchase a per user plan for less than 6 users/
+      )
+      expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user chooses less than the number of active users', () => {
+    beforeEach(() => {
+      setup()
+      return act(async () => {
+        clearSeatsInput()
+        userEvent.type(screen.getByRole('spinbutton'), '8')
+        userEvent.click(screen.getByText('Continue to Payment'))
+      })
+    })
+
+    it('displays an error', () => {
+      const error = screen.getByText(
+        / deactivate more users before downgrading plans/
+      )
+      expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('when clicking on the button to upgrade', () => {
+    beforeEach(() => {
+      setup()
+      return act(async () => {
+        clearSeatsInput()
+        userEvent.type(screen.getByRole('spinbutton'), '80')
+        userEvent.click(screen.getByText('Continue to Payment'))
+      })
+    })
+
+    it('calls the mutation', () => {
+      expect(mutate).toHaveBeenCalled()
+    })
+  })
+
+  describe('when mutation is successful', () => {
+    beforeEach(() => {
+      setup()
+      // simulating the onSuccess callback given to useCancelPlan
+      useUpgradePlan.mock.calls[0][0].onSuccess()
+    })
+
+    it('adds a success notification', () => {
+      expect(addNotification).toHaveBeenCalledWith({
+        type: 'success',
+        text: 'Plan successfully upgraded',
+      })
+    })
+
+    it('redirects the user to the billing page', () => {
+      expect(testLocation.pathname).toEqual('/account/gh/codecov')
+    })
+  })
+
+  describe('when mutation is not successful', () => {
+    beforeEach(() => {
+      setup()
+      // simulating the onError callback given to useCancelPlan
+      useUpgradePlan.mock.calls[0][0].onError()
+    })
+
+    it('adds an error notification', () => {
+      expect(addNotification).toHaveBeenCalledWith({
+        type: 'error',
+        text: 'Something went wrong',
+      })
     })
   })
 })
