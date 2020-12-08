@@ -1,5 +1,5 @@
-import ErrorBoundary from 'components/ErrorBoundary'
-import NetworkErrorBoundary from 'components/NetworkErrorBoundary'
+import ErrorBoundary from '../shared/ErrorBoundary'
+import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
 
 function FullLayout({ children }) {
   return (

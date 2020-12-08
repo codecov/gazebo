@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import SidebarLayout from './SidebarLayout'
 
-jest.mock('components/ErrorBoundary', () => ({ children }) => <>{children}</>)
+jest.mock('../shared/ErrorBoundary', () => ({ children }) => <>{children}</>)
 
 const robinQuote = 'Holy Tintinnabulation!'
 const batmanQuote =

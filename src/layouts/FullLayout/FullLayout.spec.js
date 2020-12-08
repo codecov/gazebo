@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import FullLayout from './FullLayout'
 
-jest.mock('components/ErrorBoundary', () => ({ children }) => <>{children}</>)
+jest.mock('../shared/ErrorBoundary', () => ({ children }) => <>{children}</>)
 
 const batmanQuote =
   'Why do we fall? So that we can learn to pick ourselves back up.'
