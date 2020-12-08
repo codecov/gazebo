@@ -2,17 +2,17 @@ import { render, screen, act } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import { useUser } from 'services/user'
-import { useNav } from 'services/header'
+import { useSubNav } from 'services/header'
 
 import Dropdown from './Dropdown'
 
 jest.mock('services/header')
 jest.mock('services/user')
 
-const mockNavContext = {
-  user: [{ label: 'Chatty Ghosts', to: '/👻/👅', imageUrl: '🗣.png' }],
-}
-const mockUseUser = [{ username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }]
+const mockSubMenu = [
+  [{ label: 'Chatty Ghosts', to: '/👻/👅', imageUrl: '🗣.png' }],
+]
+const mockUseUser = [[{ username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }]]
 
 describe('Dropdown', () => {
   function setup() {
@@ -25,14 +25,14 @@ describe('Dropdown', () => {
 
   describe('check rendered links', () => {
     beforeEach(() => {
-      useNav.mockReturnValue(mockNavContext)
+      useSubNav.mockReturnValue(mockSubMenu)
       useUser.mockReturnValue(mockUseUser)
 
       setup()
     })
 
-    it('renders user context links', () => {
-      mockNavContext.user.forEach((link) => {
+    it('renders sub menu links', () => {
+      mockSubMenu[0].forEach((link) => {
         const navLink = screen.getByText(link.label).closest('a')
         expect(navLink).toHaveAttribute('href', link.to)
       })
@@ -41,7 +41,7 @@ describe('Dropdown', () => {
 
   describe('opens Dropdown', () => {
     beforeEach(() => {
-      useNav.mockReturnValue(mockNavContext)
+      useSubNav.mockReturnValue(mockSubMenu)
       useUser.mockReturnValue(mockUseUser)
 
       setup()

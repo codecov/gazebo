@@ -3,7 +3,6 @@ import { Transition } from '@headlessui/react'
 import { useClickAway } from 'react-use'
 import cs from 'classnames'
 
-import { NavigationProvider } from 'services/header'
 import Icon from 'components/Icon'
 import DesktopMenu from './DesktopMenu'
 import MobileMenu from './MobileMenu'
@@ -14,7 +13,7 @@ function Header() {
   useClickAway(mobileMenuRef, () => setIsOpen(false))
 
   return (
-    <NavigationProvider>
+    <>
       <header ref={mobileMenuRef} className="fixed top-0 w-full">
         <div
           className={cs(
@@ -63,7 +62,7 @@ function Header() {
           <MobileMenu />
         </Transition>
       </header>
-    </NavigationProvider>
+    </>
   )
 }
 

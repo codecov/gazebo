@@ -2,20 +2,23 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import { useUser } from 'services/user'
-import { useNav } from 'services/header'
+import { useMainNav, useSubNav } from 'services/header'
 
 import MobileMenu from './MobileMenu'
 
 jest.mock('services/header')
 jest.mock('services/user')
 
-const mockNavContext = {
-  main: [
+const mockMain = [
+  [
     { label: 'Haunted Code', to: '/👻', iconName: 'ghost' },
     { label: 'Thriller Video', to: '/👻/👅/💃🏽', imageUrl: '💃🏽.jpeg' },
   ],
-  user: [{ label: 'Chatty Ghosts', to: '/👻/👅', imageUrl: '🗣.png' }],
-}
+]
+const mockSubMenu = [
+  [{ label: 'Chatty Ghosts', to: '/👻/👅', imageUrl: '🗣.png' }],
+]
+
 const mockUseUser = [{ username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }]
 
 describe('MobileMenu', () => {
@@ -29,21 +32,22 @@ describe('MobileMenu', () => {
 
   describe('renders from service data', () => {
     beforeEach(() => {
-      useNav.mockReturnValue(mockNavContext)
+      useMainNav.mockReturnValue(mockMain)
+      useSubNav.mockReturnValue(mockSubMenu)
       useUser.mockReturnValue(mockUseUser)
 
       setup()
     })
 
-    it('renders user nav links', () => {
-      mockNavContext.user.forEach((link) => {
+    it('renders sub menu nav links', () => {
+      mockSubMenu[0].forEach((link) => {
         const navLink = screen.getByText(link.label).closest('a')
         expect(navLink).toHaveAttribute('href', link.to)
       })
     })
 
     it('renders main nav links', () => {
-      mockNavContext.main.forEach((link) => {
+      mockMain[0].forEach((link) => {
         const navLink = screen.getByText(link.label).closest('a')
         expect(navLink).toHaveAttribute('href', link.to)
       })

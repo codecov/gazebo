@@ -1,10 +1,11 @@
-import { useNav } from 'services/header'
+import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import ServerStatus from './ServerStatus'
 import { UserNavA, MainNavLink } from './NavLink'
 
 function MobileMenu() {
-  const { main, user } = useNav()
+  const [main] = useMainNav()
+  const [subMenu] = useSubNav()
   const [{ username, avatarUrl }] = useUser()
 
   return (
@@ -35,7 +36,7 @@ function MobileMenu() {
         <ServerStatus />
       </div>
       <div className="py-3 px-2 sm:px-3 space-y-1">
-        {user.map((props, i) => (
+        {subMenu.map((props, i) => (
           <UserNavA
             key={`mobile-usernav-${i}`}
             className="px-3 py-2 text-gray-300 hover:text-white"

@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { useClickAway } from 'react-use'
 import cs from 'classnames'
 
-import { useNav } from 'services/header'
+import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import Icon from 'components/Icon'
 import { UserNavA } from './NavLink'
@@ -10,7 +10,7 @@ import { UserNavA } from './NavLink'
 function Dropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef()
-  const { user } = useNav()
+  const [subMenu] = useSubNav()
   const [{ username, avatarUrl }] = useUser()
 
   useClickAway(dropdownRef, () => setIsOpen(false))
@@ -65,7 +65,7 @@ function Dropdown() {
         aria-orientation="vertical"
         aria-labelledby="user-menu"
       >
-        {user.map((props, i) => (
+        {subMenu.map((props, i) => (
           <UserNavA
             key={`dropdown-${i}`}
             className={cs(

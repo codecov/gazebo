@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom'
 import ServerStatus from './ServerStatus'
 import Dropdown from './Dropdown'
 import { MainNavLink } from './NavLink'
-import { useNav } from 'services/header'
+import { useMainNav } from 'services/header'
 
 function DesktopMenu() {
-  const { main } = useNav()
+  const [main] = useMainNav()
 
   return (
     <>
