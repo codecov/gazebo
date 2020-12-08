@@ -60,6 +60,7 @@ module.exports = {
         success: {
           100: '#DEFFE8',
           500: '#73FF9E',
+          700: '#27B340',
           900: '#0E1B29',
         },
         error: {
@@ -80,8 +81,14 @@ module.exports = {
   },
   variants: {
     margin: ['responsive', 'last'],
-    opacity: ['disabled'],
+    opacity: ['disabled', 'hover'],
     cursor: ['disabled'],
+    transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
+    borderRadius: ['focus', 'last'],
+    borderStyle: ['first'],
+    borderColor: ['first'],
+    borderWidth: ['first'],
+    padding: ['last'],
   },
   plugins: [],
 }

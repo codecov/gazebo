@@ -5,6 +5,6 @@ module.exports = {
   plugins: [
     require('tailwindcss'),
     require('autoprefixer'),
-    pfm({ foundries: ['google'] }),
+    pfm({ foundries: ['google'], display: 'swap' }),
   ],
 }

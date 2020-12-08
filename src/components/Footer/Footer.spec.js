@@ -36,5 +36,3 @@ describe('FooterItem', () => {
     })
   })
 })
-
-// There's no logic or props in <Footer /> so no test (for now)

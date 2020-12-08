@@ -3,7 +3,7 @@ import NetworkErrorBoundary from 'components/NetworkErrorBoundary'
 
 function FullLayout({ children }) {
   return (
-    <div className="flex-grow bg-gray-200">
+    <main className="flex-grow bg-gray-200 mt-16">
       <article
         className="container py-10 px-4 sm:px-0"
         data-testid="full-layout"
@@ -12,7 +12,7 @@ function FullLayout({ children }) {
           <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
         </ErrorBoundary>
       </article>
-    </div>
+    </main>
   )
 }
 
