@@ -1,7 +1,7 @@
 import { format, fromUnixTime } from 'date-fns'
 import { Link } from 'react-router-dom'
 
-import Card from 'components/Card'
+import Card from 'ui/Card'
 import { invoicePropType } from 'services/account'
 
 import invoiceImg from './invoice.svg'

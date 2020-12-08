@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 import { useHistory } from 'react-router-dom'
 
-import Button from 'components/Button'
+import Button from 'ui/Button'
 import { useCancelPlan, accountDetailsPropType } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 

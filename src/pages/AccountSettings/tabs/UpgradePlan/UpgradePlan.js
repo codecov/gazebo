@@ -1,6 +1,6 @@
 import PropType from 'prop-types'
 
-import Card from 'components/Card'
+import Card from 'ui/Card'
 import { useAccountsAndPlans } from 'services/account'
 
 import parasolImg from './parasol.png'

@@ -2,7 +2,7 @@ import PropType from 'prop-types'
 import cs from 'classnames'
 import { NavLink } from 'react-router-dom'
 
-import Icon from 'components/Icon'
+import Icon from 'ui/Icon'
 
 const UserNav = {
   to: PropType.string.isRequired,

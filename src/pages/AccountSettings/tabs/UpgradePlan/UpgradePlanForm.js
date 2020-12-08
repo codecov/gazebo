@@ -5,8 +5,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useHistory } from 'react-router-dom'
 
-import Button from 'components/Button'
-import Select from 'components/Select'
+import Button from 'ui/Button'
+import Select from 'ui/Select'
 import {
   accountDetailsPropType,
   planPropType,

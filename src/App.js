@@ -2,10 +2,10 @@ import { Suspense, lazy } from 'react'
 import { QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
-import LogoSpinner from 'components/LogoSpinner'
-import Footer from 'components/Footer'
-import Header from 'components/Header'
-import ToastNotifications from 'components/ToastNotifications'
+import LogoSpinner from 'ui/LogoSpinner'
+import Footer from 'ui/Footer'
+import Header from 'ui/Header'
+import ToastNotifications from 'ui/ToastNotifications'
 import { ToastNotificationProvider } from 'services/toastNotification'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))

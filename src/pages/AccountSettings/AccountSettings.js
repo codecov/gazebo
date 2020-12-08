@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { useParams, Switch, Route } from 'react-router-dom'
 
 import { useBaseUrl } from 'shared/router'
-import LogoSpinner from 'components/LogoSpinner'
+import LogoSpinner from 'ui/LogoSpinner'
 import PageLayout from 'layouts/SidebarLayout'
 
 import SideMenu from './SideMenu'

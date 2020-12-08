@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 import { useCallback, useEffect } from 'react'
 
-import Icon from 'components/Icon'
+import Icon from 'ui/Icon'
 import { notificationPropType } from 'services/toastNotification'
 
 const typeToStyle = {

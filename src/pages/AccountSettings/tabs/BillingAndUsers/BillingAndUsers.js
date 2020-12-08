@@ -1,6 +1,6 @@
 import PropType from 'prop-types'
 
-import Card from 'components/Card'
+import Card from 'ui/Card'
 import { useAccountDetails } from 'services/account'
 
 import CurrentPlanCard from './CurrentPlanCard'

@@ -4,7 +4,7 @@ import App from './App'
 import './globals.css'
 import reportWebVitals from './reportWebVitals'
 
-import ErrorBoundary from 'components/ErrorBoundary'
+import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 
 import 'sentry.js'
 

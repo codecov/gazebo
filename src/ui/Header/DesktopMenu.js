@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import Icon from 'components/Icon'
+import Icon from 'ui/Icon'
 import { Link } from 'react-router-dom'
 
 import ServerStatus from './ServerStatus'

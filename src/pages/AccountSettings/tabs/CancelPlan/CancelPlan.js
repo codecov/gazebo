@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 import difference from 'lodash/difference'
 
-import Card from 'components/Card'
+import Card from 'ui/Card'
 import { useAccountsAndPlans } from 'services/account'
 
 import umbrellaImg from './umbrella.svg'

@@ -4,7 +4,7 @@ import cs from 'classnames'
 
 import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
-import Icon from 'components/Icon'
+import Icon from 'ui/Icon'
 import { UserNavA } from './NavLink'
 
 function Dropdown() {
