@@ -1,4 +1,4 @@
-import Icon from '../Icon'
+import Icon from 'ui/Icon'
 import PropType from 'prop-types'
 
 export function FooterItem({ label, to }) {

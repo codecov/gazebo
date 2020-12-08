@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 
 import FullLayout from './FullLayout'
 
@@ -9,7 +10,9 @@ const batmanQuote =
 
 describe('FullLayout', () => {
   function setup(content) {
-    render(<FullLayout>{content}</FullLayout>)
+    render(<FullLayout>{content}</FullLayout>, {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('it renders with no children', () => {

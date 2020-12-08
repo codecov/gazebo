@@ -3,9 +3,6 @@ import { QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 import LogoSpinner from 'ui/LogoSpinner'
-import Footer from 'ui/Footer'
-import Header from 'ui/Header'
-import ToastNotifications from 'ui/ToastNotifications'
 import { ToastNotificationProvider } from 'services/toastNotification'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
@@ -32,7 +29,6 @@ function App() {
       <Suspense fallback={fullPageLoader}>
         <ReactQueryCacheProvider queryCache={queryCache}>
           <BrowserRouter>
-            <Header />
             <Switch>
               <Route path="/account/:provider/:owner/">
                 <AccountSettings />
@@ -44,8 +40,6 @@ function App() {
               </Route>
             </Switch>
           </BrowserRouter>
-          <Footer />
-          <ToastNotifications />
         </ReactQueryCacheProvider>
       </Suspense>
     </ToastNotificationProvider>

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 
 import SidebarLayout from './SidebarLayout'
-
 jest.mock('../shared/ErrorBoundary', () => ({ children }) => <>{children}</>)
 
 const robinQuote = 'Holy Tintinnabulation!'
@@ -11,7 +11,12 @@ const batmanQuote =
 describe('SidebarLayout', () => {
   function setup(content) {
     render(
-      <SidebarLayout sidebar={<div>{robinQuote}</div>}>{content}</SidebarLayout>
+      <SidebarLayout sidebar={<div>{robinQuote}</div>}>
+        {content}
+      </SidebarLayout>,
+      {
+        wrapper: MemoryRouter,
+      }
     )
   }
 
