@@ -7,8 +7,8 @@ module.exports = {
   },
   purge: {
     content: [
-      './src/components/**/*.js',
-      './src/components/**.js',
+      './src/**/*.js',
+      './src/*.js',
       './public/*.html',
     ],
   },
