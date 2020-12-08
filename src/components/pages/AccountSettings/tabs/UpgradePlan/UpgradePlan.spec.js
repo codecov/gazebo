@@ -5,6 +5,7 @@ import UpgradePlan from './UpgradePlan'
 import { useAccountsAndPlans } from 'services/account'
 
 jest.mock('services/account/hooks')
+jest.mock('./UpgradePlanForm', () => () => 'UpgradePlanForm')
 
 const provider = 'gh'
 const owner = 'codecov'
