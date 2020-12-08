@@ -3,7 +3,7 @@ import { useParams, Switch, Route } from 'react-router-dom'
 
 import { useBaseUrl } from 'shared/router'
 import LogoSpinner from 'components/LogoSpinner'
-import PageLayout from 'components/pages/shared/SidebarLayout'
+import PageLayout from 'layouts/SidebarLayout'
 
 import SideMenu from './SideMenu'
 import AdminTab from './tabs/Admin'

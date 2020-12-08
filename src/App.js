@@ -9,7 +9,7 @@ import ToastNotifications from 'components/ToastNotifications'
 import { ToastNotificationProvider } from 'services/toastNotification'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
-const FullLayout = lazy(() => import('./pages/shared/FullLayout'))
+const FullLayout = lazy(() => import('./layouts/FullLayout'))
 
 const queryCache = new QueryCache({
   defaultConfig: {
