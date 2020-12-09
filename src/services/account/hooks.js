@@ -1,7 +1,6 @@
-import { useMemo } from 'react'
 import { useQuery, useMutation } from 'react-query'
+import { useStripe } from '@stripe/react-stripe-js'
 
-import config from 'config'
 import Api from 'shared/api'
 
 function getPathAccountDetails({ provider, owner }) {
@@ -54,9 +53,7 @@ export function useCancelPlan({ provider, owner, ...rest }) {
 }
 
 export function useUpgradePlan({ provider, owner, ...rest }) {
-  const stripe = useMemo(() => {
-    return window['Stripe'](config.STRIPE_KEY)
-  }, [])
+  const stripe = useStripe()
 
   function redirectToStripe(sessionId) {
     return stripe.redirectToCheckout({ sessionId }).then((e) => {

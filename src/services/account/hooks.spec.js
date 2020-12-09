@@ -2,6 +2,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { waitFor } from '@testing-library/react'
+import { useStripe } from '@stripe/react-stripe-js'
 
 import {
   useAccountDetails,
@@ -9,6 +10,8 @@ import {
   useCancelPlan,
   useUpgradePlan,
 } from './hooks'
+
+jest.mock('@stripe/react-stripe-js')
 
 const provider = 'gh'
 const owner = 'codecov'
@@ -152,9 +155,9 @@ describe('useUpgradePlan', () => {
 
   function setupStripe() {
     redirectToCheckout = jest.fn().mockResolvedValue()
-    window['Stripe'] = jest.fn(() => ({
+    useStripe.mockReturnValue({
       redirectToCheckout,
-    }))
+    })
   }
 
   function setup(currentUrl) {
