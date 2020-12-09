@@ -1,9 +1,8 @@
 import { format, fromUnixTime } from 'date-fns'
-import get from 'lodash/get'
 
 import Card from 'ui/Card'
 import Button from 'ui/Button'
-import { accountDetailsPropType } from 'services/account'
+import { subscriptionDetailType } from 'services/account'
 
 import amexLogo from './assets/amex.png'
 import discoverLogo from './assets/discover.jpg'
@@ -33,15 +32,22 @@ const cardBrand = {
   },
 }
 
-function PaymentCard({ accountDetails }) {
-  const card = get(accountDetails, 'paymentMethod.card', null)
+function getNextBilling(subscriptionDetail) {
+  const isCancelled = subscriptionDetail.cancelAtPeriodEnd
+
+  if (isCancelled) return null
+
+  const periodEnd = fromUnixTime(subscriptionDetail.currentPeriodEnd)
+  return format(periodEnd, 'do MMMM, yyyy')
+}
+
+function PaymentCard({ subscriptionDetail }) {
+  const card = subscriptionDetail?.defaultPaymentMethod?.card
 
   if (!card) return null
 
   const typeCard = cardBrand[card.brand] ?? cardBrand.fallback
-  const periodEnd = accountDetails.latestInvoice?.periodEnd
-  const nextBilling =
-    periodEnd && format(fromUnixTime(periodEnd), 'do MMMM, yyyy')
+  const nextBilling = getNextBilling(subscriptionDetail)
 
   return (
     <Card className="mt-4 p-6">
@@ -74,7 +80,7 @@ function PaymentCard({ accountDetails }) {
 }
 
 PaymentCard.propTypes = {
-  accountDetails: accountDetailsPropType.isRequired,
+  subscriptionDetail: subscriptionDetailType,
 }
 
 export default PaymentCard

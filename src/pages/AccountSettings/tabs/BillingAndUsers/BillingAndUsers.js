@@ -14,10 +14,10 @@ function BillingAndUsers({ provider, owner }) {
     <>
       <div className="col-start-1 col-end-5">
         <CurrentPlanCard accountDetails={accountDetails} />
-        <PaymentCard accountDetails={accountDetails} />
-        <div className="mt-4">
-          <LatestInvoiceCard invoice={accountDetails.latestInvoice} />
-        </div>
+        <PaymentCard subscriptionDetail={accountDetails.subscriptionDetail} />
+        <LatestInvoiceCard
+          invoice={accountDetails.subscriptionDetail?.latestInvoice}
+        />
       </div>
       <div className="col-start-5 col-end-13">
         <Card>Users</Card>
