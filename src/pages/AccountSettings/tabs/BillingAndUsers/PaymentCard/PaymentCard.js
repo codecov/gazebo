@@ -46,38 +46,29 @@ function PaymentCard({ accountDetails }) {
   return (
     <Card className="mt-4 p-6">
       <h2 className="text-lg mb-6">Creditcard information</h2>
-      {card ? (
-        <>
-          <div className="flex">
-            <div className="w-12 mr-6">
-              <img
-                className="w-full"
-                alt="credit card logo"
-                src={typeCard.logo}
-              />
-            </div>
-            <div>
-              <b className="tracking-widest">
-                ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card.last4}
-              </b>
-              <p className="text-gray-500">
-                {typeCard.name} - Expires {card.expMonth}/{card.expYear}
-              </p>
-            </div>
-          </div>
-          <p className="text-gray-500 my-4 text-sm">
-            Billed on the first of every month.
-            <br />
-             Next billing on{' '}
-            <span className="text-gray-900">{nextBilling}</span>.
+      <div className="flex">
+        <div className="w-12 mr-6">
+          <img className="w-full" alt="credit card logo" src={typeCard.logo} />
+        </div>
+        <div>
+          <b className="tracking-widest">
+            ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card.last4}
+          </b>
+          <p className="text-gray-500">
+            {typeCard.name} - Expires {card.expMonth}/{card.expYear}
           </p>
-          <Button color="pink" variant="outline">
-            Edit card
-          </Button>
-        </>
-      ) : (
-        <p className="text-gray-500 italic">No cards set</p>
+        </div>
+      </div>
+      {nextBilling && (
+        <p className="text-gray-500 my-4 text-sm">
+          Billed on the first of every month.
+          <br />
+           Next billing on <span className="text-gray-900">{nextBilling}</span>.
+        </p>
       )}
+      <Button color="pink" variant="outline">
+        Edit card
+      </Button>
     </Card>
   )
 }
