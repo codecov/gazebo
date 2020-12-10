@@ -95,9 +95,12 @@ export function useUpdateCard({ provider, owner }) {
         .then((result) => {
           if (result.error) return Promise.reject(result.error)
 
+          const accountPath = getPathAccountDetails({ provider, owner })
+          const path = `${accountPath}update_payment`
+
           return Api.patch({
             provider,
-            path: getPathAccountDetails({ provider, owner }),
+            path,
             body: { payment_method: result.paymentMethod.id },
           })
         })

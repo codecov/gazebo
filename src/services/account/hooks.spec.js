@@ -279,7 +279,7 @@ describe('useUpdateCard', () => {
       beforeEach(() => {
         server.use(
           rest.patch(
-            `/internal/${provider}/${owner}/account-details/`,
+            `/internal/${provider}/${owner}/account-details/update_payment`,
             (req, res, ctx) => {
               return res(ctx.status(200), ctx.json(accountDetails))
             }
