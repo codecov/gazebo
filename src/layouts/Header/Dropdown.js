@@ -5,15 +5,25 @@ import cs from 'classnames'
 import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import Icon from 'ui/Icon'
-import { UserNavA } from './NavLink'
+import { UserNavLink } from './NavLink'
 
 function Dropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef()
-  const [subMenu] = useSubNav()
-  const [{ username, avatarUrl }] = useUser()
+  const { data: user } = useUser({
+    suspense: false,
+  })
+  const subMenu = useSubNav()
 
   useClickAway(dropdownRef, () => setIsOpen(false))
+
+  if (!user)
+    return (
+      <a href="/login" className="flex items-center ml-4">
+        <Icon name="signIn" color="text-white" className="mr-2" />
+        Log in
+      </a>
+    )
 
   return (
     <div
@@ -35,10 +45,10 @@ function Dropdown() {
         <span className="sr-only">Open user menu</span>
         <img
           className="h-8 w-8 rounded-full"
-          src={avatarUrl}
+          src={user.avatarUrl}
           alt="user avatar"
         />
-        <p className="mx-2">{username}</p>
+        <p className="mx-2">{user.username}</p>
         <Icon
           name="rightChevron"
           color="text-white"
@@ -66,7 +76,8 @@ function Dropdown() {
         aria-labelledby="user-menu"
       >
         {subMenu.map((props, i) => (
-          <UserNavA
+          <UserNavLink
+            onClick={() => setIsOpen(false)}
             key={`dropdown-${i}`}
             className={cs(
               'bg-gray-800 hover:bg-gray-600',
