@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from 'react-query'
+import { useQuery, useMutation, useQueryCache } from 'react-query'
 import { useStripe } from '@stripe/react-stripe-js'
 
 import Api from 'shared/api'
@@ -79,4 +79,34 @@ export function useUpgradePlan({ provider, owner, ...rest }) {
       return data
     })
   }, rest)
+}
+
+export function useUpdateCard({ provider, owner }) {
+  const stripe = useStripe()
+  const queryCache = useQueryCache()
+
+  return useMutation(
+    (card) => {
+      return stripe
+        .createPaymentMethod({
+          type: 'card',
+          card,
+        })
+        .then((result) => {
+          if (result.error) return Promise.reject(result.error)
+
+          return Api.patch({
+            provider,
+            path: getPathAccountDetails({ provider, owner }),
+            body: { payment_method: result.paymentMethod.id },
+          })
+        })
+    },
+    {
+      onSuccess: (data) => {
+        // update the local cache of account details from what the server returns
+        queryCache.setQueryData(['accountDetails', provider, owner], data)
+      },
+    }
+  )
 }
