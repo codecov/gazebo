@@ -33,6 +33,15 @@ function App() {
                 <Route path="/account/:provider/:owner/">
                   <AccountSettings />
                 </Route>
+                <Route path="/:provider/" exact>
+                  <FullLayout>List of organizations</FullLayout>
+                </Route>
+                <Route path="/:provider/:owner/" exact>
+                  <FullLayout>List of repos</FullLayout>
+                </Route>
+                <Route path="/:provider/:owner/:repo/" exact>
+                  <FullLayout>Repo page</FullLayout>
+                </Route>
                 <Route path="/">
                   <FullLayout>
                     <p>Home page</p>
