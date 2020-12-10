@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { UserNavA, MainNavLink } from './NavLink'
+import { UserNavLink, MainNavLink } from './NavLink'
 
-describe('UserNavA', () => {
+describe('UserNavLink', () => {
   function setup(props) {
-    render(<UserNavA {...props} />)
+    render(<UserNavLink {...props} />)
   }
 
   describe('passed to and label', () => {

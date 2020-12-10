@@ -11,17 +11,16 @@ const UserNav = {
   iconName: PropType.string,
 }
 
-export function UserNavA({
-  to,
+export function UserNavLink({
   label,
   imageUrl,
   iconName,
   className,
+  LinkComponent = 'a',
   ...props
 }) {
   return (
-    <a
-      href={to}
+    <LinkComponent
       className={cs('flex items-center px-4 py-2 text-sm', className)}
       {...props}
     >
@@ -37,11 +36,14 @@ export function UserNavA({
         />
       )}
       <span className="pl-3">{label}</span>
-    </a>
+    </LinkComponent>
   )
 }
 
-UserNavA.propTypes = UserNav
+UserNavLink.propTypes = {
+  ...UserNav,
+  LinkComponent: PropType.elementType,
+}
 
 export function MainNavLink({
   to,
