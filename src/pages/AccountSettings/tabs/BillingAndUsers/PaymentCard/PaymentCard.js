@@ -46,7 +46,7 @@ function getNextBilling(subscriptionDetail) {
 
 function PaymentCard({ subscriptionDetail, provider, owner }) {
   const card = subscriptionDetail?.defaultPaymentMethod?.card
-  const [isFormOpen, setIsFormOpen] = useState(true)
+  const [isFormOpen, setIsFormOpen] = useState(false)
 
   if (!card) return null
 

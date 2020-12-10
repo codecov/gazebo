@@ -52,7 +52,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
   const resetError = error && reset
 
   return (
-    <form onSubmit={submit} className="mt-4">
+    <form onSubmit={submit} className="mt-4" aria-label="form">
       <div className={cs({ hidden: !isReady })}>
         <CardNumberElement
           onChange={resetError}
