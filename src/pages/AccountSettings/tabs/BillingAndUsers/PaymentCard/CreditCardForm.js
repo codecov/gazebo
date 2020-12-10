@@ -33,11 +33,11 @@ function useIsFormReady() {
   return [isReady, setFieldReady]
 }
 
-function CreditCardForm({ closeForm }) {
+function CreditCardForm({ closeForm, provider, owner }) {
   const elements = useElements()
   const [updateCard, { isLoading, error, reset }] = useUpdateCard({
-    provider: 'gh',
-    owner: 'codecov',
+    provider,
+    owner,
   })
   const [isReady, setFieldReady] = useIsFormReady()
 
