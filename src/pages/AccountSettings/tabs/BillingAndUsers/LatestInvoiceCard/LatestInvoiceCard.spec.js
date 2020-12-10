@@ -12,8 +12,9 @@ const invoice = {
 }
 
 describe('LatestInvoiceCard', () => {
+  let wrapper
   function setup(invoice) {
-    render(<LatestInvoiceCard invoice={invoice} />, {
+    wrapper = render(<LatestInvoiceCard invoice={invoice} />, {
       wrapper: MemoryRouter,
     })
   }
@@ -39,9 +40,8 @@ describe('LatestInvoiceCard', () => {
       setup(null)
     })
 
-    it('renders an empty state', () => {
-      const tab = screen.getByText(/No invoices yet/)
-      expect(tab).toBeInTheDocument()
+    it('renders nothing', () => {
+      expect(wrapper.container).toBeEmptyDOMElement()
     })
   })
 })

@@ -2,11 +2,8 @@ import { render, screen } from '@testing-library/react'
 
 import PaymentCard from './PaymentCard'
 
-const accountDetails = {
-  plan: null,
-  activatedUserCount: 2,
-  inactiveUserCount: 1,
-  paymentMethod: {
+const subscriptionDetail = {
+  defaultPaymentMethod: {
     card: {
       brand: 'visa',
       expMonth: 12,
@@ -14,28 +11,31 @@ const accountDetails = {
       last4: '1234',
     },
   },
-  latestInvoice: {
-    periodStart: 1606851492,
-    dueDate: '1609443492',
-    periodEnd: 1606851492,
-    total: 86407,
-    invoicePdf:
-      'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
-  },
+  currentPeriodEnd: 1606851492,
+  cancelAtPeriodEnd: false,
 }
 
 describe('PaymentCard', () => {
   let wrapper
 
-  function setup(accountDetails) {
-    wrapper = render(<PaymentCard accountDetails={accountDetails} />)
+  function setup(subscriptionDetail) {
+    wrapper = render(<PaymentCard subscriptionDetail={subscriptionDetail} />)
   }
 
+  describe('when the user doesnt have any subscriptionDetail', () => {
+    beforeEach(() => {
+      setup(null)
+    })
+
+    it('renders nothing', () => {
+      expect(wrapper.container).toBeEmptyDOMElement()
+    })
+  })
   describe('when the user doesnt have any cards', () => {
     beforeEach(() => {
       setup({
-        ...accountDetails,
-        paymentMethod: null,
+        ...subscriptionDetail,
+        defaultPaymentMethod: null,
       })
     })
 
@@ -46,7 +46,7 @@ describe('PaymentCard', () => {
 
   describe('when the user have a card', () => {
     beforeEach(() => {
-      setup(accountDetails)
+      setup(subscriptionDetail)
     })
 
     it('renders the card', () => {
@@ -59,6 +59,19 @@ describe('PaymentCard', () => {
 
     it('renders the next billing', () => {
       expect(screen.getByText(/1st December, 2020/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the subscription is set to expire', () => {
+    beforeEach(() => {
+      setup({
+        ...subscriptionDetail,
+        cancelAtPeriodEnd: true,
+      })
+    })
+
+    it('renders the next billing', () => {
+      expect(screen.queryByText(/1st December, 2020/)).not.toBeInTheDocument()
     })
   })
 })
