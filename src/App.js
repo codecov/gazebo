@@ -1,9 +1,9 @@
-import { Suspense, lazy } from 'react'
+import { lazy } from 'react'
 import { QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
-import LogoSpinner from 'ui/LogoSpinner'
 import { ToastNotificationProvider } from 'services/toastNotification'
+import BaseLayout from 'layouts/BaseLayout'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const FullLayout = lazy(() => import('./layouts/FullLayout'))
@@ -18,17 +18,11 @@ const queryCache = new QueryCache({
 })
 
 function App() {
-  const fullPageLoader = (
-    <div className="h-screen w-screen flex items-center justify-center mt-16">
-      <LogoSpinner />
-    </div>
-  )
-
   return (
     <ToastNotificationProvider>
-      <Suspense fallback={fullPageLoader}>
-        <ReactQueryCacheProvider queryCache={queryCache}>
-          <BrowserRouter>
+      <ReactQueryCacheProvider queryCache={queryCache}>
+        <BrowserRouter>
+          <BaseLayout>
             <Switch>
               <Route path="/account/:provider/:owner/">
                 <AccountSettings />
@@ -39,9 +33,9 @@ function App() {
                 </FullLayout>
               </Route>
             </Switch>
-          </BrowserRouter>
-        </ReactQueryCacheProvider>
-      </Suspense>
+          </BaseLayout>
+        </BrowserRouter>
+      </ReactQueryCacheProvider>
     </ToastNotificationProvider>
   )
 }
