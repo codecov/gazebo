@@ -21,7 +21,7 @@
     "react-use": "^15.3.4",
     "tailwindcss": "^1.9.6",
     "web-vitals": "^1.0.1",
-    "yup": "^0.32.5"
+    "yup": "^0.32.6"
   },
   "scripts": {
     "start": "rescripts start",
@@ -73,7 +73,7 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "@rescripts/cli": "0.0.14",
+    "@rescripts/cli": "0.0.15",
     "@sentry/cli": "^1.60.1",
     "@storybook/addon-actions": "^6.1.10",
     "@storybook/addon-essentials": "^6.1.10",
@@ -83,15 +83,15 @@
     "@storybook/react": "^6.1.10",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
-    "@testing-library/react-hooks": "^3.6.0",
+    "@testing-library/react-hooks": "^3.7.0",
     "@testing-library/user-event": "^12.5.0",
     "autoprefixer": "9.8.6",
     "bundlesize": "^0.18.0",
     "date-fns": "^2.16.1",
     "eslint-config-prettier": "^7.0.0",
     "http-proxy-middleware": "^1.0.6",
-    "husky": "^4.3.0",
     "jest-junit": "^12.0.0",
+    "husky": "^4.3.5",
     "lint-staged": "^10.5.3",
     "msw": "^0.24.1",
     "postcss-font-magician": "2.3.1",
