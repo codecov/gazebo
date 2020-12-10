@@ -26,6 +26,10 @@ jobs:
       - run:
           name: Run tests
           command: npm run test:ci
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+      - store_test_results:
+          path: ./reports/junit/
       - run:
           name: Upload coverage to codecov
           command: |
