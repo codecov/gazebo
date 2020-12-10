@@ -1,8 +1,6 @@
-import { Suspense } from 'react'
 import { useParams, Switch, Route } from 'react-router-dom'
 
 import { useBaseUrl } from 'shared/router'
-import LogoSpinner from 'ui/LogoSpinner'
 import PageLayout from 'layouts/SidebarLayout'
 
 import SideMenu from './SideMenu'
@@ -22,25 +20,23 @@ function AccountSettings() {
 
   return (
     <PageLayout sidebar={<SideMenu baseUrl={baseUrl} />}>
-      <Suspense fallback={<LogoSpinner />}>
-        <Switch>
-          <Route path={baseUrl + ''} exact>
-            <BillingAndUsersTab provider={provider} owner={owner} />
-          </Route>
-          <Route path={baseUrl + 'billing/upgrade'}>
-            <UpgradePlanTab provider={provider} owner={owner} />
-          </Route>
-          <Route path={baseUrl + 'billing/cancel'}>
-            <CancelPlanTab provider={provider} owner={owner} />
-          </Route>
-          <Route path={baseUrl + 'yaml'}>
-            <YAMLTab />
-          </Route>
-          <Route path={baseUrl + 'admin'}>
-            <AdminTab />
-          </Route>
-        </Switch>
-      </Suspense>
+      <Switch>
+        <Route path={baseUrl + ''} exact>
+          <BillingAndUsersTab provider={provider} owner={owner} />
+        </Route>
+        <Route path={baseUrl + 'billing/upgrade'}>
+          <UpgradePlanTab provider={provider} owner={owner} />
+        </Route>
+        <Route path={baseUrl + 'billing/cancel'}>
+          <CancelPlanTab provider={provider} owner={owner} />
+        </Route>
+        <Route path={baseUrl + 'yaml'}>
+          <YAMLTab />
+        </Route>
+        <Route path={baseUrl + 'admin'}>
+          <AdminTab />
+        </Route>
+      </Switch>
     </PageLayout>
   )
 }
