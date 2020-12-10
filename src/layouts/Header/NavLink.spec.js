@@ -10,10 +10,10 @@ describe('UserNavLink', () => {
 
   describe('passed to and label', () => {
     const label = 'Doggo 🐕'
-    const to = '/outside'
+    const href = '/outside'
 
     beforeEach(() => {
-      setup({ label, to })
+      setup({ label, href })
     })
 
     it('renders a link', () => {
@@ -26,11 +26,11 @@ describe('UserNavLink', () => {
 
   describe('passed to, label and iconName', () => {
     const label = 'Grump Factory 🐱'
-    const to = '/sunny-spot'
+    const href = '/sunny-spot'
     const iconName = 'codecov'
 
     beforeEach(() => {
-      setup({ label, to, iconName })
+      setup({ label, href, iconName })
     })
 
     it('renders a link', () => {
@@ -48,11 +48,11 @@ describe('UserNavLink', () => {
 
   describe('passed to, label and imageUrl', () => {
     const label = 'Fear Noodle 🐍'
-    const to = '/den'
+    const href = '/den'
     const imageUrl = 'https://sna.ke/boops.jpeg'
 
     beforeEach(() => {
-      setup({ label, to, imageUrl })
+      setup({ label, href, imageUrl })
     })
 
     it('renders a link', () => {

@@ -10,12 +10,12 @@ jest.mock('services/header')
 jest.mock('services/user')
 
 const mockSubMenu = [
-  [{ label: 'Chatty Ghosts', to: '/👻/👅', imageUrl: '🗣.png' }],
+  { label: 'Chatty Ghosts', href: '/👻/👅', imageUrl: '🗣.png' },
 ]
-const mockUseUser = [[{ username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }]]
+const mockUseUser = { username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }
 
 describe('Dropdown', () => {
-  function setup() {
+  function setup(currentUser) {
     render(
       <MemoryRouter>
         <Dropdown />
@@ -26,15 +26,15 @@ describe('Dropdown', () => {
   describe('check rendered links', () => {
     beforeEach(() => {
       useSubNav.mockReturnValue(mockSubMenu)
-      useUser.mockReturnValue(mockUseUser)
+      useUser.mockReturnValue({ data: mockUseUser })
 
       setup()
     })
 
     it('renders sub menu links', () => {
-      mockSubMenu[0].forEach((link) => {
+      mockSubMenu.forEach((link) => {
         const navLink = screen.getByText(link.label).closest('a')
-        expect(navLink).toHaveAttribute('href', link.to)
+        expect(navLink).toHaveAttribute('href', link.href)
       })
     })
   })
@@ -42,7 +42,7 @@ describe('Dropdown', () => {
   describe('opens Dropdown', () => {
     beforeEach(() => {
       useSubNav.mockReturnValue(mockSubMenu)
-      useUser.mockReturnValue(mockUseUser)
+      useUser.mockReturnValue({ data: mockUseUser })
 
       setup()
     })
@@ -54,6 +54,23 @@ describe('Dropdown', () => {
         toggle.click()
       })
       expect(screen.getByRole('menu')).not.toHaveClass('hidden')
+    })
+  })
+
+  describe('when the user isnt authenticated', () => {
+    beforeEach(() => {
+      useSubNav.mockReturnValue(mockSubMenu)
+      useUser.mockReturnValue({ data: null })
+
+      setup()
+    })
+
+    it('doesnt render the menu', () => {
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    })
+
+    it('renders a login long', () => {
+      expect(screen.getByRole('link', { name: /Log in/ })).toBeInTheDocument()
     })
   })
 })

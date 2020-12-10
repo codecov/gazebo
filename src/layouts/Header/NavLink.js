@@ -5,7 +5,6 @@ import { NavLink } from 'react-router-dom'
 import Icon from 'ui/Icon'
 
 const UserNav = {
-  to: PropType.string.isRequired,
   label: PropType.string.isRequired,
   imageUrl: PropType.string,
   iconName: PropType.string,
@@ -46,7 +45,6 @@ UserNavLink.propTypes = {
 }
 
 export function MainNavLink({
-  to,
   label,
   imageUrl,
   iconName,
@@ -54,7 +52,7 @@ export function MainNavLink({
   ...props
 }) {
   return (
-    <NavLink className={cs('flex items-center', className)} to={to} {...props}>
+    <NavLink className={cs('flex items-center', className)} {...props}>
       {imageUrl && (
         <img className="h-6 w-6 rounded-full" src={imageUrl} alt={label} />
       )}

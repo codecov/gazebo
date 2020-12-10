@@ -8,7 +8,7 @@ import { MainNavLink, UserNavLink } from './NavLink'
 function MobileMenu() {
   const main = useMainNav()
   const subMenu = useSubNav()
-  const { data: user } = useUser()
+  const { data: user } = useUser({ suspense: false })
 
   return (
     <nav
