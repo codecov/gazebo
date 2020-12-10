@@ -72,7 +72,7 @@
     }
   ],
   "devDependencies": {
-    "@babel/core": "^7.12.9",
+    "@babel/core": "^7.12.10",
     "@rescripts/cli": "0.0.15",
     "@sentry/cli": "^1.60.1",
     "@storybook/addon-actions": "^6.1.10",
