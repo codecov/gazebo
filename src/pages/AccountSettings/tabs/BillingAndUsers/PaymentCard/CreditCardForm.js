@@ -91,11 +91,9 @@ function CreditCardForm({ closeForm, provider, owner }) {
           </Button>
         </div>
       </div>
-      {!isReady && (
-        <div className="mt-8">
-          <LogoSpinner size={50} />
-        </div>
-      )}
+      <div className={cs('mt-8', { hidden: isReady })}>
+        <LogoSpinner size={50} />
+      </div>
     </form>
   )
 }

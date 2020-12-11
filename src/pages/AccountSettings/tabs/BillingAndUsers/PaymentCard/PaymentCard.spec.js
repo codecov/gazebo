@@ -20,15 +20,27 @@ const subscriptionDetail = {
 }
 
 // mocking all the stripe components; and trusting the library :)
-jest.mock('@stripe/react-stripe-js', () => ({
-  useElements: () => ({
-    getElement: jest.fn(),
-  }),
-  useStripe: () => ({}),
-  CardExpiryElement: () => 'CardExpiryElement',
-  CardNumberElement: () => 'CardNumberElement',
-  CardCvcElement: () => 'CardCvcElement',
-}))
+jest.mock('@stripe/react-stripe-js', () => {
+  const react = jest.requireActual('react')
+  function makeFakeComponent(name) {
+    // mocking onReady to be called after a bit of time
+    return function Component({ onReady }) {
+      react.useEffect(() => {
+        onReady()
+      }, [])
+      return name
+    }
+  }
+  return {
+    useElements: () => ({
+      getElement: jest.fn(),
+    }),
+    useStripe: () => ({}),
+    CardExpiryElement: makeFakeComponent('CardExpiryElement'),
+    CardNumberElement: makeFakeComponent('CardNumberElement'),
+    CardCvcElement: makeFakeComponent('CardCvcElement'),
+  }
+})
 
 describe('PaymentCard', () => {
   let wrapper
@@ -51,6 +63,7 @@ describe('PaymentCard', () => {
       expect(wrapper.container).toBeEmptyDOMElement()
     })
   })
+
   describe('when the user doesnt have any cards', () => {
     beforeEach(() => {
       setup({
