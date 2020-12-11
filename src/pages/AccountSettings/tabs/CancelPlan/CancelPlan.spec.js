@@ -106,6 +106,18 @@ describe('CancelPlan', () => {
       })
     })
 
+    describe('when clicking the X icon', () => {
+      beforeEach(() => {
+        userEvent.click(screen.queryAllByRole('button', { name: /Close/ })[0])
+      })
+
+      it('closes the modal', () => {
+        expect(
+          screen.queryByText(/Are you sure you want to cancel your plan?/)
+        ).not.toBeInTheDocument()
+      })
+    })
+
     describe('when clicking cancel', () => {
       beforeEach(() => {
         userEvent.click(screen.queryAllByRole('button', { name: /Close/ })[1])
