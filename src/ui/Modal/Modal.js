@@ -5,8 +5,6 @@ import Card from 'ui/Card'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
-ReactModal.setAppElement('#root')
-
 function Modal({ isOpen, onClose, children, title, ...rest }) {
   return (
     <ReactModal
@@ -21,6 +19,7 @@ function Modal({ isOpen, onClose, children, title, ...rest }) {
           <h2 className="text-2xl bold">{title}</h2>
           <Button variant="text" onClick={onClose}>
             <Icon name="times" />
+            <span className="hidden">Close</span>
           </Button>
         </header>
         {children}
