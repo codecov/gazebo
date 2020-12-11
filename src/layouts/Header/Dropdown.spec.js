@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import { useUser } from 'services/user'
@@ -50,10 +50,26 @@ describe('Dropdown', () => {
       const toggle = screen.getByRole('button')
 
       expect(screen.getByRole('menu')).toHaveClass('hidden')
-      act(() => {
-        toggle.click()
-      })
+      toggle.click()
       expect(screen.getByRole('menu')).not.toHaveClass('hidden')
+    })
+  })
+
+  describe('when clicking on a link', () => {
+    beforeEach(() => {
+      useSubNav.mockReturnValue(mockSubMenu)
+      useUser.mockReturnValue({ data: mockUseUser })
+
+      setup()
+
+      const toggle = screen.getByRole('button')
+      toggle.click()
+
+      screen.getByRole('link', { name: /Chatty Ghosts/ }).click()
+    })
+
+    it('closes the dropdown', () => {
+      expect(screen.getByRole('menu')).toHaveClass('hidden')
     })
   })
 
