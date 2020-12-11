@@ -7,6 +7,16 @@ import { accountDetailsPropType } from 'services/account'
 
 import BenefitList from '../../../shared/BenefitList'
 
+function shouldRenderCancelLink(accountDetails, isFreePlan) {
+  // cant cancel a free plan
+  if (isFreePlan) return false
+
+  // plan is already set for cancellation
+  if (accountDetails.subscriptionDetail?.cancelAtPeriodEnd) return false
+
+  return true
+}
+
 function CurrentPlanCard({ accountDetails }) {
   const isFreePlan = accountDetails.plan.value === 'users-free'
   const baseUrl = useBaseUrl()
@@ -39,7 +49,7 @@ function CurrentPlanCard({ accountDetails }) {
         <Button Component={Link} to={`${baseUrl}billing/upgrade`}>
           {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
         </Button>
-        {!isFreePlan && (
+        {shouldRenderCancelLink(accountDetails, isFreePlan) && (
           <Button
             to={`${baseUrl}billing/cancel`}
             Component={Link}
