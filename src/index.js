@@ -1,12 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
-import './globals.css'
-import reportWebVitals from './reportWebVitals'
+import ReactModal from 'react-modal'
 
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 
-import 'sentry.js'
+import App from './App'
+import './globals.css'
+import reportWebVitals from './reportWebVitals'
+import './sentry.js'
+
+ReactModal.setAppElement('#root')
 
 ReactDOM.render(
   <React.StrictMode>
