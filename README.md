@@ -40,12 +40,12 @@ This script is using Jest, so any valid Jest options can be added to the command
 
 We are using the [Testing Library](https://testing-library.com/docs/react-testing-library/intro) to test the React components.
 
-
 ## Linting
 
 ```bash
 > npm run test
 ```
+
 will lint the whole project.
 
 We have some extra rules to keep the code more maintainable:
@@ -69,4 +69,14 @@ The config are centralized in one place in the file `config.js`. The file merges
 
 - hardcoded configuration in that file
 - the configuration from `process.env` [documentation here](https://create-react-app.dev/docs/adding-custom-environment-variables) which is set on build-time
-- the configuration from `window.configEnv` which can be set on start-time 
+- the configuration from `window.configEnv` which can be set on start-time
+
+## Debugging failed checks
+
+### Bundsize
+
+We have a relatively agressive bundlesize check in place to ensure we serve a lean and performance web application.
+
+As we add more features our bundle will grow over time. We will adjust these thresholds on a case by case basis. If you're running into this check; this command will allow us to investigate what is taking space in the final production build.
+
+`npm run build -- --stats && npx webpack-bundle-analyzer ./build/bundle-stats.json`
