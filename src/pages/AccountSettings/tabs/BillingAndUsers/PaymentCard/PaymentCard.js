@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
 
 import Card from 'ui/Card'
@@ -8,6 +10,7 @@ import amexLogo from './assets/amex.png'
 import discoverLogo from './assets/discover.jpg'
 import mastercardLogo from './assets/mastercard.png'
 import visaLogo from './assets/visa.png'
+import CreditCardForm from './CreditCardForm'
 
 const cardBrand = {
   amex: {
@@ -41,8 +44,9 @@ function getNextBilling(subscriptionDetail) {
   return format(periodEnd, 'do MMMM, yyyy')
 }
 
-function PaymentCard({ subscriptionDetail }) {
+function PaymentCard({ subscriptionDetail, provider, owner }) {
   const card = subscriptionDetail?.defaultPaymentMethod?.card
+  const [isFormOpen, setIsFormOpen] = useState(false)
 
   if (!card) return null
 
@@ -51,36 +55,55 @@ function PaymentCard({ subscriptionDetail }) {
 
   return (
     <Card className="mt-4 p-6">
-      <h2 className="text-lg mb-6">Creditcard information</h2>
-      <div className="flex">
-        <div className="w-12 mr-6">
-          <img className="w-full" alt="credit card logo" src={typeCard.logo} />
-        </div>
-        <div>
-          <b className="tracking-widest">
-            ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card.last4}
-          </b>
-          <p className="text-gray-500">
-            {typeCard.name} - Expires {card.expMonth}/{card.expYear}
-          </p>
-        </div>
-      </div>
-      {nextBilling && (
-        <p className="text-gray-500 my-4 text-sm">
-          Billed on the first of every month.
-          <br />
-           Next billing on <span className="text-gray-900">{nextBilling}</span>.
-        </p>
+      <h2 className="text-lg">Creditcard information</h2>
+      {isFormOpen ? (
+        <CreditCardForm
+          provider={provider}
+          owner={owner}
+          closeForm={() => setIsFormOpen(false)}
+        />
+      ) : (
+        <>
+          <div className="flex mt-6">
+            <div className="w-12 mr-6">
+              <img
+                className="w-full"
+                alt="credit card logo"
+                src={typeCard.logo}
+              />
+            </div>
+            <div>
+              <b className="tracking-widest">
+                ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card.last4}
+              </b>
+              <p className="text-gray-500">
+                {typeCard.name} - Expires {card.expMonth}/{card.expYear}
+              </p>
+            </div>
+          </div>
+          {nextBilling && (
+            <p className="text-gray-500 my-4 text-sm">
+              Next billing on{' '}
+              <span className="text-gray-900">{nextBilling}</span>.
+            </p>
+          )}
+          <Button
+            color="pink"
+            variant="outline"
+            onClick={() => setIsFormOpen(true)}
+          >
+            Edit card
+          </Button>
+        </>
       )}
-      <Button color="pink" variant="outline">
-        Edit card
-      </Button>
     </Card>
   )
 }
 
 PaymentCard.propTypes = {
   subscriptionDetail: subscriptionDetailType,
+  provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
 }
 
 export default PaymentCard

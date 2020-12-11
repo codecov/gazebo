@@ -24,7 +24,7 @@ const colorToClass = {
   gray: {
     normal: 'bg-gray-500 hover:bg-gray-600',
     text: 'text-gray-500',
-    outline: 'border-current text-gray-900 hover:bg-gray-900',
+    outline: 'border-current text-gray-500 hover:bg-gray-900',
   },
   red: {
     normal: 'bg-codecov-red hover:bg-red-800',
