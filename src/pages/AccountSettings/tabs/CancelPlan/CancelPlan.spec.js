@@ -108,7 +108,7 @@ describe('CancelPlan', () => {
 
     describe('when clicking cancel', () => {
       beforeEach(() => {
-        userEvent.click(screen.queryAllByRole('button', { name: /Close/ })[0])
+        userEvent.click(screen.queryAllByRole('button', { name: /Close/ })[1])
       })
 
       it('closes the modal', () => {
