@@ -19,29 +19,27 @@ function getEndPeriod(accountDetails) {
 function useCancelSubmit({ provider, owner }) {
   const redirect = useHistory().push
   const addToast = useAddNotification()
-  return useCancelPlan({
-    provider,
-    owner,
-    onSuccess: () => {
-      addToast({
-        type: 'success',
-        text: 'Successfully downgraded to: Free Plan',
-      })
-      redirect(`/account/${provider}/${owner}`)
-    },
-    onError: () =>
-      addToast({
-        type: 'error',
-        text: 'Something went wrong',
-      }),
-    useErrorBoundary: false,
-  })
+  const [mutate, data] = useCancelPlan({ provider, owner })
+
+  function cancelPlan() {
+    mutate(null, {
+      onSuccess: () => {
+        redirect(`/account/${provider}/${owner}`)
+      },
+      onError: () =>
+        addToast({
+          type: 'error',
+          text: 'Something went wrong',
+        }),
+    })
+  }
+
+  return [cancelPlan, data]
 }
 
 function DowngradeToFree({ accountDetails, provider, owner }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [cancelPlan, { isLoading }] = useCancelSubmit({ provider, owner })
-
   const isAlreadyFreeUser = accountDetails.plan?.value === 'users-free'
   const isDisabled = [
     // disable button if

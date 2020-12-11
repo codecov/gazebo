@@ -95,23 +95,26 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
 function useSubmit({ owner, provider }) {
   const redirect = useHistory().push
   const addToast = useAddNotification()
-  return useUpgradePlan({
-    provider,
-    owner,
-    onSuccess: () => {
-      addToast({
-        type: 'success',
-        text: 'Plan successfully upgraded',
-      })
-      redirect(`/account/${provider}/${owner}`)
-    },
-    onError: () =>
-      addToast({
-        type: 'error',
-        text: 'Something went wrong',
-      }),
-    useErrorBoundary: false,
-  })
+  const [mutate, data] = useUpgradePlan({ provider, owner })
+
+  function upgradePlan(newPlan) {
+    return mutate(newPlan, {
+      onSuccess: () => {
+        addToast({
+          type: 'success',
+          text: 'Plan successfully upgraded',
+        })
+        redirect(`/account/${provider}/${owner}`)
+      },
+      onError: () =>
+        addToast({
+          type: 'error',
+          text: 'Something went wrong',
+        }),
+    })
+  }
+
+  return [upgradePlan, data]
 }
 
 function UpgradePlanForm({
