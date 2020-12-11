@@ -9,10 +9,11 @@ import { useCancelPlan, accountDetailsPropType } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 
 function getEndPeriod(accountDetails) {
-  const periodEnd = fromUnixTime(
-    accountDetails.subscriptionDetail.currentPeriodEnd
+  const unixPeriodEnd = accountDetails.subscriptionDetail?.currentPeriodEnd
+  return (
+    unixPeriodEnd &&
+    format(fromUnixTime(unixPeriodEnd), 'MMMM do yyyy, h:m aaaa')
   )
-  return format(periodEnd, 'MMMM do yyyy, h:m aaaa')
 }
 
 function useCancelSubmit({ provider, owner }) {
