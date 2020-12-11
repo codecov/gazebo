@@ -5,6 +5,7 @@ import cs from 'classnames'
 import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import Icon from 'ui/Icon'
+import Button from 'ui/Button'
 import { UserNavLink } from './NavLink'
 
 function Dropdown() {
@@ -19,10 +20,10 @@ function Dropdown() {
 
   if (!user)
     return (
-      <a href="/login" className="flex items-center ml-4">
+      <Button Component="a" href="/login" className="flex items-center ml-4">
         <Icon name="signIn" color="text-white" className="mr-2" />
         Log in
-      </a>
+      </Button>
     )
 
   return (
