@@ -24,35 +24,43 @@ const stripePromise = loadStripe(config.STRIPE_KEY)
 
 function App() {
   return (
-    <Elements stripe={stripePromise}>
-      <ToastNotificationProvider>
-        <ReactQueryCacheProvider queryCache={queryCache}>
-          <BrowserRouter>
-            <BaseLayout>
-              <Switch>
-                <Route path="/account/:provider/:owner/">
-                  <AccountSettings />
-                </Route>
-                <Route path="/:provider/" exact>
-                  <FullLayout>List of organizations</FullLayout>
-                </Route>
-                <Route path="/:provider/:owner/" exact>
-                  <FullLayout>List of repos</FullLayout>
-                </Route>
-                <Route path="/:provider/:owner/:repo/" exact>
-                  <FullLayout>Repo page</FullLayout>
-                </Route>
-                <Route path="/">
-                  <FullLayout>
-                    <p>Home page</p>
-                  </FullLayout>
-                </Route>
-              </Switch>
-            </BaseLayout>
-          </BrowserRouter>
-        </ReactQueryCacheProvider>
-      </ToastNotificationProvider>
-    </Elements>
+  <Elements stripe={stripePromise}>
+    <ToastNotificationProvider>
+      <ReactQueryCacheProvider queryCache={queryCache}>
+        <BrowserRouter>
+          <Switch>
+            <Route path="/account/:provider/:owner/">
+              <BaseLayout>
+                <AccountSettings />
+              </BaseLayout>
+            </Route>
+            <Route path="/:provider/" exact>
+              <BaseLayout>
+                <FullLayout>List of organizations</FullLayout>
+              </BaseLayout>
+            </Route>
+            <Route path="/:provider/:owner/" exact>
+              <BaseLayout>
+                <FullLayout>List of repos</FullLayout>
+              </BaseLayout>
+            </Route>
+            <Route path="/:provider/:owner/:repo/" exact>
+              <BaseLayout>
+                <FullLayout>Repo page</FullLayout>
+              </BaseLayout>
+            </Route>
+            <Route path="/">
+              <BaseLayout>
+                <FullLayout>
+                  <p>Home page</p>
+                </FullLayout>
+              </BaseLayout>
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </ReactQueryCacheProvider>
+    </ToastNotificationProvider>
+  </Elements>
   )
 }
 

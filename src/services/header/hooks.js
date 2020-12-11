@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
-import { useCurrentResource } from 'services/currentResource'
 
 function getOwnerImg(provider, owner) {
   return {
@@ -17,7 +16,7 @@ export function useMainNav() {
     gl: 'Gitlab',
   }
 
-  const { provider, owner, repo } = useCurrentResource()
+  const { provider, owner, repo } = useParams()
 
   return [
     provider && {
@@ -39,7 +38,7 @@ export function useMainNav() {
 }
 
 export function useSubNav() {
-  const { provider } = useCurrentResource()
+  const { provider } = useParams()
   const { data: user } = useUser({
     suspense: false,
   })

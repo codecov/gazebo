@@ -1,6 +1,8 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
+import { MemoryRouter } from 'react-router-dom'
+
 import { useUser } from './hooks'
 
 const user = {
@@ -24,7 +26,9 @@ describe('useUser', () => {
         return res(ctx.status(200), ctx.json(user))
       })
     )
-    hookData = renderHook(() => useUser())
+    hookData = renderHook(() => useUser(), {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('when called', () => {

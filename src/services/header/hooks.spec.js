@@ -1,19 +1,21 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
 
-import { useCurrentResource } from 'services/currentResource'
 import { useUser } from 'services/user'
 
 import { useMainNav, useSubNav } from './hooks'
 
 jest.mock('services/user')
-jest.mock('services/currentResource')
+jest.mock('react-router-dom', () => ({
+  Link: jest.fn(),
+  useParams: jest.fn(),
+}))
 
 describe('useMainNav', () => {
   let hookData
 
   function setup(currentResource) {
-    useCurrentResource.mockReturnValue(currentResource)
+    useParams.mockReturnValue(currentResource)
     hookData = renderHook(() => useMainNav())
   }
 
@@ -104,7 +106,7 @@ describe('useSubNav', () => {
   let hookData
 
   function setup(currentUser) {
-    useCurrentResource.mockReturnValue({
+    useParams.mockReturnValue({
       provider: 'gh',
     })
     useUser.mockReturnValue({ data: currentUser })

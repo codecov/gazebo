@@ -1,10 +1,10 @@
 import { useQuery } from 'react-query'
-import { useCurrentResource } from 'services/currentResource'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
 export function useUser(options = {}) {
-  const { provider } = useCurrentResource()
+  const { provider } = useParams()
 
   return useQuery(
     ['currentUser', provider],
