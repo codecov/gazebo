@@ -6,6 +6,7 @@ import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
 function Modal({ isOpen, onClose, children, title, ...rest }) {
+  if (!isOpen) return null
   return (
     <ReactModal
       isOpen={isOpen}
@@ -17,9 +18,8 @@ function Modal({ isOpen, onClose, children, title, ...rest }) {
       <Card className="w-1/2 p-8">
         <header className="flex justify-between items-center mb-4">
           <h2 className="text-2xl bold">{title}</h2>
-          <Button variant="text" onClick={onClose}>
+          <Button variant="text" onClick={onClose} aria-label="Close">
             <Icon name="times" />
-            <span className="hidden">Close</span>
           </Button>
         </header>
         {children}

@@ -1,9 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
-
 import Modal from './Modal'
 
-describe('PaymentCard', () => {
+describe('Modal', () => {
   let wrapper, props
 
   const defaultProps = {
@@ -11,8 +10,6 @@ describe('PaymentCard', () => {
     onClose: jest.fn(),
     children: 'hello',
     title: 'modal title',
-    // to silence a warning
-    ariaHideApp: false,
   }
 
   function setup(over = {}) {
