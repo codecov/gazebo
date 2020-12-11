@@ -10,13 +10,12 @@ jest.mock('services/header')
 jest.mock('services/user')
 
 const mockMain = [
-  [
-    { label: 'Haunted Code', to: '/👻', iconName: 'ghost' },
-    { label: 'Thriller Video', to: '/👻/👅/💃🏽', imageUrl: '💃🏽.jpeg' },
-  ],
+  { label: 'Haunted Code', to: '/👻', iconName: 'ghost' },
+  { label: 'Thriller Video', to: '/👻/👅/💃🏽', imageUrl: '💃🏽.jpeg' },
 ]
+
 const mockSubMenu = [
-  [{ label: 'Chatty Ghosts', to: '/👻/👅', imageUrl: '🗣.png' }],
+  { label: 'Chatty Ghosts', href: '/👻/👅', imageUrl: '🗣.png' },
 ]
 
 const mockUseUser = [{ username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }]
@@ -40,16 +39,16 @@ describe('MobileMenu', () => {
     })
 
     it('renders sub menu nav links', () => {
-      mockSubMenu[0].forEach((link) => {
+      mockSubMenu.forEach((link) => {
         const navLink = screen.getByText(link.label).closest('a')
         expect(navLink).toHaveAttribute('href', link.to)
       })
     })
 
     it('renders main nav links', () => {
-      mockMain[0].forEach((link) => {
+      mockMain.forEach((link) => {
         const navLink = screen.getByText(link.label).closest('a')
-        expect(navLink).toHaveAttribute('href', link.to)
+        expect(navLink).toHaveAttribute('href', link.href)
       })
     })
   })

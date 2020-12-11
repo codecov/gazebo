@@ -1,12 +1,14 @@
 import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
+import Icon from 'ui/Icon'
+
 import ServerStatus from './ServerStatus'
-import { UserNavA, MainNavLink } from './NavLink'
+import { MainNavLink, UserNavLink } from './NavLink'
 
 function MobileMenu() {
-  const [main] = useMainNav()
-  const [subMenu] = useSubNav()
-  const [{ username, avatarUrl }] = useUser()
+  const main = useMainNav()
+  const subMenu = useSubNav()
+  const { data: user } = useUser({ suspense: false })
 
   return (
     <nav
@@ -23,21 +25,30 @@ function MobileMenu() {
         ))}
       </div>
       <div className="flex items-center px-5 py-4 border-t border-gray-800">
-        <div className="flex-shrink-0">
-          <img
-            className="h-10 w-10 rounded-full"
-            src={avatarUrl}
-            width="40px"
-            height="auto"
-            alt="User Avatar"
-          />
-        </div>
-        <div className="flex-1 ml-3">{username}</div>
+        {user ? (
+          <>
+            <div className="flex-shrink-0">
+              <img
+                className="h-10 w-10 rounded-full"
+                src={user.avatarUrl}
+                width="40px"
+                height="auto"
+                alt="User Avatar"
+              />
+            </div>
+            <div className="flex-1 ml-3">{user.username}</div>
+          </>
+        ) : (
+          <a href="/login" className="flex items-center ml-4">
+            <Icon name="signIn" color="text-white" className="mr-2" />
+            Log in
+          </a>
+        )}
         <ServerStatus />
       </div>
       <div className="py-3 px-2 sm:px-3 space-y-1">
         {subMenu.map((props, i) => (
-          <UserNavA
+          <UserNavLink
             key={`mobile-usernav-${i}`}
             className="px-3 py-2 text-gray-300 hover:text-white"
             {...props}

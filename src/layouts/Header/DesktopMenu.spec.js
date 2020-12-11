@@ -9,10 +9,8 @@ jest.mock('services/header')
 jest.mock('./Dropdown', () => () => 'Dropdown')
 
 const mockMainNav = [
-  [
-    { label: 'Haunted Code', to: '/👻', iconName: 'ghost' },
-    { label: 'Thriller Video', to: '/👻/👅/💃🏽', imageUrl: '💃🏽.jpeg' },
-  ],
+  { label: 'Haunted Code', to: '/👻', iconName: 'ghost' },
+  { label: 'Thriller Video', to: '/👻/👅/💃🏽', imageUrl: '💃🏽.jpeg' },
 ]
 
 describe('DesktopMenu', () => {
@@ -32,7 +30,7 @@ describe('DesktopMenu', () => {
     })
 
     it('renders main nav links', () => {
-      mockMainNav[0].forEach((link) => {
+      mockMainNav.forEach((link) => {
         const navLink = screen.getByText(link.label).closest('a')
         expect(navLink).toHaveAttribute('href', link.to)
       })

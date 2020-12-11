@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { useParams, Switch, Route } from 'react-router-dom'
 
 import { useBaseUrl } from 'shared/router'
@@ -7,8 +8,9 @@ import SideMenu from './SideMenu'
 import AdminTab from './tabs/Admin'
 import BillingAndUsersTab from './tabs/BillingAndUsers'
 import YAMLTab from './tabs/YAML'
-import CancelPlanTab from './tabs/CancelPlan'
-import UpgradePlanTab from './tabs/UpgradePlan'
+
+const CancelPlanTab = lazy(() => import('./tabs/CancelPlan'))
+const UpgradePlanTab = lazy(() => import('./tabs/UpgradePlan'))
 
 function AccountSettings() {
   const { provider, owner } = useParams()
