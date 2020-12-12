@@ -53,7 +53,7 @@ class NetworkErrorBoundary extends Component {
     const { illustration, title, description } = errorToUI[status]
 
     return (
-      <div className="col-start-1 col-end-13 flex items-center justify-center flex-col">
+      <article className="mx-auto flex items-center justify-center flex-col">
         <img
           alt="illustration error"
           className={cs(styles.illustrationError, 'mx-auto')}
@@ -85,7 +85,7 @@ class NetworkErrorBoundary extends Component {
         <p>
           <strong>Error {status}</strong>
         </p>
-      </div>
+      </article>
     )
   }
 
