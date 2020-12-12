@@ -24,9 +24,9 @@ function MobileMenu() {
           />
         ))}
       </div>
-      <div className="flex items-center px-5 py-4 border-t border-gray-800">
-        {user ? (
-          <>
+      {user ? (
+        <>
+          <div className="flex items-center px-5 py-4 border-t border-gray-800">
             <div className="flex-shrink-0">
               <img
                 className="h-10 w-10 rounded-full"
@@ -37,24 +37,27 @@ function MobileMenu() {
               />
             </div>
             <div className="flex-1 ml-3">{user.username}</div>
-          </>
-        ) : (
-          <a href="/login" className="flex items-center ml-4">
+            <ServerStatus />
+          </div>
+          <div className="py-3 px-2 sm:px-3 space-y-1">
+            {subMenu.map((props, i) => (
+              <UserNavLink
+                key={`mobile-usernav-${i}`}
+                className="px-3 py-2 text-gray-300 hover:text-white"
+                {...props}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="flex items-center px-5 py-4 border-t border-gray-800">
+          <a href="/login" className="flex-1 flex items-center">
             <Icon name="signIn" color="text-white" className="mr-2" />
             Log in
           </a>
-        )}
-        <ServerStatus />
-      </div>
-      <div className="py-3 px-2 sm:px-3 space-y-1">
-        {subMenu.map((props, i) => (
-          <UserNavLink
-            key={`mobile-usernav-${i}`}
-            className="px-3 py-2 text-gray-300 hover:text-white"
-            {...props}
-          />
-        ))}
-      </div>
+          <ServerStatus />
+        </div>
+      )}
     </nav>
   )
 }
