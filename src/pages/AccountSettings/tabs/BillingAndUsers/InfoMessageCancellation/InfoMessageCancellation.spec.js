@@ -44,11 +44,6 @@ describe('InfoMessageCancellation', () => {
       expect(
         screen.getByText(/Subscription Pending Cancellation/)
       ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Your subscription has been cancelled and will become inactive on December 1st 2020, 9:38 a.m.'
-        )
-      ).toBeInTheDocument()
     })
   })
 })
