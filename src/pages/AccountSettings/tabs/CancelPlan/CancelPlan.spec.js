@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -46,6 +46,9 @@ describe('CancelPlan', () => {
           plan: currentPlan,
           activatedUserCount: 2,
           inactiveUserCount: 1,
+          subscriptionDetail: {
+            currentPeriodEnd: 1638614662,
+          },
         },
         plans: getPlans(),
       },
@@ -84,11 +87,47 @@ describe('CancelPlan', () => {
   describe('when clicking on the button to downgrade', () => {
     beforeEach(() => {
       setup()
-      userEvent.click(screen.getByRole('button'))
+      userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
     })
 
-    it('calls the mutation', () => {
-      expect(mutate).toHaveBeenCalled()
+    it('opens the modal with warning', () => {
+      expect(
+        screen.getByText(/Are you sure you want to cancel your plan?/)
+      ).toBeInTheDocument()
+    })
+
+    describe('when clicking submit', () => {
+      beforeEach(() => {
+        userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
+      })
+
+      it('calls the mutation', () => {
+        expect(mutate).toHaveBeenCalled()
+      })
+    })
+
+    describe('when clicking the X icon', () => {
+      beforeEach(() => {
+        userEvent.click(screen.queryAllByRole('button', { name: /Close/ })[0])
+      })
+
+      it('closes the modal', () => {
+        expect(
+          screen.queryByText(/Are you sure you want to cancel your plan?/)
+        ).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when clicking cancel', () => {
+      beforeEach(() => {
+        userEvent.click(screen.queryAllByRole('button', { name: /Close/ })[1])
+      })
+
+      it('closes the modal', () => {
+        expect(
+          screen.queryByText(/Are you sure you want to cancel your plan?/)
+        ).not.toBeInTheDocument()
+      })
     })
   })
 

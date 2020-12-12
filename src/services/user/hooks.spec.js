@@ -1,66 +1,54 @@
-import { renderHook, act } from '@testing-library/react-hooks'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+import { renderHook } from '@testing-library/react-hooks'
+import { MemoryRouter } from 'react-router-dom'
 
 import { useUser } from './hooks'
 
-const dummyUsername = 'TerrySmithDC'
-const dummyAvatarUrl =
-  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+const user = {
+  username: 'TerrySmithDC',
+  avatarUrl:
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+}
+
+const server = setupServer()
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
 
 describe('useUser', () => {
   let hookData
 
   function setup() {
-    hookData = renderHook(() => useUser())
+    server.use(
+      rest.get(`/internal/profile`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(user))
+      })
+    )
+    hookData = renderHook(() => useUser(), {
+      wrapper: MemoryRouter,
+    })
   }
 
-  describe('default', () => {
+  describe('when called', () => {
     beforeEach(() => {
       setup()
     })
 
-    it('has default values', () => {
-      const [user] = hookData.result.current
-      expect(user.avatarUrl).toBe(dummyAvatarUrl)
-      expect(user.username).toBe(dummyUsername)
+    it('returns isLoading', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
     })
   })
 
-  describe.each`
-    updated                                                            | numWarning | expected
-    ${{ username: 'Link' }}                                            | ${0}       | ${{ username: 'Link', avatarUrl: dummyAvatarUrl }}
-    ${{ avatarUrl: 'https://hyru.le/beachday.png' }}                   | ${0}       | ${{ username: dummyUsername, avatarUrl: 'https://hyru.le/beachday.png' }}
-    ${{ username: 'Link', avatarUrl: 'https://hyru.le/beachday.png' }} | ${0}       | ${{ username: 'Link', avatarUrl: 'https://hyru.le/beachday.png' }}
-    ${{ villain: 'Ganondorf' }}                                        | ${1}       | ${{ avatarUrl: dummyAvatarUrl, username: dummyUsername }}
-    ${{ friend: 'Una', username: 'Link' }}                             | ${1}       | ${{ avatarUrl: dummyAvatarUrl, username: 'Link' }}
-  `('Update user state to $updated', ({ updated, numWarning, expected }) => {
-    let mockWarn
+  describe('when data is loaded', () => {
     beforeEach(() => {
-      mockWarn = jest.fn()
-      const spy = jest.spyOn(console, 'warn')
-      spy.mockImplementation(mockWarn)
-
       setup()
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it(`update to ${updated}`, () => {
-      act(() => {
-        const [, setUser] = hookData.result.current
-        setUser(updated)
-      })
-
-      const [user] = hookData.result.current
-      expect(user).toMatchObject(expected)
-    })
-
-    it(`will warn ${numWarning}`, () => {
-      act(() => {
-        const [, setUser] = hookData.result.current
-        setUser(updated)
-      })
-
-      const [user] = hookData.result.current
-      expect(user).toMatchObject(expected)
-      expect(mockWarn).toHaveBeenCalledTimes(numWarning)
+    it('returns the user', () => {
+      expect(hookData.result.current.data).toEqual(user)
     })
   })
 })

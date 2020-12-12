@@ -8,7 +8,7 @@ import { MainNavLink } from './NavLink'
 import { useMainNav } from 'services/header'
 
 function DesktopMenu() {
-  const [main] = useMainNav()
+  const main = useMainNav()
 
   return (
     <>
