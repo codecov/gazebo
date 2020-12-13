@@ -16,12 +16,12 @@ function UpgradePlan({ provider, owner }) {
   const proPlanYear = plans.find((plan) => plan.value === 'users-pr-inappy')
 
   return (
-    <div className="col-start-1 col-end-13">
+    <>
       <BackLink
         to={`/account/${provider}/${owner}`}
         textLink="Billing & Users"
       />
-      <div className="grid grid-cols-12 gap-8 mt-10">
+      <article className="grid grid-cols-12 gap-8 mt-10">
         <div className="col-span-5">
           <Card className="flex flex-col items-center px-12 py-10">
             <div className="-mt-16 mb-4">
@@ -54,8 +54,8 @@ function UpgradePlan({ provider, owner }) {
             />
           </Card>
         </div>
-      </div>
-    </div>
+      </article>
+    </>
   )
 }
 

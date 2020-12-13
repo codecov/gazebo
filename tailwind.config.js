@@ -6,11 +6,7 @@ module.exports = {
     purgeLayersByDefault: true,
   },
   purge: {
-    content: [
-      './src/**/*.js',
-      './src/*.js',
-      './public/*.html',
-    ],
+    content: ['./src/**/*.js', './src/*.js', './public/*.html'],
   },
   theme: {
     fontFamily: {
@@ -88,7 +84,7 @@ module.exports = {
     borderStyle: ['first'],
     borderColor: ['first'],
     borderWidth: ['first'],
-    padding: ['last'],
+    padding: ['responsive', 'last'],
   },
   plugins: [],
 }
