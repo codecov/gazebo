@@ -15,7 +15,7 @@ function BillingAndUsers({ provider, owner }) {
       <InfoMessageCancellation
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 max-w-6xl">
         <div className="col-span-1">
           <CurrentPlanCard accountDetails={accountDetails} />
           <PaymentCard
@@ -27,7 +27,7 @@ function BillingAndUsers({ provider, owner }) {
             invoice={accountDetails.subscriptionDetail?.latestInvoice}
           />
         </div>
-        <UserManagement />
+        <UserManagement provider={provider} owner={owner} />
       </div>
     </>
   )
