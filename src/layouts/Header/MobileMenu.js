@@ -10,6 +10,47 @@ function MobileMenu() {
   const subMenu = useSubNav()
   const { data: user } = useUser({ suspense: false })
 
+  function loggedInSubMenu() {
+    return (
+      <>
+        <div className="flex items-center px-5 py-4 border-t border-gray-800">
+          <div className="flex-shrink-0">
+            <img
+              className="h-10 w-10 rounded-full"
+              src={user.avatarUrl}
+              width="40px"
+              height="auto"
+              alt="User Avatar"
+            />
+          </div>
+          <div className="flex-1 ml-3">{user.username}</div>
+          <ServerStatus />
+        </div>
+        <div className="py-3 px-2 sm:px-3 space-y-1">
+          {subMenu.map((props, i) => (
+            <UserNavLink
+              key={`mobile-usernav-${i}`}
+              className="px-3 py-2 text-gray-300 hover:text-white"
+              {...props}
+            />
+          ))}
+        </div>
+      </>
+    )
+  }
+
+  function loggedOutSubMenu() {
+    return (
+      <div className="flex items-center px-5 py-4 border-t border-gray-800">
+        <a href="/login" className="flex-1 flex items-center">
+          <Icon name="signIn" color="text-white" className="mr-2" />
+          Log in
+        </a>
+        <ServerStatus />
+      </div>
+    )
+  }
+
   return (
     <nav
       data-testid="mobile-menu"
@@ -24,40 +65,7 @@ function MobileMenu() {
           />
         ))}
       </div>
-      {user ? (
-        <>
-          <div className="flex items-center px-5 py-4 border-t border-gray-800">
-            <div className="flex-shrink-0">
-              <img
-                className="h-10 w-10 rounded-full"
-                src={user.avatarUrl}
-                width="40px"
-                height="auto"
-                alt="User Avatar"
-              />
-            </div>
-            <div className="flex-1 ml-3">{user.username}</div>
-            <ServerStatus />
-          </div>
-          <div className="py-3 px-2 sm:px-3 space-y-1">
-            {subMenu.map((props, i) => (
-              <UserNavLink
-                key={`mobile-usernav-${i}`}
-                className="px-3 py-2 text-gray-300 hover:text-white"
-                {...props}
-              />
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className="flex items-center px-5 py-4 border-t border-gray-800">
-          <a href="/login" className="flex-1 flex items-center">
-            <Icon name="signIn" color="text-white" className="mr-2" />
-            Log in
-          </a>
-          <ServerStatus />
-        </div>
-      )}
+      {user ? loggedInSubMenu() : loggedOutSubMenu()}
     </nav>
   )
 }
