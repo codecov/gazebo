@@ -21,12 +21,12 @@ function CancelPlan({ provider, owner }) {
   )
 
   return (
-    <div className="col-start-1 col-end-13">
+    <>
       <BackLink
         to={`/account/${provider}/${owner}`}
         textLink="Billing & Users"
       />
-      <div className="grid grid-cols-12 gap-8 mt-10">
+      <article className="grid grid-cols-12 gap-8 mt-10">
         <div className="col-span-7">
           <Card className="border border-codecov-red px-12 py-10">
             <h2 className="text-2xl text-codecov-red bold mb-4">
@@ -74,8 +74,8 @@ function CancelPlan({ provider, owner }) {
             />
           </Card>
         </div>
-      </div>
-    </div>
+      </article>
+    </>
   )
 }
 

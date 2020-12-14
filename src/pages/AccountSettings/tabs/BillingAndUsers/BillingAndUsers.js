@@ -3,6 +3,7 @@ import PropType from 'prop-types'
 import Card from 'ui/Card'
 import { useAccountDetails } from 'services/account'
 
+import InfoMessageCancellation from './InfoMessageCancellation'
 import CurrentPlanCard from './CurrentPlanCard'
 import LatestInvoiceCard from './LatestInvoiceCard'
 import PaymentCard from './PaymentCard'
@@ -12,6 +13,9 @@ function BillingAndUsers({ provider, owner }) {
 
   return (
     <>
+      <InfoMessageCancellation
+        subscriptionDetail={accountDetails.subscriptionDetail}
+      />
       <div className="col-start-1 col-end-5">
         <CurrentPlanCard accountDetails={accountDetails} />
         <PaymentCard

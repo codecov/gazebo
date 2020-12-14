@@ -134,15 +134,10 @@ describe('CancelPlan', () => {
   describe('when mutation is successful', () => {
     beforeEach(() => {
       setup()
-      // simulating the onSuccess callback given to useCancelPlan
-      useCancelPlan.mock.calls[0][0].onSuccess()
-    })
-
-    it('adds a success notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'success',
-        text: 'Successfully downgraded to: Free Plan',
-      })
+      userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
+      userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
+      // simulating the onSuccess callback given to mutate
+      mutate.mock.calls[0][1].onSuccess()
     })
 
     it('redirects the user to the billing page', () => {
@@ -153,8 +148,10 @@ describe('CancelPlan', () => {
   describe('when mutation is not successful', () => {
     beforeEach(() => {
       setup()
-      // simulating the onError callback given to useCancelPlan
-      useCancelPlan.mock.calls[0][0].onError()
+      userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
+      userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
+      // simulating the onError callback given to mutate
+      mutate.mock.calls[0][1].onError()
     })
 
     it('adds an error notification', () => {

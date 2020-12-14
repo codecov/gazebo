@@ -256,38 +256,36 @@ describe('UpgradePlanForm', () => {
     it('calls the mutation', () => {
       expect(mutate).toHaveBeenCalled()
     })
-  })
 
-  describe('when mutation is successful', () => {
-    beforeEach(() => {
-      setup()
-      // simulating the onSuccess callback given to useCancelPlan
-      useUpgradePlan.mock.calls[0][0].onSuccess()
-    })
+    describe('when mutation is successful', () => {
+      beforeEach(() => {
+        // simulating the onSuccess callback given to mutate
+        mutate.mock.calls[0][1].onSuccess()
+      })
 
-    it('adds a success notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'success',
-        text: 'Plan successfully upgraded',
+      it('adds a success notification', () => {
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'success',
+          text: 'Plan successfully upgraded',
+        })
+      })
+
+      it('redirects the user to the billing page', () => {
+        expect(testLocation.pathname).toEqual('/account/gh/codecov')
       })
     })
 
-    it('redirects the user to the billing page', () => {
-      expect(testLocation.pathname).toEqual('/account/gh/codecov')
-    })
-  })
+    describe('when mutation is not successful', () => {
+      beforeEach(() => {
+        // simulating the onError callback given to useCancelPlan
+        mutate.mock.calls[0][1].onError()
+      })
 
-  describe('when mutation is not successful', () => {
-    beforeEach(() => {
-      setup()
-      // simulating the onError callback given to useCancelPlan
-      useUpgradePlan.mock.calls[0][0].onError()
-    })
-
-    it('adds an error notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'error',
-        text: 'Something went wrong',
+      it('adds an error notification', () => {
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong',
+        })
       })
     })
   })

@@ -9,9 +9,12 @@ const batmanQuote =
   'Why do we fall? So that we can learn to pick ourselves back up.'
 
 describe('SidebarLayout', () => {
-  function setup(content) {
+  function setup(content, overrideClass) {
     render(
-      <SidebarLayout sidebar={<div>{robinQuote}</div>}>
+      <SidebarLayout
+        className={overrideClass}
+        sidebar={<div>{robinQuote}</div>}
+      >
         {content}
       </SidebarLayout>,
       {
@@ -44,6 +47,28 @@ describe('SidebarLayout', () => {
     it('renders the content of the page (children)', () => {
       const content = screen.getByText(batmanQuote)
       expect(content).toBeInTheDocument()
+    })
+  })
+
+  describe('it renders the content with default styles', () => {
+    beforeEach(() => {
+      setup(<p>{batmanQuote}</p>)
+    })
+
+    it('renders the sidebar', () => {
+      const content = screen.getByTestId('sidebar-content')
+      expect(content).toHaveClass('pl-0 sm:pl-4')
+    })
+  })
+
+  describe('it renders the content with custom styles', () => {
+    beforeEach(() => {
+      setup(<p>{batmanQuote}</p>, 'batcave')
+    })
+
+    it('renders the sidebar', () => {
+      const content = screen.getByTestId('sidebar-content')
+      expect(content).toHaveClass('batcave')
     })
   })
 })

@@ -15,6 +15,22 @@ const proAccountDetails = {
   inactiveUserCount: 1,
 }
 
+const freeAccountDetails = {
+  plan: {
+    marketingName: 'Basic',
+    value: 'users-free',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Up to 5 users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+  },
+  activatedUserCount: 2,
+  inactiveUserCount: 1,
+}
+
 describe('CurrentPlanCard', () => {
   function setup(accountDetails) {
     render(<CurrentPlanCard accountDetails={accountDetails} />, {
@@ -28,13 +44,42 @@ describe('CurrentPlanCard', () => {
     })
 
     it('renders the price of the plan', () => {
-      const tab = screen.getByText(/\$12/)
-      expect(tab).toBeInTheDocument()
+      expect(screen.getByText(/\$12/)).toBeInTheDocument()
     })
 
     it('renders the link to Cancel', () => {
-      const tab = screen.getByText(/Cancel/)
-      expect(tab).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: /Cancel Plan/ })
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendering with a free plan', () => {
+    beforeEach(() => {
+      setup(freeAccountDetails)
+    })
+
+    it('doesnt render the link to Cancel', () => {
+      expect(
+        screen.queryByRole('link', { name: /Cancel Plan/ })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the subscription of the user is expiring', () => {
+    beforeEach(() => {
+      setup({
+        ...proAccountDetails,
+        subscriptionDetail: {
+          cancelAtPeriodEnd: true,
+        },
+      })
+    })
+
+    it('doesnt render the link to Cancel', () => {
+      expect(
+        screen.queryByRole('link', { name: /Cancel Plan/ })
+      ).not.toBeInTheDocument()
     })
   })
 })
