@@ -1,13 +1,12 @@
 import PropType from 'prop-types'
 
-import Card from 'ui/Card'
 import { useAccountDetails } from 'services/account'
 
 import InfoMessageCancellation from './InfoMessageCancellation'
 import CurrentPlanCard from './CurrentPlanCard'
 import LatestInvoiceCard from './LatestInvoiceCard'
 import PaymentCard from './PaymentCard'
-
+import UserManagement from './UserManagement'
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
 
@@ -16,19 +15,19 @@ function BillingAndUsers({ provider, owner }) {
       <InfoMessageCancellation
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
-      <div className="col-start-1 col-end-5">
-        <CurrentPlanCard accountDetails={accountDetails} />
-        <PaymentCard
-          subscriptionDetail={accountDetails.subscriptionDetail}
-          provider={provider}
-          owner={owner}
-        />
-        <LatestInvoiceCard
-          invoice={accountDetails.subscriptionDetail?.latestInvoice}
-        />
-      </div>
-      <div className="col-start-5 col-end-13">
-        <Card>Users</Card>
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+        <div className="col-span-1">
+          <CurrentPlanCard accountDetails={accountDetails} />
+          <PaymentCard
+            subscriptionDetail={accountDetails.subscriptionDetail}
+            provider={provider}
+            owner={owner}
+          />
+          <LatestInvoiceCard
+            invoice={accountDetails.subscriptionDetail?.latestInvoice}
+          />
+        </div>
+        <UserManagement />
       </div>
     </>
   )

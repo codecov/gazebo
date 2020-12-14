@@ -8,7 +8,7 @@ function UserManagement() {
   const onSubmit = (data) => alert(JSON.stringify(data))
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+    <form className="space-y-4 col-span-2" onSubmit={handleSubmit(onSubmit)}>
       <Card className="shadow">
         <div className="flex">
           <Controller
