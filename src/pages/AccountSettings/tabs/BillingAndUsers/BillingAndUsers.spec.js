@@ -6,6 +6,7 @@ import { useAccountDetails } from 'services/account'
 jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
 jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')
 jest.mock('./PaymentCard', () => () => 'PaymentCard')
+jest.mock('./InfoMessageCancellation', () => () => 'InfoMessageCancellation')
 jest.mock('services/account/hooks')
 
 const provider = 'gh'
@@ -36,6 +37,11 @@ describe('BillingAndUsersTab', () => {
 
     it('renders the PaymentCard', () => {
       const tab = screen.getByText(/PaymentCard/)
+      expect(tab).toBeInTheDocument()
+    })
+
+    it('renders the InfoMessageCancellation', () => {
+      const tab = screen.getByText(/InfoMessageCancellation/)
       expect(tab).toBeInTheDocument()
     })
   })

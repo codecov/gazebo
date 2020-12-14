@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import ToastNotifications from './ToastNotifications'
 import {
@@ -42,16 +42,6 @@ describe('ToastNotifications', () => {
     it('renders the notifications', () => {
       expect(screen.getByText(notifications[0].text)).toBeInTheDocument()
       expect(screen.getByText(notifications[1].text)).toBeInTheDocument()
-    })
-
-    describe('when clicking on the delete', () => {
-      beforeEach(() => {
-        fireEvent.click(screen.getAllByTestId('close-notification')[0])
-      })
-
-      it('calls removeNotification for the clicked notification', () => {
-        expect(removeNotification).toHaveBeenCalledWith(notifications[0].id)
-      })
     })
 
     describe('when enough time passes', () => {

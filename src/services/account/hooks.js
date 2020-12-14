@@ -48,12 +48,20 @@ export function useAccountsAndPlans({ provider, owner }) {
   )
 }
 
-export function useCancelPlan({ provider, owner, ...rest }) {
-  return useMutation(() => cancelPlan({ provider, owner }), rest)
+export function useCancelPlan({ provider, owner }) {
+  const queryCache = useQueryCache()
+
+  return useMutation(() => cancelPlan({ provider, owner }), {
+    onSuccess: (data) => {
+      // update the local cache of account details from what the server returns
+      queryCache.setQueryData(['accountDetails', provider, owner], data)
+    },
+  })
 }
 
-export function useUpgradePlan({ provider, owner, ...rest }) {
+export function useUpgradePlan({ provider, owner }) {
   const stripe = useStripe()
+  const queryCache = useQueryCache()
 
   function redirectToStripe(sessionId) {
     return stripe.redirectToCheckout({ sessionId }).then((e) => {
@@ -62,23 +70,31 @@ export function useUpgradePlan({ provider, owner, ...rest }) {
     })
   }
 
-  return useMutation((formData) => {
-    const path = getPathAccountDetails({ provider, owner })
-    const body = {
-      plan: {
-        quantity: formData.seats,
-        value: formData.newPlan.value,
+  return useMutation(
+    (formData) => {
+      const path = getPathAccountDetails({ provider, owner })
+      const body = {
+        plan: {
+          quantity: formData.seats,
+          value: formData.newPlan.value,
+        },
+      }
+      return Api.patch({ path, provider, body }).then((data) => {
+        if (data.checkoutSessionId) {
+          // redirect to stripe checkout if there is a checkout session id
+          return redirectToStripe(data.checkoutSessionId)
+        }
+
+        return data
+      })
+    },
+    {
+      onSuccess: (data) => {
+        // update the local cache of account details from what the server returns
+        queryCache.setQueryData(['accountDetails', provider, owner], data)
       },
     }
-    return Api.patch({ path, provider, body }).then((data) => {
-      if (data.checkoutSessionId) {
-        // redirect to stripe checkout if there is a checkout session id
-        return redirectToStripe(data.checkoutSessionId)
-      }
-
-      return data
-    })
-  }, rest)
+  )
 }
 
 export function useUpdateCard({ provider, owner }) {
