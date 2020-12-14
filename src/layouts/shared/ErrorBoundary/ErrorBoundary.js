@@ -2,7 +2,11 @@ import PropTypes from 'prop-types'
 import * as Sentry from '@sentry/react'
 
 function DefaultUI() {
-  return <p>Well this is embarassing, looks like we had an error.</p>
+  return (
+    <p className="container">
+      Well this is embarassing, looks like there was an error.
+    </p>
+  )
 }
 
 export default function ErrorBoundary({

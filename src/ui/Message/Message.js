@@ -30,7 +30,13 @@ const typeToStyle = {
   },
 }
 
-function Message({ className, padding = 'p-4', variant, children, onClose }) {
+function Message({
+  className,
+  padding = 'p-4',
+  variant = 'info',
+  children,
+  onClose,
+}) {
   const style = typeToStyle[variant]
   const wrapperClassname = cs(
     'rounded flex w-full flex items-center',
@@ -40,10 +46,12 @@ function Message({ className, padding = 'p-4', variant, children, onClose }) {
     className
   )
 
+  console.log(style)
+
   return (
     <div className={wrapperClassname}>
       <div className={cs('rounded-full mr-4', style.backgroundIcon)}>
-        <Icon name={style.icon} />
+        <Icon name={style.icon} color={style.backgroundIcon} />
       </div>
       <div>{children}</div>
       {onClose && (
