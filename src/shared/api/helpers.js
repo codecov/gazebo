@@ -22,7 +22,7 @@ export function getHeaders(provider) {
 
   const authorizationHeader = token
     ? {
-        Authorization: `frontend ${token}`,
+        Authorization: `Bearer ${token}`,
       }
     : {}
 
