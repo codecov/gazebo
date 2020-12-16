@@ -52,8 +52,8 @@ function UserManagement({ provider, owner }) {
         defaultValue={items[0]}
         render={({ onChange, value }) => (
           <Select
-            className="flex-none flex relative"
-            buttonClass="flex items-center border-r border-solid border-gray-200 px-2 py-3"
+            className="relative flex-1 md:flex-none w-full md:w-auto"
+            buttonClass="flex items-center px-2 py-3"
             ulClass="absolute inset-x-0 bottom top-0 z-40 overflow-hidden rounded-md bg-white border-gray-200 outline-none"
             items={items}
             renderItem={({ label }) => (
@@ -78,7 +78,7 @@ function UserManagement({ provider, owner }) {
       className="space-y-4 col-span-2"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <Card className="shadow flex">
+      <Card className="shadow flex flex-wrap divide-x divide-gray-200 divide-solid">
         {_SelectEl('activated', [
           { label: 'Filter...' },
           { label: 'activated', q: true },
@@ -98,12 +98,16 @@ function UserManagement({ provider, owner }) {
           { label: 'Sort by email ⬇', q: '-email' },
         ])}
         <input
-          className="flex-2 px-2 py-3 rounded w-full"
+          className="flex-2 px-2 py-3 rounded w-full md:w-auto"
           name="search"
           ref={register}
           placeholder="Search"
         />
-        <input className="hidden sr:block" type="submit" value="Search" />
+        <input
+          className="block md:hidden sr:block bg-gray-100 flex-2 px-2 py-3 rounded w-full"
+          type="submit"
+          value="Submit"
+        />
       </Card>
       <Card className="shadow divide-y divide-gray-200 divide-solid p-4">
         <div className="pb-4">
