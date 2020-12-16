@@ -30,10 +30,9 @@ function createUserPills({ student, isAdmin, email }) {
 }
 
 function UserManagement({ provider, owner }) {
-  const [query, setQuery] = useState(null)
+  const [query, setQuery] = useState({})
   const { register, handleSubmit, control } = useForm()
   const onSubmit = (data) => {
-    console.log(data)
     setQuery(createQuery(data))
   }
 
@@ -62,7 +61,10 @@ function UserManagement({ provider, owner }) {
                 {label}
               </div>
             )}
-            onChange={onChange}
+            onChange={(select) => {
+              onChange(select)
+              setQuery({ ...query, ...createQuery({ [name]: select }) })
+            }}
             value={value}
           />
         )}
