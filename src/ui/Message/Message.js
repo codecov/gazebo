@@ -30,11 +30,10 @@ const typeToStyle = {
   },
 }
 
-function Message({ className, padding = 'p-4', variant, children, onClose }) {
+function Message({ className = 'p-4', variant, children, onClose }) {
   const style = typeToStyle[variant]
   const wrapperClassname = cs(
     'rounded flex w-full flex items-center',
-    padding,
     style.text,
     style.background,
     className
@@ -61,7 +60,6 @@ function Message({ className, padding = 'p-4', variant, children, onClose }) {
 
 Message.propTypes = {
   variant: PropTypes.oneOf(Object.keys(typeToStyle)).isRequired,
-  padding: PropTypes.string,
   onClose: PropTypes.func,
 }
 

@@ -20,15 +20,10 @@ function NotificationItem({ notification, removeNotification }) {
     return () => clearTimeout(timeout)
   }, [close, notification])
 
-  const className = 'rounded-full max-w-lg mx-auto flex items-center mt-4'
+  const className = 'rounded-full max-w-lg mx-auto flex items-center mt-4 p-2'
 
   return (
-    <Message
-      padding="p-2"
-      className={className}
-      onClose={close}
-      variant={notification.type}
-    >
+    <Message className={className} onClose={close} variant={notification.type}>
       {notification.text}
     </Message>
   )
