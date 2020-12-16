@@ -14,6 +14,7 @@ function Select({
   buttonClass,
   ulClass,
   className,
+  ariaName,
 }) {
   const {
     isOpen,
@@ -46,6 +47,7 @@ function Select({
   return (
     <div className={cs({ 'w-full relative': !className }, className)}>
       <button
+        aria-label={ariaName}
         type="button"
         className={cs(
           {
@@ -59,6 +61,7 @@ function Select({
         <Icon name={isOpen ? 'angleUp' : 'angleDown'} />
       </button>
       <ul
+        aria-label={ariaName}
         className={cs(
           {
             'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full': !ulClass,
@@ -83,6 +86,7 @@ Select.propTypes = {
   renderItem: PropTypes.func,
   buttonClass: PropTypes.string,
   ulClass: PropTypes.string,
+  ariaName: PropTypes.string,
 }
 
 export default Select

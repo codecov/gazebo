@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { useForm, Controller } from 'react-hook-form'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
+import isNil from 'lodash/isNil'
 
 import Select from 'ui/Select'
 import Card from 'ui/Card'
@@ -12,9 +13,9 @@ import { getOwnerImg } from 'shared/utils'
 function createQuery({ search, activated, admin, sort }) {
   const queryShape = {
     ...(search && { prefix: search }),
-    ...(activated?.q && { activated: activated.q }),
-    ...(admin?.q && { is_admin: admin.q }),
-    ...(sort?.q && { ordering: sort.q }),
+    ...(!isNil(activated?.q) && { activated: activated.q }),
+    ...(!isNil(admin?.q) && { is_admin: admin.q }),
+    ...(!isNil(sort?.q) && { ordering: sort.q }),
   }
   return queryShape
 }
@@ -36,8 +37,6 @@ function UserManagement({ provider, owner }) {
     setQuery(createQuery(data))
   }
 
-  const formRef = useRef()
-
   const { data } = useUsers({
     provider,
     owner,
@@ -52,9 +51,10 @@ function UserManagement({ provider, owner }) {
         defaultValue={items[0]}
         render={({ onChange, value }) => (
           <Select
+            ariaName={name}
             className="relative flex-1 md:flex-none w-full md:w-auto"
             buttonClass="flex items-center px-2 py-3"
-            ulClass="absolute inset-x-0 bottom top-0 z-40 overflow-hidden rounded-md bg-white border-gray-200 outline-none"
+            ulClass="absolute inset-x-0 bottom top-0 z-50 overflow-hidden rounded-md bg-white border-gray-200 outline-none"
             items={items}
             renderItem={({ label }) => (
               <div className="flex justify-between flex-1 p-2 text-base w-full">
@@ -73,19 +73,15 @@ function UserManagement({ provider, owner }) {
   }
 
   return (
-    <form
-      ref={formRef}
-      className="space-y-4 col-span-2"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <form className="space-y-4 col-span-2" onSubmit={handleSubmit(onSubmit)}>
       <Card className="shadow flex flex-wrap divide-x divide-gray-200 divide-solid">
         {_SelectEl('activated', [
-          { label: 'Filter...' },
+          { label: 'Sort Active Users' },
           { label: 'activated', q: true },
           { label: 'deactivated', q: false },
         ])}
         {_SelectEl('admin', [
-          { label: 'Filter...' },
+          { label: 'Sort By Admin' },
           { label: 'Is Admin', q: true },
           { label: 'Not Admin', q: false },
         ])}
@@ -94,10 +90,11 @@ function UserManagement({ provider, owner }) {
           { label: 'Sort by Name ⬇', q: '-name' },
           { label: 'Sort by Username ⬆', q: 'username' },
           { label: 'Sort by Username ⬇', q: '-username' },
-          { label: 'Sort by email ⬆', q: 'email' },
-          { label: 'Sort by email ⬇', q: '-email' },
+          { label: 'Sort by Email ⬆', q: 'email' },
+          { label: 'Sort by Email ⬇', q: '-email' },
         ])}
         <input
+          aria-label="search users"
           className="flex-2 px-2 py-3 rounded w-full md:w-auto"
           name="search"
           ref={register}
