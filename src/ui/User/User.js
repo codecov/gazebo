@@ -32,7 +32,7 @@ function User({ avatarUrl, name, username, pills = [] }) {
 
 User.propTypes = {
   avatarUrl: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string,
   username: PropTypes.string.isRequired,
   pills: PropTypes.arrayOf(
     PropTypes.shape({

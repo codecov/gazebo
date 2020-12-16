@@ -1,13 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
-
-function getOwnerImg(provider, owner) {
-  return {
-    gh: `https://github.com/${owner}.png?size=40`,
-    bb: `https://bitbucket.org/account/${owner}/avatar/40`,
-  }[provider]
-}
+import { getOwnerImg } from 'shared/utils'
 
 export function useMainNav() {
   const providerToLabel = {
