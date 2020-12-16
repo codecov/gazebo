@@ -16,7 +16,6 @@ function createQuery({ search, activated, admin, sort }) {
     ...(admin?.q && { is_admin: admin.q }),
     ...(sort?.q && { ordering: sort.q }),
   }
-  console.log(queryShape)
   return queryShape
 }
 
@@ -46,6 +45,31 @@ function UserManagement({ provider, owner }) {
     query,
   })
 
+  function _SelectEl(name, items) {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        defaultValue={items[0]}
+        render={({ onChange, value }) => (
+          <Select
+            className="flex-none flex relative"
+            buttonClass="flex items-center border-r border-solid border-gray-200 px-2 py-3"
+            ulClass="absolute inset-x-0 bottom top-0 z-40 overflow-hidden rounded-md bg-white border-gray-200 outline-none"
+            items={items}
+            renderItem={({ label }) => (
+              <div className="flex justify-between flex-1 p-2 text-base w-full">
+                {label}
+              </div>
+            )}
+            onChange={onChange}
+            value={value}
+          />
+        )}
+      />
+    )
+  }
+
   return (
     <form
       ref={formRef}
@@ -53,82 +77,26 @@ function UserManagement({ provider, owner }) {
       onSubmit={handleSubmit(onSubmit)}
     >
       <Card className="shadow flex">
-        <Controller
-          name="activated"
-          control={control}
-          defaultValue={{ label: 'Select..' }}
-          render={({ onChange, value }) => (
-            <Select
-              className="flex-initial w-auto"
-              items={[
-                { label: 'Select..' },
-                { label: 'activated', q: true },
-                { label: 'deactivated', q: false },
-              ]}
-              renderItem={({ label }) => (
-                <div className="flex justify-between flex-1 p-2 text-base w-full">
-                  {label}
-                </div>
-              )}
-              onChange={(selction) => {
-                handleSubmit(onSubmit(selction))
-                onChange(selction)
-              }}
-              value={value}
-            />
-          )}
-        />
-
-        <Controller
-          name="admin"
-          control={control}
-          defaultValue={{ label: 'Select..' }}
-          render={({ onChange, value }) => (
-            <Select
-              className="flex-initial w-auto"
-              items={[
-                { label: 'Select..' },
-                { label: 'Is Admin', q: true },
-                { label: 'Not Admin', q: false },
-              ]}
-              renderItem={({ label }) => (
-                <div className="flex justify-between flex-1 p-2 text-base w-full">
-                  {label}
-                </div>
-              )}
-              onChange={onChange}
-              value={value}
-            />
-          )}
-        />
-
-        <Controller
-          name="sort"
-          control={control}
-          defaultValue={{ label: 'Sort by Name ⬆', q: 'name' }}
-          render={({ onChange, value }) => (
-            <Select
-              className="flex-initial truncate mr-2"
-              items={[
-                { label: 'Sort by Name ⬆', q: 'name' },
-                { label: 'Sort by Name ⬇', q: '-name' },
-                { label: 'Sort by Username ⬆', q: 'username' },
-                { label: 'Sort by Username ⬇', q: '-username' },
-                { label: 'Sort by email ⬆', q: 'email' },
-                { label: 'Sort by email ⬇', q: '-email' },
-              ]}
-              renderItem={({ label }) => (
-                <div className="flex justify-between flex-1 p-2 text-base w-full">
-                  <span className="capitalize text-gray-600">{label}</span>
-                </div>
-              )}
-              onChange={onChange}
-              value={value}
-            />
-          )}
-        />
+        {_SelectEl('activated', [
+          { label: 'Filter...' },
+          { label: 'activated', q: true },
+          { label: 'deactivated', q: false },
+        ])}
+        {_SelectEl('admin', [
+          { label: 'Filter...' },
+          { label: 'Is Admin', q: true },
+          { label: 'Not Admin', q: false },
+        ])}
+        {_SelectEl('sort', [
+          { label: 'Sort by Name ⬆', q: 'name' },
+          { label: 'Sort by Name ⬇', q: '-name' },
+          { label: 'Sort by Username ⬆', q: 'username' },
+          { label: 'Sort by Username ⬇', q: '-username' },
+          { label: 'Sort by email ⬆', q: 'email' },
+          { label: 'Sort by email ⬇', q: '-email' },
+        ])}
         <input
-          className="flex-3 p-2 rounded w-full"
+          className="flex-2 px-2 py-3 rounded w-full"
           name="search"
           ref={register}
           placeholder="Search"
