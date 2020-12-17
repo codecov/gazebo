@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { useUsers } from 'services/account'
@@ -8,26 +8,54 @@ import UserManagerment from './UserManagement'
 jest.mock('services/account/hooks')
 
 const users = {
-  data: {
-    results: [{ username: 'clwiseman', name: 'carrie', activated: true }],
-  },
+  data: {},
 }
 
 describe('UserManagerment', () => {
   function setup() {
-    render(<UserManagerment provider="gh" owner="chris" />)
+    act(() => {
+      render(<UserManagerment provider="gh" owner="chris" />)
+    })
   }
 
   describe('User List', () => {
-    beforeEach(() => {
-      useUsers.mockReturnValue(users)
-      setup()
+    describe('renders results', () => {
+      beforeEach(() => {
+        const mockUseUsers = {
+          data: {
+            results: [
+              { username: 'clwiseman', name: 'carrie', activated: true },
+            ],
+          },
+        }
+        useUsers.mockReturnValue(mockUseUsers)
+        setup()
+      })
+      it('renders the user list', () => {
+        const placeholder = screen.getByText(/@clwiseman/)
+        expect(placeholder).toBeInTheDocument()
+
+        const Avatar = screen.getAllByRole('img')
+        expect(Avatar.length).toBe(1)
+      })
     })
-    it('renders the user list', () => {
-      const placeholder = screen.getByText(/@clwiseman/)
-      expect(placeholder).toBeInTheDocument()
+    describe('renders nothing with no results', () => {
+      beforeEach(() => {
+        const mockUseUsers = {
+          data: {
+            results: [],
+          },
+        }
+        useUsers.mockReturnValue(mockUseUsers)
+        setup()
+      })
+      it('renders the user list', () => {
+        const Avatar = screen.queryAllByRole('img')
+        expect(Avatar.length).toBe(0)
+      })
     })
   })
+
   describe('Sort By', () => {
     describe('Default Selection', () => {
       beforeEach(() => {
@@ -184,6 +212,30 @@ describe('UserManagerment', () => {
           provider: 'gh',
           query: expected,
         })
+      })
+    })
+  })
+
+  describe('Search', () => {
+    beforeEach(() => {
+      useUsers.mockReturnValue(users)
+      setup()
+      return act(async () => {
+        const SearchInput = screen.getByRole('textbox', {
+          name: 'search users',
+        })
+        const Submit = screen.getByRole('button', { name: 'Submit' })
+
+        userEvent.type(SearchInput, 'Ter')
+        userEvent.click(Submit, { bubbles: true })
+      })
+    })
+
+    it('Makes the correct query to the api', () => {
+      expect(useUsers).toHaveBeenCalledWith({
+        owner: 'chris',
+        provider: 'gh',
+        query: { ordering: 'name', prefix: 'Ter' },
       })
     })
   })

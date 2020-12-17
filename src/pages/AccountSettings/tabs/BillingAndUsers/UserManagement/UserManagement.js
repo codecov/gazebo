@@ -20,11 +20,11 @@ function createQuery({ search, activated, admin, sort }) {
   return queryShape
 }
 
-function createUserPills({ student, isAdmin, email }) {
+function createUserPills({ student, is_admin, email }) {
   const pills = []
 
   if (student) pills.push({ text: 'Student' })
-  if (isAdmin) pills.push({ text: 'Admin', highlight: true })
+  if (is_admin) pills.push({ text: 'Admin', highlight: true })
   if (email) pills.push({ text: email })
 
   return pills
