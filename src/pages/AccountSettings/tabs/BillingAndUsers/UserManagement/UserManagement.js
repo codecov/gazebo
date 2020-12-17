@@ -12,7 +12,7 @@ import { getOwnerImg } from 'shared/utils'
 
 function createQuery({ search, activated, admin, sort }) {
   const queryShape = {
-    ...(search && { prefix: search }),
+    ...(search && { search }),
     ...(!isNil(activated?.q) && { activated: activated.q }),
     ...(!isNil(admin?.q) && { is_admin: admin.q }),
     ...(!isNil(sort?.q) && { ordering: sort.q }),

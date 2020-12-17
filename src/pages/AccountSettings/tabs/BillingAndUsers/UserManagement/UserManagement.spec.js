@@ -235,7 +235,7 @@ describe('UserManagerment', () => {
       expect(useUsers).toHaveBeenCalledWith({
         owner: 'chris',
         provider: 'gh',
-        query: { ordering: 'name', prefix: 'Ter' },
+        query: { ordering: 'name', search: 'Ter' },
       })
     })
   })
