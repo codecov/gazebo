@@ -1,4 +1,5 @@
 import PropType from 'prop-types'
+import isNil from 'lodash/isNil'
 
 import { useAccountDetails } from 'services/account'
 
@@ -12,7 +13,7 @@ import LegacyUpgrade from './LegacyUpgrade'
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
 
-  if (!typeof yourVariable === 'object') {
+  if (isNil(accountDetails)) {
     return <LegacyUpgrade />
   }
 

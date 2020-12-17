@@ -15,16 +15,16 @@ const provider = 'gh'
 const owner = 'codecov'
 
 describe('BillingAndUsersTab', () => {
-  function setup(url) {
+  function setup(data = {}) {
     useAccountDetails.mockReturnValue({
-      data: {},
+      data,
     })
     render(<BillingAndUsers provider={provider} owner={owner} />)
   }
 
   describe('when rendering on base url', () => {
     beforeEach(() => {
-      setup('/')
+      setup()
     })
 
     it('renders the CurrentPlanCard', () => {
@@ -44,6 +44,17 @@ describe('BillingAndUsersTab', () => {
 
     it('renders the InfoMessageCancellation', () => {
       const tab = screen.getByText(/InfoMessageCancellation/)
+      expect(tab).toBeInTheDocument()
+    })
+  })
+
+  describe('legacy plan', () => {
+    beforeEach(() => {
+      setup(null)
+    })
+
+    it('renders the LegacyBillingPage is user is on old plan', () => {
+      const tab = screen.getByText(/LegacyUpgrade/)
       expect(tab).toBeInTheDocument()
     })
   })
