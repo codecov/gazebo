@@ -21,19 +21,19 @@ function BillingAndUsers({ provider, owner }) {
       <InfoMessageCancellation
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
-      <div className="col-start-1 col-end-5">
-        <CurrentPlanCard accountDetails={accountDetails} />
-        <PaymentCard
-          subscriptionDetail={accountDetails.subscriptionDetail}
-          provider={provider}
-          owner={owner}
-        />
-        <LatestInvoiceCard
-          invoice={accountDetails.subscriptionDetail?.latestInvoice}
-        />
-      </div>
-      <div className="col-start-5 col-end-13">
-        <UserManagement />
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 max-w-6xl">
+        <div className="col-span-1">
+          <CurrentPlanCard accountDetails={accountDetails} />
+          <PaymentCard
+            subscriptionDetail={accountDetails.subscriptionDetail}
+            provider={provider}
+            owner={owner}
+          />
+          <LatestInvoiceCard
+            invoice={accountDetails.subscriptionDetail?.latestInvoice}
+          />
+        </div>
+        <UserManagement provider={provider} owner={owner} />
       </div>
     </>
   )

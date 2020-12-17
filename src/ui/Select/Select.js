@@ -11,6 +11,10 @@ function Select({
   onChange,
   value,
   renderItem = identity,
+  buttonClass,
+  ulClass,
+  className,
+  ariaName,
 }) {
   const {
     isOpen,
@@ -41,22 +45,30 @@ function Select({
   }
 
   return (
-    <div className="w-full relative">
+    <div className={cs({ 'w-full relative': !className }, className)}>
       <button
+        aria-label={ariaName}
         type="button"
-        className="flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none"
+        className={cs(
+          {
+            'flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none': !buttonClass,
+          },
+          buttonClass
+        )}
         {...getToggleButtonProps()}
       >
         {renderButton()}
         <Icon name={isOpen ? 'angleUp' : 'angleDown'} />
       </button>
       <ul
+        aria-label={ariaName}
         className={cs(
-          'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full',
           {
+            'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full': !ulClass,
             border: isOpen,
             'border-solid': isOpen,
-          }
+          },
+          ulClass
         )}
         {...getMenuProps()}
       >
@@ -72,6 +84,9 @@ Select.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.any,
   renderItem: PropTypes.func,
+  buttonClass: PropTypes.string,
+  ulClass: PropTypes.string,
+  ariaName: PropTypes.string,
 }
 
 export default Select
