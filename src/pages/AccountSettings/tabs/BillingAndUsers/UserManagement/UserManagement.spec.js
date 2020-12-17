@@ -1,11 +1,11 @@
 import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { useUsers } from 'services/account'
+import { useUsers } from 'services/users'
 
 import UserManagerment from './UserManagement'
 
-jest.mock('services/account/hooks')
+jest.mock('services/users/hooks')
 
 const users = {
   data: {},

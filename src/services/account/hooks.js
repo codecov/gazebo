@@ -7,18 +7,9 @@ function getPathAccountDetails({ provider, owner }) {
   return `/${provider}/${owner}/account-details/`
 }
 
-function getPathUsers({ provider, owner }) {
-  return `/${provider}/${owner}/users/`
-}
-
 function fetchAccountDetails({ provider, owner }) {
   const path = getPathAccountDetails({ provider, owner })
   return Api.get({ path, provider })
-}
-
-function fetchUsers({ provider, owner, query }) {
-  const path = getPathUsers({ provider, owner })
-  return Api.get({ path, provider, query })
 }
 
 function fetchPlan(provider) {
@@ -135,17 +126,6 @@ export function useUpdateCard({ provider, owner }) {
         // update the local cache of account details from what the server returns
         queryCache.setQueryData(['accountDetails', provider, owner], data)
       },
-    }
-  )
-}
-
-export function useUsers({ provider, owner, query }) {
-  return useQuery(
-    ['users', provider, owner, query],
-    () => fetchUsers({ provider, owner, query }),
-    {
-      keepPreviousData: true,
-      staleTime: 5000,
     }
   )
 }

@@ -7,7 +7,7 @@ import Select from 'ui/Select'
 import Card from 'ui/Card'
 import User from 'ui/User'
 
-import { useUsers } from 'services/account'
+import { useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
 function createQuery({ search, activated, admin, sort }) {
