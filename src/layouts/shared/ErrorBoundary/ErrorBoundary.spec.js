@@ -42,7 +42,7 @@ describe('Error Boundary', () => {
       setup()
       // Get first error message
       const [defaultErrorUI] = screen.getAllByText(
-        /Well this is embarassing, looks like we had an error./
+        /Well this is embarassing, looks like there was an error./
       )
 
       expect(defaultErrorUI).toBeInTheDocument()

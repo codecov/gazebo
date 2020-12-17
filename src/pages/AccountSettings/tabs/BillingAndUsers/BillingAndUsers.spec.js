@@ -8,6 +8,7 @@ jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')
 jest.mock('./PaymentCard', () => () => 'PaymentCard')
 jest.mock('./InfoMessageCancellation', () => () => 'InfoMessageCancellation')
 jest.mock('./UserManagement', () => () => 'UserManagement')
+jest.mock('./LegacyUpgrade', () => () => 'LegacyUpgrade')
 jest.mock('services/account/hooks')
 
 const provider = 'gh'

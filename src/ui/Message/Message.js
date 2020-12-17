@@ -39,8 +39,6 @@ function Message({ className = 'p-4', variant, children, onClose }) {
     className
   )
 
-  console.log(style)
-
   return (
     <div className={wrapperClassname}>
       <div className={cs('rounded-full mr-4', style.backgroundIcon)}>
