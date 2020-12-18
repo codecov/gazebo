@@ -5,10 +5,11 @@ import isNil from 'lodash/isNil'
 
 import Select from 'ui/Select'
 import Card from 'ui/Card'
-import User from 'ui/User'
+import Button from 'ui/Button'
 
-import { useUsers } from 'services/users'
-import { getOwnerImg } from 'shared/utils'
+import UserTable from './UserTable'
+
+import { useUsers, useActivateUser } from 'services/users'
 
 function createQuery({ search, activated, admin, sort }) {
   const queryShape = {
@@ -20,16 +21,6 @@ function createQuery({ search, activated, admin, sort }) {
   return queryShape
 }
 
-function createUserPills({ student, is_admin, email }) {
-  const pills = []
-
-  if (student) pills.push({ text: 'Student' })
-  if (is_admin) pills.push({ text: 'Admin', highlight: true })
-  if (email) pills.push({ text: email })
-
-  return pills
-}
-
 function UserManagement({ provider, owner }) {
   const [query, setQuery] = useState({})
   const { register, handleSubmit, control } = useForm()
@@ -38,6 +29,12 @@ function UserManagement({ provider, owner }) {
   }
 
   const { data } = useUsers({
+    provider,
+    owner,
+    query,
+  })
+
+  const [activateUser] = useActivateUser({
     provider,
     owner,
     query,
@@ -107,19 +104,29 @@ function UserManagement({ provider, owner }) {
         />
       </Card>
       <Card className="shadow divide-y divide-gray-200 divide-solid p-4">
-        <div className="pb-4">
-          <h2>User List</h2>
-          {data?.results?.map((user, i) => (
-            <div key={i} className="p-2 flex justify-between">
-              <User
-                username={user.username}
-                name={user.name}
-                avatarUrl={getOwnerImg(provider, user.username)}
-                pills={createUserPills(user)}
-              />
-              <span>{user.activated ? 'Activated' : 'Disabled'}</span>
-            </div>
-          ))}
+        <div className="pb-4 divide-y divide-solid divide-gray-200">
+          <div className="my-2">
+            <h2 className="bold">Users</h2>
+          </div>
+          {Array.isArray(data.results) && (
+            <UserTable
+              provider={provider}
+              users={data.results}
+              Cta={(user) => (
+                <Button
+                  onClick={() =>
+                    activateUser({
+                      activated: !user.activated,
+                      targetUser: user.username,
+                    })
+                  }
+                  variant={user.activated ? 'normal' : 'outline'}
+                >
+                  {user.activated ? 'Activated' : 'Disabled'}
+                </Button>
+              )}
+            />
+          )}
         </div>
         <div className="pt-4">Pagination</div>
       </Card>

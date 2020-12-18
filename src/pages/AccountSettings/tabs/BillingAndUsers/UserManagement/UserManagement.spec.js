@@ -1,25 +1,35 @@
 import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import PropTypes from 'prop-types'
 
 import { useUsers } from 'services/users'
 
-import UserManagerment from './UserManagement'
+import UserManagement from './UserManagement'
+
+function MockUserTable({ users, Cta }) {
+  return <div>{Cta(users[0])} UserTable</div>
+}
+MockUserTable.propTypes = {
+  Cta: PropTypes.func,
+  users: PropTypes.arrayOf(PropTypes.object),
+}
 
 jest.mock('services/users/hooks')
+jest.mock('./UserTable', () => MockUserTable)
 
 const users = {
   data: {},
 }
 
-describe('UserManagerment', () => {
+describe('UserManagement', () => {
   function setup() {
     act(() => {
-      render(<UserManagerment provider="gh" owner="chris" />)
+      render(<UserManagement provider="gh" owner="chris" />)
     })
   }
 
   describe('User List', () => {
-    describe('renders results', () => {
+    describe('with results', () => {
       beforeEach(() => {
         const mockUseUsers = {
           data: {
@@ -32,26 +42,45 @@ describe('UserManagerment', () => {
         setup()
       })
       it('renders the user list', () => {
-        const placeholder = screen.getByText(/@clwiseman/)
+        const placeholder = screen.getByText(/UserTable/)
         expect(placeholder).toBeInTheDocument()
-
-        const Avatar = screen.getAllByRole('img')
-        expect(Avatar.length).toBe(1)
       })
     })
-    describe('renders nothing with no results', () => {
+    describe('with no results', () => {
       beforeEach(() => {
         const mockUseUsers = {
-          data: {
-            results: [],
-          },
+          data: {},
         }
         useUsers.mockReturnValue(mockUseUsers)
         setup()
       })
-      it('renders the user list', () => {
-        const Avatar = screen.queryAllByRole('img')
-        expect(Avatar.length).toBe(0)
+      it('does not render the user list', () => {
+        const placeholder = screen.queryByText(/UserTable/)
+        expect(placeholder).not.toBeInTheDocument()
+      })
+    })
+    describe('activated button', () => {
+      beforeEach(() => {
+        const mockUseUsers = {
+          data: {
+            results: [
+              { username: 'clwiseman', name: 'carrie', activated: true },
+            ],
+          },
+        }
+        useUsers.mockReturnValue(mockUseUsers)
+
+        setup()
+      })
+      it('renders a button', () => {
+        expect(
+          screen.getByRole('button', { name: 'Activated' })
+        ).toBeInTheDocument()
+      })
+      it('Activated', () => {
+        expect(screen.getByRole('button', { name: 'Activated' })).toContain(
+          'Activated'
+        )
       })
     })
   })

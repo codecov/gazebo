@@ -50,10 +50,18 @@ export function patch(config) {
   })
 }
 
+export function put(config) {
+  return _fetch({
+    ...config,
+    method: 'PUT',
+  })
+}
+
 const Api = {
   get,
   post,
   patch,
+  put,
 }
 
 export default Api
