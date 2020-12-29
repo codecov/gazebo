@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 
 import {
   useAccountDetails,
-  useAccountsAndPlans,
+  usePlans,
   useCancelPlan,
   useUpgradePlan,
   useUpdateCard,
@@ -79,22 +79,16 @@ describe('useAccountDetails', () => {
   })
 })
 
-describe('useAccountsAndPlans', () => {
+describe('usePlans', () => {
   let hookData
 
   function setup(currentUrl) {
     server.use(
-      rest.get(
-        `/internal/${provider}/${owner}/account-details/`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(accountDetails))
-        }
-      ),
       rest.get(`/internal/plans`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(getPlans()))
       })
     )
-    hookData = renderHook(() => useAccountsAndPlans({ provider, owner }), {
+    hookData = renderHook(() => usePlans({ provider, owner }), {
       wrapper,
     })
   }
@@ -114,10 +108,7 @@ describe('useAccountsAndPlans', () => {
       })
 
       it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({
-          accountDetails,
-          plans: getPlans(),
-        })
+        expect(hookData.result.current.data).toEqual(getPlans())
       })
     })
   })

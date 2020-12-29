@@ -33,15 +33,11 @@ export function useAccountDetails({ provider, owner }) {
   })
 }
 
-export function useAccountsAndPlans({ provider, owner }) {
-  return useQuery(['accountDetails-and-plans', provider, owner], () => {
-    return Promise.all([
-      fetchAccountDetails({ provider, owner }),
-      fetchPlan(provider),
-    ]).then((data) => {
-      const [accountDetails, plans] = data
-      return { accountDetails, plans }
-    })
+export function usePlans(provider) {
+  // the plans are very static data
+  return useQuery('plans', () => fetchPlan(provider), {
+    cacheTime: Infinity,
+    staleTime: Infinity,
   })
 }
 

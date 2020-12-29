@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CancelPlan from './CancelPlan'
-import { useAccountsAndPlans, useCancelPlan } from 'services/account'
+import { useAccountDetails, usePlans, useCancelPlan } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 
 jest.mock('services/account/hooks')
@@ -40,18 +40,18 @@ describe('CancelPlan', () => {
 
   function setup(currentPlan = proPlan) {
     useAddNotification.mockReturnValue(addNotification)
-    useAccountsAndPlans.mockReturnValue({
+    useAccountDetails.mockReturnValue({
       data: {
-        accountDetails: {
-          plan: currentPlan,
-          activatedUserCount: 2,
-          inactiveUserCount: 1,
-          subscriptionDetail: {
-            currentPeriodEnd: 1638614662,
-          },
+        plan: currentPlan,
+        activatedUserCount: 2,
+        inactiveUserCount: 1,
+        subscriptionDetail: {
+          currentPeriodEnd: 1638614662,
         },
-        plans: getPlans(),
       },
+    })
+    usePlans.mockReturnValue({
+      data: getPlans(),
     })
     useCancelPlan.mockReturnValue({ mutate, isLoading: false })
     render(
