@@ -82,6 +82,10 @@ describe('CancelPlan', () => {
       const button = screen.getByRole('button')
       expect(button).toHaveTextContent('Downgrade to Free')
     })
+
+    it('loads the baremetrics script', () => {
+      expect(window.barecancel.created).toBeTruthy()
+    })
   })
 
   describe('when clicking on the button to downgrade', () => {
@@ -101,8 +105,10 @@ describe('CancelPlan', () => {
         userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       })
 
-      it('calls the mutation', () => {
-        expect(mutate).toHaveBeenCalled()
+      it('closes the modal', () => {
+        expect(
+          screen.queryByText(/Are you sure you want to cancel your plan?/)
+        ).not.toBeInTheDocument()
       })
     })
 
@@ -131,9 +137,10 @@ describe('CancelPlan', () => {
     })
   })
 
-  describe('when mutation is successful', () => {
+  describe('when calling the mutation', () => {
     beforeEach(() => {
       setup()
+      window.barecancel.params.callback_send()
       userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
       userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       // simulating the onSuccess callback given to mutate
@@ -148,6 +155,7 @@ describe('CancelPlan', () => {
   describe('when mutation is not successful', () => {
     beforeEach(() => {
       setup()
+      window.barecancel.params.callback_send()
       userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
       userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       // simulating the onError callback given to mutate
