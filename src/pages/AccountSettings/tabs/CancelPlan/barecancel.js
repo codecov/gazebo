@@ -27,7 +27,6 @@ function useBarecancel(accountDetails, cancelPlan) {
       test_mode: config.NODE_ENV !== 'production',
       callback_send: cancelPlan,
     }
-    console.log(config)
   }, [stripeCustomerId, cancelPlan])
 }
 
