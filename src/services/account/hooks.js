@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryCache } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useStripe } from '@stripe/react-stripe-js'
 
 import Api from 'shared/api'
@@ -28,40 +28,37 @@ function cancelPlan({ provider, owner }) {
 }
 
 export function useAccountDetails({ provider, owner }) {
-  return useQuery(['accountDetails', provider, owner], (_, provider, owner) => {
+  return useQuery(['accountDetails', provider, owner], () => {
     return fetchAccountDetails({ provider, owner })
   })
 }
 
 export function useAccountsAndPlans({ provider, owner }) {
-  return useQuery(
-    ['accountDetails-and-plans', provider, owner],
-    (_, provider, owner) => {
-      return Promise.all([
-        fetchAccountDetails({ provider, owner }),
-        fetchPlan(provider),
-      ]).then((data) => {
-        const [accountDetails, plans] = data
-        return { accountDetails, plans }
-      })
-    }
-  )
+  return useQuery(['accountDetails-and-plans', provider, owner], () => {
+    return Promise.all([
+      fetchAccountDetails({ provider, owner }),
+      fetchPlan(provider),
+    ]).then((data) => {
+      const [accountDetails, plans] = data
+      return { accountDetails, plans }
+    })
+  })
 }
 
 export function useCancelPlan({ provider, owner }) {
-  const queryCache = useQueryCache()
+  const queryClient = useQueryClient()
 
   return useMutation(() => cancelPlan({ provider, owner }), {
     onSuccess: (data) => {
       // update the local cache of account details from what the server returns
-      queryCache.setQueryData(['accountDetails', provider, owner], data)
+      queryClient.setQueryData(['accountDetails', provider, owner], data)
     },
   })
 }
 
 export function useUpgradePlan({ provider, owner }) {
   const stripe = useStripe()
-  const queryCache = useQueryCache()
+  const queryClient = useQueryClient()
 
   function redirectToStripe(sessionId) {
     return stripe.redirectToCheckout({ sessionId }).then((e) => {
@@ -91,7 +88,7 @@ export function useUpgradePlan({ provider, owner }) {
     {
       onSuccess: (data) => {
         // update the local cache of account details from what the server returns
-        queryCache.setQueryData(['accountDetails', provider, owner], data)
+        queryClient.setQueryData(['accountDetails', provider, owner], data)
       },
     }
   )
@@ -99,7 +96,7 @@ export function useUpgradePlan({ provider, owner }) {
 
 export function useUpdateCard({ provider, owner }) {
   const stripe = useStripe()
-  const queryCache = useQueryCache()
+  const queryClient = useQueryClient()
 
   return useMutation(
     (card) => {
@@ -124,7 +121,7 @@ export function useUpdateCard({ provider, owner }) {
     {
       onSuccess: (data) => {
         // update the local cache of account details from what the server returns
-        queryCache.setQueryData(['accountDetails', provider, owner], data)
+        queryClient.setQueryData(['accountDetails', provider, owner], data)
       },
     }
   )

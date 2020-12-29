@@ -35,7 +35,7 @@ function useIsFormReady() {
 
 function CreditCardForm({ closeForm, provider, owner }) {
   const elements = useElements()
-  const [updateCard, { isLoading, error, reset }] = useUpdateCard({
+  const { mutate: updateCard, isLoading, error, reset } = useUpdateCard({
     provider,
     owner,
   })

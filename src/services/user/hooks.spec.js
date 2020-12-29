@@ -2,6 +2,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useUser } from './hooks'
 
@@ -10,6 +11,13 @@ const user = {
   avatarUrl:
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
+
+const queryClient = new QueryClient()
+const wrapper = ({ children }) => (
+  <MemoryRouter>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  </MemoryRouter>
+)
 
 const server = setupServer()
 
@@ -26,9 +34,7 @@ describe('useUser', () => {
         return res(ctx.status(200), ctx.json(user))
       })
     )
-    hookData = renderHook(() => useUser(), {
-      wrapper: MemoryRouter,
-    })
+    hookData = renderHook(() => useUser(), { wrapper })
   }
 
   describe('when called', () => {
