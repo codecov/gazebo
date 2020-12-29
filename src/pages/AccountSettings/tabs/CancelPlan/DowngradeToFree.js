@@ -19,7 +19,7 @@ function getEndPeriod(accountDetails) {
 function useCancelSubmit({ provider, owner }) {
   const redirect = useHistory().push
   const addToast = useAddNotification()
-  const [mutate, data] = useCancelPlan({ provider, owner })
+  const { mutate, ...rest } = useCancelPlan({ provider, owner })
 
   function cancelPlan() {
     mutate(null, {
@@ -34,12 +34,12 @@ function useCancelSubmit({ provider, owner }) {
     })
   }
 
-  return [cancelPlan, data]
+  return { cancelPlan, ...rest }
 }
 
 function DowngradeToFree({ accountDetails, provider, owner }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [cancelPlan, { isLoading }] = useCancelSubmit({ provider, owner })
+  const { cancelPlan, isLoading } = useCancelSubmit({ provider, owner })
   const isAlreadyFreeUser = accountDetails.plan?.value === 'users-free'
   const isDisabled = [
     // disable button if

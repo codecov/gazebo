@@ -3,6 +3,10 @@ import { MemoryRouter } from 'react-router-dom'
 
 import Header from './Header'
 
+jest.mock('services/user', () => ({
+  useUser: () => ({ data: null }),
+}))
+
 describe('Header', () => {
   function setup() {
     render(

@@ -95,7 +95,7 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
 function useSubmit({ owner, provider }) {
   const redirect = useHistory().push
   const addToast = useAddNotification()
-  const [mutate, data] = useUpgradePlan({ provider, owner })
+  const { mutate, ...rest } = useUpgradePlan({ provider, owner })
 
   function upgradePlan(newPlan) {
     return mutate(newPlan, {
@@ -114,7 +114,7 @@ function useSubmit({ owner, provider }) {
     })
   }
 
-  return [upgradePlan, data]
+  return { upgradePlan, ...rest }
 }
 
 function UpgradePlanForm({
@@ -138,10 +138,10 @@ function UpgradePlanForm({
     planOptions,
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
 
-  const [upgrade] = useSubmit({ owner, provider })
+  const { upgradePlan } = useSubmit({ owner, provider })
 
   return (
-    <form className="text-gray-900" onSubmit={handleSubmit(upgrade)}>
+    <form className="text-gray-900" onSubmit={handleSubmit(upgradePlan)}>
       <h2 className="text-2xl text-pink-500 bold mb-8">
         {proPlanMonth.marketingName}
       </h2>

@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { QueryCache, ReactQueryCacheProvider } from 'react-query'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
@@ -11,8 +11,8 @@ import config from 'config'
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const FullLayout = lazy(() => import('./layouts/FullLayout'))
 
-const queryCache = new QueryCache({
-  defaultConfig: {
+const queryClient = new QueryClient({
+  defaultOptions: {
     queries: {
       suspense: true,
       retry: false,
@@ -27,7 +27,7 @@ function App() {
   return (
     <Elements stripe={stripePromise}>
       <ToastNotificationProvider>
-        <ReactQueryCacheProvider queryCache={queryCache}>
+        <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <Switch>
               <Route path="/account/:provider/:owner/">
@@ -59,7 +59,7 @@ function App() {
               </Route>
             </Switch>
           </BrowserRouter>
-        </ReactQueryCacheProvider>
+        </QueryClientProvider>
       </ToastNotificationProvider>
     </Elements>
   )

@@ -8,7 +8,7 @@ export function useUser(options = {}) {
 
   return useQuery(
     ['currentUser', provider],
-    (_, provider) => {
+    () => {
       return Api.get({
         path: '/profile',
         provider,

@@ -79,7 +79,7 @@ describe('UpgradePlanForm', () => {
       },
     }
     useAddNotification.mockReturnValue(addNotification)
-    useUpgradePlan.mockReturnValue([mutate, { isLoading: false }])
+    useUpgradePlan.mockReturnValue({ mutate, isLoading: false })
     render(
       <MemoryRouter initialEntries={['/my/initial/route']}>
         <UpgradePlanForm {...props} />

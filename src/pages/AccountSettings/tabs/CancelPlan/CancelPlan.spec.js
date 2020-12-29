@@ -53,7 +53,7 @@ describe('CancelPlan', () => {
         plans: getPlans(),
       },
     })
-    useCancelPlan.mockReturnValue([mutate, { isLoading: false }])
+    useCancelPlan.mockReturnValue({ mutate, isLoading: false })
     render(
       <MemoryRouter initialEntries={['/my/initial/route']}>
         <CancelPlan provider={provider} owner={owner} />
