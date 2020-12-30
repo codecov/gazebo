@@ -19,7 +19,7 @@ function LatestInvoiceCard({ invoice }) {
         <img src={invoiceImg} alt="invoice icon" />
         <div className="ml-4">
           <div className="text-gray-500 mr-1">
-            {format(fromUnixTime(invoice.periodStart), 'MMMM yyyy')}
+            {format(fromUnixTime(invoice.created), 'MMMM yyyy')}
           </div>
           <div className="italic text-gray-400">
             Due date {format(fromUnixTime(invoice.dueDate), 'do MMM')} - $

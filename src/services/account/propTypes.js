@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 
 export const invoicePropType = PropType.shape({
-  periodStart: PropType.number.isRequired,
+  created: PropType.number.isRequired,
   dueDate: PropType.number.isRequired,
   total: PropType.number.isRequired,
   invoicePdf: PropType.string.isRequired,
