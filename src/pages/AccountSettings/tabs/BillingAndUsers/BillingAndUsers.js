@@ -8,6 +8,7 @@ import InfoMessageCancellation from './InfoMessageCancellation'
 import CurrentPlanCard from './CurrentPlanCard'
 import LatestInvoiceCard from './LatestInvoiceCard'
 import PaymentCard from './PaymentCard'
+import LegacyUser from './LegacyUser'
 
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -18,20 +19,32 @@ function BillingAndUsers({ provider, owner }) {
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
       <InfoMessageStripeCallback />
-      <div className="col-start-1 col-end-5">
-        <CurrentPlanCard accountDetails={accountDetails} />
-        <PaymentCard
-          subscriptionDetail={accountDetails.subscriptionDetail}
-          provider={provider}
-          owner={owner}
-        />
-        <LatestInvoiceCard
-          invoice={accountDetails.subscriptionDetail?.latestInvoice}
-        />
-      </div>
-      <div className="col-start-5 col-end-13">
-        <Card>Users</Card>
-      </div>
+      {accountDetails.plan ? (
+        <>
+          <div className="col-start-1 col-end-5">
+            <CurrentPlanCard accountDetails={accountDetails} />
+            <PaymentCard
+              subscriptionDetail={accountDetails.subscriptionDetail}
+              provider={provider}
+              owner={owner}
+            />
+            <LatestInvoiceCard
+              invoice={accountDetails.subscriptionDetail?.latestInvoice}
+            />
+          </div>
+          <div className="col-start-5 col-end-13">
+            <Card>Users</Card>
+          </div>
+        </>
+      ) : (
+        <div className="col-start-1 col-end-13">
+          <LegacyUser
+            accountDetails={accountDetails}
+            provider={provider}
+            owner={owner}
+          />
+        </div>
+      )}
     </>
   )
 }
