@@ -27,6 +27,13 @@ function cancelPlan({ provider, owner }) {
   return Api.patch({ path, provider, body })
 }
 
+export function useInvoices({ provider, owner }) {
+  return useQuery(['invoices', provider, owner], () => {
+    const path = `/${provider}/${owner}/invoices/`
+    return Api.get({ path, provider })
+  })
+}
+
 export function useAccountDetails({ provider, owner }) {
   return useQuery(['accountDetails', provider, owner], () => {
     return fetchAccountDetails({ provider, owner })
