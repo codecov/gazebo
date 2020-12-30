@@ -4,10 +4,13 @@ import { Link } from 'react-router-dom'
 import Button from 'ui/Button'
 import Card from 'ui/Card'
 import { invoicePropType } from 'services/account'
+import { useBaseUrl } from 'shared/router'
 
 import invoiceImg from './invoice.svg'
 
 function LatestInvoiceCard({ invoice }) {
+  const baseUrl = useBaseUrl()
+
   if (!invoice) return null
   return (
     <Card className="p-6 mt-4">
@@ -32,7 +35,12 @@ function LatestInvoiceCard({ invoice }) {
           </div>
         </div>
       </div>
-      <Button color="pink" variant="outline" to="#" Component={Link}>
+      <Button
+        color="pink"
+        variant="outline"
+        to={`${baseUrl}invoices`}
+        Component={Link}
+      >
         See all invoices
       </Button>
     </Card>

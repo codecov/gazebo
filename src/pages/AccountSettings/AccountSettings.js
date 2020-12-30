@@ -11,6 +11,7 @@ import YAMLTab from './tabs/YAML'
 
 const CancelPlanTab = lazy(() => import('./tabs/CancelPlan'))
 const UpgradePlanTab = lazy(() => import('./tabs/UpgradePlan'))
+const Invoices = lazy(() => import('./tabs/Invoices'))
 
 function AccountSettings() {
   const { provider, owner } = useParams()
@@ -31,6 +32,9 @@ function AccountSettings() {
         </Route>
         <Route path={baseUrl + 'billing/cancel'}>
           <CancelPlanTab provider={provider} owner={owner} />
+        </Route>
+        <Route path={baseUrl + 'invoices'}>
+          <Invoices provider={provider} owner={owner} />
         </Route>
         <Route path={baseUrl + 'yaml'}>
           <YAMLTab />
