@@ -13,7 +13,7 @@ function LatestInvoiceCard({ invoice }) {
 
   if (!invoice) return null
   return (
-    <Card className="p-6 mt-4">
+    <Card className="p-6 mb-4">
       <h2 className="text-lg mb-4">Invoices</h2>
       <div className="mb-5 flex items-center">
         <img src={invoiceImg} alt="invoice icon" />
