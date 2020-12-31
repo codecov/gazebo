@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import { useInvoices } from 'services/account'
 
 import BackLink from '../../shared/BackLink'
+import InvoiceCard from './InvoiceCard'
 
 function useGroupedInvoices({ owner, provider }) {
   const { data: invoices } = useInvoices({ provider, owner })
@@ -33,13 +34,11 @@ function Invoices({ provider, owner }) {
         textLink="Billing & Users"
       />
       {allYears.map((year) => (
-        <div key={year}>
-          <h2>{year}</h2>
-          <ul>
-            {groupedInvoices[year].map((invoice) => (
-              <li key={invoice.number}>{invoice.number}</li>
-            ))}
-          </ul>
+        <div className="mt-8" key={year}>
+          <h2 className="text-center text-xl bold">{year}</h2>
+          {groupedInvoices[year].map((invoice) => (
+            <InvoiceCard key={invoice.number} invoice={invoice} />
+          ))}
         </div>
       ))}
     </>
