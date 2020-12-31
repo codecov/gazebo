@@ -25,7 +25,7 @@ function useGroupedInvoices({ owner, provider }) {
 function Invoices({ provider, owner }) {
   const groupedInvoices = useGroupedInvoices({ provider, owner })
   // extract the years so we can be sure of the desc order of the years
-  const allYears = Object.keys(groupedInvoices).sort().reverse()
+  const years = Object.keys(groupedInvoices).sort().reverse()
 
   return (
     <>
@@ -33,7 +33,7 @@ function Invoices({ provider, owner }) {
         to={`/account/${provider}/${owner}`}
         textLink="Billing & Users"
       />
-      {allYears.map((year) => (
+      {years.map((year) => (
         <div className="mt-8" key={year}>
           <h2 className="text-center text-xl bold">{year}</h2>
           {groupedInvoices[year].map((invoice) => (

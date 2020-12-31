@@ -24,7 +24,7 @@ function InvoiceCard({ invoice }) {
         ${(invoice.total / 100).toFixed(2)}{' '}
         <span className="capitalize">{invoice.status}</span>
       </span>
-      <Button Component={Link} href="#">
+      <Button Component={Link} to="#">
         View
       </Button>
     </Card>
