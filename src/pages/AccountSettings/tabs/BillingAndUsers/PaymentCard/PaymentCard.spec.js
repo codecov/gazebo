@@ -112,7 +112,10 @@ describe('PaymentCard', () => {
     const updateCard = jest.fn()
 
     beforeEach(() => {
-      useUpdateCard.mockReturnValue([updateCard, { isLoading: false }])
+      useUpdateCard.mockReturnValue({
+        mutate: updateCard,
+        isLoading: false,
+      })
       setup(subscriptionDetail)
       userEvent.click(screen.getByRole('button', { name: /edit card/i }))
     })
@@ -152,10 +155,10 @@ describe('PaymentCard', () => {
     const randomError = 'not rich enough'
 
     beforeEach(() => {
-      useUpdateCard.mockReturnValue([
-        jest.fn(),
-        { error: { message: randomError } },
-      ])
+      useUpdateCard.mockReturnValue({
+        mutate: jest.fn(),
+        error: { message: randomError },
+      })
       setup(subscriptionDetail)
       userEvent.click(screen.getByRole('button', { name: /edit card/i }))
     })
@@ -167,7 +170,7 @@ describe('PaymentCard', () => {
 
   describe('when the form is loading', () => {
     beforeEach(() => {
-      useUpdateCard.mockReturnValue([jest.fn(), { isLoading: true }])
+      useUpdateCard.mockReturnValue({ mutate: jest.fn(), isLoading: true })
       setup(subscriptionDetail)
       userEvent.click(screen.getByRole('button', { name: /edit card/i }))
     })

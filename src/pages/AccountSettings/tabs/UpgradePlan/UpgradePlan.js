@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 
 import Card from 'ui/Card'
-import { useAccountsAndPlans } from 'services/account'
+import { useAccountDetails, usePlans } from 'services/account'
 
 import parasolImg from './parasol.png'
 import UpgradePlanForm from './UpgradePlanForm'
@@ -9,8 +9,8 @@ import BenefitList from '../../shared/BenefitList'
 import BackLink from '../../shared/BackLink'
 
 function UpgradePlan({ provider, owner }) {
-  const { data } = useAccountsAndPlans({ provider, owner })
-  const { accountDetails, plans } = data
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: plans } = usePlans(provider)
 
   const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')
   const proPlanYear = plans.find((plan) => plan.value === 'users-pr-inappy')

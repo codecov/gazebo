@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import UpgradePlan from './UpgradePlan'
-import { useAccountsAndPlans } from 'services/account'
+import { useAccountDetails, usePlans } from 'services/account'
 
 jest.mock('services/account/hooks')
 jest.mock('./UpgradePlanForm', () => () => 'UpgradePlanForm')
@@ -12,15 +12,15 @@ const owner = 'codecov'
 
 describe('UpgradePlanPage', () => {
   function setup() {
-    useAccountsAndPlans.mockReturnValue({
+    useAccountDetails.mockReturnValue({
       data: {
-        accountDetails: {
-          plan: null,
-          activatedUserCount: 2,
-          inactiveUserCount: 1,
-        },
-        plans: getPlans(),
+        plan: null,
+        activatedUserCount: 2,
+        inactiveUserCount: 1,
       },
+    })
+    usePlans.mockReturnValue({
+      data: getPlans(),
     })
     render(<UpgradePlan provider={provider} owner={owner} />, {
       wrapper: MemoryRouter,
