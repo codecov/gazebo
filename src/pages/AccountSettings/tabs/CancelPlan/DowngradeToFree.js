@@ -7,6 +7,7 @@ import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 import { useCancelPlan, accountDetailsPropType } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import useBarecancel from './barecancel'
 
 function getEndPeriod(accountDetails) {
   const unixPeriodEnd = accountDetails.subscriptionDetail?.currentPeriodEnd
@@ -49,6 +50,8 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
   ].some(Boolean)
   const periodEnd = getEndPeriod(accountDetails)
 
+  useBarecancel(accountDetails, cancelPlan)
+
   return (
     <>
       <Button
@@ -80,7 +83,12 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
           >
             Close
           </Button>
-          <Button color="red" onClick={cancelPlan} disabled={isDisabled}>
+          <Button
+            color="red"
+            id="barecancel-trigger"
+            disabled={isDisabled}
+            onClick={() => setIsModalOpen(false)}
+          >
             Continue Cancellation
           </Button>
         </div>
