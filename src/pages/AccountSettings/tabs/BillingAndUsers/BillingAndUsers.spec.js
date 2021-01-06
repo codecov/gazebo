@@ -7,6 +7,9 @@ jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
 jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')
 jest.mock('./PaymentCard', () => () => 'PaymentCard')
 jest.mock('./InfoMessageCancellation', () => () => 'InfoMessageCancellation')
+jest.mock('./InfoMessageStripeCallback', () => () =>
+  'InfoMessageStripeCallback'
+)
 jest.mock('services/account/hooks')
 
 const provider = 'gh'
@@ -42,6 +45,11 @@ describe('BillingAndUsersTab', () => {
 
     it('renders the InfoMessageCancellation', () => {
       const tab = screen.getByText(/InfoMessageCancellation/)
+      expect(tab).toBeInTheDocument()
+    })
+
+    it('renders the InfoMessageStripeCallback', () => {
+      const tab = screen.getByText(/InfoMessageStripeCallback/)
       expect(tab).toBeInTheDocument()
     })
   })

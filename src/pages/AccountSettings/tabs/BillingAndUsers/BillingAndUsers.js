@@ -3,6 +3,7 @@ import PropType from 'prop-types'
 import Card from 'ui/Card'
 import { useAccountDetails } from 'services/account'
 
+import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import InfoMessageCancellation from './InfoMessageCancellation'
 import CurrentPlanCard from './CurrentPlanCard'
 import LatestInvoiceCard from './LatestInvoiceCard'
@@ -16,6 +17,7 @@ function BillingAndUsers({ provider, owner }) {
       <InfoMessageCancellation
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
+      <InfoMessageStripeCallback />
       <div className="col-start-1 col-end-5">
         <CurrentPlanCard accountDetails={accountDetails} />
         <PaymentCard
