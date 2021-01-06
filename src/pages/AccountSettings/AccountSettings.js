@@ -28,22 +28,22 @@ function AccountSettings() {
         <Route path={baseUrl + ''} exact>
           <BillingAndUsersTab provider={provider} owner={owner} />
         </Route>
-        <Route path={baseUrl + 'billing/upgrade'}>
+        <Route path={baseUrl + 'billing/upgrade'} exact>
           <UpgradePlanTab provider={provider} owner={owner} />
         </Route>
-        <Route path={baseUrl + 'billing/cancel'}>
+        <Route path={baseUrl + 'billing/cancel'} exact>
           <CancelPlanTab provider={provider} owner={owner} />
         </Route>
-        <Route path={baseUrl + 'invoices'}>
+        <Route path={baseUrl + 'invoices'} exact>
           <InvoicesTab provider={provider} owner={owner} />
         </Route>
-        <Route path={baseUrl + 'invoices/:id'}>
+        <Route path={baseUrl + 'invoices/:id'} exact>
           <InvoiceDetailTab provider={provider} owner={owner} />
         </Route>
-        <Route path={baseUrl + 'yaml'}>
+        <Route path={baseUrl + 'yaml'} exact>
           <YAMLTab />
         </Route>
-        <Route path={baseUrl + 'admin'}>
+        <Route path={baseUrl + 'admin'} exact>
           <AdminTab />
         </Route>
       </Switch>

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import cs from 'classnames'
 import { Link } from 'react-router-dom'
 import { format, fromUnixTime } from 'date-fns'
@@ -14,7 +15,7 @@ const statusToColor = {
   uncollectible: 'text-error-500',
 }
 
-function InvoiceCard({ invoice }) {
+function InvoiceCard({ invoice, provider, owner }) {
   return (
     <Card className="p-4 mt-4 flex text-sm items-center">
       Invoice on {format(fromUnixTime(invoice.created), 'MMMM do yyyy')}
@@ -24,7 +25,10 @@ function InvoiceCard({ invoice }) {
         ${(invoice.total / 100).toFixed(2)}{' '}
         <span className="capitalize">{invoice.status}</span>
       </span>
-      <Button Component={Link} to="#">
+      <Button
+        Component={Link}
+        to={`/account/${provider}/${owner}/invoices/${invoice.id}`}
+      >
         View
       </Button>
     </Card>
@@ -33,6 +37,8 @@ function InvoiceCard({ invoice }) {
 
 InvoiceCard.propTypes = {
   invoice: invoicePropType.isRequired,
+  provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
 }
 
 export default InvoiceCard
