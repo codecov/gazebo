@@ -12,8 +12,7 @@ import InvoiceTotal from './sections/InvoiceTotal'
 function InvoiceDetail({ provider, owner }) {
   const { id } = useParams()
   const { data: invoice } = useInvoice({ provider, owner, id })
-
-  const classNameSection = 'p-8 border-t first:border-0 border-gray-200'
+  const classNameSection = 'py-8 px-16 border-t first:border-0 border-gray-200'
 
   return (
     <>
@@ -34,6 +33,7 @@ function InvoiceDetail({ provider, owner }) {
         <div className={classNameSection}>
           <InvoiceFooter invoice={invoice} />
         </div>
+        <pre>{JSON.stringify(invoice, null, 2)}</pre>
       </div>
     </>
   )
