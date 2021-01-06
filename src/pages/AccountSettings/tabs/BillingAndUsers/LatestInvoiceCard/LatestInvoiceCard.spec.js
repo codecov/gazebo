@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import LatestInvoiceCard from './LatestInvoiceCard'
 
 const invoice = {
-  periodStart: 1595270468,
+  created: 1595270468,
   dueDate: 1600544863,
   total: 9600.0,
   invoicePdf:
