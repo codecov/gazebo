@@ -19,7 +19,6 @@ function SideMenu({ baseUrl }) {
             to={link.to}
             className="flex items-center text-gray-500 p-2 pr-2 mb-2 border-solid border-pink-500 hover:bg-gray-100 hover:border-r-4"
             activeClassName="border-r-4"
-            exact
           >
             <Icon name={link.iconName} className="mr-1" />
             {link.text}

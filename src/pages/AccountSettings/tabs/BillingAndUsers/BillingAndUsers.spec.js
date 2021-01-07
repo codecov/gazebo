@@ -8,22 +8,29 @@ jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')
 jest.mock('./PaymentCard', () => () => 'PaymentCard')
 jest.mock('./InfoMessageCancellation', () => () => 'InfoMessageCancellation')
 jest.mock('./UserManagement', () => () => 'UserManagement')
+jest.mock('./InfoMessageStripeCallback', () => () =>
+  'InfoMessageStripeCallback'
+)
+jest.mock('./LegacyUser', () => () => 'LegacyUser')
 jest.mock('services/account/hooks')
 
 const provider = 'gh'
 const owner = 'codecov'
 
 describe('BillingAndUsersTab', () => {
-  function setup(url) {
+  const defaultAccountDetails = {
+    plan: {},
+  }
+  function setup(userAccount = defaultAccountDetails) {
     useAccountDetails.mockReturnValue({
-      data: {},
+      data: userAccount,
     })
     render(<BillingAndUsers provider={provider} owner={owner} />)
   }
 
   describe('when rendering on base url', () => {
     beforeEach(() => {
-      setup('/')
+      setup()
     })
 
     it('renders the CurrentPlanCard', () => {
@@ -44,6 +51,43 @@ describe('BillingAndUsersTab', () => {
     it('renders the InfoMessageCancellation', () => {
       const tab = screen.getByText(/InfoMessageCancellation/)
       expect(tab).toBeInTheDocument()
+    })
+
+    it('renders the InfoMessageStripeCallback', () => {
+      const tab = screen.getByText(/InfoMessageStripeCallback/)
+      expect(tab).toBeInTheDocument()
+    })
+    it('doesnt render the LegacyUser', () => {
+      const tab = screen.queryByText(/LegacyUser/)
+      expect(tab).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the user is on a legacy plan', () => {
+    beforeEach(() => {
+      setup({
+        plan: null,
+      })
+    })
+
+    it('renders the LegacyUser', () => {
+      const tab = screen.getByText(/LegacyUser/)
+      expect(tab).toBeInTheDocument()
+    })
+
+    it('doesnt renders the CurrentPlanCard', () => {
+      const tab = screen.queryByText(/CurrentPlanCard/)
+      expect(tab).not.toBeInTheDocument()
+    })
+
+    it('doesnt renders the LatestInvoiceCard', () => {
+      const tab = screen.queryByText(/LatestInvoiceCard/)
+      expect(tab).not.toBeInTheDocument()
+    })
+
+    it('doesnt renders the PaymentCard', () => {
+      const tab = screen.queryByText(/PaymentCard/)
+      expect(tab).not.toBeInTheDocument()
     })
   })
 })

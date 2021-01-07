@@ -3,16 +3,23 @@ import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { waitFor } from '@testing-library/react'
 import { useStripe } from '@stripe/react-stripe-js'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import {
   useAccountDetails,
-  useAccountsAndPlans,
+  usePlans,
   useCancelPlan,
   useUpgradePlan,
   useUpdateCard,
+  useInvoices,
 } from './hooks'
 
 jest.mock('@stripe/react-stripe-js')
+
+const queryClient = new QueryClient()
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+)
 
 const provider = 'gh'
 const owner = 'codecov'
@@ -47,7 +54,9 @@ describe('useAccountDetails', () => {
         }
       )
     )
-    hookData = renderHook(() => useAccountDetails({ provider, owner }))
+    hookData = renderHook(() => useAccountDetails({ provider, owner }), {
+      wrapper,
+    })
   }
 
   describe('when called', () => {
@@ -71,22 +80,23 @@ describe('useAccountDetails', () => {
   })
 })
 
-describe('useAccountsAndPlans', () => {
+describe('useInvoices', () => {
   let hookData
 
-  function setup(currentUrl) {
+  const invoices = [
+    { total: 2400, number: 1, created: 1607078662, dueDate: 1607078662 },
+    { total: 2500, number: 2, created: 1604486662, dueDate: 1604486662 },
+  ]
+
+  function setup() {
     server.use(
-      rest.get(
-        `/internal/${provider}/${owner}/account-details/`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(accountDetails))
-        }
-      ),
-      rest.get(`/internal/plans`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(getPlans()))
+      rest.get(`/internal/${provider}/${owner}/invoices/`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(invoices))
       })
     )
-    hookData = renderHook(() => useAccountsAndPlans({ provider, owner }))
+    hookData = renderHook(() => useInvoices({ provider, owner }), {
+      wrapper,
+    })
   }
 
   describe('when called', () => {
@@ -104,10 +114,42 @@ describe('useAccountsAndPlans', () => {
       })
 
       it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({
-          accountDetails,
-          plans: getPlans(),
-        })
+        expect(hookData.result.current.data).toEqual(invoices)
+      })
+    })
+  })
+})
+
+describe('usePlans', () => {
+  let hookData
+
+  function setup(currentUrl) {
+    server.use(
+      rest.get(`/internal/plans`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(getPlans()))
+      })
+    )
+    hookData = renderHook(() => usePlans({ provider, owner }), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders isLoading true', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual(getPlans())
       })
     })
   })
@@ -125,7 +167,9 @@ describe('useCancelPlan', () => {
         }
       )
     )
-    hookData = renderHook(() => useCancelPlan({ provider, owner }))
+    hookData = renderHook(() => useCancelPlan({ provider, owner }), {
+      wrapper,
+    })
   }
 
   describe('when called', () => {
@@ -134,18 +178,21 @@ describe('useCancelPlan', () => {
     })
 
     it('returns isLoading false', () => {
-      expect(hookData.result.current[1].isLoading).toBeFalsy()
+      expect(hookData.result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation', () => {
       beforeEach(() => {
-        act(() => {
-          hookData.result.current[0]()
+        return act(() => {
+          hookData.result.current.mutate()
+          return hookData.waitFor(
+            () => hookData.result.current.status !== 'idle'
+          )
         })
       })
 
       it('returns isLoading true', () => {
-        expect(hookData.result.current[1].isLoading).toBeTruthy()
+        expect(hookData.result.current.isLoading).toBeTruthy()
       })
     })
   })
@@ -163,7 +210,9 @@ describe('useUpgradePlan', () => {
 
   function setup(currentUrl) {
     setupStripe()
-    hookData = renderHook(() => useUpgradePlan({ provider, owner }))
+    hookData = renderHook(() => useUpgradePlan({ provider, owner }), {
+      wrapper,
+    })
   }
 
   describe('when called', () => {
@@ -172,7 +221,7 @@ describe('useUpgradePlan', () => {
     })
 
     it('returns isLoading false', () => {
-      expect(hookData.result.current[1].isLoading).toBeFalsy()
+      expect(hookData.result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation, which return a checkoutSessionId', () => {
@@ -191,13 +240,16 @@ describe('useUpgradePlan', () => {
             }
           )
         )
-        return act(() => {
-          return hookData.result.current[0]({
+        return act(async () => {
+          hookData.result.current.mutate({
             seats: 12,
             newPlan: {
               value: 'users-pr-inappy',
             },
           })
+          // one wait for isLoading: true, one for isLoading: false
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
         })
       })
 
@@ -226,14 +278,15 @@ describe('useUpgradePlan', () => {
             }
           )
         )
-        return act(() =>
-          hookData.result.current[0]({
+        return act(() => {
+          hookData.result.current.mutate({
             seats: 12,
             newPlan: {
               value: 'users-pr-inappy',
             },
           })
-        )
+          return hookData.waitFor(() => hookData.result.current.isSuccess)
+        })
       })
 
       it('doesnt call redirectToCheckout on the Stripe client', () => {
@@ -263,7 +316,9 @@ describe('useUpdateCard', () => {
 
   function setup(currentUrl) {
     setupStripe()
-    hookData = renderHook(() => useUpdateCard({ provider, owner }))
+    hookData = renderHook(() => useUpdateCard({ provider, owner }), {
+      wrapper,
+    })
   }
 
   describe('when called', () => {
@@ -272,7 +327,7 @@ describe('useUpdateCard', () => {
     })
 
     it('returns isLoading false', () => {
-      expect(hookData.result.current[1].isLoading).toBeFalsy()
+      expect(hookData.result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation', () => {
@@ -285,8 +340,9 @@ describe('useUpdateCard', () => {
             }
           )
         )
-        act(() => {
-          hookData.result.current[0](card)
+        return act(() => {
+          hookData.result.current.mutate(card)
+          return hookData.waitFor(() => hookData.result.current.isLoading)
         })
       })
 
@@ -304,12 +360,12 @@ describe('useUpdateCard', () => {
         beforeEach(() => {
           return act(() => {
             resolver({ error })
-            return hookData.waitFor(() => hookData.result.current[1].error)
+            return hookData.waitFor(() => hookData.result.current.error)
           })
         })
 
         it('does something', () => {
-          expect(hookData.result.current[1].error).toEqual(error)
+          expect(hookData.result.current.error).toEqual(error)
         })
       })
 
@@ -321,12 +377,12 @@ describe('useUpdateCard', () => {
                 id: 1,
               },
             })
-            return hookData.waitFor(() => hookData.result.current[1].isSuccess)
+            return hookData.waitFor(() => hookData.result.current.isSuccess)
           })
         })
 
         it('returns the data from the server', () => {
-          expect(hookData.result.current[1].data).toEqual(accountDetails)
+          expect(hookData.result.current.data).toEqual(accountDetails)
         })
       })
     })

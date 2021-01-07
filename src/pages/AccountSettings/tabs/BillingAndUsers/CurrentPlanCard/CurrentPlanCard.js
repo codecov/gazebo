@@ -22,7 +22,7 @@ function CurrentPlanCard({ accountDetails }) {
   const baseUrl = useBaseUrl()
 
   return (
-    <Card className="px-12 py-10 pb-4">
+    <Card className="px-12 py-10 pb-4 mb-4">
       <h3 className="text-lg text-pink-500 font-bold">
         {accountDetails.plan.marketingName}
       </h3>

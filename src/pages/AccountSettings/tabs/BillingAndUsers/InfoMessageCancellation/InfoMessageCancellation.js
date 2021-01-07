@@ -12,7 +12,7 @@ function InfoMessageCancellation({ subscriptionDetail }) {
   if (!subscriptionDetail?.cancelAtPeriodEnd) return null
   const periodEnd = getPeriodEnd(subscriptionDetail)
   return (
-    <div className="col-start-1 col-end-13">
+    <div className="col-start-1 col-end-13 mb-4">
       <Message variant="info">
         <h2 className="text-lg">Subscription Pending Cancellation</h2>
         <p className="text-sm">

@@ -2,7 +2,7 @@ import PropType from 'prop-types'
 import difference from 'lodash/difference'
 
 import Card from 'ui/Card'
-import { useAccountsAndPlans } from 'services/account'
+import { useAccountDetails, usePlans } from 'services/account'
 
 import umbrellaImg from './umbrella.svg'
 import DowngradeToFree from './DowngradeToFree'
@@ -10,8 +10,8 @@ import BenefitList from '../../shared/BenefitList'
 import BackLink from '../../shared/BackLink'
 
 function CancelPlan({ provider, owner }) {
-  const { data } = useAccountsAndPlans({ provider, owner })
-  const { accountDetails, plans } = data
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: plans } = usePlans(provider)
 
   const freePlan = plans.find((plan) => plan.value === 'users-free')
   const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')

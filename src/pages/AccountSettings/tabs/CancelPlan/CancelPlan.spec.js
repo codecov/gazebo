@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CancelPlan from './CancelPlan'
-import { useAccountsAndPlans, useCancelPlan } from 'services/account'
+import { useAccountDetails, usePlans, useCancelPlan } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 
 jest.mock('services/account/hooks')
@@ -40,20 +40,20 @@ describe('CancelPlan', () => {
 
   function setup(currentPlan = proPlan) {
     useAddNotification.mockReturnValue(addNotification)
-    useAccountsAndPlans.mockReturnValue({
+    useAccountDetails.mockReturnValue({
       data: {
-        accountDetails: {
-          plan: currentPlan,
-          activatedUserCount: 2,
-          inactiveUserCount: 1,
-          subscriptionDetail: {
-            currentPeriodEnd: 1638614662,
-          },
+        plan: currentPlan,
+        activatedUserCount: 2,
+        inactiveUserCount: 1,
+        subscriptionDetail: {
+          currentPeriodEnd: 1638614662,
         },
-        plans: getPlans(),
       },
     })
-    useCancelPlan.mockReturnValue([mutate, { isLoading: false }])
+    usePlans.mockReturnValue({
+      data: getPlans(),
+    })
+    useCancelPlan.mockReturnValue({ mutate, isLoading: false })
     render(
       <MemoryRouter initialEntries={['/my/initial/route']}>
         <CancelPlan provider={provider} owner={owner} />
@@ -82,6 +82,10 @@ describe('CancelPlan', () => {
       const button = screen.getByRole('button')
       expect(button).toHaveTextContent('Downgrade to Free')
     })
+
+    it('loads the baremetrics script', () => {
+      expect(window.barecancel.created).toBeTruthy()
+    })
   })
 
   describe('when clicking on the button to downgrade', () => {
@@ -101,8 +105,10 @@ describe('CancelPlan', () => {
         userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       })
 
-      it('calls the mutation', () => {
-        expect(mutate).toHaveBeenCalled()
+      it('closes the modal', () => {
+        expect(
+          screen.queryByText(/Are you sure you want to cancel your plan?/)
+        ).not.toBeInTheDocument()
       })
     })
 
@@ -131,9 +137,10 @@ describe('CancelPlan', () => {
     })
   })
 
-  describe('when mutation is successful', () => {
+  describe('when calling the mutation', () => {
     beforeEach(() => {
       setup()
+      window.barecancel.params.callback_send()
       userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
       userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       // simulating the onSuccess callback given to mutate
@@ -148,6 +155,7 @@ describe('CancelPlan', () => {
   describe('when mutation is not successful', () => {
     beforeEach(() => {
       setup()
+      window.barecancel.params.callback_send()
       userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
       userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       // simulating the onError callback given to mutate

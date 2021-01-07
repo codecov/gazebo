@@ -54,7 +54,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
   const nextBilling = getNextBilling(subscriptionDetail)
 
   return (
-    <Card className="mt-4 p-6">
+    <Card className="p-6 mb-4">
       <h2 className="text-lg">Creditcard information</h2>
       {isFormOpen ? (
         <CreditCardForm

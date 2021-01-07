@@ -7,6 +7,7 @@ import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 import { useCancelPlan, accountDetailsPropType } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import useBarecancel from './barecancel'
 
 function getEndPeriod(accountDetails) {
   const unixPeriodEnd = accountDetails.subscriptionDetail?.currentPeriodEnd
@@ -19,7 +20,7 @@ function getEndPeriod(accountDetails) {
 function useCancelSubmit({ provider, owner }) {
   const redirect = useHistory().push
   const addToast = useAddNotification()
-  const [mutate, data] = useCancelPlan({ provider, owner })
+  const { mutate, ...rest } = useCancelPlan({ provider, owner })
 
   function cancelPlan() {
     mutate(null, {
@@ -34,12 +35,12 @@ function useCancelSubmit({ provider, owner }) {
     })
   }
 
-  return [cancelPlan, data]
+  return { cancelPlan, ...rest }
 }
 
 function DowngradeToFree({ accountDetails, provider, owner }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [cancelPlan, { isLoading }] = useCancelSubmit({ provider, owner })
+  const { cancelPlan, isLoading } = useCancelSubmit({ provider, owner })
   const isAlreadyFreeUser = accountDetails.plan?.value === 'users-free'
   const isDisabled = [
     // disable button if
@@ -48,6 +49,8 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
     accountDetails.subscriptionDetail?.cancelAtPeriodEnd, // the subscription is already getting cancelled
   ].some(Boolean)
   const periodEnd = getEndPeriod(accountDetails)
+
+  useBarecancel(accountDetails, cancelPlan)
 
   return (
     <>
@@ -80,7 +83,12 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
           >
             Close
           </Button>
-          <Button color="red" onClick={cancelPlan} disabled={isDisabled}>
+          <Button
+            color="red"
+            id="barecancel-trigger"
+            disabled={isDisabled}
+            onClick={() => setIsModalOpen(false)}
+          >
             Continue Cancellation
           </Button>
         </div>

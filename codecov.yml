@@ -26,3 +26,4 @@ ignore:
   - ./scripts/*
   - ./src/index.js
   - ./src/sentry.js
+  - ./src/mocks/*.js

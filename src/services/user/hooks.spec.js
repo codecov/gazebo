@@ -2,6 +2,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useUser } from './hooks'
 
@@ -9,6 +10,13 @@ const user = {
   username: 'TerrySmithDC',
   avatarUrl: 'photo',
 }
+
+const queryClient = new QueryClient()
+const wrapper = ({ children }) => (
+  <MemoryRouter>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  </MemoryRouter>
+)
 
 const server = setupServer()
 
@@ -25,9 +33,7 @@ describe('useUser', () => {
         return res(ctx.status(200), ctx.json(user))
       })
     )
-    hookData = renderHook(() => useUser(), {
-      wrapper: MemoryRouter,
-    })
+    hookData = renderHook(() => useUser(), { wrapper })
   }
 
   describe('when called', () => {
