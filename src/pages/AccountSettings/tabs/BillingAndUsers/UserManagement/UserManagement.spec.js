@@ -22,6 +22,7 @@ describe('UserManagerment', () => {
     describe('renders results', () => {
       beforeEach(() => {
         const mockUseUsers = {
+          isSuccess: true,
           data: {
             results: [
               { username: 'clwiseman', name: 'carrie', activated: true },
@@ -42,6 +43,7 @@ describe('UserManagerment', () => {
     describe('renders nothing with no results', () => {
       beforeEach(() => {
         const mockUseUsers = {
+          isSuccess: true,
           data: {
             results: [],
           },
@@ -64,7 +66,7 @@ describe('UserManagerment', () => {
       })
 
       it(`Renders the correct selection: Sort by Name ⬆`, () => {
-        const SortSelect = screen.getByRole('button', { name: 'sort' })
+        const SortSelect = screen.getByRole('button', { name: 'ordering' })
         userEvent.click(SortSelect)
         expect(
           screen.getByRole('option', { name: /Sort by Name ⬆/ })
@@ -76,7 +78,7 @@ describe('UserManagerment', () => {
       })
 
       it(`Makes the correct query to the api: Sort by Name ⬆`, () => {
-        const SortSelect = screen.getByRole('button', { name: 'sort' })
+        const SortSelect = screen.getByRole('button', { name: 'ordering' })
         userEvent.click(SortSelect)
         userEvent.click(
           screen.getByRole('option', { name: /Sort by Username ⬆/ })
@@ -104,7 +106,7 @@ describe('UserManagerment', () => {
       })
 
       it(`Renders the correct selection: ${label}`, () => {
-        const SortSelect = screen.getByRole('button', { name: 'sort' })
+        const SortSelect = screen.getByRole('button', { name: 'ordering' })
         userEvent.click(SortSelect)
         expect(screen.getByRole('option', { name: label })).toBeInTheDocument()
         userEvent.click(screen.getByRole('option', { name: label }))
@@ -121,7 +123,7 @@ describe('UserManagerment', () => {
           query: {},
         })
 
-        const SortSelect = screen.getByRole('button', { name: 'sort' })
+        const SortSelect = screen.getByRole('button', { name: 'ordering' })
         userEvent.click(SortSelect)
         userEvent.click(screen.getByRole('option', { name: label }))
         expect(useUsers).toHaveBeenCalledTimes(2)
@@ -136,8 +138,8 @@ describe('UserManagerment', () => {
 
   describe('Filter by Activated', () => {
     describe.each([
-      [/^activated$/, { activated: true }],
-      [/^deactivated$/, { activated: false }],
+      [/^activated$/, { activated: 'True' }],
+      [/^deactivated$/, { activated: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         useUsers.mockReturnValue(users)
@@ -177,8 +179,8 @@ describe('UserManagerment', () => {
 
   describe('Filter by is_admin', () => {
     describe.each([
-      [/Is Admin/, { is_admin: true }],
-      [/Not Admin/, { is_admin: false }],
+      [/Is Admin/, { is_admin: 'True' }],
+      [/Not Admin/, { is_admin: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         useUsers.mockReturnValue(users)
@@ -186,7 +188,7 @@ describe('UserManagerment', () => {
       })
 
       it(`Renders the correct selection: ${label}`, () => {
-        const SortSelect = screen.getByRole('button', { name: 'admin' })
+        const SortSelect = screen.getByRole('button', { name: 'isAdmin' })
         userEvent.click(SortSelect)
         expect(screen.getByRole('option', { name: label })).toBeInTheDocument()
         userEvent.click(screen.getByRole('option', { name: label }))
@@ -203,7 +205,7 @@ describe('UserManagerment', () => {
           query: {},
         })
 
-        const SortSelect = screen.getByRole('button', { name: 'admin' })
+        const SortSelect = screen.getByRole('button', { name: 'isAdmin' })
         userEvent.click(SortSelect)
         userEvent.click(screen.getByRole('option', { name: label }))
         expect(useUsers).toHaveBeenCalledTimes(2)
@@ -235,7 +237,7 @@ describe('UserManagerment', () => {
       expect(useUsers).toHaveBeenCalledWith({
         owner: 'chris',
         provider: 'gh',
-        query: { ordering: 'name', search: 'Ter' },
+        query: { ordering: 'name', activated: '', is_admin: '', search: 'Ter' },
       })
     })
   })
