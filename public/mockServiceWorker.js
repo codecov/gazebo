@@ -7,7 +7,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-const INTEGRITY_CHECKSUM = '65d33ca82955e1c5928aed19d1bdf3f9'
+const INTEGRITY_CHECKSUM = '7a54d6f8bbbda3fb393dcd9176d1fd19'
 const bypassHeaderName = 'x-msw-bypass'
 
 let clients = {}
@@ -76,6 +76,7 @@ self.addEventListener('message', async function (event) {
 
 self.addEventListener('fetch', function (event) {
   const { clientId, request } = event
+  const requestId = uuidv4()
   const requestClone = request.clone()
   const getOriginalResponse = () => fetch(requestClone)
 
@@ -125,6 +126,7 @@ self.addEventListener('fetch', function (event) {
       const rawClientMessage = await sendToClient(client, {
         type: 'REQUEST',
         payload: {
+          id: requestId,
           url: request.url,
           method: request.method,
           headers: reqHeaders,
@@ -186,14 +188,34 @@ If you wish to mock an error response, please refer to this guide: https://mswjs
           return resolve(createResponse(clientMessage))
         }
       }
-    }).catch((error) => {
-      console.error(
-        '[MSW] Failed to mock a "%s" request to "%s": %s',
-        request.method,
-        request.url,
-        error,
-      )
-    }),
+    })
+      .then(async (response) => {
+        const client = await event.target.clients.get(clientId)
+        const clonedResponse = response.clone()
+
+        sendToClient(client, {
+          type: 'RESPONSE',
+          payload: {
+            requestId,
+            ok: clonedResponse.ok,
+            status: clonedResponse.status,
+            statusText: clonedResponse.statusText,
+            body: await clonedResponse.text(),
+            headers: serializeHeaders(clonedResponse.headers),
+            redirected: clonedResponse.redirected,
+          },
+        })
+
+        return response
+      })
+      .catch((error) => {
+        console.error(
+          '[MSW] Failed to mock a "%s" request to "%s": %s',
+          request.method,
+          request.url,
+          error,
+        )
+      }),
   )
 })
 
@@ -238,4 +260,12 @@ function ensureKeys(keys, obj) {
 
     return acc
   }, {})
+}
+
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0
+    const v = c == 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
 }

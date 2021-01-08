@@ -95,7 +95,7 @@ describe('useInvoices', () => {
       })
     )
     hookData = renderHook(() => useInvoices({ provider, owner }), {
-      wrapper
+      wrapper,
     })
   }
 

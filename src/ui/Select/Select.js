@@ -11,6 +11,7 @@ function Select({
   onChange,
   value,
   renderItem = identity,
+  ariaName,
 }) {
   const {
     isOpen,
@@ -43,6 +44,7 @@ function Select({
   return (
     <div className="w-full relative">
       <button
+        aria-label={ariaName}
         type="button"
         className="flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none"
         {...getToggleButtonProps()}
@@ -51,8 +53,9 @@ function Select({
         <Icon name={isOpen ? 'angleUp' : 'angleDown'} />
       </button>
       <ul
+        aria-label={ariaName}
         className={cs(
-          'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full',
+          'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10',
           {
             border: isOpen,
             'border-solid': isOpen,
@@ -72,6 +75,7 @@ Select.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.any,
   renderItem: PropTypes.func,
+  ariaName: PropTypes.string,
 }
 
 export default Select
