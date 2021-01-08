@@ -13,7 +13,6 @@ export const FormSelect = ({ control, handleOnChange, name, items }) => {
         // Replace with a new ui component in another PR
         <Select
           ariaName={name}
-          className="relative flex-1 md:flex-none w-full md:w-auto"
           items={items}
           renderItem={({ label }) => (
             <div className="flex justify-between flex-1 p-2 text-base w-full">
