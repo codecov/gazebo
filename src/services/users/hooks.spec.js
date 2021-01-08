@@ -1,8 +1,14 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useUsers } from './hooks'
+
+const queryClient = new QueryClient()
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+)
 
 const provider = 'gh'
 const owner = 'TerrySmithDC'
@@ -42,7 +48,9 @@ describe('useUsers', () => {
         return res(ctx.status(200), ctx.json(users))
       })
     )
-    hookData = renderHook(() => useUsers({ provider, owner, query }))
+    hookData = renderHook(() => useUsers({ provider, owner, query }), {
+      wrapper,
+    })
   }
 
   describe('when called', () => {

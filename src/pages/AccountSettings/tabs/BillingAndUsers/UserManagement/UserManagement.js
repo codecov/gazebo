@@ -1,36 +1,15 @@
 import PropTypes from 'prop-types'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 
-import Select from 'ui/Select'
+import { FormSelect as Select } from './UserFormSelect'
+import createQuery, { FilterEnum } from './formQuery'
+
 import Card from 'ui/Card'
 import User from 'ui/User'
 
 import { useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
-
-const FilterEnum = Object.freeze({ none: 0, true: 1, false: 2 })
-
-function filterQuery(key, value) {
-  if (value === FilterEnum.none) return { [key]: '' }
-  if (value === FilterEnum.true) return { [key]: 'True' } // API only accepts string with capital letter...
-  if (value === FilterEnum.false) return { [key]: 'False' } // API only accepts string with capital letter...
-}
-
-function createQuery(
-  prev,
-  { search, activated, isAdmin: is_admin, ordering } = {}
-) {
-  const queryShape = {
-    ...prev,
-    ...(search && { search }),
-    ...(ordering && { ordering: ordering.q }),
-    ...filterQuery('activated', activated?.q),
-    ...filterQuery('is_admin', is_admin?.q),
-  }
-
-  return queryShape
-}
 
 function createUserPills({ student, isAdmin, email }) {
   const pills = []
@@ -45,65 +24,62 @@ function createUserPills({ student, isAdmin, email }) {
 function UserManagement({ provider, owner }) {
   const [query, setQuery] = useState({})
   const { register, handleSubmit, control } = useForm()
-  const onSubmit = (data) => {
-    setQuery(createQuery(query, data))
-  }
   const { data, isSuccess } = useUsers({
     provider,
     owner,
     query,
   })
 
-  function _SelectEl(name, items) {
-    return (
-      <Controller
-        name={name}
-        control={control}
-        defaultValue={items[0]}
-        render={({ onChange, value }) => (
-          <Select
-            ariaName={name}
-            className="relative flex-1 md:flex-none w-full md:w-auto"
-            buttonClass="flex items-center px-2 py-3"
-            ulClass="absolute inset-x-0 bottom top-0 z-50 overflow-hidden rounded-md bg-white border-gray-200 outline-none"
-            items={items}
-            renderItem={({ label }) => (
-              <div className="flex justify-between flex-1 p-2 text-base w-full">
-                {label}
-              </div>
-            )}
-            onChange={(select) => {
-              onChange(select)
-              setQuery(createQuery(query, { [name]: select }))
-            }}
-            value={value}
-          />
-        )}
-      />
-    )
+  function updateQuery(data) {
+    setQuery(createQuery(query, data))
+  }
+  const onSubmit = (data) => {
+    updateQuery(data)
   }
 
   return (
     <form className="space-y-4 col-span-2" onSubmit={handleSubmit(onSubmit)}>
       <Card className="shadow flex flex-wrap divide-x divide-gray-200 divide-solid">
-        {_SelectEl('activated', [
-          { label: 'Filter By Activated Users', q: FilterEnum.none },
-          { label: 'activated', q: FilterEnum.true },
-          { label: 'deactivated', q: FilterEnum.false },
-        ])}
-        {_SelectEl('isAdmin', [
-          { label: 'Filter By Admin', q: FilterEnum.none },
-          { label: 'Is Admin', q: FilterEnum.true },
-          { label: 'Not Admin', q: FilterEnum.false },
-        ])}
-        {_SelectEl('ordering', [
-          { label: 'Sort by Name ⬆', q: 'name' },
-          { label: 'Sort by Name ⬇', q: '-name' },
-          { label: 'Sort by Username ⬆', q: 'username' },
-          { label: 'Sort by Username ⬇', q: '-username' },
-          { label: 'Sort by Email ⬆', q: 'email' },
-          { label: 'Sort by Email ⬇', q: '-email' },
-        ])}
+        <Select
+          control={control}
+          name="activated"
+          items={[
+            { label: 'Filter By Activated Users', q: FilterEnum.none },
+            { label: 'activated', q: FilterEnum.true },
+            { label: 'deactivated', q: FilterEnum.false },
+          ]}
+          handleOnChange={(select, name) => {
+            updateQuery({ [name]: select })
+          }}
+        />
+        <Select
+          control={control}
+          name="isAdmin"
+          items={[
+            { label: 'Filter By Admin', q: FilterEnum.none },
+            { label: 'Is Admin', q: FilterEnum.true },
+            { label: 'Not Admin', q: FilterEnum.false },
+          ]}
+          handleOnChange={(select, name) => {
+            updateQuery({ [name]: select })
+          }}
+        />
+        <Select
+          control={control}
+          name="ordering"
+          items={[
+            { label: 'Sort by Name ⬆', q: 'name' },
+            { label: 'Sort by Name ⬇', q: '-name' },
+            { label: 'Sort by Username ⬆', q: 'username' },
+            { label: 'Sort by Username ⬇', q: '-username' },
+            { label: 'Sort by Email ⬆', q: 'email' },
+            { label: 'Sort by Email ⬇', q: '-email' },
+          ]}
+          handleOnChange={(select, name) => {
+            updateQuery({ [name]: select })
+          }}
+        />
+
         <input
           aria-label="search users"
           className="flex-2 px-2 py-3 rounded w-full md:w-auto"
@@ -132,6 +108,7 @@ function UserManagement({ provider, owner }) {
                 <span>{user.activated ? 'Activated' : 'Disabled'}</span>
               </div>
             ))}
+          {!isSuccess && <p>Failed to fetch users</p>}
         </div>
         <div className="pt-4">Pagination</div>
       </Card>

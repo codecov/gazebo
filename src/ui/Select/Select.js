@@ -11,9 +11,6 @@ function Select({
   onChange,
   value,
   renderItem = identity,
-  buttonClass,
-  ulClass,
-  className,
   ariaName,
 }) {
   const {
@@ -45,16 +42,11 @@ function Select({
   }
 
   return (
-    <div className={cs({ 'w-full relative': !className }, className)}>
+    <div className="w-full relative">
       <button
         aria-label={ariaName}
         type="button"
-        className={cs(
-          {
-            'flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none': !buttonClass,
-          },
-          buttonClass
-        )}
+        className="lex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none"
         {...getToggleButtonProps()}
       >
         {renderButton()}
@@ -63,12 +55,11 @@ function Select({
       <ul
         aria-label={ariaName}
         className={cs(
+          'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10',
           {
-            'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full': !ulClass,
             border: isOpen,
             'border-solid': isOpen,
-          },
-          ulClass
+          }
         )}
         {...getMenuProps()}
       >
@@ -84,8 +75,6 @@ Select.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.any,
   renderItem: PropTypes.func,
-  buttonClass: PropTypes.string,
-  ulClass: PropTypes.string,
   ariaName: PropTypes.string,
 }
 

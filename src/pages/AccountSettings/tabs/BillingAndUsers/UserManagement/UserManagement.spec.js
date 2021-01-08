@@ -58,6 +58,68 @@ describe('UserManagerment', () => {
     })
   })
 
+  describe('User rendering', () => {
+    describe('is student', () => {
+      beforeEach(() => {
+        const mockUseUsers = {
+          isSuccess: true,
+          data: {
+            results: [{ username: 'kumar', student: true }],
+          },
+        }
+        useUsers.mockReturnValue(mockUseUsers)
+        setup()
+      })
+      it('renders if student user', () => {
+        const placeholder = screen.getByText(/kumar/)
+        expect(placeholder).toBeInTheDocument()
+
+        const studentLabel = screen.getByText(/Student/)
+        expect(studentLabel).toBeInTheDocument()
+      })
+    })
+
+    describe('is admin', () => {
+      beforeEach(() => {
+        const mockUseUsers = {
+          isSuccess: true,
+          data: {
+            results: [{ username: 'kumar', isAdmin: true }],
+          },
+        }
+        useUsers.mockReturnValue(mockUseUsers)
+        setup()
+      })
+      it('renders if admin user', () => {
+        const placeholder = screen.getByText(/kumar/)
+        expect(placeholder).toBeInTheDocument()
+
+        const studentLabel = screen.getByText(/^Admin/)
+        expect(studentLabel).toBeInTheDocument()
+      })
+    })
+
+    describe('is email', () => {
+      beforeEach(() => {
+        const mockUseUsers = {
+          isSuccess: true,
+          data: {
+            results: [{ username: 'kumar', email: 'test@email.com' }],
+          },
+        }
+        useUsers.mockReturnValue(mockUseUsers)
+        setup()
+      })
+      it('renders an email', () => {
+        const placeholder = screen.getByText(/kumar/)
+        expect(placeholder).toBeInTheDocument()
+
+        const studentLabel = screen.getByText(/test@email.com/)
+        expect(studentLabel).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('Sort By', () => {
     describe('Default Selection', () => {
       beforeEach(() => {

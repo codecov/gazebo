@@ -14,7 +14,7 @@ function Header() {
 
   return (
     <>
-      <header ref={mobileMenuRef} className="fixed top-0 w-full">
+      <header ref={mobileMenuRef} className="fixed top-0 w-full z-50">
         <div
           className={cs(
             'z-50 absolute w-full max-w-7xl mx-auto px-4',
