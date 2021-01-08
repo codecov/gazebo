@@ -46,7 +46,7 @@ function Select({
       <button
         aria-label={ariaName}
         type="button"
-        className="lex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none"
+        className="flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none"
         {...getToggleButtonProps()}
       >
         {renderButton()}

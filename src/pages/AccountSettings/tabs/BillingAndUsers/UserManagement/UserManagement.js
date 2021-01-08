@@ -97,8 +97,8 @@ function UserManagement({ provider, owner }) {
         <div className="pb-4">
           <h2>User List</h2>
           {isSuccess &&
-            data?.results?.map((user, i) => (
-              <div key={i} className="p-2 flex justify-between">
+            data?.results?.map((user) => (
+              <div key={user.username} className="p-2 flex justify-between">
                 <User
                   username={user.username}
                   name={user.name}
@@ -108,7 +108,6 @@ function UserManagement({ provider, owner }) {
                 <span>{user.activated ? 'Activated' : 'Disabled'}</span>
               </div>
             ))}
-          {!isSuccess && <p>Failed to fetch users</p>}
         </div>
         <div className="pt-4">Pagination</div>
       </Card>
