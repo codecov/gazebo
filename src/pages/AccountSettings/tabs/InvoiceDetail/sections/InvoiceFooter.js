@@ -25,19 +25,21 @@ function InvoiceFooter({ invoice }) {
   const addressInfo = generateAddressInfo(billingDetails)
 
   return (
-    <div className="flex justify-between">
-      <div className="text-sm">
-        <h4 className="bold text-pink-500">TO</h4>
-        <address className="not-italic text-gray-800">
-          {addressInfo.map((addressItem, i) => (
-            <span key={`${addressItem}-${i}`}>
-              {addressItem}
-              <br />
-            </span>
-          ))}
-        </address>
-      </div>
-      <div className="text-right text-xl text-gray-800">
+    <div className="flex">
+      {addressInfo.length > 0 && (
+        <div className="text-sm">
+          <h4 className="bold text-pink-500">TO</h4>
+          <address className="not-italic text-gray-800">
+            {addressInfo.map((addressItem, i) => (
+              <span key={`${addressItem}-${i}`}>
+                {addressItem}
+                <br />
+              </span>
+            ))}
+          </address>
+        </div>
+      )}
+      <div className="ml-auto text-right text-xl text-gray-800">
         TOTAL
         <span className="text-2xl ml-4">
           ${(invoice.total / 100).toFixed(2)}
