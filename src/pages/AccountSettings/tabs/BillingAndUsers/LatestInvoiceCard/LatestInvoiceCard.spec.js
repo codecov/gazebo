@@ -14,7 +14,12 @@ const invoice = {
 describe('LatestInvoiceCard', () => {
   let wrapper
   function setup(invoice) {
-    wrapper = render(<LatestInvoiceCard invoice={invoice} />, {
+    const props = {
+      invoice,
+      provider: 'gh',
+      owner: 'codecov',
+    }
+    wrapper = render(<LatestInvoiceCard {...props} />, {
       wrapper: MemoryRouter,
     })
   }
