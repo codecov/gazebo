@@ -35,10 +35,8 @@ export function useInvoices({ provider, owner }) {
 }
 
 export function useInvoice({ provider, owner, id }) {
-  console.log('bro')
   return useQuery(['invoice', provider, owner, id], () => {
     const path = `/${provider}/${owner}/invoices/${id}`
-    console.log(path)
     return Api.get({ path, provider })
   })
 }
