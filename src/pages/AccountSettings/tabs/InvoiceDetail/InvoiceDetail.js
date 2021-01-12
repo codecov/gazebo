@@ -1,25 +1,24 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 
 import { useInvoice } from 'services/account'
+import Button from 'ui/Button'
 
 import BackLink from '../../shared/BackLink'
 import InvoiceHeader from './sections/InvoiceHeader'
 import InvoiceItems from './sections/InvoiceItems'
 import InvoiceFooter from './sections/InvoiceFooter'
-import InvoiceTotal from './sections/InvoiceTotal'
+import InvoiceSubTotal from './sections/InvoiceSubTotal'
 
 function InvoiceDetail({ provider, owner }) {
   const { id } = useParams()
   const { data: invoice } = useInvoice({ provider, owner, id })
   const classNameSection = 'py-8 px-16 border-t first:border-0 border-gray-200'
+  const backLinkUrl = `/account/${provider}/${owner}/invoices`
 
   return (
     <>
-      <BackLink
-        to={`/account/${provider}/${owner}/invoices`}
-        textLink="Invoice overview"
-      />
+      <BackLink to={backLinkUrl} textLink="Invoice overview" />
       <div className="bg-white shadow-card border-pink-500 border-t-2 mt-8">
         <div className={classNameSection}>
           <InvoiceHeader invoice={invoice} />
@@ -28,12 +27,19 @@ function InvoiceDetail({ provider, owner }) {
           <InvoiceItems invoice={invoice} />
         </div>
         <div className={classNameSection}>
-          <InvoiceTotal invoice={invoice} />
+          <InvoiceSubTotal invoice={invoice} />
         </div>
         <div className={classNameSection}>
           <InvoiceFooter invoice={invoice} />
         </div>
-        <pre>{JSON.stringify(invoice, null, 2)}</pre>
+      </div>
+      <div className="my-8">
+        <Button to={backLinkUrl} Component={Link} variant="outline">
+          Back to invoices
+        </Button>
+        <Button className="ml-4" onClick={window.print}>
+          Print
+        </Button>
       </div>
     </>
   )
