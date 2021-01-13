@@ -83,7 +83,7 @@ function Dropdown() {
             className={cs(
               'bg-gray-800 hover:bg-gray-600',
               'first:border-t first:border-solid first:border-gray-900',
-              'last:rounded-b-3xl last:pb-3'
+              'last:rounded-b-3xl last:pb-3 px-4'
             )}
             {...props}
           />

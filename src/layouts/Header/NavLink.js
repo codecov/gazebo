@@ -20,7 +20,7 @@ export function UserNavLink({
 }) {
   return (
     <LinkComponent
-      className={cs('flex items-center px-4 py-2 text-sm', className)}
+      className={cs('flex items-center py-2 text-sm', className)}
       {...props}
     >
       {imageUrl && (
