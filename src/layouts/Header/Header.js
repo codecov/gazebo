@@ -26,7 +26,7 @@ function Header() {
             onClick={() => setIsOpen(!isOpen)}
             className={cs(
               'inline-flex items-center justify-center p-2 h-10 w-10 rounded-md',
-              'bg-gray-800  text-gray-400',
+              'bg-gray-800 text-gray-400',
               'hover:text-white hover:bg-gray-700',
               'focus:outline-none focus:bg-gray-600'
             )}
