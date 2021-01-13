@@ -79,7 +79,7 @@
     "@rescripts/cli": "0.0.15",
     "@sentry/cli": "^1.61.0",
     "@storybook/addon-actions": "^6.1.11",
-    "@storybook/addon-essentials": "^6.1.11",
+    "@storybook/addon-essentials": "^6.1.14",
     "@storybook/addon-links": "^6.1.12",
     "@storybook/node-logger": "^6.1.12",
     "@storybook/preset-create-react-app": "^3.1.4",
