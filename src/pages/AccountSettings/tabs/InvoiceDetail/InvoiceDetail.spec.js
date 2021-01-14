@@ -78,7 +78,7 @@ const subscriptionDetail = {
 }
 
 describe('InvoiceDetail', () => {
-  function setup(invoiceOver = {}) {
+  function setup(invoiceOver = {}, url = '') {
     useInvoice.mockReturnValue({
       data: {
         ...invoice,
@@ -90,9 +90,11 @@ describe('InvoiceDetail', () => {
         subscriptionDetail,
       },
     })
-    render(<InvoiceDetail owner="codecov" provider="codecov" />, {
-      wrapper: MemoryRouter,
-    })
+    render(
+      <MemoryRouter initialEntries={[url]}>
+        <InvoiceDetail owner="codecov" provider="codecov" />
+      </MemoryRouter>
+    )
   }
 
   describe('when rendering', () => {
@@ -175,6 +177,17 @@ describe('InvoiceDetail', () => {
     it('renders the discount', () => {
       expect(screen.getByText(/discount/i)).toBeInTheDocument()
       expect(screen.getByText(/\$-10.00/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('when ?print is in the URL', () => {
+    beforeEach(() => {
+      window.print = jest.fn()
+      setup({}, '/invoice/123?print')
+    })
+
+    it('prompts the user for printing', () => {
+      expect(window.print).toHaveBeenCalled()
     })
   })
 })

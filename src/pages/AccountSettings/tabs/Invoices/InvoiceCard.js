@@ -16,6 +16,7 @@ const statusToColor = {
 }
 
 function InvoiceCard({ invoice, provider, owner }) {
+  const invoiceUrl = `/account/${provider}/${owner}/invoices/${invoice.id}`
   return (
     <Card className="p-4 mt-4 flex text-sm items-center">
       Invoice on {format(fromUnixTime(invoice.created), 'MMMM do yyyy')}
@@ -27,8 +28,13 @@ function InvoiceCard({ invoice, provider, owner }) {
       </span>
       <Button
         Component={Link}
-        to={`/account/${provider}/${owner}/invoices/${invoice.id}`}
+        to={invoiceUrl + '?print'}
+        target="_blank"
+        variant="outline"
       >
+        Download
+      </Button>
+      <Button Component={Link} to={invoiceUrl} className="ml-4">
         View
       </Button>
     </Card>
