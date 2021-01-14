@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useParams, Link } from 'react-router-dom'
 
-import { useInvoice } from 'services/account'
+import { useInvoice, useAccountDetails } from 'services/account'
 import Button from 'ui/Button'
 
 import BackLink from '../../shared/BackLink'
@@ -12,6 +12,7 @@ import InvoiceSubTotal from './sections/InvoiceSubTotal'
 
 function InvoiceDetail({ provider, owner }) {
   const { id } = useParams()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: invoice } = useInvoice({ provider, owner, id })
   const classNameSection = 'py-8 px-16 border-t first:border-0 border-gray-200'
   const backLinkUrl = `/account/${provider}/${owner}/invoices`
@@ -30,7 +31,7 @@ function InvoiceDetail({ provider, owner }) {
           <InvoiceSubTotal invoice={invoice} />
         </div>
         <div className={classNameSection}>
-          <InvoiceFooter invoice={invoice} />
+          <InvoiceFooter invoice={invoice} accountDetails={accountDetails} />
         </div>
       </div>
       <div className="my-8">

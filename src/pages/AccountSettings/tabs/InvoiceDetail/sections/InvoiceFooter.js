@@ -20,8 +20,10 @@ function generateAddressInfo(billingDetails) {
   return addressInfo
 }
 
-function InvoiceFooter({ invoice }) {
-  const { billingDetails } = invoice.subscription.defaultPaymentMethod
+function InvoiceFooter({ invoice, accountDetails }) {
+  const {
+    billingDetails,
+  } = accountDetails.subscriptionDetail.defaultPaymentMethod
   const addressInfo = generateAddressInfo(billingDetails)
 
   return (
@@ -52,7 +54,9 @@ function InvoiceFooter({ invoice }) {
 InvoiceFooter.propTypes = {
   invoice: PropTypes.shape({
     total: PropTypes.number.isRequired,
-    subscription: PropTypes.shape({
+  }).isRequired,
+  accountDetails: PropTypes.shape({
+    subscriptionDetail: PropTypes.shape({
       defaultPaymentMethod: PropTypes.shape({
         billingDetails: PropTypes.shape({
           name: PropTypes.string,

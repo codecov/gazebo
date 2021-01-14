@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { useInvoice } from 'services/account'
+import { useInvoice, useAccountDetails } from 'services/account'
 import InvoiceDetail from './InvoiceDetail'
 
 jest.mock('services/account/hooks')
@@ -47,33 +47,34 @@ const invoice = {
       quantity: 1,
     },
   ],
-  subscription: {
-    latestInvoice: 'in_1I3vJAGlVGuVgOrk5h77hHRa',
-    defaultPaymentMethod: {
-      card: {
-        brand: 'visa',
-        expMonth: 12,
-        expYear: 2021,
-        last4: '4242',
-      },
-      billingDetails: {
-        address: {
-          city: 'Bordeaux',
-          country: 'France',
-          line1: '12 cours st-louis',
-          line2: 'apt-31',
-          postalCode: '33000',
-          state: 'Gironde',
-        },
-        email: null,
-        name: 'Checo perez',
-        phone: null,
-      },
+}
+
+const subscriptionDetail = {
+  latestInvoice: 'in_1I3vJAGlVGuVgOrk5h77hHRa',
+  defaultPaymentMethod: {
+    card: {
+      brand: 'visa',
+      expMonth: 12,
+      expYear: 2021,
+      last4: '4242',
     },
-    cancelAtPeriodEnd: false,
-    currentPeriodEnd: 1640834708,
-    customer: 'cus_IVd2T7puVJe1Ur',
+    billingDetails: {
+      address: {
+        city: 'Bordeaux',
+        country: 'France',
+        line1: '12 cours st-louis',
+        line2: 'apt-31',
+        postalCode: '33000',
+        state: 'Gironde',
+      },
+      email: null,
+      name: 'Checo perez',
+      phone: null,
+    },
   },
+  cancelAtPeriodEnd: false,
+  currentPeriodEnd: 1640834708,
+  customer: 'cus_IVd2T7puVJe1Ur',
 }
 
 describe('InvoiceDetail', () => {
@@ -82,6 +83,11 @@ describe('InvoiceDetail', () => {
       data: {
         ...invoice,
         ...invoiceOver,
+      },
+    })
+    useAccountDetails.mockReturnValue({
+      data: {
+        subscriptionDetail,
       },
     })
     render(<InvoiceDetail owner="codecov" provider="codecov" />, {
