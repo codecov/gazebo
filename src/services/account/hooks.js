@@ -34,6 +34,13 @@ export function useInvoices({ provider, owner }) {
   })
 }
 
+export function useInvoice({ provider, owner, id }) {
+  return useQuery(['invoice', provider, owner, id], () => {
+    const path = `/${provider}/${owner}/invoices/${id}`
+    return Api.get({ path, provider })
+  })
+}
+
 export function useAccountDetails({ provider, owner }) {
   return useQuery(['accountDetails', provider, owner], () => {
     return fetchAccountDetails({ provider, owner })

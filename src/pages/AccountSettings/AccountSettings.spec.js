@@ -10,6 +10,7 @@ jest.mock('./tabs/CancelPlan', () => () => 'CancelPlan')
 jest.mock('./tabs/YAML', () => () => 'YAMLTab')
 jest.mock('./tabs/CancelPlan', () => () => 'CancelPlanTab')
 jest.mock('./tabs/UpgradePlan', () => () => 'UpgradePlan')
+jest.mock('./tabs/InvoiceDetail', () => () => 'InvoiceDetail')
 
 describe('AccountSettings', () => {
   function setup() {
