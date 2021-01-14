@@ -5,12 +5,12 @@ function InvoiceSubTotal({ invoice }) {
 
   return (
     <div className="text-right flex leading-8">
-      <p className="ml-auto text-gray-400">
-        SUB TOTAL
+      <p className="ml-auto text-gray-400 uppercase">
+        sub total
         {discount > 0 && (
           <>
             <br />
-            DISCOUNT
+            discount
           </>
         )}
       </p>
