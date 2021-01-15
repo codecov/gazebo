@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useUser } from 'services/user'
 import AccountSettings from './AccountSettings'
 
 jest.mock('./tabs/Admin', () => () => 'AdminTab')
@@ -11,44 +11,53 @@ jest.mock('./tabs/YAML', () => () => 'YAMLTab')
 jest.mock('./tabs/CancelPlan', () => () => 'CancelPlanTab')
 jest.mock('./tabs/UpgradePlan', () => () => 'UpgradePlan')
 jest.mock('./tabs/InvoiceDetail', () => () => 'InvoiceDetail')
+jest.mock('services/user/hooks')
 
 describe('AccountSettings', () => {
-  function setup() {
-    render(<AccountSettings />, {
-      wrapper: MemoryRouter,
+  function setup(url = '/account/gh/codecov') {
+    useUser.mockReturnValue({
+      data: {
+        username: 'dorian',
+      },
     })
+    render(
+      <MemoryRouter initialEntries={[url]}>
+        <Route path="/account/:provider/:owner/">
+          <AccountSettings />
+        </Route>
+      </MemoryRouter>
+    )
   }
 
-  describe('when rendering on base url', () => {
+  describe('when rendering for an organization', () => {
     beforeEach(() => {
-      setup('/')
+      setup()
     })
 
-    it('renders the BillingAndUsers tab', () => {
-      const tab = screen.getByText(/BillingAndUsersTab/)
-      expect(tab).toBeInTheDocument()
+    it('renders the right links', () => {
+      expect(screen.getByRole('link', { name: /Admin/ })).toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: /Access/ })
+      ).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: /billing & users/i })
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendering for personal settings', () => {
+    beforeEach(() => {
+      setup('/account/gh/dorian')
     })
 
-    describe('when clicking on yaml', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByText(/YAML/))
-      })
-
-      it('renders the Yaml tab', () => {
-        const tab = screen.getByText(/YAMLTab/)
-        expect(tab).toBeInTheDocument()
-      })
-    })
-
-    describe('when rendering on admin tab', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByText(/Admin/))
-      })
-
-      it('renders the Admin tab', () => {
-        const tab = screen.getByText(/AdminTab/)
-        expect(tab).toBeInTheDocument()
-      })
+    it('renders the right links', () => {
+      expect(screen.getByRole('link', { name: /Admin/ })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /Access/ })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: /billing & users/i })
+      ).not.toBeInTheDocument()
     })
   })
 })
