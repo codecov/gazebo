@@ -18,7 +18,7 @@ function UpgradePlan({ provider, owner }) {
   return (
     <>
       <BackLink
-        to={`/account/${provider}/${owner}`}
+        to={`/account/${provider}/${owner}/billing`}
         textLink="Billing & Users"
       />
       <article className="grid grid-cols-12 gap-8 mt-10">
