@@ -30,7 +30,7 @@ function Invoices({ provider, owner }) {
   return (
     <>
       <BackLink
-        to={`/account/${provider}/${owner}`}
+        to={`/account/${provider}/${owner}/billing`}
         textLink="Billing & Users"
       />
       {years.map((year) => (

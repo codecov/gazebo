@@ -46,12 +46,12 @@ function CurrentPlanCard({ accountDetails }) {
       </p>
 
       <div className="flex flex-col items-center mt-6">
-        <Button Component={Link} to={`${baseUrl}billing/upgrade`}>
+        <Button Component={Link} to={`${baseUrl}upgrade`}>
           {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
         </Button>
         {shouldRenderCancelLink(accountDetails, isFreePlan) && (
           <Button
-            to={`${baseUrl}billing/cancel`}
+            to={`${baseUrl}cancel`}
             Component={Link}
             variant="text"
             color="gray"

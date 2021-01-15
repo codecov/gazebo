@@ -3,11 +3,23 @@ import { NavLink } from 'react-router-dom'
 
 import Icon from 'ui/Icon'
 
-function SideMenu({ baseUrl }) {
+function SideMenu({ baseUrl, isPersonalSettings }) {
+  const personalLinks = [
+    { to: baseUrl + 'access', iconName: 'creditCard', text: 'Access' },
+  ]
+
+  const organizationLinks = [
+    {
+      to: baseUrl + 'billing',
+      iconName: 'creditCard',
+      text: 'Billing & Users',
+    },
+  ]
+
   const links = [
-    { to: baseUrl, iconName: 'creditCard', text: 'Billing & Users' },
+    { to: baseUrl, iconName: 'setting', text: 'Admin' },
+    ...(isPersonalSettings ? personalLinks : organizationLinks),
     { to: baseUrl + 'yaml', iconName: 'fileAlt', text: 'YAML' },
-    { to: baseUrl + 'admin', iconName: 'setting', text: 'Admin' },
   ]
 
   return (
@@ -15,6 +27,7 @@ function SideMenu({ baseUrl }) {
       <section>
         {links.map((link) => (
           <NavLink
+            exact={baseUrl === link.to}
             key={link.to}
             to={link.to}
             className="flex items-center text-gray-500 p-2 pr-2 mb-2 border-solid border-pink-500 hover:bg-gray-100 hover:border-r-4"
@@ -31,6 +44,7 @@ function SideMenu({ baseUrl }) {
 
 SideMenu.propTypes = {
   baseUrl: PropTypes.string.isRequired,
+  isPersonalSettings: PropTypes.bool.isRequired,
 }
 
 export default SideMenu
