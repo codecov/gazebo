@@ -1,8 +1,10 @@
-import { lazy } from 'react'
-import { useParams, Switch, Route } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
+import { useParams, Switch, Route, Redirect } from 'react-router-dom'
 
+import LogoSpinner from 'ui/LogoSpinner'
 import { useBaseUrl } from 'shared/router'
-import PageLayout from 'layouts/SidebarLayout'
+import SidebarLayout from 'layouts/SidebarLayout'
+import { useUser } from 'services/user'
 
 import SideMenu from './SideMenu'
 import AdminTab from './tabs/Admin'
@@ -15,39 +17,56 @@ const InvoicesTab = lazy(() => import('./tabs/Invoices'))
 const InvoiceDetailTab = lazy(() => import('./tabs/InvoiceDetail'))
 
 function AccountSettings() {
+  const { data: user } = useUser()
   const { provider, owner } = useParams()
   const baseUrl = useBaseUrl()
 
-  // it's a slightly different menu / pages if the owner is a Org or a user
-  // so we will need to fetch the information at this level
-  // and render different UI according to the type of user
+  const isPersonalSettings = user.username === owner
+
+  const tabLoading = (
+    <div className="h-full w-full flex items-center justify-center">
+      <LogoSpinner />
+    </div>
+  )
 
   return (
-    <PageLayout sidebar={<SideMenu baseUrl={baseUrl} />}>
-      <Switch>
-        <Route path={baseUrl + ''} exact>
-          <BillingAndUsersTab provider={provider} owner={owner} />
-        </Route>
-        <Route path={baseUrl + 'billing/upgrade'} exact>
-          <UpgradePlanTab provider={provider} owner={owner} />
-        </Route>
-        <Route path={baseUrl + 'billing/cancel'} exact>
-          <CancelPlanTab provider={provider} owner={owner} />
-        </Route>
-        <Route path={baseUrl + 'invoices'} exact>
-          <InvoicesTab provider={provider} owner={owner} />
-        </Route>
-        <Route path={baseUrl + 'invoices/:id'} exact>
-          <InvoiceDetailTab provider={provider} owner={owner} />
-        </Route>
-        <Route path={baseUrl + 'yaml'} exact>
-          <YAMLTab />
-        </Route>
-        <Route path={baseUrl + 'admin'} exact>
-          <AdminTab />
-        </Route>
-      </Switch>
-    </PageLayout>
+    <SidebarLayout
+      sidebar={
+        <SideMenu baseUrl={baseUrl} isPersonalSettings={isPersonalSettings} />
+      }
+    >
+      <Suspense fallback={tabLoading}>
+        <Switch>
+          <Route path={baseUrl} exact>
+            <AdminTab />
+          </Route>
+          <Route path={baseUrl + 'yaml'} exact>
+            <YAMLTab />
+          </Route>
+          <Route path={baseUrl + 'access'} exact>
+            AccessTab :)
+          </Route>
+          <Route path={baseUrl + 'billing'} exact>
+            <BillingAndUsersTab provider={provider} owner={owner} />
+          </Route>
+          <Route path={baseUrl + 'users'} exact>
+            <Redirect to={baseUrl + 'billing'} />
+          </Route>
+          <Route path={baseUrl + 'billing/upgrade'} exact>
+            <UpgradePlanTab provider={provider} owner={owner} />
+          </Route>
+          <Route path={baseUrl + 'billing/cancel'} exact>
+            <CancelPlanTab provider={provider} owner={owner} />
+          </Route>
+          <Route path={baseUrl + 'invoices'} exact>
+            <InvoicesTab provider={provider} owner={owner} />
+          </Route>
+          <Route path={baseUrl + 'invoices/:id'} exact>
+            <InvoiceDetailTab provider={provider} owner={owner} />
+          </Route>
+        </Switch>
+      </Suspense>
+    </SidebarLayout>
   )
 }
 
