@@ -31,6 +31,15 @@ export function useUsers({ provider, owner, query }) {
 export function useUpdateUser({ provider, owner, params }) {
   const queryClient = useQueryClient()
 
+  function updateUserCache(oldData, user) {
+    const index = findIndex(
+      oldData.results,
+      ({ username }) => username === user.username
+    )
+
+    return update(oldData, `results[${index}].activated`, () => user.activated)
+  }
+
   return useMutation(
     ({ targetUser, ...body }) => {
       const path = patchPathUsers({ provider, owner, targetUser })
@@ -38,26 +47,10 @@ export function useUpdateUser({ provider, owner, params }) {
     },
     {
       onSuccess: (user) => {
-        const prevData = queryClient.getQueryData([
-          'users',
-          provider,
-          owner,
-          params,
-        ])
-        const index = findIndex(
-          prevData.results,
-          ({ username }) => username === user.username
-        )
-        const currentData = update(
-          prevData,
-          `results[${index}].activated`,
-          () => user.activated
-        )
-
-        // update the local cache of account details from what the server returns
+        // update the local cache of account details with what the server returns
         queryClient.setQueryData(
           ['users', provider, owner, params],
-          currentData
+          (oldData) => updateUserCache(oldData, user)
         )
       },
     }
