@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import cs from 'classnames'
 
-function User({ avatarUrl, name, username, pills = [] }) {
+function User({ avatarUrl, name, username, pills = [], className }) {
   return (
-    <div className="flex text-md text-sm space-x-4">
+    <div className={cs(className, 'flex text-md text-sm space-x-4')}>
       <img className="rounded-full h-12 w-12" src={avatarUrl} alt={username} />
       <div className="flex-1 flex flex-col justify-center">
         <div>

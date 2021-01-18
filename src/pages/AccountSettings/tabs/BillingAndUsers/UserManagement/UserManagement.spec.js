@@ -1,7 +1,12 @@
-import { render, screen, act } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+  waitFor,
+} from '@testing-library/react'
+import user from '@testing-library/user-event'
 
-import { useUsers } from 'services/users'
+import { useUsers, useUpdateUser } from 'services/users'
 
 import UserManagerment from './UserManagement'
 
@@ -11,11 +16,13 @@ const users = {
   data: {},
 }
 
+const mockUpdateUser = {
+  mutate: jest.fn(),
+}
+
 describe('UserManagerment', () => {
   function setup() {
-    act(() => {
-      render(<UserManagerment provider="gh" owner="chris" />)
-    })
+    render(<UserManagerment provider="gh" owner="chris" />)
   }
 
   describe('User List', () => {
@@ -30,6 +37,7 @@ describe('UserManagerment', () => {
           },
         }
         useUsers.mockReturnValue(mockUseUsers)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
       it('renders the user list', () => {
@@ -49,6 +57,7 @@ describe('UserManagerment', () => {
           },
         }
         useUsers.mockReturnValue(mockUseUsers)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
       it('renders the user list', () => {
@@ -68,6 +77,7 @@ describe('UserManagerment', () => {
           },
         }
         useUsers.mockReturnValue(mockUseUsers)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
       it('renders if student user', () => {
@@ -88,6 +98,7 @@ describe('UserManagerment', () => {
           },
         }
         useUsers.mockReturnValue(mockUseUsers)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
       it('renders if admin user', () => {
@@ -108,6 +119,7 @@ describe('UserManagerment', () => {
           },
         }
         useUsers.mockReturnValue(mockUseUsers)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
       it('renders an email', () => {
@@ -124,16 +136,17 @@ describe('UserManagerment', () => {
     describe('Default Selection', () => {
       beforeEach(() => {
         useUsers.mockReturnValue(users)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
 
       it(`Renders the correct selection: Sort by Name ⬆`, () => {
         const SortSelect = screen.getByRole('button', { name: 'ordering' })
-        userEvent.click(SortSelect)
+        user.click(SortSelect)
         expect(
           screen.getByRole('option', { name: /Sort by Name ⬆/ })
         ).toBeInTheDocument()
-        userEvent.click(screen.getByRole('option', { name: /Sort by Name ⬆/ }))
+        user.click(screen.getByRole('option', { name: /Sort by Name ⬆/ }))
         expect(
           screen.queryByRole('option', { name: /Sort by Name ⬆/ })
         ).not.toBeInTheDocument()
@@ -141,12 +154,10 @@ describe('UserManagerment', () => {
 
       it(`Makes the correct query to the api: Sort by Name ⬆`, () => {
         const SortSelect = screen.getByRole('button', { name: 'ordering' })
-        userEvent.click(SortSelect)
-        userEvent.click(
-          screen.getByRole('option', { name: /Sort by Username ⬆/ })
-        )
-        userEvent.click(SortSelect)
-        userEvent.click(screen.getByRole('option', { name: /Sort by Name ⬆/ }))
+        user.click(SortSelect)
+        user.click(screen.getByRole('option', { name: /Sort by Username ⬆/ }))
+        user.click(SortSelect)
+        user.click(screen.getByRole('option', { name: /Sort by Name ⬆/ }))
         expect(useUsers).toHaveBeenCalledWith({
           owner: 'chris',
           provider: 'gh',
@@ -164,14 +175,15 @@ describe('UserManagerment', () => {
     ])('All others', (label, expected) => {
       beforeEach(() => {
         useUsers.mockReturnValue(users)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
 
       it(`Renders the correct selection: ${label}`, () => {
         const SortSelect = screen.getByRole('button', { name: 'ordering' })
-        userEvent.click(SortSelect)
+        user.click(SortSelect)
         expect(screen.getByRole('option', { name: label })).toBeInTheDocument()
-        userEvent.click(screen.getByRole('option', { name: label }))
+        user.click(screen.getByRole('option', { name: label }))
         expect(
           screen.queryByRole('option', { name: label })
         ).not.toBeInTheDocument()
@@ -186,8 +198,8 @@ describe('UserManagerment', () => {
         })
 
         const SortSelect = screen.getByRole('button', { name: 'ordering' })
-        userEvent.click(SortSelect)
-        userEvent.click(screen.getByRole('option', { name: label }))
+        user.click(SortSelect)
+        user.click(screen.getByRole('option', { name: label }))
         expect(useUsers).toHaveBeenCalledTimes(2)
         expect(useUsers).toHaveBeenCalledWith({
           owner: 'chris',
@@ -205,14 +217,15 @@ describe('UserManagerment', () => {
     ])('All others', (label, expected) => {
       beforeEach(() => {
         useUsers.mockReturnValue(users)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
 
       it(`Renders the correct selection: ${label}`, () => {
         const SortSelect = screen.getByRole('button', { name: 'activated' })
-        userEvent.click(SortSelect)
+        user.click(SortSelect)
         expect(screen.getByRole('option', { name: label })).toBeInTheDocument()
-        userEvent.click(screen.getByRole('option', { name: label }))
+        user.click(screen.getByRole('option', { name: label }))
         expect(
           screen.queryByRole('option', { name: label })
         ).not.toBeInTheDocument()
@@ -227,8 +240,8 @@ describe('UserManagerment', () => {
         })
 
         const SortSelect = screen.getByRole('button', { name: 'activated' })
-        userEvent.click(SortSelect)
-        userEvent.click(screen.getByRole('option', { name: label }))
+        user.click(SortSelect)
+        user.click(screen.getByRole('option', { name: label }))
         expect(useUsers).toHaveBeenCalledTimes(2)
         expect(useUsers).toHaveBeenCalledWith({
           owner: 'chris',
@@ -246,14 +259,15 @@ describe('UserManagerment', () => {
     ])('All others', (label, expected) => {
       beforeEach(() => {
         useUsers.mockReturnValue(users)
+        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
 
       it(`Renders the correct selection: ${label}`, () => {
         const SortSelect = screen.getByRole('button', { name: 'isAdmin' })
-        userEvent.click(SortSelect)
+        user.click(SortSelect)
         expect(screen.getByRole('option', { name: label })).toBeInTheDocument()
-        userEvent.click(screen.getByRole('option', { name: label }))
+        user.click(screen.getByRole('option', { name: label }))
         expect(
           screen.queryByRole('option', { name: label })
         ).not.toBeInTheDocument()
@@ -268,8 +282,8 @@ describe('UserManagerment', () => {
         })
 
         const SortSelect = screen.getByRole('button', { name: 'isAdmin' })
-        userEvent.click(SortSelect)
-        userEvent.click(screen.getByRole('option', { name: label }))
+        user.click(SortSelect)
+        user.click(screen.getByRole('option', { name: label }))
         expect(useUsers).toHaveBeenCalledTimes(2)
         expect(useUsers).toHaveBeenCalledWith({
           owner: 'chris',
@@ -282,24 +296,130 @@ describe('UserManagerment', () => {
 
   describe('Search', () => {
     beforeEach(() => {
-      useUsers.mockReturnValue(users)
-      setup()
-      return act(async () => {
-        const SearchInput = screen.getByRole('textbox', {
-          name: 'search users',
-        })
-        const Submit = screen.getByRole('button', { name: 'Submit' })
+      const mockUseUsers = ({ query }) => {
+        return {
+          isSuccess: true,
+          data: {
+            results: [
+              { username: 'kumar', email: 'test@email.com', activated: false },
+            ].filter(({ username }) => {
+              // mock query search
+              if (query.search) return username.includes(query.search)
+              return true
+            }),
+          },
+        }
+      }
 
-        userEvent.type(SearchInput, 'Ter')
-        userEvent.click(Submit, { bubbles: true })
-      })
+      useUsers.mockImplementation(mockUseUsers)
+      useUpdateUser.mockReturnValue(mockUpdateUser)
+      setup()
     })
 
-    it('Makes the correct query to the api', () => {
+    it('Makes the correct query to the api', async () => {
+      const SearchInput = screen.getByRole('textbox', {
+        name: 'search users',
+      })
+      const Submit = screen.getByRole('button', { name: 'Submit' })
+
+      await user.type(SearchInput, 'Ter')
+      user.click(Submit)
+      await waitForElementToBeRemoved(() => screen.getByText(/kumar/))
+
       expect(useUsers).toHaveBeenCalledWith({
         owner: 'chris',
         provider: 'gh',
         query: { ordering: 'name', activated: '', is_admin: '', search: 'Ter' },
+      })
+    })
+  })
+
+  describe('Activate user', () => {
+    let mutateMock = jest.fn()
+
+    beforeEach(() => {
+      const mockActivateUser = {
+        mutate: mutateMock,
+      }
+      const mockUseUsers = {
+        isSuccess: true,
+        data: {
+          results: [
+            {
+              username: 'kumar',
+              activated: false,
+            },
+          ],
+        },
+      }
+
+      useUsers.mockReturnValue(mockUseUsers)
+      useUpdateUser.mockReturnValue(mockActivateUser)
+
+      setup()
+    })
+
+    it('Renders a inactive user with a Activate button', () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Activate',
+      })
+      expect(ActivateBtn).toBeInTheDocument()
+    })
+
+    it('Clicking "Activate" activates a user', async () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Activate',
+      })
+      user.click(ActivateBtn)
+      await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
+      expect(mutateMock).toHaveBeenCalledWith({
+        targetUser: 'kumar',
+        activated: true,
+      })
+    })
+  })
+
+  describe('Deactivate user', () => {
+    let mutateMock = jest.fn()
+
+    beforeEach(() => {
+      const mockActivateUser = {
+        mutate: mutateMock,
+      }
+      const mockUseUsers = {
+        isSuccess: true,
+        data: {
+          results: [
+            {
+              username: 'kumar',
+              activated: true,
+            },
+          ],
+        },
+      }
+
+      useUsers.mockReturnValue(mockUseUsers)
+      useUpdateUser.mockReturnValue(mockActivateUser)
+
+      setup()
+    })
+
+    it('Renders a inactive user with a Deactivate button', () => {
+      const DeactivateBtn = screen.getByRole('button', {
+        name: 'Deactivate',
+      })
+      expect(DeactivateBtn).toBeInTheDocument()
+    })
+
+    it('Clicking "Deactivate" activates a user', async () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Deactivate',
+      })
+      user.click(ActivateBtn)
+      await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
+      expect(mutateMock).toHaveBeenCalledWith({
+        targetUser: 'kumar',
+        activated: false,
       })
     })
   })

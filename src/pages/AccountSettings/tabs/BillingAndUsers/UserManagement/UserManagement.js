@@ -7,8 +7,9 @@ import createQuery, { FilterEnum } from './formQuery'
 
 import Card from 'ui/Card'
 import User from 'ui/User'
+import Button from 'ui/Button'
 
-import { useUsers } from 'services/users'
+import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
 function createUserPills({ student, isAdmin, email }) {
@@ -21,6 +22,20 @@ function createUserPills({ student, isAdmin, email }) {
   return pills
 }
 
+function useActivateUser({ provider, owner, query }) {
+  const { mutate, ...rest } = useUpdateUser({
+    provider,
+    owner,
+    params: query,
+  })
+
+  function activate(user, activated) {
+    return mutate({ targetUser: user, activated })
+  }
+
+  return { activate, ...rest }
+}
+
 function UserManagement({ provider, owner }) {
   const [query, setQuery] = useState({})
   const { register, handleSubmit, control } = useForm()
@@ -29,6 +44,7 @@ function UserManagement({ provider, owner }) {
     owner,
     query,
   })
+  const { activate } = useActivateUser({ owner, provider, query })
 
   function updateQuery(data) {
     setQuery(createQuery(query, data))
@@ -98,14 +114,24 @@ function UserManagement({ provider, owner }) {
           <h2>User List</h2>
           {isSuccess &&
             data?.results?.map((user) => (
-              <div key={user.username} className="p-2 flex justify-between">
+              <div key={user.username} className="p-2 grid grid-cols-5 gap-4">
                 <User
+                  className="col-span-2"
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
                   pills={createUserPills(user)}
                 />
-                <span>{user.activated ? 'Activated' : 'Disabled'}</span>
+                {/* Div placeholders for last pr/seen */}
+                <div />
+                <div />
+                <Button
+                  color={user.activated ? 'red' : 'blue'}
+                  variant={user.activated ? 'outline' : 'normal'}
+                  onClick={() => activate(user.username, !user.activated)}
+                >
+                  {user.activated ? 'Deactivate' : 'Activate'}
+                </Button>
               </div>
             ))}
         </div>
