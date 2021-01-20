@@ -1,15 +1,41 @@
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
+import find from 'lodash/find'
 
 import { FormSelect as Select } from './UserFormSelect'
-import createQuery, { FilterEnum } from './formQuery'
+import {
+  useLocationParams,
+  normalizeFormData,
+  ApiFilterEnum,
+  getApiFilterEnum,
+} from 'services/navigation'
 
 import Card from 'ui/Card'
 import User from 'ui/User'
 
 import { useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
+
+const OrderingItems = [
+  { label: 'Sort by Name ⬆', value: 'name' },
+  { label: 'Sort by Name ⬇', value: '-name' },
+  { label: 'Sort by Username ⬆', value: 'username' },
+  { label: 'Sort by Username ⬇', value: '-username' },
+  { label: 'Sort by Email ⬆', value: 'email' },
+  { label: 'Sort by Email ⬇', value: '-email' },
+]
+
+const AdminItems = [
+  { label: 'Filter By Admin', value: ApiFilterEnum.none },
+  { label: 'Is Admin', value: ApiFilterEnum.true },
+  { label: 'Not Admin', value: ApiFilterEnum.false },
+]
+
+const ActivatedItems = [
+  { label: 'Filter By Activated Users', value: ApiFilterEnum.none },
+  { label: 'activated', value: ApiFilterEnum.true },
+  { label: 'deactivated', value: ApiFilterEnum.false },
+]
 
 function createUserPills({ student, isAdmin, email }) {
   const pills = []
@@ -22,61 +48,66 @@ function createUserPills({ student, isAdmin, email }) {
 }
 
 function UserManagement({ provider, owner }) {
-  const [query, setQuery] = useState({})
+  const { params, setParams } = useLocationParams({
+    activated: '',
+    isAdmin: '',
+    ordering: 'name',
+    search: '',
+  })
   const { register, handleSubmit, control } = useForm()
   const { data, isSuccess } = useUsers({
     provider,
     owner,
-    query,
+    query: params,
   })
 
   function updateQuery(data) {
-    setQuery(createQuery(query, data))
-  }
-  const onSubmit = (data) => {
-    updateQuery(data)
+    // Combine previous params with new form data
+    setParams({
+      ...params,
+      ...normalizeFormData(data),
+    })
   }
 
+  console.log(params)
+
   return (
-    <form className="space-y-4 col-span-2" onSubmit={handleSubmit(onSubmit)}>
+    <form className="space-y-4 col-span-2" onSubmit={handleSubmit(updateQuery)}>
       <Card className="shadow flex flex-wrap divide-x divide-gray-200 divide-solid">
         <Select
           control={control}
           name="activated"
-          items={[
-            { label: 'Filter By Activated Users', q: FilterEnum.none },
-            { label: 'activated', q: FilterEnum.true },
-            { label: 'deactivated', q: FilterEnum.false },
-          ]}
-          handleOnChange={(select, name) => {
-            updateQuery({ [name]: select })
+          items={ActivatedItems}
+          selected={find(
+            ActivatedItems,
+            ({ value }) => value === getApiFilterEnum(params.activated)
+          )}
+          handleOnChange={({ value }, name) => {
+            updateQuery({ [name]: value })
           }}
         />
         <Select
           control={control}
           name="isAdmin"
-          items={[
-            { label: 'Filter By Admin', q: FilterEnum.none },
-            { label: 'Is Admin', q: FilterEnum.true },
-            { label: 'Not Admin', q: FilterEnum.false },
-          ]}
-          handleOnChange={(select, name) => {
-            updateQuery({ [name]: select })
+          items={AdminItems}
+          selected={find(
+            AdminItems,
+            ({ value }) => value === getApiFilterEnum(params.isAdmin)
+          )}
+          handleOnChange={({ value }, name) => {
+            updateQuery({ [name]: value })
           }}
         />
         <Select
           control={control}
           name="ordering"
-          items={[
-            { label: 'Sort by Name ⬆', q: 'name' },
-            { label: 'Sort by Name ⬇', q: '-name' },
-            { label: 'Sort by Username ⬆', q: 'username' },
-            { label: 'Sort by Username ⬇', q: '-username' },
-            { label: 'Sort by Email ⬆', q: 'email' },
-            { label: 'Sort by Email ⬇', q: '-email' },
-          ]}
-          handleOnChange={(select, name) => {
-            updateQuery({ [name]: select })
+          items={OrderingItems}
+          selected={find(
+            OrderingItems,
+            ({ value }) => value === params.ordering
+          )}
+          handleOnChange={({ value }, name) => {
+            updateQuery({ [name]: value })
           }}
         />
 
