@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
 const basicClass =
-  'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50'
+  'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 transition-colors duration-200 ease-in-out'
 
 const variantToClass = {
   normal:

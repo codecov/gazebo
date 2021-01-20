@@ -271,7 +271,7 @@ describe('UpgradePlanForm', () => {
       })
 
       it('redirects the user to the billing page', () => {
-        expect(testLocation.pathname).toEqual('/account/gh/codecov')
+        expect(testLocation.pathname).toEqual('/account/gh/codecov/billing')
       })
     })
 

@@ -12,6 +12,7 @@ import {
   useUpgradePlan,
   useUpdateCard,
   useInvoices,
+  useInvoice,
 } from './hooks'
 
 jest.mock('@stripe/react-stripe-js')
@@ -115,6 +116,52 @@ describe('useInvoices', () => {
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual(invoices)
+      })
+    })
+  })
+})
+
+describe('useInvoice', () => {
+  let hookData
+
+  const id = 'in_1234567'
+  const invoice = {
+    total: 2400,
+    number: 1,
+    created: 1607078662,
+    dueDate: 1607078662,
+  }
+
+  function setup() {
+    server.use(
+      rest.get(
+        `/internal/${provider}/${owner}/invoices/${id}`,
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(invoice))
+        }
+      )
+    )
+    hookData = renderHook(() => useInvoice({ provider, owner, id }), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders isLoading true', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual(invoice)
       })
     })
   })

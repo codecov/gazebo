@@ -25,7 +25,7 @@ function useCancelSubmit({ provider, owner }) {
   function cancelPlan() {
     mutate(null, {
       onSuccess: () => {
-        redirect(`/account/${provider}/${owner}`)
+        redirect(`/account/${provider}/${owner}/billing`)
       },
       onError: () =>
         addToast({

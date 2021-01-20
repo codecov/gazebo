@@ -1,16 +1,14 @@
+import PropTypes from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
 import { Link } from 'react-router-dom'
 
 import Button from 'ui/Button'
 import Card from 'ui/Card'
 import { invoicePropType } from 'services/account'
-import { useBaseUrl } from 'shared/router'
 
 import invoiceImg from './invoice.svg'
 
-function LatestInvoiceCard({ invoice }) {
-  const baseUrl = useBaseUrl()
-
+function LatestInvoiceCard({ invoice, provider, owner }) {
   if (!invoice) return null
   return (
     <Card className="p-6 mb-4">
@@ -24,21 +22,19 @@ function LatestInvoiceCard({ invoice }) {
           <div className="italic text-gray-400">
             Due date {format(fromUnixTime(invoice.dueDate), 'do MMM')} - $
             {(invoice.total / 100).toFixed(2)}
-            <a
+            <Link
               className="inline-block not-italic underline hover:underline text-blue-200 ml-2"
-              href={invoice.invoicePdf}
-              rel="noreferrer"
-              target="_blank"
+              to={`/account/${provider}/${owner}/invoices/${invoice.id}`}
             >
               View
-            </a>
+            </Link>
           </div>
         </div>
       </div>
       <Button
         color="pink"
         variant="outline"
-        to={`${baseUrl}invoices`}
+        to={`/account/${provider}/${owner}/invoices`}
         Component={Link}
       >
         See all invoices
@@ -49,6 +45,8 @@ function LatestInvoiceCard({ invoice }) {
 
 LatestInvoiceCard.propTypes = {
   invoice: invoicePropType,
+  provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
 }
 
 export default LatestInvoiceCard

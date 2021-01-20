@@ -30,14 +30,19 @@ function Invoices({ provider, owner }) {
   return (
     <>
       <BackLink
-        to={`/account/${provider}/${owner}`}
+        to={`/account/${provider}/${owner}/billing`}
         textLink="Billing & Users"
       />
       {years.map((year) => (
         <div className="mt-8" key={year}>
           <h2 className="text-center text-xl bold">{year}</h2>
           {groupedInvoices[year].map((invoice) => (
-            <InvoiceCard key={invoice.number} invoice={invoice} />
+            <InvoiceCard
+              key={invoice.number}
+              invoice={invoice}
+              provider={provider}
+              owner={owner}
+            />
           ))}
         </div>
       ))}
