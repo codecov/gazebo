@@ -62,7 +62,7 @@ function UserManagement({ provider, owner }) {
       ordering: OrderingItems[0],
     },
   })
-  const { data, isSuccess } = useUsers({
+  const { data, isSuccess, isFetching } = useUsers({
     provider,
     owner,
     query: params,
@@ -123,6 +123,7 @@ function UserManagement({ provider, owner }) {
           placeholder="Search"
           onChange={() => updateQuery(getValues())}
         />
+        {isFetching && <p>Fetching</p>}
         <input
           className="block md:hidden sr:block bg-gray-100 flex-2 px-2 py-3 rounded w-full"
           type="submit"
