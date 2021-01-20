@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
+import formatDistance from 'date-fns/formatDistance'
+import parseISO from 'date-fns/parseISO'
 
 import { FormSelect as Select } from './UserFormSelect'
 import createQuery, { FilterEnum } from './formQuery'
@@ -34,6 +36,22 @@ function useActivateUser({ provider, owner, query }) {
   }
 
   return { activate, ...rest }
+}
+
+function DateItem({ date, label }) {
+  const compare = parseISO(date)
+  const today = new Date()
+  return (
+    <div className="flex flex-col text-sm">
+      <span className="font-bold">{label}</span>
+      <span>{date && formatDistance(compare, today, 'MM/dd/yyyy')}</span>
+    </div>
+  )
+}
+
+DateItem.propTypes = {
+  date: PropTypes.string,
+  label: PropTypes.string,
 }
 
 function UserManagement({ provider, owner }) {
@@ -122,16 +140,18 @@ function UserManagement({ provider, owner }) {
                   avatarUrl={getOwnerImg(provider, user.username)}
                   pills={createUserPills(user)}
                 />
-                {/* Div placeholders for last pr/seen */}
-                <div />
-                <div />
-                <Button
-                  color={user.activated ? 'red' : 'blue'}
-                  variant={user.activated ? 'outline' : 'normal'}
-                  onClick={() => activate(user.username, !user.activated)}
-                >
-                  {user.activated ? 'Deactivate' : 'Activate'}
-                </Button>
+                <DateItem label="Last seen:" date={user.lastseen} />
+                <DateItem label="Last pr:" date={user.latestPrivatePrDate} />
+                <div>
+                  <Button
+                    className="w-full"
+                    color={user.activated ? 'red' : 'blue'}
+                    variant={user.activated ? 'outline' : 'normal'}
+                    onClick={() => activate(user.username, !user.activated)}
+                  >
+                    {user.activated ? 'Deactivate' : 'Activate'}
+                  </Button>
+                </div>
               </div>
             ))}
         </div>
