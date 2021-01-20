@@ -69,8 +69,6 @@ function UserManagement({ provider, owner }) {
     })
   }
 
-  console.log(params)
-
   return (
     <form className="space-y-4 col-span-2" onSubmit={handleSubmit(updateQuery)}>
       <Card className="shadow flex flex-wrap divide-x divide-gray-200 divide-solid">
@@ -80,7 +78,7 @@ function UserManagement({ provider, owner }) {
           items={ActivatedItems}
           selected={find(
             ActivatedItems,
-            ({ value }) => value === getApiFilterEnum(params.activated)
+            ({ value }) => value === getApiFilterEnum(params?.activated)
           )}
           handleOnChange={({ value }, name) => {
             updateQuery({ [name]: value })
@@ -92,7 +90,7 @@ function UserManagement({ provider, owner }) {
           items={AdminItems}
           selected={find(
             AdminItems,
-            ({ value }) => value === getApiFilterEnum(params.isAdmin)
+            ({ value }) => value === getApiFilterEnum(params?.isAdmin)
           )}
           handleOnChange={({ value }, name) => {
             updateQuery({ [name]: value })
@@ -104,7 +102,7 @@ function UserManagement({ provider, owner }) {
           items={OrderingItems}
           selected={find(
             OrderingItems,
-            ({ value }) => value === params.ordering
+            ({ value }) => value === params?.ordering
           )}
           handleOnChange={({ value }, name) => {
             updateQuery({ [name]: value })
@@ -136,7 +134,7 @@ function UserManagement({ provider, owner }) {
                   avatarUrl={getOwnerImg(provider, user.username)}
                   pills={createUserPills(user)}
                 />
-                <span>{user.activated ? 'Activated' : 'Disabled'}</span>
+                <span>{user?.activated ? 'Activated' : 'Disabled'}</span>
               </div>
             ))}
         </div>

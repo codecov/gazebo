@@ -33,7 +33,13 @@ export function normalizeFormData(data) {
 
 export function useLocationParams(defaultParams) {
   const { push } = useHistory()
-  const { pathname, state } = useLocation()
+  const { pathname, search, state } = useLocation()
+  const params = state || {
+    ...defaultParams,
+    ...qs.parse(search, {
+      ignoreQueryPrefix: true,
+    }),
+  }
 
   function setParams(params) {
     // If param is default, don't push to location.
@@ -45,5 +51,5 @@ export function useLocationParams(defaultParams) {
     push(`${pathname}?${qs.stringify(locationParams)}`, locationParams)
   }
 
-  return { params: state, setParams }
+  return { params, setParams }
 }
