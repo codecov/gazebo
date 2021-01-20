@@ -54,7 +54,14 @@ function UserManagement({ provider, owner }) {
     ordering: 'name',
     search: '',
   })
-  const { register, handleSubmit, control } = useForm()
+  const { register, handleSubmit, control, getValues } = useForm({
+    defaultValues: {
+      search: params.search,
+      activated: ActivatedItems[0],
+      isAdmin: AdminItems[0],
+      ordering: OrderingItems[0],
+    },
+  })
   const { data, isSuccess } = useUsers({
     provider,
     owner,
@@ -108,13 +115,13 @@ function UserManagement({ provider, owner }) {
             updateQuery({ [name]: value })
           }}
         />
-
         <input
           aria-label="search users"
           className="flex-2 px-2 py-3 rounded w-full md:w-auto"
           name="search"
           ref={register}
           placeholder="Search"
+          onChange={() => updateQuery(getValues())}
         />
         <input
           className="block md:hidden sr:block bg-gray-100 flex-2 px-2 py-3 rounded w-full"
