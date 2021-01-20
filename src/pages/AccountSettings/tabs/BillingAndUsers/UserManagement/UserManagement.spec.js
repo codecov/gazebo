@@ -16,19 +16,31 @@ const users = {
   data: {},
 }
 
-const mockUpdateUser = {
+const updateUser = {
   mutate: jest.fn(),
 }
 
 describe('UserManagerment', () => {
-  function setup() {
+  function setup({
+    mockUseUsersValue = users,
+    mockUseUpdateUserValue = updateUser,
+    mockUseUsersImplementation,
+  } = {}) {
+    useUpdateUser.mockReturnValue(mockUseUpdateUserValue)
+
+    if (mockUseUsersImplementation) {
+      useUsers.mockImplementation(mockUseUsersImplementation)
+    } else {
+      useUsers.mockReturnValue(mockUseUsersValue)
+    }
+
     render(<UserManagerment provider="gh" owner="chris" />)
   }
 
   describe('User List', () => {
     describe('renders results', () => {
       beforeEach(() => {
-        const mockUseUsers = {
+        const mockUseUsersValue = {
           isSuccess: true,
           data: {
             results: [
@@ -36,9 +48,7 @@ describe('UserManagerment', () => {
             ],
           },
         }
-        useUsers.mockReturnValue(mockUseUsers)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
-        setup()
+        setup({ mockUseUsersValue })
       })
       it('renders the user list', () => {
         const placeholder = screen.getByText(/@clwiseman/)
@@ -50,15 +60,13 @@ describe('UserManagerment', () => {
     })
     describe('renders nothing with no results', () => {
       beforeEach(() => {
-        const mockUseUsers = {
+        const mockUseUsersValue = {
           isSuccess: true,
           data: {
             results: [],
           },
         }
-        useUsers.mockReturnValue(mockUseUsers)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
-        setup()
+        setup({ mockUseUsersValue })
       })
       it('renders the user list', () => {
         const Avatar = screen.queryAllByRole('img')
@@ -70,15 +78,13 @@ describe('UserManagerment', () => {
   describe('User rendering', () => {
     describe('is student', () => {
       beforeEach(() => {
-        const mockUseUsers = {
+        const mockUseUsersValue = {
           isSuccess: true,
           data: {
             results: [{ username: 'kumar', student: true }],
           },
         }
-        useUsers.mockReturnValue(mockUseUsers)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
-        setup()
+        setup({ mockUseUsersValue })
       })
       it('renders if student user', () => {
         const placeholder = screen.getByText(/kumar/)
@@ -91,15 +97,13 @@ describe('UserManagerment', () => {
 
     describe('is admin', () => {
       beforeEach(() => {
-        const mockUseUsers = {
+        const mockUseUsersValue = {
           isSuccess: true,
           data: {
             results: [{ username: 'kumar', isAdmin: true }],
           },
         }
-        useUsers.mockReturnValue(mockUseUsers)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
-        setup()
+        setup({ mockUseUsersValue })
       })
       it('renders if admin user', () => {
         const placeholder = screen.getByText(/kumar/)
@@ -112,15 +116,13 @@ describe('UserManagerment', () => {
 
     describe('is email', () => {
       beforeEach(() => {
-        const mockUseUsers = {
+        const mockUseUsersValue = {
           isSuccess: true,
           data: {
             results: [{ username: 'kumar', email: 'test@email.com' }],
           },
         }
-        useUsers.mockReturnValue(mockUseUsers)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
-        setup()
+        setup({ mockUseUsersValue })
       })
       it('renders an email', () => {
         const placeholder = screen.getByText(/kumar/)
@@ -135,8 +137,6 @@ describe('UserManagerment', () => {
   describe('Sort By', () => {
     describe('Default Selection', () => {
       beforeEach(() => {
-        useUsers.mockReturnValue(users)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
 
@@ -174,8 +174,6 @@ describe('UserManagerment', () => {
       [/Sort by Email ⬇/, { ordering: '-email' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
-        useUsers.mockReturnValue(users)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
 
@@ -216,8 +214,6 @@ describe('UserManagerment', () => {
       [/^deactivated$/, { activated: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
-        useUsers.mockReturnValue(users)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
 
@@ -258,8 +254,6 @@ describe('UserManagerment', () => {
       [/Not Admin/, { is_admin: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
-        useUsers.mockReturnValue(users)
-        useUpdateUser.mockReturnValue(mockUpdateUser)
         setup()
       })
 
@@ -296,24 +290,19 @@ describe('UserManagerment', () => {
 
   describe('Search', () => {
     beforeEach(() => {
-      const mockUseUsers = ({ query }) => {
-        return {
-          isSuccess: true,
-          data: {
-            results: [
-              { username: 'kumar', email: 'test@email.com', activated: false },
-            ].filter(({ username }) => {
+      const mockUseUsersImplementation = ({ query }) => ({
+        isSuccess: true,
+        data: {
+          results: [{ username: 'kumar' }, { username: 'terry' }].filter(
+            ({ username }) => {
               // mock query search
               if (query.search) return username.includes(query.search)
               return true
-            }),
-          },
-        }
-      }
-
-      useUsers.mockImplementation(mockUseUsers)
-      useUpdateUser.mockReturnValue(mockUpdateUser)
-      setup()
+            }
+          ),
+        },
+      })
+      setup({ mockUseUsersImplementation })
     })
 
     it('Makes the correct query to the api', async () => {
@@ -338,10 +327,10 @@ describe('UserManagerment', () => {
     let mutateMock = jest.fn()
 
     beforeEach(() => {
-      const mockActivateUser = {
+      const mockUseUpdateUserValue = {
         mutate: mutateMock,
       }
-      const mockUseUsers = {
+      const mockUseUsersValue = {
         isSuccess: true,
         data: {
           results: [
@@ -353,10 +342,7 @@ describe('UserManagerment', () => {
         },
       }
 
-      useUsers.mockReturnValue(mockUseUsers)
-      useUpdateUser.mockReturnValue(mockActivateUser)
-
-      setup()
+      setup({ mockUseUsersValue, mockUseUpdateUserValue })
     })
 
     it('Renders a inactive user with a Activate button', () => {
@@ -383,10 +369,10 @@ describe('UserManagerment', () => {
     let mutateMock = jest.fn()
 
     beforeEach(() => {
-      const mockActivateUser = {
+      const mockUseUpdateUserValue = {
         mutate: mutateMock,
       }
-      const mockUseUsers = {
+      const mockUseUsersValue = {
         isSuccess: true,
         data: {
           results: [
@@ -398,10 +384,7 @@ describe('UserManagerment', () => {
         },
       }
 
-      useUsers.mockReturnValue(mockUseUsers)
-      useUpdateUser.mockReturnValue(mockActivateUser)
-
-      setup()
+      setup({ mockUseUsersValue, mockUseUpdateUserValue })
     })
 
     it('Renders a inactive user with a Deactivate button', () => {
