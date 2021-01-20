@@ -133,7 +133,7 @@ describe('useUpdateUser', () => {
   describe('when called', () => {
     beforeEach(() => {
       // pass mock response
-      const mockRes = { ...mundo, activated: true }
+      const mockRes = { ...mundo, activated: true, isAdmin: true }
       setup('mundo', mockRes)
     })
 
@@ -147,6 +147,7 @@ describe('useUpdateUser', () => {
           return act(async () => {
             hookData.result.current.mutate({
               targetUser: 'mundo',
+              admin: true,
               activated: true,
             })
             await hookData.waitFor(() => hookData.result.current.isLoading)
@@ -177,7 +178,7 @@ describe('useUpdateUser', () => {
               },
               {
                 activated: true,
-                isAdmin: false,
+                isAdmin: true,
                 username: 'mundo',
                 email: 'drmundo@lol.com',
                 ownerid: 2,

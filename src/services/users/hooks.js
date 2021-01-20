@@ -37,7 +37,7 @@ export function useUpdateUser({ provider, owner, params }) {
       ({ username }) => username === user.username
     )
 
-    return update(oldData, `results[${index}].activated`, () => user.activated)
+    return update(oldData, `results[${index}]`, () => user)
   }
 
   return useMutation(
