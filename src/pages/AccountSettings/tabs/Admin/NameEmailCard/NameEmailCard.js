@@ -1,13 +1,35 @@
 import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
 import { useUser } from 'services/user'
 import Card from 'ui/Card'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
 
+function getSchema() {
+  return yup.object().shape({
+    name: yup.string().required('Name is required'),
+    email: yup
+      .string()
+      .email('Not a valid email')
+      .required('Email is required'),
+  })
+}
+
 function NameEmailCard() {
-  const { register, handleSubmit } = useForm()
   const { data: user } = useUser()
+  const { register, handleSubmit, errors, formState } = useForm({
+    resolver: yupResolver(getSchema()),
+    defaultValues: {
+      email: user.email,
+      name: user.name,
+    },
+  })
+
+  const isButtonDisabled = [!formState.isDirty, formState.isSubmitting].some(
+    Boolean
+  )
 
   function submit(...args) {
     console.log(args)
@@ -26,9 +48,12 @@ function NameEmailCard() {
               id="name-edit"
               className="mt-2"
               name="name"
-              defaultValue={user.name}
+              placeholder="Your name"
               ref={register}
             />
+            {errors.name && (
+              <p className="text-error-900 mt-1">{errors.name?.message}</p>
+            )}
           </div>
           <div className="w-full md:w-1/2 ml-2 mt-4 md:mt-0">
             <label htmlFor="email-edit" className="bold">
@@ -38,14 +63,19 @@ function NameEmailCard() {
               id="email-edit"
               className="mt-2"
               name="email"
-              defaultValue={user.email}
+              placeholder="Your email"
               ref={register}
             />
+            {errors.email && (
+              <p className="text-error-900 mt-1">{errors.email?.message}</p>
+            )}
           </div>
         </div>
         <div className="flex justify-between items-center">
           <h1 className="text-2xl bold">Your details</h1>
-          <Button type="submit">Save changes</Button>
+          <Button type="submit" disabled={isButtonDisabled}>
+            Save changes
+          </Button>
         </div>
       </form>
     </Card>
