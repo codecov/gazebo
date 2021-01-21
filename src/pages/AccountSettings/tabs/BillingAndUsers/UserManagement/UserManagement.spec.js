@@ -141,7 +141,7 @@ describe('UserManagerment', () => {
       })
     })
 
-    describe('last seen', () => {
+    describe('Last seen', () => {
       beforeEach(() => {
         const mockUseUsersValue = {
           isSuccess: true,
@@ -162,7 +162,26 @@ describe('UserManagerment', () => {
       })
     })
 
-    describe('last pr', () => {
+    describe('No last seen', () => {
+      beforeEach(() => {
+        const mockUseUsersValue = {
+          isSuccess: true,
+          data: {
+            results: [{ username: 'kumar' }],
+          },
+        }
+        setup({ mockUseUsersValue })
+      })
+      it('renders never seen', () => {
+        const placeholder = screen.getByText(/kumar/)
+        expect(placeholder).toBeInTheDocument()
+
+        const lastSeen = screen.getByTestId('last-seen')
+        expect(lastSeen).toBeInTheDocument()
+      })
+    })
+
+    describe('Last pr', () => {
       beforeEach(() => {
         const mockUseUsersValue = {
           isSuccess: true,
@@ -184,6 +203,25 @@ describe('UserManagerment', () => {
         const lastPr = screen.getByText(assertFromToday('2021-01-20T05:03:56Z'))
         expect(lastPr).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('No last pr', () => {
+    beforeEach(() => {
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          results: [{ username: 'kumar' }],
+        },
+      }
+      setup({ mockUseUsersValue })
+    })
+    it('renders never seen', () => {
+      const placeholder = screen.getByText(/kumar/)
+      expect(placeholder).toBeInTheDocument()
+
+      const lastPr = screen.getByTestId('last-pr')
+      expect(lastPr).toBeInTheDocument()
     })
   })
 

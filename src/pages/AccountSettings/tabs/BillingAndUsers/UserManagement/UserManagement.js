@@ -38,20 +38,23 @@ function useActivateUser({ provider, owner, query }) {
   return { activate, ...rest }
 }
 
-function DateItem({ date, label }) {
+function DateItem({ date, label, testId }) {
   const compare = parseISO(date)
   const today = new Date()
   return (
     <div className="flex flex-col text-sm">
       <span className="font-bold">{label}</span>
-      <span>{date && formatDistance(compare, today, 'MM/dd/yyyy')}</span>
+      <span data-testid={testId}>
+        {date ? formatDistance(compare, today, 'MM/dd/yyyy') : 'never'}
+      </span>
     </div>
   )
 }
 
 DateItem.propTypes = {
   date: PropTypes.string,
-  label: PropTypes.string,
+  label: PropTypes.string.isRequired,
+  testId: PropTypes.string.isRequired,
 }
 
 function UserManagement({ provider, owner }) {
@@ -140,8 +143,16 @@ function UserManagement({ provider, owner }) {
                   avatarUrl={getOwnerImg(provider, user.username)}
                   pills={createUserPills(user)}
                 />
-                <DateItem label="Last seen:" date={user.lastseen} />
-                <DateItem label="Last pr:" date={user.latestPrivatePrDate} />
+                <DateItem
+                  testId="last-seen"
+                  label="Last seen:"
+                  date={user.lastseen}
+                />
+                <DateItem
+                  testId="last-pr"
+                  label="Last pr:"
+                  date={user.latestPrivatePrDate}
+                />
                 <div>
                   <Button
                     className="w-full"
