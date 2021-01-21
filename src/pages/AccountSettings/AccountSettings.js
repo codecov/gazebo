@@ -38,7 +38,7 @@ function AccountSettings() {
       <Suspense fallback={tabLoading}>
         <Switch>
           <Route path={baseUrl} exact>
-            <AdminTab />
+            <AdminTab isPersonalSettings={isPersonalSettings} />
           </Route>
           <Route path={baseUrl + 'yaml'} exact>
             <YAMLTab />
