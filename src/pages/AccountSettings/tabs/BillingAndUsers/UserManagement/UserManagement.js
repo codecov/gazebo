@@ -7,7 +7,7 @@ import {
   useLocationParams,
   normalizeFormData,
   ApiFilterEnum,
-  getApiFilterEnum,
+  apiFilterType,
 } from 'services/navigation'
 
 import Card from 'ui/Card'
@@ -101,7 +101,7 @@ function UserManagement({ provider, owner }) {
           items={ActivatedItems}
           selected={find(
             ActivatedItems,
-            ({ value }) => value === getApiFilterEnum(params?.activated)
+            ({ value }) => apiFilterType(value) === params?.activated
           )}
           handleOnChange={({ value }, name) => {
             updateQuery({ [name]: value })
@@ -113,7 +113,7 @@ function UserManagement({ provider, owner }) {
           items={AdminItems}
           selected={find(
             AdminItems,
-            ({ value }) => value === getApiFilterEnum(params?.isAdmin)
+            ({ value }) => apiFilterType(value) === params?.isAdmin
           )}
           handleOnChange={({ value }, name) => {
             updateQuery({ [name]: value })

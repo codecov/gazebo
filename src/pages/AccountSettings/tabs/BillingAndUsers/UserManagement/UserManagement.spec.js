@@ -42,6 +42,18 @@ describe('UserManagerment', () => {
     })
   }
 
+  describe('Shows fetching status', () => {
+    beforeEach(() => {
+      const mockUseUsersValue = {
+        isFetching: true,
+      }
+      setup({ mockUseUsersValue })
+    })
+    it('shows fetching', () => {
+      expect(screen.getByText(/Fetching/)).toBeInTheDocument()
+    })
+  })
+
   describe('User List', () => {
     describe('renders results', () => {
       beforeEach(() => {
