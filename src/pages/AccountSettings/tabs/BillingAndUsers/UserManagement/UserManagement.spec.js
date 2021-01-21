@@ -1,10 +1,6 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-  waitFor,
-} from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import user from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 
 import { useUsers, useUpdateUser } from 'services/users'
 
@@ -18,6 +14,13 @@ const users = {
 
 const updateUser = {
   mutate: jest.fn(),
+}
+
+const defaultQuery = {
+  activated: '',
+  isAdmin: '',
+  ordering: 'name',
+  search: '',
 }
 
 describe('UserManagerment', () => {
@@ -34,7 +37,9 @@ describe('UserManagerment', () => {
       useUsers.mockReturnValue(mockUseUsersValue)
     }
 
-    render(<UserManagerment provider="gh" owner="chris" />)
+    render(<UserManagerment provider="gh" owner="radient" />, {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('User List', () => {
@@ -44,14 +49,18 @@ describe('UserManagerment', () => {
           isSuccess: true,
           data: {
             results: [
-              { username: 'clwiseman', name: 'carrie', activated: true },
+              {
+                username: 'earthspirit',
+                name: 'Earth Spitir',
+                activated: true,
+              },
             ],
           },
         }
         setup({ mockUseUsersValue })
       })
       it('renders the user list', () => {
-        const placeholder = screen.getByText(/@clwiseman/)
+        const placeholder = screen.getByText(/@earthspirit/)
         expect(placeholder).toBeInTheDocument()
 
         const Avatar = screen.getAllByRole('img')
@@ -81,13 +90,13 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
-            results: [{ username: 'kumar', student: true }],
+            results: [{ username: 'dazzle', student: true }],
           },
         }
         setup({ mockUseUsersValue })
       })
       it('renders if student user', () => {
-        const placeholder = screen.getByText(/kumar/)
+        const placeholder = screen.getByText(/dazzle$/)
         expect(placeholder).toBeInTheDocument()
 
         const studentLabel = screen.getByText(/Student/)
@@ -100,13 +109,13 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
-            results: [{ username: 'kumar', isAdmin: true }],
+            results: [{ username: 'dazzle', isAdmin: true }],
           },
         }
         setup({ mockUseUsersValue })
       })
       it('renders if admin user', () => {
-        const placeholder = screen.getByText(/kumar/)
+        const placeholder = screen.getByText(/dazzle$/)
         expect(placeholder).toBeInTheDocument()
 
         const studentLabel = screen.getByText(/^Admin/)
@@ -119,16 +128,16 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
-            results: [{ username: 'kumar', email: 'test@email.com' }],
+            results: [{ username: 'dazzle', email: 'dazzle@dota.com' }],
           },
         }
         setup({ mockUseUsersValue })
       })
       it('renders an email', () => {
-        const placeholder = screen.getByText(/kumar/)
+        const placeholder = screen.getByText(/dazzle$/)
         expect(placeholder).toBeInTheDocument()
 
-        const studentLabel = screen.getByText(/test@email.com/)
+        const studentLabel = screen.getByText(/dazzle@dota.com/)
         expect(studentLabel).toBeInTheDocument()
       })
     })
@@ -155,13 +164,15 @@ describe('UserManagerment', () => {
       it(`Makes the correct query to the api: Sort by Name ⬆`, () => {
         const SortSelect = screen.getByRole('button', { name: 'ordering' })
         user.click(SortSelect)
-        user.click(screen.getByRole('option', { name: /Sort by Username ⬆/ }))
+        user.click(screen.getByRole('option', { name: /Sort by Username ⬇/ }))
+
         user.click(SortSelect)
         user.click(screen.getByRole('option', { name: /Sort by Name ⬆/ }))
-        expect(useUsers).toHaveBeenCalledWith({
-          owner: 'chris',
+
+        expect(useUsers).toHaveBeenLastCalledWith({
+          owner: 'radient',
           provider: 'gh',
-          query: { ordering: 'name' },
+          query: {},
         })
       })
     })
@@ -188,19 +199,18 @@ describe('UserManagerment', () => {
       })
 
       it(`Makes the correct query to the api: ${label}`, () => {
-        expect(useUsers).toHaveBeenCalledTimes(1)
-        expect(useUsers).toHaveBeenCalledWith({
-          owner: 'chris',
+        expect(useUsers).toHaveBeenLastCalledWith({
+          owner: 'radient',
           provider: 'gh',
-          query: {},
+          query: defaultQuery,
         })
 
         const SortSelect = screen.getByRole('button', { name: 'ordering' })
         user.click(SortSelect)
         user.click(screen.getByRole('option', { name: label }))
-        expect(useUsers).toHaveBeenCalledTimes(2)
-        expect(useUsers).toHaveBeenCalledWith({
-          owner: 'chris',
+
+        expect(useUsers).toHaveBeenLastCalledWith({
+          owner: 'radient',
           provider: 'gh',
           query: expected,
         })
@@ -210,6 +220,10 @@ describe('UserManagerment', () => {
 
   describe('Filter by Activated', () => {
     describe.each([
+      [
+        /Filter By Activated Users/,
+        { activated: '', isAdmin: '', ordering: 'name', search: '' },
+      ],
       [/^activated$/, { activated: 'True' }],
       [/^deactivated$/, { activated: 'False' }],
     ])('All others', (label, expected) => {
@@ -228,19 +242,18 @@ describe('UserManagerment', () => {
       })
 
       it(`Makes the correct query to the api: ${label}`, () => {
-        expect(useUsers).toHaveBeenCalledTimes(1)
-        expect(useUsers).toHaveBeenCalledWith({
-          owner: 'chris',
+        expect(useUsers).toHaveBeenLastCalledWith({
+          owner: 'radient',
           provider: 'gh',
-          query: {},
+          query: defaultQuery,
         })
 
         const SortSelect = screen.getByRole('button', { name: 'activated' })
         user.click(SortSelect)
         user.click(screen.getByRole('option', { name: label }))
-        expect(useUsers).toHaveBeenCalledTimes(2)
-        expect(useUsers).toHaveBeenCalledWith({
-          owner: 'chris',
+
+        expect(useUsers).toHaveBeenLastCalledWith({
+          owner: 'radient',
           provider: 'gh',
           query: expected,
         })
@@ -248,10 +261,14 @@ describe('UserManagerment', () => {
     })
   })
 
-  describe('Filter by is_admin', () => {
+  describe('Filter by is_Admin', () => {
     describe.each([
-      [/Is Admin/, { is_admin: 'True' }],
-      [/Not Admin/, { is_admin: 'False' }],
+      [
+        /Filter By Admin/,
+        { activated: '', isAdmin: '', ordering: 'name', search: '' },
+      ],
+      [/Is Admin/, { isAdmin: 'True' }],
+      [/Not Admin/, { isAdmin: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         setup()
@@ -268,19 +285,18 @@ describe('UserManagerment', () => {
       })
 
       it(`Makes the correct query to the api: ${label}`, () => {
-        expect(useUsers).toHaveBeenCalledTimes(1)
-        expect(useUsers).toHaveBeenCalledWith({
-          owner: 'chris',
+        expect(useUsers).toHaveBeenLastCalledWith({
+          owner: 'radient',
           provider: 'gh',
-          query: {},
+          query: defaultQuery,
         })
 
         const SortSelect = screen.getByRole('button', { name: 'isAdmin' })
         user.click(SortSelect)
         user.click(screen.getByRole('option', { name: label }))
-        expect(useUsers).toHaveBeenCalledTimes(2)
-        expect(useUsers).toHaveBeenCalledWith({
-          owner: 'chris',
+
+        expect(useUsers).toHaveBeenLastCalledWith({
+          owner: 'radient',
           provider: 'gh',
           query: expected,
         })
@@ -293,7 +309,7 @@ describe('UserManagerment', () => {
       const mockUseUsersImplementation = ({ query }) => ({
         isSuccess: true,
         data: {
-          results: [{ username: 'kumar' }, { username: 'terry' }].filter(
+          results: [{ username: 'earthspirit' }, { username: 'dazzle' }].filter(
             ({ username }) => {
               // mock query search
               if (query.search) return username.includes(query.search)
@@ -305,21 +321,32 @@ describe('UserManagerment', () => {
       setup({ mockUseUsersImplementation })
     })
 
-    it('Makes the correct query to the api', async () => {
+    it('Makes the correct query to the api', () => {
       const SearchInput = screen.getByRole('textbox', {
         name: 'search users',
       })
-      const Submit = screen.getByRole('button', { name: 'Submit' })
+      expect(useUsers).toHaveBeenCalledTimes(1)
 
-      await user.type(SearchInput, 'Ter')
-      user.click(Submit)
-      await waitForElementToBeRemoved(() => screen.getByText(/kumar/))
+      user.type(SearchInput, 'd')
 
-      expect(useUsers).toHaveBeenCalledWith({
-        owner: 'chris',
+      expect(useUsers).toHaveBeenCalledTimes(2)
+      expect(useUsers).toHaveBeenLastCalledWith({
+        owner: 'radient',
         provider: 'gh',
-        query: { ordering: 'name', activated: '', is_admin: '', search: 'Ter' },
+        query: { ordering: '', search: 'd' },
       })
+    })
+
+    it('Only renders current matching users', () => {
+      const SearchInput = screen.getByRole('textbox', {
+        name: 'search users',
+      })
+
+      expect(screen.getByText(/earthspirit$/)).toBeInTheDocument()
+
+      user.type(SearchInput, 'd')
+
+      expect(screen.queryByText(/earthspirit$/)).not.toBeInTheDocument()
     })
   })
 
@@ -358,7 +385,7 @@ describe('UserManagerment', () => {
       })
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
-      expect(mutateMock).toHaveBeenCalledWith({
+      expect(mutateMock).toHaveBeenLastCalledWith({
         targetUser: 'kumar',
         activated: true,
       })
@@ -400,7 +427,7 @@ describe('UserManagerment', () => {
       })
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
-      expect(mutateMock).toHaveBeenCalledWith({
+      expect(mutateMock).toHaveBeenLastCalledWith({
         targetUser: 'kumar',
         activated: false,
       })
