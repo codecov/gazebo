@@ -49,9 +49,7 @@ export function camelizeKeys(obj = {}) {
 }
 
 export function snakeifyKeys(obj = {}) {
-  if (Array.isArray(obj)) {
-    return obj.map((v) => snakeifyKeys(v))
-  } else if (obj !== null && obj.constructor === Object) {
+  if (obj !== null && obj.constructor === Object) {
     return Object.keys(obj).reduce(
       (result, key) => ({
         ...result,
