@@ -1,11 +1,19 @@
 import PropTypes from 'prop-types'
 
 import NameEmailCard from './NameEmailCard'
+import StudentCard from './StudentCard'
 
 function Admin({ isPersonalSettings }) {
   return (
     <div>
-      {isPersonalSettings ? <NameEmailCard /> : 'add/remove admin section'}
+      {isPersonalSettings ? (
+        <>
+          <NameEmailCard />
+          <StudentCard />
+        </>
+      ) : (
+        'add/remove admin section'
+      )}
     </div>
   )
 }
