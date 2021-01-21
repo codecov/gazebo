@@ -1,21 +1,4 @@
-import { getApiFilterEnum, normalizeFormData, ApiFilterEnum } from './helpers'
-
-describe('getApiFilterEnum', () => {
-  it('converts ""', () => {
-    expect(getApiFilterEnum('')).toBe(ApiFilterEnum.none)
-  })
-  it('converts True', () => {
-    expect(getApiFilterEnum('True')).toBe(ApiFilterEnum.true)
-  })
-  it('converts False', () => {
-    expect(getApiFilterEnum('False')).toBe(ApiFilterEnum.false)
-  })
-  it('Unexpected is none', () => {
-    expect(getApiFilterEnum('jijij')).toBe(ApiFilterEnum.none)
-    expect(getApiFilterEnum(123)).toBe(ApiFilterEnum.none)
-    expect(getApiFilterEnum({ foo: 'bar' })).toBe(ApiFilterEnum.none)
-  })
-})
+import { normalizeFormData, ApiFilterEnum } from './helpers'
 
 // normalizeFormData for API requests, as Django has some odd behavior in string expectations
 describe('normalizeFormData', () => {
