@@ -22,7 +22,10 @@ export const MODE = {
 
 // Todo add tooltip
 function ServerStatus() {
-  const [status] = useServerStatus()
+  // const { data } = useServerStatus()
+  console.log(useServerStatus())
+
+  const status = 'down'
 
   return (
     <a
