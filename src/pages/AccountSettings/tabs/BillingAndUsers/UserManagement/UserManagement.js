@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
+import formatDistance from 'date-fns/formatDistance'
+import parseISO from 'date-fns/parseISO'
 
 import { FormSelect as Select } from './UserFormSelect'
 import createQuery, { FilterEnum } from './formQuery'
@@ -34,6 +36,25 @@ function useActivateUser({ provider, owner, query }) {
   }
 
   return { activate, ...rest }
+}
+
+function DateItem({ date, label, testId }) {
+  const compare = parseISO(date)
+  const today = new Date()
+  return (
+    <div className="flex flex-col text-sm">
+      <span className="font-bold">{label}</span>
+      <span data-testid={testId}>
+        {date ? formatDistance(compare, today, 'MM/dd/yyyy') : 'never'}
+      </span>
+    </div>
+  )
+}
+
+DateItem.propTypes = {
+  date: PropTypes.string,
+  label: PropTypes.string.isRequired,
+  testId: PropTypes.string.isRequired,
 }
 
 function UserManagement({ provider, owner }) {
@@ -122,16 +143,26 @@ function UserManagement({ provider, owner }) {
                   avatarUrl={getOwnerImg(provider, user.username)}
                   pills={createUserPills(user)}
                 />
-                {/* Div placeholders for last pr/seen */}
-                <div />
-                <div />
-                <Button
-                  color={user.activated ? 'red' : 'blue'}
-                  variant={user.activated ? 'outline' : 'normal'}
-                  onClick={() => activate(user.username, !user.activated)}
-                >
-                  {user.activated ? 'Deactivate' : 'Activate'}
-                </Button>
+                <DateItem
+                  testId="last-seen"
+                  label="Last seen:"
+                  date={user.lastseen}
+                />
+                <DateItem
+                  testId="last-pr"
+                  label="Last pr:"
+                  date={user.latestPrivatePrDate}
+                />
+                <div>
+                  <Button
+                    className="w-full"
+                    color={user.activated ? 'red' : 'blue'}
+                    variant={user.activated ? 'outline' : 'normal'}
+                    onClick={() => activate(user.username, !user.activated)}
+                  >
+                    {user.activated ? 'Deactivate' : 'Activate'}
+                  </Button>
+                </div>
               </div>
             ))}
         </div>

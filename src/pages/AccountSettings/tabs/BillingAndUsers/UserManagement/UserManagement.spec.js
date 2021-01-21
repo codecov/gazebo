@@ -5,6 +5,8 @@ import {
   waitFor,
 } from '@testing-library/react'
 import user from '@testing-library/user-event'
+import formatDistance from 'date-fns/formatDistance'
+import parseISO from 'date-fns/parseISO'
 
 import { useUsers, useUpdateUser } from 'services/users'
 
@@ -18,6 +20,12 @@ const users = {
 
 const updateUser = {
   mutate: jest.fn(),
+}
+
+function assertFromToday(date) {
+  // Due to last seen/past pr being based on the current date
+  // we need to asset the expected date format is rendered vs hard coding the expect.
+  return formatDistance(parseISO(date), new Date(), 'MM/dd/yyyy')
 }
 
 describe('UserManagerment', () => {
@@ -131,6 +139,89 @@ describe('UserManagerment', () => {
         const studentLabel = screen.getByText(/test@email.com/)
         expect(studentLabel).toBeInTheDocument()
       })
+    })
+
+    describe('Last seen', () => {
+      beforeEach(() => {
+        const mockUseUsersValue = {
+          isSuccess: true,
+          data: {
+            results: [{ username: 'kumar', lastseen: '2021-01-20T05:03:56Z' }],
+          },
+        }
+        setup({ mockUseUsersValue })
+      })
+      it('renders correct date', () => {
+        const placeholder = screen.getByText(/kumar/)
+        expect(placeholder).toBeInTheDocument()
+
+        const lastSeen = screen.getByText(
+          assertFromToday('2021-01-20T05:03:56Z')
+        )
+        expect(lastSeen).toBeInTheDocument()
+      })
+    })
+
+    describe('No last seen', () => {
+      beforeEach(() => {
+        const mockUseUsersValue = {
+          isSuccess: true,
+          data: {
+            results: [{ username: 'kumar' }],
+          },
+        }
+        setup({ mockUseUsersValue })
+      })
+      it('renders never seen', () => {
+        const placeholder = screen.getByText(/kumar/)
+        expect(placeholder).toBeInTheDocument()
+
+        const lastSeen = screen.getByTestId('last-seen')
+        expect(lastSeen).toBeInTheDocument()
+      })
+    })
+
+    describe('Last pr', () => {
+      beforeEach(() => {
+        const mockUseUsersValue = {
+          isSuccess: true,
+          data: {
+            results: [
+              {
+                username: 'kumar',
+                latestPrivatePrDate: '2021-01-20T05:03:56Z',
+              },
+            ],
+          },
+        }
+        setup({ mockUseUsersValue })
+      })
+      it('renders correct date', () => {
+        const placeholder = screen.getByText(/kumar/)
+        expect(placeholder).toBeInTheDocument()
+
+        const lastPr = screen.getByText(assertFromToday('2021-01-20T05:03:56Z'))
+        expect(lastPr).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('No last pr', () => {
+    beforeEach(() => {
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          results: [{ username: 'kumar' }],
+        },
+      }
+      setup({ mockUseUsersValue })
+    })
+    it('renders never seen', () => {
+      const placeholder = screen.getByText(/kumar/)
+      expect(placeholder).toBeInTheDocument()
+
+      const lastPr = screen.getByTestId('last-pr')
+      expect(lastPr).toBeInTheDocument()
     })
   })
 
