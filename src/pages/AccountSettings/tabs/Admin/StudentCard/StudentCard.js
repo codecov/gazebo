@@ -35,8 +35,8 @@ function StudentCard({ user }) {
 StudentCard.propTypes = {
   user: PropTypes.shape({
     student: PropTypes.bool.isRequired,
-    studentCreatedAt: PropTypes.string.isRequired,
-    studentUpdatedAt: PropTypes.string.isRequired,
+    studentCreatedAt: PropTypes.string,
+    studentUpdatedAt: PropTypes.string,
   }).isRequired,
 }
 
