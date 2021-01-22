@@ -10,6 +10,11 @@ describe('normalizeFormData', () => {
       test: 'hello',
     })
   })
+  it('numbers returns same number', () => {
+    expect(normalizeFormData({ test: 9999 })).toStrictEqual({
+      test: 9999,
+    })
+  })
   it('filter enum returns correct string for api', () => {
     expect(normalizeFormData({ test: ApiFilterEnum.true })).toStrictEqual({
       test: 'True',
