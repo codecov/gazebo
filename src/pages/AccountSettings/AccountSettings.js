@@ -1,5 +1,11 @@
 import { Suspense, lazy } from 'react'
-import { useParams, Switch, Route, Redirect } from 'react-router-dom'
+import {
+  useParams,
+  Switch,
+  Route,
+  Redirect,
+  useRouteMatch,
+} from 'react-router-dom'
 
 import LogoSpinner from 'ui/LogoSpinner'
 import { useBaseUrl } from 'shared/router'
@@ -19,8 +25,8 @@ const InvoiceDetailTab = lazy(() => import('./tabs/InvoiceDetail'))
 function AccountSettings() {
   const { data: user } = useUser()
   const { provider, owner } = useParams()
+  const { path } = useRouteMatch()
   const baseUrl = useBaseUrl()
-
   const isPersonalSettings = user.username === owner
 
   const tabLoading = (
@@ -37,31 +43,31 @@ function AccountSettings() {
     >
       <Suspense fallback={tabLoading}>
         <Switch>
-          <Route path={baseUrl} exact>
+          <Route path={path} exact>
             <AdminTab isPersonalSettings={isPersonalSettings} />
           </Route>
-          <Route path={baseUrl + 'yaml'} exact>
+          <Route path={path + 'yaml'} exact>
             <YAMLTab />
           </Route>
-          <Route path={baseUrl + 'access'} exact>
+          <Route path={path + 'access'} exact>
             AccessTab :)
           </Route>
-          <Route path={baseUrl + 'billing'} exact>
+          <Route path={path + 'billing'} exact>
             <BillingAndUsersTab provider={provider} owner={owner} />
           </Route>
-          <Route path={baseUrl + 'users'} exact>
+          <Route path={path + 'users'} exact>
             <Redirect to={baseUrl + 'billing'} />
           </Route>
-          <Route path={baseUrl + 'billing/upgrade'} exact>
+          <Route path={path + 'billing/upgrade'} exact>
             <UpgradePlanTab provider={provider} owner={owner} />
           </Route>
-          <Route path={baseUrl + 'billing/cancel'} exact>
+          <Route path={path + 'billing/cancel'} exact>
             <CancelPlanTab provider={provider} owner={owner} />
           </Route>
-          <Route path={baseUrl + 'invoices'} exact>
+          <Route path={path + 'invoices'} exact>
             <InvoicesTab provider={provider} owner={owner} />
           </Route>
-          <Route path={baseUrl + 'invoices/:id'} exact>
+          <Route path={path + 'invoices/:id'} exact>
             <InvoiceDetailTab provider={provider} owner={owner} />
           </Route>
         </Switch>
