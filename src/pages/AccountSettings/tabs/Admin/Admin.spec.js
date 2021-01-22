@@ -17,6 +17,7 @@ describe('AdminTab', () => {
     beforeEach(() => {
       setup({
         isPersonalSettings: true,
+        provider: 'gh',
       })
     })
 
@@ -35,6 +36,7 @@ describe('AdminTab', () => {
     beforeEach(() => {
       setup({
         isPersonalSettings: false,
+        provider: 'gh',
       })
     })
 

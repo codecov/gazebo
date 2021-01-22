@@ -6,6 +6,8 @@ import * as yup from 'yup'
 import Card from 'ui/Card'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
+import { useAddNotification } from 'services/toastNotification'
+import { useUpdateProfile } from 'services/user'
 
 function getSchema() {
   return yup.object().shape({
@@ -17,8 +19,9 @@ function getSchema() {
   })
 }
 
-function NameEmailCard({ user }) {
-  const { register, handleSubmit, errors, formState } = useForm({
+function NameEmailCard({ user, provider }) {
+  const addToast = useAddNotification()
+  const { register, handleSubmit, errors, formState, reset } = useForm({
     resolver: yupResolver(getSchema()),
     defaultValues: {
       email: user.email,
@@ -26,12 +29,29 @@ function NameEmailCard({ user }) {
     },
   })
 
-  const isButtonDisabled = [!formState.isDirty, formState.isSubmitting].some(
-    Boolean
-  )
+  const { mutate, isLoading } = useUpdateProfile({ provider })
 
-  function submit(...args) {
-    console.log(args)
+  const isButtonDisabled = !formState.isDirty || isLoading
+
+  function submit(formData) {
+    mutate(formData, {
+      onSuccess: (user) => {
+        addToast({
+          type: 'success',
+          text: 'Information successfully updated',
+        })
+        reset({
+          email: user.email,
+          name: user.name,
+        })
+      },
+      onError: () => {
+        addToast({
+          type: 'error',
+          text: 'Something went wrong',
+        })
+      },
+    })
   }
 
   return (
@@ -48,6 +68,7 @@ function NameEmailCard({ user }) {
               className="mt-2"
               name="name"
               placeholder="Your name"
+              disabled={isLoading}
               ref={register}
             />
             {errors.name && (
@@ -63,6 +84,7 @@ function NameEmailCard({ user }) {
               className="mt-2"
               name="email"
               placeholder="Your email"
+              disabled={isLoading}
               ref={register}
             />
             {errors.email && (
@@ -86,6 +108,7 @@ NameEmailCard.propTypes = {
     name: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
   }),
+  provider: PropTypes.string.isRequired,
 }
 
 export default NameEmailCard

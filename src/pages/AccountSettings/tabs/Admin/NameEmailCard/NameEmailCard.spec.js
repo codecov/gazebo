@@ -2,6 +2,11 @@ import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import NameEmailCard from './NameEmailCard'
+import { useUpdateProfile } from 'services/user'
+import { useAddNotification } from 'services/toastNotification'
+
+jest.mock('services/user/hooks')
+jest.mock('services/toastNotification')
 
 const user = {
   name: 'donald duck',
@@ -9,8 +14,13 @@ const user = {
 }
 
 describe('NameEmailCard', () => {
+  const mutate = jest.fn()
+  const addNotification = jest.fn()
+
   function setup() {
-    render(<NameEmailCard user={user} />)
+    useAddNotification.mockReturnValue(addNotification)
+    useUpdateProfile.mockReturnValue({ mutate, isLoading: false })
+    render(<NameEmailCard user={user} provider="gh" />)
   }
 
   describe('when rendered', () => {
@@ -144,9 +154,41 @@ describe('NameEmailCard', () => {
       })
     })
 
-    it('submits', () => {
-      // implementation in next PR
-      expect(1).toBe(1)
+    it('calls the mutation', () => {
+      expect(mutate).toHaveBeenCalled()
+    })
+
+    describe('when mutation is successful', () => {
+      beforeEach(() => {
+        // simulating the onSuccess callback given to mutate
+        act(() => {
+          mutate.mock.calls[0][1].onSuccess({
+            name: 'picsou',
+            email: 'picsou@gmail.com',
+          })
+        })
+      })
+
+      it('adds a success notification', () => {
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'success',
+          text: 'Information successfully updated',
+        })
+      })
+    })
+
+    describe('when mutation is not successful', () => {
+      beforeEach(() => {
+        // simulating the onError callback given to useCancelPlan
+        mutate.mock.calls[0][1].onError()
+      })
+
+      it('adds an error notification', () => {
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong',
+        })
+      })
     })
   })
 })
