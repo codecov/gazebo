@@ -6,6 +6,7 @@ import { useMainNav, useSubNav } from 'services/header'
 
 import MobileMenu from './MobileMenu'
 
+jest.mock('layouts/Header/ServerStatus.js', () => () => 'ServerStatus')
 jest.mock('services/header')
 jest.mock('services/user')
 

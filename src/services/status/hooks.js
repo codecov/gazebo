@@ -1,10 +1,10 @@
 import { useQuery } from 'react-query'
 
-const statusApi = 'https://wdzsn5dlywj9.statuspage.io/api/v2/summary.json'
+export const StatusUrl =
+  'https://wdzsn5dlywj9.statuspage.io/api/v2/summary.json'
 
 function fetchStatus() {
-  return fetch(statusApi, {
-    method: 'GET',
+  return fetch(StatusUrl, {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -25,5 +25,6 @@ export function useServerStatus() {
   return useQuery('serverStatus', () => fetchStatus(), {
     retry: true,
     refetchOnWindowFocus: true,
+    suspense: false,
   })
 }
