@@ -68,6 +68,7 @@ function NameEmailCard({ user, provider }) {
               className="mt-2"
               name="name"
               placeholder="Your name"
+              disabled={isLoading}
               ref={register}
             />
             {errors.name && (
@@ -83,6 +84,7 @@ function NameEmailCard({ user, provider }) {
               className="mt-2"
               name="email"
               placeholder="Your email"
+              disabled={isLoading}
               ref={register}
             />
             {errors.email && (
