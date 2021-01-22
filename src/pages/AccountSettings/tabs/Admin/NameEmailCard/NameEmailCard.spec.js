@@ -2,9 +2,6 @@ import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import NameEmailCard from './NameEmailCard'
-import { useUser } from 'services/user'
-
-jest.mock('services/user')
 
 const user = {
   name: 'donald duck',
@@ -13,10 +10,7 @@ const user = {
 
 describe('NameEmailCard', () => {
   function setup() {
-    useUser.mockReturnValue({
-      data: user,
-    })
-    render(<NameEmailCard />)
+    render(<NameEmailCard user={user} />)
   }
 
   describe('when rendered', () => {
