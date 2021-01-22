@@ -45,6 +45,12 @@ function NameEmailCard({ user, provider }) {
           name: user.name,
         })
       },
+      onError: () => {
+        addToast({
+          type: 'error',
+          text: 'Something went wrong',
+        })
+      },
     })
   }
 
