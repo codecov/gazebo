@@ -5,11 +5,7 @@ import formatDistance from 'date-fns/formatDistance'
 import parseISO from 'date-fns/parseISO'
 
 import { FormSelect as Select } from './UserFormSelect'
-import {
-  useLocationParams,
-  normalizeFormData,
-  ApiFilterEnum,
-} from 'services/navigation'
+import { useLocationParams, ApiFilterEnum } from 'services/navigation'
 
 import Card from 'ui/Card'
 import User from 'ui/User'
@@ -83,13 +79,13 @@ DateItem.propTypes = {
 }
 
 function UserManagement({ provider, owner }) {
-  const { params, setParams } = useLocationParams({
+  const { params, updateParams } = useLocationParams({
     activated: '',
     isAdmin: '',
     ordering: 'name',
     search: '',
   })
-  const { register, handleSubmit, control, getValues } = useForm({
+  const { register, handleSubmit, control } = useForm({
     defaultValues: {
       search: params.search,
       activated: ActivatedItems[0],
@@ -105,11 +101,7 @@ function UserManagement({ provider, owner }) {
   const { activate } = useActivateUser({ owner, provider, query: params })
 
   function updateQuery(data) {
-    // Combine previous params with new form data
-    setParams({
-      ...params,
-      ...normalizeFormData(data),
-    })
+    updateParams(data)
   }
 
   return (
@@ -154,7 +146,7 @@ function UserManagement({ provider, owner }) {
           name="search"
           ref={register}
           placeholder="Search"
-          onChange={() => updateQuery(getValues())}
+          onChange={(event) => updateQuery({ search: event.target.value })}
         />
         {isFetching && <p>Fetching</p>}
         <input

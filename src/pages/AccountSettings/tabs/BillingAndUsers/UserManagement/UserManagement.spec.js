@@ -275,17 +275,17 @@ describe('UserManagerment', () => {
         expect(useUsers).toHaveBeenLastCalledWith({
           owner: 'radient',
           provider: 'gh',
-          query: {},
+          query: defaultQuery,
         })
       })
     })
 
     describe.each([
-      [/Sort by Name ⬇/, { ordering: '-name' }],
-      [/Sort by Username ⬆/, { ordering: 'username' }],
-      [/Sort by Username ⬇/, { ordering: '-username' }],
-      [/Sort by Email ⬆/, { ordering: 'email' }],
-      [/Sort by Email ⬇/, { ordering: '-email' }],
+      [/Sort by Name ⬇/, { ...defaultQuery, ordering: '-name' }],
+      [/Sort by Username ⬆/, { ...defaultQuery, ordering: 'username' }],
+      [/Sort by Username ⬇/, { ...defaultQuery, ordering: '-username' }],
+      [/Sort by Email ⬆/, { ...defaultQuery, ordering: 'email' }],
+      [/Sort by Email ⬇/, { ...defaultQuery, ordering: '-email' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         setup()
@@ -323,12 +323,9 @@ describe('UserManagerment', () => {
 
   describe('Filter by Activated', () => {
     describe.each([
-      [
-        /Filter By Activated Users/,
-        { activated: '', isAdmin: '', ordering: 'name', search: '' },
-      ],
-      [/^activated$/, { activated: 'True' }],
-      [/^deactivated$/, { activated: 'False' }],
+      [/Filter By Activated Users/, defaultQuery],
+      [/^activated$/, { ...defaultQuery, activated: 'True' }],
+      [/^deactivated$/, { ...defaultQuery, activated: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         setup()
@@ -366,12 +363,9 @@ describe('UserManagerment', () => {
 
   describe('Filter by is_Admin', () => {
     describe.each([
-      [
-        /Filter By Admin/,
-        { activated: '', isAdmin: '', ordering: 'name', search: '' },
-      ],
-      [/Is Admin/, { isAdmin: 'True' }],
-      [/Not Admin/, { isAdmin: 'False' }],
+      [/Filter By Admin/, defaultQuery],
+      [/Is Admin/, { ...defaultQuery, isAdmin: 'True' }],
+      [/Not Admin/, { ...defaultQuery, isAdmin: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         setup()
@@ -436,7 +430,7 @@ describe('UserManagerment', () => {
       expect(useUsers).toHaveBeenLastCalledWith({
         owner: 'radient',
         provider: 'gh',
-        query: { ordering: '', search: 'd' },
+        query: { ...defaultQuery, search: 'd' },
       })
     })
 

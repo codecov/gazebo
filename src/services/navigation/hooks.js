@@ -11,17 +11,28 @@ export function useLocationParams(defaultParams = {}) {
       ignoreQueryPrefix: true,
     }),
   }
-  // console.log(params)
 
-  function setParams(params) {
-    // If param is default, don't push to location.
+  function updateWindowLocation(params) {
     const locationParams = omitBy(
       params,
       (value, key) => value === defaultParams[key]
     )
-    // locationParams is passed through as next params state.
-    push(`${pathname}?${qs.stringify(locationParams)}`, locationParams)
+
+    push(`${pathname}?${qs.stringify(locationParams)}`, state)
   }
 
-  return { params, setParams }
+  // Create new state
+  function setParams(newParams) {
+    updateWindowLocation(newParams)
+  }
+
+  // Retain previous state
+  function updateParams(newParams) {
+    updateWindowLocation({
+      ...params,
+      ...newParams,
+    })
+  }
+
+  return { params, setParams, updateParams }
 }
