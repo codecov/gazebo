@@ -1,8 +1,8 @@
+import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
-import { useUser } from 'services/user'
 import Card from 'ui/Card'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
@@ -17,8 +17,7 @@ function getSchema() {
   })
 }
 
-function NameEmailCard() {
-  const { data: user } = useUser()
+function NameEmailCard({ user }) {
   const { register, handleSubmit, errors, formState } = useForm({
     resolver: yupResolver(getSchema()),
     defaultValues: {
@@ -80,6 +79,13 @@ function NameEmailCard() {
       </form>
     </Card>
   )
+}
+
+NameEmailCard.propTypes = {
+  user: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+  }),
 }
 
 export default NameEmailCard

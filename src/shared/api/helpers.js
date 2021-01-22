@@ -14,7 +14,7 @@ export function generatePath({ path, query }) {
   const baseUrl = `${config.API_URL}/internal`
   const queryString = qs.stringify(query, {})
 
-  return `${baseUrl}${path}?${queryString}`
+  return `${baseUrl}${path}${queryString && '?' + queryString}`
 }
 
 export function getHeaders(provider) {
