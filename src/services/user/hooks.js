@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
@@ -15,5 +15,24 @@ export function useUser(options = {}) {
       })
     },
     options
+  )
+}
+
+export function useUpdateProfile({ provider }) {
+  const queryClient = useQueryClient()
+
+  return useMutation(
+    (data) => {
+      return Api.patch({
+        path: '/profile/',
+        provider,
+        body: data,
+      })
+    },
+    {
+      onSuccess: (user) => {
+        queryClient.setQueryData(['currentUser', provider], () => user)
+      },
+    }
   )
 }
