@@ -5,14 +5,13 @@ import User from './User'
 describe('User', () => {
   const requiredProps = {
     avatarUrl: 'https://good.dog/🐕.jpeg',
-    name: 'Sir Roofus',
     username: 'gaurd2003',
   }
   function setup(props) {
     render(<User {...requiredProps} {...props} />)
   }
 
-  describe('when rendered with no pills', () => {
+  describe('when rendered with no props', () => {
     beforeEach(() => {
       setup()
     })
@@ -22,47 +21,58 @@ describe('User', () => {
       expect(avatar).toBeInTheDocument()
     })
 
+    it(`renders the username`, () => {
+      const username = screen.getByText(/gaurd2003/)
+      expect(username).toBeInTheDocument()
+    })
+  })
+
+  describe('renders name', () => {
+    beforeEach(() => {
+      setup({ name: 'Sir Roofus' })
+    })
+
     it(`renders user's name`, () => {
       const name = screen.getByText(/Sir Roofus/)
       expect(name).toBeInTheDocument()
     })
+  })
 
-    it(`renders the username`, () => {
-      const name = screen.getByText(/gaurd2003/)
-      expect(name).toBeInTheDocument()
+  describe('renders email', () => {
+    beforeEach(() => {
+      setup({ email: 'gaurd2003@neighborhood.howl' })
+    })
+
+    it(`renders user's email`, () => {
+      const email = screen.getByText(/gaurd2003@neighborhood.howl/)
+      expect(email).toBeInTheDocument()
     })
   })
 
-  describe('renders pills', () => {
-    const pills = [
-      { text: 'gaurd2003@neighborhood.howl' },
-      { text: 'good boi' },
-    ]
-
+  describe('renders isAdmin', () => {
     beforeEach(() => {
-      setup({ pills })
+      setup({ isAdmin: true })
     })
 
-    it('renders correct pills', () => {
-      pills.forEach(({ text }) => {
-        const pill = screen.getByText(text)
-        expect(pill).toBeInTheDocument()
-      })
+    it(`renders user's admin status`, () => {
+      const adminPill = screen.getByText(/Admin/)
+      expect(adminPill).toBeInTheDocument()
+    })
+
+    it('highlights admin status', () => {
+      const adminPill = screen.getByText(/Admin/)
+      expect(adminPill).toHaveClass('bg-gray-300')
     })
   })
 
-  describe('renders pills with highlight', () => {
-    const pills = [{ text: 'gaurd2003@neighborhood.howl', highlight: true }]
-
+  describe('renders student', () => {
     beforeEach(() => {
-      setup({ pills })
+      setup({ student: true })
     })
 
-    it('renders pill with highlight class', () => {
-      pills.forEach(({ text }) => {
-        const pill = screen.getByText(text)
-        expect(pill).toHaveClass('bg-gray-300')
-      })
+    it(`renders student status`, () => {
+      const studentPill = screen.getByText(/Student/)
+      expect(studentPill).toBeInTheDocument()
     })
   })
 })

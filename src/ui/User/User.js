@@ -1,7 +1,26 @@
 import PropTypes from 'prop-types'
 import cs from 'classnames'
 
-function User({ avatarUrl, name, username, pills = [], className }) {
+function createUserPills({ student, isAdmin, email }) {
+  const pills = []
+
+  if (student) pills.push({ text: 'Student' })
+  if (isAdmin) pills.push({ text: 'Admin', highlight: true })
+  if (email) pills.push({ text: email })
+
+  return pills
+}
+
+function User({
+  avatarUrl,
+  name,
+  username,
+  student,
+  isAdmin,
+  email,
+  className,
+}) {
+  const pills = createUserPills({ student, isAdmin, email })
   return (
     <div className={cs(className, 'flex text-md text-sm space-x-4')}>
       <img className="rounded-full h-12 w-12" src={avatarUrl} alt={username} />
@@ -34,12 +53,9 @@ User.propTypes = {
   avatarUrl: PropTypes.string.isRequired,
   name: PropTypes.string,
   username: PropTypes.string.isRequired,
-  pills: PropTypes.arrayOf(
-    PropTypes.shape({
-      text: PropTypes.string,
-      highlight: PropTypes.bool,
-    })
-  ),
+  student: PropTypes.bool,
+  isAdmin: PropTypes.bool,
+  email: PropTypes.string,
 }
 
 export default User
