@@ -41,10 +41,14 @@ export function useInvoice({ provider, owner, id }) {
   })
 }
 
-export function useAccountDetails({ provider, owner }) {
-  return useQuery(['accountDetails', provider, owner], () => {
-    return fetchAccountDetails({ provider, owner })
-  })
+export function useAccountDetails({ provider, owner, opts = {} }) {
+  return useQuery(
+    ['accountDetails', provider, owner],
+    () => {
+      return fetchAccountDetails({ provider, owner })
+    },
+    opts
+  )
 }
 
 export function usePlans(provider) {
