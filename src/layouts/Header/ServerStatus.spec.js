@@ -9,16 +9,36 @@ describe('ServerStatus', () => {
   function setup() {
     render(<ServerStatus />)
   }
-  describe('Server status fetching', () => {
+
+  describe('Show server up until status api resolves.', () => {
     beforeEach(() => {
       useServerStatus.mockReturnValue({
-        isSuccess: false,
+        isLoading: true,
       })
       setup()
     })
 
     it('The correct accessibility message', () => {
-      const span = screen.getByText(/Server Status Unknown/)
+      const span = screen.getByText(/All Systems Operational/)
+      expect(span).toBeInTheDocument()
+    })
+
+    it('Icon is the correct color', () => {
+      const icon = screen.getByTestId('server-icon')
+      expect(icon).toHaveClass('text-success-700')
+    })
+  })
+
+  describe('Api errored', () => {
+    beforeEach(() => {
+      useServerStatus.mockReturnValue({
+        isError: true,
+      })
+      setup()
+    })
+
+    it('The correct accessibility message', () => {
+      const span = screen.getByText(/Status Unknown/)
       expect(span).toBeInTheDocument()
     })
 
@@ -29,22 +49,22 @@ describe('ServerStatus', () => {
   })
 
   describe.each`
-    serverStatus  | screenReader             | iconColor
-    ${'none'}     | ${/Server Up/}           | ${'text-success-700'}
-    ${'critical'} | ${/Server Down/}         | ${'text-codecov-red'}
-    ${'major'}    | ${/Major Server Issues/} | ${'text-codecov-red'}
-    ${'minor'}    | ${/Minor Server Issues/} | ${'text-warning-500'}
-  `('Server status rendering', ({ serverStatus, screenReader, iconColor }) => {
+    indicator     | description              | iconColor
+    ${'none'}     | ${'Server Up'}           | ${'text-success-700'}
+    ${'critical'} | ${'Server Down'}         | ${'text-codecov-red'}
+    ${'major'}    | ${'Major Server Issues'} | ${'text-codecov-red'}
+    ${'minor'}    | ${'Minor Server Issues'} | ${'text-warning-500'}
+  `('Server status rendering', ({ indicator, description, iconColor }) => {
     beforeEach(() => {
       useServerStatus.mockReturnValue({
         isSuccess: true,
-        data: { status: { indicator: serverStatus } },
+        data: { indicator, description },
       })
       setup()
     })
 
     it('The correct accessibility message', () => {
-      const span = screen.getByText(screenReader)
+      const span = screen.getByText(description)
       expect(span).toBeInTheDocument()
     })
 

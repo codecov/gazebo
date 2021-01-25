@@ -21,10 +21,14 @@ function fetchStatus() {
   })
 }
 
-export function useServerStatus() {
+export function useServerStatus({ opts } = {}) {
   return useQuery('serverStatus', () => fetchStatus(), {
     retry: true,
     refetchOnWindowFocus: true,
     suspense: false,
+    select: (data) => {
+      return data.status
+    },
+    ...opts,
   })
 }

@@ -24,7 +24,9 @@ describe('useServerStatus', () => {
       rest.get(StatusUrl, (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.json({ status: { indicator: 'a status' } })
+          ctx.json({
+            status: { indicator: 'a status', description: 'description' },
+          })
         )
       })
     )
@@ -47,7 +49,8 @@ describe('useServerStatus', () => {
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toStrictEqual({
-          status: { indicator: 'a status' },
+          indicator: 'a status',
+          description: 'description',
         })
       })
     })
