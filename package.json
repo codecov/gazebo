@@ -79,7 +79,7 @@
     "@babel/core": "^7.12.10",
     "@rescripts/cli": "0.0.15",
     "@sentry/cli": "^1.61.0",
-    "@storybook/addon-actions": "^6.1.14",
+    "@storybook/addon-actions": "^6.1.15",
     "@storybook/addon-essentials": "^6.1.14",
     "@storybook/addon-links": "^6.1.14",
     "@storybook/node-logger": "^6.1.14",
