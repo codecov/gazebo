@@ -4,8 +4,9 @@ import { useUser } from 'services/user'
 
 import NameEmailCard from './NameEmailCard'
 import StudentCard from './StudentCard'
+import GithubIntegrationCard from './GithubIntegrationCard'
 
-function Admin({ isPersonalSettings, provider }) {
+function Admin({ isPersonalSettings, provider, owner }) {
   const { data: user } = useUser({ provider })
   return (
     <div>
@@ -17,6 +18,9 @@ function Admin({ isPersonalSettings, provider }) {
       ) : (
         'add/remove admin section'
       )}
+      <div className="mt-8">
+        <GithubIntegrationCard provider={provider} owner={owner} />
+      </div>
     </div>
   )
 }
@@ -24,6 +28,7 @@ function Admin({ isPersonalSettings, provider }) {
 Admin.propTypes = {
   isPersonalSettings: PropTypes.bool.isRequired,
   provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
 }
 
 export default Admin
