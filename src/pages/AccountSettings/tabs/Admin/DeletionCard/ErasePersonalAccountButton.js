@@ -16,8 +16,8 @@ function ErasePersonalAccountButton() {
         onClose={() => setIsModalOpen(false)}
         title="Are you sure?"
       >
-        <p className="text-sm">Erasing your account will:</p>
-        <ul className="mt-4 list-disc pl-4 text-sm">
+        <p>Erasing your account will:</p>
+        <ul className="mt-4 list-disc pl-4">
           <li>
             This will delete all your session data, oauth token, email and other
             personal data
