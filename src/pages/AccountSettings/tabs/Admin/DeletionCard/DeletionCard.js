@@ -5,7 +5,7 @@ import Button from 'ui/Button'
 
 import ErasePersonalAccountButton from './ErasePersonalAccountButton'
 
-function DeletionCard({ isPersonalSettings }) {
+function DeletionCard({ isPersonalSettings, provider, owner }) {
   return (
     <Card className="p-10 text-codecov-red">
       <h2 className="border-b text-2xl pb-4 bold border-codecov-red">
@@ -16,7 +16,7 @@ function DeletionCard({ isPersonalSettings }) {
           <p className="mt-4 mb-6">
             Erase all my personal content and personal projects.
           </p>
-          <ErasePersonalAccountButton />
+          <ErasePersonalAccountButton provider={provider} owner={owner} />
         </>
       ) : (
         <>
@@ -34,6 +34,8 @@ function DeletionCard({ isPersonalSettings }) {
 
 DeletionCard.propTypes = {
   isPersonalSettings: PropTypes.bool.isRequired,
+  provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
 }
 
 export default DeletionCard

@@ -1,9 +1,12 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
+import { useEraseAccount } from 'services/account'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-function ErasePersonalAccountButton() {
+function ErasePersonalAccountButton({ provider, owner }) {
+  const { mutate, isLoading } = useEraseAccount({ provider, owner })
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
@@ -29,13 +32,18 @@ function ErasePersonalAccountButton() {
           <Button variant="outline" onClick={() => setIsModalOpen(false)}>
             Close
           </Button>
-          <Button color="red" onClick={() => setIsModalOpen(false)}>
+          <Button color="red" onClick={mutate} disabled={isLoading}>
             Erase my account
           </Button>
         </div>
       </Modal>
     </>
   )
+}
+
+ErasePersonalAccountButton.propTypes = {
+  provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
 }
 
 export default ErasePersonalAccountButton

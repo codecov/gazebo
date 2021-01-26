@@ -22,7 +22,11 @@ function Admin({ isPersonalSettings, provider, owner }) {
       <div className="mt-8 flex">
         <GithubIntegrationCard provider={provider} owner={owner} />
         <div className="flex-grow">
-          <DeletionCard isPersonalSettings={isPersonalSettings} />
+          <DeletionCard
+            provider={provider}
+            owner={owner}
+            isPersonalSettings={isPersonalSettings}
+          />
         </div>
       </div>
     </div>
