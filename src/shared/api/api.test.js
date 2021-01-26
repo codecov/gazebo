@@ -37,6 +37,9 @@ const server = setupServer(
   }),
   rest.patch('/internal/test', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(req.body))
+  }),
+  rest.delete('/internal/test', (req, res, ctx) => {
+    return res(ctx.status(204), null)
   })
 )
 
@@ -124,5 +127,19 @@ describe('when using a patch request', () => {
       test: 'foo',
       camelCase: 'snakeCase',
     })
+  })
+})
+
+describe('when using a delete request', () => {
+  beforeEach(() => {
+    return Api.erase({
+      path: '/test',
+    }).then((data) => {
+      result = data
+    })
+  })
+
+  it('returns null', () => {
+    expect(result).toEqual(null)
   })
 })
