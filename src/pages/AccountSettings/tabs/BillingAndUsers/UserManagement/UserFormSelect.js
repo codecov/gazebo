@@ -5,22 +5,12 @@ import cs from 'classnames'
 
 import Icon from 'ui/Icon'
 
-// const SelectClasses = {
-//   root: 'flex-1 bg-white',
-//   button:
-//     'flex-1 flex justify-between items-center text-left px-4 py-2 outline-none truncate',
-//   ul: 'overflow-hidden bg-white outline-none absolute z-10',
-//   li: 'block cursor-pointer p-2 text-sm hover:bg-gray-200',
-//   item: 'flex justify-between flex-1 p-2 text-base truncate',
-// }
-
 const SelectClasses = {
   root: 'truncate flex bg-white',
   button: 'truncate flex items-center outline-none text-left p-2',
-  ul: (isOpen) => `
+  ul: `
       overflow-hidden outline-none absolute z-10
       rounded-b-md bg-white border-gray-200
-      ${isOpen && ' border border-solid'}
   `,
   li: 'cursor-pointer text-sm hover:bg-gray-200',
   item: 'flex-1 flex justify-between text-base p-4 truncate',
@@ -92,7 +82,7 @@ export const FormSelect = ({
           </button>
           <ul
             aria-label={name}
-            className={cs(SelectClasses.ul(isOpen))}
+            className={cs(SelectClasses.ul, { 'border border-solid': isOpen })}
             {...getMenuProps()}
           >
             {isOpen && items.map(_renderItem)}

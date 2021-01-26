@@ -31,13 +31,14 @@ const FormClasses = {
   root: 'shadow flex divide-x divide-gray-200 divide-solid',
   search: 'flex-auto px-2 py-4 w-full rounded-tr-md rounded-br-md md:w-auto',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
+  firstFilter: 'rounded-tl-md rounded-bl-md pl-2',
 }
 
 export function FormControls({ control, register, onChange, current }) {
   return (
     <Card className={FormClasses.root}>
       <Select
-        className="rounded-tl-md rounded-bl-md"
+        className={FormClasses.firstFilter}
         control={control}
         name="activated"
         items={ActivatedItems}
