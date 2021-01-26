@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import Card from 'ui/Card'
 import Button from 'ui/Button'
 
+import ErasePersonalAccountButton from './ErasePersonalAccountButton'
+
 function DeletionCard({ isPersonalSettings }) {
   return (
     <Card className="p-10 text-codecov-red">
@@ -14,7 +16,7 @@ function DeletionCard({ isPersonalSettings }) {
           <p className="mt-4 mb-6">
             Erase all my personal content and personal projects.
           </p>
-          <Button color="red">Erase account</Button>
+          <ErasePersonalAccountButton />
         </>
       ) : (
         <>
