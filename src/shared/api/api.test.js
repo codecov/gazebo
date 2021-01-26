@@ -132,7 +132,7 @@ describe('when using a patch request', () => {
 
 describe('when using a delete request', () => {
   beforeEach(() => {
-    return Api.erase({
+    return Api.delete({
       path: '/test',
     }).then((data) => {
       result = data

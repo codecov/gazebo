@@ -148,7 +148,7 @@ export function useEraseAccount({ provider, owner }) {
     () => {
       const path = getPathAccountDetails({ provider, owner })
 
-      return Api.erase({
+      return Api.delete({
         provider,
         path,
       })

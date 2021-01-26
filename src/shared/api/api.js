@@ -37,37 +37,19 @@ function _fetch({
   })
 }
 
-export function get(config) {
-  return _fetch(config)
-}
-
-export function post(config) {
-  return _fetch({
-    ...config,
-    method: 'POST',
-  })
-}
-
-export function patch(config) {
-  return _fetch({
-    ...config,
-    method: 'PATCH',
-  })
-}
-
-// cant use delete as its a JS keywork
-export function erase(config) {
-  return _fetch({
-    ...config,
-    method: 'DELETE',
-  })
+function prefillMethod(method) {
+  return (config) =>
+    _fetch({
+      ...config,
+      method,
+    })
 }
 
 const Api = {
-  get,
-  post,
-  patch,
-  erase,
+  get: prefillMethod('GET'),
+  post: prefillMethod('POST'),
+  patch: prefillMethod('PATCH'),
+  delete: prefillMethod('DELETE'),
 }
 
 export default Api
