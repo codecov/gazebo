@@ -21,7 +21,12 @@ function _fetch({
     method,
     body: body ? JSON.stringify(body) : null,
   }).then(async (res) => {
-    const data = camelizeKeys(await res.json())
+    let data = null
+    try {
+      data = camelizeKeys(await res.json())
+    } catch {
+      // nothing to do, body can be empty
+    }
 
     return res.ok
       ? data
@@ -50,10 +55,19 @@ export function patch(config) {
   })
 }
 
+// cant use delete as its a JS keywork
+export function erase(config) {
+  return _fetch({
+    ...config,
+    method: 'DELETE',
+  })
+}
+
 const Api = {
   get,
   post,
   patch,
+  erase,
 }
 
 export default Api
