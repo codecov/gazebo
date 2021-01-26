@@ -2,12 +2,24 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 
 import { useEraseAccount } from 'services/account'
+import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
 function ErasePersonalAccountButton({ provider, owner }) {
   const { mutate, isLoading } = useEraseAccount({ provider, owner })
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const addToast = useAddNotification()
+
+  function eraseAccount() {
+    mutate(null, {
+      onError: () =>
+        addToast({
+          type: 'error',
+          text: 'Something went wrong',
+        }),
+    })
+  }
 
   return (
     <>
@@ -32,7 +44,7 @@ function ErasePersonalAccountButton({ provider, owner }) {
           <Button variant="outline" onClick={() => setIsModalOpen(false)}>
             Close
           </Button>
-          <Button color="red" onClick={mutate} disabled={isLoading}>
+          <Button color="red" onClick={eraseAccount} disabled={isLoading}>
             Erase my account
           </Button>
         </div>
