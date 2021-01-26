@@ -23,7 +23,11 @@ function User({
   const pills = createUserPills({ student, isAdmin, email })
   return (
     <div className={cs(className, 'flex text-md text-sm space-x-4')}>
-      <img className="rounded-full h-12 w-12" src={avatarUrl} alt={username} />
+      <img
+        className="flex-none rounded-full h-12 w-12"
+        src={avatarUrl}
+        alt={username}
+      />
       <div className="flex-1 flex flex-col justify-center">
         <div>
           <span className="text-gray-900 font-bold mr-1">{name}</span>

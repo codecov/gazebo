@@ -27,16 +27,17 @@ const ActivatedItems = [
   { label: 'deactivated', value: ApiFilterEnum.false },
 ]
 
-export function FormControls({
-  control,
-  register,
-  onChange,
-  current,
-  fetching = false,
-}) {
+const FormClasses = {
+  root: 'shadow flex divide-x divide-gray-200 divide-solid',
+  search: 'flex-auto px-2 py-4 w-full rounded-tr-md rounded-br-md md:w-auto',
+  submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
+}
+
+export function FormControls({ control, register, onChange, current }) {
   return (
-    <Card className="shadow flex flex-wrap divide-x divide-gray-200 divide-solid">
+    <Card className={FormClasses.root}>
       <Select
+        className="rounded-tl-md rounded-bl-md"
         control={control}
         name="activated"
         items={ActivatedItems}
@@ -71,18 +72,13 @@ export function FormControls({
       />
       <input
         aria-label="search users"
-        className="flex-2 px-2 py-3 rounded w-full md:w-auto"
+        className={FormClasses.search}
         name="search"
         ref={register}
         placeholder="Search"
         onChange={(event) => onChange({ search: event.target.value })}
       />
-      {fetching && <p>Fetching</p>}
-      <input
-        className="block md:hidden sr:block bg-gray-100 flex-2 px-2 py-3 rounded w-full"
-        type="submit"
-        value="Submit"
-      />
+      <input className={FormClasses.submit} type="submit" value="Submit" />
     </Card>
   )
 }

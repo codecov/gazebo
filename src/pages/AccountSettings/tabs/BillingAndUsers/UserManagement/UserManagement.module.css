@@ -1,0 +1,4 @@
+.userTable {
+  @apply grid p-2 gap-4;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}

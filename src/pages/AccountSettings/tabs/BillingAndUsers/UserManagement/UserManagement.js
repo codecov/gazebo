@@ -13,6 +13,8 @@ import Button from 'ui/Button'
 import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
+import styles from './UserManagement.module.css'
+
 function useActivateUser({ provider, owner, query }) {
   const { mutate, ...rest } = useUpdateUser({
     provider,
@@ -61,7 +63,7 @@ function UserManagement({ provider, owner }) {
       ordering: { label: 'Sort by Name ⬆', value: 'name' },
     },
   })
-  const { data, isSuccess, isFetching } = useUsers({
+  const { data, isSuccess } = useUsers({
     provider,
     owner,
     query: params,
@@ -78,7 +80,6 @@ function UserManagement({ provider, owner }) {
         current={params}
         onChange={updateQuery}
         register={register}
-        fetching={isFetching}
         control={control}
       />
       <Card className="shadow divide-y divide-gray-200 divide-solid p-4">
@@ -86,9 +87,8 @@ function UserManagement({ provider, owner }) {
           <h2>User List</h2>
           {isSuccess &&
             data?.results?.map((user) => (
-              <div key={user.username} className="p-2 grid grid-cols-5 gap-4">
+              <div key={user.username} className={styles.userTable}>
                 <User
-                  className="col-span-2"
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
@@ -108,7 +108,7 @@ function UserManagement({ provider, owner }) {
                 />
                 <div>
                   <Button
-                    className="w-full"
+                    className="w-full truncate"
                     color={user.activated ? 'red' : 'blue'}
                     variant={user.activated ? 'outline' : 'normal'}
                     onClick={() => activate(user.username, !user.activated)}
