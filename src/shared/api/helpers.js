@@ -5,7 +5,7 @@ import * as Cookie from 'js-cookie'
 
 import config from 'config'
 
-const ProviderCookieKeyMapping = {
+export const ProviderCookieKeyMapping = {
   gh: 'github-token',
   gl: 'gitlab-token',
   bb: 'bitbucket-token',
