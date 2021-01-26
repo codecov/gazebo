@@ -42,7 +42,7 @@ function ErasePersonalAccountButton({ provider, owner }) {
         </ul>
         <div className="flex justify-between mt-6">
           <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-            Close
+            Cancel
           </Button>
           <Button color="red" onClick={eraseAccount} disabled={isLoading}>
             Erase my account

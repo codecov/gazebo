@@ -7,6 +7,7 @@ jest.mock('services/user')
 jest.mock('./NameEmailCard', () => () => 'NameEmailCard')
 jest.mock('./StudentCard', () => () => 'StudentCard')
 jest.mock('./GithubIntegrationCard', () => () => 'GithubIntegrationCard')
+jest.mock('./DeletionCard', () => () => 'DeletionCard')
 
 describe('AdminTab', () => {
   const defaultProps = {
@@ -44,6 +45,11 @@ describe('AdminTab', () => {
       const card = screen.getByText(/GithubIntegrationCard/)
       expect(card).toBeInTheDocument()
     })
+
+    it('renders the DeletionCard', () => {
+      const card = screen.getByText(/DeletionCard/)
+      expect(card).toBeInTheDocument()
+    })
   })
 
   describe('when rendered for organization', () => {
@@ -60,6 +66,11 @@ describe('AdminTab', () => {
 
     it('renders the GithubIntegrationCard', () => {
       const card = screen.getByText(/GithubIntegrationCard/)
+      expect(card).toBeInTheDocument()
+    })
+
+    it('renders the DeletionCard', () => {
+      const card = screen.getByText(/DeletionCard/)
       expect(card).toBeInTheDocument()
     })
   })
