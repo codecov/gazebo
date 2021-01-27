@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 
 import LogoSpinner from 'ui/LogoSpinner'
+import { useTracking } from 'services/tracking'
 
 import ErrorBoundary from '../shared/ErrorBoundary'
 import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
@@ -9,6 +10,8 @@ import Header from '../Header'
 import ToastNotifications from '../ToastNotifications'
 
 function BaseLayout({ children }) {
+  useTracking()
+
   const fullPageLoader = (
     <div className="h-screen w-screen flex items-center justify-center mt-16">
       <LogoSpinner />
