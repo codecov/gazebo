@@ -94,7 +94,7 @@ describe('Select', () => {
 
       const value = items[0]
 
-      const renderItem = (item) => item.planName
+      const renderItem = (item) => <p>{item.planName}</p>
 
       setup({
         items,
@@ -120,6 +120,24 @@ describe('Select', () => {
         expect(options[1]).toHaveTextContent(props.items[1].planName)
         expect(options[2]).toHaveTextContent(props.items[2].planName)
       })
+    })
+  })
+
+  describe('when selected item has a custom select option', () => {
+    beforeEach(() => {
+      const items = [`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]
+      const value = items[0]
+      const renderSelected = (item) => <p>Selected: {item}</p>
+      setup({
+        items,
+        value,
+        renderSelected,
+      })
+    })
+
+    it('renders the custom selected item', () => {
+      const button = screen.getByText(/Selected: Don't forget EQ/)
+      expect(button).toBeInTheDocument()
     })
   })
 })
