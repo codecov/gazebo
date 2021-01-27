@@ -31,7 +31,7 @@ function assertFromToday(date) {
   return formatDistance(parseISO(date), new Date(), 'MM/dd/yyyy')
 }
 
-xdescribe('UserManagerment', () => {
+describe('UserManagerment', () => {
   function setup({
     mockUseUsersValue = users,
     mockUseUpdateUserValue = updateUser,

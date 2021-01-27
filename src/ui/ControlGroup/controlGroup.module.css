@@ -1,0 +1,32 @@
+.controlGroup {
+  @apply grid grid-cols-4 divide-x divide-gray-200 divide-solid;
+}
+
+.controlGroup > * {
+  @apply w-auto border-none;
+}
+
+.controlGroup > * > * {
+  @apply border-none rounded-none;
+}
+
+.controlGroup > input[type='text'] {
+  @apply rounded-none bg-white;
+}
+
+/* Round the edges of the control group */
+.controlGroup > *:first-child {
+  @apply rounded-tl-md rounded-bl-md;
+}
+
+.controlGroup > * > *:first-child {
+  @apply rounded-tl-md rounded-bl-md;
+}
+
+.controlGroup > *:last-child {
+  @apply rounded-tr-md rounded-br-md;
+}
+
+.controlGroup > * > *:last-child {
+  @apply rounded-tr-md rounded-br-md;
+}

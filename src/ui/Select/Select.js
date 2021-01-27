@@ -1,9 +1,19 @@
 import PropTypes from 'prop-types'
 import { useSelect } from 'downshift'
 import identity from 'lodash/identity'
-import cs from 'classnames'
 
 import Icon from 'ui/Icon'
+
+const SelectClasses = {
+  root: 'w-full relative',
+  button:
+    'flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none',
+  ul: (isOpen) =>
+    `overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10${
+      isOpen && ' border border-solid'
+    }`,
+  li: 'block hover:bg-gray-200 cursor-pointer p-2 text-sm',
+}
 
 function Select({
   placeholder = 'Select',
@@ -32,7 +42,7 @@ function Select({
   function _renderItem(item, index) {
     return (
       <li
-        className="block hover:bg-gray-200 cursor-pointer p-2 text-sm"
+        className={SelectClasses.li}
         key={`${item}${index}`}
         {...getItemProps({ item, index })}
       >
@@ -42,11 +52,11 @@ function Select({
   }
 
   return (
-    <div className="w-full relative">
+    <div className={SelectClasses.root}>
       <button
         aria-label={ariaName}
         type="button"
-        className="flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none"
+        className={SelectClasses.button}
         {...getToggleButtonProps()}
       >
         {renderButton()}
@@ -54,13 +64,7 @@ function Select({
       </button>
       <ul
         aria-label={ariaName}
-        className={cs(
-          'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10',
-          {
-            border: isOpen,
-            'border-solid': isOpen,
-          }
-        )}
+        className={SelectClasses.ul(isOpen)}
         {...getMenuProps()}
       >
         {isOpen && items.map(_renderItem)}
