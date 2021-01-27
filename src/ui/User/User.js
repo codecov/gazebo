@@ -15,8 +15,8 @@ const UserClasses = {
 function createUserPills({ student, isAdmin, email }) {
   const pills = []
 
-  if (student) pills.push({ text: 'Student' })
   if (isAdmin) pills.push({ text: 'Admin', highlight: true })
+  if (student) pills.push({ text: 'Student' })
   if (email) pills.push({ text: email })
 
   return pills

@@ -6,8 +6,12 @@
   @apply w-auto border-none;
 }
 
-.controlGroup > * > * {
-  @apply border-none rounded-none;
+.controlGroup > * > button {
+  @apply border-none;
+}
+
+.controlGroup > * > ul {
+  @apply rounded-t-none bg-white;
 }
 
 .controlGroup > input[type='text'] {
@@ -15,11 +19,11 @@
 }
 
 /* Round the edges of the control group */
-.controlGroup > *:first-child {
+.controlGroup > button:first-child {
   @apply rounded-tl-md rounded-bl-md;
 }
 
-.controlGroup > * > *:first-child {
+.controlGroup > input[type='text']:first-child {
   @apply rounded-tl-md rounded-bl-md;
 }
 
@@ -27,6 +31,6 @@
   @apply rounded-tr-md rounded-br-md;
 }
 
-.controlGroup > * > *:last-child {
+.controlGroup > input[type='text']:last-child {
   @apply rounded-tr-md rounded-br-md;
 }
