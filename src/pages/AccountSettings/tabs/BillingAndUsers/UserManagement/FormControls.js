@@ -42,6 +42,13 @@ const FormClasses = {
 }
 
 export function FormControls({ control, register, onChange, current }) {
+  // function _renderSelected(label) {
+  //   return (
+  //     <span className={FormClasses.item}>
+  //       <span className={FormClasses.itemContent}>{label}</span>
+  //     </span>
+  //   )
+  // }
   function _renderItem(label, value, target) {
     return (
       <span className={FormClasses.item}>
@@ -66,10 +73,11 @@ export function FormControls({ control, register, onChange, current }) {
           control={control}
           render={() => (
             <Select
+              ariaName="activated"
               className={FormClasses.firstFilter}
               control={control}
-              name="activated"
               items={ActivatedItems}
+              // renderSelected={({ label }) => _renderSelected(label)}
               renderItem={({ label, value }) =>
                 _renderItem(label, value, 'activated')
               }
@@ -88,8 +96,10 @@ export function FormControls({ control, register, onChange, current }) {
           control={control}
           render={() => (
             <Select
+              ariaName="isAdmin"
               control={control}
               items={AdminItems}
+              // renderSelected={({ label }) => _renderSelected(label)}
               renderItem={({ label, value }) =>
                 _renderItem(label, value, 'isAdmin')
               }
@@ -108,8 +118,10 @@ export function FormControls({ control, register, onChange, current }) {
           control={control}
           render={() => (
             <Select
+              ariaName="ordering"
               control={control}
               items={OrderingItems}
+              // renderSelected={({ label }) => _renderSelected(label)}
               renderItem={({ label, value }) =>
                 _renderItem(label, value, 'ordering')
               }
@@ -124,6 +136,7 @@ export function FormControls({ control, register, onChange, current }) {
           )}
         />
         <TextInput
+          variant="light"
           aria-label="search users"
           className={FormClasses.search}
           name="search"

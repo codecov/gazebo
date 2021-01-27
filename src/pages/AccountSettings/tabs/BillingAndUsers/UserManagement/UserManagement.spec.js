@@ -50,18 +50,6 @@ describe('UserManagerment', () => {
     })
   }
 
-  describe('Shows fetching status', () => {
-    beforeEach(() => {
-      const mockUseUsersValue = {
-        isFetching: true,
-      }
-      setup({ mockUseUsersValue })
-    })
-    it('shows fetching', () => {
-      expect(screen.getByText(/Fetching/)).toBeInTheDocument()
-    })
-  })
-
   describe('User List', () => {
     describe('renders results', () => {
       beforeEach(() => {
@@ -252,25 +240,25 @@ describe('UserManagerment', () => {
         setup()
       })
 
-      it(`Renders the correct selection: Sort by Name ⬆`, () => {
+      it(`Renders the correct selection: Name A-Z`, () => {
         const SortSelect = screen.getByRole('button', { name: 'ordering' })
         user.click(SortSelect)
         expect(
-          screen.getByRole('option', { name: /Sort by Name ⬆/ })
+          screen.getByRole('option', { name: /Name A-Z/ })
         ).toBeInTheDocument()
-        user.click(screen.getByRole('option', { name: /Sort by Name ⬆/ }))
+        user.click(screen.getByRole('option', { name: /Name A-Z/ }))
         expect(
-          screen.queryByRole('option', { name: /Sort by Name ⬆/ })
+          screen.queryByRole('option', { name: /Name A-Z/ })
         ).not.toBeInTheDocument()
       })
 
-      it(`Makes the correct query to the api: Sort by Name ⬆`, () => {
+      it(`Makes the correct query to the api: Name A-Z`, () => {
         const SortSelect = screen.getByRole('button', { name: 'ordering' })
         user.click(SortSelect)
-        user.click(screen.getByRole('option', { name: /Sort by Username ⬇/ }))
+        user.click(screen.getByRole('option', { name: /Name Z-A/ }))
 
         user.click(SortSelect)
-        user.click(screen.getByRole('option', { name: /Sort by Name ⬆/ }))
+        user.click(screen.getByRole('option', { name: /Name A-Z/ }))
 
         expect(useUsers).toHaveBeenLastCalledWith({
           owner: 'radient',
@@ -281,12 +269,12 @@ describe('UserManagerment', () => {
     })
 
     describe.each([
-      [/Sort by Name ⬇/, { ...defaultQuery, ordering: '-name' }],
-      [/Sort by Username ⬆/, { ...defaultQuery, ordering: 'username' }],
-      [/Sort by Username ⬇/, { ...defaultQuery, ordering: '-username' }],
-      [/Sort by Email ⬆/, { ...defaultQuery, ordering: 'email' }],
-      [/Sort by Email ⬇/, { ...defaultQuery, ordering: '-email' }],
-    ])('All others', (label, expected) => {
+      [/Name Z-A/, { ...defaultQuery, ordering: '-name' }],
+      [/Username A-Z/, { ...defaultQuery, ordering: 'username' }],
+      [/Username Z-A/, { ...defaultQuery, ordering: '-username' }],
+      [/Email A-Z/, { ...defaultQuery, ordering: 'email' }],
+      [/Email Z-A/, { ...defaultQuery, ordering: '-email' }],
+    ])('ordering', (label, expected) => {
       beforeEach(() => {
         setup()
       })
@@ -323,9 +311,9 @@ describe('UserManagerment', () => {
 
   describe('Filter by Activated', () => {
     describe.each([
-      [/Filter By Activated Users/, defaultQuery],
-      [/^activated$/, { ...defaultQuery, activated: 'True' }],
-      [/^deactivated$/, { ...defaultQuery, activated: 'False' }],
+      [/All users/, defaultQuery],
+      [/Active users/, { ...defaultQuery, activated: 'True' }],
+      [/In-active users/, { ...defaultQuery, activated: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         setup()
@@ -363,9 +351,9 @@ describe('UserManagerment', () => {
 
   describe('Filter by is_Admin', () => {
     describe.each([
-      [/Filter By Admin/, defaultQuery],
-      [/Is Admin/, { ...defaultQuery, isAdmin: 'True' }],
-      [/Not Admin/, { ...defaultQuery, isAdmin: 'False' }],
+      [/Everyone/, defaultQuery],
+      [/Admins/, { ...defaultQuery, isAdmin: 'True' }],
+      [/Collaborators/, { ...defaultQuery, isAdmin: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         setup()

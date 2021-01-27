@@ -14,9 +14,9 @@ import { getOwnerImg } from 'shared/utils'
 
 const UserManagementClasses = {
   root: 'space-y-4 col-span-2',
+  title: 'text-lg py-3',
   results: 'shadow divide-y divide-gray-200 divide-solid p-4',
-  wrapper: 'pb-4',
-  userTable: 'grid grid-cols-2 md:grid-cols-5 gap-2',
+  userTable: 'grid grid-cols-auto md:grid-cols-5 gap-2 my-6',
   user: 'col-span-2',
 }
 
@@ -46,7 +46,7 @@ function UserManagement({ provider, owner }) {
       search: params.search,
       activated: ApiFilterEnum.none,
       isAdmin: ApiFilterEnum.none,
-      ordering: { label: 'Sort by Name ⬆', value: 'name' },
+      ordering: 'name',
     },
   })
   const { data, isSuccess } = useUsers({
@@ -72,8 +72,8 @@ function UserManagement({ provider, owner }) {
         control={control}
       />
       <Card className={UserManagementClasses.results}>
-        <div className={UserManagementClasses.wrapper}>
-          <h2>User List</h2>
+        <h2 className={UserManagementClasses.title}>Users</h2>
+        <div>
           {isSuccess &&
             data?.results?.map((user) => (
               <div
