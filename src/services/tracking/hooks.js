@@ -18,7 +18,7 @@ function setDataLayer(user) {
 }
 
 export function useTracking() {
-  useUser({
+  return useUser({
     onSuccess: (user) => setDataLayer(user),
     onError: (data) => setDataLayer(null),
     suspense: false,
