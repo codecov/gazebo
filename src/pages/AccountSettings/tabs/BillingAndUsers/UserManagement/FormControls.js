@@ -12,24 +12,24 @@ import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 
 const OrderingItems = [
-  { label: 'Sort by Name ⬆', value: 'name' },
-  { label: 'Sort by Name ⬇', value: '-name' },
-  { label: 'Sort by Username ⬆', value: 'username' },
-  { label: 'Sort by Username ⬇', value: '-username' },
-  { label: 'Sort by Email ⬆', value: 'email' },
-  { label: 'Sort by Email ⬇', value: '-email' },
+  { label: 'Name A-Z', value: 'name' },
+  { label: 'Name Z-A', value: '-name' },
+  { label: 'Username A-Z', value: 'username' },
+  { label: 'Username Z-A', value: '-username' },
+  { label: 'Email A-Z', value: 'email' },
+  { label: 'Email Z-A', value: '-email' },
 ]
 
 const AdminItems = [
-  { label: 'Filter By Admin', value: ApiFilterEnum.none },
-  { label: 'Is Admin', value: ApiFilterEnum.true },
-  { label: 'Not Admin', value: ApiFilterEnum.false },
+  { label: 'Everyone', value: ApiFilterEnum.none },
+  { label: 'Admins', value: ApiFilterEnum.true },
+  { label: 'Collaborators', value: ApiFilterEnum.false },
 ]
 
 const ActivatedItems = [
-  { label: 'Filter By Activated Users', value: ApiFilterEnum.none },
-  { label: 'activated', value: ApiFilterEnum.true },
-  { label: 'deactivated', value: ApiFilterEnum.false },
+  { label: 'All users', value: ApiFilterEnum.none },
+  { label: 'Active users', value: ApiFilterEnum.true },
+  { label: 'In-active users', value: ApiFilterEnum.false },
 ]
 
 const FormClasses = {
@@ -38,7 +38,7 @@ const FormClasses = {
   firstFilter: 'rounded-tl-md rounded-bl-md pl-2',
   item: 'flex-1 flex justify-between text-base py-2 truncate',
   itemContent: 'flex justify-between flex-1 text-base truncate',
-  icon: 'w-6 h-6 bg-gray-200 rounded-full list-item-type ml-3',
+  icon: 'w-6 h-6 bg-gray-100 rounded-full list-item-type ml-3',
 }
 
 export function FormControls({ control, register, onChange, current }) {
