@@ -4,6 +4,7 @@ import { useUser } from 'services/user'
 
 import NameEmailCard from './NameEmailCard'
 import StudentCard from './StudentCard'
+import ManageAdminCard from './ManageAdminCard'
 import GithubIntegrationCard from './GithubIntegrationCard'
 import DeletionCard from './DeletionCard'
 
@@ -17,7 +18,7 @@ function Admin({ isPersonalSettings, provider, owner }) {
           <StudentCard user={user} />
         </>
       ) : (
-        'add/remove admin section'
+        <ManageAdminCard />
       )}
       <div className="mt-8 flex flex-col md:flex-row">
         <GithubIntegrationCard provider={provider} owner={owner} />
