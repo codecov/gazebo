@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useStripe } from '@stripe/react-stripe-js'
+import * as Cookie from 'js-cookie'
 
 import Api from 'shared/api'
+import { ProviderCookieKeyMapping } from 'shared/api/helpers'
 
 function getPathAccountDetails({ provider, owner }) {
   return `/${provider}/${owner}/account-details/`
@@ -136,6 +138,27 @@ export function useUpdateCard({ provider, owner }) {
       onSuccess: (data) => {
         // update the local cache of account details from what the server returns
         queryClient.setQueryData(['accountDetails', provider, owner], data)
+      },
+    }
+  )
+}
+
+export function useEraseAccount({ provider, owner }) {
+  return useMutation(
+    () => {
+      const path = getPathAccountDetails({ provider, owner })
+
+      return Api.delete({
+        provider,
+        path,
+      })
+    },
+    {
+      onSuccess: () => {
+        // clear cookie and redirect to homepage
+        const cookieTokenName = ProviderCookieKeyMapping[provider]
+        Cookie.remove(cookieTokenName)
+        window.location.href = '/'
       },
     }
   )
