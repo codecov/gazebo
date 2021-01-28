@@ -72,24 +72,25 @@ module.exports = {
         card: '0 7px 20px 0 rgba(34,47,61,0.05)',
       },
       screens: {
-        'print': {'raw': 'print'},
-      }
+        print: { raw: 'print' },
+      },
     },
   },
   variants: {
-    margin: ['responsive', 'last'],
-    opacity: ['disabled', 'hover'],
-    cursor: ['disabled'],
-    transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
-    borderRadius: ['focus', 'last'],
-    borderStyle: ['first'],
-    borderColor: ['first'],
-    borderWidth: ['first'],
-    padding: ['responsive', 'last'],
+    extend: {
+      textColor: ['disabled'],
+      margin: ['responsive', 'last'],
+      opacity: ['disabled', 'hover'],
+      cursor: ['disabled'],
+      transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
+      borderRadius: ['focus', 'last'],
+      borderStyle: ['first'],
+      borderColor: ['first'],
+      borderWidth: ['first'],
+      padding: ['responsive', 'last'],
+    },
   },
-  plugins: [
-    plugin(caretColorPlugin)
-  ],
+  plugins: [plugin(caretColorPlugin)],
 }
 
 function caretColorPlugin({ addUtilities, theme }) {
@@ -101,14 +102,13 @@ function caretColorPlugin({ addUtilities, theme }) {
     if (typeof variants === 'string') {
       // no variant for the color, it's directly the color
       newUtilities[`.caret-${colorName}`] = {
-        'caret-color': variants
+        'caret-color': variants,
       }
-    }
-    else {
+    } else {
       // map each variant of the color
       forIn(variants, (color, variantName) => {
         newUtilities[`.caret-${colorName}-${variantName}`] = {
-          'caret-color': color
+          'caret-color': color,
         }
       })
     }
