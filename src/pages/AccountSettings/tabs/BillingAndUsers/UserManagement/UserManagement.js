@@ -35,16 +35,6 @@ const ActivatedItems = [
   { label: 'deactivated', value: ApiFilterEnum.false },
 ]
 
-function createUserPills({ student, isAdmin, email }) {
-  const pills = []
-
-  if (student) pills.push({ text: 'Student' })
-  if (isAdmin) pills.push({ text: 'Admin', highlight: true })
-  if (email) pills.push({ text: email })
-
-  return pills
-}
-
 function useActivateUser({ provider, owner, query }) {
   const { mutate, ...rest } = useUpdateUser({
     provider,
@@ -76,6 +66,14 @@ DateItem.propTypes = {
   date: PropTypes.string,
   label: PropTypes.string.isRequired,
   testId: PropTypes.string.isRequired,
+}
+
+function createPills({ isAdmin, email, student }) {
+  return [
+    isAdmin && { label: 'Admin', highlight: true },
+    email,
+    student && 'Student',
+  ]
 }
 
 function UserManagement({ provider, owner }) {
@@ -166,7 +164,7 @@ function UserManagement({ provider, owner }) {
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
-                  pills={createUserPills(user)}
+                  pills={createPills(user)}
                 />
                 <DateItem
                   testId="last-seen"

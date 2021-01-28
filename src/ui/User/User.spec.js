@@ -5,14 +5,13 @@ import User from './User'
 describe('User', () => {
   const requiredProps = {
     avatarUrl: 'https://good.dog/🐕.jpeg',
-    name: 'Sir Roofus',
     username: 'gaurd2003',
   }
   function setup(props) {
     render(<User {...requiredProps} {...props} />)
   }
 
-  describe('when rendered with no pills', () => {
+  describe('when rendered with no props', () => {
     beforeEach(() => {
       setup()
     })
@@ -22,46 +21,61 @@ describe('User', () => {
       expect(avatar).toBeInTheDocument()
     })
 
-    it(`renders user's name`, () => {
-      const name = screen.getByText(/Sir Roofus/)
-      expect(name).toBeInTheDocument()
+    it(`renders the username`, () => {
+      const username = screen.getByText(/gaurd2003/)
+      expect(username).toBeInTheDocument()
+    })
+  })
+
+  describe('renders name', () => {
+    beforeEach(() => {
+      setup({ name: 'Sir Roofus' })
     })
 
-    it(`renders the username`, () => {
-      const name = screen.getByText(/gaurd2003/)
+    it(`renders user's name`, () => {
+      const name = screen.getByText(/Sir Roofus/)
       expect(name).toBeInTheDocument()
     })
   })
 
   describe('renders pills', () => {
-    const pills = [
-      { text: 'gaurd2003@neighborhood.howl' },
-      { text: 'good boi' },
-    ]
+    describe('simple', () => {
+      beforeEach(() => {
+        setup({ pills: ['foo', 'bar'] })
+      })
 
-    beforeEach(() => {
-      setup({ pills })
-    })
-
-    it('renders correct pills', () => {
-      pills.forEach(({ text }) => {
-        const pill = screen.getByText(text)
-        expect(pill).toBeInTheDocument()
+      it(`renders pills`, () => {
+        expect(screen.getByText(/foo/)).toBeInTheDocument()
+        expect(screen.getByText(/bar/)).toBeInTheDocument()
       })
     })
-  })
+    describe('object', () => {
+      beforeEach(() => {
+        setup({
+          pills: [
+            { label: 'foo' },
+            { label: 'bar', highlight: true },
+            { label: 'biz', className: 'test' },
+          ],
+        })
+      })
 
-  describe('renders pills with highlight', () => {
-    const pills = [{ text: 'gaurd2003@neighborhood.howl', highlight: true }]
-
-    beforeEach(() => {
-      setup({ pills })
+      it(`renders pills`, () => {
+        expect(screen.getByText(/foo/)).toBeInTheDocument()
+        expect(screen.getByText(/bar/)).toBeInTheDocument()
+        expect(screen.getByText(/bar/)).toHaveClass('bg-gray-300')
+        expect(screen.getByText(/biz/)).toBeInTheDocument()
+        expect(screen.getByText(/biz/)).toHaveClass('test')
+      })
     })
+    describe('mixed', () => {
+      beforeEach(() => {
+        setup({ pills: ['foo', { label: 'bar' }] })
+      })
 
-    it('renders pill with highlight class', () => {
-      pills.forEach(({ text }) => {
-        const pill = screen.getByText(text)
-        expect(pill).toHaveClass('bg-gray-300')
+      it(`renders pills`, () => {
+        expect(screen.getByText(/foo/)).toBeInTheDocument()
+        expect(screen.getByText(/bar/)).toBeInTheDocument()
       })
     })
   })
