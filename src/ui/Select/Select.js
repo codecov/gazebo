@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types'
 import { useSelect } from 'downshift'
 import identity from 'lodash/identity'
+import cs from 'classnames'
 
 import Icon from 'ui/Icon'
 
 const SelectClasses = {
   root: 'w-full relative',
+  item: 'block hover:bg-gray-200 cursor-pointer p-2 text-sm',
   button:
     'flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none',
-  ul: (isOpen) =>
-    `overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10${
-      isOpen && ' border border-solid'
-    }`,
-  li: 'block hover:bg-gray-200 cursor-pointer p-2 text-sm',
+  ul:
+    'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10',
 }
 
 function Select({
@@ -20,12 +19,22 @@ function Select({
   items,
   onChange,
   value,
+  /* renderItem props:
+   *  isHover: boolean
+   *  isSelected: boolean
+   */
   renderItem = identity,
+  /* renderSelected props:
+   *  placeholder: string / any
+   */
+  renderSelected,
   ariaName,
+  className,
 }) {
   const {
     isOpen,
     selectedItem,
+    highlightedIndex,
     getToggleButtonProps,
     getMenuProps,
     getItemProps,
@@ -36,23 +45,31 @@ function Select({
   })
 
   function renderButton() {
-    return renderItem(selectedItem) || placeholder
+    const _render = renderSelected || renderItem
+    return (
+      _render(selectedItem, {
+        placeholder,
+      }) || placeholder
+    )
   }
 
   function _renderItem(item, index) {
     return (
       <li
-        className={SelectClasses.li}
+        className={SelectClasses.item}
         key={`${item}${index}`}
         {...getItemProps({ item, index })}
       >
-        {renderItem(item)}
+        {renderItem(item, {
+          isHover: highlightedIndex === index,
+          isSelected: selectedItem === item,
+        })}
       </li>
     )
   }
 
   return (
-    <div className={SelectClasses.root}>
+    <div className={cs(className, SelectClasses.root)}>
       <button
         aria-label={ariaName}
         type="button"
@@ -64,7 +81,10 @@ function Select({
       </button>
       <ul
         aria-label={ariaName}
-        className={SelectClasses.ul(isOpen)}
+        className={cs(SelectClasses.ul, {
+          border: isOpen,
+          'border-solid': isOpen,
+        })}
         {...getMenuProps()}
       >
         {isOpen && items.map(_renderItem)}
@@ -79,6 +99,7 @@ Select.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.any,
   renderItem: PropTypes.func,
+  renderSelected: PropTypes.func,
   ariaName: PropTypes.string,
 }
 

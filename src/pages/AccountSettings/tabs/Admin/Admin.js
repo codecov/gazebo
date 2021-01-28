@@ -4,8 +4,11 @@ import { useUser } from 'services/user'
 
 import NameEmailCard from './NameEmailCard'
 import StudentCard from './StudentCard'
+import ManageAdminCard from './ManageAdminCard'
+import GithubIntegrationCard from './GithubIntegrationCard'
+import DeletionCard from './DeletionCard'
 
-function Admin({ isPersonalSettings, provider }) {
+function Admin({ isPersonalSettings, provider, owner }) {
   const { data: user } = useUser({ provider })
   return (
     <div>
@@ -15,8 +18,18 @@ function Admin({ isPersonalSettings, provider }) {
           <StudentCard user={user} />
         </>
       ) : (
-        'add/remove admin section'
+        <ManageAdminCard />
       )}
+      <div className="mt-8 flex flex-col md:flex-row">
+        <GithubIntegrationCard provider={provider} owner={owner} />
+        <div className="flex-grow mt-8 md:mt-0">
+          <DeletionCard
+            provider={provider}
+            owner={owner}
+            isPersonalSettings={isPersonalSettings}
+          />
+        </div>
+      </div>
     </div>
   )
 }
@@ -24,6 +37,7 @@ function Admin({ isPersonalSettings, provider }) {
 Admin.propTypes = {
   isPersonalSettings: PropTypes.bool.isRequired,
   provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
 }
 
 export default Admin

@@ -4,6 +4,7 @@ import { renderHook, act } from '@testing-library/react-hooks'
 import { waitFor } from '@testing-library/react'
 import { useStripe } from '@stripe/react-stripe-js'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import * as Cookie from 'js-cookie'
 
 import {
   useAccountDetails,
@@ -13,9 +14,11 @@ import {
   useUpdateCard,
   useInvoices,
   useInvoice,
+  useEraseAccount,
 } from './hooks'
 
 jest.mock('@stripe/react-stripe-js')
+jest.mock('js-cookie')
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -430,6 +433,68 @@ describe('useUpdateCard', () => {
 
         it('returns the data from the server', () => {
           expect(hookData.result.current.data).toEqual(accountDetails)
+        })
+      })
+    })
+  })
+})
+
+describe('useEraseAccount', () => {
+  let hookData
+
+  function setup(currentUrl) {
+    server.use(
+      rest.delete(
+        `/internal/${provider}/${owner}/account-details/`,
+        (req, res, ctx) => {
+          return res(ctx.status(204), null)
+        }
+      )
+    )
+    hookData = renderHook(() => useEraseAccount({ provider, owner }), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('returns isLoading false', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation', () => {
+      beforeEach(() => {
+        return act(() => {
+          hookData.result.current.mutate()
+          return hookData.waitFor(
+            () => hookData.result.current.status !== 'idle'
+          )
+        })
+      })
+
+      it('returns isLoading true', () => {
+        expect(hookData.result.current.isLoading).toBeTruthy()
+      })
+
+      describe('when success', () => {
+        beforeEach(() => {
+          return act(async () => {
+            await hookData.waitFor(
+              () => hookData.result.current.status !== 'idle'
+            )
+            await hookData.waitFor(() => hookData.result.current.isSuccess)
+          })
+        })
+
+        it('returns isLoading false', () => {
+          expect(hookData.result.current.isLoading).toBeFalsy()
+        })
+
+        it('deletes the auth cookie', () => {
+          expect(Cookie.remove).toHaveBeenCalledWith('github-token')
         })
       })
     })

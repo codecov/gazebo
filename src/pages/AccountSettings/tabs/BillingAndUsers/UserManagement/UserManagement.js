@@ -34,6 +34,14 @@ function useActivateUser({ provider, owner, query }) {
   return { activate, ...rest }
 }
 
+function createPills({ isAdmin, email, student }) {
+  return [
+    isAdmin && { label: 'Admin', highlight: true },
+    email,
+    student && 'Student',
+  ]
+}
+
 function UserManagement({ provider, owner }) {
   const { params, updateParams } = useLocationParams({
     activated: '',
@@ -85,9 +93,7 @@ function UserManagement({ provider, owner }) {
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
-                  student={user.student}
-                  isAdmin={user.isAdmin}
-                  email={user.email}
+                  pills={createPills(user)}
                 />
                 <DateItem
                   testId="last-seen"

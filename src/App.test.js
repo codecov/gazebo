@@ -2,6 +2,9 @@ import { waitFor, render, screen } from '@testing-library/react'
 import App from './App'
 
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
+jest.mock('react-query/devtools', () => ({
+  ReactQueryDevtools: () => 'ReactQueryDevtools',
+}))
 
 describe('App', () => {
   describe('when rendering', () => {

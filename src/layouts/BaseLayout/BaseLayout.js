@@ -2,6 +2,8 @@ import { Suspense } from 'react'
 
 import LogoSpinner from 'ui/LogoSpinner'
 
+import ErrorBoundary from '../shared/ErrorBoundary'
+import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
 import Footer from '../Footer'
 import Header from '../Header'
 import ToastNotifications from '../ToastNotifications'
@@ -17,7 +19,11 @@ function BaseLayout({ children }) {
     <>
       <Header />
       <Suspense fallback={fullPageLoader}>
-        <main className="flex-grow bg-gray-200 mt-20">{children}</main>
+        <main className="flex-grow bg-gray-200 mt-20">
+          <ErrorBoundary sentryScopes={[['layout', 'base']]}>
+            <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
+          </ErrorBoundary>
+        </main>
       </Suspense>
       <Footer />
       <ToastNotifications />

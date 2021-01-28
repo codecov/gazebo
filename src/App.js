@@ -7,6 +7,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import BaseLayout from 'layouts/BaseLayout'
 import config from 'config'
+import { ReactQueryDevtools } from 'react-query/devtools'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const FullLayout = lazy(() => import('./layouts/FullLayout'))
@@ -28,6 +29,7 @@ function App() {
     <Elements stripe={stripePromise}>
       <ToastNotificationProvider>
         <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
           <BrowserRouter>
             <Switch>
               <Route path="/account/:provider/:owner/">

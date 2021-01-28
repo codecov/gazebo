@@ -21,7 +21,12 @@ function _fetch({
     method,
     body: body ? JSON.stringify(body) : null,
   }).then(async (res) => {
-    const data = camelizeKeys(await res.json())
+    let data = null
+    try {
+      data = camelizeKeys(await res.json())
+    } catch {
+      // nothing to do, body can be empty
+    }
 
     return res.ok
       ? data
@@ -32,28 +37,19 @@ function _fetch({
   })
 }
 
-export function get(config) {
-  return _fetch(config)
-}
-
-export function post(config) {
-  return _fetch({
-    ...config,
-    method: 'POST',
-  })
-}
-
-export function patch(config) {
-  return _fetch({
-    ...config,
-    method: 'PATCH',
-  })
+function prefillMethod(method) {
+  return (config) =>
+    _fetch({
+      ...config,
+      method,
+    })
 }
 
 const Api = {
-  get,
-  post,
-  patch,
+  get: prefillMethod('GET'),
+  post: prefillMethod('POST'),
+  patch: prefillMethod('PATCH'),
+  delete: prefillMethod('DELETE'),
 }
 
 export default Api

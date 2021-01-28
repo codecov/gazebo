@@ -5,6 +5,7 @@ import { useMainNav } from 'services/header'
 
 import DesktopMenu from './DesktopMenu'
 
+jest.mock('layouts/Header/ServerStatus.js', () => () => 'ServerStatus')
 jest.mock('services/header')
 jest.mock('./Dropdown', () => () => 'Dropdown')
 

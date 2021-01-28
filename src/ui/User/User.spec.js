@@ -38,41 +38,45 @@ describe('User', () => {
     })
   })
 
-  describe('renders email', () => {
-    beforeEach(() => {
-      setup({ email: 'gaurd2003@neighborhood.howl' })
-    })
+  describe('renders pills', () => {
+    describe('simple', () => {
+      beforeEach(() => {
+        setup({ pills: ['foo', 'bar'] })
+      })
 
-    it(`renders user's email`, () => {
-      const email = screen.getByText(/gaurd2003@neighborhood.howl/)
-      expect(email).toBeInTheDocument()
+      it(`renders pills`, () => {
+        expect(screen.getByText(/foo/)).toBeInTheDocument()
+        expect(screen.getByText(/bar/)).toBeInTheDocument()
+      })
     })
-  })
+    describe('object', () => {
+      beforeEach(() => {
+        setup({
+          pills: [
+            { label: 'foo' },
+            { label: 'bar', highlight: true },
+            { label: 'biz', className: 'test' },
+          ],
+        })
+      })
 
-  describe('renders isAdmin', () => {
-    beforeEach(() => {
-      setup({ isAdmin: true })
+      it(`renders pills`, () => {
+        expect(screen.getByText(/foo/)).toBeInTheDocument()
+        expect(screen.getByText(/bar/)).toBeInTheDocument()
+        expect(screen.getByText(/bar/)).toHaveClass('bg-gray-300')
+        expect(screen.getByText(/biz/)).toBeInTheDocument()
+        expect(screen.getByText(/biz/)).toHaveClass('test')
+      })
     })
+    describe('mixed', () => {
+      beforeEach(() => {
+        setup({ pills: ['foo', { label: 'bar' }] })
+      })
 
-    it(`renders user's admin status`, () => {
-      const adminPill = screen.getByText(/Admin/)
-      expect(adminPill).toBeInTheDocument()
-    })
-
-    it('highlights admin status', () => {
-      const adminPill = screen.getByText(/Admin/)
-      expect(adminPill).toHaveClass('bg-gray-300')
-    })
-  })
-
-  describe('renders student', () => {
-    beforeEach(() => {
-      setup({ student: true })
-    })
-
-    it(`renders student status`, () => {
-      const studentPill = screen.getByText(/Student/)
-      expect(studentPill).toBeInTheDocument()
+      it(`renders pills`, () => {
+        expect(screen.getByText(/foo/)).toBeInTheDocument()
+        expect(screen.getByText(/bar/)).toBeInTheDocument()
+      })
     })
   })
 })
