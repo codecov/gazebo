@@ -4,7 +4,7 @@ import Pagination from '.'
 describe('Pagination', () => {
   const mockOnClick = jest.fn()
   function setup(props) {
-    return render(<Pagination onClick={mockOnClick} {...props} />)
+    return render(<Pagination onPageChange={mockOnClick} {...props} />)
   }
 
   describe('pointer in the center', () => {

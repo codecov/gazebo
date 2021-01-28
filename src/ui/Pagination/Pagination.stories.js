@@ -11,5 +11,5 @@ NormalPagination.args = {
 export default {
   title: 'Components/Pagination',
   component: Pagination,
-  argTypes: { onClick: { action: 'clicked' } },
+  argTypes: { onPageChange: { action: 'clicked' } },
 }

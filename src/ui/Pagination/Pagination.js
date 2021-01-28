@@ -50,59 +50,63 @@ Page.propTypes = {
   onClick: PropTypes.func.isRequired,
 }
 
-function Pagination({ onClick, results, pointer }) {
+function Pagination({ onPageChange, results, pointer }) {
   return (
     <nav className={PaginationClasses.nav} aria-label="Pagination">
       <button
-        onClick={() => onClick(pointer - 1)}
+        onClick={() => onPageChange(pointer - 1)}
         className={PaginationClasses.previous}
         disabled={pointer === 1}
       >
         <span className="sr-only">Previous</span>
         <Icon name="leftChevron" color="text-current" className="w-4 h-4" />
       </button>
-      <Page onClick={onClick} isRendered={pointer !== 1} location={1} />
-      <Page onClick={onClick} isRendered={pointer - 1 > 2} clickable={false} />
+      <Page onClick={onPageChange} isRendered={pointer !== 1} location={1} />
       <Page
-        onClick={onClick}
+        onPageChange={onPageChange}
+        isRendered={pointer - 1 > 2}
+        clickable={false}
+      />
+      <Page
+        onClick={onPageChange}
         isRendered={pointer - 2 > 1}
         location={pointer - 2}
         desktopOnly={true}
       />
       <Page
-        onClick={onClick}
+        onClick={onPageChange}
         isRendered={pointer - 1 > 1}
         location={pointer - 1}
       />
       <button
-        onClick={() => onClick(pointer)}
+        onClick={() => onPageChange(pointer)}
         className={PaginationClasses.current}
       >
         {pointer}
       </button>
       <Page
-        onClick={onClick}
+        onClick={onPageChange}
         isRendered={pointer + 1 < results}
         location={pointer + 1}
       />
       <Page
-        onClick={onClick}
+        onClick={onPageChange}
         isRendered={pointer + 2 < results}
         location={pointer + 2}
         desktopOnly={true}
       />
       <Page
-        onClick={onClick}
+        onClick={onPageChange}
         isRendered={pointer + 2 < results}
         clickable={false}
       />
       <Page
-        onClick={onClick}
+        onClick={onPageChange}
         isRendered={pointer !== results}
         location={results}
       />
       <button
-        onClick={() => onClick(pointer + 1)}
+        onClick={() => onPageChange(pointer + 1)}
         className={PaginationClasses.next}
         disabled={pointer === results}
       >
@@ -114,7 +118,7 @@ function Pagination({ onClick, results, pointer }) {
 }
 
 Pagination.propTypes = {
-  onClick: PropTypes.func.isRequired,
+  onPageChange: PropTypes.func.isRequired,
   results: PropTypes.number.isRequired,
   pointer: PropTypes.number.isRequired,
 }
