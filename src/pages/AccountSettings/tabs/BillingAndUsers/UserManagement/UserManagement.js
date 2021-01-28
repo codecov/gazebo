@@ -17,7 +17,7 @@ const UserManagementClasses = {
   root: 'space-y-4 col-span-2',
   title: 'text-lg py-3',
   results: 'shadow divide-y divide-gray-200 divide-solid p-4',
-  userTable: 'grid grid-cols-4 gap-2 my-6',
+  userTable: 'grid grid-cols-4 lg:gap-2 my-6',
   user: ({ lastseen, latestPrivatePrDate }) =>
     cs({
       'col-span-2': !lastseen || !latestPrivatePrDate,

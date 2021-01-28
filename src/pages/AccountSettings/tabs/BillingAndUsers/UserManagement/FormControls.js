@@ -33,9 +33,9 @@ const ActivatedItems = [
 ]
 
 const FormClasses = {
-  search: 'flex-auto px-2 py-4 w-full rounded-tr-md rounded-br-md md:w-auto',
+  search: 'flex-auto w-auto py-4 ',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
-  firstFilter: 'rounded-tl-md rounded-bl-md pl-2',
+  firstFilter: 'rounded-tl-md rounded-bl-md',
   item: 'flex-1 flex justify-between text-base py-2 truncate',
   itemContent: 'flex justify-between flex-1 text-base truncate',
   icon: 'w-6 h-6 bg-gray-100 rounded-full list-item-type ml-3',
@@ -142,7 +142,12 @@ export function FormControls({ control, register, onChange, current }) {
           name="search"
           ref={register}
           placeholder="Search"
-          embedded={() => <Icon name="search" />}
+          embedded={() => (
+            <Icon
+              name="search"
+              className="w-full h-full absolute top-2 left-0"
+            />
+          )}
           onChange={(event) => onChange({ search: event.target.value })}
         />
       </ControlGroup>
