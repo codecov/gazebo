@@ -7,6 +7,7 @@ jest.mock('services/user')
 jest.mock('./NameEmailCard', () => () => 'NameEmailCard')
 jest.mock('./StudentCard', () => () => 'StudentCard')
 jest.mock('./GithubIntegrationCard', () => () => 'GithubIntegrationCard')
+jest.mock('./ManageAdminCard', () => () => 'ManageAdminCard')
 jest.mock('./DeletionCard', () => () => 'DeletionCard')
 
 describe('AdminTab', () => {
@@ -59,8 +60,8 @@ describe('AdminTab', () => {
       })
     })
 
-    it('renders the admin manage section', () => {
-      const card = screen.getByText(/add\/remove admin section/)
+    it('renders the ManageAdminCard', () => {
+      const card = screen.getByText(/ManageAdminCard/)
       expect(card).toBeInTheDocument()
     })
 
