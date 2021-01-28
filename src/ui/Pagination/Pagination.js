@@ -59,7 +59,7 @@ function Pagination({ onClick, results, pointer }) {
         disabled={pointer === 1}
       >
         <span className="sr-only">Previous</span>
-        <Icon name="leftChevron" color="text-current" />
+        <Icon name="leftChevron" color="text-current" className="w-4 h-4" />
       </button>
       <Page onClick={onClick} isRendered={pointer !== 1} location={1} />
       <Page onClick={onClick} isRendered={pointer - 1 > 2} clickable={false} />
@@ -107,7 +107,7 @@ function Pagination({ onClick, results, pointer }) {
         disabled={pointer === results}
       >
         <span className="sr-only">Next</span>
-        <Icon name="rightChevron" color="text-current" />
+        <Icon name="rightChevron" color="text-current" className="w-4 h-4" />
       </button>
     </nav>
   )
