@@ -93,7 +93,7 @@ function Pagination({ onClick, results, pointer }) {
       />
       <Page
         onClick={onClick}
-        isRendered={pointer + 1 < results}
+        isRendered={pointer + 2 < results}
         clickable={false}
       />
       <Page
