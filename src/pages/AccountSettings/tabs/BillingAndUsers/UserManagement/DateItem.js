@@ -11,14 +11,14 @@ const DateItemClasses = {
 export function DateItem({ date, label, testId }) {
   const compare = parseISO(date)
   const today = new Date()
-  return (
+  return date ? (
     <div className={DateItemClasses.root}>
       <span className={DateItemClasses.label}>{label}</span>
       <span data-testid={testId}>
-        {date ? formatDistance(compare, today, 'MM/dd/yyyy') : 'never'}
+        {formatDistance(compare, today, 'MM/dd/yyyy')}
       </span>
     </div>
-  )
+  ) : null
 }
 
 DateItem.propTypes = {

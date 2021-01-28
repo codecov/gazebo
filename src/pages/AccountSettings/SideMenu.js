@@ -24,14 +24,14 @@ function SideMenu({ baseUrl, isPersonalSettings }) {
 
   return (
     <aside>
-      <section className="flex flex-row md:flex-col">
+      <section className="flex flex-row lg:flex-col">
         {links.map((link) => (
           <NavLink
             exact={baseUrl === link.to}
             key={link.to}
             to={link.to}
-            className="flex-1 flex tems-center text-gray-500 p-2 pr-2 mb-2 border-solid border-pink-500 hover:bg-gray-100 hover:border-r-4"
-            activeClassName="border-r-4"
+            className="flex-1 flex tems-center text-gray-500 p-2 pr-2 mb-2 border-solid border-pink-500 hover:bg-gray-100"
+            activeClassName="border-b-4 lg:border-b-0 lg:border-r-4"
           >
             <Icon name={link.iconName} className="mr-1" />
             {link.text}

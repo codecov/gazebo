@@ -8,7 +8,7 @@ const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
     'block w-full px-6 py-2 rounded-full',
     'bg-gray-100 text-gray-900 caret-pink-500',
     {
-      'pl-10': embedded,
+      'pl-9': embedded,
     }
   )
 
@@ -18,7 +18,7 @@ const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
 
   function _embedded() {
     return (
-      <span className="absolute top-0 left-0 p-2 w-4 h-4 z-10">
+      <span className="absolute top-0 left-0 m-3 w-4 h-4 z-10">
         {embedded()}
       </span>
     )

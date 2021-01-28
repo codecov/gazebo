@@ -1,4 +1,7 @@
 import Icon from './Icon'
+import * as svg from './svg'
+
+const options = Object.keys(svg)
 
 const Template = (args) => <Icon {...args} />
 
@@ -13,9 +16,15 @@ SimpleIconWithColor.args = {
   color: 'text-pink-500',
 }
 
-// TODO: display all the icon we have by looping the keys from `import * as svg from './svg'`
-
 export default {
   title: 'Components/Icon',
   component: Icon,
+  argTypes: { name: { control: { type: 'select', options } } },
+  decorators: [
+    (Story) => (
+      <div style={{ width: '25%' }}>
+        <Story />
+      </div>
+    ),
+  ],
 }

@@ -3,34 +3,28 @@
 }
 
 .controlGroup > * {
-  @apply w-auto border-none;
+  @apply w-auto;
 }
 
-.controlGroup > * > button {
-  @apply border-none;
+.controlGroup > * > button,
+.controlGroup > button {
+  @apply border-none rounded-none;
 }
 
-.controlGroup > * > ul {
-  @apply rounded-t-none bg-white;
-}
-
+.controlGroup > * > ul,
 .controlGroup > input[type='text'] {
   @apply rounded-none bg-white;
 }
 
 /* Round the edges of the control group */
-.controlGroup > button:first-child {
-  @apply rounded-tl-md rounded-bl-md;
-}
-
+.controlGroup > *:first-child > button,
+.controlGroup > button:first-child,
 .controlGroup > input[type='text']:first-child {
   @apply rounded-tl-md rounded-bl-md;
 }
 
-.controlGroup > *:last-child {
-  @apply rounded-tr-md rounded-br-md;
-}
-
+.controlGroup > *:last-child,
+.controlGroup > *:last-child > button,
 .controlGroup > input[type='text']:last-child {
   @apply rounded-tr-md rounded-br-md;
 }

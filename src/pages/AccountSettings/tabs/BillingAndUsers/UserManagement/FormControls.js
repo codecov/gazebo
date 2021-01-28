@@ -42,18 +42,18 @@ const FormClasses = {
 }
 
 export function FormControls({ control, register, onChange, current }) {
-  // function _renderSelected(label) {
-  //   return (
-  //     <span className={FormClasses.item}>
-  //       <span className={FormClasses.itemContent}>{label}</span>
-  //     </span>
-  //   )
-  // }
-  function _renderItem(label, value, target) {
+  function _renderSelected(label) {
     return (
       <span className={FormClasses.item}>
         <span className={FormClasses.itemContent}>{label}</span>
-        {value === current[target] ? (
+      </span>
+    )
+  }
+  function _renderItem(label, selected) {
+    return (
+      <span className={FormClasses.item}>
+        <span className={FormClasses.itemContent}>{label}</span>
+        {selected ? (
           <Icon
             className={FormClasses.icon}
             name="check"
@@ -77,9 +77,9 @@ export function FormControls({ control, register, onChange, current }) {
               className={FormClasses.firstFilter}
               control={control}
               items={ActivatedItems}
-              // renderSelected={({ label }) => _renderSelected(label)}
-              renderItem={({ label, value }) =>
-                _renderItem(label, value, 'activated')
+              renderSelected={({ label }) => _renderSelected(label)}
+              renderItem={({ label }, { isSelected }) =>
+                _renderItem(label, isSelected)
               }
               value={find(
                 ActivatedItems,
@@ -99,9 +99,9 @@ export function FormControls({ control, register, onChange, current }) {
               ariaName="isAdmin"
               control={control}
               items={AdminItems}
-              // renderSelected={({ label }) => _renderSelected(label)}
-              renderItem={({ label, value }) =>
-                _renderItem(label, value, 'isAdmin')
+              renderSelected={({ label }) => _renderSelected(label)}
+              renderItem={({ label }, { isSelected }) =>
+                _renderItem(label, isSelected)
               }
               value={find(
                 AdminItems,
@@ -121,15 +121,15 @@ export function FormControls({ control, register, onChange, current }) {
               ariaName="ordering"
               control={control}
               items={OrderingItems}
-              // renderSelected={({ label }) => _renderSelected(label)}
-              renderItem={({ label, value }) =>
-                _renderItem(label, value, 'ordering')
+              renderSelected={({ label }) => _renderSelected(label)}
+              renderItem={({ label }, { isSelected }) =>
+                _renderItem(label, isSelected)
               }
               value={find(
                 OrderingItems,
                 ({ value }) => value === current?.ordering
               )}
-              onChange={({ value }, name) => {
+              onChange={({ value }) => {
                 onChange({ ordering: value })
               }}
             />
@@ -142,6 +142,7 @@ export function FormControls({ control, register, onChange, current }) {
           name="search"
           ref={register}
           placeholder="Search"
+          embedded={() => <Icon name="search" />}
           onChange={(event) => onChange({ search: event.target.value })}
         />
       </ControlGroup>

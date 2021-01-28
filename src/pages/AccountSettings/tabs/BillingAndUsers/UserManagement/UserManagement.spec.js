@@ -181,12 +181,12 @@ describe('UserManagerment', () => {
         }
         setup({ mockUseUsersValue })
       })
-      it('renders never seen', () => {
+      it('not rendered', () => {
         const placeholder = screen.getByText(/kumar/)
         expect(placeholder).toBeInTheDocument()
 
-        const lastSeen = screen.getByTestId('last-seen')
-        expect(lastSeen).toBeInTheDocument()
+        const lastSeen = screen.queryByTestId('last-seen')
+        expect(lastSeen).not.toBeInTheDocument()
       })
     })
 
@@ -225,12 +225,12 @@ describe('UserManagerment', () => {
       }
       setup({ mockUseUsersValue })
     })
-    it('renders never seen', () => {
+    it('not rendered', () => {
       const placeholder = screen.getByText(/kumar/)
       expect(placeholder).toBeInTheDocument()
 
-      const lastPr = screen.getByTestId('last-pr')
-      expect(lastPr).toBeInTheDocument()
+      const lastPr = screen.queryByTestId('last-pr')
+      expect(lastPr).not.toBeInTheDocument()
     })
   })
 

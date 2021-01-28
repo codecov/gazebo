@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
+import cs from 'classnames'
 
 import { FormControls } from './FormControls'
 import { DateItem } from './DateItem'
@@ -16,8 +17,14 @@ const UserManagementClasses = {
   root: 'space-y-4 col-span-2',
   title: 'text-lg py-3',
   results: 'shadow divide-y divide-gray-200 divide-solid p-4',
-  userTable: 'grid grid-cols-auto md:grid-cols-5 gap-2 my-6',
-  user: 'col-span-2',
+  userTable: 'grid grid-cols-4 gap-2 my-6',
+  user: ({ lastseen, latestPrivatePrDate }) =>
+    cs({
+      'col-span-2': !lastseen || !latestPrivatePrDate,
+      'col-span-3': !lastseen && !latestPrivatePrDate,
+    }),
+  ctaWrapper: 'flex items-center',
+  cta: 'w-full truncate',
 }
 
 function useActivateUser({ provider, owner, query }) {
@@ -36,9 +43,9 @@ function useActivateUser({ provider, owner, query }) {
 
 function createPills({ isAdmin, email, student }) {
   return [
-    isAdmin && { label: 'Admin', highlight: true },
+    isAdmin ? { label: 'Admin', highlight: true } : null,
     email,
-    student && 'Student',
+    student ? 'Student' : null,
   ]
 }
 
@@ -89,7 +96,7 @@ function UserManagement({ provider, owner }) {
                 className={UserManagementClasses.userTable}
               >
                 <User
-                  className={UserManagementClasses.user}
+                  className={UserManagementClasses.user(user)}
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
@@ -105,9 +112,9 @@ function UserManagement({ provider, owner }) {
                   label="Last pr:"
                   date={user.latestPrivatePrDate}
                 />
-                <div>
+                <div className={UserManagementClasses.ctaWrapper}>
                   <Button
-                    className="w-full truncate"
+                    className={UserManagementClasses.cta}
                     color={user.activated ? 'red' : 'blue'}
                     variant={user.activated ? 'outline' : 'normal'}
                     onClick={() => activate(user.username, !user.activated)}
