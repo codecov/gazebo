@@ -1,24 +1,47 @@
 import { useParams } from 'react-router-dom'
 
-import { useUsers } from 'services/users'
+import { useUsers, useUpdateUser } from 'services/users'
 import { ApiFilterEnum } from 'services/navigation'
 import { getOwnerImg } from 'shared/utils'
 import { providerToName } from 'shared/utils/provider'
 import Button from 'ui/Button'
 
-function AdminList() {
-  const { provider, owner } = useParams()
-  const { data: admins } = useUsers({
+function useAdminsAndRevoke({ provider, owner }) {
+  const params = { isAdmin: ApiFilterEnum.true }
+  const { data, refetch } = useUsers({
     provider,
     owner,
-    query: {
-      isAdmin: ApiFilterEnum.true,
-    },
+    query: params,
+  })
+  const { mutate, isLoading } = useUpdateUser({ provider, owner, params })
+
+  function revokeUser(username) {
+    mutate(
+      {
+        targetUser: username,
+        is_admin: false,
+      },
+      {
+        onSuccess: refetch,
+      }
+    )
+  }
+
+  return {
+    admins: data?.results ?? [],
+    revokeUser,
+    isLoading,
+  }
+}
+
+function AdminList() {
+  const { provider, owner } = useParams()
+  const { admins, revokeUser, isLoading } = useAdminsAndRevoke({
+    provider,
+    owner,
   })
 
-  const nbAdmins = admins?.results?.length ?? 0
-
-  if (nbAdmins === 0) {
+  if (admins.length === 0) {
     return (
       <p className="text-gray-800">
         No admins yet. Note that admins in your {providerToName(provider)}{' '}
@@ -29,7 +52,7 @@ function AdminList() {
 
   return (
     <div>
-      {admins.results.map((admin) => {
+      {admins.map((admin) => {
         // temporary until User support a slim variant
         const avatarUrl = getOwnerImg(provider, admin.username)
         return (
@@ -44,7 +67,13 @@ function AdminList() {
             <span className="flex-initial flex text-sm space-x-2 bg-gray-200 text-gray-900 rounded-full px-3">
               {admin.email}
             </span>
-            <Button className="ml-auto" variant="outline" color="gray">
+            <Button
+              disabled={isLoading}
+              className="ml-auto"
+              variant="outline"
+              color="gray"
+              onClick={() => revokeUser(admin.username)}
+            >
               Revoke
             </Button>
           </div>
