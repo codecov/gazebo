@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import cs from 'classnames'
+import uniqueId from 'lodash/uniqueId'
 
 const UserClasses = {
   root: 'flex text-md text-sm space-x-4',
@@ -12,26 +13,20 @@ const UserClasses = {
   pill: 'flex-initial bg-gray-200 text-gray-900 rounded-full px-3',
 }
 
-function createUserPills({ student, isAdmin, email }) {
-  const pills = []
-
-  if (isAdmin) pills.push({ text: 'Admin', highlight: true })
-  if (student) pills.push({ text: 'Student' })
-  if (email) pills.push({ text: email })
-
-  return pills
-}
-
-function User({
-  avatarUrl,
-  name,
-  username,
-  student,
-  isAdmin,
-  email,
-  className,
-}) {
-  const pills = createUserPills({ student, isAdmin, email })
+function User({ avatarUrl, name, username, pills = [], className }) {
+  function _generatePills(item) {
+    const label = typeof item === 'string' ? item : item.label
+    return (
+      <span
+        key={`pill-${uniqueId('pill_')}`}
+        className={cs(UserClasses.pill, item?.className, {
+          'bg-gray-300': item?.highlight,
+        })}
+      >
+        {label}
+      </span>
+    )
+  }
   return (
     <div className={cs(className, UserClasses.root)}>
       <img className={UserClasses.avatar} src={avatarUrl} alt={username} />
@@ -41,16 +36,7 @@ function User({
           <span className={UserClasses.username}>@{username}</span>
         </div>
         <div className={UserClasses.pills}>
-          {pills.map(({ text, highlight }, i) => (
-            <span
-              key={`pill-${username}-${i}`}
-              className={cs(UserClasses.pill, {
-                'bg-gray-300': highlight,
-              })}
-            >
-              {text}
-            </span>
-          ))}
+          {pills.filter(Boolean).map(_generatePills)}
         </div>
       </div>
     </div>
@@ -61,9 +47,16 @@ User.propTypes = {
   avatarUrl: PropTypes.string.isRequired,
   name: PropTypes.string,
   username: PropTypes.string.isRequired,
-  student: PropTypes.bool,
-  isAdmin: PropTypes.bool,
-  email: PropTypes.string,
+  pills: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        highlight: PropTypes.bool,
+        className: PropTypes.string,
+      }),
+    ])
+  ),
 }
 
 export default User

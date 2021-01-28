@@ -68,6 +68,14 @@ DateItem.propTypes = {
   testId: PropTypes.string.isRequired,
 }
 
+function createPills({ isAdmin, email, student }) {
+  return [
+    isAdmin && { label: 'Admin', highlight: true },
+    email,
+    student && 'Student',
+  ]
+}
+
 function UserManagement({ provider, owner }) {
   const { params, updateParams } = useLocationParams({
     activated: '',
@@ -156,9 +164,7 @@ function UserManagement({ provider, owner }) {
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
-                  student={user.student}
-                  email={user.email}
-                  isAdmin={user.isAdmin}
+                  pills={createPills(user)}
                 />
                 <DateItem
                   testId="last-seen"
