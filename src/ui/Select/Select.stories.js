@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import identity from 'lodash/identity'
@@ -39,15 +40,19 @@ SimpleSelect.args = {
 export const SimpleSelectWithRenderItem = Template.bind({})
 SimpleSelectWithRenderItem.args = {
   ...SimpleSelect.args,
-  // eslint-disable-next-line react/display-name
-  renderItem: (val) => <span>👩🏼‍🎤 {val}</span>,
+  renderItem: (item, { isSelected, isHover, placeholder }) => (
+    <span>
+      {isSelected || isHover ? '👨🏼‍🎤' : '👩🏼‍🎤'} {item || placeholder}
+    </span>
+  ),
 }
 
 export const SimpleSelectWithRenderSelected = Template.bind({})
 SimpleSelectWithRenderSelected.args = {
   ...SimpleSelect.args,
-  // eslint-disable-next-line react/display-name
-  renderSelected: (item) => <span>👨🏼‍🎤{item}</span>,
+  renderSelected: (item, { placeholder }) => (
+    <span>👨🏼‍🎤 {item || placeholder}</span>
+  ),
 }
 
 export const complexSelectWithAll = Template.bind({})

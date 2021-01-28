@@ -19,13 +19,22 @@ function Select({
   items,
   onChange,
   value,
+  /* renderItem props:
+   *  isHover: boolean
+   *  isSelected: boolean
+   */
   renderItem = identity,
+  /* renderSelected props:
+   *  placeholder: string / any
+   */
   renderSelected,
   ariaName,
+  className,
 }) {
   const {
     isOpen,
     selectedItem,
+    highlightedIndex,
     getToggleButtonProps,
     getMenuProps,
     getItemProps,
@@ -37,7 +46,11 @@ function Select({
 
   function renderButton() {
     const _render = renderSelected || renderItem
-    return _render(selectedItem) || placeholder
+    return (
+      _render(selectedItem, {
+        placeholder,
+      }) || placeholder
+    )
   }
 
   function _renderItem(item, index) {
@@ -47,13 +60,16 @@ function Select({
         key={`${item}${index}`}
         {...getItemProps({ item, index })}
       >
-        {renderItem(item)}
+        {renderItem(item, {
+          isHover: highlightedIndex === index,
+          isSelected: selectedItem === item,
+        })}
       </li>
     )
   }
 
   return (
-    <div className={SelectClasses.root}>
+    <div className={cs(className, SelectClasses.root)}>
       <button
         aria-label={ariaName}
         type="button"
