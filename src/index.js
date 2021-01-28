@@ -9,7 +9,10 @@ import './globals.css'
 import reportWebVitals from './reportWebVitals'
 import './sentry.js'
 
-if (process.env.NODE_ENV === 'development') {
+if (
+  process.env.NODE_ENV === 'development' &&
+  process.env.REACT_APP_MSW_BROWSER
+) {
   const { worker } = require('./mocks/browser')
   worker.start()
 }
