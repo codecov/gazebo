@@ -162,5 +162,4 @@ FormControls.propTypes = {
   register: PropTypes.func.isRequired,
   control: PropTypes.object.isRequired,
   current: PropTypes.object.isRequired,
-  fetching: PropTypes.bool,
 }
