@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import ManageAdminCard from './ManageAdminCard'
-import { useUsers } from 'services/users'
+import { useUsers, useUpdateUser } from 'services/users'
 
 jest.mock('services/users')
 jest.mock('react-router-dom', () => ({
@@ -16,11 +17,18 @@ const admins = [
 ]
 
 describe('ManageAdminCard', () => {
+  const refetch = jest.fn()
+  const mutate = jest.fn()
   function setup(adminResults = []) {
     useUsers.mockReturnValue({
       data: {
         results: adminResults,
       },
+      refetch,
+    })
+    useUpdateUser.mockReturnValue({
+      isLoading: false,
+      mutate,
     })
     render(<ManageAdminCard />)
   }
@@ -62,6 +70,28 @@ describe('ManageAdminCard', () => {
       expect(screen.getAllByText(admins[0].name)).not.toHaveLength(0)
       expect(screen.getAllByText(admins[0].username)).not.toHaveLength(0)
       expect(screen.getAllByText(admins[0].email)).not.toHaveLength(0)
+    })
+  })
+
+  describe('when clicking on revoking admin', () => {
+    beforeEach(() => {
+      setup(admins)
+      const revokeButton = screen.getByRole('button', {
+        name: /revoke/i,
+      })
+      userEvent.click(revokeButton)
+    })
+
+    it('calls the mutation with the user and is_admin=false', () => {
+      expect(mutate).toHaveBeenCalledWith(
+        {
+          targetUser: admins[0].username,
+          is_admin: false,
+        },
+        {
+          onSuccess: refetch,
+        }
+      )
     })
   })
 })
