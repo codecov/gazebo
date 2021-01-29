@@ -13,13 +13,29 @@ const UserClasses = {
   pill: 'flex-initial bg-gray-200 text-gray-900 rounded-full px-3',
 }
 
-function User({ avatarUrl, name, username, pills = [], className }) {
+const UserCompactClasses = {
+  ...UserClasses,
+  root: cs(UserClasses.root, 'items-center'),
+  avatar: 'flex-none rounded-full h-8 w-8',
+  content: 'flex-1 flex items-center',
+  name: 'text-gray-900 font-bold mr-2',
+  pills: 'flex flex-wrap text-sm space-x-2 ml-3',
+}
+
+function User({
+  avatarUrl,
+  name,
+  username,
+  pills = [],
+  compact = false,
+  className,
+}) {
   function _generatePills(item) {
     const label = typeof item === 'string' ? item : item.label
     return (
       <span
         key={`pill-${uniqueId('pill_')}`}
-        className={cs(UserClasses.pill, item?.className, {
+        className={cs(styles.pill, item?.className, {
           'bg-gray-300': item?.highlight,
         })}
       >
@@ -27,15 +43,18 @@ function User({ avatarUrl, name, username, pills = [], className }) {
       </span>
     )
   }
+
+  const styles = compact ? UserCompactClasses : UserClasses
+
   return (
-    <div className={cs(className, UserClasses.root)}>
-      <img className={UserClasses.avatar} src={avatarUrl} alt={username} />
-      <div className={UserClasses.content}>
-        <div className={UserClasses.identity}>
-          <span className={UserClasses.name}>{name}</span>
-          <span className={UserClasses.username}>@{username}</span>
+    <div className={cs(className, styles.root)}>
+      <img className={styles.avatar} src={avatarUrl} alt={username} />
+      <div className={styles.content}>
+        <div className={styles.identity}>
+          <span className={styles.name}>{name}</span>
+          <span className={styles.username}>@{username}</span>
         </div>
-        <div className={UserClasses.pills}>
+        <div className={styles.pills}>
           {pills.filter(Boolean).map(_generatePills)}
         </div>
       </div>
@@ -47,6 +66,7 @@ User.propTypes = {
   avatarUrl: PropTypes.string.isRequired,
   name: PropTypes.string,
   username: PropTypes.string.isRequired,
+  compact: PropTypes.bool,
   pills: PropTypes.arrayOf(
     PropTypes.oneOfType([
       PropTypes.string,
