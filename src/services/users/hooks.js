@@ -17,13 +17,14 @@ function fetchUsers({ provider, owner, query }) {
   return Api.get({ path, provider, query })
 }
 
-export function useUsers({ provider, owner, query }) {
+export function useUsers({ provider, owner, query, opts }) {
   return useQuery(
     ['users', provider, owner, query],
     () => fetchUsers({ provider, owner, query }),
     {
       keepPreviousData: true,
       staleTime: 5000,
+      ...opts,
     }
   )
 }
