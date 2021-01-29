@@ -5,19 +5,10 @@ import { useCombobox } from 'downshift'
 import useClickAway from 'react-use/lib/useClickAway'
 
 import { ApiFilterEnum } from 'services/navigation'
+import { getOwnerImg } from 'shared/utils'
 import { useUsers } from 'services/users'
 import TextInput from 'ui/TextInput'
-import Button from 'ui/Button'
-
-function stateReducer(state, actionAndChanges) {
-  const { type, changes } = actionAndChanges
-  const actionToState = {
-    [useCombobox.stateChangeTypes.InputKeyDownEnter]: state,
-    [useCombobox.stateChangeTypes.ItemClick]: state,
-  }
-
-  return actionToState[type] ?? changes
-}
+import User from 'ui/User'
 
 const styles = {
   listResult: (isOpen) =>
@@ -25,16 +16,19 @@ const styles = {
       'overflow-hidden rounded-b-md bg-gray-100 border border-gray-200 outline-none absolute w-full z-10 shadow-card',
       { hidden: !isOpen }
     ),
-  item: 'block p-2 text-sm border-t border-gray-200',
+  item: (highlighted) =>
+    cs('flex p-2 text-sm border-t border-gray-200', {
+      'bg-white': highlighted,
+    }),
   input: (isOpen) => cs({ 'rounded-b-none': isOpen, 'rounded-t-3xl': isOpen }),
 }
 
 function ResultList({
   isLoading,
   users,
-  setInput,
   getItemProps,
-  setAdminStatus,
+  highlightedIndex,
+  provider,
 }) {
   if (isLoading) return 'loading...'
 
@@ -42,24 +36,22 @@ function ResultList({
 
   return users.map((user, index) => (
     <li
-      className={styles.item}
+      className={styles.item(highlightedIndex === index)}
       key={user.username}
       {...getItemProps({ item: user, index })}
     >
-      {user.username}
-      <Button
-        onClick={() => {
-          setInput('')
-          setAdminStatus(user, true)
-        }}
-      >
-        +
-      </Button>
+      <User
+        avatarUrl={getOwnerImg(provider, user.username)}
+        name={user.name}
+        username={user.username}
+        pills={[user.email]}
+        compact
+      />
     </li>
   ))
 }
 
-function useSearch({ provider, owner }) {
+function useSearch({ provider, owner, setAdminStatus }) {
   const [input, setInput] = useState('')
   const params = { isAdmin: ApiFilterEnum.false, search: input }
   const isOpen = input.length > 0
@@ -70,6 +62,8 @@ function useSearch({ provider, owner }) {
     opts: {
       suspense: false,
       enabled: isOpen,
+      staleTime: 0,
+      keepPreviousData: false,
     },
   })
 
@@ -80,15 +74,34 @@ function useSearch({ provider, owner }) {
     getInputProps,
     getComboboxProps,
     getItemProps,
+    highlightedIndex,
   } = useCombobox({
     items: users,
-    stateReducer,
     inputValue: input,
+    stateReducer: (state, actionAndChanges) => {
+      // when a result is selected, reset input and selectedItem and call
+      // the setAdminStatus callback from the props
+      const { type, changes } = actionAndChanges
+      switch (type) {
+        case useCombobox.stateChangeTypes.InputKeyDownEnter:
+        case useCombobox.stateChangeTypes.ItemClick:
+          setInput('')
+          setAdminStatus(changes.selectedItem, true)
+          return {
+            ...changes,
+            selectedItem: null,
+            inputValue: '',
+          }
+        default:
+          return changes
+      }
+    },
     onInputValueChange: ({ inputValue }) => setInput(inputValue),
     isOpen,
   })
 
   return {
+    highlightedIndex,
     isOpen,
     users,
     setInput,
@@ -110,7 +123,8 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
     getMenuProps,
     getItemProps,
     isLoading,
-  } = useSearch({ provider, owner })
+    highlightedIndex,
+  } = useSearch({ provider, owner, setAdminStatus })
   const wrapperRef = useRef()
   useClickAway(wrapperRef, () => setInput(''))
 
@@ -128,9 +142,9 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
           <ResultList
             users={users}
             isLoading={isLoading}
-            setInput={setInput}
             getItemProps={getItemProps}
-            setAdminStatus={setAdminStatus}
+            provider={provider}
+            highlightedIndex={highlightedIndex}
           />
         )}
       </ul>
