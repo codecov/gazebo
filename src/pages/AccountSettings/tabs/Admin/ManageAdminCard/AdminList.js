@@ -5,6 +5,7 @@ import { ApiFilterEnum } from 'services/navigation'
 import { getOwnerImg } from 'shared/utils'
 import { providerToName } from 'shared/utils/provider'
 import Button from 'ui/Button'
+import User from 'ui/User'
 
 import AddAdmins from './AddAdmins'
 
@@ -50,27 +51,25 @@ function AdminList() {
           setAdminStatus={setAdminStatus}
         />
       </div>
-      {admins.length === 0 ? (
-        <p className="text-gray-800">
-          No admins yet. Note that admins in your {providerToName(provider)}{' '}
-          organization are automatically considered admins.
-        </p>
-      ) : (
-        admins.map((admin) => {
-          // temporary until User support a slim variant
-          const avatarUrl = getOwnerImg(provider, admin.username)
-          return (
-            <div className="flex" key={admin.username}>
-              <img
-                className="rounded-full h-8 w-8 mr-4"
-                src={avatarUrl}
-                alt={admin.username}
+      <div className="max-h-56 overflow-y-auto">
+        {admins.length === 0 ? (
+          <p className="text-gray-800">
+            No admins yet. Note that admins in your {providerToName(provider)}{' '}
+            organization are automatically considered admins.
+          </p>
+        ) : (
+          admins.map((admin) => (
+            <div
+              className="flex border-t border-gray-200 first:border-0 py-2"
+              key={admin.username}
+            >
+              <User
+                avatarUrl={getOwnerImg(provider, admin.username)}
+                name={admin.name}
+                username={admin.username}
+                pills={[admin.email]}
+                compact
               />
-              <p>{admin.name}</p>
-              <p>@{admin.username}</p>
-              <span className="flex-initial flex text-sm space-x-2 bg-gray-200 text-gray-900 rounded-full px-3">
-                {admin.email}
-              </span>
               <Button
                 disabled={isLoading}
                 className="ml-auto"
@@ -81,9 +80,9 @@ function AdminList() {
                 Revoke
               </Button>
             </div>
-          )
-        })
-      )}
+          ))
+        )}
+      </div>
     </>
   )
 }
