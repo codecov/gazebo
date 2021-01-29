@@ -18,15 +18,13 @@ function useAdminsAndRevoke({ provider, owner }) {
   const { mutate, isLoading } = useUpdateUser({ provider, owner, params })
 
   function setAdminStatus(user, isAdmin) {
-    mutate(
-      {
-        targetUser: user.username,
-        is_admin: isAdmin,
-      },
-      {
-        onSuccess: refetch,
-      }
-    )
+    const body = {
+      targetUser: user.username,
+      is_admin: isAdmin,
+    }
+    mutate(body, {
+      onSuccess: refetch,
+    })
   }
 
   return {
