@@ -98,7 +98,7 @@ describe('AddAdmins', () => {
       userEvent.type(screen.getByRole('textbox'), 'hello')
       userEvent.click(
         screen.getByRole('option', {
-          name: /dorian/,
+          name: new RegExp(users[0].name, 'i'),
         })
       )
     })
