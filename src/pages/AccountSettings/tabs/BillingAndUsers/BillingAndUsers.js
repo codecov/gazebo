@@ -9,7 +9,6 @@ import LatestInvoiceCard from './LatestInvoiceCard'
 import PaymentCard from './PaymentCard'
 import UserManagement from './UserManagement'
 import LegacyUser from './LegacyUser'
-import GithubMarketplaceCard from './GithubMarketplaceCard'
 
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -24,11 +23,9 @@ function BillingAndUsers({ provider, owner }) {
         {accountDetails.plan ? (
           <>
             <div className="col-span-1">
-              {accountDetails.planProvider === 'github' ? (
-                <GithubMarketplaceCard />
-              ) : (
+              <CurrentPlanCard accountDetails={accountDetails} />
+              {accountDetails.planProvider !== 'github' && (
                 <>
-                  <CurrentPlanCard accountDetails={accountDetails} />
                   <PaymentCard
                     subscriptionDetail={accountDetails.subscriptionDetail}
                     provider={provider}
