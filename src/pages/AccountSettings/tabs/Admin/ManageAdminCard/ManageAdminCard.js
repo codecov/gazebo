@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 
 import Card from 'ui/Card'
-import TextInput from 'ui/TextInput'
 import LogoSpinner from 'ui/LogoSpinner'
 
 import AdminList from './AdminList'
@@ -16,7 +15,6 @@ function ManageAdminCard() {
         Admins are able to: Add other admins, activate deactivate other users,
         view billing and modify the team yaml.
       </p>
-      <TextInput placeholder="Search to add administrator" className="mb-4" />
       <Suspense fallback={loadingState}>
         <AdminList />
       </Suspense>
