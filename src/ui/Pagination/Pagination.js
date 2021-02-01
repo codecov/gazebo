@@ -50,13 +50,13 @@ Page.propTypes = {
   onClick: PropTypes.func.isRequired,
 }
 
-function Pagination({ onPageChange, results, pointer }) {
+function Pagination({ onPageChange, totalPages, pointer, next, previous }) {
   return (
     <nav className={PaginationClasses.nav} aria-label="Pagination">
       <button
         onClick={() => onPageChange(pointer - 1)}
         className={PaginationClasses.previous}
-        disabled={pointer === 1}
+        disabled={pointer === 1 || !previous}
       >
         <span className="sr-only">Previous</span>
         <Icon name="leftChevron" color="text-current" className="w-4 h-4" />
@@ -86,29 +86,29 @@ function Pagination({ onPageChange, results, pointer }) {
       </button>
       <Page
         onClick={onPageChange}
-        isRendered={pointer + 1 < results}
+        isRendered={pointer + 1 < totalPages}
         location={pointer + 1}
       />
       <Page
         onClick={onPageChange}
-        isRendered={pointer + 2 < results}
+        isRendered={pointer + 2 < totalPages}
         location={pointer + 2}
         desktopOnly={true}
       />
       <Page
         onClick={onPageChange}
-        isRendered={pointer + 2 < results}
+        isRendered={pointer + 2 < totalPages}
         clickable={false}
       />
       <Page
         onClick={onPageChange}
-        isRendered={pointer !== results}
-        location={results}
+        isRendered={pointer !== totalPages}
+        location={totalPages}
       />
       <button
         onClick={() => onPageChange(pointer + 1)}
         className={PaginationClasses.next}
-        disabled={pointer === results}
+        disabled={pointer === totalPages || !next}
       >
         <span className="sr-only">Next</span>
         <Icon name="rightChevron" color="text-current" className="w-4 h-4" />
@@ -119,8 +119,10 @@ function Pagination({ onPageChange, results, pointer }) {
 
 Pagination.propTypes = {
   onPageChange: PropTypes.func.isRequired,
-  results: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
   pointer: PropTypes.number.isRequired,
+  next: PropTypes.string,
+  previous: PropTypes.string,
 }
 
 export default Pagination

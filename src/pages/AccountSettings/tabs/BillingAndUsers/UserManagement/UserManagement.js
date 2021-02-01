@@ -4,12 +4,14 @@ import find from 'lodash/find'
 import formatDistance from 'date-fns/formatDistance'
 import parseISO from 'date-fns/parseISO'
 
-import { FormSelect as Select } from './UserFormSelect'
+import { FormSelect } from './UserFormSelect'
 import { useLocationParams, ApiFilterEnum } from 'services/navigation'
 
 import Card from 'ui/Card'
 import User from 'ui/User'
 import Button from 'ui/Button'
+import Pagination from 'ui/Pagination'
+import Select from 'ui/Select'
 
 import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
@@ -89,8 +91,12 @@ function UserManagement({ provider, owner }) {
       activated: ActivatedItems[0],
       isAdmin: AdminItems[0],
       ordering: OrderingItems[0],
+      page: 1,
+      pageSize: 1,
     },
   })
+
+  // Take location params and query the api
   const { data, isSuccess, isFetching } = useUsers({
     provider,
     owner,
@@ -105,7 +111,7 @@ function UserManagement({ provider, owner }) {
   return (
     <form className="space-y-4 col-span-2" onSubmit={handleSubmit(updateQuery)}>
       <Card className="shadow flex flex-wrap divide-x divide-gray-200 divide-solid">
-        <Select
+        <FormSelect
           control={control}
           name="activated"
           items={ActivatedItems}
@@ -117,7 +123,7 @@ function UserManagement({ provider, owner }) {
             updateQuery({ [name]: value })
           }}
         />
-        <Select
+        <FormSelect
           control={control}
           name="isAdmin"
           items={AdminItems}
@@ -126,7 +132,7 @@ function UserManagement({ provider, owner }) {
             updateQuery({ [name]: value })
           }}
         />
-        <Select
+        <FormSelect
           control={control}
           name="ordering"
           items={OrderingItems}
@@ -189,7 +195,21 @@ function UserManagement({ provider, owner }) {
               </div>
             ))}
         </div>
-        <div className="pt-4">Pagination</div>
+        <div className="flex">
+          <Pagination
+            ref={register}
+            onPageChange={(page) => updateQuery({ page })}
+            pointer={params.page}
+            totalPages={data.totalPages}
+            next={data.next}
+            previous={data.previous}
+          />
+          <Select
+            ref={register}
+            onChange={(data) => updateQuery({ pageSize: data })}
+            items={['Page Size:', 1, 5, 10, 25, 50]}
+          />
+        </div>
       </Card>
     </form>
   )
