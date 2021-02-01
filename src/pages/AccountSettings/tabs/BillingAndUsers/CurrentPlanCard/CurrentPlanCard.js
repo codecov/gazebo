@@ -51,9 +51,13 @@ function CurrentPlanCard({ accountDetails }) {
         {accountDetails.planProvider === 'github' ? (
           <div className="border-t border-gray-200 pb-4">
             <p className="mt-4 mb-6 flex items-center text-sm">
-              <div className="mr-4">
-                <img alt="Github" src={githubLogo} height={32} width={32} />
-              </div>
+              <img
+                className="block mr-4"
+                alt="Github"
+                src={githubLogo}
+                height={32}
+                width={32}
+              />
               Your account is configured via GitHub Marketplace
             </p>
             <div className="text-center">
