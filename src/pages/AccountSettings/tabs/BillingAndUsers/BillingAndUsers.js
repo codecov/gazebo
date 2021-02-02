@@ -12,6 +12,10 @@ import LegacyUser from './LegacyUser'
 
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const shouldRenderBillingDetails = [
+    accountDetails.planProvider !== 'github',
+    !accountDetails.rootOrganization,
+  ].every(Boolean)
 
   return (
     <>
@@ -24,7 +28,7 @@ function BillingAndUsers({ provider, owner }) {
           <>
             <div className="col-span-1">
               <CurrentPlanCard accountDetails={accountDetails} />
-              {accountDetails.planProvider !== 'github' && (
+              {shouldRenderBillingDetails && (
                 <>
                   <PaymentCard
                     subscriptionDetail={accountDetails.subscriptionDetail}
