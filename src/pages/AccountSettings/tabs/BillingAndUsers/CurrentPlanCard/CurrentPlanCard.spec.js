@@ -97,4 +97,37 @@ describe('CurrentPlanCard', () => {
       ).toBeInTheDocument()
     })
   })
+
+  describe('when the owner is a Gitlab subgroup', () => {
+    const parentUsername = 'parent'
+
+    beforeEach(() => {
+      setup({
+        ...freeAccountDetails,
+        rootOrganization: {
+          ...proAccountDetails,
+          username: parentUsername,
+        },
+      })
+    })
+
+    it('renders the plan of the parent', () => {
+      expect(
+        screen.getByRole('heading', {
+          name: /pro team/i,
+        })
+      ).toBeInTheDocument()
+    })
+
+    it('renders a link to the billing page of the parent', () => {
+      const link = screen.getByRole('link', {
+        name: /view billing/i,
+      })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        `/account/gl/${parentUsername}/billing`
+      )
+    })
+  })
 })
