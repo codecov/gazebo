@@ -5,7 +5,7 @@ import { useAccountDetails } from 'services/account'
 import Card from 'ui/Card'
 import Button from 'ui/Button'
 
-import githubLogo from './githublogo.png'
+import githubLogo from 'assets/githublogo.png'
 
 function GithubIntegrationCard({ provider, owner }) {
   const shouldRender = provider === 'gh' && !config.IS_ENTERPRISE

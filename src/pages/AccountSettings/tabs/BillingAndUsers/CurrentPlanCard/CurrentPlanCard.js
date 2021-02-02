@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom'
 
 import Button from 'ui/Button'
 import Card from 'ui/Card'
+import githubLogo from 'assets/githublogo.png'
 import { useBaseUrl } from 'shared/router'
+
 import { accountDetailsPropType } from 'services/account'
 
 import BenefitList from '../../../shared/BenefitList'
@@ -46,19 +48,44 @@ function CurrentPlanCard({ accountDetails }) {
       </p>
 
       <div className="flex flex-col items-center mt-6">
-        <Button Component={Link} to={`${baseUrl}upgrade`}>
-          {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
-        </Button>
-        {shouldRenderCancelLink(accountDetails, isFreePlan) && (
-          <Button
-            to={`${baseUrl}cancel`}
-            Component={Link}
-            variant="text"
-            color="gray"
-            className="mt-4"
-          >
-            Cancel Plan
-          </Button>
+        {accountDetails.planProvider === 'github' ? (
+          <div className="border-t border-gray-200 pb-4">
+            <p className="mt-4 mb-6 flex items-center text-sm">
+              <img
+                className="block mr-4"
+                alt="Github"
+                src={githubLogo}
+                height={32}
+                width={32}
+              />
+              Your account is configured via GitHub Marketplace
+            </p>
+            <div className="text-center">
+              <Button
+                Component="a"
+                href="https://github.com/marketplace/codecov"
+              >
+                Manage billing in GitHub
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Button Component={Link} to={`${baseUrl}upgrade`}>
+              {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
+            </Button>
+            {shouldRenderCancelLink(accountDetails, isFreePlan) && (
+              <Button
+                to={`${baseUrl}cancel`}
+                Component={Link}
+                variant="text"
+                color="gray"
+                className="mt-4"
+              >
+                Cancel Plan
+              </Button>
+            )}
+          </>
         )}
       </div>
     </Card>

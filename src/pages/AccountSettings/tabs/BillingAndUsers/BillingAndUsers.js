@@ -24,16 +24,20 @@ function BillingAndUsers({ provider, owner }) {
           <>
             <div className="col-span-1">
               <CurrentPlanCard accountDetails={accountDetails} />
-              <PaymentCard
-                subscriptionDetail={accountDetails.subscriptionDetail}
-                provider={provider}
-                owner={owner}
-              />
-              <LatestInvoiceCard
-                provider={provider}
-                owner={owner}
-                invoice={accountDetails.subscriptionDetail?.latestInvoice}
-              />
+              {accountDetails.planProvider !== 'github' && (
+                <>
+                  <PaymentCard
+                    subscriptionDetail={accountDetails.subscriptionDetail}
+                    provider={provider}
+                    owner={owner}
+                  />
+                  <LatestInvoiceCard
+                    provider={provider}
+                    owner={owner}
+                    invoice={accountDetails.subscriptionDetail?.latestInvoice}
+                  />
+                </>
+              )}
             </div>
             <UserManagement provider={provider} owner={owner} />
           </>

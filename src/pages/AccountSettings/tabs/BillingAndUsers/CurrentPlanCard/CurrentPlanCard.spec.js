@@ -82,4 +82,19 @@ describe('CurrentPlanCard', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  describe('when the user is using github marketplace', () => {
+    beforeEach(() => {
+      setup({
+        ...freeAccountDetails,
+        planProvider: 'github',
+      })
+    })
+
+    it('renders a link to the github marketplace', () => {
+      expect(
+        screen.getByRole('link', { name: /Manage billing in GitHub/ })
+      ).toBeInTheDocument()
+    })
+  })
 })
