@@ -3,34 +3,57 @@ import TextInput from 'ui/TextInput'
 import Select from 'ui/Select'
 import Button from 'ui/Button'
 
+// Due to responsive issues and class name priority items are left to set their own flex property.
+const className = 'flex-1'
+
 export const EampleControlGroup = () => (
   <ControlGroup>
-    <Select items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]} />
-    <Select items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]} />
-    <TextInput placeholder="Text" />
+    <Select
+      className={className}
+      items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]}
+    />
+    <Select
+      className={className}
+      items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]}
+    />
+    <TextInput className={className} placeholder="Text" />
   </ControlGroup>
 )
 
 export const EampleControlGroup2 = () => (
   <ControlGroup>
-    <Select items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]} />
-    <Select items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]} />
-    <Select items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]} />
+    <Select
+      className={className}
+      items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]}
+    />
+    <Select
+      className={className}
+      items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]}
+    />
+    <Select
+      className={className}
+      items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]}
+    />
   </ControlGroup>
 )
 
 export const EampleControlGroup3 = () => (
   <ControlGroup>
-    <Button>Button A</Button>
-    <Button color="gray">Button B</Button>
-    <Select items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]} />
+    <Button className={className}>Button A</Button>
+    <Button className={className} color="gray">
+      Button B
+    </Button>
+    <Select
+      className={className}
+      items={[`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`]}
+    />
   </ControlGroup>
 )
 
 export const EampleControlGroup4 = () => (
   <ControlGroup>
-    <TextInput placeholder="First" />
-    <TextInput placeholder="Second" />
+    <TextInput className={className} placeholder="First" />
+    <TextInput className={className} placeholder="Second" />
   </ControlGroup>
 )
 

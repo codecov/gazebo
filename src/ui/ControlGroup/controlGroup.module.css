@@ -1,9 +1,9 @@
 .controlGroup {
-  @apply grid grid-cols-4 divide-x divide-gray-200 divide-solid;
+  @apply flex flex-wrap items-center divide-x divide-gray-200 divide-solid;
 }
 
 .controlGroup > * {
-  @apply w-auto;
+  @apply w-full;
 }
 
 .controlGroup > * > button,
@@ -12,7 +12,8 @@
 }
 
 .controlGroup > * > ul,
-.controlGroup > * > input[type='text'] {
+.controlGroup > * > input[type='text'],
+.controlGroup > input[type='text'] {
   @apply rounded-none bg-white;
 }
 
@@ -25,6 +26,7 @@
 
 .controlGroup > *:last-child,
 .controlGroup > *:last-child > button,
-.controlGroup > * > input[type='text']:last-child {
+.controlGroup > * > input[type='text']:last-child,
+.controlGroup > input[type='text']:last-child {
   @apply rounded-tr-md rounded-br-md;
 }

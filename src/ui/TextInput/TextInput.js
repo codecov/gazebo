@@ -4,7 +4,9 @@ import cs from 'classnames'
 
 const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
   const classes = cs(
-    className,
+    {
+      [className]: !embedded,
+    },
     'border-box block w-full px-6 py-2 rounded-full',
     'bg-gray-100 text-gray-900 caret-pink-500',
     {
@@ -18,7 +20,7 @@ const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
 
   function _embedded() {
     return (
-      <span className="absolute top-2 left-0 m-3 w-4 h-4 z-10">
+      <span className="absolute top-0 left-0 m-3 w-4 h-4 z-10">
         {embedded()}
       </span>
     )
@@ -26,7 +28,7 @@ const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
 
   if (embedded) {
     return (
-      <span className="relative">
+      <span className={cs(className, 'relative')}>
         {_embedded()}
         {_render()}
       </span>

@@ -32,11 +32,13 @@ const ActivatedItems = [
 ]
 
 const FormClasses = {
-  search: 'flex-auto w-auto py-4 ',
+  search:
+    'flex-none md:flex-1 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
-  firstFilter: 'rounded-tl-md rounded-bl-md',
-  item: 'flex-1 flex justify-between text-base py-2 truncate',
-  itemContent: 'flex justify-between flex-1 text-base truncate',
+  firstFilter: 'flex-1 rounded-tl-md rounded-bl-md',
+  filter: 'flex-1',
+  item: 'flex justify-between text-base py-2 truncate',
+  itemContent: 'flex justify-between text-base truncate',
   icon: 'w-6 h-6 bg-gray-100 rounded-full list-item-type ml-3',
 }
 
@@ -98,6 +100,7 @@ export function FormControls({ control, register, onChange, current }) {
           render={() => (
             <Select
               ariaName="isAdmin"
+              className={FormClasses.filter}
               control={control}
               items={AdminItems}
               renderSelected={SelectedItem}
@@ -117,6 +120,7 @@ export function FormControls({ control, register, onChange, current }) {
           render={() => (
             <Select
               ariaName="ordering"
+              className={FormClasses.filter}
               control={control}
               items={OrderingItems}
               renderSelected={SelectedItem}
@@ -137,7 +141,7 @@ export function FormControls({ control, register, onChange, current }) {
           name="search"
           ref={register}
           placeholder="Search"
-          embedded={() => <Icon name="search" />}
+          embedded={() => <Icon name="search" className="absolute top-2" />}
           onChange={(event) => onChange({ search: event.target.value })}
         />
       </ControlGroup>
