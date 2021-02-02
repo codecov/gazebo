@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import find from 'lodash/find'
 import { Controller } from 'react-hook-form'
 
 import Select from 'ui/Select'
@@ -41,30 +40,35 @@ const FormClasses = {
   icon: 'w-6 h-6 bg-gray-100 rounded-full list-item-type ml-3',
 }
 
+function SelectedItem({ label }) {
+  return (
+    <span className={FormClasses.item}>
+      <span className={FormClasses.itemContent}>{label}</span>
+    </span>
+  )
+}
+SelectedItem.propTypes = {
+  label: PropTypes.string.isRequired,
+}
+
+function Item({ label }, { isSelected }) {
+  return (
+    <span className={FormClasses.item}>
+      <span className={FormClasses.itemContent}>{label}</span>
+      {isSelected ? (
+        <Icon className={FormClasses.icon} name="check" color="text-pink-500" />
+      ) : (
+        <span className={FormClasses.icon}></span>
+      )}
+    </span>
+  )
+}
+
+Item.propTypes = {
+  label: PropTypes.string.isRequired,
+}
+
 export function FormControls({ control, register, onChange, current }) {
-  function _renderSelected(label) {
-    return (
-      <span className={FormClasses.item}>
-        <span className={FormClasses.itemContent}>{label}</span>
-      </span>
-    )
-  }
-  function _renderItem(label, selected) {
-    return (
-      <span className={FormClasses.item}>
-        <span className={FormClasses.itemContent}>{label}</span>
-        {selected ? (
-          <Icon
-            className={FormClasses.icon}
-            name="check"
-            color="text-pink-500"
-          />
-        ) : (
-          <span className={FormClasses.icon}></span>
-        )}
-      </span>
-    )
-  }
   return (
     <Card>
       <ControlGroup>
@@ -77,12 +81,9 @@ export function FormControls({ control, register, onChange, current }) {
               className={FormClasses.firstFilter}
               control={control}
               items={ActivatedItems}
-              renderSelected={({ label }) => _renderSelected(label)}
-              renderItem={({ label }, { isSelected }) =>
-                _renderItem(label, isSelected)
-              }
-              value={find(
-                ActivatedItems,
+              renderSelected={SelectedItem}
+              renderItem={Item}
+              value={ActivatedItems.find(
                 ({ value }) => value === current?.activated
               )}
               onChange={({ value }) => {
@@ -99,12 +100,9 @@ export function FormControls({ control, register, onChange, current }) {
               ariaName="isAdmin"
               control={control}
               items={AdminItems}
-              renderSelected={({ label }) => _renderSelected(label)}
-              renderItem={({ label }, { isSelected }) =>
-                _renderItem(label, isSelected)
-              }
-              value={find(
-                AdminItems,
+              renderSelected={SelectedItem}
+              renderItem={Item}
+              value={ActivatedItems.find(
                 ({ value }) => value === current?.isAdmin
               )}
               onChange={({ value }) => {
@@ -121,12 +119,9 @@ export function FormControls({ control, register, onChange, current }) {
               ariaName="ordering"
               control={control}
               items={OrderingItems}
-              renderSelected={({ label }) => _renderSelected(label)}
-              renderItem={({ label }, { isSelected }) =>
-                _renderItem(label, isSelected)
-              }
-              value={find(
-                OrderingItems,
+              renderSelected={SelectedItem}
+              renderItem={Item}
+              value={OrderingItems.find(
                 ({ value }) => value === current?.ordering
               )}
               onChange={({ value }) => {
