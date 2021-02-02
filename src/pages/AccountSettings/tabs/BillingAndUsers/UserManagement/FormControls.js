@@ -137,12 +137,7 @@ export function FormControls({ control, register, onChange, current }) {
           name="search"
           ref={register}
           placeholder="Search"
-          embedded={() => (
-            <Icon
-              name="search"
-              className="w-full h-full absolute top-2 left-0"
-            />
-          )}
+          embedded={() => <Icon name="search" />}
           onChange={(event) => onChange({ search: event.target.value })}
         />
       </ControlGroup>
