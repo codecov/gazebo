@@ -9,7 +9,7 @@ function Icon({ className = '', name, color = 'text-gray-500', testId }) {
   if (!IconSvg) return null
   return (
     <span className={cs(color, className)} data-testid={testId}>
-      <IconSvg className="fill-current w-full h-full" />
+      <IconSvg className="fill-current" />
     </span>
   )
 }

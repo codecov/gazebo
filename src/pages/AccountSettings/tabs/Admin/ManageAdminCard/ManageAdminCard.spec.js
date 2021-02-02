@@ -5,6 +5,7 @@ import ManageAdminCard from './ManageAdminCard'
 import { useUsers, useUpdateUser } from 'services/users'
 
 jest.mock('services/users')
+jest.mock('./AddAdmins', () => () => 'AddAdmins')
 jest.mock('react-router-dom', () => ({
   useParams: () => ({
     provider: 'gh',

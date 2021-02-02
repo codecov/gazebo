@@ -19,6 +19,7 @@ describe('User', () => {
     it('renders the avatar', () => {
       const avatar = screen.getByRole('img', { name: /gaurd2003/ })
       expect(avatar).toBeInTheDocument()
+      expect(avatar).toHaveClass('h-12 w-12')
     })
 
     it(`renders the username`, () => {
@@ -35,6 +36,17 @@ describe('User', () => {
     it(`renders user's name`, () => {
       const name = screen.getByText(/Sir Roofus/)
       expect(name).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with compact', () => {
+    beforeEach(() => {
+      setup({ compact: true })
+    })
+
+    it('render the avatar but smaller', () => {
+      const avatar = screen.getByRole('img', { name: /gaurd2003/ })
+      expect(avatar).toHaveClass('h-8 w-8')
     })
   })
 
