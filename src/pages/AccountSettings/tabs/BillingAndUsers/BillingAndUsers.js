@@ -23,10 +23,10 @@ function BillingAndUsers({ provider, owner }) {
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
       <InfoMessageStripeCallback />
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 max-w-6xl">
+      <div className="grid gap-0 md:gap-4 grid-cols-1 lg:grid-cols-3 max-w-6xl">
         {accountDetails.plan ? (
           <>
-            <div className="col-span-1">
+            <div>
               <CurrentPlanCard accountDetails={accountDetails} />
               {shouldRenderBillingDetails && (
                 <>

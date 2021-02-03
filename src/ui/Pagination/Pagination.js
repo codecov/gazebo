@@ -63,7 +63,7 @@ function Pagination({ onPageChange, results, pointer }) {
       </button>
       <Page onClick={onPageChange} isRendered={pointer !== 1} location={1} />
       <Page
-        onPageChange={onPageChange}
+        onClick={onPageChange}
         isRendered={pointer - 1 > 2}
         clickable={false}
       />
