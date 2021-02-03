@@ -27,15 +27,13 @@ const UserManagementClasses = {
   cta: 'w-full truncate',
 }
 
-function useActivateUser({ provider, owner, query }, opts) {
-  const { mutate, ...rest } = useUpdateUser(
-    {
-      provider,
-      owner,
-      params: query,
-    },
-    opts
-  )
+function useActivateUser({ provider, owner, query, opts }) {
+  const { mutate, ...rest } = useUpdateUser({
+    provider,
+    owner,
+    params: query,
+    opts,
+  })
 
   function activate(user, activated) {
     return mutate({ targetUser: user, activated })
@@ -67,20 +65,19 @@ function UserManagement({ provider, owner }) {
       ordering: 'name',
     },
   })
-  const { data, isSuccess } = useUsers({
+  const { data, isSuccess, refetch } = useUsers({
     provider,
     owner,
     query: params,
   })
-  const { activate } = useActivateUser(
-    { owner, provider, query: params },
-    {
-      onSuccess: (...args) => {
-        console.log(args)
-        updateQuery()
-      },
-    }
-  )
+  const { activate } = useActivateUser({
+    owner,
+    provider,
+    query: params,
+    opts: {
+      onSuccess: refetch,
+    },
+  })
 
   function updateQuery(data) {
     updateParams(data)
