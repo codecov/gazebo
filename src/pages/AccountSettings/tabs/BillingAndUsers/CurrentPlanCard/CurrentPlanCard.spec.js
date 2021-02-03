@@ -82,4 +82,52 @@ describe('CurrentPlanCard', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  describe('when the user is using github marketplace', () => {
+    beforeEach(() => {
+      setup({
+        ...freeAccountDetails,
+        planProvider: 'github',
+      })
+    })
+
+    it('renders a link to the github marketplace', () => {
+      expect(
+        screen.getByRole('link', { name: /Manage billing in GitHub/ })
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when the owner is a Gitlab subgroup', () => {
+    const parentUsername = 'parent'
+
+    beforeEach(() => {
+      setup({
+        ...freeAccountDetails,
+        rootOrganization: {
+          ...proAccountDetails,
+          username: parentUsername,
+        },
+      })
+    })
+
+    it('renders the plan of the parent', () => {
+      expect(
+        screen.getByRole('heading', {
+          name: /pro team/i,
+        })
+      ).toBeInTheDocument()
+    })
+
+    it('renders a link to the billing page of the parent', () => {
+      const link = screen.getByRole('link', {
+        name: /view billing/i,
+      })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        `/account/gl/${parentUsername}/billing`
+      )
+    })
+  })
 })

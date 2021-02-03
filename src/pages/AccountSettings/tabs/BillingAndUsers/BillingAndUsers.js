@@ -12,6 +12,10 @@ import LegacyUser from './LegacyUser'
 
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const shouldRenderBillingDetails = [
+    accountDetails.planProvider !== 'github',
+    !accountDetails.rootOrganization,
+  ].every(Boolean)
 
   return (
     <>
@@ -19,21 +23,25 @@ function BillingAndUsers({ provider, owner }) {
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
       <InfoMessageStripeCallback />
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 max-w-6xl">
+      <div className="grid gap-0 md:gap-4 grid-cols-1 lg:grid-cols-3 max-w-6xl">
         {accountDetails.plan ? (
           <>
-            <div className="col-span-1">
+            <div>
               <CurrentPlanCard accountDetails={accountDetails} />
-              <PaymentCard
-                subscriptionDetail={accountDetails.subscriptionDetail}
-                provider={provider}
-                owner={owner}
-              />
-              <LatestInvoiceCard
-                provider={provider}
-                owner={owner}
-                invoice={accountDetails.subscriptionDetail?.latestInvoice}
-              />
+              {shouldRenderBillingDetails && (
+                <>
+                  <PaymentCard
+                    subscriptionDetail={accountDetails.subscriptionDetail}
+                    provider={provider}
+                    owner={owner}
+                  />
+                  <LatestInvoiceCard
+                    provider={provider}
+                    owner={owner}
+                    invoice={accountDetails.subscriptionDetail?.latestInvoice}
+                  />
+                </>
+              )}
             </div>
             <UserManagement provider={provider} owner={owner} />
           </>

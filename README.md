@@ -71,6 +71,27 @@ The config are centralized in one place in the file `config.js`. The file merges
 - the configuration from `process.env` [documentation here](https://create-react-app.dev/docs/adding-custom-environment-variables) which is set on build-time
 - the configuration from `window.configEnv` which can be set on start-time
 
+## How to mock HTTP responses in the browser:
+
+Sometimes when working locally it helps to control API responses. For edge cases, for investigating support or on call incidents.
+
+If you need to mock a response add `REACT_APP_MSW_BROWSER=true` to `.env.local` to enable browser mocks.
+Mocks are located in `src/mocks/handlers`
+
+Example:
+
+```js
+import { rest } from 'msw'
+
+export const handlers = [
+  rest.get('internal/user', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({ mock: 'data' }))
+  }),
+]
+```
+
+Read more at the [official documentation.](https://mswjs.io/docs/getting-started/mocks/rest-api)
+
 ## Debugging failed checks
 
 ### Bundsize

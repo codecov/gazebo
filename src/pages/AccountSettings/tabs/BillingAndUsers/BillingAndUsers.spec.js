@@ -63,6 +63,56 @@ describe('BillingAndUsersTab', () => {
     })
   })
 
+  describe('when the user is using github marketplace', () => {
+    beforeEach(() => {
+      setup({
+        ...defaultAccountDetails,
+        planProvider: 'github',
+      })
+    })
+
+    it('renders the CurrentPlanCard', () => {
+      const tab = screen.getByText(/CurrentPlanCard/)
+      expect(tab).toBeInTheDocument()
+    })
+
+    it('doesnt render the LatestInvoiceCard', () => {
+      const tab = screen.queryByText(/LatestInvoiceCard/)
+      expect(tab).not.toBeInTheDocument()
+    })
+
+    it('doesnt render the PaymentCard', () => {
+      const tab = screen.queryByText(/PaymentCard/)
+      expect(tab).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the owner is a gitlab subgroup', () => {
+    beforeEach(() => {
+      setup({
+        ...defaultAccountDetails,
+        rootOrganization: {
+          username: 'something',
+        },
+      })
+    })
+
+    it('renders the CurrentPlanCard', () => {
+      const tab = screen.getByText(/CurrentPlanCard/)
+      expect(tab).toBeInTheDocument()
+    })
+
+    it('doesnt render the LatestInvoiceCard', () => {
+      const tab = screen.queryByText(/LatestInvoiceCard/)
+      expect(tab).not.toBeInTheDocument()
+    })
+
+    it('doesnt render the PaymentCard', () => {
+      const tab = screen.queryByText(/PaymentCard/)
+      expect(tab).not.toBeInTheDocument()
+    })
+  })
+
   describe('when the user is on a legacy plan', () => {
     beforeEach(() => {
       setup({
