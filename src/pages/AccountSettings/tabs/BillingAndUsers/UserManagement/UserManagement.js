@@ -29,6 +29,7 @@ const UserManagementClasses = {
   cta: 'w-full truncate',
 }
 
+// Activate User hook,
 function useActivateUser({ provider, owner, query }) {
   const { mutate, ...rest } = useUpdateUser({
     provider,
@@ -52,12 +53,17 @@ function createPills({ isAdmin, email, student }) {
 }
 
 function UserManagement({ provider, owner }) {
+  // local state is pulled from url params.
+  // Defaults are not shown in url programically.
   const { params, updateParams } = useLocationParams({
-    activated: '',
-    isAdmin: '',
-    ordering: 'name',
-    search: '',
+    activated: '', // Default to no filter on activated
+    isAdmin: '', // Default to no filter on isAdmin
+    ordering: 'name', // Default sort is A-Z Name
+    search: '', // Default to no seach on initial load
+    page: 1, // Default to first page
+    pageSize: 10, // Default page size
   })
+  // Setup form defaults
   const { register, handleSubmit, control } = useForm({
     defaultValues: {
       search: params.search,
@@ -68,15 +74,25 @@ function UserManagement({ provider, owner }) {
       pageSize: 1,
     },
   })
+  // Get user API data
   const { data, isSuccess } = useUsers({
     provider,
     owner,
     query: params,
   })
+  // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider, query: params })
 
+  // Kick off a new render by updating the location params
   function updateQuery(data) {
     updateParams(data)
+  }
+
+  // Filter out page sizes which are larger then the total number of pages
+  function _createPageSizes() {
+    const max = data.totalPages
+    const defaultPages = [10, 20, 50, 100]
+    return defaultPages.filter((num) => num <= max)
   }
 
   return (
@@ -129,20 +145,24 @@ function UserManagement({ provider, owner }) {
               </div>
             ))}
         </div>
-        <div className="flex">
+        <div className="flex justify-between">
           <Pagination
-            ref={register}
+            className="flex-inital"
             onPageChange={(page) => updateQuery({ page })}
-            pointer={params.page}
-            totalPages={data.totalPages}
+            pointer={parseInt(params.page, 10)}
+            totalPages={data.totalPages || 1}
             next={data.next}
             previous={data.previous}
           />
-          <Select
-            ref={register}
-            onChange={(data) => updateQuery({ pageSize: data })}
-            items={['Page Size:', 1, 5, 10, 25, 50]}
-          />
+          {_createPageSizes().length > 1 && (
+            <Select
+              className="flex-inital"
+              onChange={(data) => updateQuery({ page: 1, pageSize: data })}
+              items={_createPageSizes()}
+              value={params.pageSize}
+              placeholder="Page Size:"
+            />
+          )}
         </div>
       </Card>
     </form>

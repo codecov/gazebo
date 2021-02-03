@@ -102,7 +102,7 @@ function Pagination({ onPageChange, totalPages, pointer, next, previous }) {
       />
       <Page
         onClick={onPageChange}
-        isRendered={pointer !== totalPages}
+        isRendered={pointer < totalPages}
         location={totalPages}
       />
       <button
