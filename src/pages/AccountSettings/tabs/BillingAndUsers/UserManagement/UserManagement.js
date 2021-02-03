@@ -1,16 +1,15 @@
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import find from 'lodash/find'
-import formatDistance from 'date-fns/formatDistance'
-import parseISO from 'date-fns/parseISO'
 
 import { FormSelect as Select } from './UserFormSelect'
-import { useLocationParams, ApiFilterEnum } from 'services/navigation'
+import { DateItem } from './DateItem'
 
 import Card from 'ui/Card'
 import User from 'ui/User'
 import Button from 'ui/Button'
 
+import { useLocationParams, ApiFilterEnum } from 'services/navigation'
 import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
@@ -35,37 +34,21 @@ const ActivatedItems = [
   { label: 'deactivated', value: ApiFilterEnum.false },
 ]
 
-function useActivateUser({ provider, owner, query }) {
-  const { mutate, ...rest } = useUpdateUser({
-    provider,
-    owner,
-    params: query,
-  })
+function useActivateUser({ provider, owner, query }, opts) {
+  const { mutate, ...rest } = useUpdateUser(
+    {
+      provider,
+      owner,
+      params: query,
+    },
+    opts
+  )
 
   function activate(user, activated) {
     return mutate({ targetUser: user, activated })
   }
 
   return { activate, ...rest }
-}
-
-function DateItem({ date, label, testId }) {
-  const compare = parseISO(date)
-  const today = new Date()
-  return (
-    <div className="flex flex-col text-sm">
-      <span className="font-bold">{label}</span>
-      <span data-testid={testId}>
-        {date ? formatDistance(compare, today, 'MM/dd/yyyy') : 'never'}
-      </span>
-    </div>
-  )
-}
-
-DateItem.propTypes = {
-  date: PropTypes.string,
-  label: PropTypes.string.isRequired,
-  testId: PropTypes.string.isRequired,
 }
 
 function createPills({ isAdmin, email, student }) {
@@ -96,7 +79,15 @@ function UserManagement({ provider, owner }) {
     owner,
     query: params,
   })
-  const { activate } = useActivateUser({ owner, provider, query: params })
+  const { activate } = useActivateUser(
+    { owner, provider, query: params },
+    {
+      onSuccess: (...args) => {
+        console.log(args)
+        updateQuery()
+      },
+    }
+  )
 
   function updateQuery(data) {
     updateParams(data)
