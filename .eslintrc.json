@@ -8,35 +8,73 @@
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "complexity": [
-      "error",
-      5
-    ],
-    "max-statements": [
-      "error",
-      10
-    ],
-    "max-nested-callbacks": [
-      "error",
-      2
-    ],
-    "react/prefer-stateless-function": [
-      "error"
-    ],
+    "complexity": ["error", 5],
+    "max-statements": ["error", 10],
+    "max-nested-callbacks": ["error", 2],
+    "react/prefer-stateless-function": ["error"],
     "react/prop-types": [
       "warn",
       {
-        "ignore": [
-          "children",
-          "context",
-          "className"
-        ]
+        "ignore": ["children", "context", "className"]
       }
     ]
   },
   "overrides": [
+    // UI Rules
     {
-      "files": ["*-test.js","*.spec.js", "*.test.js"],
+      "files": ["src/ui/**/*.js", "src/ui/*.js"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "services",
+                "message": "The design system cannot depend on services"
+              },
+              {
+                "name": "layouts",
+                "message": "The design system cannot depend on layouts"
+              },
+              {
+                "name": "pages",
+                "message": "The design system cannot depend on pages"
+              }
+            ],
+            "patterns": ["services/**", "layouts/**", "pages/**"]
+          }
+        ]
+      }
+    },
+    // Services Rules
+    {
+      "files": ["src/services/**/*.js", "src/services/*.js"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "ui",
+                "message": "Services should not render components"
+              },
+              {
+                "name": "layouts",
+                "message": "Services should not render components"
+              },
+              {
+                "name": "pages",
+                "message": "Services should not render components"
+              }
+            ],
+            "patterns": ["ui/**", "layouts/**", "pages/**"]
+          }
+        ]
+      }
+    },
+    // Testing Rules
+    {
+      "files": ["*-test.js", "*.spec.js", "*.test.js"],
       "rules": {
         "max-nested-callbacks": "off",
         "max-statements": "off",
@@ -44,6 +82,7 @@
         "react/display-name": "off"
       }
     },
+    // Story Rules
     {
       "files": ["*.stories.js"],
       "rules": {
