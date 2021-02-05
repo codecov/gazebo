@@ -3,14 +3,14 @@ import { useForm } from 'react-hook-form'
 import cs from 'classnames'
 
 import { FormControls } from './FormControls'
+import { FormPaginate } from './FormPaginate'
+
 import { DateItem } from './DateItem'
 import { useLocationParams, ApiFilterEnum } from 'services/navigation'
 
 import Card from 'ui/Card'
 import User from 'ui/User'
 import Button from 'ui/Button'
-import Pagination from 'ui/Pagination'
-import Select from 'ui/Select'
 
 import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
@@ -88,13 +88,6 @@ function UserManagement({ provider, owner }) {
     updateParams(data)
   }
 
-  // Filter out page sizes which are larger then the total number of pages
-  function _createPageSizes() {
-    const max = data.totalPages
-    const defaultPages = [10, 20, 50, 100]
-    return defaultPages.filter((num) => num <= max)
-  }
-
   return (
     <form
       className={UserManagementClasses.root}
@@ -145,25 +138,14 @@ function UserManagement({ provider, owner }) {
               </div>
             ))}
         </div>
-        <div className="flex justify-between">
-          <Pagination
-            className="flex-inital"
-            onPageChange={(page) => updateQuery({ page })}
-            pointer={parseInt(params.page, 10)}
-            totalPages={data.totalPages || 1}
-            next={data.next}
-            previous={data.previous}
-          />
-          {_createPageSizes().length > 1 && (
-            <Select
-              className="flex-inital"
-              onChange={(data) => updateQuery({ page: 1, pageSize: data })}
-              items={_createPageSizes()}
-              value={params.pageSize}
-              placeholder="Page Size:"
-            />
-          )}
-        </div>
+        <FormPaginate
+          totalPages={data.totalPages}
+          page={params.page}
+          next={data.next}
+          previous={data.previous}
+          pageSize={params.pageSize}
+          onChange={updateQuery}
+        />
       </Card>
     </form>
   )

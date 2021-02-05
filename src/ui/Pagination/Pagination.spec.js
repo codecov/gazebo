@@ -1,14 +1,27 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+
 import Pagination from '.'
 
 describe('Pagination', () => {
   const mockOnClick = jest.fn()
   function setup(props) {
-    return render(<Pagination onPageChange={mockOnClick} {...props} />)
+    return render(
+      <Pagination
+        onPageChange={(page) => {
+          mockOnClick(page)
+        }}
+        {...props}
+      />
+    )
   }
 
   describe('pointer in the center', () => {
-    const props = { results: 300, pointer: 10 }
+    const props = {
+      totalPages: 300,
+      pointer: 10,
+      next: 'nextUrl',
+      previous: 'previousUrl',
+    }
 
     it('filler', () => {
       setup(props)
@@ -35,7 +48,7 @@ describe('Pagination', () => {
       it('renders expected button', () => {
         expect(buttonEl).toBeInTheDocument()
       })
-      it('clicking emites the correct page data', () => {
+      it('clicking emits the correct page data', () => {
         fireEvent.click(buttonEl)
         expect(mockOnClick).lastCalledWith(location)
       })
@@ -43,7 +56,7 @@ describe('Pagination', () => {
   })
 
   describe('pointer at the beginning', () => {
-    const props = { results: 10, pointer: 1 }
+    const props = { totalPages: 10, pointer: 1, next: 'nexturl' }
     it('filler', () => {
       setup(props)
       expect(screen.getAllByText('...').length).toBe(1)
@@ -61,7 +74,7 @@ describe('Pagination', () => {
       })
       it('Clicking on button does not fire event', () => {
         fireEvent.click(buttonEl)
-        expect(mockOnClick.mock.calls.length).toBe(0)
+        expect(mockOnClick).toBeCalledTimes(0)
       })
     })
 
@@ -80,7 +93,7 @@ describe('Pagination', () => {
       it('renders expected button', () => {
         expect(buttonEl).toBeInTheDocument()
       })
-      it('clicking emites the correct page data', () => {
+      it('clicking emits the correct page data', () => {
         fireEvent.click(buttonEl)
         expect(mockOnClick).lastCalledWith(location)
       })
@@ -88,7 +101,7 @@ describe('Pagination', () => {
   })
 
   describe('pointer at the end', () => {
-    const props = { results: 10, pointer: 10 }
+    const props = { totalPages: 10, pointer: 10, previous: 'prevUrl' }
     it('filler', () => {
       setup(props)
       expect(screen.getAllByText('...').length).toBe(1)
@@ -106,7 +119,7 @@ describe('Pagination', () => {
       })
       it('Clicking on button does not fire event', () => {
         fireEvent.click(buttonEl)
-        expect(mockOnClick.mock.calls.length).toBe(0)
+        expect(mockOnClick).toBeCalledTimes(0)
       })
     })
 
@@ -125,7 +138,7 @@ describe('Pagination', () => {
       it('renders expected button', () => {
         expect(buttonEl).toBeInTheDocument()
       })
-      it('clicking emites the correct page data', () => {
+      it('clicking emits the correct page data', () => {
         fireEvent.click(buttonEl)
         expect(mockOnClick).lastCalledWith(location)
       })
