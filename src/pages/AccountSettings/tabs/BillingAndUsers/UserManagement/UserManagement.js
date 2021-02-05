@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
+import cs from 'classnames'
 
 import { FormControls } from './FormControls'
 import { DateItem } from './DateItem'
-import cs from 'classnames'
 
 import Card from 'ui/Card'
 import User from 'ui/User'
