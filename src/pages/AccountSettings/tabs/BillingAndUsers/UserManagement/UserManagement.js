@@ -16,16 +16,18 @@ import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
 const UserManagementClasses = {
-  root: 'space-y-4 col-span-2',
-  title: 'text-lg py-3',
-  results: 'shadow divide-y divide-gray-200 divide-solid p-4',
-  userTable: 'grid grid-cols-4 lg:gap-2 my-6',
+  root: 'space-y-4 col-span-2 mb-20', // Select pushes page length out. For now padding
+  title: 'text-2xl font-bold pb-4',
+  results: 'shadow divide-y divide-gray-200 divide-solid p-6',
+  userTable: 'grid grid-cols-5 lg:gap-2 my-6',
   user: ({ lastseen, latestPrivatePrDate }) =>
     cs({
-      'col-span-2': !lastseen || !latestPrivatePrDate,
-      'col-span-3': !lastseen && !latestPrivatePrDate,
+      'col-span-3':
+        (!lastseen || !latestPrivatePrDate) &&
+        !(!lastseen && !latestPrivatePrDate),
+      'col-span-4': !lastseen && !latestPrivatePrDate,
     }),
-  ctaWrapper: 'flex items-center',
+  ctaWrapper: 'flex items-center justify-end',
   cta: 'w-full truncate',
 }
 

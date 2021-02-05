@@ -4,9 +4,10 @@ import Pagination from 'ui/Pagination'
 import Select from 'ui/Select'
 
 const FormPaginateClasses = {
-  container: 'flex justify-between',
-  left: 'flex-inital',
-  right: 'flex-inital',
+  container: 'flex justify-between pt-6 pb-2',
+  flex1: 'flex-1',
+  right: 'flex-1 max-w-max flex items-center',
+  label: 'flex-initial mr-2',
 }
 
 export function FormPaginate({
@@ -27,7 +28,7 @@ export function FormPaginate({
   return (
     <div className={FormPaginateClasses.container}>
       <Pagination
-        className={FormPaginateClasses.left}
+        className={FormPaginateClasses.flex1}
         onPageChange={(page) => onChange({ page })}
         pointer={parseInt(page, 10)}
         totalPages={totalPages}
@@ -35,13 +36,16 @@ export function FormPaginate({
         previous={previous}
       />
       {_createPageSizes().length > 1 && (
-        <Select
-          ariaName="select page size"
-          className={FormPaginateClasses.right}
-          onChange={(data) => onChange({ page: 1, pageSize: data })}
-          items={_createPageSizes()}
-          value={parseInt(pageSize, 10)}
-        />
+        <div className={FormPaginateClasses.right}>
+          <span className={FormPaginateClasses.label}>Users per:</span>
+          <Select
+            ariaName="select page size"
+            className={FormPaginateClasses.flex1}
+            onChange={(data) => onChange({ page: 1, pageSize: data })}
+            items={_createPageSizes()}
+            value={parseInt(pageSize, 10)}
+          />
+        </div>
       )}
     </div>
   )

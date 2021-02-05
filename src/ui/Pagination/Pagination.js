@@ -7,7 +7,7 @@ import { PageButton } from './PageButton'
 const pageClasses =
   'outline-none focus:ring-1 relative inline-flex items-center p-2 text-sm font-medium'
 const endClasses =
-  'px-4 bg-white hover:bg-gray-100 text-black disabled:text-gray-200'
+  'px-4 bg-white hover:bg-gray-100 text-black disabled:text-gray-200 disabled:bg-white'
 
 const PaginationClasses = {
   nav:
