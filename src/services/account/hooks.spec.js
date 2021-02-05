@@ -8,6 +8,7 @@ import * as Cookie from 'js-cookie'
 
 import {
   useAccountDetails,
+  useInvalidateAccountDetails,
   usePlans,
   useCancelPlan,
   useUpgradePlan,
@@ -81,6 +82,23 @@ describe('useAccountDetails', () => {
         expect(hookData.result.current.data).toEqual(accountDetails)
       })
     })
+  })
+})
+
+describe('useInvalidateAccountDetails', () => {
+  let hookData
+  beforeEach(() => {
+    hookData = renderHook(() => useInvalidateAccountDetails(), {
+      wrapper,
+    })
+  })
+
+  it('returns a function to flust the users cache', () => {
+    const invalidateCache = hookData.result.current
+
+    invalidateCache()
+
+    // TODO: I'm having a hard time figuring out how to best test this, thoughts?
   })
 })
 

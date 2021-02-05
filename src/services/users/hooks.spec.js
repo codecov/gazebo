@@ -3,7 +3,7 @@ import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { useUsers, useUpdateUser } from './hooks'
+import { useUsers, useUpdateUser, useInvalidateUsers } from './hooks'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -142,58 +142,38 @@ describe('useUpdateUser', () => {
     })
 
     describe('when calling the mutation', () => {
-      describe('it updates local cache on success', () => {
-        beforeEach(() => {
-          return act(async () => {
-            hookData.result.current.mutate({
-              targetUser: 'mundo',
-              admin: true,
-              activated: true,
-            })
-            await hookData.waitFor(() => hookData.result.current.isLoading)
-            await hookData.waitFor(() => !hookData.result.current.isLoading)
+      beforeEach(() => {
+        return act(async () => {
+          hookData.result.current.mutate({
+            targetUser: 'mundo',
+            admin: true,
+            activated: true,
           })
-        })
-
-        it('the call was successful', () => {
-          expect(hookData.result.current.isSuccess).toBeTruthy()
-        })
-
-        it('The local cache has been updated', () => {
-          const expectedCache = {
-            count: 2,
-            next: null,
-            previous: null,
-            results: [
-              {
-                activated: true,
-                isAdmin: true,
-                username: 'ahri',
-                email: 'ahri@lol.com',
-                ownerid: 1,
-                student: false,
-                name: 'Ahri the Nine-Tailed Fox',
-                latestPrivatePrDate: '2020-12-17T00:08:16.398263Z',
-                lastseen: '2020-12-17T00:08:16.398263Z',
-              },
-              {
-                activated: true,
-                isAdmin: true,
-                username: 'mundo',
-                email: 'drmundo@lol.com',
-                ownerid: 2,
-                student: false,
-                name: 'Dr. Mundo',
-                latestPrivatePrDate: '2020-12-17T00:08:16.398263Z',
-                lastseen: '2020-12-17T00:08:16.398263Z',
-              },
-            ],
-          }
-          expect(
-            queryClient.getQueryData(['users', provider, owner, {}])
-          ).toMatchObject(expectedCache)
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
         })
       })
+
+      it('updates the query', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
+      })
     })
+  })
+})
+
+describe('useInvalidateUsers', () => {
+  let hookData
+  beforeEach(() => {
+    hookData = renderHook(() => useInvalidateUsers(), {
+      wrapper,
+    })
+  })
+
+  it('returns a function to flust the users cache', () => {
+    const invalidateCache = hookData.result.current
+
+    invalidateCache()
+
+    // TODO: I'm having a hard time figuring out how to best test this, thoughts?
   })
 })

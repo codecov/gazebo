@@ -1,5 +1,4 @@
-import { useQuery, useMutation } from 'react-query'
-
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import Api from 'shared/api'
 
 function getPathUsers({ provider, owner }) {
@@ -15,7 +14,13 @@ function fetchUsers({ provider, owner, query }) {
   return Api.get({ path, provider, query })
 }
 
-export function useUsers({ provider, owner, query, opts }) {
+export function useInvalidateUsers() {
+  const queryClient = useQueryClient()
+
+  return () => queryClient.invalidateQueries('users')
+}
+
+export function useUsers({ provider, owner, query, opts = {} }) {
   return useQuery(
     ['users', provider, owner, query],
     () => fetchUsers({ provider, owner, query }),
