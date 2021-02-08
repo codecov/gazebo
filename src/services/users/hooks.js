@@ -14,12 +14,6 @@ function fetchUsers({ provider, owner, query }) {
   return Api.get({ path, provider, query })
 }
 
-export function useInvalidateUsers() {
-  const queryClient = useQueryClient()
-
-  return () => queryClient.invalidateQueries('users')
-}
-
 export function useUsers({ provider, owner, query, opts = {} }) {
   return useQuery(
     ['users', provider, owner, query],
@@ -33,11 +27,26 @@ export function useUsers({ provider, owner, query, opts = {} }) {
 }
 
 export function useUpdateUser({ provider, owner, opts = {} }) {
+  const { onSuccess, ...passedOpts } = opts
+  const queryClient = useQueryClient()
+
+  const successHandler = (...args) => {
+    console.log('hello')
+    // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
+    queryClient.invalidateQueries('users')
+    queryClient.invalidateQueries('accountDetails')
+
+    if (onSuccess) {
+      // Exicute passed onSuccess after invalidating queries
+      onSuccess.apply(null, args)
+    }
+  }
+
   return useMutation(
     ({ targetUser, ...body }) => {
       const path = patchPathUsers({ provider, owner, targetUser })
       return Api.patch({ path, provider, body })
     },
-    { ...opts }
+    { onSuccess: successHandler, ...passedOpts }
   )
 }

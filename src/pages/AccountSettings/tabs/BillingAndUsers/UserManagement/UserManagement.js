@@ -10,8 +10,7 @@ import User from 'ui/User'
 import Button from 'ui/Button'
 
 import { useLocationParams, ApiFilterEnum } from 'services/navigation'
-import { useUsers, useUpdateUser, useInvalidateUsers } from 'services/users'
-import { useInvalidateAccountDetails } from 'services/account'
+import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
 const UserManagementClasses = {
@@ -71,20 +70,10 @@ function UserManagement({ provider, owner }) {
     owner,
     query: params,
   })
-  const invalidateUsers = useInvalidateUsers()
-  const invalidateAccountDetails = useInvalidateAccountDetails()
   const { activate } = useActivateUser({
     owner,
     provider,
     query: params,
-    opts: {
-      onSuccess: () => {
-        // Re-query users with without updating current params.
-        invalidateUsers()
-        // Re-query the account details api to update the current plan card.
-        invalidateAccountDetails()
-      },
-    },
   })
 
   function updateQuery(data) {

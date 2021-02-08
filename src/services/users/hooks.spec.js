@@ -3,7 +3,7 @@ import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { useUsers, useUpdateUser, useInvalidateUsers } from './hooks'
+import { useUsers, useUpdateUser } from './hooks'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -158,22 +158,5 @@ describe('useUpdateUser', () => {
         expect(hookData.result.current.isSuccess).toBeTruthy()
       })
     })
-  })
-})
-
-describe('useInvalidateUsers', () => {
-  let hookData
-  beforeEach(() => {
-    hookData = renderHook(() => useInvalidateUsers(), {
-      wrapper,
-    })
-  })
-
-  it('returns a function to flust the users cache', () => {
-    const invalidateCache = hookData.result.current
-
-    invalidateCache()
-
-    // TODO: I'm having a hard time figuring out how to best test this, thoughts?
   })
 })

@@ -53,12 +53,6 @@ export function useAccountDetails({ provider, owner, opts = {} }) {
   )
 }
 
-export function useInvalidateAccountDetails() {
-  const queryClient = useQueryClient()
-
-  return () => queryClient.invalidateQueries('accountDetails')
-}
-
 export function usePlans(provider) {
   // the plans are very static data
   return useQuery('plans', () => fetchPlan(provider), {
