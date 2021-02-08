@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { useForm } from 'react-hook-form'
 import cs from 'classnames'
 
 import { FormControls } from './FormControls'
@@ -27,12 +26,10 @@ const UserManagementClasses = {
   cta: 'w-full truncate',
 }
 
-function useActivateUser({ provider, owner, query, opts }) {
+function useActivateUser({ provider, owner }) {
   const { mutate, ...rest } = useUpdateUser({
     provider,
     owner,
-    params: query,
-    opts,
   })
 
   function activate(user, activated) {
@@ -52,18 +49,10 @@ function createPills({ isAdmin, email, student }) {
 
 function UserManagement({ provider, owner }) {
   const { params, updateParams } = useLocationParams({
-    activated: '',
-    isAdmin: '',
+    activated: ApiFilterEnum.none,
+    isAdmin: ApiFilterEnum.none,
     ordering: 'name',
     search: '',
-  })
-  const { register, handleSubmit, control } = useForm({
-    defaultValues: {
-      search: params.search,
-      activated: ApiFilterEnum.none,
-      isAdmin: ApiFilterEnum.none,
-      ordering: 'name',
-    },
   })
   const { data, isSuccess } = useUsers({
     provider,
@@ -73,7 +62,6 @@ function UserManagement({ provider, owner }) {
   const { activate } = useActivateUser({
     owner,
     provider,
-    query: params,
   })
 
   function updateQuery(data) {
@@ -81,21 +69,22 @@ function UserManagement({ provider, owner }) {
   }
 
   return (
-    <form
-      className={UserManagementClasses.root}
-      onSubmit={handleSubmit(updateQuery)}
-    >
+    <article className={UserManagementClasses.root}>
       <FormControls
         current={params}
         onChange={updateQuery}
-        register={register}
-        control={control}
+        defaultValues={{
+          search: params.search,
+          activated: ApiFilterEnum.none,
+          isAdmin: ApiFilterEnum.none,
+          ordering: 'name',
+        }}
       />
       <Card className={UserManagementClasses.results}>
         <h2 className={UserManagementClasses.title}>Users</h2>
         <div>
           {isSuccess &&
-            data?.results?.map((user) => (
+            data.results.map((user) => (
               <div
                 key={user.username}
                 className={UserManagementClasses.userTable}
@@ -132,7 +121,7 @@ function UserManagement({ provider, owner }) {
         </div>
         <div className="pt-4">Pagination</div>
       </Card>
-    </form>
+    </article>
   )
 }
 
