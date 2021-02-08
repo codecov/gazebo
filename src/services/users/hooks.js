@@ -31,10 +31,13 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
   const queryClient = useQueryClient()
 
   const successHandler = (...args) => {
-    console.log('hello')
     // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
-    queryClient.invalidateQueries('users')
-    queryClient.invalidateQueries('accountDetails')
+    if (queryClient.getQueryData('users')) {
+      queryClient.invalidateQueries('users')
+    }
+    if (queryClient.getQueryData('accountDetails')) {
+      queryClient.invalidateQueries('accountDetails')
+    }
 
     if (onSuccess) {
       // Exicute passed onSuccess after invalidating queries
