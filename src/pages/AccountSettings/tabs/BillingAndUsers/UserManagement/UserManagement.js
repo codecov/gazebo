@@ -64,15 +64,11 @@ function UserManagement({ provider, owner }) {
     provider,
   })
 
-  function updateQuery(data) {
-    updateParams(data)
-  }
-
   return (
     <article className={UserManagementClasses.root}>
       <FormControls
         current={params}
-        onChange={updateQuery}
+        onChange={updateParams}
         defaultValues={{
           search: params.search,
           activated: ApiFilterEnum.none,

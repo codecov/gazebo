@@ -194,30 +194,5 @@ describe('useUpdateUser', () => {
         expect(queryClient.isFetching('accountDetails')).toBe(0)
       })
     })
-
-    describe('accountDetails cache invalidate', () => {
-      beforeEach(() => {
-        // Dummy cache data
-        queryClient.setQueryData(
-          'accountDetails',
-          'original accountDetails data'
-        )
-        queryClient.setQueryData('users', 'original users data')
-        return act(async () => {
-          hookData.result.current.mutate({
-            targetUser: 'mundo',
-            admin: true,
-            activated: true,
-          })
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
-        })
-      })
-      it('accountDetails cache is now invalid', () => {
-        expect(queryClient.isFetching('accountDetails')).toBeGreaterThanOrEqual(
-          1
-        )
-      })
-    })
   })
 })
