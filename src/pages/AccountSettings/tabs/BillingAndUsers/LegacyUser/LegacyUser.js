@@ -33,7 +33,7 @@ function LegacyUser({ accountDetails, provider, owner }) {
         <hr className="my-6" />
 
         <div className="flex flex-col items-center mt-6">
-          <Button Component={Link} to={`${baseUrl}billing/upgrade`}>
+          <Button Component={Link} to={`${baseUrl}/upgrade`}>
             Upgrade to per user pricing
           </Button>
           <p className="mt-4 text-gray-900">
