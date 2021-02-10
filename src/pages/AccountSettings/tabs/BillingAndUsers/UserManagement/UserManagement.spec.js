@@ -14,7 +14,9 @@ jest.mock('services/users/hooks')
 const queryClient = new QueryClient()
 
 const users = {
-  data: {},
+  data: {
+    totalPages: 1,
+  },
 }
 
 const updateUser = {
@@ -26,6 +28,8 @@ const defaultQuery = {
   isAdmin: '',
   ordering: 'name',
   search: '',
+  page: 1,
+  pageSize: 50,
 }
 
 function assertFromToday(date) {
@@ -63,6 +67,7 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
+            totalPages: 1,
             results: [
               {
                 username: 'earthspirit',
@@ -87,6 +92,7 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
+            totalPages: 1,
             results: [],
           },
         }
@@ -105,6 +111,7 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
+            totalPages: 1,
             results: [{ username: 'dazzle', student: true }],
           },
         }
@@ -124,6 +131,7 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
+            totalPages: 1,
             results: [{ username: 'dazzle', isAdmin: true }],
           },
         }
@@ -143,6 +151,7 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
+            totalPages: 1,
             results: [{ username: 'dazzle', email: 'dazzle@dota.com' }],
           },
         }
@@ -162,6 +171,7 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
+            totalPages: 1,
             results: [{ username: 'kumar', lastseen: '2021-01-20T05:03:56Z' }],
           },
         }
@@ -183,6 +193,7 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
+            totalPages: 1,
             results: [{ username: 'kumar' }],
           },
         }
@@ -202,6 +213,7 @@ describe('UserManagerment', () => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
+            totalPages: 1,
             results: [
               {
                 username: 'kumar',
@@ -227,6 +239,7 @@ describe('UserManagerment', () => {
       const mockUseUsersValue = {
         isSuccess: true,
         data: {
+          totalPages: 1,
           results: [{ username: 'kumar' }],
         },
       }
@@ -401,6 +414,7 @@ describe('UserManagerment', () => {
       const mockUseUsersImplementation = ({ query }) => ({
         isSuccess: true,
         data: {
+          totalPages: 1,
           results: [{ username: 'earthspirit' }, { username: 'dazzle' }].filter(
             ({ username }) => {
               // mock query search
@@ -452,6 +466,7 @@ describe('UserManagerment', () => {
       const mockUseUsersValue = {
         isSuccess: true,
         data: {
+          totalPages: 1,
           results: [
             {
               username: 'kumar',
@@ -494,6 +509,7 @@ describe('UserManagerment', () => {
       const mockUseUsersValue = {
         isSuccess: true,
         data: {
+          totalPages: 1,
           results: [
             {
               username: 'kumar',
@@ -522,6 +538,57 @@ describe('UserManagerment', () => {
       expect(mutateMock).toHaveBeenLastCalledWith({
         targetUser: 'kumar',
         activated: false,
+      })
+    })
+  })
+
+  describe('Pagination Controls', () => {
+    describe('On page change', () => {
+      beforeEach(() => {
+        const mockUseUsersImplementation = ({ query }) => {
+          const dazzle = { username: 'dazzle' }
+          const es = { username: 'earthspirit' }
+          return {
+            isSuccess: true,
+            data: {
+              totalPages: 10,
+              results: query.page === 1 ? [dazzle] : [es],
+            },
+          }
+        }
+
+        setup({ mockUseUsersImplementation })
+      })
+
+      it('Clicking a page updates the query page', async () => {
+        expect(screen.getByText(/dazzle$/)).toBeInTheDocument()
+        const Page2 = screen.getByRole('button', {
+          name: /2/,
+        })
+        user.click(Page2)
+        await waitFor(() =>
+          expect(expect(screen.getByText(/earthspirit$/)).toBeInTheDocument())
+        )
+      })
+    })
+    describe('If only one page', () => {
+      beforeEach(() => {
+        const mockUseUsersValue = {
+          isSuccess: true,
+          data: {
+            totalPages: 1,
+            results: [],
+          },
+        }
+        setup({ mockUseUsersValue })
+      })
+
+      it('Does not render', async () => {
+        const Page1 = screen.queryByRole('button', {
+          name: /1/,
+        })
+
+        expect(Page1).not.toBeInTheDocument()
       })
     })
   })
