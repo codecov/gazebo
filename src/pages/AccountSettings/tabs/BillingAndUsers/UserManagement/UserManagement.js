@@ -63,7 +63,7 @@ function UserManagement({ provider, owner }) {
     ordering: 'name', // Default sort is A-Z Name
     search: '', // Default to no seach on initial load
     page: 1, // Default to first page
-    pageSize: 10, // Default page size
+    pageSize: 50, // Default page size
   })
   // Setup form defaults
   const { register, handleSubmit, control } = useForm({
@@ -73,7 +73,6 @@ function UserManagement({ provider, owner }) {
       isAdmin: ApiFilterEnum.none,
       ordering: 'name',
       page: 1,
-      pageSize: 1,
     },
   })
   // Get user API data
@@ -145,7 +144,6 @@ function UserManagement({ provider, owner }) {
           page={params.page}
           next={data.next}
           previous={data.previous}
-          pageSize={params.pageSize}
           onChange={updateQuery}
         />
       </Card>

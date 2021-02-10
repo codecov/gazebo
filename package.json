@@ -30,7 +30,7 @@
   "scripts": {
     "start": "rescripts start",
     "build": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build",
-    "test": "rescripts test --reporters=default --reporters=jest-junit",
+    "test": "rescripts test",
     "sentry": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build && node scripts/sentry.js",
     "test:ci": "rescripts test --collectCoverage --runInBand --reporters=default --reporters=jest-junit",
     "eject": "rescripts eject",

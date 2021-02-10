@@ -26,7 +26,7 @@ const defaultQuery = {
   ordering: 'name',
   search: '',
   page: 1,
-  pageSize: 10,
+  pageSize: 50,
 }
 
 function assertFromToday(date) {
@@ -564,184 +564,24 @@ describe('UserManagerment', () => {
         )
       })
     })
-    describe('Renders all expected options with massive page size', () => {
+    describe('If only one page', () => {
       beforeEach(() => {
         const mockUseUsersValue = {
           isSuccess: true,
           data: {
-            totalPages: 3000,
+            totalPages: 1,
             results: [],
           },
         }
         setup({ mockUseUsersValue })
       })
 
-      it('All options are presented', async () => {
-        const Select = screen.getByRole('button', {
-          name: /select page size/,
+      it('Does not render', async () => {
+        const Page1 = screen.queryByRole('button', {
+          name: /1/,
         })
-        user.click(Select)
-        await waitFor(() =>
-          expect(
-            screen.getByRole('option', {
-              name: '10',
-            })
-          ).toBeInTheDocument()
-        )
-        expect(
-          screen.getByRole('option', {
-            name: '20',
-          })
-        ).toBeInTheDocument()
-        expect(
-          screen.getByRole('option', {
-            name: '50',
-          })
-        ).toBeInTheDocument()
-        expect(
-          screen.getByRole('option', {
-            name: '100',
-          })
-        ).toBeInTheDocument()
-      })
 
-      it('Selecting a page size triggers a new user query', async () => {
-        const Select = screen.getByRole('button', {
-          name: /select page size/,
-        })
-        user.click(Select)
-        await waitFor(() =>
-          expect(
-            screen.getByRole('option', {
-              name: '10',
-            })
-          ).toBeInTheDocument()
-        )
-
-        user.click(
-          screen.getByRole('option', {
-            name: '50',
-          })
-        )
-      })
-    })
-    describe('Renders up to possible page size options [10, 20, 50]', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 75,
-            results: [],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-
-      it('All expected options are presented', async () => {
-        const Select = screen.getByRole('button', {
-          name: /select page size/,
-        })
-        user.click(Select)
-        await waitFor(() =>
-          expect(
-            screen.getByRole('option', {
-              name: '10',
-            })
-          ).toBeInTheDocument()
-        )
-        expect(
-          screen.getByRole('option', {
-            name: '20',
-          })
-        ).toBeInTheDocument()
-        expect(
-          screen.getByRole('option', {
-            name: '50',
-          })
-        ).toBeInTheDocument()
-      })
-    })
-    describe('Renders up to possible page size options [10, 20]', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 42,
-            results: [],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-
-      it('All expected options are presented', async () => {
-        const Select = screen.getByRole('button', {
-          name: /select page size/,
-        })
-        user.click(Select)
-        await waitFor(() =>
-          expect(
-            screen.getByRole('option', {
-              name: '10',
-            })
-          ).toBeInTheDocument()
-        )
-        expect(
-          screen.getByRole('option', {
-            name: '20',
-          })
-        ).toBeInTheDocument()
-      })
-    })
-    describe('Selecting a new page size updates', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 42,
-            results: [],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-
-      it('Updates selected', async () => {
-        const Select = screen.getByRole('button', {
-          name: /select page size/,
-        })
-        expect(Select).toHaveTextContent('10')
-        user.click(Select)
-        await waitFor(() =>
-          expect(
-            screen.getByRole('option', {
-              name: '10',
-            })
-          ).toBeInTheDocument()
-        )
-        user.click(
-          screen.getByRole('option', {
-            name: '20',
-          })
-        )
-        await waitFor(() => expect(Select).toHaveTextContent('20'))
-      })
-    })
-    describe('If no page size options possible do not render', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 11,
-            results: [],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-
-      it('All expected options are presented', async () => {
-        const Select = screen.queryByText('button', {
-          name: /select page size/,
-        })
-        expect(Select).not.toBeInTheDocument()
+        expect(Page1).not.toBeInTheDocument()
       })
     })
   })
