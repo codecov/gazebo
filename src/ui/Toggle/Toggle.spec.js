@@ -41,4 +41,27 @@ describe('Toggle', () => {
       expect(button).toHaveClass('translate-x-0')
     })
   })
+
+  describe('Default Label', () => {
+    beforeEach(() => {
+      setup({ value: false })
+    })
+
+    it('is screen reader only', () => {
+      const label = screen.getByText(/🐕/)
+      expect(label).toHaveClass('sr-only')
+    })
+  })
+
+  describe('Shown Label', () => {
+    beforeEach(() => {
+      setup({ value: false, labelClass: 'some-class' })
+    })
+
+    it('is screen reader only', () => {
+      const label = screen.getByText(/🐕/)
+      expect(label).toHaveClass('some-class')
+      expect(label).toHaveClass('cursor-pointer')
+    })
+  })
 })
