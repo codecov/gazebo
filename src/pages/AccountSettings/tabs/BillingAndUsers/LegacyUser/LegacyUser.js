@@ -23,7 +23,16 @@ function LegacyUser({ accountDetails, provider, owner }) {
         <p className="mt-4 text-gray-500">
           You’re on a legacy per repository plan, these plans are no longer
           supported by Codecov, if you need help managing your plan please reach
-          out to support.
+          out to{' '}
+          <a
+            className="underline hover:text-blue-600"
+            target="_blank"
+            rel="noreferrer"
+            href="https://codecov.freshdesk.com/support/home"
+          >
+            support
+          </a>
+          .
         </p>
         <p className="mt-4 text-gray-900 text-xl bold">
           {accountDetails.nbActivePrivateRepos}/
