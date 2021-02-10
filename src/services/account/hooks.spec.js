@@ -15,6 +15,7 @@ import {
   useInvoices,
   useInvoice,
   useEraseAccount,
+  useAutoActivate,
 } from './hooks'
 
 jest.mock('@stripe/react-stripe-js')
@@ -497,6 +498,50 @@ describe('useEraseAccount', () => {
           expect(Cookie.remove).toHaveBeenCalledWith('github-token')
         })
       })
+    })
+  })
+})
+
+describe('useAutoActivate', () => {
+  let hookData
+  let onSuccess = jest.fn()
+
+  function setup() {
+    const opts = {
+      onSuccess,
+    }
+    server.use(
+      rest.patch(
+        `/internal/${provider}/${owner}/account-details/`,
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({}))
+        }
+      )
+    )
+    hookData = renderHook(() => useAutoActivate({ provider, owner, opts }), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+      return act(() => {
+        hookData.result.current.mutate(true)
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+    })
+
+    it('opts are passed through to react-query', () => {
+      expect(onSuccess).toHaveBeenCalledTimes(1)
+    })
+
+    it('accountDetails cache unchanged', () => {
+      expect(queryClient.isFetching('accountDetails')).toBe(0)
+    })
+
+    it('users cache unchanged', () => {
+      expect(queryClient.isFetching('users')).toBe(0)
     })
   })
 })
