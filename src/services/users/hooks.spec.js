@@ -1,6 +1,7 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
+
 import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useUsers, useUpdateUser } from './hooks'
@@ -116,7 +117,7 @@ describe('useUsers', () => {
 describe('useUpdateUser', () => {
   let hookData
 
-  function setup(username, body, params = {}) {
+  function setup({ username, body, opts = {} }) {
     server.use(
       rest.patch(
         `/internal/${provider}/${owner}/users/${username}`,
@@ -125,7 +126,7 @@ describe('useUpdateUser', () => {
         }
       )
     )
-    hookData = renderHook(() => useUpdateUser({ provider, owner, params }), {
+    hookData = renderHook(() => useUpdateUser({ provider, owner, opts }), {
       wrapper,
     })
   }
@@ -134,7 +135,7 @@ describe('useUpdateUser', () => {
     beforeEach(() => {
       // pass mock response
       const mockRes = { ...mundo, activated: true, isAdmin: true }
-      setup('mundo', mockRes)
+      setup({ username: 'mundo', body: mockRes })
     })
 
     it('returns isLoading false', () => {
@@ -142,57 +143,55 @@ describe('useUpdateUser', () => {
     })
 
     describe('when calling the mutation', () => {
-      describe('it updates local cache on success', () => {
-        beforeEach(() => {
-          return act(async () => {
-            hookData.result.current.mutate({
-              targetUser: 'mundo',
-              admin: true,
-              activated: true,
-            })
-            await hookData.waitFor(() => hookData.result.current.isLoading)
-            await hookData.waitFor(() => !hookData.result.current.isLoading)
+      beforeEach(() => {
+        return act(async () => {
+          hookData.result.current.mutate({
+            targetUser: 'mundo',
+            admin: true,
+            activated: true,
           })
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
         })
+      })
 
-        it('the call was successful', () => {
-          expect(hookData.result.current.isSuccess).toBeTruthy()
-        })
+      it('updates the query', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
+      })
+    })
+  })
 
-        it('The local cache has been updated', () => {
-          const expectedCache = {
-            count: 2,
-            next: null,
-            previous: null,
-            results: [
-              {
-                activated: true,
-                isAdmin: true,
-                username: 'ahri',
-                email: 'ahri@lol.com',
-                ownerid: 1,
-                student: false,
-                name: 'Ahri the Nine-Tailed Fox',
-                latestPrivatePrDate: '2020-12-17T00:08:16.398263Z',
-                lastseen: '2020-12-17T00:08:16.398263Z',
-              },
-              {
-                activated: true,
-                isAdmin: true,
-                username: 'mundo',
-                email: 'drmundo@lol.com',
-                ownerid: 2,
-                student: false,
-                name: 'Dr. Mundo',
-                latestPrivatePrDate: '2020-12-17T00:08:16.398263Z',
-                lastseen: '2020-12-17T00:08:16.398263Z',
-              },
-            ],
-          }
-          expect(
-            queryClient.getQueryData(['users', provider, owner, {}])
-          ).toMatchObject(expectedCache)
+  describe('onSuccess handler', () => {
+    const mockSuccess = jest.fn()
+    beforeEach(() => {
+      // pass mock response
+      const mockRes = 'new account details data'
+      setup({
+        username: 'mundo',
+        body: mockRes,
+        opts: { onSuccess: mockSuccess },
+      })
+    })
+
+    describe('passes through the on success passed function', () => {
+      beforeEach(() => {
+        return act(async () => {
+          hookData.result.current.mutate({
+            targetUser: 'mundo',
+            admin: true,
+            activated: true,
+          })
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
         })
+      })
+
+      it('calls the onSuccess method', () => {
+        expect(mockSuccess).toHaveBeenCalledTimes(1)
+      })
+
+      it('accountDetails cache unchanged', () => {
+        expect(queryClient.isFetching('accountDetails')).toBe(0)
       })
     })
   })

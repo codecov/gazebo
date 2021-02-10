@@ -11,7 +11,7 @@ import AddAdmins from './AddAdmins'
 
 function useAdminsAndRevoke({ provider, owner }) {
   const params = { isAdmin: ApiFilterEnum.true }
-  const { data, refetch } = useUsers({
+  const { data } = useUsers({
     provider,
     owner,
     query: params,
@@ -23,9 +23,7 @@ function useAdminsAndRevoke({ provider, owner }) {
       targetUser: user.username,
       is_admin: isAdmin,
     }
-    mutate(body, {
-      onSuccess: refetch,
-    })
+    mutate(body)
   }
 
   return {

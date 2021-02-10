@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import user from '@testing-library/user-event'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
 import formatDistance from 'date-fns/formatDistance'
 import parseISO from 'date-fns/parseISO'
@@ -9,6 +10,8 @@ import { useUsers, useUpdateUser } from 'services/users'
 import UserManagerment from './UserManagement'
 
 jest.mock('services/users/hooks')
+
+const queryClient = new QueryClient()
 
 const users = {
   data: {
@@ -50,7 +53,11 @@ describe('UserManagerment', () => {
     }
 
     render(<UserManagerment provider="gh" owner="radient" />, {
-      wrapper: MemoryRouter,
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter>{children}</MemoryRouter>
+        </QueryClientProvider>
+      ),
     })
   }
 

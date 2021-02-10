@@ -18,7 +18,7 @@ export function useLocationParams(defaultParams = {}) {
       (value, key) => value === defaultParams[key]
     )
 
-    push(`${pathname}?${qs.stringify(locationParams)}`, state)
+    push(`${pathname}?${qs.stringify(locationParams)}`, params)
   }
 
   // Create new state

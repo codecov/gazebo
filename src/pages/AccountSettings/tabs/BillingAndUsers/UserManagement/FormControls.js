@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { Controller } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
@@ -70,90 +70,95 @@ Item.propTypes = {
   label: PropTypes.string.isRequired,
 }
 
-export function FormControls({ control, register, onChange, current }) {
+export function FormControls({ onChange, current, defaultValues }) {
+  const { register, control } = useForm({
+    defaultValues,
+  })
+
   return (
-    <Card>
-      <ControlGroup>
-        <Controller
-          name="activated"
-          control={control}
-          render={() => (
-            <Select
-              ariaName="activated"
-              className={FormClasses.firstFilter}
-              control={control}
-              items={ActivatedItems}
-              renderSelected={SelectedItem}
-              renderItem={Item}
-              value={ActivatedItems.find(
-                ({ value }) => value === current?.activated
-              )}
-              onChange={({ value }) => {
-                onChange({ activated: value })
-              }}
-            />
-          )}
-        />
-        <Controller
-          name="isAdmin"
-          control={control}
-          render={() => (
-            <Select
-              ariaName="isAdmin"
-              className={FormClasses.filter}
-              control={control}
-              items={AdminItems}
-              renderSelected={SelectedItem}
-              renderItem={Item}
-              value={ActivatedItems.find(
-                ({ value }) => value === current?.isAdmin
-              )}
-              onChange={({ value }) => {
-                onChange({ isAdmin: value })
-              }}
-            />
-          )}
-        />
-        <Controller
-          name="ordering"
-          control={control}
-          render={() => (
-            <Select
-              ariaName="ordering"
-              className={FormClasses.filter}
-              control={control}
-              items={OrderingItems}
-              renderSelected={SelectedItem}
-              renderItem={Item}
-              value={OrderingItems.find(
-                ({ value }) => value === current?.ordering
-              )}
-              onChange={({ value }) => {
-                onChange({ ordering: value })
-              }}
-            />
-          )}
-        />
-        <TextInput
-          variant="light"
-          aria-label="search users"
-          className={FormClasses.search}
-          name="search"
-          ref={register}
-          placeholder="Search"
-          embedded={() => <Icon name="search" className="absolute top-2" />}
-          onChange={(event) => onChange({ search: event.target.value })}
-        />
-      </ControlGroup>
-      {/* Hidden input for screen readers */}
-      <input className={FormClasses.submit} type="submit" value="Submit" />
-    </Card>
+    <form onSubmit={onChange}>
+      <Card>
+        <ControlGroup>
+          <Controller
+            name="activated"
+            control={control}
+            render={() => (
+              <Select
+                ariaName="activated"
+                className={FormClasses.firstFilter}
+                control={control}
+                items={ActivatedItems}
+                renderSelected={SelectedItem}
+                renderItem={Item}
+                value={ActivatedItems.find(
+                  ({ value }) => value === current?.activated
+                )}
+                onChange={({ value }) => {
+                  onChange({ activated: value })
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="isAdmin"
+            control={control}
+            render={() => (
+              <Select
+                ariaName="isAdmin"
+                className={FormClasses.filter}
+                control={control}
+                items={AdminItems}
+                renderSelected={SelectedItem}
+                renderItem={Item}
+                value={ActivatedItems.find(
+                  ({ value }) => value === current?.isAdmin
+                )}
+                onChange={({ value }) => {
+                  onChange({ isAdmin: value })
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="ordering"
+            control={control}
+            render={() => (
+              <Select
+                ariaName="ordering"
+                className={FormClasses.filter}
+                control={control}
+                items={OrderingItems}
+                renderSelected={SelectedItem}
+                renderItem={Item}
+                value={OrderingItems.find(
+                  ({ value }) => value === current?.ordering
+                )}
+                onChange={({ value }) => {
+                  onChange({ ordering: value })
+                }}
+              />
+            )}
+          />
+          <TextInput
+            variant="light"
+            aria-label="search users"
+            className={FormClasses.search}
+            name="search"
+            ref={register}
+            placeholder="Search"
+            embedded={() => <Icon name="search" className="absolute top-2" />}
+            onChange={(event) => onChange({ search: event.target.value })}
+          />
+        </ControlGroup>
+        {/* Hidden input for screen readers */}
+        <input className={FormClasses.submit} type="submit" value="Submit" />
+      </Card>
+    </form>
   )
 }
 
 FormControls.propTypes = {
   onChange: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired,
-  control: PropTypes.object.isRequired,
+  defaultValues: PropTypes.object.isRequired,
   current: PropTypes.object.isRequired,
 }

@@ -1,7 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
-import update from 'lodash/update'
-import findIndex from 'lodash/findIndex'
-
 import Api from 'shared/api'
 
 function getPathUsers({ provider, owner }) {
@@ -17,7 +14,7 @@ function fetchUsers({ provider, owner, query }) {
   return Api.get({ path, provider, query })
 }
 
-export function useUsers({ provider, owner, query, opts }) {
+export function useUsers({ provider, owner, query, opts = {} }) {
   return useQuery(
     ['users', provider, owner, query],
     () => fetchUsers({ provider, owner, query }),
@@ -29,16 +26,19 @@ export function useUsers({ provider, owner, query, opts }) {
   )
 }
 
-export function useUpdateUser({ provider, owner, params }) {
+export function useUpdateUser({ provider, owner, opts = {} }) {
+  const { onSuccess, ...passedOpts } = opts
   const queryClient = useQueryClient()
 
-  function updateUserCache(oldData, user) {
-    const index = findIndex(
-      oldData.results,
-      ({ username }) => username === user.username
-    )
+  const successHandler = (...args) => {
+    // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
+    queryClient.invalidateQueries('users')
+    queryClient.invalidateQueries('accountDetails')
 
-    return update(oldData, `results[${index}]`, () => user)
+    if (onSuccess) {
+      // Exicute passed onSuccess after invalidating queries
+      onSuccess.apply(null, args)
+    }
   }
 
   return useMutation(
@@ -46,14 +46,6 @@ export function useUpdateUser({ provider, owner, params }) {
       const path = patchPathUsers({ provider, owner, targetUser })
       return Api.patch({ path, provider, body })
     },
-    {
-      onSuccess: (user) => {
-        // update the local cache of account details with what the server returns
-        queryClient.setQueryData(
-          ['users', provider, owner, params],
-          (oldData) => updateUserCache(oldData, user)
-        )
-      },
-    }
+    { onSuccess: successHandler, ...passedOpts }
   )
 }
