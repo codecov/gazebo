@@ -88,6 +88,7 @@ module.exports = {
       borderColor: ['first'],
       borderWidth: ['first'],
       padding: ['responsive', 'last'],
+      backgroundColor: ['disabled'],
     },
   },
   plugins: [plugin(caretColorPlugin)],

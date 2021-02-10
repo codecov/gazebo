@@ -32,7 +32,7 @@
     "build": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build",
     "test": "rescripts test",
     "sentry": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build && node scripts/sentry.js",
-    "test:ci": "rescripts test --collectCoverage  --runInBand --reporters=default --reporters=jest-junit",
+    "test:ci": "rescripts test --collectCoverage --runInBand --reporters=default --reporters=jest-junit",
     "eject": "rescripts eject",
     "lint": "npx eslint --no-ignore --max-warnings=0 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
     "bundlesize": "npx bundlesize",

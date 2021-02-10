@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form'
 import cs from 'classnames'
 
 import { FormControls } from './FormControls'
+import { FormPaginate } from './FormPaginate'
+
 import { DateItem } from './DateItem'
 import { useLocationParams, ApiFilterEnum } from 'services/navigation'
 
@@ -14,19 +16,22 @@ import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
 const UserManagementClasses = {
-  root: 'space-y-4 col-span-2',
-  title: 'text-lg py-3',
-  results: 'shadow divide-y divide-gray-200 divide-solid p-4',
-  userTable: 'grid grid-cols-4 lg:gap-2 my-6',
+  root: 'space-y-4 col-span-2 mb-20', // Select pushes page length out. For now padding
+  title: 'text-2xl font-bold pb-4',
+  results: 'shadow divide-y divide-gray-200 divide-solid p-6',
+  userTable: 'grid grid-cols-5 lg:gap-2 my-6',
   user: ({ lastseen, latestPrivatePrDate }) =>
     cs({
-      'col-span-2': !lastseen || !latestPrivatePrDate,
-      'col-span-3': !lastseen && !latestPrivatePrDate,
+      'col-span-3':
+        (!lastseen || !latestPrivatePrDate) &&
+        !(!lastseen && !latestPrivatePrDate),
+      'col-span-4': !lastseen && !latestPrivatePrDate,
     }),
-  ctaWrapper: 'flex items-center',
+  ctaWrapper: 'flex items-center justify-end',
   cta: 'w-full truncate',
 }
 
+// Activate User hook,
 function useActivateUser({ provider, owner, query }) {
   const { mutate, ...rest } = useUpdateUser({
     provider,
@@ -50,27 +55,36 @@ function createPills({ isAdmin, email, student }) {
 }
 
 function UserManagement({ provider, owner }) {
+  // local state is pulled from url params.
+  // Defaults are not shown in url programically.
   const { params, updateParams } = useLocationParams({
-    activated: '',
-    isAdmin: '',
-    ordering: 'name',
-    search: '',
+    activated: '', // Default to no filter on activated
+    isAdmin: '', // Default to no filter on isAdmin
+    ordering: 'name', // Default sort is A-Z Name
+    search: '', // Default to no seach on initial load
+    page: 1, // Default to first page
+    pageSize: 50, // Default page size
   })
+  // Setup form defaults
   const { register, handleSubmit, control } = useForm({
     defaultValues: {
       search: params.search,
       activated: ApiFilterEnum.none,
       isAdmin: ApiFilterEnum.none,
       ordering: 'name',
+      page: 1,
     },
   })
+  // Get user API data
   const { data, isSuccess } = useUsers({
     provider,
     owner,
     query: params,
   })
+  // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider, query: params })
 
+  // Kick off a new render by updating the location params
   function updateQuery(data) {
     updateParams(data)
   }
@@ -125,7 +139,13 @@ function UserManagement({ provider, owner }) {
               </div>
             ))}
         </div>
-        <div className="pt-4">Pagination</div>
+        <FormPaginate
+          totalPages={data.totalPages}
+          page={params.page}
+          next={data.next}
+          previous={data.previous}
+          onChange={updateQuery}
+        />
       </Card>
     </form>
   )
