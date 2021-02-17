@@ -17,8 +17,8 @@ const ToggleClasses = {
   label: (classes) => checkClass(classes),
 }
 
-const ID = uniqueId('toggle')
 function Toggle({ label, labelClass, value = false, ...props }) {
+  const ID = uniqueId('toggle')
   return (
     <>
       <button
