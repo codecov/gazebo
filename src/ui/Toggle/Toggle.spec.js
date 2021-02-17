@@ -55,7 +55,19 @@ describe('Toggle', () => {
 
   describe('Shown Label', () => {
     beforeEach(() => {
-      setup({ value: false, labelClass: 'some-class' })
+      setup({ value: false, showLabel: true })
+    })
+
+    it('is screen reader only', () => {
+      const label = screen.getByText(/🐕/)
+      expect(label).not.toHaveClass('sr-only')
+      expect(label).toHaveClass('cursor-pointer')
+    })
+  })
+
+  describe('Shown Label with custom styling', () => {
+    beforeEach(() => {
+      setup({ value: false, labelClass: 'some-class', showLabel: true })
     })
 
     it('is screen reader only', () => {

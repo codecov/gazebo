@@ -98,6 +98,7 @@ function UserManagement({ provider, owner }) {
           <h2 className={UserManagementClasses.title}>Users</h2>
           <span className={UserManagementClasses.activateUsers}>
             <Toggle
+              showLabel={true}
               onClick={() => autoActivate(!planAutoActivate)}
               value={planAutoActivate}
               label="Auto activate users"
