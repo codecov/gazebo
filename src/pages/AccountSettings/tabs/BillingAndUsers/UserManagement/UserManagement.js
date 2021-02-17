@@ -19,17 +19,15 @@ const UserManagementClasses = {
   title: 'text-2xl font-bold pb-4',
   results: 'shadow divide-y divide-gray-200 divide-solid p-6',
   userTable: 'grid grid-cols-5 lg:gap-2 my-6',
-  // eslint-disable-next-line complexity
-  user: ({ lastseen, latestPrivatePrDate }) =>
-    cs({
-      'col-span-3':
-        (!lastseen || !latestPrivatePrDate) &&
-        !(!lastseen && !latestPrivatePrDate),
-      'col-span-4': !lastseen && !latestPrivatePrDate,
-      'col-span-2': lastseen && latestPrivatePrDate,
-    }),
+  user: getUserClass,
   ctaWrapper: 'flex items-center justify-end',
   cta: 'w-full truncate',
+}
+
+function getUserClass ({ lastseen, latestPrivatePrDate }) {
+    if (lastseen && latestPrivatePrDate) return 'col-span-2'
+    else if (!lastseen && !latestPrivatePrDate) return 'col-span-4'
+    return 'col-span-3'
 }
 
 function useActivateUser({ provider, owner }) {
