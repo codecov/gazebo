@@ -28,28 +28,6 @@ The page will reload when you make edits. There is a local proxy to the staging 
 PROXY_TO=http://localhost:5100
 ```
 
-## Enviornment Variables
-
-Gazebo supports enviornment files by default which become enviornment variables at run time.
-
-You must prepend env variables with `REACT_APP_` to access during run time.
-
-```
-PROXY_TO=https://stage-api.codecov.dev
-REACT_APP_MY_CUSTOM_VAR=foobar
-```
-
-```js
-console.log(process.env.REACT_APP_MY_CUSTOM_VAR) // foobar
-```
-
-To override enviornment variables when working locally create a `.env.local` file, this file is ignored by git be default which will prevent accidental commits.
-
-Currently there's two variables you may want to change when working locally:
-
-- PROXY_TO (Change where Gazebo api services are pointing to)
-- REACT_APP_MSW_BROWSER (boolean to enable mocking api requests in browser, see [How to mock HTTP responses in the browser](#How-to-mock-HTTP-responses-in-the-browser))
-
 ## Run tests
 
 You can run the tests with
@@ -90,8 +68,34 @@ will build the application in the `build` folder. We currently use Netlify for d
 The config are centralized in one place in the file `config.js`. The file merges multiple configuration in one object:
 
 - hardcoded configuration in that file
-- the configuration from `process.env` [documentation here](https://create-react-app.dev/docs/adding-custom-environment-variables) which is set on build-time
+- the configuration from [process.env](#process.env) which is set on build-time
 - the configuration from `window.configEnv` which can be set on start-time
+
+### process.env
+
+Gazebo supports [env files](https://create-react-app.dev/docs/adding-custom-environment-variables) by default which become enviornment variables at build-time.
+
+To override enviornment variables when working locally create a `.env.local` file, this file is ignored by git.
+
+You must prepend env variables with `REACT_APP_` to access them at run time.
+
+`.env.local`
+
+```
+PROXY_TO=https://stage-api.codecov.dev
+REACT_APP_MY_CUSTOM_VAR=foobar
+```
+
+`/src/somefile.js`
+
+```js
+console.log(process.env.REACT_APP_MY_CUSTOM_VAR) // foobar
+```
+
+Currently there's two variables you may want to change when working locally:
+
+- PROXY_TO (Change where Gazebo api services are pointing to)
+- REACT_APP_MSW_BROWSER (boolean to enable mocking api requests in browser, see [How to mock HTTP responses in the browser](#How-to-mock-HTTP-responses-in-the-browser))
 
 ## How to mock HTTP responses in the browser:
 
