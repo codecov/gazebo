@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import cs from 'classnames'
 
 import { FormControls } from './FormControls'
 import { FormPaginate } from './FormPaginate'
