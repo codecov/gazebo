@@ -45,7 +45,7 @@ console.log(process.env.REACT_APP_MY_CUSTOM_VAR) // foobar
 
 To override enviornment variables when working locally create a `.env.local` file, this file is ignored by git be default which will prevent accidental commits.
 
-Currently there's 3 variables you may want to change when working locally:
+Currently there's two variables you may want to change when working locally:
 
 - PROXY_TO (Change where Gazebo api services are pointing to)
 - REACT_APP_MSW_BROWSER (boolean to enable mocking api requests in browser, see [How to mock HTTP responses in the browser](#How-to-mock-HTTP-responses-in-the-browser))
