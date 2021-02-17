@@ -7,16 +7,22 @@ import { FormPaginate } from './FormPaginate'
 import { DateItem } from './DateItem'
 
 import Card from 'ui/Card'
+import Toggle from 'ui/Toggle'
 import User from 'ui/User'
 import Button from 'ui/Button'
 
 import { useLocationParams, ApiFilterEnum } from 'services/navigation'
+import { useAutoActivate, useAccountDetails } from 'services/account'
 import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
 const UserManagementClasses = {
   root: 'space-y-4 col-span-2 mb-20', // Select pushes page length out. For now padding
-  title: 'text-2xl font-bold pb-4',
+  cardHeader: 'flex justify-between items-center pb-4',
+  activateUsers:
+    'flex items-center py-2 px-4 shadow rounded-full text-blue-500',
+  activateUsersText: 'ml-2',
+  title: 'text-2xl font-bold',
   results: 'shadow divide-y divide-gray-200 divide-solid p-6',
   userTable: 'grid grid-cols-5 lg:gap-2 my-6',
   user: ({ lastseen, latestPrivatePrDate }) =>
@@ -70,6 +76,10 @@ function UserManagement({ provider, owner }) {
   })
   // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider })
+  const { mutate: autoActivate } = useAutoActivate({ owner, provider })
+  const {
+    data: { planAutoActivate },
+  } = useAccountDetails({ owner, provider })
 
   return (
     <article className={UserManagementClasses.root}>
@@ -84,7 +94,18 @@ function UserManagement({ provider, owner }) {
         }}
       />
       <Card className={UserManagementClasses.results}>
-        <h2 className={UserManagementClasses.title}>Users</h2>
+        <div className={UserManagementClasses.cardHeader}>
+          <h2 className={UserManagementClasses.title}>Users</h2>
+          <span className={UserManagementClasses.activateUsers}>
+            <Toggle
+              showLabel={true}
+              onClick={() => autoActivate(!planAutoActivate)}
+              value={planAutoActivate}
+              label="Auto activate users"
+              labelClass={UserManagementClasses.activateUsersText}
+            />
+          </span>
+        </div>
         <div>
           {isSuccess &&
             data.results.map((user) => (

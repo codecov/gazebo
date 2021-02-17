@@ -9,6 +9,7 @@ const Template = (args) => {
 export const NormalToggle = Template.bind({})
 NormalToggle.args = {
   label: 'sr label',
+  labelClass: '',
 }
 
 export default {

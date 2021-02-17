@@ -163,3 +163,35 @@ export function useEraseAccount({ provider, owner }) {
     }
   )
 }
+
+export function useAutoActivate({ provider, owner, opts = {} }) {
+  const queryClient = useQueryClient()
+  const { onSuccess, ...passedOpts } = opts
+
+  const successHandler = (...args) => {
+    // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
+    queryClient.invalidateQueries('users')
+    queryClient.invalidateQueries('accountDetails')
+
+    if (onSuccess) {
+      // Exicute passed onSuccess after invalidating queries
+      onSuccess.apply(null, args)
+    }
+  }
+
+  return useMutation(
+    (activate) => {
+      const path = getPathAccountDetails({ provider, owner })
+      const body = {
+        plan_auto_activate: activate,
+      }
+
+      return Api.patch({
+        path,
+        provider,
+        body,
+      })
+    },
+    { onSuccess: successHandler, ...passedOpts }
+  )
+}

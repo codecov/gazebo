@@ -6,10 +6,12 @@ import formatDistance from 'date-fns/formatDistance'
 import parseISO from 'date-fns/parseISO'
 
 import { useUsers, useUpdateUser } from 'services/users'
+import { useAccountDetails, useAutoActivate } from 'services/account'
 
 import UserManagerment from './UserManagement'
 
 jest.mock('services/users/hooks')
+jest.mock('services/account/hooks')
 
 const queryClient = new QueryClient()
 
@@ -19,8 +21,18 @@ const users = {
   },
 }
 
+const account = {
+  data: { planAutoActivate: true },
+}
+
+const updateUserMutate = jest.fn()
 const updateUser = {
-  mutate: jest.fn(),
+  mutate: updateUserMutate,
+}
+
+const updateAccountMutate = jest.fn()
+const updateAccount = {
+  mutate: updateAccountMutate,
 }
 
 const defaultQuery = {
@@ -43,8 +55,12 @@ describe('UserManagerment', () => {
     mockUseUsersValue = users,
     mockUseUpdateUserValue = updateUser,
     mockUseUsersImplementation,
+    mockUseAccountDetails = account,
+    mockUseAutoActivate = updateAccount,
   } = {}) {
     useUpdateUser.mockReturnValue(mockUseUpdateUserValue)
+    useAccountDetails.mockReturnValue(mockUseAccountDetails)
+    useAutoActivate.mockReturnValue(mockUseAutoActivate)
 
     if (mockUseUsersImplementation) {
       useUsers.mockImplementation(mockUseUsersImplementation)
@@ -589,6 +605,23 @@ describe('UserManagerment', () => {
         })
 
         expect(Page1).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Auto Activate Toggle', () => {
+    describe('On change', () => {
+      beforeEach(() => {
+        jest.resetAllMocks()
+        setup()
+      })
+
+      it('Clicking triggers a change', async () => {
+        const toggle = screen.getByText(/Auto activate users/)
+        user.click(toggle)
+        await waitFor(() =>
+          expect(updateAccountMutate).toHaveBeenCalledTimes(1)
+        )
       })
     })
   })
