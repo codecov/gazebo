@@ -1,0 +1,2 @@
+[context.deploy-preview]
+  environment = { REACT_APP_API_URL = "https://stage-api.codecov.dev", REACT_APP_STRIPE_KEY="pk_test_d3lcWjpwF96baLX9ShZfMcq4" }
