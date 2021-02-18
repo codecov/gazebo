@@ -10,6 +10,11 @@ import { ApiFilterEnum } from 'services/navigation'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 
+import config from 'config'
+
+// Testing preview deployments
+console.log(config.STRIPE_KEY)
+
 const OrderingItems = [
   { label: 'Name A-Z', value: 'name' },
   { label: 'Name Z-A', value: '-name' },
