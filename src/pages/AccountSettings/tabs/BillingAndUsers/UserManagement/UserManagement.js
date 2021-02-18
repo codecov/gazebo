@@ -29,10 +29,10 @@ const UserManagementClasses = {
   cta: 'w-full truncate',
 }
 
-function getUserClass ({ lastseen, latestPrivatePrDate }) {
-    if (lastseen && latestPrivatePrDate) return 'col-span-2'
-    else if (!lastseen && !latestPrivatePrDate) return 'col-span-4'
-    return 'col-span-3'
+function getUserClass({ lastseen, latestPrivatePrDate }) {
+  if (lastseen && latestPrivatePrDate) return 'col-span-2'
+  else if (!lastseen && !latestPrivatePrDate) return 'col-span-4'
+  return 'col-span-3'
 }
 
 function useActivateUser({ provider, owner }) {
@@ -80,6 +80,7 @@ function UserManagement({ provider, owner }) {
     data: { planAutoActivate },
   } = useAccountDetails({ owner, provider })
 
+  console.log('hi')
   return (
     <article className={UserManagementClasses.root}>
       <FormControls
