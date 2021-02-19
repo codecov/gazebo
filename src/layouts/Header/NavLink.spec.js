@@ -94,7 +94,6 @@ describe('MainNavLink', () => {
     })
   })
 
-
   describe('passed to, label and imageUrl', () => {
     const label = 'Fear Noodle 🐍'
     const to = '/den'

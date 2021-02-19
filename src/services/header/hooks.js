@@ -4,14 +4,13 @@ import { useUser } from 'services/user'
 import { getOwnerImg, providerImage, providerToName } from 'shared/utils'
 
 export function useMainNav() {
-
   const { provider, owner, repo } = useParams()
 
   return [
     provider && {
       label: providerToName(provider),
       to: `/${provider}`,
-      imageUrl: providerImage(provider)
+      imageUrl: providerImage(provider),
     },
     owner && {
       label: owner,

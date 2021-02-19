@@ -3,7 +3,6 @@ import cs from 'classnames'
 import { NavLink } from 'react-router-dom'
 import Icon from 'ui/Icon'
 
-
 const UserNav = {
   label: PropType.string.isRequired,
   imageUrl: PropType.string,
@@ -18,7 +17,6 @@ export function UserNavLink({
   LinkComponent = 'a',
   ...props
 }) {
-
   return (
     <LinkComponent
       className={cs('flex items-center py-2 text-sm', className)}
@@ -33,7 +31,7 @@ export function UserNavLink({
           name={iconName}
           className="h-4 w-4"
           color="text-white"
-        /> 
+        />
       )}
       <span className="pl-3">{label}</span>
     </LinkComponent>
@@ -52,8 +50,6 @@ export function MainNavLink({
   className,
   ...props
 }) {
-
-
   return (
     <NavLink className={cs('flex items-center', className)} {...props}>
       {imageUrl && (
