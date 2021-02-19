@@ -9,7 +9,6 @@ const UserNav = {
   imageUrl: PropType.string,
   iconName: PropType.string,
 }
-
 export function UserNavLink({
   label,
   imageUrl,

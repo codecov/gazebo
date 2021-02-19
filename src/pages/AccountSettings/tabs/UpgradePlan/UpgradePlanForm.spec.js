@@ -196,8 +196,8 @@ describe('UpgradePlanForm', () => {
     beforeEach(() => {
       setup()
       return act(async () => {
-        clearSeatsInput()
-        userEvent.click(screen.getByText('Continue to Payment'))
+        await clearSeatsInput()
+        userEvent.click(screen.getByRole('button', { name: 'Update' }))
       })
     })
 
@@ -212,8 +212,8 @@ describe('UpgradePlanForm', () => {
       setup()
       return act(async () => {
         clearSeatsInput()
-        userEvent.type(screen.getByRole('spinbutton'), '1')
-        userEvent.click(screen.getByText('Continue to Payment'))
+        await userEvent.type(screen.getByRole('spinbutton'), '1')
+        userEvent.click(screen.getByRole('button', { name: 'Update' }))
       })
     })
 
@@ -230,8 +230,8 @@ describe('UpgradePlanForm', () => {
       setup()
       return act(async () => {
         clearSeatsInput()
-        userEvent.type(screen.getByRole('spinbutton'), '8')
-        userEvent.click(screen.getByText('Continue to Payment'))
+        await userEvent.type(screen.getByRole('spinbutton'), '8')
+        userEvent.click(screen.getByRole('button', { name: 'Update' }))
       })
     })
 
@@ -248,8 +248,8 @@ describe('UpgradePlanForm', () => {
       setup()
       return act(async () => {
         clearSeatsInput()
-        userEvent.type(screen.getByRole('spinbutton'), '80')
-        userEvent.click(screen.getByText('Continue to Payment'))
+        await userEvent.type(screen.getByRole('spinbutton'), '80')
+        userEvent.click(screen.getByRole('button', { name: 'Update' }))
       })
     })
 

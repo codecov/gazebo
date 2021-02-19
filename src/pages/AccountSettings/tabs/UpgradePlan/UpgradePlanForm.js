@@ -65,10 +65,12 @@ function getSchema(accountDetails) {
 function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const planOptions = [proPlanYear, proPlanMonth]
 
-  const { register, handleSubmit, watch, control, errors } = useForm({
-    defaultValues: getInitialDataForm(planOptions, accountDetails),
-    resolver: yupResolver(getSchema(accountDetails)),
-  })
+  const { register, handleSubmit, watch, control, errors, formState } = useForm(
+    {
+      defaultValues: getInitialDataForm(planOptions, accountDetails),
+      resolver: yupResolver(getSchema(accountDetails)),
+    }
+  )
 
   const seats = watch('seats')
   const newPlan = watch('newPlan')
@@ -89,6 +91,7 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
     isPerYear,
     errors,
     planOptions,
+    formState,
   }
 }
 
@@ -136,6 +139,7 @@ function UpgradePlanForm({
     isPerYear,
     errors,
     planOptions,
+    formState: { isDirty },
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
 
   const { upgradePlan } = useSubmit({ owner, provider })
@@ -223,8 +227,8 @@ function UpgradePlanForm({
           {errors.seats?.message}
         </p>
       )}
-      <Button type="submit" className="w-full block mt-4">
-        Continue to Payment
+      <Button disabled={!isDirty} type="submit" className="w-full block mt-4">
+        Update
       </Button>
     </form>
   )
