@@ -94,27 +94,6 @@ describe('MainNavLink', () => {
     })
   })
 
-  describe('passed to, label and iconName', () => {
-    const label = 'Grump Factory 🐱'
-    const to = '/sunny-spot'
-    const iconName = 'codecov'
-
-    beforeEach(() => {
-      setup({ label, to, iconName })
-    })
-
-    it('renders a link', () => {
-      const layout = screen.getByText(label)
-      expect(layout).toBeInTheDocument()
-      const a = screen.getByRole('link')
-      expect(a).toBeInTheDocument()
-    })
-
-    it('renders a svg', () => {
-      const svg = screen.getByTestId('nav-link-icon')
-      expect(svg).toBeInTheDocument()
-    })
-  })
 
   describe('passed to, label and imageUrl', () => {
     const label = 'Fear Noodle 🐍'

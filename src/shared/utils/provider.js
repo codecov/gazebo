@@ -3,5 +3,16 @@ export function providerToName(provider) {
     gh: 'Github',
     bb: 'BitBucket',
     gl: 'Gitlab',
-  }[provider]
+    github: 'Github',
+    bitbucket: 'BitBucket',
+    gitlab: 'Gitlab'
+  }[provider.toLowerCase()]
+}
+
+export function providerImage(providerName) {
+    return {
+        'Github': '/logos/providers/github-icon.svg',
+        'Gitlab': '/logos/providers/gitlab-icon.svg',
+        'BitBucket': '/logos/providers/bitbucket-icon.svg',
+    }[providerToName(providerName)]
 }
