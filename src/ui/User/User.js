@@ -4,7 +4,7 @@ import uniqueId from 'lodash/uniqueId'
 
 const UserClasses = {
   root: 'flex text-md text-sm space-x-4',
-  avatar: 'flex-none rounded-full h-12 w-12',
+  avatar: 'flex-none rounded-full object-cover h-12 w-12',
   content: 'flex-1 flex flex-col justify-center',
   identity: 'flex flex-wrap',
   name: 'text-gray-900 font-bold mr-1',

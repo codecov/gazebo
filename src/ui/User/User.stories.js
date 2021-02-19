@@ -4,7 +4,7 @@ const Template = (args) => <User {...args} />
 
 export const NormalUser = Template.bind({})
 NormalUser.args = {
-  avatarUrl: 'https://placedog.net/64',
+  avatarUrl: 'https://placedog.net/64?id=150',
   username: 'doggo',
   name: 'Roffus',
 }

@@ -1,9 +1,13 @@
-import Layout from './Layout';
+import Layout from './Layout'
 
 export const parameters = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
+  actions: { argTypesRegex: '^on[A-Z].*' },
 }
 
 export const decorators = [
-  (Story) => <Layout><Story/></Layout>
+  (Story) => (
+    <Layout>
+      <Story />
+    </Layout>
+  ),
 ]
