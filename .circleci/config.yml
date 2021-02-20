@@ -89,6 +89,9 @@ workflows:
     jobs:
       - install
       - storybook:
+          filters:
+            branches:
+              ignore: /^Bump/
           requires:
             - install
       - test:
