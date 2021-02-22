@@ -160,7 +160,7 @@ function UpgradePlanForm({
                 <span className="capitalize text-gray-600">
                   {plan.billingRate} User Pricing
                 </span>
-                <span>${plan.baseUnitPrice}* /month</span>
+                <span>${plan.baseUnitPrice} /month</span>
               </div>
             )}
             onChange={onChange}
