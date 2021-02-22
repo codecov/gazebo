@@ -65,6 +65,8 @@ function getSchema(accountDetails) {
 function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const planOptions = [proPlanYear, proPlanMonth]
 
+  console.log('hereee', proPlanMonth, proPlanYear)
+
   const { register, handleSubmit, watch, control, errors, formState } = useForm(
     {
       defaultValues: getInitialDataForm(planOptions, accountDetails),
@@ -160,7 +162,7 @@ function UpgradePlanForm({
                 <span className="capitalize text-gray-600">
                   {plan.billingRate} User Pricing
                 </span>
-                <span>${plan.baseUnitPrice}* /month</span>
+                <span>${plan.baseUnitPrice} /month</span>
               </div>
             )}
             onChange={onChange}
