@@ -65,8 +65,6 @@ function getSchema(accountDetails) {
 function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const planOptions = [proPlanYear, proPlanMonth]
 
-  console.log('hereee', proPlanMonth, proPlanYear)
-
   const { register, handleSubmit, watch, control, errors, formState } = useForm(
     {
       defaultValues: getInitialDataForm(planOptions, accountDetails),
