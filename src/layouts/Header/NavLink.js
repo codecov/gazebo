@@ -8,6 +8,7 @@ const UserNav = {
   label: PropType.string.isRequired,
   imageUrl: PropType.string,
   iconName: PropType.string,
+  external: PropType.bool,
 }
 export function UserNavLink({
   label,
@@ -48,6 +49,7 @@ export function MainNavLink({
   imageUrl,
   iconName,
   className,
+  external,
   ...props
 }) {
   return (

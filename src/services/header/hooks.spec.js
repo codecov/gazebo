@@ -39,6 +39,7 @@ describe('useMainNav', () => {
     it('returns the link to the provider', () => {
       expect(hookData.result.current).toEqual([
         {
+          external: true,
           label: 'Github',
           to: '/gh',
           iconName: 'infoCircle',
@@ -58,11 +59,13 @@ describe('useMainNav', () => {
     it('returns the link to the provider and owner', () => {
       expect(hookData.result.current).toEqual([
         {
+          external: true,
           label: 'Github',
           to: '/gh',
           iconName: 'infoCircle',
         },
         {
+          external: true,
           label: 'codecov',
           to: '/gh/codecov',
           imageUrl: 'https://github.com/codecov.png?size=40',
@@ -83,16 +86,19 @@ describe('useMainNav', () => {
     it('returns the link to the provider and owner', () => {
       expect(hookData.result.current).toEqual([
         {
+          external: true,
           label: 'Github',
           to: '/gh',
           iconName: 'infoCircle',
         },
         {
+          external: true,
           label: 'codecov',
           to: '/gh/codecov',
           imageUrl: 'https://github.com/codecov.png?size=40',
         },
         {
+          external: true,
           label: 'gazebo',
           to: '/gh/codecov/gazebo',
           iconName: 'infoCircle',
@@ -136,14 +142,16 @@ describe('useSubNav', () => {
     it('returns the link to the settings and sign out', () => {
       expect(hookData.result.current).toEqual([
         {
+          external: false,
           label: 'Personal Settings',
           to: `/account/gh/${user.username}`,
           imageUrl: user.avatarUrl,
           LinkComponent: Link,
         },
         {
+          external: true,
           label: 'Sign Out',
-          href: '/sign-out',
+          to: '/sign-out',
           iconName: 'signOut',
         },
       ])

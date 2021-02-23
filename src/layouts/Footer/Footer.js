@@ -1,42 +1,44 @@
 import Icon from 'ui/Icon'
 import PropType from 'prop-types'
 
-export function FooterItem({ label, to }) {
+import { appLinks } from 'shared/router'
+
+export function FooterItem({ text, path }) {
   return (
     <li className="flex justify-center">
-      {to ? (
+      {path ? (
         <a
           className="p-4 no-underline hover:underline hover:text-blue-400"
-          href={to}
+          href={path}
         >
-          {label}
+          {text}
         </a>
       ) : (
-        label
+        text
       )}
     </li>
   )
 }
 
 FooterItem.propTypes = {
-  label: PropType.string.isRequired,
-  to: PropType.string,
+  text: PropType.string.isRequired,
+  path: PropType.string,
 }
 
 function Footer() {
   const leftMenu = [
-    { label: '© 2019 Codecov' },
-    { label: 'Terms', to: '/terms' },
-    { label: 'Privacy', to: '/privacy' },
-    { label: 'Security', to: '/security' },
-    { label: 'GDPR', to: '/gdpr' },
+    { text: '© 2021 Codecov' },
+    appLinks.terms,
+    appLinks.privacy,
+    appLinks.security,
+    appLinks.gdpr,
   ]
   const rightMenu = [
-    // { label: 'Shop', to: '/' },
-    { label: 'Pricing', to: '/pricing' },
-    { label: 'Support', to: '/support' },
-    { label: 'Docs', to: 'https://docs.codecov.io/' },
-    { label: 'Enterprise', to: '/enterprise' },
+    // appLinks.shop,
+    appLinks.pricing,
+    appLinks.support,
+    appLinks.docs,
+    appLinks.enterprise,
   ]
   return (
     <footer className="flex-none bg-codecov-footer">

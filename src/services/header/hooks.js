@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 import { getOwnerImg } from 'shared/utils'
+import { appLinks } from 'shared/router'
 
 export function useMainNav() {
   const providerToLabel = {
@@ -15,20 +16,23 @@ export function useMainNav() {
   return [
     provider && {
       label: providerToLabel[provider],
-      to: `/${provider}`,
+      to: appLinks.provider.createPath({ provider }),
+      external: appLinks.provider.isExternalLink,
       iconName: 'infoCircle',
     },
     owner && {
       label: owner,
-      to: `/${provider}/${owner}`,
-      imageUrl: getOwnerImg(provider, owner),
+      to: appLinks.owner.createPath({ provider, owner }),
+      external: appLinks.owner.isExternalLink,
+      imageUrl: getOwnerImg(provider, owner), //TODO Does not support GitLab
     },
     repo && {
       label: repo,
-      to: `/${provider}/${owner}/${repo}`,
+      to: appLinks.repo.createPath({ provider, owner, repo }),
+      external: appLinks.owner.isExternalLink,
       iconName: 'infoCircle',
     },
-  ].filter(Boolean)
+  ].filter(Boolean) // Any undefined's are not included in the final array
 }
 
 export function useSubNav() {
@@ -41,15 +45,17 @@ export function useSubNav() {
 
   return [
     {
-      label: 'Personal Settings',
-      to: `/account/${provider}/${user.username}`,
+      label: appLinks.account.text,
+      to: appLinks.account.createPath({ provider, owner: user.username }),
+      external: appLinks.account.isExternalLink,
       imageUrl: user.avatarUrl,
       LinkComponent: Link,
     },
     {
-      label: 'Sign Out',
-      href: '/sign-out',
+      label: appLinks.signOut.text,
+      to: appLinks.signOut.path,
+      external: appLinks.signOut.isExternalLink,
       iconName: 'signOut',
     },
-  ].filter(Boolean)
+  ].filter(Boolean) // Any undefined's are not included in the final array
 }

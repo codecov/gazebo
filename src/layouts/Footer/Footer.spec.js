@@ -7,16 +7,16 @@ describe('FooterItem', () => {
     render(<FooterItem {...props} />)
   }
 
-  describe('pass a "to" prop', () => {
-    const label = 'Doggo 🐕'
-    const to = '/outside'
+  describe('pass a "path" prop', () => {
+    const text = 'Doggo 🐕'
+    const path = '/outside'
 
     beforeEach(() => {
-      setup({ label, to })
+      setup({ text, path })
     })
 
     it('renders a link', () => {
-      const layout = screen.getByText(label)
+      const layout = screen.getByText(text)
       expect(layout).toBeInTheDocument()
       const a = screen.getByRole('link')
       expect(a).toBeInTheDocument()
@@ -24,14 +24,14 @@ describe('FooterItem', () => {
   })
 
   describe('only pass a "lable" prop', () => {
-    const label = 'Fear Noodle 🐍'
+    const text = 'Fear Noodle 🐍'
 
     beforeEach(() => {
-      setup({ label })
+      setup({ text })
     })
 
     it('does not render a link', () => {
-      const layout = screen.getByText(label)
+      const layout = screen.getByText(text)
       expect(layout).toBeInTheDocument()
     })
   })
