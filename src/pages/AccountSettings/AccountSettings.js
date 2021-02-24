@@ -22,13 +22,7 @@ function AccountSettings() {
 
   return (
     <SidebarLayout
-      sidebar={
-        <SideMenu
-          isPersonalSettings={isPersonalSettings}
-          provider={provider}
-          owner={owner}
-        />
-      }
+      sidebar={<SideMenu isPersonalSettings={isPersonalSettings} />}
     >
       <Suspense fallback={tabLoading}>
         <Switch>

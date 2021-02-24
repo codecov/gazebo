@@ -1,8 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
+import { useNavLinks } from 'services/navigation'
 import { getOwnerImg } from 'shared/utils'
-import { appLinks } from 'shared/router'
 
 export function useMainNav() {
   const providerToLabel = {
@@ -12,49 +12,49 @@ export function useMainNav() {
   }
 
   const { provider, owner, repo } = useParams()
+  const {
+    provider: providerLink,
+    owner: onwerLink,
+    repo: repoLink,
+  } = useNavLinks()
 
   return [
     provider && {
       label: providerToLabel[provider],
-      to: appLinks.provider.createPath({ provider }),
-      external: appLinks.provider.isExternalLink,
+      to: providerLink.path,
       iconName: 'infoCircle',
     },
     owner && {
       label: owner,
-      to: appLinks.owner.createPath({ provider, owner }),
-      external: appLinks.owner.isExternalLink,
+      to: onwerLink.path,
       imageUrl: getOwnerImg(provider, owner), //TODO Does not support GitLab
     },
     repo && {
       label: repo,
-      to: appLinks.repo.createPath({ provider, owner, repo }),
-      external: appLinks.owner.isExternalLink,
+      to: repoLink.path,
       iconName: 'infoCircle',
     },
   ].filter(Boolean) // Any undefined's are not included in the final array
 }
 
 export function useSubNav() {
-  const { provider } = useParams()
   const { data: user } = useUser({
     suspense: false,
   })
+  const { account, signOut } = useNavLinks({ owner: user?.username })
 
   if (!user) return []
 
   return [
     {
-      label: appLinks.account.text,
-      to: appLinks.account.createPath({ provider, owner: user.username }),
-      external: appLinks.account.isExternalLink,
+      label: account.text,
+      to: account.path,
       imageUrl: user.avatarUrl,
       LinkComponent: Link,
     },
     {
-      label: appLinks.signOut.text,
-      to: appLinks.signOut.path,
-      external: appLinks.signOut.isExternalLink,
+      label: signOut.text,
+      to: signOut.path,
       iconName: 'signOut',
     },
   ].filter(Boolean) // Any undefined's are not included in the final array

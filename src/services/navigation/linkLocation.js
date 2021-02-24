@@ -31,7 +31,7 @@ export const appLinks = {
   privacy: { text: 'Privacy', path: '/privacy', isExternalLink: true },
   security: { text: 'Security', path: '/security', isExternalLink: true },
   gdpr: { text: 'GDPR', path: '/gdpr', isExternalLink: true },
-  shop: { text: 'Shop', path: '/', isExternalLink: true },
+  shop: { text: 'Shop', path: '/shop', isExternalLink: true },
   pricing: { text: 'Pricing', path: '/pricing', isExternalLink: true },
   support: { text: 'Support', path: '/support', isExternalLink: true },
   docs: {

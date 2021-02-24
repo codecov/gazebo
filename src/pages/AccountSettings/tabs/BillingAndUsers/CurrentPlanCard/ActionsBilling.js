@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Button from 'ui/Button'
 import githubLogo from 'assets/githublogo.png'
-import { useBaseUrl } from 'shared/router'
+import { useBaseUrl } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'
 
 function shouldRenderCancelLink(accountDetails, isFreePlan) {

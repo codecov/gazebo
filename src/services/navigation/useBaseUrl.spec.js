@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter, Switch, Route } from 'react-router-dom'
 
-import useBaseUrl from './useBaseUrl'
+import { useBaseUrl } from './useBaseUrl'
 
 describe('useBaseUrl', () => {
   let hookData

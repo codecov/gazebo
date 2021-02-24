@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Card from 'ui/Card'
 import Button from 'ui/Button'
-import { useBaseUrl } from 'shared/router'
+import { useBaseUrl } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'
 
 import PaymentCard from '../PaymentCard'

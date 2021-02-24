@@ -1,7 +1,7 @@
 import Icon from 'ui/Icon'
 import PropType from 'prop-types'
 
-import { appLinks } from 'shared/router'
+import { useNavLinks } from 'services/navigation'
 
 export function FooterItem({ text, path }) {
   return (
@@ -26,19 +26,25 @@ FooterItem.propTypes = {
 }
 
 function Footer() {
-  const leftMenu = [
-    { text: '© 2021 Codecov' },
-    appLinks.terms,
-    appLinks.privacy,
-    appLinks.security,
-    appLinks.gdpr,
-  ]
+  const {
+    terms,
+    privacy,
+    security,
+    gdpr,
+    // shop,
+    pricing,
+    support,
+    docs,
+    enterprise,
+  } = useNavLinks()
+
+  const leftMenu = [{ text: '© 2021 Codecov' }, terms, privacy, security, gdpr]
   const rightMenu = [
-    // appLinks.shop,
-    appLinks.pricing,
-    appLinks.support,
-    appLinks.docs,
-    appLinks.enterprise,
+    // shop,
+    pricing,
+    support,
+    docs,
+    enterprise,
   ]
   return (
     <footer className="flex-none bg-codecov-footer">

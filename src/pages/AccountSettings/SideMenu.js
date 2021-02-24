@@ -2,46 +2,47 @@ import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 import uniqueId from 'lodash/uniqueId'
 
-import { accountLinks } from 'shared/router'
+import { useNavLinks } from 'services/navigation'
 import Icon from 'ui/Icon'
 
-function SideMenu({ isPersonalSettings, provider, owner }) {
+function SideMenu({ isPersonalSettings }) {
+  const { root, yamlTab, accessTab, billingAndUsers } = useNavLinks()
   const personalLinks = [
     {
       props: {
-        to: accountLinks.accessTab.createPath({ provider, owner }),
+        to: accessTab.path,
       },
       iconName: 'creditCard',
-      text: accountLinks.accessTab.text,
+      text: accessTab.text,
     },
   ]
 
   const organizationLinks = [
     {
       props: {
-        to: accountLinks.billingAndUsers.createPath({ provider, owner }),
+        to: billingAndUsers.path,
       },
       iconName: 'creditCard',
-      text: accountLinks.billingAndUsers.text,
+      text: billingAndUsers.text,
     },
   ]
 
   const links = [
     {
       props: {
-        to: accountLinks.root.createPath({ provider, owner }),
+        to: root.path,
         exact: true,
       },
       iconName: 'setting',
-      text: accountLinks.root.text,
+      text: root.text,
     },
     ...(isPersonalSettings ? personalLinks : organizationLinks),
     {
       props: {
-        to: accountLinks.yamlTab.createPath({ provider, owner }),
+        to: yamlTab.path,
       },
       iconName: 'fileAlt',
-      text: accountLinks.yamlTab.text,
+      text: yamlTab.text,
     },
   ]
 
@@ -66,8 +67,6 @@ function SideMenu({ isPersonalSettings, provider, owner }) {
 
 SideMenu.propTypes = {
   isPersonalSettings: PropTypes.bool.isRequired,
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default SideMenu

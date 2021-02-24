@@ -1,4 +1,4 @@
-import { accountLinks, appLinks } from './links'
+import { accountLinks, appLinks } from './linkLocation'
 
 const params = { provider: '⛷', owner: '☃️', id: '👾', repo: '🦑' }
 

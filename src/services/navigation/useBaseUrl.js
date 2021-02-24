@@ -14,4 +14,4 @@ function useBaseUrl() {
   return baseUrl
 }
 
-export default useBaseUrl
+export { useBaseUrl }
