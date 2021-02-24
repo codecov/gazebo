@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom'
 
 import Card from 'ui/Card'
 import Button from 'ui/Button'
-import { useBaseUrl } from 'services/navigation'
+import { useNavLinks } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'
 
 import PaymentCard from '../PaymentCard'
 import LatestInvoiceCard from '../LatestInvoiceCard'
 
 function LegacyUser({ accountDetails, provider, owner }) {
-  const baseUrl = useBaseUrl()
+  const { upgradePlan } = useNavLinks()
 
   return (
     <div className="flex">
@@ -42,7 +42,7 @@ function LegacyUser({ accountDetails, provider, owner }) {
         <hr className="my-6" />
 
         <div className="flex flex-col items-center mt-6">
-          <Button Component={Link} to={`${baseUrl}/upgrade`}>
+          <Button Component={Link} to={upgradePlan.path}>
             Upgrade to per user pricing
           </Button>
           <p className="mt-4 text-gray-900">

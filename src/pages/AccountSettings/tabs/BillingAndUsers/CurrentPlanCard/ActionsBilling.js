@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Button from 'ui/Button'
 import githubLogo from 'assets/githublogo.png'
-import { useBaseUrl } from 'services/navigation'
+import { useNavLinks } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'
 
 function shouldRenderCancelLink(accountDetails, isFreePlan) {
@@ -17,7 +17,7 @@ function shouldRenderCancelLink(accountDetails, isFreePlan) {
 }
 
 function ActionsBilling({ accountDetails, isFreePlan }) {
-  const baseUrl = useBaseUrl()
+  const { upgradePlan, cancelPlan } = useNavLinks()
 
   if (accountDetails.planProvider === 'github') {
     return (
@@ -62,12 +62,12 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
 
   return (
     <>
-      <Button Component={Link} to={`${baseUrl}upgrade`}>
+      <Button Component={Link} to={upgradePlan.path}>
         {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
       </Button>
       {shouldRenderCancelLink(accountDetails, isFreePlan) && (
         <Button
-          to={`${baseUrl}cancel`}
+          to={cancelPlan.path}
           Component={Link}
           variant="text"
           color="gray"
