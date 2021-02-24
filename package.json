@@ -27,6 +27,7 @@
     "react-use": "^17.1.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
     "web-vitals": "^1.1.0",
+    "y18n": "^4.0.1",
     "yup": "^0.32.9"
   },
   "scripts": {
