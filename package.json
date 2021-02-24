@@ -8,7 +8,6 @@
     "@sentry/react": "^6.2.0",
     "@stripe/react-stripe-js": "^1.2.2",
     "@stripe/stripe-js": "^1.12.1",
-    "@tailwindcss/postcss7-compat": "^2.0.3",
     "classnames": "^2.2.6",
     "date-fns": "^2.17.0",
     "downshift": "^6.1.0",
@@ -25,17 +24,16 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.2",
     "react-use": "^17.1.1",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
     "web-vitals": "^1.1.0",
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "rescripts start",
-    "build": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build",
-    "test": "rescripts test",
-    "sentry": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); rescripts build && node scripts/sentry.js",
-    "test:ci": "rescripts test --collectCoverage --runInBand --reporters=default --reporters=jest-junit",
-    "eject": "rescripts eject",
+    "start": "craco start",
+    "build": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); craco build",
+    "test": "craco test",
+    "sentry": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short HEAD); craco build && node scripts/sentry.js",
+    "test:ci": "craco test --collectCoverage --runInBand --reporters=default --reporters=jest-junit",
+    "eject": "craco eject",
     "lint": "npx eslint --no-ignore --max-warnings=0 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
     "bundlesize": "npx bundlesize",
     "storybook": "start-storybook -p 6006 -s public --no-dll",
@@ -69,7 +67,7 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.12.17",
-    "@rescripts/cli": "0.0.16",
+    "@craco/craco": "^6.1.1",
     "@sentry/cli": "^1.62.0",
     "@storybook/addon-actions": "^6.1.18",
     "@storybook/addon-essentials": "^6.1.18",
@@ -77,6 +75,7 @@
     "@storybook/node-logger": "^6.1.18",
     "@storybook/preset-create-react-app": "^3.1.6",
     "@storybook/react": "^6.1.18",
+    "@tailwindcss/postcss7-compat": "^2.0.3",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^5.0.3",
@@ -89,10 +88,11 @@
     "jest-junit": "^12.0.0",
     "lint-staged": "^10.5.4",
     "msw": "^0.26.2",
+    "postcss": "^7.0.35",
     "postcss-font-magician": "2.3.1",
     "prettier": "^2.2.1",
     "react-is": "^17.0.1",
     "react-test-renderer": "^17.0.1",
-    "rescript-use-postcss-config": "^1.0.0"
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.3"
   }
 }
