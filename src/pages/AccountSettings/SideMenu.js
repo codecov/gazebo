@@ -6,7 +6,7 @@ import { useNavLinks } from 'services/navigation'
 import Icon from 'ui/Icon'
 
 function SideMenu({ isPersonalSettings }) {
-  const { root, yamlTab, accessTab, billingAndUsers } = useNavLinks()
+  const { accountAdmin, yamlTab, accessTab, billingAndUsers } = useNavLinks()
   const personalLinks = [
     {
       props: {
@@ -30,11 +30,11 @@ function SideMenu({ isPersonalSettings }) {
   const links = [
     {
       props: {
-        to: root.path,
+        to: accountAdmin.path,
         exact: true,
       },
       iconName: 'setting',
-      text: root.text,
+      text: accountAdmin.text,
     },
     ...(isPersonalSettings ? personalLinks : organizationLinks),
     {

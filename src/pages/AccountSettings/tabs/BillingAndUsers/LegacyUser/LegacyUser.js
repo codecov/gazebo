@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Card from 'ui/Card'
 import Button from 'ui/Button'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'
 
 import PaymentCard from '../PaymentCard'
@@ -11,6 +11,7 @@ import LatestInvoiceCard from '../LatestInvoiceCard'
 
 function LegacyUser({ accountDetails, provider, owner }) {
   const { upgradePlan } = useNavLinks()
+  const { freshdesk } = useStaticNavLinks()
 
   return (
     <div className="flex">
@@ -23,12 +24,12 @@ function LegacyUser({ accountDetails, provider, owner }) {
         <p className="mt-4 text-gray-500">
           You’re on a legacy per repository plan, these plans are no longer
           supported by Codecov, if you need help managing your plan please reach
-          out to{' '}
+          out to
           <a
             className="underline hover:text-blue-600"
             target="_blank"
             rel="noreferrer"
-            href="https://codecov.freshdesk.com/support/home"
+            href={freshdesk.path}
           >
             support
           </a>
@@ -46,14 +47,14 @@ function LegacyUser({ accountDetails, provider, owner }) {
             Upgrade to per user pricing
           </Button>
           <p className="mt-4 text-gray-900">
-            Questions?{' '}
+            Questions?
             <a
               className="underline hover:text-blue-600"
               target="_blank"
               rel="noreferrer"
-              href="https://codecov.freshdesk.com/support/home"
+              href={freshdesk.path}
             >
-              Contact support
+              {freshdesk.text}
             </a>
             .
           </p>

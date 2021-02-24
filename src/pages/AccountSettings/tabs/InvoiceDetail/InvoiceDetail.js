@@ -6,6 +6,7 @@ import { useParams, Link } from 'react-router-dom'
 import cs from 'classnames'
 
 import { useInvoice, useAccountDetails } from 'services/account'
+import { useNavLinks } from 'services/navigation'
 import Button from 'ui/Button'
 
 import BackLink from '../../shared/BackLink'
@@ -39,14 +40,14 @@ function InvoiceDetail({ provider, owner }) {
   const { id } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: invoice } = useInvoice({ provider, owner, id })
-  const backLinkUrl = `/account/${provider}/${owner}/invoices`
+  const { invoiceTab } = useNavLinks()
 
   usePrintPage()
 
   return (
     <>
       <div className="mb-8">
-        <BackLink to={backLinkUrl} textLink="Invoice overview" />
+        <BackLink to={invoiceTab.path} textLink="Invoice overview" />
       </div>
       <div
         className={cs(
@@ -68,7 +69,7 @@ function InvoiceDetail({ provider, owner }) {
         </div>
       </div>
       <div className="my-8">
-        <Button to={backLinkUrl} Component={Link} variant="outline">
+        <Button to={invoiceTab.path} Component={Link} variant="outline">
           Back to invoices
         </Button>
         <Button className="ml-4" onClick={window.print}>

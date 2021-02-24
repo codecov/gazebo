@@ -6,14 +6,16 @@ import ServerStatus from './ServerStatus'
 import Dropdown from './Dropdown'
 import { MainNavLink } from './NavLink'
 import { useMainNav } from 'services/header'
+import { useStaticNavLinks } from 'services/navigation'
 
 function DesktopMenu() {
   const main = useMainNav()
+  const { root } = useStaticNavLinks()
 
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center">
-        <Link to="/" tabIndex="0" className="flex-shrink-0">
+        <Link to={root.path} tabIndex="0" className="flex-shrink-0">
           <span className="sr-only">Link to Homepage</span>
           <Icon alt="Codecov Logo" name="codecov" color="text-white" />
         </Link>

@@ -1,7 +1,7 @@
 import Icon from 'ui/Icon'
 import PropType from 'prop-types'
 
-import { useNavLinks } from 'services/navigation'
+import { useStaticNavLinks } from 'services/navigation'
 
 export function FooterItem({ text, path }) {
   return (
@@ -36,7 +36,7 @@ function Footer() {
     support,
     docs,
     enterprise,
-  } = useNavLinks()
+  } = useStaticNavLinks()
 
   const leftMenu = [{ text: '© 2021 Codecov' }, terms, privacy, security, gdpr]
   const rightMenu = [

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Button from 'ui/Button'
 import githubLogo from 'assets/githublogo.png'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'
 
 function shouldRenderCancelLink(accountDetails, isFreePlan) {
@@ -18,6 +18,7 @@ function shouldRenderCancelLink(accountDetails, isFreePlan) {
 
 function ActionsBilling({ accountDetails, isFreePlan }) {
   const { upgradePlan, cancelPlan } = useNavLinks()
+  const { githubMarketplace } = useStaticNavLinks()
 
   if (accountDetails.planProvider === 'github') {
     return (
@@ -33,8 +34,8 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
           Your account is configured via GitHub Marketplace
         </p>
         <div className="text-center">
-          <Button Component="a" href="https://github.com/marketplace/codecov">
-            Manage billing in GitHub
+          <Button Component="a" href={githubMarketplace.path}>
+            {githubMarketplace.text}
           </Button>
         </div>
       </div>

@@ -1,5 +1,4 @@
 export const appLinks = {
-  root: { path: '/', isExternalLink: true },
   provider: {
     createPath: ({ provider }) => `/${provider}`,
     isExternalLink: true,
@@ -17,33 +16,7 @@ export const appLinks = {
     createPath: ({ provider, owner }) => `/account/${provider}/${owner}`,
     isExternalLink: false,
   },
-  signOut: {
-    text: 'Sign Out',
-    path: '/sign-out',
-    isExternalLink: true,
-  },
-  signIn: {
-    text: 'Sign In',
-    path: '/sign-in',
-    isExternalLink: true,
-  },
-  terms: { text: 'Terms', path: '/terms', isExternalLink: true },
-  privacy: { text: 'Privacy', path: '/privacy', isExternalLink: true },
-  security: { text: 'Security', path: '/security', isExternalLink: true },
-  gdpr: { text: 'GDPR', path: '/gdpr', isExternalLink: true },
-  shop: { text: 'Shop', path: '/shop', isExternalLink: true },
-  pricing: { text: 'Pricing', path: '/pricing', isExternalLink: true },
-  support: { text: 'Support', path: '/support', isExternalLink: true },
-  docs: {
-    text: 'Docs',
-    path: 'https://docs.codecov.io/',
-    isExternalLink: true,
-  },
-  enterprise: { text: 'Enterprise', path: '/enterprise', isExternalLink: true },
-}
-
-export const accountLinks = {
-  root: {
+  accountAdmin: {
     text: 'Admin',
     createPath: ({ provider, owner }) => `/account/${provider}/${owner}`,
     isExternalLink: false,
