@@ -1,24 +1,72 @@
 import { useRouteMatch } from 'react-router-dom'
 
-import { appLinks } from './linkLocation'
-
 // TODO we need to add location storage or something for when params are not availble.
 function useNavLinks(opts = {}) {
-  const { params: routerParams } = useRouteMatch()
-  const links = {}
-  const params = {
-    ...routerParams,
+  const { params } = useRouteMatch()
+  // Combine router params with passed override options.
+  const { provider, owner, repo, id } = {
+    ...params,
     ...opts,
   }
 
-  for (const link in appLinks) {
-    const { createPath, ...values } = appLinks[link]
-    links[link] = { ...values, path: createPath(params) }
+  return {
+    provider: {
+      path: `/${provider}`,
+      isExternalLink: true,
+    },
+    owner: {
+      path: `/${provider}/${owner}`,
+      isExternalLink: true,
+    },
+    repo: {
+      path: `/${provider}/${owner}/${repo}`,
+      isExternalLink: true,
+    },
+    account: {
+      text: 'Personal Settings',
+      path: `/account/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    accountAdmin: {
+      text: 'Admin',
+      path: `/account/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    yamlTab: {
+      text: 'YAML',
+      path: `/account/${provider}/${owner}/yaml`,
+      isExternalLink: false,
+    },
+    accessTab: {
+      text: 'Access',
+      path: `/account/${provider}/${owner}/access`,
+      isExternalLink: false,
+    },
+    billingAndUsers: {
+      text: 'Billing & Users',
+      path: `/account/${provider}/${owner}/billing`,
+      isExternalLink: false,
+    },
+    upgradePlan: {
+      path: `/account/${provider}/${owner}/billing/upgrade`,
+      isExternalLink: false,
+    },
+    cancelPlan: {
+      path: `/account/${provider}/${owner}/billing/cancel`,
+      isExternalLink: false,
+    },
+    invoiceTab: {
+      path: `/account/${provider}/${owner}/invoices`,
+      isExternalLink: false,
+    },
+    invoiceDetail: {
+      path: `/account/${provider}/${owner}/invoices/${id}`,
+      isExternalLink: false,
+    },
   }
-
-  return links
 }
 
+// Seperate hook which doesn't unessisarily use the router. (Easier unit tests)
 function useStaticNavLinks() {
   return {
     root: { path: '/', isExternalLink: true },

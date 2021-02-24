@@ -17,7 +17,9 @@ function shouldRenderCancelLink(accountDetails, isFreePlan) {
 }
 
 function ActionsBilling({ accountDetails, isFreePlan }) {
-  const { upgradePlan, cancelPlan } = useNavLinks()
+  const { upgradePlan, cancelPlan, billingAndUsers } = useNavLinks({
+    owner: accountDetails?.rootOrganization?.username,
+  })
   const { githubMarketplace } = useStaticNavLinks()
 
   if (accountDetails.planProvider === 'github') {
@@ -50,10 +52,7 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
           {accountDetails.rootOrganization.username}.
         </p>
         <div className="text-center">
-          <Button
-            Component={Link}
-            to={`/account/gl/${accountDetails.rootOrganization.username}/billing`}
-          >
+          <Button Component={Link} to={billingAndUsers.path}>
             View Billing
           </Button>
         </div>

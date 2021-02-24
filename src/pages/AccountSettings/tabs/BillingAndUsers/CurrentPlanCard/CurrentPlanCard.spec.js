@@ -31,6 +31,11 @@ const freeAccountDetails = {
   inactiveUserCount: 1,
 }
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useRouteMatch: () => ({ params: { provider: 'gl' } }),
+}))
+
 describe('CurrentPlanCard', () => {
   function setup(accountDetails) {
     render(<CurrentPlanCard accountDetails={accountDetails} />, {
