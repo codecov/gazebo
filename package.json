@@ -29,7 +29,7 @@
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
     "web-vitals": "^1.1.0",
     "websocket-extensions": "^0.1.4",
-    "y18n": "^4.0.1",
+    "y18n": "^5.0.5",
     "yup": "^0.32.9"
   },
   "scripts": {
