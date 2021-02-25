@@ -1,4 +1,6 @@
 [![codecov](https://codecov.io/gh/codecov/gazebo/branch/main/graph/badge.svg?token=UAP786D58M)](https://codecov.io/gh/codecov/gazebo)
+[![Storybook](https://raw.githubusercontent.com/storybookjs/brand/master/badge/badge-storybook.svg)](https://5fa9228f77839a00217f8a45-bkjyepljyt.chromatic.com/)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/128d65e5-70a2-4179-b216-4f16683513da/deploy-status)](https://app.netlify.com/sites/gazebo/deploys)
 
 # Gazebo
 
@@ -77,7 +79,7 @@ Gazebo supports [env files](https://create-react-app.dev/docs/adding-custom-envi
 
 To override enviornment variables when working locally create a `.env.local` file, this file is ignored by git.
 
-You must prepend env variables with `REACT_APP_` to access them at run time.
+You must prepend env variables with `REACT_APP_`.
 
 `.env.local`
 
@@ -89,10 +91,11 @@ REACT_APP_MY_CUSTOM_VAR=foobar
 `/src/somefile.js`
 
 ```js
-console.log(process.env.REACT_APP_MY_CUSTOM_VAR) // foobar
+import config from 'config'
+console.log(config.MY_CUSTOM_VAR) // foobar
 ```
 
-Currently there's two variables you may want to change when working locally:
+Currently there's two env variables you may want to change when working locally:
 
 - PROXY_TO (Change where Gazebo api services are pointing to)
 - REACT_APP_MSW_BROWSER (boolean to enable mocking api requests in browser, see [How to mock HTTP responses in the browser](#How-to-mock-HTTP-responses-in-the-browser))
