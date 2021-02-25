@@ -7,7 +7,7 @@
     "@hookform/resolvers": "^1.3.0",
     "@sentry/react": "^6.2.0",
     "@stripe/react-stripe-js": "^1.2.2",
-    "@stripe/stripe-js": "^1.12.1",
+    "@stripe/stripe-js": "^1.13.0",
     "classnames": "^2.2.6",
     "date-fns": "^2.17.0",
     "downshift": "^6.1.0",
@@ -25,6 +25,7 @@
     "react-scripts": "^4.0.2",
     "react-use": "^17.1.1",
     "web-vitals": "^1.1.0",
+    "y18n": "^4.0.1",
     "yup": "^0.32.9"
   },
   "scripts": {
@@ -66,8 +67,8 @@
     }
   ],
   "devDependencies": {
-    "@babel/core": "^7.12.17",
     "@craco/craco": "^6.1.1",
+    "@babel/core": "^7.13.1",
     "@sentry/cli": "^1.62.0",
     "@storybook/addon-actions": "^6.1.18",
     "@storybook/addon-essentials": "^6.1.20",
