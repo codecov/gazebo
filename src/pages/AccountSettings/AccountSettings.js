@@ -12,7 +12,7 @@ import routes from './routes'
 function AccountSettings() {
   const { data: user } = useUser()
   const { provider, owner } = useParams()
-  const isPersonalSettings = user.username === owner // Need a better check this is case sentitive in the route
+  const isPersonalSettings = user.username.toLowerCase() === owner.toLowerCase()
 
   const tabLoading = (
     <div className="h-full w-full flex items-center justify-center">
