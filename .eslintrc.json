@@ -3,8 +3,7 @@
     "react-app",
     "react-app/jest",
     "plugin:react/recommended",
-    "prettier",
-    "prettier/react"
+    "prettier"
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
