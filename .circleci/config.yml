@@ -91,7 +91,7 @@ workflows:
       - storybook:
           filters:
             branches:
-              ignore: /Bump/
+              ignore: /dependabot/
           requires:
             - install
       - test:
