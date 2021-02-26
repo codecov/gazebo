@@ -91,7 +91,7 @@ workflows:
       - storybook:
           filters:
             branches:
-              ignore: /dependabot/
+              ignore: /^dependabot*/
           requires:
             - install
       - test:
