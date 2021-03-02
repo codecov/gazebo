@@ -16,7 +16,7 @@ import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 
 const UserManagementClasses = {
-  root: 'space-y-4 col-span-2 mb-20', // Select pushes page length out. For now padding
+  root: 'space-y-4 col-span-2 mb-20 flex-grow', // Select pushes page length out. For now padding
   cardHeader: 'flex justify-between items-center pb-4',
   activateUsers:
     'flex items-center py-2 px-4 shadow rounded-full text-blue-500',
