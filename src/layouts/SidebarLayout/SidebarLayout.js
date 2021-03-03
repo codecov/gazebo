@@ -6,7 +6,7 @@ import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
 
 function SidebarLayout({ sidebar, children, className }) {
   return (
-    <div className="flex flex-col lg:flex-row">
+    <div className="flex container flex-col lg:flex-row">
       <ErrorBoundary sentryScopes={[['layout', 'sidebar']]}>
         <NetworkErrorBoundary>
           {sidebar}
