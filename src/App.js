@@ -34,7 +34,7 @@ function App() {
             <Switch>
               <Route path="/account/:provider/:owner/">
                 <BaseLayout>
-                  <AccountSettings />
+                    <AccountSettings />
                 </BaseLayout>
               </Route>
               <Route path="/:provider/" exact>

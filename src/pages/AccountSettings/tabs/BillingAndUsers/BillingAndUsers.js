@@ -23,10 +23,10 @@ function BillingAndUsers({ provider, owner }) {
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
       <InfoMessageStripeCallback />
-      <div className="grid gap-0 md:gap-4 grid-cols-1 lg:grid-cols-3 max-w-6xl">
+      <div className="block md:flex flex-wrap justify-between">
         {accountDetails.plan ? (
           <>
-            <div>
+            <div className="sm:mr-4 sm:flex-initial flex-1">
               <CurrentPlanCard accountDetails={accountDetails} />
               {shouldRenderBillingDetails && (
                 <>
@@ -43,7 +43,9 @@ function BillingAndUsers({ provider, owner }) {
                 </>
               )}
             </div>
-            <UserManagement provider={provider} owner={owner} />
+            <div className="flex-1">
+              <UserManagement provider={provider} owner={owner} />
+            </div>
           </>
         ) : (
           <LegacyUser

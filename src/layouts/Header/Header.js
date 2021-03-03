@@ -15,9 +15,9 @@ function Header() {
   return (
     <header
       ref={mobileMenuRef}
-      className="fixed top-0 right-0 left-0 z-50 bg-gray-900 text-white px-4 sm:px-6 lg:px-8"
+      className="fixed top-0 right-0 left-0 z-50 bg-gray-900 text-white"
     >
-      <nav className="h-16 flex items-center justify-between max-w-7xl mx-auto">
+      <nav className="h-16 flex items-center container justify-between  mx-auto">
         <DesktopMenu />
         <div className="-mr-2 flex md:hidden">
           <button
