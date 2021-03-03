@@ -23,10 +23,10 @@ function BillingAndUsers({ provider, owner }) {
         subscriptionDetail={accountDetails.subscriptionDetail}
       />
       <InfoMessageStripeCallback />
-      <div className="flex flex-wrap justify-between">
+      <div className="block md:flex flex-wrap justify-between">
         {accountDetails.plan ? (
           <>
-            <div className="mr-4 sm:flex-1">
+            <div className="sm:mr-4 sm:flex-initial flex-1">
               <CurrentPlanCard accountDetails={accountDetails} />
               {shouldRenderBillingDetails && (
                 <>
