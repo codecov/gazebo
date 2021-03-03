@@ -110,7 +110,7 @@ export function FormControls({ onChange, current, defaultValues }) {
                 items={AdminItems}
                 renderSelected={SelectedItem}
                 renderItem={Item}
-                value={ActivatedItems.find(
+                value={AdminItems.find(
                   ({ value }) => value === current?.isAdmin
                 )}
                 onChange={({ value }) => {
