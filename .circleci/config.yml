@@ -47,18 +47,6 @@ jobs:
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
       - store_test_results:
           path: ./reports/junit/
-      - persist_to_workspace:
-          root: .
-          paths:
-            - 'coverage'
-
-  coverage:
-    docker:
-      - image: circleci/node:14.5.0
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
       - run:
           name: Upload coverage to codecov
           command: |
@@ -126,9 +114,6 @@ workflows:
       - test:
           requires:
             - install
-      - coverage:
-          requires:
-            - test
       # - sentry:
       #     requires:
       #       - eslint
