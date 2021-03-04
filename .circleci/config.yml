@@ -36,6 +36,9 @@ jobs:
           keys:
             - npm-deps-{{ checksum "package-lock.json" }}
       - run:
+          name: Add junit
+          command: npm i jest-junit
+      - run:
           name: Run tests
           command: |
             TESTFILES=$(circleci tests glob "src/**/*.spec.js" | circleci tests split --split-by=timings)
