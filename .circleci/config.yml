@@ -40,7 +40,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            TESTFILES=$(circleci tests glob "src/**/*.*(spec|test).js" | circleci tests split --split-by=timings)
+            TESTFILES=$(circleci tests glob "src/**/*.spec.js" | circleci tests split --split-by=timings)
             CI=true npm run test:ci -- --maxWorkers=2 $TESTFILES
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
