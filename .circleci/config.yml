@@ -54,9 +54,9 @@ jobs:
             # chmod +x ./codecov-linux
             # ./codecov-linux
             bash <(curl -s https://codecov.io/bash)
-      # - run:
-      #     name: Upload coverage to staging
-      #     command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
+      - run:
+          name: Upload coverage to staging
+          command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
 
   sentry:
     docker:
@@ -102,21 +102,21 @@ workflows:
   test-and-build:
     jobs:
       - install
-      # - eslint:
-      #     requires:
-      #       - install
-      # - storybook:
-      #     filters:
-      #       branches:
-      #         ignore: /^dependabot.*/
-      #     requires:
-      #       - eslint
-      - test:
+      - eslint:
           requires:
             - install
-      # - sentry:
-      #     requires:
-      #       - eslint
-      # - build:
-      #     requires:
-      #       - eslint
+      - storybook:
+          filters:
+            branches:
+              ignore: /^dependabot.*/
+          requires:
+            - eslint
+      - test:
+          requires:
+            - eslint
+      - sentry:
+          requires:
+            - eslint
+      - build:
+          requires:
+            - eslint
