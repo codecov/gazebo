@@ -18,6 +18,7 @@ jobs:
   test:
     docker:
       - image: circleci/node:14.5.0
+    parallelism: 5
     steps:
       - checkout
       - restore_cache:
@@ -25,7 +26,9 @@ jobs:
             - npm-deps-{{ checksum "package-lock.json" }}
       - run:
           name: Run tests
-          command: npm run test:ci
+          command: |
+            TESTFILES=$(circleci tests glob "src/**/*.spec.js" | circleci tests split --split-by=timings)
+            CI=true npm run test:ci $TESTFILES
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
       - store_test_results:
