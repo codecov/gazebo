@@ -50,13 +50,13 @@ jobs:
       - run:
           name: Upload coverage to codecov
           command: |
-            wget https://github.com/codecov/uploader/releases/download/v0.1.0_1681/codecov-linux
-            chmod +x ./codecov-linux
-            ./codecov-linux
-            # bash <(curl -s https://codecov.io/bash)
-      - run:
-          name: Upload coverage to codecov staging
-          command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
+            # wget https://github.com/codecov/uploader/releases/download/v0.1.0_1681/codecov-linux
+            # chmod +x ./codecov-linux
+            # ./codecov-linux
+            bash <(curl -s https://codecov.io/bash)
+      # - run:
+      #     name: Upload coverage to staging
+      #     command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
 
   sentry:
     docker:
