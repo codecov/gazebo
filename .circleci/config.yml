@@ -56,7 +56,7 @@ jobs:
             bash <(curl -s https://codecov.io/bash)
       - run:
           name: Upload coverage to staging
-          command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
+          command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING -u stage-web.codecov.dev
 
   sentry:
     docker:
