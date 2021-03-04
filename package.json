@@ -71,7 +71,7 @@
   "devDependencies": {
     "@craco/craco": "^6.1.1",
     "@babel/core": "^7.13.8",
-    "@sentry/cli": "^1.63.0",
+    "@sentry/cli": "^1.63.1",
     "@storybook/addon-actions": "^6.1.21",
     "@storybook/addon-essentials": "^6.1.21",
     "@storybook/addon-links": "^6.1.21",
