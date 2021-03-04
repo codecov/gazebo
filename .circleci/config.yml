@@ -15,6 +15,7 @@ jobs:
           key: npm-deps-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
+
   eslint: 
     docker:
       - image: circleci/node:14.5.0
@@ -26,6 +27,7 @@ jobs:
       - run:
           name: Run linter
           command: npm run lint
+
   test:
     docker:
       - image: circleci/node:14.5.0
@@ -43,15 +45,14 @@ jobs:
           command: |
             TESTFILES=$(circleci tests glob "src/**/*.spec.js" | circleci tests split --split-by=timings)
             CI=true npm run test:ci $TESTFILES
-          environment:
-            JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
       - store_test_results:
           path: ./reports/junit/
       - persist_to_workspace:
           root: .
           paths:
             - 'coverage'
-  uploadCoverage:
+
+  coverage:
     docker:
       - image: circleci/node:14.5.0
     steps:
@@ -116,21 +117,21 @@ workflows:
       - eslint:
           requires:
             - install
-      - storybook:
-          filters:
-            branches:
-              ignore: /^dependabot.*/
-          requires:
-            - eslint
+      # - storybook:
+      #     filters:
+      #       branches:
+      #         ignore: /^dependabot.*/
+      #     requires:
+      #       - eslint
       - test:
           requires:
             - eslint
-      - uploadCoverage:
+      - coverage:
           requires:
             - test
-      - sentry:
-          requires:
-            - eslint
-      - build:
-          requires:
-            - eslint
+      # - sentry:
+      #     requires:
+      #       - eslint
+      # - build:
+      #     requires:
+      #       - eslint
