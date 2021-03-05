@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
-import { Link } from 'react-router-dom'
 
 import Icon from 'ui/Icon'
+import AppLink from 'ui/AppLink'
 
 function BackLink({ textLink, to }) {
   return (
@@ -10,12 +10,12 @@ function BackLink({ textLink, to }) {
         <Icon name="arrowLeft" />
       </span>
       Back to:
-      <Link
+      <AppLink
         to={to}
         className="underline text-gray-500 hover:text-gray-600 visited:text-gray-500 hover:underline ml-1"
       >
         {textLink}
-      </Link>
+      </AppLink>
     </div>
   )
 }

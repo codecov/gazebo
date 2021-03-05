@@ -2,6 +2,7 @@ import PropType from 'prop-types'
 import cs from 'classnames'
 import { NavLink } from 'react-router-dom'
 import Icon from 'ui/Icon'
+import AppLink from 'ui/AppLink'
 
 const UserNav = {
   label: PropType.string.isRequired,
@@ -18,7 +19,8 @@ export function UserNavLink({
   ...props
 }) {
   return (
-    <LinkComponent
+    <AppLink
+      Component={LinkComponent}
       className={cs('flex items-center py-2 text-sm', className)}
       {...props}
     >
@@ -34,7 +36,7 @@ export function UserNavLink({
         />
       )}
       <span className="pl-3">{label}</span>
-    </LinkComponent>
+    </AppLink>
   )
 }
 
@@ -51,12 +53,16 @@ export function MainNavLink({
   ...props
 }) {
   return (
-    <NavLink className={cs('flex items-center', className)} {...props}>
+    <AppLink
+      Component={NavLink}
+      className={cs('flex items-center', className)}
+      {...props}
+    >
       {imageUrl && (
         <img className="h-6 w-6 rounded-full" src={imageUrl} alt={label} />
       )}
       <span className="pl-3">{label}</span>
-    </NavLink>
+    </AppLink>
   )
 }
 
