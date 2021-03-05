@@ -47,7 +47,7 @@ function InvoiceDetail({ provider, owner }) {
   return (
     <>
       <div className="mb-8">
-        <BackLink to={invoiceTab.path} textLink="Invoice overview" />
+        <BackLink to={invoiceTab.path()} textLink="Invoice overview" />
       </div>
       <div
         className={cs(
@@ -69,7 +69,7 @@ function InvoiceDetail({ provider, owner }) {
         </div>
       </div>
       <div className="my-8">
-        <Button to={invoiceTab.path} Component={Link} variant="outline">
+        <Button to={invoiceTab.path()} Component={Link} variant="outline">
           Back to invoices
         </Button>
         <Button className="ml-4" onClick={window.print}>

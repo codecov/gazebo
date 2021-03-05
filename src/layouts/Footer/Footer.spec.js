@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { FooterItem } from './Footer'
+import { FooterItem } from './FooterItem'
 
 describe('FooterItem', () => {
   function setup(props) {
@@ -9,7 +9,7 @@ describe('FooterItem', () => {
 
   describe('pass a "path" prop', () => {
     const text = 'Doggo 🐕'
-    const path = '/outside'
+    const path = () => '/outside'
 
     beforeEach(() => {
       setup({ text, path })

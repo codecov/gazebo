@@ -10,7 +10,7 @@ function SideMenu({ isPersonalSettings }) {
   const personalLinks = [
     {
       props: {
-        to: accessTab.path,
+        to: accessTab.path(),
       },
       iconName: 'creditCard',
       text: accessTab.text,
@@ -20,7 +20,7 @@ function SideMenu({ isPersonalSettings }) {
   const organizationLinks = [
     {
       props: {
-        to: billingAndUsers.path,
+        to: billingAndUsers.path(),
       },
       iconName: 'creditCard',
       text: billingAndUsers.text,
@@ -30,7 +30,7 @@ function SideMenu({ isPersonalSettings }) {
   const links = [
     {
       props: {
-        to: accountAdmin.path,
+        to: accountAdmin.path(),
         exact: true,
       },
       iconName: 'setting',
@@ -39,7 +39,7 @@ function SideMenu({ isPersonalSettings }) {
     ...(isPersonalSettings ? personalLinks : organizationLinks),
     {
       props: {
-        to: yamlTab.path,
+        to: yamlTab.path(),
       },
       iconName: 'fileAlt',
       text: yamlTab.text,

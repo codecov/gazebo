@@ -21,17 +21,17 @@ export function useMainNav() {
   return [
     provider && {
       label: providerToLabel[provider],
-      to: providerLink.path,
+      to: providerLink.path(),
       iconName: 'infoCircle',
     },
     owner && {
       label: owner,
-      to: onwerLink.path,
+      to: onwerLink.path(),
       imageUrl: getOwnerImg(provider, owner), //TODO Does not support GitLab
     },
     repo && {
       label: repo,
-      to: repoLink.path,
+      to: repoLink.path(),
       iconName: 'infoCircle',
     },
   ].filter(Boolean) // Any undefined's are not included in the final array
@@ -41,7 +41,7 @@ export function useSubNav() {
   const { data: user } = useUser({
     suspense: false,
   })
-  const { account } = useNavLinks({ owner: user?.username })
+  const { account } = useNavLinks()
   const { signOut } = useStaticNavLinks()
 
   if (!user) return []
@@ -49,13 +49,13 @@ export function useSubNav() {
   return [
     {
       label: account.text,
-      to: account.path,
+      to: account.path({ owner: user?.username }),
       imageUrl: user.avatarUrl,
       LinkComponent: Link,
     },
     {
       label: signOut.text,
-      to: signOut.path,
+      to: signOut.path(),
       iconName: 'signOut',
     },
   ].filter(Boolean) // Any undefined's are not included in the final array

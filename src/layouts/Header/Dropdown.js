@@ -24,7 +24,7 @@ function Dropdown() {
     return (
       <Button
         Component="a"
-        href={signIn.path}
+        href={signIn.path()}
         className="flex items-center ml-4"
       >
         <Icon name="signIn" color="text-white" className="mr-2" />

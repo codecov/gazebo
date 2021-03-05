@@ -1,109 +1,125 @@
 import { useRouteMatch } from 'react-router-dom'
 
-// TODO we need to add location storage or something for when params are not availble.
-function useNavLinks(opts = {}) {
+function useNavLinks() {
   const { params } = useRouteMatch()
-  // Combine router params with passed override options.
-  const { provider, owner, repo, id } = {
-    ...params,
-    ...opts,
-  }
+  const { provider: p, owner: o, repo: r, id: i } = params
 
   return {
     provider: {
-      path: `/${provider}`,
+      path: ({ provider = p } = { provider: p }) => `/${provider}`,
       isExternalLink: true,
     },
     owner: {
-      path: `/${provider}/${owner}`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/${provider}/${owner}`,
       isExternalLink: true,
     },
     repo: {
-      path: `/${provider}/${owner}/${repo}`,
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}`,
       isExternalLink: true,
     },
     account: {
       text: 'Personal Settings',
-      path: `/account/${provider}/${owner}`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}`,
       isExternalLink: false,
     },
     accountAdmin: {
       text: 'Admin',
-      path: `/account/${provider}/${owner}`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}`,
       isExternalLink: false,
     },
     yamlTab: {
       text: 'YAML',
-      path: `/account/${provider}/${owner}/yaml`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/yaml`,
       isExternalLink: false,
     },
     accessTab: {
       text: 'Access',
-      path: `/account/${provider}/${owner}/access`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/access`,
       isExternalLink: false,
     },
     billingAndUsers: {
       text: 'Billing & Users',
-      path: `/account/${provider}/${owner}/billing`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/billing`,
       isExternalLink: false,
     },
     upgradePlan: {
-      path: `/account/${provider}/${owner}/billing/upgrade`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/billing/upgrade`,
       isExternalLink: false,
     },
     cancelPlan: {
-      path: `/account/${provider}/${owner}/billing/cancel`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/billing/cancel`,
       isExternalLink: false,
     },
     invoiceTab: {
-      path: `/account/${provider}/${owner}/invoices`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/invoices`,
       isExternalLink: false,
     },
     invoiceDetail: {
-      path: `/account/${provider}/${owner}/invoices/${id}`,
+      path: (
+        { provider = p, owner = o, id = i } = { provider: p, owner: o, id: i }
+      ) => `/account/${provider}/${owner}/invoices/${id}`,
       isExternalLink: false,
     },
   }
 }
 
-// Seperate hook which doesn't unessisarily use the router. (Easier unit tests)
+// Seperate function which doesn't unessisarily use the router.
 function useStaticNavLinks() {
   return {
-    root: { path: '/', isExternalLink: true },
+    root: { path: () => '/', isExternalLink: true },
     signOut: {
       text: 'Sign Out',
-      path: '/sign-out',
+      path: () => '/sign-out',
       isExternalLink: true,
     },
     signIn: {
       text: 'Log in',
-      path: '/sign-in',
+      path: () => '/sign-in',
       isExternalLink: true,
     },
-    terms: { text: 'Terms', path: '/terms', isExternalLink: true },
-    privacy: { text: 'Privacy', path: '/privacy', isExternalLink: true },
-    security: { text: 'Security', path: '/security', isExternalLink: true },
-    gdpr: { text: 'GDPR', path: '/gdpr', isExternalLink: true },
-    shop: { text: 'Shop', path: '/shop', isExternalLink: true },
-    pricing: { text: 'Pricing', path: '/pricing', isExternalLink: true },
-    support: { text: 'Support', path: '/support', isExternalLink: true },
+    terms: { text: 'Terms', path: () => '/terms', isExternalLink: true },
+    privacy: { text: 'Privacy', path: () => '/privacy', isExternalLink: true },
+    security: {
+      text: 'Security',
+      path: () => '/security',
+      isExternalLink: true,
+    },
+    gdpr: { text: 'GDPR', path: () => '/gdpr', isExternalLink: true },
+    shop: { text: 'Shop', path: () => '/shop', isExternalLink: true },
+    pricing: { text: 'Pricing', path: () => '/pricing', isExternalLink: true },
+    support: { text: 'Support', path: () => '/support', isExternalLink: true },
     docs: {
       text: 'Docs',
-      path: 'https://docs.codecov.io/',
+      path: () => 'https://docs.codecov.io/',
       isExternalLink: true,
     },
     enterprise: {
       text: 'Enterprise',
-      path: '/enterprise',
+      path: () => '/enterprise',
       isExternalLink: true,
     },
     githubMarketplace: {
-      path: 'https://github.com/marketplace/codecov',
+      path: () => 'https://github.com/marketplace/codecov',
       external: true,
       text: 'Manage billing in GitHub',
     },
     freshdesk: {
-      path: 'https://codecov.freshdesk.com/support/home',
+      path: () => 'https://codecov.freshdesk.com/support/home',
       external: true,
       text: 'Contact Support',
     },

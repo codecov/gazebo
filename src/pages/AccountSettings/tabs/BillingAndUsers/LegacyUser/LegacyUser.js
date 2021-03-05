@@ -29,7 +29,7 @@ function LegacyUser({ accountDetails, provider, owner }) {
             className="underline hover:text-blue-600"
             target="_blank"
             rel="noreferrer"
-            href={freshdesk.path}
+            href={freshdesk.path()}
           >
             support
           </a>
@@ -43,7 +43,7 @@ function LegacyUser({ accountDetails, provider, owner }) {
         <hr className="my-6" />
 
         <div className="flex flex-col items-center mt-6">
-          <Button Component={Link} to={upgradePlan.path}>
+          <Button Component={Link} to={upgradePlan.path()}>
             Upgrade to per user pricing
           </Button>
           <p className="mt-4 text-gray-900">
@@ -52,7 +52,7 @@ function LegacyUser({ accountDetails, provider, owner }) {
               className="underline hover:text-blue-600"
               target="_blank"
               rel="noreferrer"
-              href={freshdesk.path}
+              href={freshdesk.path()}
             >
               {freshdesk.text}
             </a>
