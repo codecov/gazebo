@@ -2,15 +2,9 @@ import { Link, useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
-import { getOwnerImg } from 'shared/utils'
+import { getOwnerImg, providerImage, providerToName } from 'shared/utils'
 
 export function useMainNav() {
-  const providerToLabel = {
-    gh: 'Github',
-    bb: 'BitBucket',
-    gl: 'Gitlab',
-  }
-
   const { provider, owner, repo } = useParams()
   const {
     provider: providerLink,
@@ -20,9 +14,9 @@ export function useMainNav() {
 
   return [
     provider && {
-      label: providerToLabel[provider],
+      label: providerToName(provider),
       to: providerLink.path(),
-      iconName: 'infoCircle',
+      imageUrl: providerImage(provider),
     },
     owner && {
       label: owner,
