@@ -41,7 +41,7 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          imageUrl: '/logos/providers/github-icon.svg',
+          imageUrl: 'github-icon.svg',
         },
       ])
     })
@@ -60,7 +60,7 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          imageUrl: '/logos/providers/github-icon.svg',
+          imageUrl: 'github-icon.svg',
         },
         {
           label: 'codecov',
@@ -85,7 +85,7 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          imageUrl: '/logos/providers/github-icon.svg',
+          imageUrl: 'github-icon.svg',
         },
         {
           label: 'codecov',
