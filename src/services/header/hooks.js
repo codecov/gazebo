@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
@@ -45,7 +45,6 @@ export function useSubNav() {
       label: account.text,
       to: account.path({ owner: user?.username }),
       imageUrl: user.avatarUrl,
-      LinkComponent: Link,
     },
     {
       label: signOut.text,

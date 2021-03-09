@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import AppLink from 'ui/AppLink'
 
 const basicClass =
   'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 transition-colors duration-200 ease-in-out'
@@ -48,7 +49,7 @@ function Button({
     className,
   ].join(' ')
 
-  return <Component className={classes} {...props} />
+  return <AppLink Component={Component} className={classes} {...props} />
 }
 
 Button.propTypes = {
