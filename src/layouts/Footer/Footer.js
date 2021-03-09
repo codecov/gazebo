@@ -1,42 +1,28 @@
 import Icon from 'ui/Icon'
-import PropType from 'prop-types'
 
-export function FooterItem({ label, to }) {
-  return (
-    <li className="flex justify-center">
-      {to ? (
-        <a
-          className="p-4 no-underline hover:underline hover:text-blue-400"
-          href={to}
-        >
-          {label}
-        </a>
-      ) : (
-        label
-      )}
-    </li>
-  )
-}
-
-FooterItem.propTypes = {
-  label: PropType.string.isRequired,
-  to: PropType.string,
-}
+import { useStaticNavLinks } from 'services/navigation'
+import { FooterItem } from './FooterItem'
 
 function Footer() {
-  const leftMenu = [
-    { label: '© 2019 Codecov' },
-    { label: 'Terms', to: '/terms' },
-    { label: 'Privacy', to: '/privacy' },
-    { label: 'Security', to: '/security' },
-    { label: 'GDPR', to: '/gdpr' },
-  ]
+  const {
+    terms,
+    privacy,
+    security,
+    gdpr,
+    // shop,
+    pricing,
+    support,
+    docs,
+    enterprise,
+  } = useStaticNavLinks()
+
+  const leftMenu = [{ text: '© 2021 Codecov' }, terms, privacy, security, gdpr]
   const rightMenu = [
-    // { label: 'Shop', to: '/' },
-    { label: 'Pricing', to: '/pricing' },
-    { label: 'Support', to: '/support' },
-    { label: 'Docs', to: 'https://docs.codecov.io/' },
-    { label: 'Enterprise', to: '/enterprise' },
+    // shop,
+    pricing,
+    support,
+    docs,
+    enterprise,
   ]
   return (
     <footer className="flex-none bg-codecov-footer">

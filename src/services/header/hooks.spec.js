@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useRouteMatch } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
 
 import { useUser } from 'services/user'
@@ -8,13 +8,15 @@ import { useMainNav, useSubNav } from './hooks'
 jest.mock('services/user')
 jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
+  useRouteMatch: jest.fn(),
 }))
 
 describe('useMainNav', () => {
   let hookData
 
-  function setup(currentResource) {
-    useParams.mockReturnValue(currentResource)
+  function setup(params) {
+    useParams.mockReturnValue(params)
+    useRouteMatch.mockReturnValue({ params })
     hookData = renderHook(() => useMainNav())
   }
 
@@ -105,9 +107,13 @@ describe('useSubNav', () => {
   let hookData
 
   function setup(currentUser) {
-    useParams.mockReturnValue({
+    const params = {
       provider: 'gh',
-    })
+      owner: 'codecov',
+      repo: 'gazebo',
+    }
+    useRouteMatch.mockReturnValue({ params })
+    useParams.mockReturnValue(params)
     useUser.mockReturnValue({ data: currentUser })
     hookData = renderHook(() => useSubNav())
   }
@@ -141,7 +147,7 @@ describe('useSubNav', () => {
         },
         {
           label: 'Sign Out',
-          href: '/sign-out',
+          to: '/sign-out',
           iconName: 'signOut',
         },
       ])
