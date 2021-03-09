@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 import { getOwnerImg, providerImage, providerToName } from 'shared/utils'
@@ -38,7 +38,6 @@ export function useSubNav() {
       label: 'Personal Settings',
       to: `/account/${provider}/${user.username}`,
       imageUrl: user.avatarUrl,
-      LinkComponent: Link,
     },
     {
       label: 'Sign Out',

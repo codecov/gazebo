@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Button from 'ui/Button'
 import Card from 'ui/Card'
+import AppLink from 'ui/AppLink'
 import { invoicePropType } from 'services/account'
 
 import invoiceImg from './invoice.svg'
@@ -22,12 +23,12 @@ function LatestInvoiceCard({ invoice, provider, owner }) {
           <div className="italic text-gray-400">
             Due date {format(fromUnixTime(invoice.dueDate), 'do MMM')} - $
             {(invoice.total / 100).toFixed(2)}
-            <Link
+            <AppLink
               className="inline-block not-italic underline hover:underline text-blue-200 ml-2"
               to={`/account/${provider}/${owner}/invoices/${invoice.id}`}
             >
               View
-            </Link>
+            </AppLink>
           </div>
         </div>
       </div>

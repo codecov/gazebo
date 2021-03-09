@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import Icon from 'ui/Icon'
-import { Link } from 'react-router-dom'
+import AppLink from 'ui/AppLink'
 
 import ServerStatus from './ServerStatus'
 import Dropdown from './Dropdown'
@@ -13,10 +13,10 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center">
-        <Link to="/" tabIndex="0" className="flex-shrink-0">
+        <AppLink to="/" tabIndex="0" className="flex-shrink-0">
           <span className="sr-only">Link to Homepage</span>
           <Icon alt="Codecov Logo" name="codecov" color="text-white" />
-        </Link>
+        </AppLink>
         <div className="hidden md:block">
           <div className="ml-10 flex items-center space-x-2">
             {main.map((props, i) => (

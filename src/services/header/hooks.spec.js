@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
 
 import { useUser } from 'services/user'
@@ -7,7 +7,6 @@ import { useMainNav, useSubNav } from './hooks'
 
 jest.mock('services/user')
 jest.mock('react-router-dom', () => ({
-  Link: jest.fn(),
   useParams: jest.fn(),
 }))
 
@@ -139,7 +138,6 @@ describe('useSubNav', () => {
           label: 'Personal Settings',
           to: `/account/gh/${user.username}`,
           imageUrl: user.avatarUrl,
-          LinkComponent: Link,
         },
         {
           label: 'Sign Out',
