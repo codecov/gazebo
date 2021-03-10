@@ -42,6 +42,7 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
+          useRouter: false,
           imageUrl: 'github-icon.svg',
         },
       ])
@@ -61,11 +62,13 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
+          useRouter: false,
           imageUrl: 'github-icon.svg',
         },
         {
           label: 'codecov',
           to: '/gh/codecov',
+          useRouter: false,
           imageUrl: 'https://github.com/codecov.png?size=40',
         },
       ])
@@ -86,16 +89,19 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
+          useRouter: false,
           imageUrl: 'github-icon.svg',
         },
         {
           label: 'codecov',
           to: '/gh/codecov',
+          useRouter: false,
           imageUrl: 'https://github.com/codecov.png?size=40',
         },
         {
           label: 'gazebo',
           to: '/gh/codecov/gazebo',
+          useRouter: false,
           iconName: 'infoCircle',
         },
       ])
@@ -143,11 +149,13 @@ describe('useSubNav', () => {
         {
           label: 'Personal Settings',
           to: `/account/gh/${user.username}`,
+          useRouter: true,
           imageUrl: user.avatarUrl,
         },
         {
           label: 'Sign Out',
           to: '/sign-out',
+          useRouter: false,
           iconName: 'signOut',
         },
       ])

@@ -25,7 +25,11 @@ function DeletionCard({ isPersonalSettings, provider, owner }) {
           <p className="mt-4 mb-6">
             Erase all my organization content and projects.
           </p>
-          <Button Component="a" href={support.path()} color="red">
+          <Button
+            to={support.path()}
+            useRouter={!support.isExternalLink}
+            color="red"
+          >
             Contact support
           </Button>
         </>

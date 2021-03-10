@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import PropTypes from 'prop-types'
 
 import { useInvoices } from 'services/account'
+import { useNavLinks } from 'services/navigation'
 
 import BackLink from '../../shared/BackLink'
 import InvoiceCard from './InvoiceCard'
@@ -24,14 +25,16 @@ function useGroupedInvoices({ owner, provider }) {
 
 function Invoices({ provider, owner }) {
   const groupedInvoices = useGroupedInvoices({ provider, owner })
+  const { billingAndUsers } = useNavLinks()
   // extract the years so we can be sure of the desc order of the years
   const years = Object.keys(groupedInvoices).sort().reverse()
 
   return (
     <>
       <BackLink
-        to={`/account/${provider}/${owner}/billing`}
-        textLink="Billing & Users"
+        to={billingAndUsers.path()}
+        useRouter={!billingAndUsers.isExternalLink}
+        textLink={billingAndUsers.text}
       />
       {years.map((year) => (
         <div className="mt-8" key={year}>

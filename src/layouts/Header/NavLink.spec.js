@@ -5,15 +5,15 @@ import { UserNavLink, MainNavLink } from './NavLink'
 
 describe('UserNavLink', () => {
   function setup(props) {
-    render(<UserNavLink {...props} />)
+    render(<UserNavLink {...props} />, { wrapper: MemoryRouter })
   }
 
   describe('passed to and label', () => {
     const label = 'Doggo 🐕'
-    const href = '/outside'
+    const to = '/outside'
 
     beforeEach(() => {
-      setup({ label, href })
+      setup({ label, to })
     })
 
     it('renders a link', () => {
@@ -26,11 +26,11 @@ describe('UserNavLink', () => {
 
   describe('passed to, label and iconName', () => {
     const label = 'Grump Factory 🐱'
-    const href = '/sunny-spot'
+    const to = '/sunny-spot'
     const iconName = 'codecov'
 
     beforeEach(() => {
-      setup({ label, href, iconName })
+      setup({ label, to, iconName })
     })
 
     it('renders a link', () => {
@@ -48,11 +48,11 @@ describe('UserNavLink', () => {
 
   describe('passed to, label and imageUrl', () => {
     const label = 'Fear Noodle 🐍'
-    const href = '/den'
+    const to = '/den'
     const imageUrl = 'https://sna.ke/boops.jpeg'
 
     beforeEach(() => {
-      setup({ label, href, imageUrl })
+      setup({ label, to, imageUrl })
     })
 
     it('renders a link', () => {
@@ -71,11 +71,7 @@ describe('UserNavLink', () => {
 
 describe('MainNavLink', () => {
   function setup(props) {
-    render(
-      <MemoryRouter>
-        <MainNavLink {...props} />
-      </MemoryRouter>
-    )
+    render(<MainNavLink {...props} />, { wrapper: MemoryRouter })
   }
 
   describe('passed to and label', () => {

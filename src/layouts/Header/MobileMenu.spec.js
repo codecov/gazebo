@@ -16,18 +16,14 @@ const mockMain = [
 ]
 
 const mockSubMenu = [
-  { label: 'Chatty Ghosts', href: '/👻/👅', imageUrl: '🗣.png' },
+  { label: 'Chatty Ghosts', to: '/👻/👅', imageUrl: '🗣.png' },
 ]
 
 const mockUseUser = { data: { username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' } }
 
 describe('MobileMenu', () => {
   function setup() {
-    render(
-      <MemoryRouter>
-        <MobileMenu />
-      </MemoryRouter>
-    )
+    render(<MobileMenu />, { wrapper: MemoryRouter })
   }
 
   describe('logged in', () => {

@@ -2,12 +2,15 @@ import PropTypes from 'prop-types'
 import config from 'config'
 
 import { useAccountDetails } from 'services/account'
+import { useStaticNavLinks } from 'services/navigation'
+
 import Card from 'ui/Card'
 import Button from 'ui/Button'
 
 import githubLogo from 'assets/githublogo.png'
 
 function GithubIntegrationCard({ provider, owner }) {
+  const { github, githubMarketplace } = useStaticNavLinks()
   const shouldRender = provider === 'gh' && !config.IS_ENTERPRISE
   const { data: accountDetails } = useAccountDetails({
     provider,
@@ -32,11 +35,11 @@ function GithubIntegrationCard({ provider, owner }) {
             You can manage the app on Github.
           </p>
           <Button
-            Component="a"
-            href="https://github.com/apps/codecov"
+            to={github.path()}
+            useRouter={!github.isExternalLink}
             variant="outline"
           >
-            Continue to GitHub to manage repository integration
+            {github.text}
           </Button>
         </div>
       ) : (
@@ -49,11 +52,11 @@ function GithubIntegrationCard({ provider, owner }) {
             comments on behalf of Codecov.
           </p>
           <Button
-            Component="a"
-            href="https://github.com/marketplace/codecov"
+            to={githubMarketplace.path()}
+            useRouter={!githubMarketplace.isExternalLink}
             variant="outline"
           >
-            Checkout Codecov in the GitHub Marketplace
+            {githubMarketplace.text}
           </Button>
         </div>
       )}

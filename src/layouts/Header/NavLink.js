@@ -8,6 +8,7 @@ const UserNav = {
   label: PropType.string.isRequired,
   imageUrl: PropType.string,
   iconName: PropType.string,
+  useRouter: PropType.bool,
 }
 
 export function UserNavLink({
@@ -15,12 +16,11 @@ export function UserNavLink({
   imageUrl,
   iconName,
   className,
-  LinkComponent = 'a',
   ...props
 }) {
   return (
     <AppLink
-      Component={LinkComponent}
+      Component={NavLink}
       className={cs('flex items-center py-2 text-sm', className)}
       {...props}
     >
@@ -42,7 +42,6 @@ export function UserNavLink({
 
 UserNavLink.propTypes = {
   ...UserNav,
-  LinkComponent: PropType.elementType,
 }
 
 export function MainNavLink({

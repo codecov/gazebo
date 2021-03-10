@@ -43,7 +43,11 @@ function LegacyUser({ accountDetails, provider, owner }) {
         <hr className="my-6" />
 
         <div className="flex flex-col items-center mt-6">
-          <Button Component={Link} to={upgradePlan.path()}>
+          <Button
+            Component={Link}
+            to={upgradePlan.path()}
+            useRouter={!upgradePlan.isExternalLink}
+          >
             Upgrade to per user pricing
           </Button>
           <p className="mt-4 text-gray-900">

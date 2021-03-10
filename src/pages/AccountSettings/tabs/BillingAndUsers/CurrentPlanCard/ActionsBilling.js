@@ -34,15 +34,18 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
           Your account is configured via GitHub Marketplace
         </p>
         <div className="text-center">
-          <Button Component="a" href={githubMarketplace.path()}>
-            {githubMarketplace.text}
+          <Button
+            href={githubMarketplace.path()}
+            useRouter={!githubMarketplace.isExternalLink}
+          >
+            Manage billing in GitHub
           </Button>
         </div>
       </div>
     )
   }
 
-  if (accountDetails.rootOrganization) {
+  if (accountDetails.rootOrganization?.username) {
     return (
       <div className="border-t border-gray-200 pb-4">
         <p className="mt-4 mb-6 text-sm">
@@ -53,8 +56,9 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
           <Button
             Component={Link}
             to={billingAndUsers.path({
-              owner: accountDetails?.rootOrganization?.username,
+              owner: accountDetails.rootOrganization.username,
             })}
+            useRouter={!billingAndUsers.isExternalLink}
           >
             View Billing
           </Button>
@@ -65,12 +69,17 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
 
   return (
     <>
-      <Button Component={Link} to={upgradePlan.path()}>
+      <Button
+        Component={Link}
+        to={upgradePlan.path()}
+        useRouter={!upgradePlan.isExternalLink}
+      >
         {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
       </Button>
       {shouldRenderCancelLink(accountDetails, isFreePlan) && (
         <Button
           to={cancelPlan.path()}
+          useRouter={!cancelPlan.isExternalLink}
           Component={Link}
           variant="text"
           color="gray"

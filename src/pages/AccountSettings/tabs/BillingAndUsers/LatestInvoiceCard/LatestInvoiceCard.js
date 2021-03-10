@@ -6,10 +6,12 @@ import Button from 'ui/Button'
 import Card from 'ui/Card'
 import AppLink from 'ui/AppLink'
 import { invoicePropType } from 'services/account'
+import { useNavLinks } from 'services/navigation'
 
 import invoiceImg from './invoice.svg'
 
 function LatestInvoiceCard({ invoice, provider, owner }) {
+  const { invoiceDetail, invoiceTab } = useNavLinks()
   if (!invoice) return null
   return (
     <Card className="p-6 mb-4">
@@ -25,7 +27,8 @@ function LatestInvoiceCard({ invoice, provider, owner }) {
             {(invoice.total / 100).toFixed(2)}
             <AppLink
               className="inline-block not-italic underline hover:underline text-blue-200 ml-2"
-              to={`/account/${provider}/${owner}/invoices/${invoice.id}`}
+              to={invoiceDetail.path({ id: invoice.id })}
+              useRouter={!invoiceDetail.isExternalLink}
             >
               View
             </AppLink>
@@ -35,7 +38,8 @@ function LatestInvoiceCard({ invoice, provider, owner }) {
       <Button
         color="pink"
         variant="outline"
-        to={`/account/${provider}/${owner}/invoices`}
+        to={invoiceTab.path()}
+        useRouter={!invoiceTab.isExternalLink}
         Component={Link}
       >
         See all invoices

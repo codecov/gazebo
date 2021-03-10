@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { format, fromUnixTime } from 'date-fns'
 
 import { invoicePropType } from 'services/account'
+import { useNavLinks } from 'services/navigation'
+
 import Card from 'ui/Card'
 import Button from 'ui/Button'
 
@@ -16,7 +18,7 @@ const statusToColor = {
 }
 
 function InvoiceCard({ invoice, provider, owner }) {
-  const invoiceUrl = `/account/${provider}/${owner}/invoices/${invoice.id}`
+  const { invoiceDetail } = useNavLinks()
   return (
     <Card className="p-4 mt-4 flex text-sm items-center">
       Invoice on {format(fromUnixTime(invoice.created), 'MMMM do yyyy')}
@@ -28,13 +30,18 @@ function InvoiceCard({ invoice, provider, owner }) {
       </span>
       <Button
         Component={Link}
-        to={invoiceUrl + '?print'}
+        to={invoiceDetail.path({ id: invoice.id }) + '?print'}
         target="_blank"
         variant="outline"
       >
         Download
       </Button>
-      <Button Component={Link} to={invoiceUrl} className="ml-4">
+      <Button
+        Component={Link}
+        to={invoiceDetail.path({ id: invoice.id })}
+        useRouter={!invoiceDetail.isExternalLink}
+        className="ml-4"
+      >
         View
       </Button>
     </Card>
