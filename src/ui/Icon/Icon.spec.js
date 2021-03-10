@@ -45,9 +45,9 @@ describe('Icon', () => {
       setup({ name: 'check' })
     })
     it('renders small icon', () => {
-        const svg = wrapper.container.querySelector('svg')
-        expect(svg.classList.contains('w-6')).toBe(true)
-        expect(svg.classList.contains('h-6')).toBe(true)
+      const svg = wrapper.container.querySelector('svg')
+      expect(svg.classList.contains('w-6')).toBe(true)
+      expect(svg.classList.contains('h-6')).toBe(true)
     })
   })
 
@@ -56,9 +56,9 @@ describe('Icon', () => {
       setup({ name: 'check', size: 'lg' })
     })
     it('renders small icon', () => {
-        const svg = wrapper.container.querySelector('svg')
-        expect(svg.classList.contains('w-16')).toBe(true)
-        expect(svg.classList.contains('h-16')).toBe(true)
+      const svg = wrapper.container.querySelector('svg')
+      expect(svg.classList.contains('w-16')).toBe(true)
+      expect(svg.classList.contains('h-16')).toBe(true)
     })
   })
 })

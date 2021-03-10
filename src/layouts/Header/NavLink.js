@@ -25,11 +25,7 @@ export function UserNavLink({
       {...props}
     >
       {imageUrl && (
-        <img
-          className="h-4 w-4 rounded-full"
-          src={imageUrl}
-          alt={label}
-        />
+        <img className="h-4 w-4 rounded-full" src={imageUrl} alt={label} />
       )}
       {iconName && (
         <Icon
