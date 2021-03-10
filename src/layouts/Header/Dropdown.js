@@ -4,6 +4,7 @@ import cs from 'classnames'
 
 import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
+import { useStaticNavLinks } from 'services/navigation'
 import Icon from 'ui/Icon'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 
@@ -11,6 +12,7 @@ import Button from 'ui/Button'
 import { UserNavLink } from './NavLink'
 
 function Dropdown() {
+  const { signIn } = useStaticNavLinks()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef()
   const { data: user } = useUser({
@@ -22,9 +24,13 @@ function Dropdown() {
 
   if (!user)
     return (
-      <Button Component="a" href="/login" className="flex items-center ml-4">
+      <Button
+        Component="a"
+        href={signIn.path()}
+        className="flex items-center ml-4"
+      >
         <SignInIcon className="mr-2" />
-        Log in
+        {signIn.text}
       </Button>
     )
 

@@ -1,6 +1,7 @@
 import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
+import { useStaticNavLinks } from 'services/navigation'
 
 import ServerStatus from './ServerStatus'
 import { MainNavLink, UserNavLink } from './NavLink'
@@ -9,6 +10,7 @@ function MobileMenu() {
   const main = useMainNav()
   const subMenu = useSubNav()
   const { data: user } = useUser({ suspense: false })
+  const { signIn } = useStaticNavLinks()
 
   function loggedInSubMenu() {
     return (
@@ -39,12 +41,12 @@ function MobileMenu() {
     )
   }
 
-  function loggedOutSubMenu() {
+  function loginButton() {
     return (
       <div className="flex items-center py-4 border-t border-gray-800">
-        <a href="/login" className="flex-1 flex items-center">
+        <a href={signIn.path()} className="flex-1 flex items-center">
           <SignInIcon className="mr-2" />
-          Log in
+          {signIn.text}
         </a>
         <ServerStatus />
       </div>
@@ -65,7 +67,7 @@ function MobileMenu() {
           />
         ))}
       </div>
-      {user ? loggedInSubMenu() : loggedOutSubMenu()}
+      {user ? loggedInSubMenu() : loginButton()}
     </nav>
   )
 }

@@ -15,7 +15,7 @@ const mockSubMenu = [
 const mockUseUser = { username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }
 
 describe('Dropdown', () => {
-  function setup(currentUser) {
+  function setup() {
     render(
       <MemoryRouter>
         <Dropdown />
