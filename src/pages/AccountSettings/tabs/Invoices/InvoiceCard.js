@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
 import { Link } from 'react-router-dom'
 import { format, fromUnixTime } from 'date-fns'
@@ -17,7 +16,7 @@ const statusToColor = {
   uncollectible: 'text-error-500',
 }
 
-function InvoiceCard({ invoice, provider, owner }) {
+function InvoiceCard({ invoice }) {
   const { invoiceDetail } = useNavLinks()
   return (
     <Card className="p-4 mt-4 flex text-sm items-center">
@@ -50,8 +49,6 @@ function InvoiceCard({ invoice, provider, owner }) {
 
 InvoiceCard.propTypes = {
   invoice: invoicePropType.isRequired,
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default InvoiceCard

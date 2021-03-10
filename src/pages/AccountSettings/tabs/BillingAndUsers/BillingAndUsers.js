@@ -36,8 +36,6 @@ function BillingAndUsers({ provider, owner }) {
                     owner={owner}
                   />
                   <LatestInvoiceCard
-                    provider={provider}
-                    owner={owner}
                     invoice={accountDetails.subscriptionDetail?.latestInvoice}
                   />
                 </>

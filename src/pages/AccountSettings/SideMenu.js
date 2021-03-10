@@ -54,18 +54,25 @@ function SideMenu({ isPersonalSettings }) {
   return (
     <aside>
       <section className="flex flex-row lg:flex-col">
-        {links.map((link) => (
-          <AppLink
-            className="flex-1 flex tems-center text-gray-500 p-2 pr-2 mb-2 border-solid border-pink-500 hover:bg-gray-100"
-            activeClassName="border-b-4 lg:border-b-0 lg:border-r-4"
-            Component={NavLink}
-            key={uniqueId(link.text)}
-            {...link.props}
-          >
-            <Icon name={link.iconName} className="mr-1" />
-            {link.text}
-          </AppLink>
-        ))}
+        {links.map(({ useRouter, exact = false, ...link }, i) => {
+          const activeProps = useRouter && {
+            activeClassName: 'border-b-4 lg:border-b-0 lg:border-r-4',
+            exact,
+          }
+          return (
+            <AppLink
+              className="flex-1 flex tems-center text-gray-500 p-2 pr-2 mb-2 border-solid border-pink-500 hover:bg-gray-100"
+              Component={NavLink}
+              key={uniqueId(link.text)}
+              useRouter={useRouter}
+              {...activeProps}
+              {...link.props}
+            >
+              <Icon name={link.iconName} className="mr-1" />
+              {link.text}
+            </AppLink>
+          )
+        })}
       </section>
     </aside>
   )
