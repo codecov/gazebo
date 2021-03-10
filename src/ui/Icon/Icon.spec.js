@@ -34,11 +34,9 @@ describe('Icon', () => {
       setup({ name: 'check', size: 'sm' })
     })
     it('renders small icon', () => {
-      const style = window.getComputedStyle(
-        wrapper.container.querySelector('svg')
-      )
-      expect(style.width).toBe('12px')
-      expect(style.height).toBe('12px')
+      const svg = wrapper.container.querySelector('svg')
+      expect(svg.classList.contains('w-3')).toBe(true)
+      expect(svg.classList.contains('h-3')).toBe(true)
     })
   })
 
@@ -47,11 +45,9 @@ describe('Icon', () => {
       setup({ name: 'check' })
     })
     it('renders small icon', () => {
-      const style = window.getComputedStyle(
-        wrapper.container.querySelector('svg')
-      )
-      expect(style.width).toBe('24px')
-      expect(style.height).toBe('24px')
+        const svg = wrapper.container.querySelector('svg')
+        expect(svg.classList.contains('w-6')).toBe(true)
+        expect(svg.classList.contains('h-6')).toBe(true)
     })
   })
 
@@ -60,11 +56,9 @@ describe('Icon', () => {
       setup({ name: 'check', size: 'lg' })
     })
     it('renders small icon', () => {
-      const style = window.getComputedStyle(
-        wrapper.container.querySelector('svg')
-      )
-      expect(style.width).toBe('64px')
-      expect(style.height).toBe('64px')
+        const svg = wrapper.container.querySelector('svg')
+        expect(svg.classList.contains('w-16')).toBe(true)
+        expect(svg.classList.contains('h-16')).toBe(true)
     })
   })
 })

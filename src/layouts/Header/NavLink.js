@@ -26,7 +26,6 @@ export function UserNavLink({
     >
       {imageUrl && (
         <img
-          data-testid="nav-link-icon"
           className="h-4 w-4 rounded-full"
           src={imageUrl}
           alt={label}

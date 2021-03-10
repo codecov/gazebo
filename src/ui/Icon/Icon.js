@@ -5,18 +5,9 @@ import cs from 'classnames'
 import * as svg from './svg'
 
 const IconClasses = {
-  sm: {
-    width: 12,
-    height: 12,
-  },
-  md: {
-    width: 24,
-    height: 24,
-  },
-  lg: {
-    width: 64,
-    height: 64,
-  },
+  sm: 'w-3 h-3 fill-current',
+  md: 'w-6 h-6 fill-current',
+  lg: 'w-16 h-16 fill-current',
 }
 
 function Icon({
@@ -30,7 +21,7 @@ function Icon({
   if (!IconSvg) return null
   return (
     <span className={cs(color, className)} data-testid={testId}>
-      <IconSvg style={IconClasses[size]} className="fill-current" />
+      <IconSvg className={IconClasses[size]} />
     </span>
   )
 }
@@ -39,7 +30,7 @@ Icon.propTypes = {
   name: PropType.string.isRequired,
   color: PropType.string,
   testId: PropType.string,
-  size: PropType.string,
+  size: PropType.oneOf(['sm', 'md', 'lg']),
 }
 
 export default Icon
