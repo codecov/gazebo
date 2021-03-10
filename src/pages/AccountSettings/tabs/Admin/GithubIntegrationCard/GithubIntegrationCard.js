@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
+
 import config from 'config'
 
 import { useAccountDetails } from 'services/account'
@@ -35,6 +37,7 @@ function GithubIntegrationCard({ provider, owner }) {
             You can manage the app on Github.
           </p>
           <Button
+            Component={Link}
             to={github.path()}
             useRouter={!github.isExternalLink}
             variant="outline"
@@ -52,6 +55,7 @@ function GithubIntegrationCard({ provider, owner }) {
             comments on behalf of Codecov.
           </p>
           <Button
+            Component={Link}
             to={githubMarketplace.path()}
             useRouter={!githubMarketplace.isExternalLink}
             variant="outline"

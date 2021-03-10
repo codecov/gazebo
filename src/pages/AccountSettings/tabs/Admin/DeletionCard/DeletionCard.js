@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 import { useStaticNavLinks } from 'services/navigation'
 import Card from 'ui/Card'
@@ -26,6 +27,7 @@ function DeletionCard({ isPersonalSettings, provider, owner }) {
             Erase all my organization content and projects.
           </p>
           <Button
+            Component={Link}
             to={support.path()}
             useRouter={!support.isExternalLink}
             color="red"

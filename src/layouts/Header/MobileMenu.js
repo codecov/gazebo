@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { useStaticNavLinks } from 'services/navigation'
@@ -46,6 +48,7 @@ function MobileMenu() {
     return (
       <div className="flex items-center py-4 border-t border-gray-800">
         <Button
+          Component={Link}
           to={signIn.path()}
           useRouter={!signIn.isExternalLink}
           className="flex-1 flex items-center"
