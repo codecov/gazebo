@@ -6,20 +6,26 @@ import * as svg from './svg'
 
 const IconClasses = {
   sm: {
-      width: 12,
-      height: 12
+    width: 12,
+    height: 12,
   },
   md: {
-      width: 24,
-      height: 24
+    width: 24,
+    height: 24,
   },
   lg: {
-      width: 64,
-      height: 64
-  }
+    width: 64,
+    height: 64,
+  },
 }
 
-function Icon({ className = '', name, color = 'text-gray-500', testId, size = 'md' }) {
+function Icon({
+  className = '',
+  name,
+  color = 'text-gray-500',
+  testId,
+  size = 'md',
+}) {
   const IconSvg = get(svg, name, null)
   if (!IconSvg) return null
   return (
@@ -33,7 +39,7 @@ Icon.propTypes = {
   name: PropType.string.isRequired,
   color: PropType.string,
   testId: PropType.string,
-  size: PropType.string
+  size: PropType.string,
 }
 
 export default Icon

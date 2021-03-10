@@ -5,7 +5,7 @@ import cs from 'classnames'
 import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import Icon from 'ui/Icon'
-import { ReactComponent as SignInIcon} from 'assets/svg/signIn.svg'
+import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 
 import Button from 'ui/Button'
 import { UserNavLink } from './NavLink'

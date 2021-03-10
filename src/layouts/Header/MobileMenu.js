@@ -1,6 +1,6 @@
 import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
-import { ReactComponent as SignInIcon} from 'assets/svg/signIn.svg'
+import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 
 import ServerStatus from './ServerStatus'
 import { MainNavLink, UserNavLink } from './NavLink'
@@ -43,7 +43,7 @@ function MobileMenu() {
     return (
       <div className="flex items-center py-4 border-t border-gray-800">
         <a href="/login" className="flex-1 flex items-center">
-        <SignInIcon className="mr-2" />
+          <SignInIcon className="mr-2" />
           Log in
         </a>
         <ServerStatus />
