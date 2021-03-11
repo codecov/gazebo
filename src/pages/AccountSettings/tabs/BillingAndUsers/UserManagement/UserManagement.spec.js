@@ -270,7 +270,6 @@ describe('UserManagerment', () => {
     })
   })
 
-
   describe('Filter by Activated', () => {
     describe.each([
       [/All users/, defaultQuery],
