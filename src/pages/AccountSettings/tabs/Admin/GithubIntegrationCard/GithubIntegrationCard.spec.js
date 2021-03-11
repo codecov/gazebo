@@ -64,7 +64,7 @@ describe('GithubIntegrationCard', () => {
     it('has a link to the github marketplace', () => {
       expect(
         screen.getByRole('link', {
-          name: /checkout codecov in the github marketplace/i,
+          name: /View in GitHub Marketplace/i,
         })
       ).toBeInTheDocument()
     })
