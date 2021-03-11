@@ -19,7 +19,7 @@ function DesktopMenu() {
           to={root.path()}
           useRouter={!root.isExternalLink}
           tabIndex="0"
-          className="flex-shrink-0"
+          className="mx-2 md:mx-0 flex-shrink-0"
         >
           <span className="sr-only">Link to Homepage</span>
           <Icon alt="Codecov Logo" name="codecov" color="text-white" />
