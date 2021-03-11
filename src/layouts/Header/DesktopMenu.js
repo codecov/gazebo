@@ -15,7 +15,11 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center">
-        <AppLink to={root.path()} tabIndex="0" className="flex-shrink-0">
+        <AppLink
+          to={root.path()}
+          tabIndex="0"
+          className="mx-2 md:mx-0 flex-shrink-0"
+        >
           <span className="sr-only">Link to Homepage</span>
           <Icon alt="Codecov Logo" name="codecov" color="text-white" />
         </AppLink>
