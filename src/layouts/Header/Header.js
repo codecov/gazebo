@@ -17,9 +17,9 @@ function Header() {
       ref={mobileMenuRef}
       className="fixed top-0 right-0 left-0 z-50 bg-gray-900 text-white"
     >
-      <nav className="h-16 flex items-center container justify-between  mx-auto">
+      <nav className="h-16 flex items-center container justify-between mx-auto">
         <DesktopMenu />
-        <div className="-mr-2 flex md:hidden">
+        <div className="mx-2 flex md:hidden">
           <button
             tabIndex="0"
             data-testid="toggle-mobile"
