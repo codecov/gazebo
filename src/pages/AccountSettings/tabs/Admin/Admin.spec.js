@@ -17,7 +17,7 @@ describe('AdminTab', () => {
   }
 
   function setup(over = {}) {
-    useUser.mockReturnValue({ data: {} })
+    useUser.mockReturnValue({ data: { username: 'terry' } })
     const props = {
       ...defaultProps,
       ...over,
@@ -27,9 +27,7 @@ describe('AdminTab', () => {
 
   describe('when rendered for user', () => {
     beforeEach(() => {
-      setup({
-        isPersonalSettings: true,
-      })
+      setup({ owner: 'terry' })
     })
 
     it('renders the NameEmailCard', () => {
@@ -55,9 +53,7 @@ describe('AdminTab', () => {
 
   describe('when rendered for organization', () => {
     beforeEach(() => {
-      setup({
-        isPersonalSettings: false,
-      })
+      setup()
     })
 
     it('renders the ManageAdminCard', () => {
