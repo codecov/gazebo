@@ -53,7 +53,7 @@ function GithubIntegrationCard({ provider, owner }) {
             href="https://github.com/marketplace/codecov"
             variant="outline"
           >
-            Checkout Codecov in the GitHub Marketplace
+            View in GitHub Marketplace
           </Button>
         </div>
       )}
