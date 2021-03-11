@@ -27,7 +27,7 @@ describe('UserNavLink', () => {
   describe('passed to, label and iconName', () => {
     const label = 'Grump Factory 🐱'
     const href = '/sunny-spot'
-    const iconName = 'codecov'
+    const iconName = 'search'
 
     beforeEach(() => {
       setup({ label, href, iconName })

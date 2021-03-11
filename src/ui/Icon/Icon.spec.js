@@ -28,4 +28,37 @@ describe('Icon', () => {
       expect(wrapper.container.querySelector('svg')).toBeNull()
     })
   })
+
+  describe('renders small icon', () => {
+    beforeEach(() => {
+      setup({ name: 'check', size: 'sm' })
+    })
+    it('renders small icon', () => {
+      const svg = wrapper.container.querySelector('svg')
+      expect(svg.classList.contains('w-3')).toBe(true)
+      expect(svg.classList.contains('h-3')).toBe(true)
+    })
+  })
+
+  describe('renders medium icon', () => {
+    beforeEach(() => {
+      setup({ name: 'check' })
+    })
+    it('renders small icon', () => {
+      const svg = wrapper.container.querySelector('svg')
+      expect(svg.classList.contains('w-6')).toBe(true)
+      expect(svg.classList.contains('h-6')).toBe(true)
+    })
+  })
+
+  describe('renders larg icon', () => {
+    beforeEach(() => {
+      setup({ name: 'check', size: 'lg' })
+    })
+    it('renders small icon', () => {
+      const svg = wrapper.container.querySelector('svg')
+      expect(svg.classList.contains('w-16')).toBe(true)
+      expect(svg.classList.contains('h-16')).toBe(true)
+    })
+  })
 })
