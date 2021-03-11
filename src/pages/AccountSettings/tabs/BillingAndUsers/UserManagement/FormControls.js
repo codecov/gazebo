@@ -10,15 +10,6 @@ import { ApiFilterEnum } from 'services/navigation'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 
-const OrderingItems = [
-  { label: 'Name A-Z', value: 'name' },
-  { label: 'Name Z-A', value: '-name' },
-  { label: 'Username A-Z', value: 'username' },
-  { label: 'Username Z-A', value: '-username' },
-  { label: 'Email A-Z', value: 'email' },
-  { label: 'Email Z-A', value: '-email' },
-]
-
 const AdminItems = [
   { label: 'Everyone', value: ApiFilterEnum.none },
   { label: 'Admins', value: ApiFilterEnum.true },
@@ -115,26 +106,6 @@ export function FormControls({ onChange, current, defaultValues }) {
                 )}
                 onChange={({ value }) => {
                   onChange({ isAdmin: value })
-                }}
-              />
-            )}
-          />
-          <Controller
-            name="ordering"
-            control={control}
-            render={() => (
-              <Select
-                ariaName="ordering"
-                className={FormClasses.filter}
-                control={control}
-                items={OrderingItems}
-                renderSelected={SelectedItem}
-                renderItem={Item}
-                value={OrderingItems.find(
-                  ({ value }) => value === current?.ordering
-                )}
-                onChange={({ value }) => {
-                  onChange({ ordering: value })
                 }}
               />
             )}
