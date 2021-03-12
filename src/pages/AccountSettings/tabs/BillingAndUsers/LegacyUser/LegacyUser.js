@@ -51,7 +51,7 @@ function LegacyUser({ accountDetails, provider, owner }) {
             Upgrade to per user pricing
           </Button>
           <p className="mt-4 text-gray-900">
-            Questions?
+            Questions?{' '}
             <a
               className="underline hover:text-blue-600"
               target="_blank"
