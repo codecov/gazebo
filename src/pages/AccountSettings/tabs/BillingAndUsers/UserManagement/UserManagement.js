@@ -24,7 +24,8 @@ const UserManagementClasses = {
   title: 'text-2xl font-bold',
   results: 'shadow divide-y divide-gray-200 divide-solid p-6',
   userTable: 'grid grid-cols-5 lg:gap-2 my-6',
-  user: ( {lastseen, latestPrivatePrDate} ) => lastseen || latestPrivatePrDate ? 'col-span-3' : 'col-span-4',
+  user: ({ lastseen, latestPrivatePrDate }) =>
+    lastseen || latestPrivatePrDate ? 'col-span-3' : 'col-span-4',
   ctaWrapper: 'flex items-center justify-end',
   cta: 'w-full truncate',
 }
@@ -74,27 +75,32 @@ function UserManagement({ provider, owner }) {
     data: { planAutoActivate },
   } = useAccountDetails({ owner, provider })
 
-  const Lastseen = (lastseen) => <DateItem testId="last-seen" label="Last seen:" date={lastseen}/>
-  const LastPrivatePr = (latestPrivatePrDate) => (<DateItem testId="last-pr" label="Last pr:" date={latestPrivatePrDate}/>) 
+  const Lastseen = (lastseen) => (
+    <DateItem testId="last-seen" label="Last seen:" date={lastseen} />
+  )
+  const LastPrivatePr = (latestPrivatePrDate) => (
+    <DateItem testId="last-pr" label="Last pr:" date={latestPrivatePrDate} />
+  )
 
   const getLatestActivity = (lastPrivatePr, lastseen) => {
-    if (lastPrivatePr && lastseen){
-        const lastPrivatePrDate = new Date(lastPrivatePr)
-        const lastseenDate = new Date(lastseen)
-        return lastPrivatePrDate > lastseenDate ? LastPrivatePr(lastPrivatePr) : Lastseen(lastseen)
+    if (lastPrivatePr && lastseen) {
+      const lastPrivatePrDate = new Date(lastPrivatePr)
+      const lastseenDate = new Date(lastseen)
+      return lastPrivatePrDate > lastseenDate
+        ? LastPrivatePr(lastPrivatePr)
+        : Lastseen(lastseen)
     }
     return lastPrivatePr ? LastPrivatePr(lastPrivatePr) : Lastseen(lastseen)
   }
 
   const renderLastestActivity = (user) => {
-    const lastPrivatePr = user.latestPrivatePrDate 
+    const lastPrivatePr = user.latestPrivatePrDate
     const lastseen = user.lastseen
-    if(!lastPrivatePr && !lastseen) {
-        return null
+    if (!lastPrivatePr && !lastseen) {
+      return null
     }
     return getLatestActivity(lastPrivatePr, lastseen)
-  } 
-
+  }
 
   return (
     <article className={UserManagementClasses.root}>
