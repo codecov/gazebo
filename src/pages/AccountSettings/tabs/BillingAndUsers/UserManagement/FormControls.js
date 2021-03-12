@@ -24,10 +24,10 @@ const ActivatedItems = [
 
 const FormClasses = {
   search:
-    'flex-none md:flex-1 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
+    'flex-none md:w-1/2 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
-  firstFilter: 'flex-1 rounded-tl-md rounded-bl-md',
-  filter: 'flex-1',
+  firstFilter: 'flex-1 md:w-1/4 rounded-tl-md rounded-bl-md',
+  filter: 'flex-1 md:w-1/4',
   item: 'flex justify-between text-base py-2 truncate',
   itemContent: 'flex justify-between text-base truncate',
   icon: 'w-6 h-6 bg-gray-100 rounded-full list-item-type ml-3',
