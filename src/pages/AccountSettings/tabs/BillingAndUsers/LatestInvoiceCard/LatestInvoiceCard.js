@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
 import { Link } from 'react-router-dom'
 
@@ -10,7 +9,7 @@ import { useNavLinks } from 'services/navigation'
 
 import invoiceImg from './invoice.svg'
 
-function LatestInvoiceCard({ invoice, provider, owner }) {
+function LatestInvoiceCard({ invoice }) {
   const { invoiceDetail, invoiceTab } = useNavLinks()
   if (!invoice) return null
   return (
@@ -50,8 +49,6 @@ function LatestInvoiceCard({ invoice, provider, owner }) {
 
 LatestInvoiceCard.propTypes = {
   invoice: invoicePropType,
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default LatestInvoiceCard

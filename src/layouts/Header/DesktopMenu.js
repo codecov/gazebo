@@ -29,6 +29,7 @@ function DesktopMenu() {
             {main.map(({ useRouter, ...props }, i) => {
               const activeProps = useRouter && {
                 activeClassName: 'opacity-100',
+                exact: true,
               }
 
               return (
@@ -42,7 +43,6 @@ function DesktopMenu() {
                   )}
                   <MainNavLink
                     className="opacity-50 px-3 py-2 rounded-md hover:opacity-100 transition-opacity"
-                    exact={true}
                     useRouter={useRouter}
                     {...activeProps}
                     {...props}
