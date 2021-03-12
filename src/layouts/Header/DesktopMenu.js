@@ -7,6 +7,7 @@ import Dropdown from './Dropdown'
 import { MainNavLink } from './NavLink'
 import { useMainNav } from 'services/header'
 import { useStaticNavLinks } from 'services/navigation'
+import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 
 function DesktopMenu() {
   const main = useMainNav()
@@ -22,7 +23,7 @@ function DesktopMenu() {
           className="mx-2 md:mx-0 flex-shrink-0"
         >
           <span className="sr-only">Link to Homepage</span>
-          <Icon alt="Codecov Logo" name="codecov" color="text-white" />
+          <CodecovIcon />
         </AppLink>
         <div className="hidden md:block">
           <div className="ml-10 flex items-center space-x-2">

@@ -122,7 +122,7 @@ function useStaticNavLinks() {
     githubMarketplace: {
       path: () => 'https://github.com/marketplace/codecov',
       isExternalLink: true,
-      text: 'Checkout Codecov in the GitHub Marketplace',
+      text: 'View in GitHub Marketplace',
     },
     freshdesk: {
       path: () => 'https://codecov.freshdesk.com/support/home',

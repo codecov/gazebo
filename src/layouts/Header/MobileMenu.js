@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom'
 
 import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
+import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 import { useStaticNavLinks } from 'services/navigation'
-import Icon from 'ui/Icon'
 import Button from 'ui/Button'
 
 import ServerStatus from './ServerStatus'
@@ -53,7 +53,7 @@ function MobileMenu() {
           useRouter={!signIn.isExternalLink}
           className="flex-1 flex items-center"
         >
-          <Icon name="signIn" color="text-white" className="mr-2" />
+          <SignInIcon className="mr-2" />
           {signIn.text}
         </Button>
         <ServerStatus />

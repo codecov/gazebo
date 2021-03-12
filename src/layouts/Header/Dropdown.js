@@ -6,6 +6,8 @@ import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { useStaticNavLinks } from 'services/navigation'
 import Icon from 'ui/Icon'
+import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
+
 import Button from 'ui/Button'
 import { UserNavLink } from './NavLink'
 
@@ -27,7 +29,7 @@ function Dropdown() {
         useRouter={!signIn.isExternalLink}
         className="flex items-center ml-4"
       >
-        <Icon name="signIn" color="text-white" className="mr-2" />
+        <SignInIcon className="mr-2" />
         {signIn.text}
       </Button>
     )
