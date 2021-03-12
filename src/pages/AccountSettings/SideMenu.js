@@ -10,9 +10,8 @@ function SideMenu({ isPersonalSettings }) {
   const { accountAdmin, yamlTab, accessTab, billingAndUsers } = useNavLinks()
   const personalLinks = [
     {
-      props: {
-        to: accessTab.path(),
-      },
+      to: accessTab.path(),
+      useRouter: !accessTab.isExternalLink,
       iconName: 'creditCard',
       text: accessTab.text,
     },
@@ -20,9 +19,8 @@ function SideMenu({ isPersonalSettings }) {
 
   const organizationLinks = [
     {
-      props: {
-        to: billingAndUsers.path(),
-      },
+      to: billingAndUsers.path(),
+      useRouter: !billingAndUsers.isExternalLink,
       iconName: 'creditCard',
       text: billingAndUsers.text,
     },
@@ -30,18 +28,16 @@ function SideMenu({ isPersonalSettings }) {
 
   const links = [
     {
-      props: {
-        to: accountAdmin.path(),
-        exact: true,
-      },
+      to: accountAdmin.path(),
+      useRouter: !accountAdmin.isExternalLink,
+      exact: true,
       iconName: 'setting',
       text: accountAdmin.text,
     },
     ...(isPersonalSettings ? personalLinks : organizationLinks),
     {
-      props: {
-        to: yamlTab.path(),
-      },
+      to: yamlTab.path(),
+      useRouter: !yamlTab.isExternalLink,
       iconName: 'fileAlt',
       text: yamlTab.text,
     },
@@ -50,18 +46,26 @@ function SideMenu({ isPersonalSettings }) {
   return (
     <aside>
       <section className="flex flex-row lg:flex-col">
-        {links.map((link) => (
-          <AppLink
-            Component={NavLink}
-            key={uniqueId(link.text)}
-            {...link.props}
-            className="flex-1 flex tems-center text-gray-500 p-2 pr-2 mb-2 border-solid border-pink-500 hover:bg-gray-100"
-            activeClassName="border-b-4 lg:border-b-0 lg:border-r-4"
-          >
-            <Icon name={link.iconName} className="mr-1" />
-            {link.text}
-          </AppLink>
-        ))}
+        {links.map(({ useRouter, exact, text, iconName, ...props }) => {
+          const activeProps = useRouter && {
+            activeClassName: 'border-b-4 lg:border-b-0 lg:border-r-4',
+            exact: exact,
+          }
+
+          return (
+            <AppLink
+              className="flex-1 flex tems-center text-gray-500 p-2 pr-2 mb-2 border-solid border-pink-500 hover:bg-gray-100"
+              Component={NavLink}
+              key={uniqueId(text)}
+              useRouter={useRouter}
+              {...activeProps}
+              {...props}
+            >
+              <Icon name={iconName} className="mr-1" />
+              {text}
+            </AppLink>
+          )
+        })}
       </section>
     </aside>
   )

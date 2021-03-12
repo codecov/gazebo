@@ -40,13 +40,13 @@ function useNavLinks() {
       text: 'YAML',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/yaml`,
-      isExternalLink: false,
+      isExternalLink: true,
     },
     accessTab: {
       text: 'Access',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/access`,
-      isExternalLink: false,
+      isExternalLink: true,
     },
     billingAndUsers: {
       text: 'Billing & Users',
@@ -68,6 +68,7 @@ function useNavLinks() {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/invoices`,
       isExternalLink: false,
+      text: 'Invoice overview',
     },
     invoiceDetail: {
       path: (
@@ -113,14 +114,19 @@ function useStaticNavLinks() {
       path: () => '/enterprise',
       isExternalLink: true,
     },
+    github: {
+      path: () => 'https://github.com/marketplace/codecov',
+      isExternalLink: true,
+      text: 'Continue to GitHub to manage repository integration',
+    },
     githubMarketplace: {
       path: () => 'https://github.com/marketplace/codecov',
-      external: true,
-      text: 'Manage billing in GitHub',
+      isExternalLink: true,
+      text: 'View in GitHub Marketplace',
     },
     freshdesk: {
       path: () => 'https://codecov.freshdesk.com/support/home',
-      external: true,
+      isExternalLink: true,
       text: 'Contact Support',
     },
   }

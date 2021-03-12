@@ -25,8 +25,8 @@ function Dropdown() {
   if (!user)
     return (
       <Button
-        Component="a"
-        href={signIn.path()}
+        to={signIn.path()}
+        useRouter={!signIn.isExternalLink}
         className="flex items-center ml-4"
       >
         <SignInIcon className="mr-2" />

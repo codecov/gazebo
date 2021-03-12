@@ -16,11 +16,7 @@ const mockMainNav = [
 
 describe('DesktopMenu', () => {
   function setup() {
-    render(
-      <MemoryRouter>
-        <DesktopMenu />
-      </MemoryRouter>
-    )
+    render(<DesktopMenu />, { wrapper: MemoryRouter })
   }
 
   describe('renders from service data', () => {

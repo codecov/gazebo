@@ -2,6 +2,7 @@ import PropType from 'prop-types'
 
 import Card from 'ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
+import { useNavLinks } from 'services/navigation'
 
 import parasolImg from './parasol.png'
 import UpgradePlanForm from './UpgradePlanForm'
@@ -11,6 +12,7 @@ import BackLink from '../../shared/BackLink'
 function UpgradePlan({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = usePlans(provider)
+  const { billingAndUsers } = useNavLinks()
 
   const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')
   const proPlanYear = plans.find((plan) => plan.value === 'users-pr-inappy')
@@ -18,8 +20,9 @@ function UpgradePlan({ provider, owner }) {
   return (
     <>
       <BackLink
-        to={`/account/${provider}/${owner}/billing`}
-        textLink="Billing & Users"
+        to={billingAndUsers.path()}
+        useRouter={!billingAndUsers.isExternalLink}
+        textLink={billingAndUsers.text}
       />
       <article className="grid grid-cols-12 gap-8 mt-10">
         <div className="col-span-5">

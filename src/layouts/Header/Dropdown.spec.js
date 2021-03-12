@@ -10,17 +10,13 @@ jest.mock('services/header')
 jest.mock('services/user')
 
 const mockSubMenu = [
-  { label: 'Chatty Ghosts', href: '/👻/👅', imageUrl: '🗣.png' },
+  { label: 'Chatty Ghosts', to: '/👻/👅', imageUrl: '🗣.png' },
 ]
 const mockUseUser = { username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }
 
 describe('Dropdown', () => {
   function setup() {
-    render(
-      <MemoryRouter>
-        <Dropdown />
-      </MemoryRouter>
-    )
+    render(<Dropdown />, { wrapper: MemoryRouter })
   }
 
   describe('check rendered links', () => {

@@ -1,7 +1,10 @@
+import { Link } from 'react-router-dom'
+
 import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 import { useStaticNavLinks } from 'services/navigation'
+import Button from 'ui/Button'
 
 import ServerStatus from './ServerStatus'
 import { MainNavLink, UserNavLink } from './NavLink'
@@ -44,10 +47,15 @@ function MobileMenu() {
   function loginButton() {
     return (
       <div className="flex items-center py-4 border-t border-gray-800">
-        <a href={signIn.path()} className="flex-1 flex items-center">
+        <Button
+          Component={Link}
+          to={signIn.path()}
+          useRouter={!signIn.isExternalLink}
+          className="flex-1 flex items-center"
+        >
           <SignInIcon className="mr-2" />
           {signIn.text}
-        </a>
+        </Button>
         <ServerStatus />
       </div>
     )
@@ -59,13 +67,21 @@ function MobileMenu() {
       className="md:hidden bg-gray-900 z-40 text-white"
     >
       <div className="pb-1 space-y-1">
-        {main.map((props, i) => (
-          <MainNavLink
-            key={`mobile-mainnav-${i}`}
-            className="block py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
-            {...props}
-          />
-        ))}
+        {main.map(({ useRouter, ...props }, i) => {
+          const activeProps = useRouter && {
+            activeClassName: 'opacity-100',
+          }
+
+          return (
+            <MainNavLink
+              key={`mobile-mainnav-${i}`}
+              className="block py-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
+              useRouter={useRouter}
+              {...activeProps}
+              {...props}
+            />
+          )
+        })}
       </div>
       {user ? loggedInSubMenu() : loginButton()}
     </nav>
