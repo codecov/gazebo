@@ -2,10 +2,6 @@
   @apply flex flex-wrap items-center divide-x divide-gray-200 divide-solid;
 }
 
-.controlGroup > * {
-  @apply w-full;
-}
-
 .controlGroup > * > button,
 .controlGroup > button {
   @apply border-none rounded-none;

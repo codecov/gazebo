@@ -10,15 +10,6 @@ import { ApiFilterEnum } from 'services/navigation'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 
-const OrderingItems = [
-  { label: 'Name A-Z', value: 'name' },
-  { label: 'Name Z-A', value: '-name' },
-  { label: 'Username A-Z', value: 'username' },
-  { label: 'Username Z-A', value: '-username' },
-  { label: 'Email A-Z', value: 'email' },
-  { label: 'Email Z-A', value: '-email' },
-]
-
 const AdminItems = [
   { label: 'Everyone', value: ApiFilterEnum.none },
   { label: 'Admins', value: ApiFilterEnum.true },
@@ -33,10 +24,10 @@ const ActivatedItems = [
 
 const FormClasses = {
   search:
-    'flex-none md:flex-1 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
+    'flex-none md:w-1/2 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
-  firstFilter: 'flex-1 rounded-tl-md rounded-bl-md',
-  filter: 'flex-1',
+  firstFilter: 'flex-1 md:w-1/4 rounded-tl-md rounded-bl-md',
+  filter: 'flex-1 md:w-1/4',
   item: 'flex justify-between text-base py-2 truncate',
   itemContent: 'flex justify-between text-base truncate',
   icon: 'w-6 h-6 bg-gray-100 rounded-full list-item-type ml-3',
@@ -115,26 +106,6 @@ export function FormControls({ onChange, current, defaultValues }) {
                 )}
                 onChange={({ value }) => {
                   onChange({ isAdmin: value })
-                }}
-              />
-            )}
-          />
-          <Controller
-            name="ordering"
-            control={control}
-            render={() => (
-              <Select
-                ariaName="ordering"
-                className={FormClasses.filter}
-                control={control}
-                items={OrderingItems}
-                renderSelected={SelectedItem}
-                renderItem={Item}
-                value={OrderingItems.find(
-                  ({ value }) => value === current?.ordering
-                )}
-                onChange={({ value }) => {
-                  onChange({ ordering: value })
                 }}
               />
             )}
