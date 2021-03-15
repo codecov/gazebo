@@ -5,6 +5,18 @@ function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i } = params
 
   return {
+    signOut: {
+      text: 'Sign Out',
+      path: ({ provider = p } = { provider: p }) =>
+        `https://codecov.io/logout/${provider}`,
+      isExternalLink: true,
+    },
+    signIn: {
+      text: 'Log in',
+      path: ({ provider = p } = { provider: p }) =>
+        `https://codecov.io/login/${provider}`,
+      isExternalLink: true,
+    },
     provider: {
       path: ({ provider = p } = { provider: p }) => `/${provider}`,
       isExternalLink: true,
@@ -83,16 +95,6 @@ function useNavLinks() {
 function useStaticNavLinks() {
   return {
     root: { path: () => '/', isExternalLink: true },
-    signOut: {
-      text: 'Sign Out',
-      path: () => 'https://about.codecov.io/',
-      isExternalLink: true,
-    },
-    signIn: {
-      text: 'Log in',
-      path: () => 'https://codecov.io/sign-in',
-      isExternalLink: true,
-    },
     terms: {
       text: 'Terms',
       path: () => 'https://codecov.io/terms',
