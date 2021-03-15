@@ -1,13 +1,17 @@
-import PropTypes from 'prop-types'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 import uniqueId from 'lodash/uniqueId'
 
 import { useNavLinks } from 'services/navigation'
+import { useUser } from 'services/user'
 import Icon from 'ui/Icon'
 import AppLink from 'ui/AppLink'
 
-function SideMenu({ isPersonalSettings }) {
+function SideMenu() {
+  const { owner } = useParams()
   const { accountAdmin, yamlTab, accessTab, billingAndUsers } = useNavLinks()
+  const { data: user } = useUser()
+  const isPersonalSettings = user.username.toLowerCase() === owner.toLowerCase()
+
   const personalLinks = [
     {
       to: accessTab.path(),
@@ -69,10 +73,6 @@ function SideMenu({ isPersonalSettings }) {
       </section>
     </aside>
   )
-}
-
-SideMenu.propTypes = {
-  isPersonalSettings: PropTypes.bool.isRequired,
 }
 
 export default SideMenu
