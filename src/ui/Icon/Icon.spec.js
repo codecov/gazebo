@@ -72,5 +72,4 @@ describe('Icon', () => {
       expect(svg.classList.contains('h-1')).toBe(true)
     })
   })
-
 })
