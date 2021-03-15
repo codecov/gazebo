@@ -85,25 +85,49 @@ function useStaticNavLinks() {
     root: { path: () => '/', isExternalLink: true },
     signOut: {
       text: 'Sign Out',
-      path: () => '/sign-out',
+      path: () => 'https://about.codecov.io/',
       isExternalLink: true,
     },
     signIn: {
       text: 'Log in',
-      path: () => '/sign-in',
+      path: () => 'https://codecov.io/sign-in',
       isExternalLink: true,
     },
-    terms: { text: 'Terms', path: () => '/terms', isExternalLink: true },
-    privacy: { text: 'Privacy', path: () => '/privacy', isExternalLink: true },
+    terms: {
+      text: 'Terms',
+      path: () => 'https://codecov.io/terms',
+      isExternalLink: true,
+    },
+    privacy: {
+      text: 'Privacy',
+      path: () => 'https://codecov.io/privacy',
+      isExternalLink: true,
+    },
     security: {
       text: 'Security',
-      path: () => '/security',
+      path: () => 'https://codecov.io/security',
       isExternalLink: true,
     },
-    gdpr: { text: 'GDPR', path: () => '/gdpr', isExternalLink: true },
-    shop: { text: 'Shop', path: () => '/shop', isExternalLink: true },
-    pricing: { text: 'Pricing', path: () => '/pricing', isExternalLink: true },
-    support: { text: 'Support', path: () => '/support', isExternalLink: true },
+    gdpr: {
+      text: 'GDPR',
+      path: () => 'https://codecov.io/gdpr',
+      isExternalLink: true,
+    },
+    shop: {
+      text: 'Shop',
+      path: () => 'https://codecov.io/shop',
+      isExternalLink: true,
+    },
+    pricing: {
+      text: 'Pricing',
+      path: () => 'https://codecov.io/pricing',
+      isExternalLink: true,
+    },
+    support: {
+      text: 'Support',
+      path: () => 'https://codecov.io/support',
+      isExternalLink: true,
+    },
     docs: {
       text: 'Docs',
       path: () => 'https://docs.codecov.io/',
@@ -111,7 +135,7 @@ function useStaticNavLinks() {
     },
     enterprise: {
       text: 'Enterprise',
-      path: () => '/enterprise',
+      path: () => 'https://codecov.io/enterprise',
       isExternalLink: true,
     },
     github: {
@@ -128,6 +152,12 @@ function useStaticNavLinks() {
       path: () => 'https://codecov.freshdesk.com/support/home',
       isExternalLink: true,
       text: 'Contact Support',
+    },
+    blog: {
+      // TODO add blog to footer
+      path: () => 'https://about.codecov.io/blog/',
+      isExternalLink: true,
+      text: 'Blog',
     },
   }
 }
