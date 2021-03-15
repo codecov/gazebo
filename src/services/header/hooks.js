@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
-import { useNavLinks, useStaticNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation'
 import { getOwnerImg, providerImage, providerToName } from 'shared/utils'
 
 export function useMainNav() {
@@ -38,8 +38,7 @@ export function useSubNav() {
   const { data: user } = useUser({
     suspense: false,
   })
-  const { account } = useNavLinks()
-  const { signOut } = useStaticNavLinks()
+  const { account, signOut } = useNavLinks()
 
   if (!user) return []
 

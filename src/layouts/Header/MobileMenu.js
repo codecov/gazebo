@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
-import { useStaticNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation'
 import Button from 'ui/Button'
 
 import ServerStatus from './ServerStatus'
@@ -13,7 +13,7 @@ function MobileMenu() {
   const main = useMainNav()
   const subMenu = useSubNav()
   const { data: user } = useUser({ suspense: false })
-  const { signIn } = useStaticNavLinks()
+  const { signIn } = useNavLinks()
 
   function loggedInSubMenu() {
     return (

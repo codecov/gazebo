@@ -4,7 +4,7 @@ import cs from 'classnames'
 
 import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
-import { useStaticNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation'
 import Icon from 'ui/Icon'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 
@@ -12,7 +12,7 @@ import Button from 'ui/Button'
 import { UserNavLink } from './NavLink'
 
 function Dropdown() {
-  const { signIn } = useStaticNavLinks()
+  const { signIn } = useNavLinks()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef()
   const { data: user } = useUser({

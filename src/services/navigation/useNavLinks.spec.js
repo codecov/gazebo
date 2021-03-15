@@ -34,6 +34,40 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('Sign Out', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.signOut.path()).toBe(
+        'https://codecov.io/logout/gl'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.signOut.path({ provider: 'bb' })).toBe(
+        'https://codecov.io/logout/bb'
+      )
+    })
+  })
+
+  describe('Sign In', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.signIn.path()).toBe(
+        'https://codecov.io/login/gl'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.signIn.path({ provider: 'bb' })).toBe(
+        'https://codecov.io/login/bb'
+      )
+    })
+  })
+
   describe('owner link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
@@ -261,18 +295,16 @@ describe('useStaticNavLinks', () => {
   let links = useStaticNavLinks()
   describe.each`
     link                       | outcome
-    ${links.root}              | ${'/'}
-    ${links.signOut}           | ${'/sign-out'}
-    ${links.signIn}            | ${'/sign-in'}
-    ${links.terms}             | ${'/terms'}
-    ${links.privacy}           | ${'/privacy'}
-    ${links.security}          | ${'/security'}
-    ${links.gdpr}              | ${'/gdpr'}
-    ${links.shop}              | ${'/shop'}
-    ${links.pricing}           | ${'/pricing'}
-    ${links.support}           | ${'/support'}
+    ${links.root}              | ${'https://about.codecov.io'}
+    ${links.terms}             | ${'https://codecov.io/terms'}
+    ${links.privacy}           | ${'https://codecov.io/privacy'}
+    ${links.security}          | ${'https://codecov.io/security'}
+    ${links.gdpr}              | ${'https://codecov.io/gdpr'}
+    ${links.shop}              | ${'https://codecov.io/shop'}
+    ${links.pricing}           | ${'https://codecov.io/pricing'}
+    ${links.support}           | ${'https://codecov.io/support'}
     ${links.docs}              | ${'https://docs.codecov.io/'}
-    ${links.enterprise}        | ${'/enterprise'}
+    ${links.enterprise}        | ${'https://codecov.io/enterprise'}
     ${links.githubMarketplace} | ${'https://github.com/marketplace/codecov'}
     ${links.freshdesk}         | ${'https://codecov.freshdesk.com/support/home'}
   `('static links return path', ({ link, outcome }) => {

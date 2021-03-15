@@ -154,7 +154,7 @@ describe('useSubNav', () => {
         },
         {
           label: 'Sign Out',
-          to: '/sign-out',
+          to: 'https://codecov.io/logout/gh',
           useRouter: false,
           iconName: 'signOut',
         },

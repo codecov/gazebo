@@ -94,7 +94,7 @@ function useNavLinks() {
 // Seperate function which doesn't unessisarily use the router.
 function useStaticNavLinks() {
   return {
-    root: { path: () => '/', isExternalLink: true },
+    root: { path: () => 'https://about.codecov.io', isExternalLink: true },
     terms: {
       text: 'Terms',
       path: () => 'https://codecov.io/terms',
