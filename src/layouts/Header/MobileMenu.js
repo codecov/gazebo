@@ -21,7 +21,7 @@ function MobileMenu() {
         <div className="flex items-center py-4 border-t border-gray-800">
           <div className="flex-shrink-0">
             <img
-              className="h-10 w-10 rounded-full"
+              className="h-9 w-9 rounded-full"
               src={user.avatarUrl}
               width="40px"
               height="auto"

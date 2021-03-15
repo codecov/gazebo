@@ -53,7 +53,7 @@ function Dropdown() {
       >
         <span className="sr-only">Open user menu</span>
         <img
-          className="h-8 w-8 rounded-full"
+          className="h-7 w-7 rounded-full"
           src={user.avatarUrl}
           alt="user avatar"
         />
@@ -61,8 +61,9 @@ function Dropdown() {
         <Icon
           name="rightChevron"
           color="text-white"
+          iconClass="w-5 h-5 fill-current"
           className={cs(
-            'w-4 h-4 mr-2',
+            'mr-2',
             'transition-transform duration-75 ease-in-out transform',
             'motion-reduce:transition-none motion-reduce:transform-none',
             {

@@ -51,7 +51,7 @@ describe('Icon', () => {
     })
   })
 
-  describe('renders larg icon', () => {
+  describe('renders large icon', () => {
     beforeEach(() => {
       setup({ name: 'check', size: 'lg' })
     })
@@ -59,6 +59,17 @@ describe('Icon', () => {
       const svg = wrapper.container.querySelector('svg')
       expect(svg.classList.contains('w-16')).toBe(true)
       expect(svg.classList.contains('h-16')).toBe(true)
+    })
+  })
+
+  describe('renders cusotm size icon', () => {
+    beforeEach(() => {
+      setup({ name: 'check', size: 'lg', iconClass: 'w-1 h-1' })
+    })
+    it('renders small icon', () => {
+      const svg = wrapper.container.querySelector('svg')
+      expect(svg.classList.contains('w-1')).toBe(true)
+      expect(svg.classList.contains('h-1')).toBe(true)
     })
   })
 })
