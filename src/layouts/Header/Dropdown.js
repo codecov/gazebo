@@ -53,7 +53,7 @@ function Dropdown() {
       >
         <span className="sr-only">Open user menu</span>
         <img
-          className="h-8 w-8 rounded-full"
+          className="h-7 w-7 rounded-full"
           src={user.avatarUrl}
           alt="user avatar"
         />

@@ -16,12 +16,13 @@ function Icon({
   color = 'text-gray-500',
   testId,
   size = 'md',
+  iconClass
 }) {
   const IconSvg = get(svg, name, null)
   if (!IconSvg) return null
   return (
     <span className={cs(color, className)} data-testid={testId}>
-      <IconSvg className={IconClasses[size]} />
+      <IconSvg className={iconClass ? iconClass : IconClasses[size]} />
     </span>
   )
 }
@@ -31,6 +32,7 @@ Icon.propTypes = {
   color: PropType.string,
   testId: PropType.string,
   size: PropType.oneOf(['sm', 'md', 'lg']),
+  iconClass: PropType.string
 }
 
 export default Icon
