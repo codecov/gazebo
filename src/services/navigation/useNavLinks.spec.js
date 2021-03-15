@@ -307,6 +307,7 @@ describe('useStaticNavLinks', () => {
     ${links.enterprise}        | ${'https://codecov.io/enterprise'}
     ${links.githubMarketplace} | ${'https://github.com/marketplace/codecov'}
     ${links.freshdesk}         | ${'https://codecov.freshdesk.com/support/home'}
+    ${links.blog}              | ${'https://about.codecov.io/blog'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

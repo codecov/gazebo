@@ -157,7 +157,7 @@ function useStaticNavLinks() {
     },
     blog: {
       // TODO add blog to footer
-      path: () => 'https://about.codecov.io/blog/',
+      path: () => 'https://about.codecov.io/blog',
       isExternalLink: true,
       text: 'Blog',
     },
