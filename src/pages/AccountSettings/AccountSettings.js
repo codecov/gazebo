@@ -14,6 +14,7 @@ const BillingAndUsersTab = lazy(() => import('./tabs/BillingAndUsers'))
 const AdminTab = lazy(() => import('./tabs/Admin'))
 const YAMLTab = lazy(() => import('./tabs/YAML'))
 const AccessTab = lazy(() => import('./tabs/Access'))
+const NotFound = lazy(() => import('../NotFound'))
 
 function AccountSettings() {
   const { provider, owner } = useParams()
@@ -54,6 +55,9 @@ function AccountSettings() {
           </Route>
           <Route path="/account/:provider/:owner/invoices/:id/" exact>
             <InvoiceDetailTab provider={provider} owner={owner} />
+          </Route>
+          <Route path="/account/:provider/:owner/*">
+            <NotFound />
           </Route>
         </Switch>
       </Suspense>
