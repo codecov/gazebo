@@ -6,19 +6,19 @@ import ServerStatus from './ServerStatus'
 import Dropdown from './Dropdown'
 import { MainNavLink } from './NavLink'
 import { useMainNav } from 'services/header'
-import { useStaticNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 
 function DesktopMenu() {
   const main = useMainNav()
-  const { root } = useStaticNavLinks()
+  const { provider } = useNavLinks()
 
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center">
         <AppLink
-          to={root.path()}
-          useRouter={!root.isExternalLink}
+          to={provider.path()}
+          useRouter={!provider.isExternalLink}
           tabIndex="0"
           className="mx-2 md:mx-0 flex-shrink-0"
         >
