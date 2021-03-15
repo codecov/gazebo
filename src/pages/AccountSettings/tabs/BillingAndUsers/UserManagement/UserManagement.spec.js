@@ -202,6 +202,27 @@ describe('UserManagerment', () => {
         )
         expect(lastSeen).toBeInTheDocument()
       })
+      it('takes precedence over last PR', () => {
+        const mockUseUsersValue = {
+          isSuccess: true,
+          data: {
+            totalPages: 1,
+            results: [
+              {
+                username: 'kumar',
+                lastseen: '2021-01-20T05:03:51Z',
+                latestPrivatePrDate: '2021-03-20T05:02:56Z',
+              },
+            ],
+          },
+        }
+        setup({ mockUseUsersValue })
+
+        const lastSeen = screen.getByText(
+          assertFromToday('2021-03-20T05:02:56Z')
+        )
+        expect(lastSeen).toBeInTheDocument()
+      })
     })
 
     describe('No last seen', () => {
@@ -245,6 +266,24 @@ describe('UserManagerment', () => {
         expect(placeholder).toBeInTheDocument()
 
         const lastPr = screen.getByText(assertFromToday('2021-01-20T05:03:56Z'))
+        expect(lastPr).toBeInTheDocument()
+      })
+      it('takes precedence over lastseen', () => {
+        const mockUseUsersValue = {
+          isSuccess: true,
+          data: {
+            totalPages: 1,
+            results: [
+              {
+                username: 'kumar',
+                latestPrivatePrDate: '2021-03-20T05:03:56Z',
+                lastseen: '2021-01-20T05:02:56Z',
+              },
+            ],
+          },
+        }
+        setup({ mockUseUsersValue })
+        const lastPr = screen.getByText(assertFromToday('2021-03-20T05:03:56Z'))
         expect(lastPr).toBeInTheDocument()
       })
     })
