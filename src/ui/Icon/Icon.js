@@ -22,7 +22,7 @@ function Icon({
   if (!IconSvg) return null
   return (
     <span className={cs(color, className)} data-testid={testId}>
-      <IconSvg className={iconClass ? iconClass : IconClasses[size]} />
+      <IconSvg className={cs(iconClass ? iconClass : IconClasses[size])} />
     </span>
   )
 }
