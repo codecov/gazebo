@@ -19,6 +19,7 @@ function _fetch({
   return fetch(uri, {
     headers,
     method,
+    credentials: 'include',
     body: body ? JSON.stringify(body) : null,
   }).then(async (res) => {
     let data = null
