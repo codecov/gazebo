@@ -11,8 +11,6 @@
     "classnames": "^2.2.6",
     "date-fns": "^2.19.0",
     "downshift": "^6.1.0",
-    "elliptic": "^6.5.4",
-    "immer": "^8.0.1",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
@@ -27,7 +25,6 @@
     "react-use": "^17.2.1",
     "web-vitals": "^1.1.1",
     "websocket-extensions": "^0.1.4",
-    "y18n": "^5.0.5",
     "yup": "^0.32.9"
   },
   "scripts": {
