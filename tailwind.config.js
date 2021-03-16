@@ -23,6 +23,22 @@ module.exports = {
           orange: '#FFC273',
           footer: '#07111b',
         },
+        ds: {
+          gray: {
+            darkest: '#1f2d3d',
+            dark: '#3c4858',
+            DEFAULT: '#c0ccda',
+            light: '#e0e6ed',
+            lightest: '#f9fafc',
+          }
+          gray: {
+            darkest: '#1f2d3d',
+            dark: '#3c4858',
+            DEFAULT: '#c0ccda',
+            light: '#e0e6ed',
+            lightest: '#f9fafc',
+          }
+        },
         gray: {
           100: '#F7F8FB',
           200: '#EAEBEF',
