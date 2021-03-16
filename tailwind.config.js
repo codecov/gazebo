@@ -8,14 +8,15 @@ module.exports = {
   },
   theme: {
     fontFamily: {
-      body: ['sans-serif', 'Lato'],
+      body: ['sans-serif', 'Poppins'],
     },
     container: {
       center: true,
     },
     extend: {
       fontFamily: {
-        sans: ['Lato', ...defaultTheme.fontFamily.sans],
+        sans: ['Poppins', ...defaultTheme.fontFamily.sans],
+        mono: ['Source Code Pro', ...defaultTheme.fontFamily.mono],
       },
       colors: {
         codecov: {
@@ -30,7 +31,7 @@ module.exports = {
             DEFAULT: '#c0ccda',
             light: '#e0e6ed',
             lightest: '#f9fafc',
-          }
+          },
           gray: {
             darkest: '#1f2d3d',
             dark: '#3c4858',
