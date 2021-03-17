@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 import { useCallback, useEffect } from 'react'
 
-import Message from 'ui/Message'
+import Message from 'old_ui/Message'
 import { notificationPropType } from 'services/toastNotification'
 
 function NotificationItem({ notification, removeNotification }) {

@@ -6,8 +6,8 @@ import config from 'config'
 import { useAccountDetails } from 'services/account'
 import { useStaticNavLinks } from 'services/navigation'
 
-import Card from 'ui/Card'
-import Button from 'ui/Button'
+import Card from 'old_ui/Card'
+import Button from 'old_ui/Button'
 
 import githubLogo from 'assets/githublogo.png'
 

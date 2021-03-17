@@ -5,8 +5,8 @@ import { format, fromUnixTime } from 'date-fns'
 import { invoicePropType } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 
-import Card from 'ui/Card'
-import Button from 'ui/Button'
+import Card from 'old_ui/Card'
+import Button from 'old_ui/Button'
 
 const statusToColor = {
   draft: 'text-gray-500',

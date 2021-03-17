@@ -5,10 +5,10 @@ import cs from 'classnames'
 import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { useNavLinks } from 'services/navigation'
-import Icon from 'ui/Icon'
+import Icon from 'old_ui/Icon'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 
-import Button from 'ui/Button'
+import Button from 'old_ui/Button'
 import { UserNavLink } from './NavLink'
 
 function Dropdown() {

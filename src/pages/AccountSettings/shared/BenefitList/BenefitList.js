@@ -1,6 +1,6 @@
 import PropType from 'prop-types'
 
-import Icon from 'ui/Icon'
+import Icon from 'old_ui/Icon'
 
 function BenefitList({ benefits, iconName, iconColor }) {
   const iconClassName = `bg-gray-200 rounded-full list-item-type mr-3`

@@ -9,8 +9,8 @@ import {
 } from '@stripe/react-stripe-js'
 
 import { useUpdateCard } from 'services/account'
-import Button from 'ui/Button'
-import LogoSpinner from 'ui/LogoSpinner'
+import Button from 'old_ui/Button'
+import LogoSpinner from 'old_ui/LogoSpinner'
 
 function useIsFormReady() {
   // Stripe fields takes a couple of second to appear

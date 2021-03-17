@@ -7,7 +7,7 @@ import cs from 'classnames'
 
 import { useInvoice, useAccountDetails } from 'services/account'
 import { useNavLinks } from 'services/navigation'
-import Button from 'ui/Button'
+import Button from 'old_ui/Button'
 
 import BackLink from '../../shared/BackLink'
 import InvoiceHeader from './sections/InvoiceHeader'

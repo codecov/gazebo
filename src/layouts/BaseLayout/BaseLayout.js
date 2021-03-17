@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import LogoSpinner from 'ui/LogoSpinner'
+import LogoSpinner from 'old_ui/LogoSpinner'
 import { useTracking } from 'services/tracking'
 
 import ErrorBoundary from '../shared/ErrorBoundary'

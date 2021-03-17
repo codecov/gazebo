@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import cs from 'classnames'
 
-import Icon from 'ui/Icon'
+import Icon from 'old_ui/Icon'
 import { PageButton } from './PageButton'
 
 const pageClasses =

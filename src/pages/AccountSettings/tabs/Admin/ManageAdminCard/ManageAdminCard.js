@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 
-import Card from 'ui/Card'
-import LogoSpinner from 'ui/LogoSpinner'
+import Card from 'old_ui/Card'
+import LogoSpinner from 'old_ui/LogoSpinner'
 
 import AdminList from './AdminList'
 

@@ -7,8 +7,8 @@ import useClickAway from 'react-use/lib/useClickAway'
 import { ApiFilterEnum } from 'services/navigation'
 import { getOwnerImg } from 'shared/utils'
 import { useUsers } from 'services/users'
-import TextInput from 'ui/TextInput'
-import User from 'ui/User'
+import TextInput from 'old_ui/TextInput'
+import User from 'old_ui/User'
 
 const styles = {
   listResult: (isOpen) =>
