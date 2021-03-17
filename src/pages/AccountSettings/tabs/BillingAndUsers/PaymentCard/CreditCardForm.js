@@ -73,7 +73,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
         </div>
         {error && (
           <p className="bg-error-500 text-error-900 p-3 mt-4 rounded-md">
-            {error.message}
+            {error.data.detail}
           </p>
         )}
         <div className="flex justify-between mt-4">
