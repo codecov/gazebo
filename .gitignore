@@ -25,3 +25,6 @@ yarn-error.log*
 build-storybook.log
 .eslintcache
 junit.xml
+
+# vim temp files
+*.swp

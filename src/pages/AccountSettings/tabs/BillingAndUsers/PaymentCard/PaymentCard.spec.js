@@ -157,7 +157,7 @@ describe('PaymentCard', () => {
     beforeEach(() => {
       useUpdateCard.mockReturnValue({
         mutate: jest.fn(),
-        error: { message: randomError },
+        error: { data: { detail: randomError } },
       })
       setup(subscriptionDetail)
       userEvent.click(screen.getByRole('button', { name: /edit card/i }))
