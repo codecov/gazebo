@@ -26,6 +26,6 @@ NormalUserWithPillObject.args = {
 }
 
 export default {
-  title: 'Components/User',
+  title: 'old_ui/Components/User',
   component: User,
 }

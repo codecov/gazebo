@@ -82,7 +82,7 @@ complexSelect.args = {
 }
 
 export default {
-  title: 'Components/Select',
+  title: 'old_ui/Components/Select',
   component: Select,
   argTypes: {
     onChange: { action: 'onChange' },

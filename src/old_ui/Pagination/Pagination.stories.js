@@ -9,7 +9,7 @@ NormalPagination.args = {
 }
 
 export default {
-  title: 'Components/Pagination',
+  title: 'old_ui/Components/Pagination',
   component: Pagination,
   argTypes: { onPageChange: { action: 'clicked' } },
 }

@@ -10,7 +10,7 @@ export const BigSpinner = Template.bind({})
 BigSpinner.args = { ...Spinner.args, size: 200 }
 
 export default {
-  title: 'Components/LogoSpinner',
+  title: 'old_ui/Components/LogoSpinner',
   component: LogoSpinner,
   argTypes: {
     size: { control: 'number' },

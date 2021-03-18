@@ -18,6 +18,6 @@ ExtraTextInput.args = {
 }
 
 export default {
-  title: 'Components/TextInput',
+  title: 'old_ui/Components/TextInput',
   component: TextInput,
 }
