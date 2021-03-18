@@ -3,7 +3,7 @@ import { useSelect } from 'downshift'
 import identity from 'lodash/identity'
 import cs from 'classnames'
 
-import Icon from 'ui/Icon'
+import Icon from 'old_ui/Icon'
 
 const SelectClasses = {
   root: 'w-full relative',

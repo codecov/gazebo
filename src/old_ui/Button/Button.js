@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import AppLink from 'ui/AppLink'
+import AppLink from 'old_ui/AppLink'
 
 const basicClass =
   'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 transition-colors duration-200 ease-in-out'

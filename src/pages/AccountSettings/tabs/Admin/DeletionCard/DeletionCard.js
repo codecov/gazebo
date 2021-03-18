@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import { useStaticNavLinks } from 'services/navigation'
-import Card from 'ui/Card'
-import Button from 'ui/Button'
+import Card from 'old_ui/Card'
+import Button from 'old_ui/Button'
 
 import ErasePersonalAccountButton from './ErasePersonalAccountButton'
 

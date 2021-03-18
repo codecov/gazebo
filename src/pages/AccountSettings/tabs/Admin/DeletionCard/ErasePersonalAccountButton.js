@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 
 import { useEraseAccount } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
-import Button from 'ui/Button'
-import Modal from 'ui/Modal'
+import Button from 'old_ui/Button'
+import Modal from 'old_ui/Modal'
 
 function ErasePersonalAccountButton({ provider, owner }) {
   const { mutate, isLoading } = useEraseAccount({ provider, owner })

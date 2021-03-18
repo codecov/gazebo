@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { useParams, Switch, Route, Redirect } from 'react-router-dom'
 
-import LogoSpinner from 'ui/LogoSpinner'
+import LogoSpinner from 'old_ui/LogoSpinner'
 import SidebarLayout from 'layouts/SidebarLayout'
 
 import SideMenu from './SideMenu'

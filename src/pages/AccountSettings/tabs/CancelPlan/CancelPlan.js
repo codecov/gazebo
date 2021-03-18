@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 import difference from 'lodash/difference'
 
-import Card from 'ui/Card'
+import Card from 'old_ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 

@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
-import Icon from 'ui/Icon'
-import AppLink from 'ui/AppLink'
+import Icon from 'old_ui/Icon'
+import AppLink from 'old_ui/AppLink'
 
 import ServerStatus from './ServerStatus'
 import Dropdown from './Dropdown'

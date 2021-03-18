@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Button from 'ui/Button'
+import Button from 'old_ui/Button'
 import githubLogo from 'assets/githublogo.png'
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'

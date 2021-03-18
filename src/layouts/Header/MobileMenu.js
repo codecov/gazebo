@@ -4,7 +4,7 @@ import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 import { useNavLinks } from 'services/navigation'
-import Button from 'ui/Button'
+import Button from 'old_ui/Button'
 
 import ServerStatus from './ServerStatus'
 import { MainNavLink, UserNavLink } from './NavLink'

@@ -5,10 +5,10 @@ import { FormPaginate } from './FormPaginate'
 
 import { DateItem } from './DateItem'
 
-import Card from 'ui/Card'
-import Toggle from 'ui/Toggle'
-import User from 'ui/User'
-import Button from 'ui/Button'
+import Card from 'old_ui/Card'
+import Toggle from 'old_ui/Toggle'
+import User from 'old_ui/User'
+import Button from 'old_ui/Button'
 
 import { useLocationParams, ApiFilterEnum } from 'services/navigation'
 import { useAutoActivate, useAccountDetails } from 'services/account'

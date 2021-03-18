@@ -2,8 +2,8 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
 
-import Card from 'ui/Card'
-import Button from 'ui/Button'
+import Card from 'old_ui/Card'
+import Button from 'old_ui/Button'
 import { subscriptionDetailType } from 'services/account'
 
 import amexLogo from './assets/amex.png'

@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
 import { Controller, useForm } from 'react-hook-form'
 
-import Select from 'ui/Select'
-import TextInput from 'ui/TextInput'
-import ControlGroup from 'ui/ControlGroup'
+import Select from 'old_ui/Select'
+import TextInput from 'old_ui/TextInput'
+import ControlGroup from 'old_ui/ControlGroup'
 
 import { ApiFilterEnum } from 'services/navigation'
 
-import Card from 'ui/Card'
-import Icon from 'ui/Icon'
+import Card from 'old_ui/Card'
+import Icon from 'old_ui/Icon'
 
 const AdminItems = [
   { label: 'Everyone', value: ApiFilterEnum.none },

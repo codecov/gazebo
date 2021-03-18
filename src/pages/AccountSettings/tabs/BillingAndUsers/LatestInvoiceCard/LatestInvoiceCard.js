@@ -1,9 +1,9 @@
 import { format, fromUnixTime } from 'date-fns'
 import { Link } from 'react-router-dom'
 
-import Button from 'ui/Button'
-import Card from 'ui/Card'
-import AppLink from 'ui/AppLink'
+import Button from 'old_ui/Button'
+import Card from 'old_ui/Card'
+import AppLink from 'old_ui/AppLink'
 import { invoicePropType } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 

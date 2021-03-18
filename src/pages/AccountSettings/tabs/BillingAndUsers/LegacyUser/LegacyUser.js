@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Card from 'ui/Card'
-import Button from 'ui/Button'
+import Card from 'old_ui/Card'
+import Button from 'old_ui/Button'
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'
 

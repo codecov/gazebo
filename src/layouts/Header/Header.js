@@ -3,7 +3,7 @@ import { Transition } from '@headlessui/react'
 import { useClickAway } from 'react-use'
 import cs from 'classnames'
 
-import Icon from 'ui/Icon'
+import Icon from 'old_ui/Icon'
 import DesktopMenu from './DesktopMenu'
 import MobileMenu from './MobileMenu'
 

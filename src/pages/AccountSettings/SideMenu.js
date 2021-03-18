@@ -3,8 +3,8 @@ import uniqueId from 'lodash/uniqueId'
 
 import { useNavLinks } from 'services/navigation'
 import { useUser } from 'services/user'
-import Icon from 'ui/Icon'
-import AppLink from 'ui/AppLink'
+import Icon from 'old_ui/Icon'
+import AppLink from 'old_ui/AppLink'
 
 function SideMenu() {
   const { owner } = useParams()
