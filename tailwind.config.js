@@ -55,7 +55,6 @@ module.exports = {
           purple: {
             DEFAULT: '#AC39CF',
           },
-          white: { DEFAULT: '#FFFFFF' },
           sunburst: {
             // Caution: Needs a proper design language name
             DEFAULT: '#C60800',
