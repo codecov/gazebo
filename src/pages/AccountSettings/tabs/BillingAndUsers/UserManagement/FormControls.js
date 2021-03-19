@@ -9,6 +9,7 @@ import { ApiFilterEnum } from 'services/navigation'
 
 import Card from 'old_ui/Card'
 import Icon from 'old_ui/Icon'
+import { useState } from 'react'
 
 const AdminItems = [
   { label: 'Everyone', value: ApiFilterEnum.none },
@@ -66,8 +67,23 @@ export function FormControls({ onChange, current, defaultValues }) {
     defaultValues,
   })
 
+  const [searchText, setSearchText] = useState('')
+
+ function handleInput(event) {
+    const value = event?.target?.value 
+    setSearchText(value) 
+    onChange({ search: value })
+  }
+
+
+  function handleSubmit(event) {
+      event.preventDefault()
+      onChange({ search: searchText })
+  }
+
+
   return (
-    <form onSubmit={onChange}>
+    <form onSubmit={handleSubmit}>
       <Card>
         <ControlGroup>
           <Controller
@@ -125,7 +141,7 @@ export function FormControls({ onChange, current, defaultValues }) {
                 className="absolute top-2"
               />
             )}
-            onChange={(event) => onChange({ search: event.target.value })}
+            onChange={handleInput}
           />
         </ControlGroup>
         {/* Hidden input for screen readers */}
