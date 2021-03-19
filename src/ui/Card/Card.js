@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 
 const styles = {
-  card: 'border border-gray-200 rounded',
-  header: 'border-b border-gray-200 p-4',
+  card: 'border border-ds-gray-secondary rounded',
+  header: 'border-b border-ds-gray-secondary p-4',
   body: 'p-4',
-  footer: 'border-t border-gray-200 p-4',
+  footer: 'border-t border-ds-gray-secondary p-4',
 }
 
 function Card({ children, header, footer }) {
