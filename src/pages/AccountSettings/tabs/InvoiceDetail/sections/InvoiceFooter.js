@@ -1,6 +1,11 @@
 import PropTypes from 'prop-types'
 
-function generateAddressInfo(billingDetails) {
+function generateAddressInfo(accountDetails) {
+  const billingDetails =
+    accountDetails.subscriptionDetail?.defaultPaymentMethod?.billingDetails
+
+  if (!billingDetails) return []
+
   // merge all the billingDetails without empty value in a the following:
   // ['Donald Duck',
   // '180 Broadway',
@@ -21,10 +26,7 @@ function generateAddressInfo(billingDetails) {
 }
 
 function InvoiceFooter({ invoice, accountDetails }) {
-  const {
-    billingDetails,
-  } = accountDetails.subscriptionDetail.defaultPaymentMethod
-  const addressInfo = generateAddressInfo(billingDetails)
+  const addressInfo = generateAddressInfo(accountDetails)
 
   return (
     <div className="flex">
