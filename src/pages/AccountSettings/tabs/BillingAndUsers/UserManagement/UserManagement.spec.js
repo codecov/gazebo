@@ -434,6 +434,22 @@ describe('UserManagerment', () => {
 
       expect(screen.queryByText(/earthspirit$/)).not.toBeInTheDocument()
     })
+
+    it('Search users on enter', () => {
+        const SearchInput = screen.getByRole('textbox', {
+          name: 'search users',
+        })
+        expect(useUsers).toHaveBeenCalledTimes(1)
+        user.type(SearchInput, 'd')
+        user.type(SearchInput, '{enter}')
+        expect(useUsers).toHaveBeenCalledTimes(3)
+        expect(useUsers).toHaveBeenLastCalledWith({
+          owner: 'radient',
+          provider: 'gh',
+          query: { ...defaultQuery, search: 'd' },
+        })
+      })
+
   })
 
   describe('Activate user', () => {
