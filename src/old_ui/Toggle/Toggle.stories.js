@@ -13,6 +13,6 @@ NormalToggle.args = {
 }
 
 export default {
-  title: 'Components/Toggle',
+  title: 'old_ui/Components/Toggle',
   component: Toggle,
 }

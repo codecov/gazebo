@@ -17,7 +17,7 @@ SimpleIconWithColor.args = {
 }
 
 export default {
-  title: 'Components/Icon',
+  title: 'old_ui/Components/Icon',
   component: Icon,
   argTypes: { name: { control: { type: 'select', options } } },
   decorators: [

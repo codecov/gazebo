@@ -14,6 +14,6 @@ CardWithExtraClass.args = {
 }
 
 export default {
-  title: 'Components/Card',
+  title: 'old_ui/Components/Card',
   component: Card,
 }

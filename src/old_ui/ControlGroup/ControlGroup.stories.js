@@ -58,7 +58,7 @@ export const EampleControlGroup4 = () => (
 )
 
 export default {
-  title: 'Components/ControlGroup',
+  title: 'old_ui/Components/ControlGroup',
   component: ControlGroup,
   decorators: [
     (Story) => (

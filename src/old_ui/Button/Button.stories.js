@@ -38,6 +38,6 @@ TextButton.args = {
 }
 
 export default {
-  title: 'Components/Button',
+  title: 'old_ui/Components/Button',
   component: Button,
 }
