@@ -1,6 +1,6 @@
 import { lazy } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 
@@ -53,11 +53,7 @@ function App() {
                 </BaseLayout>
               </Route>
               <Route path="/">
-                <BaseLayout>
-                  <FullLayout>
-                    <p>Home page</p>
-                  </FullLayout>
-                </BaseLayout>
+                <Redirect to="/gh" />
               </Route>
             </Switch>
           </BrowserRouter>
