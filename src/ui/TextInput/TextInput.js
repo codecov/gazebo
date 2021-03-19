@@ -13,7 +13,7 @@ function TextInput({ type = 'text', label, placeholder, ...props }) {
   const id = uniqueId('text-input')
 
   // If no label, the placeholder is used as a hidden label for a11y
-  const textLabel = defaultTo(label, props.placeholder)
+  const textLabel = defaultTo(label, placeholder)
 
   return (
     <div>
