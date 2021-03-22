@@ -1,6 +1,7 @@
 import cs from 'classnames'
 
-const cardClassName = 'bg-white rounded-md shadow-card'
+const cardClassName =
+  'border border-ds-gray-secondary bg-white rounded-md shadow-card'
 
 function Card({ children, className = '' }) {
   return <div className={cs(cardClassName, className)}>{children}</div>

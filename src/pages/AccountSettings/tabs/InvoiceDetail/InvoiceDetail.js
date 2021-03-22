@@ -16,7 +16,7 @@ import InvoiceFooter from './sections/InvoiceFooter'
 import InvoiceSubTotal from './sections/InvoiceSubTotal'
 
 const classNameSection =
-  'py-8 px-16 border-t first:border-0 border-gray-200 print:px-0'
+  'py-8 px-16 border border-t-0 print:border-0 print:border-b border-gray-200 print:px-0'
 // make the Invoice container full screen so only that part is printed
 const printClassnames = 'print:absolute print:inset-0 print:z-50'
 
