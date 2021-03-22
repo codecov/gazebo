@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import AppLink from 'ui/AppLink'
+import AppLink from 'shared/AppLink'
 
 const styles = {
   link: 'px-5 py-2 text-ds-gray-quinary',
