@@ -26,6 +26,12 @@ function useNavLinks() {
         `/${provider}/${owner}`,
       isExternalLink: true,
     },
+    // Like owner but internal
+    ownerInternal: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/${provider}/${owner}`,
+      isExternalLink: false,
+    },
     repo: {
       path: (
         { provider = p, owner = o, repo = r } = {

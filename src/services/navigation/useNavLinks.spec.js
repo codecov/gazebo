@@ -86,6 +86,24 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('owner internal link', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.owner.path()).toBe('/gl/doggo')
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.owner.path({ provider: 'bb' })).toBe(
+        '/bb/doggo'
+      )
+      expect(hookData.result.current.owner.path({ owner: 'cat' })).toBe(
+        '/gl/cat'
+      )
+    })
+  })
+
   describe('repo link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
