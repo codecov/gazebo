@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import defaultTo from 'lodash/defaultTo'
 import { Link, NavLink } from 'react-router-dom'
 
-/* eslint-disable-next-line */
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 
 function useLinkConfig(pageName) {
@@ -50,6 +49,8 @@ function AppLink({ pageName, options, activeClassName, children, ...props }) {
 }
 
 AppLink.propTypes = {
+  // You can find the page name in this file
+  // https://github.com/codecov/gazebo/blob/main/src/services/navigation/useNavLinks.js
   pageName: PropTypes.string.isRequired,
   text: PropTypes.string,
   options: PropTypes.object,
