@@ -1,30 +1,29 @@
-import AppLink from 'ui/AppLink'
+import PropTypes from 'prop-types'
 
-const tabs = [
-  { pageName: 'owner', text: 'Repos' },
-  { pageName: 'accountAdmin', text: 'Settings' },
-]
+import AppLink from 'ui/AppLink'
 
 const styles = {
   link: 'px-5 py-2 text-sm',
   activeLink: 'border-b-2 border-gray-500 font-semibold',
 }
 
-function TabNavigation() {
+function TabNavigation({ tabs }) {
   return (
-    <div className="container mx-auto">
-      <nav className="border-b border-gray-200 flex">
-        {tabs.map((tab) => (
-          <AppLink
-            {...tab}
-            className={styles.link}
-            activeClassName={styles.activeLink}
-            key={tabs.pageName}
-          />
-        ))}
-      </nav>
-    </div>
+    <nav className="border-b border-gray-200 flex">
+      {tabs.map((tab) => (
+        <AppLink
+          {...tab}
+          className={styles.link}
+          activeClassName={styles.activeLink}
+          key={tab.pageName}
+        />
+      ))}
+    </nav>
   )
+}
+
+TabNavigation.propTypes = {
+  tabs: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
 }
 
 export default TabNavigation
