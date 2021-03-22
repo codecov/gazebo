@@ -87,7 +87,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^5.1.0",
-    "@testing-library/user-event": "^13.0.2",
+    "@testing-library/user-event": "^13.0.6",
     "autoprefixer": "^9.8.6",
     "bundlesize": "^0.18.1",
     "eslint-config-prettier": "^8.1.0",
