@@ -15,14 +15,16 @@ function useLinkConfig(pageName) {
 }
 
 function getComponentToRender(pageConfig, activeClassName) {
-  console.log(activeClassName)
   if (pageConfig.isExternalLink) return 'a'
   if (activeClassName) return NavLink
   return Link
 }
 
-function AppLink({ pageName, text, options, activeClassName, ...props }) {
+function AppLink({ pageName, options, activeClassName, children, ...props }) {
   const pageConfig = useLinkConfig(pageName)
+
+  if (!pageConfig) return null
+
   const path = pageConfig.path(options)
 
   const Component = getComponentToRender(pageConfig, activeClassName)
@@ -41,7 +43,9 @@ function AppLink({ pageName, text, options, activeClassName, ...props }) {
   }
 
   return (
-    <Component {...completeProps}>{defaultTo(text, pageConfig.text)}</Component>
+    <Component {...completeProps}>
+      {defaultTo(children, pageConfig.text)}
+    </Component>
   )
 }
 
