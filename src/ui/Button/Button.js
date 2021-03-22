@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import AppLink from 'ui/AppLink'
+import AppLink from 'shared/AppLink'
 
 function Button({ to, ...props }) {
   const className = 'bg-blue-500'
