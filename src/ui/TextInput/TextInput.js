@@ -20,7 +20,7 @@ function TextInput({ type = 'text', label, placeholder, ...props }) {
       <label
         htmlFor={id}
         className={cs(styles.label, {
-          hidden: !label,
+          srOnly: !label,
         })}
       >
         {textLabel}
