@@ -83,4 +83,14 @@ describe('Table', () => {
       expect(screen.getByRole('button')).toBeInTheDocument()
     })
   })
+
+  describe('renders variant', () => {
+    it('renders table with full variant', () => {
+      wrapper = render(<Table data={data} variant={'full'} columns={columns} />)
+      const table = screen.getByRole('table')
+      expect(table).toBeInTheDocument()
+      const bodyRow = screen.getByTestId('body-row')
+      expect(bodyRow.children.length).toBe(3)
+    })
+  })
 })

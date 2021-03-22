@@ -104,7 +104,7 @@ function Table({ variant, data = [], columns = [] }) {
 }
 
 Table.propTypes = {
-  variant: PropTypes.oneOf(Object.keys('full')),
+  variant: PropTypes.oneOf(['full']),
   data: PropTypes.array,
   columns: PropTypes.array,
 }
