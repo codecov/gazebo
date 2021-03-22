@@ -1,6 +1,5 @@
 import Table from './Table'
 import { render, screen } from '@testing-library/react'
-import { head } from 'lodash'
 
 const data = [
   {
