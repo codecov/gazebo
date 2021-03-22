@@ -22,6 +22,7 @@
     "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
+    "react-table": "^7.6.3",
     "react-use": "^17.2.1",
     "web-vitals": "^1.1.1",
     "websocket-extensions": "^0.1.4",
