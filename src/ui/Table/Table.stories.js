@@ -29,7 +29,7 @@ Table.args = {
     {
       Header: 'Header 1',
       accessor: 'col1',
-      width: 'w-2/5', // accessor is the "key" in the data
+      width: 'w-2/5',
     },
     {
       Header: 'Header 2',

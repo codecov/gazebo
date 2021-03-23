@@ -21,7 +21,7 @@ const data = [
 const columns = [
   {
     Header: 'Header 1',
-    accessor: 'col1', // accessor is the "key" in the data
+    accessor: 'col1',
   },
   {
     Header: 'Header 2',
@@ -89,7 +89,7 @@ describe('Table', () => {
       const _columns = [
         {
           Header: 'Header 1',
-          accessor: 'col1', // accessor is the "key" in the data
+          accessor: 'col1',
           width: 'w-1/12',
         },
         {
