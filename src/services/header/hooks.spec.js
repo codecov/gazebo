@@ -1,6 +1,7 @@
 import { useParams, useRouteMatch } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
 
+import config from 'config'
 import { useUser } from 'services/user'
 
 import { useMainNav, useSubNav } from './hooks'
@@ -154,7 +155,7 @@ describe('useSubNav', () => {
         },
         {
           label: 'Sign Out',
-          to: 'https://codecov.io/logout/gh',
+          to: `${config.BASE_URL}/logout/gh`,
           useRouter: false,
           iconName: 'signOut',
         },

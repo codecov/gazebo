@@ -1,5 +1,7 @@
 import { useRouteMatch } from 'react-router-dom'
 
+import config from 'config'
+
 function useNavLinks() {
   const { params } = useRouteMatch()
   const { provider: p, owner: o, repo: r, id: i } = params
@@ -8,13 +10,13 @@ function useNavLinks() {
     signOut: {
       text: 'Sign Out',
       path: ({ provider = p } = { provider: p }) =>
-        `https://codecov.io/logout/${provider}`,
+        `${config.BASE_URL}/logout/${provider}`,
       isExternalLink: true,
     },
     signIn: {
       text: 'Log in',
       path: ({ provider = p } = { provider: p }) =>
-        `https://codecov.io/login/${provider}`,
+        `${config.BASE_URL}/login/${provider}`,
       isExternalLink: true,
     },
     provider: {
@@ -100,40 +102,40 @@ function useNavLinks() {
 // Seperate function which doesn't unessisarily use the router.
 function useStaticNavLinks() {
   return {
-    root: { path: () => 'https://about.codecov.io', isExternalLink: true },
+    root: { path: () => `${config.MARKETING_BASE_URL}`, isExternalLink: true },
     terms: {
       text: 'Terms',
-      path: () => 'https://codecov.io/terms',
+      path: () => `${config.BASE_URL}/terms`,
       isExternalLink: true,
     },
     privacy: {
       text: 'Privacy',
-      path: () => 'https://codecov.io/privacy',
+      path: () => `${config.BASE_URL}/privacy`,
       isExternalLink: true,
     },
     security: {
       text: 'Security',
-      path: () => 'https://codecov.io/security',
+      path: () => `${config.BASE_URL}/security`,
       isExternalLink: true,
     },
     gdpr: {
       text: 'GDPR',
-      path: () => 'https://codecov.io/gdpr',
+      path: () => `${config.BASE_URL}/gdpr`,
       isExternalLink: true,
     },
     shop: {
       text: 'Shop',
-      path: () => 'https://codecov.io/shop',
+      path: () => `${config.BASE_URL}/shop`,
       isExternalLink: true,
     },
     pricing: {
       text: 'Pricing',
-      path: () => 'https://codecov.io/pricing',
+      path: () => `${config.BASE_URL}/pricing`,
       isExternalLink: true,
     },
     support: {
       text: 'Support',
-      path: () => 'https://codecov.io/support',
+      path: () => `${config.BASE_URL}/support`,
       isExternalLink: true,
     },
     docs: {
@@ -143,7 +145,7 @@ function useStaticNavLinks() {
     },
     enterprise: {
       text: 'Enterprise',
-      path: () => 'https://codecov.io/enterprise',
+      path: () => `${config.BASE_URL}/enterprise`,
       isExternalLink: true,
     },
     github: {
@@ -163,7 +165,7 @@ function useStaticNavLinks() {
     },
     blog: {
       // TODO add blog to footer
-      path: () => 'https://about.codecov.io/blog',
+      path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
       text: 'Blog',
     },
