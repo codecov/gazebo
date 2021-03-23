@@ -41,7 +41,8 @@
     "build-storybook": "build-storybook -s public --no-dll",
     "chromatic": "npx chromatic --exit-zero-on-changes -ci",
     "format-staged": "npx prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "generate-icons": "node ./scripts/icons.js"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
