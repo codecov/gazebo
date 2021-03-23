@@ -69,18 +69,16 @@ export function FormControls({ onChange, current, defaultValues }) {
 
   const [searchText, setSearchText] = useState('')
 
- function handleInput(event) {
-    const value = event?.target?.value 
-    setSearchText(value) 
+  function handleInput(event) {
+    const value = event?.target?.value
+    setSearchText(value)
     onChange({ search: value })
   }
 
-
   function handleSubmit(event) {
-      event.preventDefault()
-      onChange({ search: searchText })
+    event.preventDefault()
+    onChange({ search: searchText })
   }
-
 
   return (
     <form onSubmit={handleSubmit}>
