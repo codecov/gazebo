@@ -23,6 +23,7 @@ function Icon({ name, variant = 'outline', size = 'md' }) {
 }
 
 Icon.propTypes = {
+  /* To add more icons, update /scripts/icons.js and run "npm run generate-icons"*/
   name: PropType.string.isRequired,
   variant: PropType.string,
   size: PropType.oneOf(['sm', 'md', 'lg']),
