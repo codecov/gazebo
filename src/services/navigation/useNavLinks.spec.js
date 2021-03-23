@@ -315,18 +315,17 @@ describe('useStaticNavLinks', () => {
   let links = useStaticNavLinks()
   describe.each`
     link                       | outcome
-    ${links.root}              | ${config.MARKETING_BASE_URL}
-    ${links.terms}             | ${`${config.BASE_URL}/terms`}
-    ${links.privacy}           | ${`${config.BASE_URL}/privacy`}
-    ${links.security}          | ${`${config.BASE_URL}/security`}
-    ${links.gdpr}              | ${`${config.BASE_URL}/gdpr`}
-    ${links.shop}              | ${`${config.BASE_URL}/shop`}
-    ${links.pricing}           | ${`${config.BASE_URL}/pricing`}
-    ${links.support}           | ${`${config.BASE_URL}/support`}
-    ${links.docs}              | ${'https://docs.codecov.io/'}
-    ${links.enterprise}        | ${`${config.BASE_URL}/enterprise`}
-    ${links.githubMarketplace} | ${'https://github.com/marketplace/codecov'}
-    ${links.freshdesk}         | ${'https://codecov.freshdesk.com/support/home'}
+    ${links.root}              | ${`${config.MARKETING_BASE_URL}`}
+    ${links.terms}             | ${`${config.MARKETING_BASE_URL}/terms`}
+    ${links.privacy}           | ${`${config.MARKETING_BASE_URL}/privacy`}
+    ${links.security}          | ${`${config.MARKETING_BASE_URL}/security`}
+    ${links.gdpr}              | ${`${config.MARKETING_BASE_URL}/gdpr`}
+    ${links.pricing}           | ${`${config.MARKETING_BASE_URL}/pricing`}
+    ${links.support}           | ${`https://codecov.freshdesk.com/support/home`}
+    ${links.docs}              | ${`https://docs.codecov.io/`}
+    ${links.enterprise}        | ${`${config.MARKETING_BASE_URL}/self-hosted`}
+    ${links.githubMarketplace} | ${`https://github.com/marketplace/codecov`}
+    ${links.freshdesk}         | ${`https://codecov.freshdesk.com/support/home`}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {

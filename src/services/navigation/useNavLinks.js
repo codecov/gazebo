@@ -105,37 +105,32 @@ function useStaticNavLinks() {
     root: { path: () => `${config.MARKETING_BASE_URL}`, isExternalLink: true },
     terms: {
       text: 'Terms',
-      path: () => `${config.BASE_URL}/terms`,
+      path: () => `${config.MARKETING_BASE_URL}/terms`,
       isExternalLink: true,
     },
     privacy: {
       text: 'Privacy',
-      path: () => `${config.BASE_URL}/privacy`,
+      path: () => `${config.MARKETING_BASE_URL}/privacy`,
       isExternalLink: true,
     },
     security: {
       text: 'Security',
-      path: () => `${config.BASE_URL}/security`,
+      path: () => `${config.MARKETING_BASE_URL}/security`,
       isExternalLink: true,
     },
     gdpr: {
       text: 'GDPR',
-      path: () => `${config.BASE_URL}/gdpr`,
-      isExternalLink: true,
-    },
-    shop: {
-      text: 'Shop',
-      path: () => `${config.BASE_URL}/shop`,
+      path: () => `${config.MARKETING_BASE_URL}/gdpr`,
       isExternalLink: true,
     },
     pricing: {
       text: 'Pricing',
-      path: () => `${config.BASE_URL}/pricing`,
+      path: () => `${config.MARKETING_BASE_URL}/pricing`,
       isExternalLink: true,
     },
     support: {
       text: 'Support',
-      path: () => `${config.BASE_URL}/support`,
+      path: () => `https://codecov.freshdesk.com/support/home`,
       isExternalLink: true,
     },
     docs: {
@@ -144,8 +139,8 @@ function useStaticNavLinks() {
       isExternalLink: true,
     },
     enterprise: {
-      text: 'Enterprise',
-      path: () => `${config.BASE_URL}/enterprise`,
+      text: 'Self Hosted',
+      path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
       isExternalLink: true,
     },
     github: {
