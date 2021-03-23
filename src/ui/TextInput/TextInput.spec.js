@@ -3,8 +3,10 @@ import { render, screen } from '@testing-library/react'
 import TextInput from './TextInput'
 
 describe('TextInput', () => {
+  let wrapper
+
   function setup(props) {
-    render(<TextInput {...props} />)
+    wrapper = render(<TextInput {...props} />)
   }
 
   describe('when rendered', () => {
@@ -32,6 +34,18 @@ describe('TextInput', () => {
       screen.getByRole('textbox', {
         name: /search orgs/i,
       })
+    })
+  })
+
+  describe('when rendered with icon', () => {
+    beforeEach(() => {
+      setup({
+        icon: 'search',
+      })
+    })
+
+    it('renders an icon', () => {
+      expect(wrapper.container.querySelector('svg')).not.toBeNull()
     })
   })
 })
