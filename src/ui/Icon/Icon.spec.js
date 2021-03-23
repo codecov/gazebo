@@ -41,8 +41,8 @@ describe('Icon', () => {
     })
     it('renders small icon', () => {
       const svg = wrapper.container.querySelector('svg')
-      expect(svg.classList.contains('w-3')).toBe(true)
-      expect(svg.classList.contains('h-3')).toBe(true)
+      expect(svg.classList.contains('w-4')).toBe(true)
+      expect(svg.classList.contains('h-4')).toBe(true)
     })
   })
 

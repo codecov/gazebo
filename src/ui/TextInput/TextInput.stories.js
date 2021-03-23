@@ -22,6 +22,12 @@ InputWithNoLabel.args = {
   type: 'number',
 }
 
+export const InputWithIcon = Template.bind({})
+InputWithIcon.args = {
+  placeholder: 'Search',
+  icon: 'search',
+}
+
 export default {
   title: 'Components/TextInput',
   component: TextInput,
