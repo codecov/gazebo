@@ -1,20 +1,21 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useTable } from 'react-table'
-import cs from 'classnames'
+import { useTable, useFlexLayout } from 'react-table'
 
 const TableClasses = {
-  fullTable: 'w-full',
-  headerCell: 'py-2 px-3.5',
-  headerRow: 'text-left border-t border-b border-gray-300',
-  tableRow: 'border-t border-b border-gray-300',
-  tableCell: 'py-3 px-4',
+  headerCell: 'py-2 text-sm font-semibold px-3.5 text-ds-gray-senary',
+  headerRow: 'text-left border-t border-b border-ds-black-secondary',
+  tableRow: 'border-t border-ds-black-secondary',
+  tableCell: 'py-3 px-4 text-ds-gray-octonary text-sm',
 }
 
-function Table({ variant, data = [], columns = [] }) {
+function Table({ data = [], columns = [] }) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])
-  const tableInstance = useTable({ columns: _columns, data: _data })
+  const tableInstance = useTable(
+    { columns: _columns, data: _data },
+    useFlexLayout
+  )
 
   const {
     getTableProps,
@@ -24,18 +25,18 @@ function Table({ variant, data = [], columns = [] }) {
     prepareRow,
   } = tableInstance
 
+  const columnsWidth = columns.reduce(
+    (acc, current) => ({ ...acc, [current.accessor]: current.width }),
+    {}
+  )
+
   return (
-    // apply the table props
-    <div className="flex">
-      <table
-        className={cs({ [TableClasses.fullTable]: variant === 'full' })}
-        {...getTableProps()}
-      >
+    <div className="text-ds-gray-quanternary">
+      <table className={'w-full'} {...getTableProps()}>
         <thead data-testid="header-row">
           {
             // Loop over the header rows
             headerGroups.map((headerGroup, key) => (
-              // Apply the header row props
               <tr
                 key={key}
                 className={TableClasses.headerRow}
@@ -43,19 +44,19 @@ function Table({ variant, data = [], columns = [] }) {
               >
                 {
                   // Loop over the headers in each row
-                  headerGroup.headers.map((column, key) => (
-                    // Apply the header cell props
-                    <th
-                      key={key}
-                      className={TableClasses.headerCell}
-                      {...column.getHeaderProps()}
-                    >
-                      {
-                        // Render the header
-                        column.render('Header')
-                      }
-                    </th>
-                  ))
+                  headerGroup.headers.map((column, key) => {
+                    return (
+                      <th
+                        key={key}
+                        className={`${TableClasses.headerCell} ${
+                          columnsWidth[column.id]
+                        }`}
+                        {...column.getHeaderProps()}
+                      >
+                        {column.render('Header')}
+                      </th>
+                    )
+                  })
                 }
               </tr>
             ))
@@ -66,10 +67,8 @@ function Table({ variant, data = [], columns = [] }) {
           {
             // Loop over the table rows
             rows.map((row, key) => {
-              // Prepare the row for display
               prepareRow(row)
               return (
-                // Apply the row props
                 <tr
                   key={key}
                   className={TableClasses.tableRow}
@@ -78,17 +77,15 @@ function Table({ variant, data = [], columns = [] }) {
                   {
                     // Loop over the rows cells
                     row.cells.map((cell, key) => {
-                      // Apply the cell props
                       return (
                         <td
                           key={key}
-                          className={TableClasses.tableCell}
+                          className={`${TableClasses.tableCell}  ${
+                            columnsWidth[cell.column.id]
+                          }`}
                           {...cell.getCellProps()}
                         >
-                          {
-                            // Render the cell contents
-                            cell.render('Cell')
-                          }
+                          {cell.render('Cell')}
                         </td>
                       )
                     })
@@ -104,9 +101,8 @@ function Table({ variant, data = [], columns = [] }) {
 }
 
 Table.propTypes = {
-  variant: PropTypes.oneOf(['full']),
-  data: PropTypes.array,
-  columns: PropTypes.array,
+  data: PropTypes.array.isRequired,
+  columns: PropTypes.array.isRequired,
 }
 
 export default Table
