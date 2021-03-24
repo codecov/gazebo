@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import PropTypes from 'prop-types'
 import defaultTo from 'lodash/defaultTo'
 import { Link, NavLink } from 'react-router-dom'
@@ -19,34 +20,36 @@ function getComponentToRender(pageConfig, activeClassName) {
   return Link
 }
 
-function AppLink({ pageName, options, activeClassName, children, ...props }) {
-  const pageConfig = useLinkConfig(pageName)
+const AppLink = forwardRef(
+  ({ pageName, options, activeClassName, children, ...props }, ref) => {
+    const pageConfig = useLinkConfig(pageName)
 
-  if (!pageConfig) return null
+    if (!pageConfig) return null
 
-  const path = pageConfig.path(options)
+    const path = pageConfig.path(options)
 
-  const Component = getComponentToRender(pageConfig, activeClassName)
-  const propsLink = pageConfig.isExternalLink ? { href: path } : { to: path }
-  const propsActive =
-    Component === NavLink
-      ? {
-          activeClassName,
-        }
-      : {}
+    const Component = getComponentToRender(pageConfig, activeClassName)
+    const propsLink = pageConfig.isExternalLink ? { href: path } : { to: path }
+    const propsActive =
+      Component === NavLink
+        ? {
+            activeClassName,
+          }
+        : {}
 
-  const completeProps = {
-    ...propsLink,
-    ...props,
-    ...propsActive,
+    const completeProps = {
+      ...propsLink,
+      ...props,
+      ...propsActive,
+    }
+
+    return (
+      <Component {...completeProps} ref={ref}>
+        {defaultTo(children, pageConfig.text)}
+      </Component>
+    )
   }
-
-  return (
-    <Component {...completeProps}>
-      {defaultTo(children, pageConfig.text)}
-    </Component>
-  )
-}
+)
 
 AppLink.propTypes = {
   // You can find the page name in this file
