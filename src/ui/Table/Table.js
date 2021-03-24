@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { useTable, useFlexLayout } from 'react-table'
+import cs from 'classnames'
 
 const TableClasses = {
   headerCell: 'py-2 text-sm font-semibold px-3.5 text-ds-gray-quaternary',
@@ -48,9 +49,10 @@ function Table({ data = [], columns = [] }) {
                     return (
                       <th
                         key={key}
-                        className={`${TableClasses.headerCell} ${
+                        className={cs(
+                          TableClasses.headerCell,
                           columnsWidth[column.id]
-                        }`}
+                        )}
                         {...column.getHeaderProps()}
                       >
                         {column.render('Header')}
@@ -80,9 +82,10 @@ function Table({ data = [], columns = [] }) {
                       return (
                         <td
                           key={key}
-                          className={`${TableClasses.tableCell}  ${
+                          className={cs(
+                            TableClasses.tableCell,
                             columnsWidth[cell.column.id]
-                          }`}
+                          )}
                           {...cell.getCellProps()}
                         >
                           {cell.render('Cell')}
