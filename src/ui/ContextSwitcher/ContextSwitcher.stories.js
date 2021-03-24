@@ -25,9 +25,6 @@ const contexts = [
       avatarUrl: 'https://github.com/spotify.png?size=40',
     },
     pageName: 'owner',
-    options: {
-      owner: 'spotify',
-    },
   },
   {
     owner: {
@@ -35,9 +32,6 @@ const contexts = [
       avatarUrl: 'https://github.com/codecov.png?size=40',
     },
     pageName: 'owner',
-    options: {
-      owner: 'codecov',
-    },
   },
 ]
 

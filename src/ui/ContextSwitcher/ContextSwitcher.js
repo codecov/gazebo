@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import cs from 'classnames'
-import Icon from 'old_ui/Icon'
+import Icon from 'ui/Icon'
 import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
 
 import './ContextSwitcher.css'
@@ -15,13 +15,15 @@ const styles = {
 
 function ContextSwitcher({ currentContext, contexts }) {
   function renderContext(context) {
-    const { owner, pageName, options } = context
-    const isActiveContext = owner.username === currentContext.owner.username
+    const { owner, pageName } = context
+    const isActiveContext =
+      owner.username.toLowerCase() ===
+      currentContext.owner.username.toLowerCase()
     return (
       <MenuLink
         as={AppLink}
         pageName={pageName}
-        options={options}
+        options={{ owner: owner.username }}
         key={owner.username}
       >
         <img alt="logo" src={owner.avatarUrl} className={styles.image} />
@@ -34,25 +36,21 @@ function ContextSwitcher({ currentContext, contexts }) {
 
   return (
     <Menu>
-      {({ isExpanded }) => (
-        <>
-          <MenuButton className={styles.button}>
-            <img
-              alt="logo"
-              src={currentContext.owner.avatarUrl}
-              className={styles.imageButton}
-            />
-            <div className="mx-2">{currentContext.owner.username}</div>
-            <span aria-hidden="true">
-              <Icon name={isExpanded ? 'angleUp' : 'angleDown'} />
-            </span>
-          </MenuButton>
-          <MenuList>
-            <div className={styles.switchContext}>Switch context</div>
-            {contexts.map(renderContext)}
-          </MenuList>
-        </>
-      )}
+      <MenuButton className={styles.button}>
+        <img
+          alt="logo"
+          src={currentContext.owner.avatarUrl}
+          className={styles.imageButton}
+        />
+        <div className="mx-2">{currentContext.owner.username}</div>
+        <span aria-hidden="true">
+          <Icon variant="solid" name="chevron-down" />
+        </span>
+      </MenuButton>
+      <MenuList>
+        <div className={styles.switchContext}>Switch context</div>
+        {contexts.map(renderContext)}
+      </MenuList>
     </Menu>
   )
 }
@@ -63,7 +61,6 @@ const contextPropType = PropTypes.shape({
     username: PropTypes.string.isRequired,
   }),
   pageName: PropTypes.string.isRequired,
-  options: PropTypes.object,
 })
 
 ContextSwitcher.propTypes = {
