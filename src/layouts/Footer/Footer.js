@@ -8,7 +8,6 @@ function Footer() {
     privacy,
     security,
     gdpr,
-    // shop,
     pricing,
     support,
     docs,
@@ -16,13 +15,7 @@ function Footer() {
   } = useStaticNavLinks()
 
   const leftMenu = [{ text: '© 2021 Codecov' }, terms, privacy, security, gdpr]
-  const rightMenu = [
-    // shop,
-    pricing,
-    support,
-    docs,
-    enterprise,
-  ]
+  const rightMenu = [pricing, support, docs, enterprise]
   return (
     <footer className="flex-none bg-codecov-footer">
       <nav className="container flex flex-wrap flex-col lg:flex-row justify-center sm:justify-between text-white py-6 px-3 items-center">
