@@ -2,6 +2,7 @@ const _ = require('lodash')
 const fs = require('fs')
 
 const enabledIcons = [
+  'chevron-down',
   'search',
 ]
 

@@ -42,7 +42,7 @@
 // export { ReactComponent as chevronDoubleLeft } from './chevron-double-left.svg'
 // export { ReactComponent as chevronDoubleRight } from './chevron-double-right.svg'
 // export { ReactComponent as chevronDoubleUp } from './chevron-double-up.svg'
-// export { ReactComponent as chevronDown } from './chevron-down.svg'
+export { ReactComponent as chevronDown } from './chevron-down.svg'
 // export { ReactComponent as chevronLeft } from './chevron-left.svg'
 // export { ReactComponent as chevronRight } from './chevron-right.svg'
 // export { ReactComponent as chevronUp } from './chevron-up.svg'
