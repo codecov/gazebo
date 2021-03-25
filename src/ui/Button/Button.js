@@ -61,7 +61,11 @@ function Button({
 
   const content = (
     <>
-      {isLoading && <Spinner />}
+      {isLoading && (
+        <span className="text-white mr-0.5">
+          <Spinner />
+        </span>
+      )}
       {children}
     </>
   )
