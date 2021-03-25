@@ -117,7 +117,7 @@ module.exports = {
       transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
       borderRadius: ['focus', 'last'],
       borderStyle: ['first'],
-      borderColor: ['first'],
+      borderColor: ['first', 'disabled'],
       borderWidth: ['first'],
       padding: ['responsive', 'last'],
       backgroundColor: ['disabled'],
