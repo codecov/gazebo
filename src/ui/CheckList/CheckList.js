@@ -1,5 +1,3 @@
-import uniqueId from 'lodash/uniqueId'
-
 import PropTypes from 'prop-types'
 
 import Icon from 'ui/Icon'
@@ -9,7 +7,7 @@ function CheckList({ list = [] }) {
   return (
     <ul>
       {list.map((item) => (
-        <li key={uniqueId(item)} className={className}>
+        <li key={item} className={className}>
           <span className="text-ds-pink">
             <Icon variant="solid" name="check" />
           </span>{' '}
