@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 
 function CheckList({ list = [] }) {
-  const className = 'text-sm text-ds-gray-octonary flex items-center gap-1'
+  const className = 'flex items-center gap-1'
   return (
     <ul>
       {list.map((item) => (
