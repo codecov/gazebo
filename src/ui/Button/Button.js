@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import cs from 'classnames'
 
 import AppLink from 'shared/AppLink'
+import Spinner from 'ui/Spinner'
 
 const baseClass = `
   flex justify-center items-center gap-1
@@ -11,14 +12,12 @@ const baseClass = `
 
   focus:outline-none focus:ring
 
-  disabled:cursor-not-allowed
-
-  disabled:text-ds-gray-quaternary  disabled:border-ds-gray-tertiary
-  disabled:bg-ds-gray-primary       disabled:text-ds-gray-primary     
+  disabled:cursor-not-allowed 
 `
+const baseDisabledClasses = `disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-primary`
 const variantClasses = {
   default: `
-    bg-white text-ds-gray-octornary border-ds-gray-quaternary
+    bg-white text-ds-gray-octonary border-ds-gray-quaternary
 
     hover:bg-ds-gray-secondary
   `,
@@ -34,19 +33,60 @@ const variantClasses = {
   `,
 }
 
-function Button({ to, variant = 'default', ...props }) {
-  const className = cs(baseClass, variantClasses[variant])
+const loadingVariantClasses = {
+  default: `disabled:bg-ds-gray-secondary disabled:text-ds-gray-octonary disabled:border-ds-gray-quaternary`,
+  primary: `disabled:bg-ds-blue-darker disabled:bg-ds-blue-medium text-white disabled:border-ds-blue-quinary`,
+  danger: `disabled:text-white disabled:border-ds-primary-red disabled:bg-ds-primary-red`,
+}
+
+function pickVariant(variant, loading) {
+  const set = loading ? loadingVariantClasses : variantClasses
+
+  return set[variant]
+}
+
+function Button({
+  to,
+  variant = 'default',
+  isLoading = false,
+  disabled,
+  children,
+  ...props
+}) {
+  const className = cs(
+    baseClass,
+    { [baseDisabledClasses]: !isLoading },
+    pickVariant(variant, isLoading)
+  )
+
+  const content = (
+    <>
+      {isLoading && <Spinner />}
+      {children}
+    </>
+  )
 
   return to ? (
-    <AppLink {...to} {...props} className={className} />
+    <AppLink
+      {...to}
+      disabled={disabled || isLoading}
+      {...props}
+      className={className}
+    >
+      {content}
+    </AppLink>
   ) : (
-    <button {...props} className={className} />
+    <button disabled={disabled || isLoading} {...props} className={className}>
+      {content}
+    </button>
   )
 }
 
 Button.propTypes = {
   to: PropTypes.shape(AppLink.propTypes),
   variant: PropTypes.oneOf(['default', 'primary', 'danger']),
+  isLoading: PropTypes.bool,
+  disabled: PropTypes.bool,
 }
 
 export default Button
