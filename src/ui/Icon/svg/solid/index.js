@@ -37,7 +37,7 @@
 // export { ReactComponent as chatAlt } from './chat-alt.svg'
 // export { ReactComponent as chat } from './chat.svg'
 // export { ReactComponent as checkCircle } from './check-circle.svg'
-// export { ReactComponent as check } from './check.svg'
+export { ReactComponent as check } from './check.svg'
 // export { ReactComponent as chevronDoubleDown } from './chevron-double-down.svg'
 // export { ReactComponent as chevronDoubleLeft } from './chevron-double-left.svg'
 // export { ReactComponent as chevronDoubleRight } from './chevron-double-right.svg'
