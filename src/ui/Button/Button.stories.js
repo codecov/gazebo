@@ -42,4 +42,5 @@ MixedButton.args = {
 export default {
   title: 'Components/Button',
   component: Button,
+  argTypes: { onClick: { action: 'clicked' } },
 }
