@@ -22,80 +22,32 @@ module.exports = {
         ds: {
           pink: {
             DEFAULT: '#F01F7A',
-            primary: '#F01F7A',
             secondary: '#FF4A89',
             tertiary: '#D10D62',
           },
           blue: {
             DEFAULT: '#0088E9',
-            primary: '#0088E9',
-            secondary: '#52B7FF',
-            tertiary: '#0095FF',
-            quanternary: '#0071C2',
+            light: '#52B7FF',
+            medium: '#0095FF',
+            darker: '#0071C2',
             quinary: '#015896',
             senary: '#002D4D',
           },
           gray: {
-            DEFAULT: '#F7F8FB',
+            DEFAULT: '#0E1B29',
             primary: '#F7F8FB',
             secondary: '#EAEBEF',
             tertiary: '#D8DCE2',
-            quanternary: '#999FA7',
+            quaternary: '#999FA7',
             quinary: '#68737E',
             senary: '#394754',
             septenary: '#222F3D',
             octonary: '#0E1B29',
           },
-          green: {
-            DEFAULT: '#27B340',
-          },
-          red: {
-            DEFAULT: '#CE2019',
-          },
-          purple: {
-            DEFAULT: '#AC39CF',
-          },
-          sunburst: {
-            // Caution: Needs a proper design language name
-            DEFAULT: '#C60800',
-            light: '#C60800',
-            dark: '#840500',
-          },
-          success: {
-            DEFAULT: '#73FF9E',
-            primary: '#73FF9E',
-            secondary: '#0E1B29',
-            tertiary: '#DEFFE8',
-          },
-          warning: {
-            DEFAULT: '#FFC273',
-            primary: '#FFC273',
-            secondary: '#473610',
-            tertiary: '#FFEBD2',
-          },
-          alert: {
-            DEFAULT: '#FF9B9B',
-            primary: '#FF9B9B',
-            secondary: '#590808',
-            tertiary: '#FFEDF0',
-          },
-          info: {
-            DEFAULT: '#A3D9FF',
-            primary: '#A3D9FF',
-            secondary: '#013B65',
-            tertiary: '#DFF2FF',
-          },
-          gradients: {
-            // Caution: Needs a proper design language name
-            // CAUTION These transparent colors and set gradients need more design/engineering discussion.
-            DEFAULT:
-              'linear-gradient(236.85deg, #EF589C 14.72%, #F01F7A 78.1%)',
-            pink: 'rgba(149, 0, 65, 0.25)',
-            blue: 'rgba(0, 107, 184, 0.25)',
-            // I know we could move these to the tailwind gradients but for now
-            pinkgradient:
-              'linear-gradient(236.85deg, #EF589C 14.72%, #F01F7A 78.1%)',
-            bluegradient: 'gradient(236.85deg, #2AA7FF 14.72%, #0095FF 78.1%)',
+          primary: {
+            green: '#27B340',
+            red: '#CE2019',
+            purple: '#AC39CF',
           },
         },
         codecov: {
@@ -148,14 +100,6 @@ module.exports = {
           900: '#013B65',
         },
       },
-      gradientColorStops: (theme) => ({
-        // From Design System
-        ...theme('colors'),
-        lightBlue: '#2AA7FF',
-        darkBlue: '#0095FF',
-        lightPink: '#EF589C',
-        darkPink: '#F01F7A',
-      }),
       boxShadow: {
         card: '0 7px 20px 0 rgba(34,47,61,0.05)',
       },
