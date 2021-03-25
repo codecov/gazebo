@@ -28,18 +28,20 @@ Table.args = {
   columns: [
     {
       Header: 'Header 1',
-      accessor: 'col1', // accessor is the "key" in the data
+      accessor: 'col1',
+      width: 'w-2/5',
     },
     {
       Header: 'Header 2',
       accessor: 'col2',
+      width: 'w-2/5',
     },
     {
       Header: 'Header 1',
       accessor: 'col3',
+      width: 'w-1/5',
     },
   ],
-  variant: 'full',
 }
 
 export const TableWithButton = Template.bind({})
@@ -65,7 +67,7 @@ TableWithButton.args = {
   columns: [
     {
       Header: 'Header 1',
-      accessor: 'col1', // accessor is the "key" in the data
+      accessor: 'col1',
     },
     {
       Header: 'Header 2',
@@ -76,7 +78,6 @@ TableWithButton.args = {
       accessor: 'col3',
     },
   ],
-  variant: 'full',
 }
 
 export default {

@@ -21,7 +21,7 @@ const data = [
 const columns = [
   {
     Header: 'Header 1',
-    accessor: 'col1', // accessor is the "key" in the data
+    accessor: 'col1',
   },
   {
     Header: 'Header 2',
@@ -84,13 +84,32 @@ describe('Table', () => {
     })
   })
 
-  describe('renders variant', () => {
+  describe('renders custom columns width correctly', () => {
     it('renders table with full variant', () => {
-      wrapper = render(<Table data={data} variant={'full'} columns={columns} />)
-      const table = screen.getByRole('table')
-      expect(table).toBeInTheDocument()
-      const bodyRow = screen.getByTestId('body-row')
-      expect(bodyRow.children.length).toBe(3)
+      const _columns = [
+        {
+          Header: 'Header 1',
+          accessor: 'col1',
+          width: 'w-1/12',
+        },
+        {
+          Header: 'Header 2',
+          accessor: 'col2',
+          width: 'w-6/12',
+        },
+        {
+          Header: 'Header 3',
+          accessor: 'col3',
+          width: 'w-5/12',
+        },
+      ]
+      wrapper = render(<Table data={data} columns={_columns} />)
+      let cell = wrapper.getByText('Row1Col1')
+      expect(cell.className).toMatch('w-1/12')
+      cell = wrapper.getByText('Row1Col2')
+      expect(cell.className).toMatch('w-6/12')
+      cell = wrapper.getByText('Row1Col3')
+      expect(cell.className).toMatch('w-5/12')
     })
   })
 })
