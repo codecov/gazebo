@@ -62,11 +62,23 @@ function useNavLinks() {
         `/account/${provider}/${owner}/yaml`,
       isExternalLink: true,
     },
+    internalYamlTab: {
+      text: 'YAML',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/yaml`,
+      isExternalLink: false,
+    },
     accessTab: {
       text: 'Access',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/access`,
       isExternalLink: true,
+    },
+    internalAccessTab: {
+      text: 'Access',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/access`,
+      isExternalLink: false,
     },
     billingAndUsers: {
       text: 'Billing & Users',
