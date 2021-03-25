@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
 
+import { mapEdges } from 'shared/utils/graphql'
 import Api from 'shared/api'
 
 export function useUser(options = {}) {
@@ -15,6 +16,35 @@ export function useUser(options = {}) {
       })
     },
     options
+  )
+}
+
+export function useMyContexts() {
+  const { provider } = useParams()
+  const query = `
+    query MyContext {
+      me {
+        owner {
+          username
+          avatarUrl
+        }
+        myOrganizations {
+          edges {
+            node {
+              username
+              avatarUrl
+            }
+          }
+        }
+      }
+    }
+  `
+
+  return useQuery(['myContexts', provider], () =>
+    Api.graphql({ provider, query }).then((res) => {
+      const me = res?.data?.me
+      return me ? [me.owner, ...mapEdges(me.myOrganizations)] : []
+    })
   )
 }
 
