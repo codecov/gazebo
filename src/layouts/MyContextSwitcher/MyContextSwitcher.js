@@ -12,6 +12,8 @@ function MyContextSwitcher({
   const { data: myContexts } = useMyContexts()
   const user = first(myContexts)
 
+  if (!user) return null
+
   const contexts = myContexts.map((context) => {
     const isCurrentUser =
       context.username.toLowerCase() === user?.username.toLowerCase()
