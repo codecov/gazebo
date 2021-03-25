@@ -5,6 +5,7 @@ import LogoSpinner from 'old_ui/LogoSpinner'
 import SidebarLayout from 'layouts/SidebarLayout'
 
 import SideMenu from './SideMenu'
+import Header from './Header'
 
 const CancelPlanTab = lazy(() => import('./tabs/CancelPlan'))
 const UpgradePlanTab = lazy(() => import('./tabs/UpgradePlan'))
@@ -26,42 +27,45 @@ function AccountSettings() {
   )
 
   return (
-    <SidebarLayout sidebar={<SideMenu />}>
-      <Suspense fallback={tabLoading}>
-        <Switch>
-          <Route path="/account/:provider/:owner/" exact>
-            <AdminTab provider={provider} owner={owner} />
-          </Route>
-          <Route path="/account/:provider/:owner/yaml/" exact>
-            <YAMLTab />
-          </Route>
-          <Route path="/account/:provider/:owner/access/" exact>
-            <AccessTab />
-          </Route>
-          <Route path="/account/:provider/:owner/billing/" exact>
-            <BillingAndUsersTab provider={provider} owner={owner} />
-          </Route>
-          <Route path="/account/:provider/:owner/users/" exact>
-            <Redirect to={`/account/${provider}/${owner}/billing/`} />
-          </Route>
-          <Route path="/account/:provider/:owner/billing/upgrade/" exact>
-            <UpgradePlanTab provider={provider} owner={owner} />
-          </Route>
-          <Route path="/account/:provider/:owner/billing/cancel/" exact>
-            <CancelPlanTab provider={provider} owner={owner} />
-          </Route>
-          <Route path="/account/:provider/:owner/invoices/" exact>
-            <InvoicesTab provider={provider} owner={owner} />
-          </Route>
-          <Route path="/account/:provider/:owner/invoices/:id/" exact>
-            <InvoiceDetailTab provider={provider} owner={owner} />
-          </Route>
-          <Route path="/account/:provider/:owner/*">
-            <NotFound />
-          </Route>
-        </Switch>
-      </Suspense>
-    </SidebarLayout>
+    <>
+      <Header />
+      <SidebarLayout sidebar={<SideMenu />}>
+        <Suspense fallback={tabLoading}>
+          <Switch>
+            <Route path="/account/:provider/:owner/" exact>
+              <AdminTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/yaml/" exact>
+              <YAMLTab />
+            </Route>
+            <Route path="/account/:provider/:owner/access/" exact>
+              <AccessTab />
+            </Route>
+            <Route path="/account/:provider/:owner/billing/" exact>
+              <BillingAndUsersTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/users/" exact>
+              <Redirect to={`/account/${provider}/${owner}/billing/`} />
+            </Route>
+            <Route path="/account/:provider/:owner/billing/upgrade/" exact>
+              <UpgradePlanTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/billing/cancel/" exact>
+              <CancelPlanTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/invoices/" exact>
+              <InvoicesTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/invoices/:id/" exact>
+              <InvoiceDetailTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/*">
+              <NotFound />
+            </Route>
+          </Switch>
+        </Suspense>
+      </SidebarLayout>
+    </>
   )
 }
 
