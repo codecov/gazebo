@@ -4,7 +4,7 @@ import { useParams, Switch, Route, Redirect } from 'react-router-dom'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import SidebarLayout from 'layouts/SidebarLayout'
 
-import SideMenu from './SideMenu'
+import SideMenuAccount from './SideMenuAccount'
 import Header from './Header'
 
 const CancelPlanTab = lazy(() => import('./tabs/CancelPlan'))
@@ -29,7 +29,7 @@ function AccountSettings() {
   return (
     <>
       <Header />
-      <SidebarLayout sidebar={<SideMenu />}>
+      <SidebarLayout sidebar={<SideMenuAccount />}>
         <Suspense fallback={tabLoading}>
           <Switch>
             <Route path="/account/:provider/:owner/" exact>
