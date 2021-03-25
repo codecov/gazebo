@@ -70,17 +70,19 @@ function Button({
     </>
   )
 
+  const completeProps = {
+    ...props,
+    disabled: disabled || isLoading,
+    className,
+    children: content,
+  }
+
   return to ? (
-    <AppLink
-      {...to}
-      disabled={disabled || isLoading}
-      {...props}
-      className={className}
-    >
+    <AppLink {...to} {...completeProps}>
       {content}
     </AppLink>
   ) : (
-    <button disabled={disabled || isLoading} {...props} className={className}>
+    <button {...completeProps} className={className}>
       {content}
     </button>
   )
