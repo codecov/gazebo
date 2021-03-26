@@ -5,7 +5,7 @@ import LogoSpinner from 'old_ui/LogoSpinner'
 import SidebarLayout from 'layouts/SidebarLayout'
 
 import SideMenuAccount from './SideMenuAccount'
-import Header from './Header'
+import Header from './shared/Header'
 
 const CancelPlanTab = lazy(() => import('./tabs/CancelPlan'))
 const UpgradePlanTab = lazy(() => import('./tabs/UpgradePlan'))
