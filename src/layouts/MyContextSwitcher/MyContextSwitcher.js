@@ -25,8 +25,6 @@ function MyContextSwitcher({
     })),
   ]
 
-  console.log(contexts)
-
   return (
     <ContextSwitcher
       activeContext={activeContext || currentUser.username}
@@ -47,7 +45,7 @@ MyContextSwitcher.propTypes = {
   /*
    ** The page name where the context will point to, if it's the current user
    */
-  pageNameCurrentUser: PropTypes.string.isRequired,
+  pageNameCurrentUser: PropTypes.string,
 }
 
 export default MyContextSwitcher
