@@ -41,4 +41,34 @@ describe('Button', () => {
       expect(screen.getByRole('button')).toHaveTextContent('hola')
     })
   })
+
+  describe('when isLoading', () => {
+    beforeEach(() => {
+      setup({
+        children: 'bonjour',
+        isLoading: true,
+      })
+    })
+
+    it('disables the button', () => {
+      expect(screen.getByRole('button')).toHaveAttribute('disabled')
+    })
+
+    it('The spinner is displayed', () => {
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
+    })
+  })
+
+  describe('when not isLoading', () => {
+    beforeEach(() => {
+      setup({
+        children: 'bonjour',
+        isLoading: false,
+      })
+    })
+
+    it('The spinner is displayed', () => {
+      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+    })
+  })
 })

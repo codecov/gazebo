@@ -10,7 +10,7 @@ const styles = {
     'block rounded border border-ds-gray-secondary px-3 py-1 text-sm w-full',
   label: 'block font-semibold mb-2',
   iconWrapper:
-    'absolute text-ds-gray-quanternary left-2 h-full flex items-center',
+    'absolute text-ds-gray-quaternary left-2 h-full flex items-center',
 }
 
 function TextInput({ type = 'text', icon, label, placeholder, ...props }) {
