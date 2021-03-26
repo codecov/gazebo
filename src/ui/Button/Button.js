@@ -7,7 +7,7 @@ import Spinner from 'ui/Spinner'
 const baseClass = `
   flex justify-center items-center gap-1
   border-solid border
-  font-semibold rounded py-1 px-4 shadow-sm
+  font-semibold rounded py-1 px-4 shadow
   transition-colors duration-150 motion-reduce:transition-none
 
   focus:outline-none focus:ring
@@ -17,19 +17,19 @@ const baseClass = `
 const baseDisabledClasses = `disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-primary`
 const variantClasses = {
   default: `
-    bg-white text-ds-gray-octonary border-ds-gray-quaternary
+    text-ds-gray-octonary bg-ds-gray-primary border-ds-gray-quaternary
 
     hover:bg-ds-gray-secondary
   `,
   primary: `
-    bg-ds-blue-medium text-white border-ds-blue-quinary
+    text-white bg-ds-blue-medium border-ds-blue-quinary
     
     hover:bg-ds-blue-darker
   `,
   danger: `
-    text-ds-primary-red
+    text-ds-primary-red border-ds-primary-red 
 
-    hover:text-white hover:border-ds-primary-red hover:bg-ds-primary-red
+    hover:text-white hover:bg-ds-primary-red
   `,
 }
 
