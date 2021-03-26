@@ -1,18 +1,20 @@
-import { useParams } from 'react-router-dom'
+// import { useParams } from 'react-router-dom'
 
-import MyContextSwitcher from 'layouts/MyContextSwitcher'
+// import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
-  const { owner } = useParams()
+  // const { owner } = useParams()
 
   return (
     <>
-      <MyContextSwitcher pageName="ownerInternal" activeContext={owner} />
+      {/* Commented for now, as it consumes GraphQL endpoint which is not
+        100% ready for production */}
+      {/* <MyContextSwitcher pageName="ownerInternal" activeContext={owner} /> */}
       <div className="my-4">
         <TabNavigation
           tabs={[
-            { pageName: 'ownerInternal', children: 'Repos' },
+            { pageName: 'owner', children: 'Repos' },
             { pageName: 'accountAdmin', children: 'Settings' },
           ]}
         />
