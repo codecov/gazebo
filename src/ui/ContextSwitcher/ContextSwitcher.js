@@ -48,7 +48,7 @@ function ContextSwitcher({ activeContext, contexts }) {
           src={currentContext.owner.avatarUrl}
           className={styles.imageButton}
         />
-        <div className="mx-2">{currentContext.owner.username}</div>
+        <div className="ml-2 mr-1">{currentContext.owner.username}</div>
         <span aria-hidden="true">
           <Icon variant="solid" name="chevron-down" />
         </span>
