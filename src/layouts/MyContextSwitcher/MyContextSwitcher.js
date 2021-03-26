@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import first from 'lodash/first'
 
 import { useMyContexts } from 'services/user'
 import ContextSwitcher from 'ui/ContextSwitcher'
@@ -10,22 +9,27 @@ function MyContextSwitcher({
   pageNameCurrentUser = pageName,
 }) {
   const { data: myContexts } = useMyContexts()
-  const user = first(myContexts)
 
-  if (!user) return null
+  if (!myContexts) return null
 
-  const contexts = myContexts.map((context) => {
-    const isCurrentUser =
-      context.username.toLowerCase() === user?.username.toLowerCase()
-    return {
+  const { currentUser, myOrganizations } = myContexts
+
+  const contexts = [
+    {
+      owner: currentUser,
+      pageName: pageNameCurrentUser,
+    },
+    ...myOrganizations.map((context) => ({
       owner: context,
-      pageName: isCurrentUser ? pageNameCurrentUser : pageName,
-    }
-  })
+      pageName: pageName,
+    })),
+  ]
+
+  console.log(contexts)
 
   return (
     <ContextSwitcher
-      activeContext={activeContext || user?.username}
+      activeContext={activeContext || currentUser.username}
       contexts={contexts}
     />
   )

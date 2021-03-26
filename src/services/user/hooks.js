@@ -43,7 +43,12 @@ export function useMyContexts() {
   return useQuery(['myContexts', provider], () =>
     Api.graphql({ provider, query }).then((res) => {
       const me = res?.data?.me
-      return me ? [me.owner, ...mapEdges(me.myOrganizations)] : []
+      return me
+        ? {
+            currentUser: me.owner,
+            myOrganizations: mapEdges(me.myOrganizations),
+          }
+        : null
     })
   )
 }
