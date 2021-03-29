@@ -6,7 +6,7 @@
 }
 
 [data-reach-menu-item] {
-  @apply px-4 py-2 flex items-center;
+  @apply px-4 py-2 flex items-center text-sm;
 }
 
 /* pseudo pseudo selector */

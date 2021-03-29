@@ -32,7 +32,7 @@ function Table({ data = [], columns = [] }) {
   )
 
   return (
-    <div className="text-ds-gray-quanternary">
+    <div className="text-ds-gray-quaternary">
       <table className={'w-full'} {...getTableProps()}>
         <thead data-testid="header-row">
           {

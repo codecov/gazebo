@@ -10,6 +10,8 @@ import config from 'config'
 import { ReactQueryDevtools } from 'react-query/devtools'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
+const HomePage = lazy(() => import('./pages/HomePage'))
+const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const FullLayout = lazy(() => import('./layouts/FullLayout'))
 
 const queryClient = new QueryClient({
@@ -39,12 +41,12 @@ function App() {
               </Route>
               <Route path="/:provider/" exact>
                 <BaseLayout>
-                  <FullLayout>List of organizations</FullLayout>
+                  <HomePage />
                 </BaseLayout>
               </Route>
               <Route path="/:provider/:owner/" exact>
                 <BaseLayout>
-                  <FullLayout>List of repos</FullLayout>
+                  <OwnerPage />
                 </BaseLayout>
               </Route>
               <Route path="/:provider/:owner/:repo/" exact>
