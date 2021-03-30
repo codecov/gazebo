@@ -2,17 +2,16 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import ContextSwitcher from '.'
 
-const currentContext = {
-  owner: {
-    username: 'dorianamouroux',
-    avatarUrl: 'https://github.com/dorianamouroux.png?size=40',
-  },
-  pageName: 'provider',
-}
 const props = {
-  currentContext,
+  activeContext: 'dorianamouroux',
   contexts: [
-    currentContext,
+    {
+      owner: {
+        username: 'dorianamouroux',
+        avatarUrl: 'https://github.com/dorianamouroux.png?size=40',
+      },
+      pageName: 'provider',
+    },
     {
       owner: {
         username: 'spotify',

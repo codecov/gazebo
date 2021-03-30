@@ -6,10 +6,10 @@
 }
 
 [data-reach-menu-item] {
-  @apply px-4 py-2 flex items-center;
+  @apply px-4 py-2 flex items-center text-sm;
 }
 
 /* pseudo pseudo selector */
 [data-reach-menu-item][data-selected] {
-  @apply bg-ds-gray-quanternary bg-opacity-5 text-ds-gray-octonary;
+  @apply bg-ds-gray-quaternary bg-opacity-5 text-ds-gray-octonary;
 }

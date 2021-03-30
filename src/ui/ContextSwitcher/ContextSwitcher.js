@@ -13,12 +13,18 @@ const styles = {
   switchContext: 'px-4 py-2 border-b border-ds-gray-secondary font-semibold',
 }
 
-function ContextSwitcher({ currentContext, contexts }) {
+function getCurrentContext({ activeContext, contexts }) {
+  return contexts.find((context) => {
+    return context.owner.username.toLowerCase() === activeContext.toLowerCase()
+  })
+}
+
+function ContextSwitcher({ activeContext, contexts }) {
+  const currentContext = getCurrentContext({ activeContext, contexts })
+
   function renderContext(context) {
     const { owner, pageName } = context
-    const isActiveContext =
-      owner.username.toLowerCase() ===
-      currentContext.owner.username.toLowerCase()
+    const isActiveContext = context === currentContext
     return (
       <MenuLink
         as={AppLink}
@@ -42,7 +48,7 @@ function ContextSwitcher({ currentContext, contexts }) {
           src={currentContext.owner.avatarUrl}
           className={styles.imageButton}
         />
-        <div className="mx-2">{currentContext.owner.username}</div>
+        <div className="ml-2 mr-1">{currentContext.owner.username}</div>
         <span aria-hidden="true">
           <Icon variant="solid" name="chevron-down" />
         </span>
@@ -55,17 +61,17 @@ function ContextSwitcher({ currentContext, contexts }) {
   )
 }
 
-const contextPropType = PropTypes.shape({
-  owner: PropTypes.shape({
-    avatarUrl: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired,
-  }),
-  pageName: PropTypes.string.isRequired,
-})
-
 ContextSwitcher.propTypes = {
-  currentContext: contextPropType.isRequired,
-  contexts: PropTypes.arrayOf(contextPropType).isRequired,
+  activeContext: PropTypes.string.isRequired,
+  contexts: PropTypes.arrayOf(
+    PropTypes.shape({
+      owner: PropTypes.shape({
+        avatarUrl: PropTypes.string.isRequired,
+        username: PropTypes.string.isRequired,
+      }),
+      pageName: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 }
 
 export default ContextSwitcher
