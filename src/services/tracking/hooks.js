@@ -1,39 +1,80 @@
+import omitBy from 'lodash/omitBy'
+import isNull from 'lodash/isNull'
 import { useUser } from 'services/user'
 
-/* eslint-disable */
+// Set default values so fields are readable by Salesforce
+function getUserData(
+  ownerid,
+  avatarUrl,
+  serviceId,
+  plan,
+  staff,
+  yaml,
+  email = 'unknown@codecov.io',
+  name = 'unknown',
+  username = 'unknown',
+  student = false,
+  bot = false,
+  delinquent = false,
+  didTrial = false,
+  privateAccess = false,
+  planProvider = '',
+  planUserCount = 5,
+  createstamp = new Date('2014-01-01 12:00:00').toISOString(),
+  updatestamp = new Date('2014-01-01 12:00:00').toISOString(),
+  studentCreatedAt = new Date('2014-01-01 12:00:00').toISOString(),
+  studentUpdatedAt = new Date('2014-01-01 12:00:00').toISOString()
+) {
+  return {
+    ownerid,
+    avatar: avatarUrl,
+    service_id: serviceId,
+    plan,
+    staff,
+    has_yaml: Boolean(yaml),
+    guest: false,
+    email,
+    name,
+    username,
+    student,
+    bot,
+    delinquent,
+    did_trial: didTrial,
+    private_access: privateAccess,
+    plan_provider: planProvider,
+    plan_user_count: planUserCount,
+    createdAt: createstamp,
+    updatedAt: updatestamp,
+    student_created_at: studentCreatedAt,
+    student_updated_at: studentUpdatedAt,
+  }
+}
+
 function setDataLayer(user) {
+  const user_without_nulls = omitBy(user, isNull)
   const user_data = user
-    ? {
-        ownerid: user.ownerid,
-        avatar: user.avatarUrl,
-        service_id: user.serviceId,
-        plan: user.plan,
-        staff: user.staff,
-        has_yaml: Boolean(user.yaml),
-        guest: false,
-        // Set default values so fields can be parsed by Salesforce
-        email: user.email || 'unknown@codecov.io',
-        name: user.name || 'unknown',
-        username: user.username || 'unknown',
-        student: user.student || false,
-        bot: user.bot || false,
-        delinquent: user.delinquent || false,
-        did_trial: user.didTrial || false,
-        private_access: user.privateAccess || false,
-        plan_provider: user.planProvider || '',
-        plan_user_count:
-          (typeof user.planUserCount == 'number' && user.planUserCount) || 5,
-        createdAt:
-          user.createstamp || new Date('2014-01-01 12:00:00').toISOString(),
-        updatedAt:
-          user.updatestamp || new Date('2014-01-01 12:00:00').toISOString(),
-        student_created_at:
-          user.studentCreatedAt ||
-          new Date('2014-01-01 12:00:00').toISOString(),
-        student_updated_at:
-          user.studentUpdatedAt ||
-          new Date('2014-01-01 12:00:00').toISOString(),
-      }
+    ? getUserData(
+        user_without_nulls.ownerid,
+        user_without_nulls.avatarUrl,
+        user_without_nulls.serviceId,
+        user_without_nulls.plan,
+        user_without_nulls.staff,
+        user_without_nulls.yaml,
+        user_without_nulls.email,
+        user_without_nulls.name,
+        user_without_nulls.username,
+        user_without_nulls.student,
+        user_without_nulls.bot,
+        user_without_nulls.delinquent,
+        user_without_nulls.didTrial,
+        user_without_nulls.privateAccess,
+        user_without_nulls.planProvider,
+        user_without_nulls.planUserCount,
+        user_without_nulls.createstamp,
+        user_without_nulls.updatestamp,
+        user_without_nulls.studentCreatedAt,
+        user_without_nulls.studentUpdatedAt
+      )
     : { guest: true }
   const layer = {
     codecov: {
@@ -45,7 +86,7 @@ function setDataLayer(user) {
   }
   window.dataLayer = [layer]
 }
-/*eslint-enable*/
+
 export function useTracking() {
   return useUser({
     onSuccess: (user) => setDataLayer(user),
