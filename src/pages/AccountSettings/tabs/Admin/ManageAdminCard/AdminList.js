@@ -20,8 +20,10 @@ function useAdminsAndRevoke({ provider, owner }) {
 
   function setAdminStatus(user, isAdmin) {
     const body = {
+      /* eslint-disable camelcase */
       targetUser: user.username,
       is_admin: isAdmin,
+      /* eslint-enable camelcase */
     }
     mutate(body)
   }
