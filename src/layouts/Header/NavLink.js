@@ -3,6 +3,7 @@ import cs from 'classnames'
 import { NavLink } from 'react-router-dom'
 import Icon from 'old_ui/Icon'
 import AppLink from 'old_ui/AppLink'
+import Avatar from 'ui/Avatar/Avatar'
 
 const UserNav = {
   label: PropType.string.isRequired,
@@ -25,7 +26,11 @@ export function UserNavLink({
       {...props}
     >
       {imageUrl && (
-        <img className="h-4 w-4 rounded-full" src={imageUrl} alt={label} />
+        <Avatar
+          className="h-4 w-4 rounded-full"
+          user={{ avatarUrl: imageUrl, username: label }}
+          alt={label}
+        />
       )}
       {iconName && (
         <Icon
@@ -58,7 +63,11 @@ export function MainNavLink({
       {...props}
     >
       {imageUrl && (
-        <img className="h-6 w-6 rounded-full" src={imageUrl} alt={label} />
+        <Avatar
+          className="h-6 w-6 rounded-full"
+          user={{ avatarUrl: imageUrl, username: label }}
+          alt={label}
+        />
       )}
       <span className="pl-3">{label}</span>
     </AppLink>

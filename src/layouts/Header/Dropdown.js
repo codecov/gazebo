@@ -10,6 +10,7 @@ import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 
 import Button from 'old_ui/Button'
 import { UserNavLink } from './NavLink'
+import Avatar from 'ui/Avatar/Avatar'
 
 function Dropdown() {
   const { signIn } = useNavLinks()
@@ -52,11 +53,8 @@ function Dropdown() {
         aria-haspopup="true"
       >
         <span className="sr-only">Open user menu</span>
-        <img
-          className="h-7 w-7 rounded-full"
-          src={user.avatarUrl}
-          alt="user avatar"
-        />
+
+        <Avatar className="h-7 w-7 rounded-full" user={user} />
         <p className="mx-2">{user.username}</p>
         <Icon
           name="rightChevron"

@@ -5,6 +5,7 @@ import { useUser } from 'services/user'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 import { useNavLinks } from 'services/navigation'
 import Button from 'old_ui/Button'
+import Avatar from 'ui/Avatar/Avatar'
 
 import ServerStatus from './ServerStatus'
 import { MainNavLink, UserNavLink } from './NavLink'
@@ -20,11 +21,9 @@ function MobileMenu() {
       <>
         <div className="flex items-center py-4 border-t border-gray-800">
           <div className="flex-shrink-0">
-            <img
+            <Avatar
               className="h-9 w-9 rounded-full"
-              src={user.avatarUrl}
-              width="40px"
-              height="auto"
+              user={user}
               alt="User Avatar"
             />
           </div>

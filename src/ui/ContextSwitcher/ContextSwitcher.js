@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import cs from 'classnames'
 import Icon from 'ui/Icon'
 import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
-
+import Avatar from 'ui/Avatar/Avatar'
 import './ContextSwitcher.css'
 import AppLink from 'shared/AppLink'
 
@@ -21,7 +21,6 @@ function getCurrentContext({ activeContext, contexts }) {
 
 function ContextSwitcher({ activeContext, contexts }) {
   const currentContext = getCurrentContext({ activeContext, contexts })
-
   function renderContext(context) {
     const { owner, pageName } = context
     const isActiveContext = context === currentContext
@@ -32,7 +31,7 @@ function ContextSwitcher({ activeContext, contexts }) {
         options={{ owner: owner.username }}
         key={owner.username}
       >
-        <img alt="logo" src={owner.avatarUrl} className={styles.image} />
+        <Avatar alt="logo" user={owner} className={styles.image} />
         <div className={cs('mx-2', { 'font-semibold': isActiveContext })}>
           {owner.username}
         </div>
@@ -43,9 +42,9 @@ function ContextSwitcher({ activeContext, contexts }) {
   return (
     <Menu>
       <MenuButton className={styles.button}>
-        <img
+        <Avatar
           alt="logo"
-          src={currentContext.owner.avatarUrl}
+          user={currentContext.owner}
           className={styles.imageButton}
         />
         <div className="ml-2 mr-1">{currentContext.owner.username}</div>
