@@ -80,7 +80,7 @@
     "@craco/craco": "^6.1.1",
     "@sentry/cli": "^1.63.1",
     "@storybook/addon-a11y": "^6.1.21",
-    "@storybook/addon-actions": "^6.1.21",
+    "@storybook/addon-actions": "^6.2.1",
     "@storybook/addon-essentials": "^6.1.21",
     "@storybook/addon-links": "^6.1.21",
     "@storybook/node-logger": "^6.1.21",
