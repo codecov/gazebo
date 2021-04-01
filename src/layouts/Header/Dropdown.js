@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useClickAway } from 'react-use'
 import cs from 'classnames'
-
+import { useParams } from 'react-router-dom'
 import { useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { useNavLinks } from 'services/navigation'
@@ -10,6 +10,7 @@ import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 
 import Button from 'old_ui/Button'
 import { UserNavLink } from './NavLink'
+import Avatar from 'old_ui/Avatar'
 
 function Dropdown() {
   const { signIn } = useNavLinks()
@@ -19,6 +20,9 @@ function Dropdown() {
     suspense: false,
   })
   const subMenu = useSubNav()
+  const { provider } = useParams()
+  const avatarUrl =
+    provider !== 'bb' || provider !== 'bitbucket' ? user?.avatarUrl : null
 
   useClickAway(dropdownRef, () => setIsOpen(false))
 
@@ -52,10 +56,11 @@ function Dropdown() {
         aria-haspopup="true"
       >
         <span className="sr-only">Open user menu</span>
-        <img
+
+        <Avatar
           className="h-7 w-7 rounded-full"
-          src={user.avatarUrl}
-          alt="user avatar"
+          username={user.username}
+          avatarUrl={avatarUrl}
         />
         <p className="mx-2">{user.username}</p>
         <Icon

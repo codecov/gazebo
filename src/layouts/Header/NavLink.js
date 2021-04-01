@@ -3,6 +3,7 @@ import cs from 'classnames'
 import { NavLink } from 'react-router-dom'
 import Icon from 'old_ui/Icon'
 import AppLink from 'old_ui/AppLink'
+import Avatar from 'old_ui/Avatar'
 
 const UserNav = {
   label: PropType.string.isRequired,
@@ -24,9 +25,12 @@ export function UserNavLink({
       className={cs('flex items-center py-2 text-sm', className)}
       {...props}
     >
-      {imageUrl && (
-        <img className="h-4 w-4 rounded-full" src={imageUrl} alt={label} />
-      )}
+      <Avatar
+        className="h-4 w-4 rounded-full"
+        avatarUrl={imageUrl}
+        username={label}
+        alt={label}
+      />
       {iconName && (
         <Icon
           testId="nav-link-icon"
@@ -57,9 +61,12 @@ export function MainNavLink({
       className={cs('flex items-center', className)}
       {...props}
     >
-      {imageUrl && (
-        <img className="h-6 w-6 rounded-full" src={imageUrl} alt={label} />
-      )}
+      <Avatar
+        className="h-6 w-6 rounded-full"
+        avatarUrl={imageUrl}
+        username={label}
+        alt={label}
+      />
       <span className="pl-3">{label}</span>
     </AppLink>
   )

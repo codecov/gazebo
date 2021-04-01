@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import cs from 'classnames'
 import Icon from 'ui/Icon'
 import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
-
 import './ContextSwitcher.css'
 import AppLink from 'shared/AppLink'
 
@@ -21,7 +20,6 @@ function getCurrentContext({ activeContext, contexts }) {
 
 function ContextSwitcher({ activeContext, contexts }) {
   const currentContext = getCurrentContext({ activeContext, contexts })
-
   function renderContext(context) {
     const { owner, pageName } = context
     const isActiveContext = context === currentContext
