@@ -3,7 +3,7 @@ import cs from 'classnames'
 import { NavLink } from 'react-router-dom'
 import Icon from 'old_ui/Icon'
 import AppLink from 'old_ui/AppLink'
-import Avatar from 'old_ui/Avatar/Avatar'
+import Avatar from 'old_ui/Avatar'
 
 const UserNav = {
   label: PropType.string.isRequired,

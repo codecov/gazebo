@@ -5,7 +5,7 @@ import { useUser } from 'services/user'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 import { useNavLinks } from 'services/navigation'
 import Button from 'old_ui/Button'
-import Avatar from 'old_ui/Avatar/Avatar'
+import Avatar from 'old_ui/Avatar'
 
 import ServerStatus from './ServerStatus'
 import { MainNavLink, UserNavLink } from './NavLink'
@@ -16,6 +16,8 @@ function MobileMenu() {
   const { data: user } = useUser({ suspense: false })
   const { signIn } = useNavLinks()
   const { provider } = useParams()
+  const avatarUrl =
+    provider !== 'bb' || provider !== 'bitbucket' ? user?.avatarUrl : null
 
   function loggedInSubMenu() {
     return (
@@ -25,7 +27,7 @@ function MobileMenu() {
             <Avatar
               className="h-9 w-9 rounded-full"
               username={user.username}
-              avatarUrl={provider !== 'bb' ? user.avatarUrl : null}
+              avatarUrl={avatarUrl}
               alt="User Avatar"
             />
           </div>

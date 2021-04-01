@@ -10,7 +10,7 @@ import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 
 import Button from 'old_ui/Button'
 import { UserNavLink } from './NavLink'
-import Avatar from 'old_ui/Avatar/Avatar'
+import Avatar from 'old_ui/Avatar'
 
 function Dropdown() {
   const { signIn } = useNavLinks()
@@ -21,6 +21,8 @@ function Dropdown() {
   })
   const subMenu = useSubNav()
   const { provider } = useParams()
+  const avatarUrl =
+    provider !== 'bb' || provider !== 'bitbucket' ? user?.avatarUrl : null
 
   useClickAway(dropdownRef, () => setIsOpen(false))
 
@@ -58,7 +60,7 @@ function Dropdown() {
         <Avatar
           className="h-7 w-7 rounded-full"
           username={user.username}
-          avatarUrl={provider !== 'bb' ? user.avatarUrl : null}
+          avatarUrl={avatarUrl}
         />
         <p className="mx-2">{user.username}</p>
         <Icon
