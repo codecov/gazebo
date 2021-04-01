@@ -62,8 +62,6 @@ describe('useTracking', () => {
       student_updated_at: new Date('2020-01-01 12:00:00').toISOString(),
     }
 
-    console.log('User: ' + JSON.stringify(user))
-
     beforeEach(() => {
       server.use(
         rest.get(`/internal/profile`, (req, res, ctx) => {

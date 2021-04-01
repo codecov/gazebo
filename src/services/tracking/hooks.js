@@ -51,29 +51,29 @@ function getUserData(
 }
 
 function setDataLayer(user) {
-  const user_without_nulls = omitBy(user, isNull)
+  const userWithoutNulls = omitBy(user, isNull)
   const user_data = user
     ? getUserData(
-        user_without_nulls.ownerid,
-        user_without_nulls.avatarUrl,
-        user_without_nulls.serviceId,
-        user_without_nulls.plan,
-        user_without_nulls.staff,
-        user_without_nulls.yaml,
-        user_without_nulls.email,
-        user_without_nulls.name,
-        user_without_nulls.username,
-        user_without_nulls.student,
-        user_without_nulls.bot,
-        user_without_nulls.delinquent,
-        user_without_nulls.didTrial,
-        user_without_nulls.privateAccess,
-        user_without_nulls.planProvider,
-        user_without_nulls.planUserCount,
-        user_without_nulls.createstamp,
-        user_without_nulls.updatestamp,
-        user_without_nulls.studentCreatedAt,
-        user_without_nulls.studentUpdatedAt
+        userWithoutNulls.ownerid,
+        userWithoutNulls.avatarUrl,
+        userWithoutNulls.serviceId,
+        userWithoutNulls.plan,
+        userWithoutNulls.staff,
+        userWithoutNulls.yaml,
+        userWithoutNulls.email,
+        userWithoutNulls.name,
+        userWithoutNulls.username,
+        userWithoutNulls.student,
+        userWithoutNulls.bot,
+        userWithoutNulls.delinquent,
+        userWithoutNulls.didTrial,
+        userWithoutNulls.privateAccess,
+        userWithoutNulls.planProvider,
+        userWithoutNulls.planUserCount,
+        userWithoutNulls.createstamp,
+        userWithoutNulls.updatestamp,
+        userWithoutNulls.studentCreatedAt,
+        userWithoutNulls.studentUpdatedAt
       )
     : { guest: true }
   const layer = {
