@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
-import Avatar from 'ui/Avatar/Avatar'
+import Avatar from 'old_ui/Avatar/Avatar'
 
 const UserClasses = {
   root: 'flex text-md text-sm space-x-4',
@@ -50,7 +50,8 @@ function User({
   return (
     <div className={cs(className, styles.root)}>
       <Avatar
-        user={{ avatarUrl: avatarUrl, username: username }}
+        avatarUrl={avatarUrl}
+        username={username}
         className={styles.avatar}
         alt={username}
       />

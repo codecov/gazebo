@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 function BBAvatar({ text }) {
   return (
     <svg
+      data-testid="bb-avatar"
       className="h-7 w-7 rounded-full"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 40 40"
