@@ -1,4 +1,4 @@
-import { snakeifyKeys, getHeaders, generatePath } from './helpers'
+import { snakeifyKeys, getHeaders } from './helpers'
 import * as Cookie from 'js-cookie'
 
 describe('snakeifyKeys', () => {

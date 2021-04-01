@@ -22,6 +22,10 @@ export function generatePath({ path, query }) {
 }
 
 export function getHeaders(provider) {
+  const baseHeader = { Accept: 'application/json' }
+
+  if (typeof provider !== 'string') return baseHeader
+
   const p = provider.toLowerCase()
   const token = Cookie.get(ProviderCookieKeyMapping[p])
 
@@ -33,7 +37,7 @@ export function getHeaders(provider) {
       : {}
 
   return {
-    Accept: 'application/json',
+    ...baseHeader,
     ...authorizationHeader,
   }
 }
