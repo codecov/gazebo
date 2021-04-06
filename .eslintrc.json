@@ -16,7 +16,8 @@
       {
         "ignore": ["children", "context", "className"]
       }
-    ]
+    ],
+    "camelcase": ["error", { "properties": "always" }]
   },
   "overrides": [
     // UI Rules
@@ -78,7 +79,8 @@
         "max-nested-callbacks": "off",
         "max-statements": "off",
         "complexity": "off",
-        "react/display-name": "off"
+        "react/display-name": "off",
+        "camelcase": "off"
       }
     },
     // Story Rules
