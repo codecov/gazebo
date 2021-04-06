@@ -1,28 +1,34 @@
 import OptionSelectComponent from './OptionSelect'
+import { useForm } from 'react-hook-form'
+import { useState } from 'react'
 
 const Template = (args) => {
-  return <OptionSelectComponent {...args} />
+  const { register } = useForm()
+  const [value, setValue] = useState(true)
+  console.log('fffhere')
+  return (
+    <OptionSelectComponent
+      onChange={() => setValue(!value)}
+      checked={value}
+      ref={register}
+      {...args}
+    />
+  )
 }
 
 export const DefaultOptionSelect = Template.bind({})
 
-DefaultOptionSelect.args = {
-  value: true,
-}
+DefaultOptionSelect.args = {}
 
 export const OptionSelectStringLabel = Template.bind({})
 
-let value_1 = false
 OptionSelectStringLabel.args = {
   label: '$10/per user monthly, billed annually',
-  value: value_1,
   variant: 'label',
-  onChange: (val) => (value_1 = !val),
 }
 
 export const OptionSelectHTMLLabel = Template.bind({})
 
-let value_2 = false
 OptionSelectHTMLLabel.args = {
   label: (
     <span>
@@ -30,9 +36,7 @@ OptionSelectHTMLLabel.args = {
       <span>/per user monthly, billed annually</span>
     </span>
   ),
-  value: value_2,
   variant: 'label',
-  onChange: (val) => (value_2 = !val),
 }
 
 export default {
