@@ -9,9 +9,19 @@ const Template = (args) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(_handleSubmit)}>
-      <RadioInput {...register('test')} {...args} value={'test1'} name="test" />
-      <RadioInput {...register('test')} {...args} value={'test2'} name="test" />
+    <form className="flex flex-col" onSubmit={handleSubmit(_handleSubmit)}>
+      <RadioInput ref={register} {...args} value="test1" name="test" />
+      <div>
+        <input
+          className="mr-2"
+          type="radio"
+          ref={register}
+          {...args}
+          value="test2"
+          name="test"
+        />
+        <label>This is a test label</label>
+      </div>
       <button className="text-white mt-1 p-2 rounded bg-gray-500" type="submit">
         Submit!
       </button>
