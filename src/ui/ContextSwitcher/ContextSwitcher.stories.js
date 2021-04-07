@@ -9,16 +9,14 @@ const Template = (args) => (
   </MemoryRouter>
 )
 
-const currentContext = {
-  owner: {
-    username: 'dorianamouroux',
-    avatarUrl: 'https://github.com/dorianamouroux.png?size=40',
-  },
-  pageName: 'provider',
-}
-
 const contexts = [
-  currentContext,
+  {
+    owner: {
+      username: 'dorianamouroux',
+      avatarUrl: 'https://github.com/dorianamouroux.png?size=40',
+    },
+    pageName: 'provider',
+  },
   {
     owner: {
       username: 'spotify',
@@ -37,7 +35,7 @@ const contexts = [
 
 export const SimpleContextSwitcher = Template.bind({})
 SimpleContextSwitcher.args = {
-  currentContext,
+  activeContext: 'dorianamouroux',
   contexts,
 }
 

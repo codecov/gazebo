@@ -130,7 +130,11 @@ export function useUpdateCard({ provider, owner }) {
           return Api.patch({
             provider,
             path,
-            body: { payment_method: result.paymentMethod.id },
+            body: {
+              /* eslint-disable camelcase */
+              payment_method: result.paymentMethod.id,
+              /* eslint-enable camelcase */
+            },
           })
         })
     },
@@ -183,7 +187,9 @@ export function useAutoActivate({ provider, owner, opts = {} }) {
     (activate) => {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
+        /* eslint-disable camelcase */
         plan_auto_activate: activate,
+        /* eslint-enable camelcase */
       }
 
       return Api.patch({

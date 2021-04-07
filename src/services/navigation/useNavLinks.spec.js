@@ -35,6 +35,15 @@ describe('useNavLinks', () => {
       )
     })
   })
+  describe('providerInternal link', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.providerInternal.path()).toBe('/gl')
+    })
+  })
 
   describe('Sign Out', () => {
     beforeAll(() => {

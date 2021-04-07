@@ -1,10 +1,10 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { useUser, useUpdateProfile } from './hooks'
+import { useUser, useUpdateProfile, useMyContexts } from './hooks'
 
 const user = {
   username: 'TerrySmithDC',
@@ -15,15 +15,20 @@ const user = {
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
-  <MemoryRouter>
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <MemoryRouter initialEntries={['/gh']}>
+    <Route path="/:provider">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
   </MemoryRouter>
 )
 
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
 afterAll(() => server.close())
 
 describe('useUser', () => {
@@ -109,6 +114,75 @@ describe('useUpdateProfile', () => {
           ...user,
           ...newData,
         })
+      })
+    })
+  })
+})
+
+describe('useMyContexts', () => {
+  let hookData
+
+  function setup(dataReturned) {
+    server.use(
+      rest.post(`/graphql/gh`, (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            data: dataReturned,
+          })
+        )
+      })
+    )
+    hookData = renderHook(() => useMyContexts(), { wrapper })
+  }
+
+  describe('when called and user is unauthenticated', () => {
+    beforeEach(() => {
+      setup({
+        me: null,
+      })
+    })
+
+    it('returns isLoading', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns null', () => {
+        expect(hookData.result.current.data).toEqual(null)
+      })
+    })
+  })
+
+  describe('when called and user is authenticated', () => {
+    const org1 = {
+      username: 'codecov',
+      avatarUrl: '',
+    }
+    const org2 = {
+      username: 'codecov',
+      avatarUrl: '',
+    }
+    beforeEach(() => {
+      setup({
+        me: {
+          owner: user,
+          myOrganizations: {
+            edges: [{ node: org1 }, { node: org2 }],
+          },
+        },
+      })
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
+    })
+
+    it('returns the user and their orgs', () => {
+      expect(hookData.result.current.data).toEqual({
+        currentUser: user,
+        myOrganizations: [org1, org2],
       })
     })
   })

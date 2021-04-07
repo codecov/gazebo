@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { useMainNav, useSubNav } from 'services/header'
 import { useUser } from 'services/user'
 import { ReactComponent as SignInIcon } from 'assets/svg/signIn.svg'
 import { useNavLinks } from 'services/navigation'
 import Button from 'old_ui/Button'
+import Avatar from 'old_ui/Avatar'
 
 import ServerStatus from './ServerStatus'
 import { MainNavLink, UserNavLink } from './NavLink'
@@ -14,17 +15,19 @@ function MobileMenu() {
   const subMenu = useSubNav()
   const { data: user } = useUser({ suspense: false })
   const { signIn } = useNavLinks()
+  const { provider } = useParams()
+  const avatarUrl =
+    provider !== 'bb' || provider !== 'bitbucket' ? user?.avatarUrl : null
 
   function loggedInSubMenu() {
     return (
       <>
         <div className="flex items-center py-4 border-t border-gray-800">
           <div className="flex-shrink-0">
-            <img
+            <Avatar
               className="h-9 w-9 rounded-full"
-              src={user.avatarUrl}
-              width="40px"
-              height="auto"
+              username={user.username}
+              avatarUrl={avatarUrl}
               alt="User Avatar"
             />
           </div>

@@ -1,2 +1,5 @@
+[build]
+  ignore = "git log -1 --pretty=%B | grep dependabot"
+
 [context.deploy-preview]
   environment = { REACT_APP_API_URL = "https://stage-api.codecov.dev", REACT_APP_STRIPE_KEY="pk_test_d3lcWjpwF96baLX9ShZfMcq4", REACT_APP_BASE_URL="https://stage-web.codecov.dev" }

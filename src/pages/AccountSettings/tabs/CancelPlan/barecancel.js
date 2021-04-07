@@ -21,11 +21,13 @@ function useBarecancel(accountDetails, cancelPlan) {
     // update the object of barecancel to account for the change
     // of stripeCustomerId or the cancelPlan callback
     window.barecancel.params = {
+      /* eslint-disable camelcase */
       access_token_id: config.BAREMETRICS_TOKEN, // Cancellation API public key
       customer_oid: stripeCustomerId,
       comment_required: true,
       test_mode: config.NODE_ENV !== 'production',
       callback_send: cancelPlan,
+      /* eslint-enable camelcase */
     }
   }, [stripeCustomerId, cancelPlan])
 }
