@@ -141,6 +141,8 @@ It is possible to impersonate other users for debugging purposes if you are a `C
 
 ### Bundsize
 
+(PR checks temporarirly disabled)
+
 We have a relatively agressive bundlesize check in place to ensure we serve a lean and performance web application.
 
 As we add more features our bundle will grow over time. We will adjust these thresholds on a case by case basis. If you're running into this check; this command will allow us to investigate what is taking space in the final production build.
