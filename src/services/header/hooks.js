@@ -48,12 +48,14 @@ export function useSubNav() {
       to: account.path({ owner: user?.username }),
       useRouter: !account.isExternalLink,
       imageUrl: user.avatarUrl,
+      hideAvatar: true,
     },
     {
       label: signOut.text,
       to: signOut.path(),
       useRouter: !signOut.isExternalLink,
       iconName: 'signOut',
+      hideAvatar: true,
     },
   ].filter(Boolean) // Any undefined's are not included in the final array
 }

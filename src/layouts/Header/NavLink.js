@@ -17,6 +17,7 @@ export function UserNavLink({
   imageUrl,
   iconName,
   className,
+  hideAvatar,
   ...props
 }) {
   return (
@@ -25,12 +26,15 @@ export function UserNavLink({
       className={cs('flex items-center py-2 text-sm', className)}
       {...props}
     >
-      <Avatar
-        className="h-4 w-4 rounded-full"
-        avatarUrl={imageUrl}
-        username={label}
-        alt={label}
-      />
+      {!hideAvatar && (
+        <Avatar
+          className="h-4 w-4 rounded-full"
+          avatarUrl={imageUrl}
+          username={label}
+          alt={label}
+        />
+      )}
+
       {iconName && (
         <Icon
           testId="nav-link-icon"
