@@ -99,7 +99,7 @@ function Dropdown() {
               'first:border-t first:border-solid first:border-gray-900',
               'last:rounded-b-3xl last:pb-3 px-4'
             )}
-            {...{ ...props, imageUrl: avatarUrl }}
+            {...props}
           />
         ))}
       </div>
