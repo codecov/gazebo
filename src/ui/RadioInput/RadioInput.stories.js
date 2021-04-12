@@ -13,6 +13,7 @@ const Template = (args) => {
       <RadioInput ref={register} {...args} value="test1" name="test" />
       <div>
         <input
+          id="secondaryRadio"
           className="mr-2"
           type="radio"
           ref={register}
@@ -20,7 +21,7 @@ const Template = (args) => {
           value="test2"
           name="test"
         />
-        <label>This is a test label</label>
+        <label htmlFor="secondaryRadio">This is a test label</label>
       </div>
       <button className="text-white mt-1 p-2 rounded bg-gray-500" type="submit">
         Submit!
