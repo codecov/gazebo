@@ -152,12 +152,14 @@ describe('useSubNav', () => {
           to: `/account/gh/${user.username}`,
           useRouter: true,
           imageUrl: user.avatarUrl,
+          hideAvatar: true,
         },
         {
           label: 'Sign Out',
           to: `${config.BASE_URL}/logout/gh`,
           useRouter: false,
           iconName: 'signOut',
+          hideAvatar: true,
         },
       ])
     })

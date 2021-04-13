@@ -22,10 +22,9 @@ function Dropdown() {
   const subMenu = useSubNav()
   const { provider } = useParams()
   const avatarUrl =
-    provider !== 'bb' || provider !== 'bitbucket' ? user?.avatarUrl : null
+    provider !== 'bb' && provider !== 'bitbucket' ? user?.avatarUrl : null
 
   useClickAway(dropdownRef, () => setIsOpen(false))
-
   if (!user)
     return (
       <Button
@@ -41,13 +40,13 @@ function Dropdown() {
   return (
     <div
       ref={dropdownRef}
-      className="ml-3 relative border border-solid border-gray-900"
+      className="ml-3 relative w-44 border border-solid border-gray-900"
     >
       <button
         tabIndex="0"
         onClick={() => setIsOpen(!isOpen)}
         className={cs(
-          'flex items-center max-w-xs p-2 text-sm rounded-t-3xl',
+          'flex w-full justify-between items-center p-2 text-sm rounded-t-3xl',
           'border-r border-l border-t border-solid border-gray-900',
           'bg-gray-800 hover:bg-gray-600 focus:outline-none',
           { 'rounded-b-3xl': !isOpen, 'rounded-b-none': isOpen }
@@ -56,13 +55,14 @@ function Dropdown() {
         aria-haspopup="true"
       >
         <span className="sr-only">Open user menu</span>
-
-        <Avatar
-          className="h-7 w-7 rounded-full"
-          username={user.username}
-          avatarUrl={avatarUrl}
-        />
-        <p className="mx-2">{user.username}</p>
+        <div className="flex items-center">
+          <Avatar
+            className="h-7 w-7 rounded-full"
+            username={user.username}
+            avatarUrl={avatarUrl}
+          />
+          <p className="mx-2">{user.username}</p>
+        </div>
         <Icon
           name="rightChevron"
           color="text-white"
