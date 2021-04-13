@@ -18,11 +18,14 @@ const RadioInput = forwardRef(
           id={id}
           ref={ref}
           disabled={disabled}
-          className="mr-2"
+          className="cursor-pointer mr-2"
           type="radio"
           {...props}
         />
-        <label htmlFor={id} className={cs({ 'sr-only': showLabel === false })}>
+        <label
+          htmlFor={id}
+          className={cs('cursor-pointer', { 'sr-only': showLabel === false })}
+        >
           {label}
         </label>
       </div>
