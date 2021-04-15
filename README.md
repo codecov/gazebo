@@ -45,7 +45,7 @@ We are using the [Testing Library](https://testing-library.com/docs/react-testin
 ## Linting
 
 ```bash
-> npm run test
+> npm run lint
 ```
 
 will lint the whole project.
