@@ -27,6 +27,7 @@ function getUserData(
   studentUpdatedAt = new Date('2014-01-01 12:00:00').toISOString()
 ) {
   return {
+    /* eslint-disable camelcase */
     ownerid,
     avatar: avatarUrl,
     service_id: serviceId,
@@ -49,12 +50,13 @@ function getUserData(
     updatedAt: updatestamp,
     student_created_at: studentCreatedAt,
     student_updated_at: studentUpdatedAt,
+    /* eslint-enable camelcase */
   }
 }
 
 function setDataLayer(user) {
   const userWithoutNulls = omitBy(user, isNull)
-  const user_data = user
+  const userData = user
     ? getUserData(
         userWithoutNulls.ownerid,
         userWithoutNulls.avatarUrl,
@@ -84,7 +86,7 @@ function setDataLayer(user) {
       app: {
         version: 'react-app',
       },
-      user: user_data,
+      user: userData,
     },
   }
   window.dataLayer = [layer]
