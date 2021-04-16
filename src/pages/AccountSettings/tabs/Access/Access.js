@@ -35,9 +35,9 @@ function Access({ tokens = [] }) {
         </span>
         <Button>Generate Token</Button>
       </div>
-      <hr className="mt-3 mb-3 border-ds-gray-secondary" />
+      <hr className="mt-3.5 mb-4 border-ds-gray-secondary" />
       {renderTokens()}
-      <span className="mt-5 text-lg font-semibold text-gray-octonary">
+      <span className="mt-8 text-lg font-semibold text-gray-octonary">
         Login Sessions
       </span>
     </div>
