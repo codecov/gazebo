@@ -30,7 +30,7 @@ function Access({ tokens = [] }) {
         </p>
         <Button>Generate Token</Button>
       </div>
-      <hr className="mt-3.5 mb-4 border-ds-gray-secondary" />
+      <hr className="mt-4 mb-4 border-ds-gray-secondary" />
       {renderTokens()}
       <h2 className="mt-8 text-lg font-semibold text-gray-octonary">
         Login Sessions
