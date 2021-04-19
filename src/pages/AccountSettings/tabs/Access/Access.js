@@ -15,15 +15,10 @@ function Access({ tokens = [] }) {
 
   return (
     <div className="flex flex-col">
-      <span className="text-lg font-semibold text-gray-octonary">
-        API Tokens
-      </span>
+      <h2 className="text-lg font-semibold text-gray-octonary">API Tokens</h2>
       <div className="flex justify-between items-center">
-        <span
-          data-testid="tokens-summary"
-          className="text-sm text-gray-octonary"
-        >
-          Tokens created to access Codecov{"'"}s API as an authenticated user{' '}
+        <p data-testid="tokens-summary" className="text-sm text-gray-octonary">
+          Tokens created to access Codecov`s API as an authenticated user{' '}
           <a
             data-testid="tokens-docs-link"
             rel="noreferrer"
@@ -32,14 +27,14 @@ function Access({ tokens = [] }) {
           >
             learn more
           </a>
-        </span>
+        </p>
         <Button>Generate Token</Button>
       </div>
       <hr className="mt-3.5 mb-4 border-ds-gray-secondary" />
       {renderTokens()}
-      <span className="mt-8 text-lg font-semibold text-gray-octonary">
+      <h2 className="mt-8 text-lg font-semibold text-gray-octonary">
         Login Sessions
-      </span>
+      </h2>
     </div>
   )
 }
