@@ -4,10 +4,9 @@ import PropTypes from 'prop-types'
 import { useSessions } from 'services/access'
 import formatDistance from 'date-fns/formatDistance'
 
-function Access({ tokens = [], owner, provider }) {
+function Access({ tokens = [], provider }) {
   const { data } = useSessions({
     provider,
-    owner,
   })
 
   const formatLastSeen = (lastseen) => {
@@ -103,7 +102,6 @@ function Access({ tokens = [], owner, provider }) {
 Access.propTypes = {
   tokens: PropTypes.array,
   provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default Access

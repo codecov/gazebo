@@ -2,7 +2,7 @@ import Api from 'shared/api'
 import { useQuery } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
 
-export function useSessions({ provider, owner }) {
+export function useSessions({ provider }) {
   const query = `
     query MySessions {
         me {
@@ -22,7 +22,7 @@ export function useSessions({ provider, owner }) {
       }
   `
 
-  return useQuery(['sessions', provider, owner], () => {
+  return useQuery(['sessions', provider], () => {
     return Api.graphql({ provider, query }).then((res) => {
       const me = res?.data?.me
       return me
