@@ -1,5 +1,4 @@
 import { renderHook } from '@testing-library/react-hooks'
-
 import { useDateFormatted } from './dates'
 
 describe('useDateFormatted', () => {

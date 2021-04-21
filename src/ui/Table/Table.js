@@ -7,7 +7,7 @@ const TableClasses = {
   headerCell: 'py-2 text-sm font-semibold px-3.5 text-ds-gray-quaternary',
   headerRow: 'text-left border-t border-b border-ds-black-secondary',
   tableRow: 'border-t border-ds-black-secondary',
-  tableCell: 'py-3 px-4 text-ds-gray-octonary text-sm',
+  tableCell: 'py-3 items-center flex px-4 text-ds-gray-octonary text-sm',
 }
 
 function Table({ data = [], columns = [] }) {

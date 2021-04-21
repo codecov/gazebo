@@ -39,7 +39,7 @@ function AccountSettings() {
               <YAMLTab />
             </Route>
             <Route path="/account/:provider/:owner/access/" exact>
-              <AccessTab />
+              <AccessTab provider={provider} />
             </Route>
             <Route path="/account/:provider/:owner/billing/" exact>
               <BillingAndUsersTab provider={provider} owner={owner} />

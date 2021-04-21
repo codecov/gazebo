@@ -1,6 +1,8 @@
-import { render, screen } from '@testing-library/react'
-
 import Access from './Access'
+import { render, screen } from '@testing-library/react'
+import { useSessions } from 'services/access'
+
+jest.mock('services/access')
 
 describe('AccessTab', () => {
   const defaultProps = {
@@ -9,6 +11,11 @@ describe('AccessTab', () => {
   }
 
   function setup(props) {
+    useSessions.mockReturnValue({
+      data: {
+        sessions: [],
+      },
+    })
     const _props = { ...defaultProps, ...props }
     render(<Access {..._props} />)
   }

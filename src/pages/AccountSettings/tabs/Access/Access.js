@@ -1,8 +1,14 @@
 import Button from 'ui/Button'
 import Table from 'ui/Table'
 import PropTypes from 'prop-types'
+import { useSessions } from 'services/access'
+import SessionsTable from './SessionsTable'
 
-function Access({ tokens = [] }) {
+function Access({ tokens = [], provider }) {
+  const { data } = useSessions({
+    provider,
+  })
+
   const renderTokens = () => {
     if (tokens.length <= 0)
       return (
@@ -32,15 +38,19 @@ function Access({ tokens = [] }) {
       </div>
       <hr className="mt-4 mb-4 border-ds-gray-secondary" />
       {renderTokens()}
-      <h2 className="mt-8 text-lg font-semibold text-gray-octonary">
+      <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-octonary">
         Login Sessions
       </h2>
+      <div className="max-w-screen-md">
+        <SessionsTable sessions={data.sessions} />
+      </div>
     </div>
   )
 }
 
 Access.propTypes = {
-  tokens: PropTypes.array.isRequired,
+  tokens: PropTypes.array,
+  provider: PropTypes.string.isRequired,
 }
 
 export default Access
