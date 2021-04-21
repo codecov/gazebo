@@ -1,6 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { subDays } from 'date-fns'
-import { useDateFormatted, formatLastSeen } from './dates'
+import { useDateFormatted } from './dates'
 
 describe('useDateFormatted', () => {
   let hookData
@@ -46,20 +45,6 @@ describe('useDateFormatted', () => {
 
     it('returns the date with the default format', () => {
       expect(hookData.result.current).toBe('July 20th 2020')
-    })
-  })
-})
-
-describe('formatLastSeen', () => {
-  describe('when called with no date', () => {
-    it('returns null', () => {
-      expect(formatLastSeen()).toBe(null)
-    })
-  })
-
-  describe('when called with date', () => {
-    it('returns null', () => {
-      expect(formatLastSeen(subDays(new Date(), 3))).toBe('3 days')
     })
   })
 })
