@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const fs = require('fs')
 
-const enabledIcons = ['chevron-down', 'search', 'check']
+const enabledIcons = ['chevron-down', 'search', 'check', 'x']
 
 console.log('Generating Icons import')
 console.log('Icons that will be generated: ')
