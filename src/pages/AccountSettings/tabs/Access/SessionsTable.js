@@ -3,7 +3,7 @@ import Table from 'ui/Table'
 import PropTypes from 'prop-types'
 import formatDistanceToNow from 'date-fns/formatDistance'
 
-function SessionsTable({ sessions }) {
+function SessionsTable({ sessions, onRevoke }) {
   const dataTable = sessions.map((s) => ({
     col1: (
       <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">
@@ -12,7 +12,11 @@ function SessionsTable({ sessions }) {
     ),
     col2: formatDistanceToNow(new Date(s.lastseen), new Date()),
     col3: s.useragent,
-    col4: <Button variant="danger">Revoke</Button>,
+    col4: (
+      <Button onClick={() => onRevoke(s.sessionid)} variant="danger">
+        Revoke
+      </Button>
+    ),
   }))
 
   const tableColumns = [
@@ -43,6 +47,7 @@ function SessionsTable({ sessions }) {
 
 SessionsTable.propTypes = {
   sessions: PropTypes.array,
+  onRevoke: PropTypes.func,
 }
 
 export default SessionsTable
