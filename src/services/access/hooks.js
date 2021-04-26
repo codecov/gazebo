@@ -27,13 +27,12 @@ export function useSessions({ provider }) {
   return useQuery(['sessions', provider], () => {
     return Api.graphql({ provider, query }).then((res) => {
       const me = res?.data?.me
+      if (!me) return null
       const data = _.groupBy(mapEdges(me.sessions), 'type')
-      return me
-        ? {
-            sessions: data.login || [],
-            tokens: data.api || [],
-          }
-        : null
+      return {
+        sessions: data.login || [],
+        tokens: data.api || [],
+      }
     })
   })
 }
@@ -42,13 +41,15 @@ export function useDeleteSession({ provider }) {
   const queryClient = useQueryClient()
   return useMutation(({ sessionid }) => {
     const query = `
-    mutation {
-        deleteSession(input: { sessionid: ${sessionid}}) {
+    mutation($input: DeleteSessionInput!) {
+        deleteSession(input: $input) {
           error
         }
       }
   `
-    return Api.graphql({ provider, query }).then((res) => {
+    const variables = { input: { sessionid } }
+
+    return Api.graphql({ provider, query, variables }).then((res) => {
       queryClient.invalidateQueries('sessions')
       return res?.data?.deleteSession?.error
     })
@@ -65,7 +66,8 @@ export function useGenerateToken({ provider }) {
           }
         }
     `
-    return Api.graphql({ provider, query }).then((res) => {
+    const variables = { input: { name } }
+    return Api.graphql({ provider, query, variables }).then((res) => {
       queryClient.invalidateQueries('sessions')
       return res?.data?.deleteSession?.error
     })
