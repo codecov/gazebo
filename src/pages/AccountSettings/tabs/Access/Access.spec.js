@@ -1,6 +1,6 @@
 import Access from './Access'
 import { render, screen } from '@testing-library/react'
-import { useSessions } from 'services/access'
+import { useSessions, useDeleteSession } from 'services/access'
 
 jest.mock('services/access')
 
@@ -14,8 +14,10 @@ describe('AccessTab', () => {
     useSessions.mockReturnValue({
       data: {
         sessions: [],
+        tokens: [],
       },
     })
+    useDeleteSession.mockReturnValue({})
     const _props = { ...defaultProps, ...props }
     render(<Access {..._props} />)
   }

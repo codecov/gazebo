@@ -60,7 +60,10 @@ describe('useSessions', () => {
   function setup(dataReturned) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ data: dataReturned }))
+        return res(
+          ctx.status(200),
+          ctx.json({ data: dataReturned, sessions: [] })
+        )
       })
     )
     hookData = renderHook(() => useSessions({ provider }), {
@@ -85,6 +88,7 @@ describe('useSessions', () => {
       })
 
       it('returns null', () => {
+        console.log('heree', hookData.result.current.data)
         expect(hookData.result.current.data).toEqual(null)
       })
     })
@@ -99,9 +103,10 @@ describe('useSessions', () => {
       return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns the user and their orgs', () => {
+    it('returns sessions', () => {
       expect(hookData.result.current.data).toEqual({
         sessions: mapEdges(sessions),
+        tokens: [],
       })
     })
   })
