@@ -11,6 +11,12 @@ function Access({ provider }) {
 
   const { mutate } = useDeleteSession({ provider })
 
+  const handleRevoke = (id) => {
+    if (window.confirm('Are you sure you want to revoke this token?')) {
+      mutate({ sessionid: id })
+    }
+  }
+
   const renderTokens = () => {
     if (data?.tokens?.length <= 0)
       return (
@@ -23,10 +29,7 @@ function Access({ provider }) {
       )
     return (
       <div className="mt-4 max-w-screen-md">
-        <TokensTable
-          onRevoke={(id) => mutate({ sessionid: id })}
-          tokens={data.tokens}
-        />
+        <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
       </div>
     )
   }
