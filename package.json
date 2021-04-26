@@ -89,7 +89,7 @@
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.6",
     "@testing-library/react-hooks": "^5.1.1",
-    "@testing-library/user-event": "^13.1.1",
+    "@testing-library/user-event": "^13.1.5",
     "autoprefixer": "^9.8.6",
     "eslint-config-prettier": "^8.1.0",
     "http-proxy-middleware": "^1.2.0",
