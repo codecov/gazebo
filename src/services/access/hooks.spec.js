@@ -45,6 +45,33 @@ const sessions = {
   ],
 }
 
+const tokens = {
+  edges: [
+    {
+      node: {
+        sessionid: 23,
+        ip: '172.21.0.1',
+        lastseen: '2021-04-19T18:35:05.451136Z',
+        useragent: null,
+        owner: 2,
+        type: 'api',
+        name: 'token1',
+      },
+    },
+    {
+      node: {
+        sessionid: 22,
+        ip: '172.21.0.1',
+        lastseen: '2021-04-19T18:35:05.451136Z',
+        useragent: null,
+        owner: 2,
+        type: 'api',
+        name: 'token2',
+      },
+    },
+  ],
+}
+
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -60,10 +87,7 @@ describe('useSessions', () => {
   function setup(dataReturned) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({ data: dataReturned, sessions: [] })
-        )
+        return res(ctx.status(200), ctx.json({ data: dataReturned }))
       })
     )
     hookData = renderHook(() => useSessions({ provider }), {
@@ -88,7 +112,6 @@ describe('useSessions', () => {
       })
 
       it('returns null', () => {
-        console.log('heree', hookData.result.current.data)
         expect(hookData.result.current.data).toEqual(null)
       })
     })
@@ -97,7 +120,9 @@ describe('useSessions', () => {
     beforeEach(() => {
       setup({
         me: {
-          sessions: sessions,
+          sessions: {
+            edges: [...sessions.edges, ...tokens.edges],
+          },
         },
       })
       return hookData.waitFor(() => hookData.result.current.isSuccess)
@@ -106,7 +131,7 @@ describe('useSessions', () => {
     it('returns sessions', () => {
       expect(hookData.result.current.data).toEqual({
         sessions: mapEdges(sessions),
-        tokens: [],
+        tokens: mapEdges(tokens),
       })
     })
   })

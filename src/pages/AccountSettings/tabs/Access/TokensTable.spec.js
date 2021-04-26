@@ -1,11 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import { subDays } from 'date-fns'
 import TokensTable from './TokensTable'
+import userEvent from '@testing-library/user-event'
+
+const onTokenRevoke = jest.fn(() => true)
 
 describe('TokensTable', () => {
   const defaultProps = {
     provider: 'gh',
     owner: 'codecov',
+    onRevoke: onTokenRevoke,
   }
   function setup(props) {
     const data = {
@@ -37,7 +41,7 @@ describe('TokensTable', () => {
     render(<TokensTable {..._props} />)
   }
 
-  describe('when rendering on base url', () => {
+  describe('when rendering TokensTable', () => {
     beforeEach(() => {
       setup()
     })
@@ -65,6 +69,20 @@ describe('TokensTable', () => {
         const lastFour2 = screen.getByText(/xxxx bbbb/)
         expect(lastFour1).toBeInTheDocument()
         expect(lastFour2).toBeInTheDocument()
+      })
+    })
+
+    describe('when revoking tokens', () => {
+      beforeEach(() => {
+        setup()
+      })
+
+      describe('renders triggers a revoke event', () => {
+        it('triggers revoke on click', () => {
+          userEvent.click(screen.getAllByText(/Revoke/)[0])
+          expect(onTokenRevoke).toBeCalled()
+          expect(onTokenRevoke).toBeCalledWith(32)
+        })
       })
     })
   })
