@@ -39,10 +39,7 @@ function Access({ provider }) {
         Login Sessions
       </h2>
       <div className="max-w-screen-md">
-        <SessionsTable
-          onRevoke={(id) => mutate({ sessionid: id })}
-          sessions={data.sessions}
-        />
+        <SessionsTable onRevoke={handleRevoke} sessions={data.sessions} />
       </div>
     </div>
   )
