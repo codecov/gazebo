@@ -60,11 +60,11 @@ export function useGenerateToken({ provider }) {
   const queryClient = useQueryClient()
   return useMutation(({ name }) => {
     const query = `
-      mutation {
-        createApiToken(input: { name: ${name}}) {
-            error
-          }
+    mutation($input: CreateApiTokenInput!) {
+        createApiToken(input: $input) {
+          error
         }
+      }
     `
     const variables = { input: { name } }
     return Api.graphql({ provider, query, variables }).then((res) => {

@@ -1,8 +1,8 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useSessions } from './hooks'
+import { useSessions, useDeleteSession, useGenerateToken } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { mapEdges } from 'shared/utils/graphql'
 
@@ -132,6 +132,94 @@ describe('useSessions', () => {
       expect(hookData.result.current.data).toEqual({
         sessions: mapEdges(sessions),
         tokens: mapEdges(tokens),
+      })
+    })
+  })
+})
+
+describe('useDeleteSession', () => {
+  let hookData
+
+  function setup(dataReturned) {
+    server.use(
+      rest.post(`/graphql/gh`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json({ data: dataReturned }))
+      })
+    )
+    hookData = renderHook(() => useDeleteSession({ provider }), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup({
+        me: null,
+      })
+    })
+
+    it('is not loading yet', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation', () => {
+      const data = {
+        sessionid: 1,
+      }
+      beforeEach(() => {
+        return act(async () => {
+          hookData.result.current.mutate(data)
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
+        })
+      })
+
+      it('returns success', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
+      })
+    })
+  })
+})
+
+describe('useGenerateToken', () => {
+  let hookData
+
+  function setup(dataReturned) {
+    server.use(
+      rest.post(`/graphql/gh`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json({ data: dataReturned }))
+      })
+    )
+    hookData = renderHook(() => useGenerateToken({ provider }), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup({
+        me: null,
+      })
+    })
+
+    it('is not loading yet', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation', () => {
+      const data = {
+        sessionid: 1,
+      }
+      beforeEach(() => {
+        return act(async () => {
+          hookData.result.current.mutate(data)
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
+        })
+      })
+
+      it('returns success', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
       })
     })
   })
