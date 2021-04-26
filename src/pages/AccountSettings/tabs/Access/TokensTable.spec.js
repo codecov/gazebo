@@ -5,6 +5,31 @@ import userEvent from '@testing-library/user-event'
 
 const onTokenRevoke = jest.fn(() => true)
 
+const data = {
+  tokens: [
+    {
+      sessionid: 32,
+      ip: null,
+      lastseen: subDays(new Date(), 3),
+      useragent: null,
+      owner: 2,
+      type: 'api',
+      name: 'token name 1',
+      lastFour: 'aaaa',
+    },
+    {
+      sessionid: 6,
+      ip: null,
+      lastseen: subDays(new Date(), 1),
+      useragent: null,
+      owner: 2,
+      type: 'api',
+      name: 'token name 2',
+      lastFour: 'bbbb',
+    },
+  ],
+}
+
 describe('TokensTable', () => {
   const defaultProps = {
     provider: 'gh',
@@ -12,38 +37,13 @@ describe('TokensTable', () => {
     onRevoke: onTokenRevoke,
   }
   function setup(props) {
-    const data = {
-      tokens: [
-        {
-          sessionid: 32,
-          ip: null,
-          lastseen: subDays(new Date(), 3),
-          useragent: null,
-          owner: 2,
-          type: 'api',
-          name: 'token name 1',
-          lastFour: 'aaaa',
-        },
-        {
-          sessionid: 6,
-          ip: null,
-          lastseen: subDays(new Date(), 1),
-          useragent: null,
-          owner: 2,
-          type: 'api',
-          name: 'token name 2',
-          lastFour: 'bbbb',
-        },
-      ],
-    }
-
-    const _props = { ...defaultProps, ...props, ...data }
+    const _props = { ...defaultProps, ...props }
     render(<TokensTable {..._props} />)
   }
 
   describe('when rendering TokensTable', () => {
     beforeEach(() => {
-      setup()
+      setup(data)
     })
 
     describe('renders tokens table', () => {
@@ -74,7 +74,7 @@ describe('TokensTable', () => {
 
     describe('when revoking tokens', () => {
       beforeEach(() => {
-        setup()
+        setup(data)
       })
 
       describe('renders triggers a revoke event', () => {
@@ -82,6 +82,19 @@ describe('TokensTable', () => {
           userEvent.click(screen.getAllByText(/Revoke/)[0])
           expect(onTokenRevoke).toBeCalled()
           expect(onTokenRevoke).toBeCalledWith(32)
+        })
+      })
+    })
+
+    describe('render empty table', () => {
+      beforeEach(() => {
+        setup({ tokens: [] })
+      })
+
+      describe('renders triggers a revoke event', () => {
+        it('triggers revoke on click', () => {
+          userEvent.click(screen.getByText(/No tokens created yet/))
+          expect(screen.getByText(/No tokens created yet/)).toBeInTheDocument()
         })
       })
     })

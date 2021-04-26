@@ -17,23 +17,6 @@ function Access({ provider }) {
     }
   }
 
-  const renderTokens = () => {
-    if (data?.tokens?.length <= 0)
-      return (
-        <>
-          <hr className="mt-4 mb-4 border-ds-gray-secondary" />
-          <span className="text-sm text-gray-octonary">
-            No tokens created yet
-          </span>
-        </>
-      )
-    return (
-      <div className="mt-4 max-w-screen-md">
-        <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col">
       <h2 className="text-lg font-semibold text-gray-octonary">API Tokens</h2>
@@ -51,7 +34,7 @@ function Access({ provider }) {
         </p>
         <Button>Generate Token</Button>
       </div>
-      {renderTokens()}
+      <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
       <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-octonary">
         Login Sessions
       </h2>

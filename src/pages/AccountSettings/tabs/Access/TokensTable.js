@@ -41,7 +41,23 @@ function TokensTable({ tokens, onRevoke }) {
     ),
   }))
 
-  return <Table data={dataTable} columns={tableColumns} />
+  return (
+    <>
+      {tokens.length > 0 && (
+        <div className="mt-4 max-w-screen-md">
+          <Table data={dataTable} columns={tableColumns} />
+        </div>
+      )}
+      {tokens <= 0 && (
+        <>
+          <hr className="mt-4 mb-4 border-ds-gray-secondary" />
+          <span className="text-sm text-gray-octonary">
+            No tokens created yet
+          </span>
+        </>
+      )}
+    </>
+  )
 }
 
 TokensTable.propTypes = {
