@@ -1,6 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { subDays } from 'date-fns'
 import SessionsTable from './SessionsTable'
+import userEvent from '@testing-library/user-event'
+
+const onRevoke = jest.fn(() => true)
 
 describe('SessionsTable', () => {
   const defaultProps = {
@@ -36,7 +39,7 @@ describe('SessionsTable', () => {
     render(<SessionsTable {..._props} />)
   }
 
-  describe('when rendering on base url', () => {
+  describe('when rendering SessionsTable', () => {
     beforeEach(() => {
       setup()
     })
@@ -64,6 +67,20 @@ describe('SessionsTable', () => {
         const ip_2 = screen.getByText(/172.23.0.2/)
         expect(ip_1).toBeInTheDocument()
         expect(ip_2).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('when revoking sessions', () => {
+    beforeEach(() => {
+      setup({ onRevoke: onRevoke })
+    })
+
+    describe('renders triggers a revoke event', () => {
+      it('triggers revoke on click', () => {
+        userEvent.click(screen.getAllByText(/Revoke/)[0])
+        expect(onRevoke).toBeCalled()
+        expect(onRevoke).toBeCalledWith(32)
       })
     })
   })

@@ -1,22 +1,20 @@
 import Button from 'ui/Button'
-import Table from 'ui/Table'
 import PropTypes from 'prop-types'
-import { useSessions } from 'services/access'
+import { useSessions, useDeleteSession } from 'services/access'
 import SessionsTable from './SessionsTable'
+import TokensTable from './TokensTable'
 
-function Access({ tokens = [], provider }) {
+function Access({ provider }) {
   const { data } = useSessions({
     provider,
   })
 
-  const renderTokens = () => {
-    if (tokens.length <= 0)
-      return (
-        <span className="text-sm text-gray-octonary">
-          No tokens created yet
-        </span>
-      )
-    return <Table />
+  const { mutate } = useDeleteSession({ provider })
+
+  const handleRevoke = (id) => {
+    if (window.confirm('Are you sure you want to revoke this token?')) {
+      mutate({ sessionid: id })
+    }
   }
 
   return (
@@ -36,20 +34,18 @@ function Access({ tokens = [], provider }) {
         </p>
         <Button>Generate Token</Button>
       </div>
-      <hr className="mt-4 mb-4 border-ds-gray-secondary" />
-      {renderTokens()}
+      <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
       <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-octonary">
         Login Sessions
       </h2>
       <div className="max-w-screen-md">
-        <SessionsTable sessions={data.sessions} />
+        <SessionsTable onRevoke={handleRevoke} sessions={data.sessions} />
       </div>
     </div>
   )
 }
 
 Access.propTypes = {
-  tokens: PropTypes.array,
   provider: PropTypes.string.isRequired,
 }
 
