@@ -11,4 +11,13 @@ describe('AvatarSVG', () => {
     const svg = screen.getByTestId('svg-avatar')
     expect(svg).toBeInTheDocument()
   })
+
+  it('renders the correct letter in the svg', () => {
+    render(<AvatarSVG userName={args.userName} />)
+    const text = screen.getByTestId('svg-avatar-text')
+    const textValue = screen.getByText(args.userName[0])
+
+    expect(text).toBeInTheDocument()
+    expect(textValue).toBeInTheDocument()
+  })
 })
