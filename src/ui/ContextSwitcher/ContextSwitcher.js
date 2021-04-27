@@ -53,7 +53,9 @@ function ContextSwitcher({ activeContext, contexts }) {
       </MenuButton>
       <MenuList>
         <div className={styles.switchContext}>Switch context</div>
-        {contexts.map(renderContext)}
+        <div className="max-h-64 overflow-y-auto">
+          {contexts.map(renderContext)}
+        </div>
       </MenuList>
     </Menu>
   )
