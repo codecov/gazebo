@@ -24,4 +24,16 @@ describe('Avatar', () => {
     expect(img).toHaveAttribute('src', args.user.avatarUrl)
     expect(img).toHaveAttribute('alt', args.user.alt)
   })
+
+  it('renders the avatar SVG if theres an error', () => {
+    jest.spyOn(hooks, 'useImage').mockImplementation(() => ({
+      src: null,
+      error: true,
+    }))
+
+    render(<Avatar user={args.user} />)
+
+    const avatarSVG = screen.getByTestId('svg-avatar')
+    expect(avatarSVG).toBeInTheDocument()
+  })
 })
