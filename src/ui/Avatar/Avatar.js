@@ -14,21 +14,24 @@ function Avatar({ user, bordered }) {
     useSuspense: false,
   })
 
-  const letter = user.userName ? user.userName[0] : '' // TODO default behavior?
+  const letter = user.userName ? user.userName[0] : '?'
   const alt = 'avatar'
 
   return (
     <>
-      {!error && <img src={src} alt={alt} className={classes} />}
-      {error && <AvatarSVG letter={letter} />}
+      {error ? (
+        <AvatarSVG letter={letter} />
+      ) : (
+        <img src={src} alt={alt} className={classes} />
+      )}
     </>
   )
 }
 
 Avatar.propTypes = {
   user: PropTypes.shape({
-    userName: PropTypes.string,
-    avatarUrl: PropTypes.string,
+    userName: PropTypes.string.isRequired,
+    avatarUrl: PropTypes.string.isRequired,
   }),
   bordered: PropTypes.bool,
 }
