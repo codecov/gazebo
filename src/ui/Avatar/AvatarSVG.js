@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-function AvatarSVG({ userName }) {
+function AvatarSVG({ letter }) {
   return (
     <svg
       data-testid="svg-avatar"
@@ -18,14 +18,14 @@ function AvatarSVG({ userName }) {
         fontSize="17px"
         dy=".3em"
       >
-        {userName[0]}
+        {letter}
       </text>
     </svg>
   )
 }
 
 AvatarSVG.propTypes = {
-  userName: PropTypes.string,
+  letter: PropTypes.string,
 }
 
 export default AvatarSVG

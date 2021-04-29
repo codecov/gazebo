@@ -1,21 +1,21 @@
 import { render, screen } from '@testing-library/react'
-import AvatarSVG from '.'
+import AvatarSVG from './AvatarSVG.js'
 
 describe('AvatarSVG', () => {
   const args = {
-    userName: 'pierce-m',
+    letter: 'a',
   }
 
   it('renders an SVG', () => {
-    render(<AvatarSVG userName={args.userName} />)
+    render(<AvatarSVG {...args} />)
     const svg = screen.getByTestId('svg-avatar')
     expect(svg).toBeInTheDocument()
   })
 
   it('renders the correct letter in the svg', () => {
-    render(<AvatarSVG userName={args.userName} />)
+    render(<AvatarSVG {...args} />)
     const text = screen.getByTestId('svg-avatar-text')
-    const textValue = screen.getByText(args.userName[0])
+    const textValue = screen.getByText(args.letter)
 
     expect(text).toBeInTheDocument()
     expect(textValue).toBeInTheDocument()
