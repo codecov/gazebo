@@ -13,6 +13,7 @@ function Header() {
         <TabNavigation
           tabs={[
             { pageName: 'owner', children: 'Repos' },
+            { pageName: 'analytics', children: 'Analytics' },
             { pageName: 'accountAdmin', children: 'Settings' },
           ]}
         />

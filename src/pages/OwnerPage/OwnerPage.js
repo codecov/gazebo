@@ -16,6 +16,7 @@ function OwnerPage() {
         <TabNavigation
           tabs={[
             { pageName: 'ownerInternal', children: 'Repos' },
+            { pageName: 'analytics', children: 'Analytics' },
             { pageName: 'accountAdmin', children: 'Settings' },
           ]}
         />
