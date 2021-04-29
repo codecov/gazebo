@@ -8,7 +8,7 @@ function Header() {
 
   return (
     <>
-      <MyContextSwitcher pageName="ownerInternal" activeContext={owner} />
+      <MyContextSwitcher pageName="owner" activeContext={owner} />
       <div className="my-4">
         <TabNavigation
           tabs={[
