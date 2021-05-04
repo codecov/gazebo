@@ -1,17 +1,22 @@
 import { Fragment } from 'react'
-import Icon from 'old_ui/Icon'
 import AppLink from 'old_ui/AppLink'
 
-import ServerStatus from './ServerStatus'
 import Dropdown from './Dropdown'
-import { MainNavLink } from './NavLink'
-import { useMainNav } from 'services/header'
-import { useNavLinks } from 'services/navigation'
+import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import { useUser } from 'services/user'
+
+// TODO text sizing
+let staticLinkClasses = 'ml-8 font-sans font-semibold text-ds-gray-secondary'
+
+// TODO responsiveness
 
 function DesktopMenu() {
-  const main = useMainNav()
   const { provider } = useNavLinks()
+  const { docs, support, blog } = useStaticNavLinks()
+  const { data: user } = useUser({
+    suspense: false,
+  })
 
   return (
     <>
@@ -25,41 +30,29 @@ function DesktopMenu() {
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </AppLink>
-        <div className="hidden md:block">
-          <div className="ml-10 flex items-center space-x-2">
-            {main.map(({ useRouter, ...props }, i) => {
-              const activeProps = useRouter && {
-                activeClassName: 'opacity-100',
-                exact: true,
-              }
-
-              return (
-                <Fragment key={`desktopMenu-${i}`}>
-                  {i !== 0 && (
-                    <Icon
-                      name="rightChevron"
-                      color="text-white"
-                      className="flex-shrink-0 h-5 w-5"
-                    />
-                  )}
-                  <MainNavLink
-                    className="opacity-50 px-3 py-2 rounded-md hover:opacity-100 transition-opacity"
-                    useRouter={useRouter}
-                    {...activeProps}
-                    {...props}
-                  />
-                </Fragment>
-              )
-            })}
-          </div>
-        </div>
+        <AppLink
+          to={docs.path()}
+          useRouter={false}
+          className={staticLinkClasses}
+        >
+          Docs
+        </AppLink>
+        <AppLink
+          to={support.path()}
+          useRouter={false}
+          className={staticLinkClasses}
+        >
+          Support
+        </AppLink>
+        <AppLink
+          to={blog.path()}
+          useRouter={false}
+          className={staticLinkClasses}
+        >
+          Blog
+        </AppLink>
       </div>
-      <div className="hidden md:block">
-        <div className="ml-4 flex items-center md:ml-6">
-          <ServerStatus />
-          <Dropdown />
-        </div>
-      </div>
+      <Dropdown user={user} />
     </>
   )
 }
