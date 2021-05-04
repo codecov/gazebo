@@ -56,7 +56,7 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
             isLoading={isLoading}
             type="submit"
             variant="primary"
-            disabled={nameValue.length > 0}
+            disabled={nameValue.length < 0}
           >
             Generate Token
           </Button>
