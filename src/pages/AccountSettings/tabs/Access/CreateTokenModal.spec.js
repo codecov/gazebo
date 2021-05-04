@@ -7,7 +7,6 @@ jest.mock('services/access')
 
 describe('CreateTokenModal', () => {
   const setShowModal = jest.fn()
-
   const defaultProps = {
     provider: 'gh',
     showModal: true,
@@ -55,6 +54,7 @@ describe('CreateTokenModal', () => {
     })
 
     it('calls the mutation', async () => {
+      userEvent.click(screen.getByText(/Generate Token/))
       expect(mutate).toHaveBeenCalled()
     })
 
@@ -77,8 +77,9 @@ describe('CreateTokenModal', () => {
       it('renders body', () => {
         const label = screen.getByText(/Personal API token/)
         expect(label).toBeInTheDocument()
-        const copyElements = screen.getAllByText(/copy/)
-        expect(copyElements.length).toBe(3)
+        const copyElements = screen.getByText('copy', { exact: true })
+        expect(copyElements).toBeInTheDocument()
+        userEvent.click(copyElements)
         const warning = screen.getByText(/Make sure to copy your token now/)
         expect(warning).toBeInTheDocument()
       })
