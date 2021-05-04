@@ -14,7 +14,7 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
       name: '',
     },
   })
-  const name = watch('name', false)
+  const nameValue = watch('name', '')
 
   const [token, setToken] = useState(null)
 
@@ -34,7 +34,7 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
   const renderCreateTokenModal = () => (
     <Modal
       isOpen={showModal}
-      onClose={() => setShowModal(false)}
+      onClose={closeModal}
       title="Generate new API access token"
       body={
         <div className="flex flex-col">
@@ -54,10 +54,9 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
           </div>
           <Button
             isLoading={isLoading}
-            data-testid="generate-token-button"
             type="submit"
             variant="primary"
-            disabled={!name || name === ''}
+            disabled={nameValue.length > 0}
           >
             Generate Token
           </Button>

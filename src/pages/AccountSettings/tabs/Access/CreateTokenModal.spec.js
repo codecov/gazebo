@@ -6,9 +6,12 @@ import userEvent from '@testing-library/user-event'
 jest.mock('services/access')
 
 describe('CreateTokenModal', () => {
+  const setShowModal = jest.fn()
+
   const defaultProps = {
     provider: 'gh',
     showModal: true,
+    setShowModal: setShowModal,
   }
   const mutate = jest.fn()
 
@@ -41,16 +44,17 @@ describe('CreateTokenModal', () => {
     })
   })
   describe('renders initial TokenCreatedModal', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup()
 
-      fireEvent.change(document.querySelector('#token-name'), {
+      fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '23' },
       })
+
       userEvent.click(screen.getByText(/Generate Token/))
     })
 
-    it('calls the mutation', () => {
+    it('calls the mutation', async () => {
       expect(mutate).toHaveBeenCalled()
     })
 
@@ -81,6 +85,10 @@ describe('CreateTokenModal', () => {
       it('renders footer', () => {
         const buttons = screen.getAllByRole('button')
         expect(buttons.length).toBe(1)
+      })
+      it('close modals', () => {
+        userEvent.click(screen.getByText('Done'))
+        expect(setShowModal).toHaveBeenCalled()
       })
     })
   })
