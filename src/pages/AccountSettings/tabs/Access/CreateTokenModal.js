@@ -1,7 +1,7 @@
 import Modal from 'ui/Modal'
 import Button from 'ui/Button'
 import PropTypes from 'prop-types'
-import TextInput from 'old_ui/TextInput'
+import TextInput from 'ui/TextInput/TextInput'
 import { useForm } from 'react-hook-form'
 import { useGenerateToken } from 'services/access'
 import { useState } from 'react'
@@ -9,27 +9,26 @@ import Icon from 'ui/Icon'
 import copy from 'copy-to-clipboard'
 
 function CreateTokenModal({ showModal, setShowModal, provider }) {
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, watch } = useForm({
     defaultValues: {
       name: '',
     },
   })
+  const name = watch('name', false)
 
   const [token, setToken] = useState(null)
 
-  const { mutate } = useGenerateToken({ provider })
+  const { mutate, isLoading } = useGenerateToken({ provider })
 
   const submit = ({ name }) => {
-    if (name !== '') {
-      mutate(
-        { name },
-        {
-          onSuccess: ({ data }) => {
-            setToken(data.createApiToken.fullToken)
-          },
-        }
-      )
-    }
+    mutate(
+      { name },
+      {
+        onSuccess: ({ data }) => {
+          setToken(data.createApiToken.fullToken)
+        },
+      }
+    )
   }
 
   const renderCreateTokenModal = () => (
@@ -39,10 +38,8 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
       title="Generate new API access token"
       body={
         <div className="flex flex-col">
-          <label htmlFor="token-name" className="font-semibold">
-            Token Name
-          </label>
           <TextInput
+            label="Token Name"
             id="token-name"
             name="name"
             placeholder="Name"
@@ -52,13 +49,15 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
       }
       footer={
         <form onSubmit={handleSubmit(submit)} className="flex">
-          <Button className="mr-2.5" onClick={() => setShowModal(false)}>
-            Cancel
-          </Button>
+          <div className="mr-2.5">
+            <Button onClick={closeModal}>Cancel</Button>
+          </div>
           <Button
+            isLoading={isLoading}
             data-testid="generate-token-button"
             type="submit"
             variant="primary"
+            disabled={!name || name === ''}
           >
             Generate Token
           </Button>
@@ -75,7 +74,7 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
   const renderTokenCreatedModal = () => (
     <Modal
       isOpen={showModal}
-      onClose={() => setShowModal(false)}
+      onClose={closeModal}
       title="API access token"
       body={
         <div className="flex flex-col">
@@ -87,7 +86,7 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
             <div className="flex items-center ml-2 text-ds-blue-darker">
               <Icon className="fill-current" name="clipboard-copy" />
               <span
-                onClick={() => copy('3423-0-04543523452435')}
+                onClick={() => copy(token)}
                 className="cursor-pointer text-ds-blue-darker text-xs font-semibold"
               >
                 copy
@@ -103,12 +102,7 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
     />
   )
 
-  return (
-    <>
-      {!token && renderCreateTokenModal()}
-      {token && renderTokenCreatedModal()}
-    </>
-  )
+  return <>{token ? renderTokenCreatedModal() : renderCreateTokenModal()}</>
 }
 
 CreateTokenModal.propTypes = {
