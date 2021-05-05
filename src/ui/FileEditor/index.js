@@ -1,1 +1,0 @@
-export { defaut } from './FileEditor'
