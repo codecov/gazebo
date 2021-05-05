@@ -20,6 +20,9 @@ module.exports = {
       },
       colors: {
         ds: {
+          black: {
+            header: '#111B28',
+          },
           pink: {
             DEFAULT: '#F01F7A',
             secondary: '#FF4A89',
