@@ -2,14 +2,12 @@ import { Fragment } from 'react'
 import AppLink from 'old_ui/AppLink'
 
 import Dropdown from './Dropdown'
+import Button from 'ui/Button'
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 
-// TODO text sizing
 let staticLinkClasses = 'ml-8 font-sans font-semibold text-ds-gray-secondary'
-
-// TODO responsiveness
 
 function DesktopMenu() {
   const { provider } = useNavLinks()
@@ -30,29 +28,42 @@ function DesktopMenu() {
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </AppLink>
-        <AppLink
-          to={docs.path()}
-          useRouter={false}
-          className={staticLinkClasses}
-        >
-          Docs
-        </AppLink>
-        <AppLink
-          to={support.path()}
-          useRouter={false}
-          className={staticLinkClasses}
-        >
-          Support
-        </AppLink>
-        <AppLink
-          to={blog.path()}
-          useRouter={false}
-          className={staticLinkClasses}
-        >
-          Blog
-        </AppLink>
+        <div className="hidden md:block">
+          <AppLink
+            to={docs.path()}
+            useRouter={false}
+            className={staticLinkClasses}
+          >
+            Docs
+          </AppLink>
+          <AppLink
+            to={support.path()}
+            useRouter={false}
+            className={staticLinkClasses}
+          >
+            Support
+          </AppLink>
+          <AppLink
+            to={blog.path()}
+            useRouter={false}
+            className={staticLinkClasses}
+          >
+            Blog
+          </AppLink>
+        </div>
       </div>
-      <Dropdown user={user} />
+      {!!user ? (
+        <Dropdown user={user} />
+      ) : (
+        <div className="flex items-center justify-between">
+          <button>Log in</button>
+          <div className="ml-5">
+            <Button className="ml-4 text-ds-gray-secondary" variant={'primary'}>
+              Sign up
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   )
 }
