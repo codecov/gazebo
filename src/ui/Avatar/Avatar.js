@@ -14,7 +14,7 @@ function Avatar({ user, bordered }) {
     useSuspense: false,
   })
 
-  const letter = user.userName ? user.userName[0] : '?'
+  const letter = user.username ? user.username[0] : '?'
   const alt = 'avatar'
 
   return (
@@ -30,7 +30,7 @@ function Avatar({ user, bordered }) {
 
 Avatar.propTypes = {
   user: PropTypes.shape({
-    userName: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
     avatarUrl: PropTypes.string.isRequired,
   }),
   bordered: PropTypes.bool,
