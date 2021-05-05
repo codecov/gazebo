@@ -124,6 +124,11 @@ function useNavLinks() {
 function useStaticNavLinks() {
   return {
     root: { path: () => `${config.MARKETING_BASE_URL}`, isExternalLink: true },
+    signUp: {
+      text: 'Sign Up',
+      path: () => `${config.MARKETING_BASE_URL}/sign-up`,
+      isExternalLink: true,
+    },
     terms: {
       text: 'Terms',
       path: () => `${config.MARKETING_BASE_URL}/terms`,

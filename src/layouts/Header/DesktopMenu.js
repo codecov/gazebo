@@ -10,7 +10,7 @@ import { useUser } from 'services/user'
 let staticLinkClasses = 'ml-8 font-sans font-semibold text-ds-gray-secondary'
 
 function DesktopMenu() {
-  const { provider } = useNavLinks()
+  const { provider, signIn } = useNavLinks()
   const { docs, support, blog } = useStaticNavLinks()
   const { data: user } = useUser({
     suspense: false,
@@ -56,9 +56,13 @@ function DesktopMenu() {
         <Dropdown user={user} />
       ) : (
         <div className="flex items-center justify-between">
-          <button>Log in</button>
+          <a href={signIn.path(provider)}>Log in</a>
           <div className="ml-5">
-            <Button className="ml-4 text-ds-gray-secondary" variant={'primary'}>
+            <Button
+              to={{ pageName: 'signUp' }}
+              className="ml-4 text-ds-gray-secondary"
+              variant={'primary'}
+            >
               Sign up
             </Button>
           </div>
