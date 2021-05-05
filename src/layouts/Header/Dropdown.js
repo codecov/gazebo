@@ -3,14 +3,16 @@ import PropTypes from 'prop-types'
 import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
 import AppLink from 'shared/AppLink'
 import Avatar from 'ui/Avatar'
-
-// TODO arrow-icon
+import Icon from 'ui/Icon'
 
 function Dropdown({ user }) {
   return (
     <Menu>
-      <MenuButton>
+      <MenuButton className="flex items-center justify-between">
         <Avatar user={user} bordered={true} />
+        <div className="ml-1">
+          <Icon size={'sm'} name="dropdown-arrow" variant={'solid'} />
+        </div>
       </MenuButton>
       <MenuList>
         <MenuLink as={AppLink} pageName={'account'}>
@@ -30,7 +32,7 @@ function Dropdown({ user }) {
 Dropdown.propTypes = {
   user: PropTypes.shape({
     avatarUrl: PropTypes.string.isRequired,
-    userName: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
   }),
 }
 
