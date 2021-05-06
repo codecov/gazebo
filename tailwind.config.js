@@ -7,16 +7,13 @@ module.exports = {
     content: ['./src/**/*.js', './src/*.js', './public/*.html'],
   },
   theme: {
-    fontFamily: {
-      body: ['sans-serif', 'Poppins'],
-    },
     container: {
       center: true,
     },
     extend: {
       fontFamily: {
         sans: ['Poppins', ...defaultTheme.fontFamily.sans],
-        mono: ['Source Code Pro', ...defaultTheme.fontFamily.mono],
+        mono: ['"Source Code Pro"', ...defaultTheme.fontFamily.mono],
       },
       colors: {
         ds: {
