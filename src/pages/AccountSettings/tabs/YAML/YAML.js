@@ -1,13 +1,38 @@
+import { useState } from 'react'
 import PropTypes from 'prop-types'
 import YamlEditor from './YamlEditor'
 import Button from 'ui/Button'
+import { useYamlConfig, useUpdateYaml } from 'services/yaml'
 
 function YAML({ owner, provider }) {
-  const value = ``
+  const [isDirty, setDirty] = useState(false)
+  const [newConfig, setNewConfig] = useState('')
+  const { data: yamlConfig, isSuccess } = useYamlConfig({
+    provider,
+    variables: { username: owner },
+  })
+
+  const {
+    // error,
+    // data,
+    isLoading,
+    // isError,
+    // isSuccess: updateSuccess,
+    mutate,
+  } = useUpdateYaml({
+    provider,
+    variables: { username: owner },
+  })
+
   const onChange = (value) => {
-    // dispatch to yaml endpoint
-    console.log(value)
+    setDirty(true)
+    setNewConfig(value)
   }
+
+  const onSubmit = () => {
+    mutate({ username: owner, content: newConfig })
+  }
+
   return (
     <>
       <div className="border-b border-ds-gray-secondary pb-4 mb-4">
@@ -19,6 +44,7 @@ function YAML({ owner, provider }) {
             className="text-ds-blue hover:underline"
             href="https://docs.codecov.io/docs/codecov-yaml"
             target="_blank"
+            rel="noreferrer"
           >
             learn more
           </a>
@@ -26,11 +52,16 @@ function YAML({ owner, provider }) {
       </div>
       <YamlEditor
         placeholder={`All ${owner} repos will inherit this configuration`}
-        value={value}
+        value={isSuccess && yamlConfig}
         onChange={onChange}
       />
       <div className="mt-4 float-right">
-        <Button variant="primary" disabled={false}>
+        <Button
+          variant="primary"
+          disabled={!isDirty}
+          onClick={onSubmit}
+          isLoading={isLoading}
+        >
           Save Changes
         </Button>
       </div>
