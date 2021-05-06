@@ -66,13 +66,13 @@ function useNavLinks() {
       isExternalLink: false,
     },
     yamlTab: {
-      text: 'YAML',
+      text: 'Global YAML',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/yaml`,
       isExternalLink: true,
     },
     internalYamlTab: {
-      text: 'YAML',
+      text: 'Global YAML',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/yaml`,
       isExternalLink: false,

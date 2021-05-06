@@ -5,6 +5,7 @@ import AceEditor from 'react-ace'
 import 'ace-builds/src-noconflict/theme-github'
 import 'ace-builds/src-noconflict/mode-yaml'
 import './codecov-theme.css'
+
 function YamlEditor({ onChange, ...props }) {
   const onChangeFn = (value) => {
     onChange(sanitize(value))
