@@ -19,6 +19,7 @@ function YAML({ owner, provider }) {
             className="text-ds-blue hover:underline"
             href="https://docs.codecov.io/docs/codecov-yaml"
             target="_blank"
+            rel="noreferrer"
           >
             learn more
           </a>
