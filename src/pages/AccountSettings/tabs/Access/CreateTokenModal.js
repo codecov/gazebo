@@ -8,7 +8,7 @@ import { useState } from 'react'
 import Icon from 'ui/Icon'
 import copy from 'copy-to-clipboard'
 
-function CreateTokenModal({ showModal, setShowModal, provider }) {
+function CreateTokenModal({ showModal = true, closeModal, provider }) {
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
       name: '',
@@ -19,7 +19,7 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
   const [token, setToken] = useState(null)
 
   const { mutate, isLoading } = useGenerateToken({ provider })
-
+  console.log('name vale')
   const submit = ({ name }) => {
     mutate(
       { name },
@@ -37,15 +37,13 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
       onClose={closeModal}
       title="Generate new API access token"
       body={
-        <div className="flex flex-col">
-          <TextInput
-            label="Token Name"
-            id="token-name"
-            name="name"
-            placeholder="Name"
-            ref={register}
-          />
-        </div>
+        <TextInput
+          label="Token Name"
+          id="token-name"
+          name="name"
+          placeholder="Name"
+          ref={register}
+        />
       }
       footer={
         <form onSubmit={handleSubmit(submit)} className="flex">
@@ -56,7 +54,7 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
             isLoading={isLoading}
             type="submit"
             variant="primary"
-            disabled={nameValue.length < 0}
+            disabled={nameValue.length === 0}
           >
             Generate Token
           </Button>
@@ -64,11 +62,6 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
       }
     />
   )
-
-  const closeModal = () => {
-    setShowModal(false)
-    setToken(null)
-  }
 
   const renderTokenCreatedModal = () => (
     <Modal
@@ -106,8 +99,8 @@ function CreateTokenModal({ showModal, setShowModal, provider }) {
 
 CreateTokenModal.propTypes = {
   showModal: PropTypes.bool.isRequired,
-  setShowModal: PropTypes.func.isRequired,
   provider: PropTypes.string.isRequired,
+  closeModal: PropTypes.func.isRequired,
 }
 
 export default CreateTokenModal

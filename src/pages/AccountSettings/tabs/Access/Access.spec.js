@@ -74,7 +74,14 @@ describe('AccessTab', () => {
       it('tiggers confirmation Modal', () => {
         userEvent.click(screen.getAllByText(/Revoke/)[0])
         expect(window.confirm).toBeCalled()
-        expect(true).toBe(true)
+      })
+    })
+    describe('on open modal', () => {
+      it('opens create token modal', () => {
+        userEvent.click(screen.getByText(/Generate Token/))
+        expect(
+          screen.getByText('Generate new API access token')
+        ).toBeInTheDocument()
       })
     })
   })

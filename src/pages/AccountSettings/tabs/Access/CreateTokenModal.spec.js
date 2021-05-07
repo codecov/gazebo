@@ -6,11 +6,11 @@ import userEvent from '@testing-library/user-event'
 jest.mock('services/access')
 
 describe('CreateTokenModal', () => {
-  const setShowModal = jest.fn()
+  const closeModal = jest.fn()
   const defaultProps = {
     provider: 'gh',
     showModal: true,
-    setShowModal: setShowModal,
+    closeModal: closeModal,
   }
   const mutate = jest.fn()
 
@@ -50,11 +50,15 @@ describe('CreateTokenModal', () => {
         target: { value: '23' },
       })
 
-      userEvent.click(screen.getByText(/Generate Token/))
+      userEvent.click(screen.getByText('Generate Token'))
     })
 
     it('calls the mutation', async () => {
-      userEvent.click(screen.getByText(/Generate Token/))
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '2333' },
+      })
+      userEvent.click(screen.getByText('Generate Token'))
+
       expect(mutate).toHaveBeenCalled()
     })
 
@@ -89,7 +93,7 @@ describe('CreateTokenModal', () => {
       })
       it('close modals', () => {
         userEvent.click(screen.getByText('Done'))
-        expect(setShowModal).toHaveBeenCalled()
+        expect(closeModal).toHaveBeenCalled()
       })
     })
   })

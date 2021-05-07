@@ -40,7 +40,7 @@ function Access({ provider }) {
         <Button onClick={() => setShowModal(true)}>Generate Token</Button>
         <CreateTokenModal
           provider={provider}
-          setShowModal={setShowModal}
+          closeModal={() => setShowModal(false)}
           showModal={showModal}
         />
       </div>
