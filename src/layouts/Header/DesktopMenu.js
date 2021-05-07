@@ -9,15 +9,38 @@ import { useUser } from 'services/user'
 
 const staticLinkClasses = 'ml-8 font-sans font-semibold text-ds-gray-secondary'
 
-function DesktopMenu() {
+export function LoginPrompt() {
   const { provider, signIn } = useNavLinks()
+  return (
+    <div
+      data-testid="login-prompt"
+      className="flex items-center justify-between"
+    >
+      <a href={signIn.path(provider)}>Log in</a>
+      <div className="ml-5">
+        <Button
+          to={{ pageName: 'signUp' }}
+          className="ml-4 text-ds-gray-secondary"
+          variant={'primary'}
+        >
+          Sign up
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function DesktopMenu() {
   const { data: user } = useUser({
     suspense: false,
   })
 
   return (
     <>
-      <div data-testid="desktop-menu" className="flex items-center">
+      <div
+        data-testid="desktop-menu-static-links"
+        className="flex items-center"
+      >
         <AppLink
           pageName={'provider'}
           tabIndex="0"
@@ -38,22 +61,7 @@ function DesktopMenu() {
           </AppLink>
         </div>
       </div>
-      {!!user ? (
-        <Dropdown user={user} />
-      ) : (
-        <div className="flex items-center justify-between">
-          <a href={signIn.path(provider)}>Log in</a>
-          <div className="ml-5">
-            <Button
-              to={{ pageName: 'signUp' }}
-              className="ml-4 text-ds-gray-secondary"
-              variant={'primary'}
-            >
-              Sign up
-            </Button>
-          </div>
-        </div>
-      )}
+      {!!user ? <Dropdown user={user} /> : <LoginPrompt />}
     </>
   )
 }

@@ -7,25 +7,27 @@ import Icon from 'ui/Icon'
 
 function Dropdown({ user }) {
   return (
-    <Menu>
-      <MenuButton className="flex items-center justify-between">
-        <Avatar user={user} bordered={true} />
-        <div className="ml-1">
-          <Icon size={'sm'} name="dropdown-arrow" variant={'solid'} />
-        </div>
-      </MenuButton>
-      <MenuList>
-        <MenuLink as={AppLink} pageName={'account'}>
-          Settings
-        </MenuLink>
-        <MenuLink as={AppLink} pageName={'provider'}>
-          Organizations
-        </MenuLink>
-        <MenuLink as={AppLink} pageName={'signOut'}>
-          Sign Out
-        </MenuLink>
-      </MenuList>
-    </Menu>
+    <div data-testid="dropdown">
+      <Menu>
+        <MenuButton className="flex items-center justify-between">
+          <Avatar user={user} bordered={true} />
+          <div className="ml-1">
+            <Icon size={'sm'} name="dropdown-arrow" variant={'solid'} />
+          </div>
+        </MenuButton>
+        <MenuList>
+          <MenuLink as={AppLink} pageName={'account'}>
+            Settings
+          </MenuLink>
+          <MenuLink as={AppLink} pageName={'provider'}>
+            Organizations
+          </MenuLink>
+          <MenuLink as={AppLink} pageName={'signOut'}>
+            Sign Out
+          </MenuLink>
+        </MenuList>
+      </Menu>
+    </div>
   )
 }
 
