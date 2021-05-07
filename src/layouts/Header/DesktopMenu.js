@@ -1,17 +1,16 @@
 import { Fragment } from 'react'
-import AppLink from 'old_ui/AppLink'
+import AppLink from 'shared/AppLink'
 
 import Dropdown from './Dropdown'
 import Button from 'ui/Button'
-import { useNavLinks, useStaticNavLinks } from 'services/navigation'
+import { useNavLinks } from 'services/navigation'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 
-let staticLinkClasses = 'ml-8 font-sans font-semibold text-ds-gray-secondary'
+const staticLinkClasses = 'ml-8 font-sans font-semibold text-ds-gray-secondary'
 
 function DesktopMenu() {
   const { provider, signIn } = useNavLinks()
-  const { docs, support, blog } = useStaticNavLinks()
   const { data: user } = useUser({
     suspense: false,
   })
@@ -20,8 +19,7 @@ function DesktopMenu() {
     <>
       <div data-testid="desktop-menu" className="flex items-center">
         <AppLink
-          to={provider.path()}
-          useRouter={!provider.isExternalLink}
+          pageName={'provider'}
           tabIndex="0"
           className="mx-2 md:mx-0 flex-shrink-0"
         >
@@ -29,25 +27,13 @@ function DesktopMenu() {
           <CodecovIcon />
         </AppLink>
         <div className="hidden md:block">
-          <AppLink
-            to={docs.path()}
-            useRouter={false}
-            className={staticLinkClasses}
-          >
+          <AppLink pageName={'docs'} className={staticLinkClasses}>
             Docs
           </AppLink>
-          <AppLink
-            to={support.path()}
-            useRouter={false}
-            className={staticLinkClasses}
-          >
+          <AppLink pageName={'support'} className={staticLinkClasses}>
             Support
           </AppLink>
-          <AppLink
-            to={blog.path()}
-            useRouter={false}
-            className={staticLinkClasses}
-          >
+          <AppLink pageName={'blog'} className={staticLinkClasses}>
             Blog
           </AppLink>
         </div>
