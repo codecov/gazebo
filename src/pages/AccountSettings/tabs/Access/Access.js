@@ -38,11 +38,12 @@ function Access({ provider }) {
           </a>
         </p>
         <Button onClick={() => setShowModal(true)}>Generate Token</Button>
-        <CreateTokenModal
-          provider={provider}
-          closeModal={() => setShowModal(false)}
-          showModal={showModal}
-        />
+        {showModal && (
+          <CreateTokenModal
+            provider={provider}
+            closeModal={() => setShowModal(false)}
+          />
+        )}
       </div>
       <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
       <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-octonary">

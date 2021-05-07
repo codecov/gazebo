@@ -19,7 +19,7 @@ function CreateTokenModal({ showModal = true, closeModal, provider }) {
   const [token, setToken] = useState(null)
 
   const { mutate, isLoading } = useGenerateToken({ provider })
-  console.log('name vale')
+
   const submit = ({ name }) => {
     mutate(
       { name },
