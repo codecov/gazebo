@@ -8,7 +8,7 @@ import { useState } from 'react'
 import Icon from 'ui/Icon'
 import copy from 'copy-to-clipboard'
 
-function CreateTokenModal({ showModal = true, closeModal, provider }) {
+function CreateTokenModal({ closeModal, provider }) {
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
       name: '',
@@ -33,7 +33,7 @@ function CreateTokenModal({ showModal = true, closeModal, provider }) {
 
   const renderCreateTokenModal = () => (
     <Modal
-      isOpen={showModal}
+      isOpen={true}
       onClose={closeModal}
       title="Generate new API access token"
       body={
@@ -65,7 +65,7 @@ function CreateTokenModal({ showModal = true, closeModal, provider }) {
 
   const renderTokenCreatedModal = () => (
     <Modal
-      isOpen={showModal}
+      isOpen={true}
       onClose={closeModal}
       title="API access token"
       body={
