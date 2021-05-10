@@ -82,6 +82,8 @@ describe('AccessTab', () => {
         expect(
           screen.getByText('Generate new API access token')
         ).toBeInTheDocument()
+        userEvent.click(screen.getByText(/Cancel/))
+        expect(screen.getByText('Generate Token')).toBeInTheDocument()
       })
     })
   })
