@@ -37,10 +37,7 @@ function DesktopMenu() {
 
   return (
     <>
-      <div
-        data-testid="desktop-menu-static-links"
-        className="flex items-center"
-      >
+      <div data-testid="desktop-menu" className="flex items-center">
         <AppLink
           pageName={'provider'}
           tabIndex="0"
