@@ -22,7 +22,7 @@ const tableColumns = [
   },
 ]
 
-function RepoTable({ repos = [] }) {
+function RepoTable({ repos }) {
   const dataTable = repos.map((repo) => ({
     col1: <OrgBreadcrumb repo={repo} />,
     col2: formatDistanceToNow(new Date(repo.updatedAt)),
