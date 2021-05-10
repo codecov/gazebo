@@ -1,12 +1,13 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react'
 import cs from 'classnames'
+import PropTypes from 'prop-types'
+
 function OptionButton({ initialStateIndex, options, onChange }) {
   const [active, setActive] = useState(initialStateIndex || 0)
 
   function handleClick(option, index) {
     setActive(index)
-    onChange(option)
+    if (onChange) onChange(option)
   }
 
   return (
@@ -28,6 +29,17 @@ function OptionButton({ initialStateIndex, options, onChange }) {
       ))}
     </div>
   )
+}
+
+OptionButton.propTypes = {
+  initialStateIndex: PropTypes.number,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string,
+    })
+  ),
+  name: PropTypes.string,
+  onChange: PropTypes.func,
 }
 
 export default OptionButton
