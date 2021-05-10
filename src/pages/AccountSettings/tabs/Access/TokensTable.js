@@ -27,7 +27,6 @@ const tableColumns = [
 ]
 
 function TokensTable({ tokens, onRevoke }) {
-  console.log('ree', onRevoke)
   const dataTable = tokens.map((t) => ({
     col1: t.name,
     col2: (
