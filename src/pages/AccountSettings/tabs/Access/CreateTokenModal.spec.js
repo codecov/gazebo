@@ -1,5 +1,5 @@
 import CreateTokenModal from './CreateTokenModal'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { render, screen, act } from 'custom-testing-library'
 import { useGenerateToken } from 'services/access'
 import userEvent from '@testing-library/user-event'
 
@@ -42,29 +42,24 @@ describe('CreateTokenModal', () => {
       expect(buttons.length).toBe(2)
     })
   })
-  describe('renders initial TokenCreatedModal', () => {
-    beforeEach(async () => {
+
+  describe('when the user types a token name and submits', () => {
+    beforeEach(() => {
       setup()
-
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: '23' },
+      userEvent.type(screen.getByRole('textbox'), '2333')
+      return act(() => {
+        userEvent.click(screen.getByText('Generate Token'))
+        return Promise.resolve()
       })
-
-      userEvent.click(screen.getByText('Generate Token'))
     })
 
-    it('calls the mutation', async () => {
-      fireEvent.change(screen.getByRole('textbox'), {
-        target: { value: '2333' },
-      })
-      userEvent.click(screen.getByText('Generate Token'))
-
+    it('calls the mutation', () => {
       expect(mutate).toHaveBeenCalled()
     })
 
     describe('when mutation is successfull', () => {
       beforeEach(() => {
-        act(() => {
+        return act(() => {
           mutate.mock.calls[0][1].onSuccess({
             data: {
               createApiToken: {
@@ -72,18 +67,23 @@ describe('CreateTokenModal', () => {
               },
             },
           })
+          return Promise.resolve()
         })
       })
+
       it('renders title', () => {
         const title = screen.getByText(/API access token/)
         expect(title).toBeInTheDocument()
       })
+
       it('renders body', () => {
         const label = screen.getByText(/Personal API token/)
         expect(label).toBeInTheDocument()
         const copyElements = screen.getByText('copy', { exact: true })
         expect(copyElements).toBeInTheDocument()
+        window.prompt = jest.fn()
         userEvent.click(copyElements)
+        expect(window.prompt).toHaveBeenCalled()
         const warning = screen.getByText(/Make sure to copy your token now/)
         expect(warning).toBeInTheDocument()
       })
