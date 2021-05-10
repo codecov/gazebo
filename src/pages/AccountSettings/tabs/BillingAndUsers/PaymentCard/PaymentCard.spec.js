@@ -15,6 +15,9 @@ const subscriptionDetail = {
       last4: '1234',
     },
   },
+  plan: {
+    value: 'users-pr-inappy',
+  },
   currentPeriodEnd: 1606851492,
   cancelAtPeriodEnd: false,
 }
@@ -64,7 +67,23 @@ describe('PaymentCard', () => {
     })
   })
 
-  describe('when the user doesnt have any cards', () => {
+  describe('when the user doesnt have a card but is on a free plan', () => {
+    beforeEach(() => {
+      setup({
+        ...subscriptionDetail,
+        defaultPaymentMethod: null,
+        plan: {
+          value: 'users-free',
+        },
+      })
+    })
+
+    it('renders nothing', () => {
+      expect(wrapper.container).toBeEmptyDOMElement()
+    })
+  })
+
+  describe('when the user doesnt have any cards but has a paid plan', () => {
     beforeEach(() => {
       setup({
         ...subscriptionDetail,
@@ -72,8 +91,32 @@ describe('PaymentCard', () => {
       })
     })
 
-    it('renders nothing', () => {
-      expect(wrapper.container).toBeEmptyDOMElement()
+    it('renders an error message', () => {
+      expect(
+        screen.getByText(
+          /No credit card set. Please contact support if you think it’s an error or set it yourself./
+        )
+      ).toBeInTheDocument()
+    })
+
+    describe('when the user clicks on Set card', () => {
+      beforeEach(() => {
+        useUpdateCard.mockReturnValue({
+          mutate: () => null,
+          isLoading: false,
+        })
+        userEvent.click(screen.getByRole('button', { name: /set card/i }))
+      })
+
+      it('doesnt render the card anymore', () => {
+        expect(screen.queryByText(/Visa/)).not.toBeInTheDocument()
+      })
+
+      it('renders the form', () => {
+        expect(
+          screen.getByRole('button', { name: /save/i })
+        ).toBeInTheDocument()
+      })
     })
   })
 
