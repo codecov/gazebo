@@ -16,7 +16,11 @@ function Dropdown({ user }) {
           </div>
         </MenuButton>
         <MenuList>
-          <MenuLink as={AppLink} pageName={'account'}>
+          <MenuLink
+            as={AppLink}
+            pageName={'account'}
+            options={{ owner: user.username }}
+          >
             Settings
           </MenuLink>
           <MenuLink as={AppLink} pageName={'provider'}>
