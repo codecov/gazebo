@@ -2,8 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import user from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
-import formatDistance from 'date-fns/formatDistance'
-import parseISO from 'date-fns/parseISO'
 
 import { useUsers, useUpdateUser } from 'services/users'
 import { useAccountDetails, useAutoActivate } from 'services/account'
@@ -42,12 +40,6 @@ const defaultQuery = {
   search: '',
   page: 1,
   pageSize: 50,
-}
-
-function assertFromToday(date) {
-  // Due to last seen/past pr being based on the current date
-  // we need to asset the expected date format is rendered vs hard coding the expect.
-  return formatDistance(parseISO(date), new Date(), 'MM/dd/yyyy')
 }
 
 describe('UserManagerment', () => {
@@ -180,132 +172,6 @@ describe('UserManagerment', () => {
         const studentLabel = screen.getByText(/dazzle@dota.com/)
         expect(studentLabel).toBeInTheDocument()
       })
-    })
-
-    describe('Last seen', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 1,
-            results: [{ username: 'kumar', lastseen: '2021-01-20T05:03:56Z' }],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-      it('renders correct date', () => {
-        const placeholder = screen.getByText(/kumar/)
-        expect(placeholder).toBeInTheDocument()
-
-        const lastSeen = screen.getByText(
-          assertFromToday('2021-01-20T05:03:56Z')
-        )
-        expect(lastSeen).toBeInTheDocument()
-      })
-      it('takes precedence over last PR', () => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 1,
-            results: [
-              {
-                username: 'kumar',
-                lastseen: '2021-01-20T05:03:51Z',
-                latestPrivatePrDate: '2021-03-20T05:02:56Z',
-              },
-            ],
-          },
-        }
-        setup({ mockUseUsersValue })
-
-        const lastSeen = screen.getByText(
-          assertFromToday('2021-03-20T05:02:56Z')
-        )
-        expect(lastSeen).toBeInTheDocument()
-      })
-    })
-
-    describe('No last seen', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 1,
-            results: [{ username: 'kumar' }],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-      it('not rendered', () => {
-        const placeholder = screen.getByText(/kumar/)
-        expect(placeholder).toBeInTheDocument()
-
-        const lastSeen = screen.queryByTestId('last-seen')
-        expect(lastSeen).not.toBeInTheDocument()
-      })
-    })
-
-    describe('Last pr', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 1,
-            results: [
-              {
-                username: 'kumar',
-                latestPrivatePrDate: '2021-01-20T05:03:56Z',
-              },
-            ],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-      it('renders correct date', () => {
-        const placeholder = screen.getByText(/kumar/)
-        expect(placeholder).toBeInTheDocument()
-
-        const lastPr = screen.getByText(assertFromToday('2021-01-20T05:03:56Z'))
-        expect(lastPr).toBeInTheDocument()
-      })
-      it('takes precedence over lastseen', () => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 1,
-            results: [
-              {
-                username: 'kumar',
-                latestPrivatePrDate: '2021-03-20T05:03:56Z',
-                lastseen: '2021-01-20T05:02:56Z',
-              },
-            ],
-          },
-        }
-        setup({ mockUseUsersValue })
-        const lastPr = screen.getByText(assertFromToday('2021-03-20T05:03:56Z'))
-        expect(lastPr).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('No last pr', () => {
-    beforeEach(() => {
-      const mockUseUsersValue = {
-        isSuccess: true,
-        data: {
-          totalPages: 1,
-          results: [{ username: 'kumar' }],
-        },
-      }
-      setup({ mockUseUsersValue })
-    })
-    it('not rendered', () => {
-      const placeholder = screen.getByText(/kumar/)
-      expect(placeholder).toBeInTheDocument()
-
-      const lastPr = screen.queryByTestId('last-pr')
-      expect(lastPr).not.toBeInTheDocument()
     })
   })
 
