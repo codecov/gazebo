@@ -12,7 +12,7 @@ function Dropdown({ user }) {
         <MenuButton className="flex items-center justify-between">
           <Avatar user={user} bordered={true} />
           <div className="ml-1">
-            <Icon size={'sm'} name="dropdown-arrow" variant={'solid'} />
+            <Icon size={'sm'} name="chevron-down" variant={'solid'} />
           </div>
         </MenuButton>
         <MenuList>
