@@ -4,6 +4,8 @@ import OptionButton from 'ui/OptionButton'
 import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
 
+import ResyncButton from './ResyncButton'
+
 const sortItems = [
   'Most recent commit',
   'Least recent commit',
@@ -30,17 +32,20 @@ function OrgControlTable({
   setSearchValue,
 }) {
   return (
-    <div className="flex justify-between h-8 my-4">
+    <div className="flex items-center h-8 my-4">
       <div className="flex">
         <div className="w-52 mr-2">
           <Select value={sortItem} items={sortItems} onChange={setSortItem} />
         </div>
-        <div className="w-52">
+        <div className="w-52 mr-2">
           <TextInput
             placeholder="Search"
             onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
+      </div>
+      <div className="mr-auto">
+        <ResyncButton refetch={console.log} />
       </div>
       <OptionButton
         active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
