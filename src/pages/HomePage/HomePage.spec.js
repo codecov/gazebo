@@ -9,6 +9,7 @@ jest.mock('react-router-dom', () => ({
   }),
 }))
 jest.mock('services/repos/hooks')
+jest.mock('./ResyncButton', () => () => 'ResyncButton')
 
 describe('HomePage', () => {
   function setup() {
