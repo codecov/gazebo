@@ -124,7 +124,7 @@ export function useResyncUser(onSyncFinish = noop) {
   // or if GraphQL returned true for me.isSyncingWithGitProvider
   const isSyncing = mutationData.isLoading || isSyncingInCache
 
-  // useQuery will automat
+  // useQuery will automatically feed the so we don't need to care about return
   useQuery(keyCache, fetchIsSyncing, {
     suspense: false,
     useErrorBoundary: false,
