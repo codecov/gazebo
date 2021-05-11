@@ -7,7 +7,7 @@ import { useNavLinks } from 'services/navigation'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 
-const staticLinkClasses = 'ml-8 font-sans font-semibold text-ds-gray-secondary'
+const staticLinkClasses = 'ml-7 font-sans font-semibold text-ds-gray-secondary'
 
 export function LoginPrompt() {
   const { provider, signIn } = useNavLinks()
@@ -17,10 +17,10 @@ export function LoginPrompt() {
       className="flex items-center justify-between"
     >
       <a href={signIn.path(provider)}>Log in</a>
-      <div className="ml-5">
+      <div className="ml-7">
         <Button
           to={{ pageName: 'signUp' }}
-          className="ml-4 text-ds-gray-secondary"
+          className="text-ds-gray-secondary"
           variant={'primary'}
         >
           Sign up
