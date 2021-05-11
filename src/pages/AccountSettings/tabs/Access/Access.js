@@ -3,11 +3,16 @@ import PropTypes from 'prop-types'
 import { useSessions, useDeleteSession } from 'services/access'
 import SessionsTable from './SessionsTable'
 import TokensTable from './TokensTable'
+import CreateTokenModal from './CreateTokenModal'
+
+import { useState } from 'react'
 
 function Access({ provider }) {
   const { data } = useSessions({
     provider,
   })
+
+  const [showModal, setShowModal] = useState(false)
 
   const { mutate } = useDeleteSession({ provider })
 
@@ -32,7 +37,13 @@ function Access({ provider }) {
             learn more
           </a>
         </p>
-        <Button>Generate Token</Button>
+        <Button onClick={() => setShowModal(true)}>Generate Token</Button>
+        {showModal && (
+          <CreateTokenModal
+            provider={provider}
+            closeModal={() => setShowModal(false)}
+          />
+        )}
       </div>
       <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
       <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-octonary">
