@@ -1,10 +1,15 @@
-import { rest } from 'msw'
+import { rest, graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { useUser, useUpdateProfile, useMyContexts } from './hooks'
+import {
+  useUser,
+  useUpdateProfile,
+  useMyContexts,
+  useResyncUser,
+} from './hooks'
 
 const user = {
   username: 'TerrySmithDC',
@@ -184,6 +189,103 @@ describe('useMyContexts', () => {
         currentUser: user,
         myOrganizations: [org1, org2],
       })
+    })
+  })
+})
+
+describe('useResyncUser', () => {
+  let hookData
+  const onSyncFinish = jest.fn()
+
+  let syncStatus = false
+
+  function setup() {
+    server.use(
+      graphql.query('IsSyncing', (req, res, ctx) => {
+        return res(
+          ctx.data({
+            me: {
+              isSyncing: syncStatus,
+            },
+          })
+        )
+      }),
+      graphql.mutation('SyncData', (req, res, ctx) => {
+        syncStatus = true
+        return res(
+          ctx.data({
+            syncWithGitProvider: {
+              me: {
+                isSyncing: syncStatus,
+              },
+            },
+          })
+        )
+      })
+    )
+    hookData = renderHook(() => useResyncUser(onSyncFinish), { wrapper })
+  }
+
+  describe('when the hook is called and the syncing is not in progress', () => {
+    beforeEach(() => {
+      syncStatus = false
+      setup()
+    })
+
+    it('returns syncing false', () => {
+      expect(hookData.result.current.isSyncing).toBeFalsy()
+    })
+  })
+
+  describe('when the user trigger a sync', () => {
+    beforeEach(() => {
+      syncStatus = false
+      setup()
+      return act(() => {
+        hookData.result.current.triggerResync()
+        return Promise.resolve()
+      })
+    })
+
+    it('returns syncing true', () => {
+      expect(hookData.result.current.isSyncing).toBeTruthy()
+    })
+  })
+
+  describe('when the hook is called and the syncing is in progress', () => {
+    beforeEach(() => {
+      syncStatus = true
+      setup()
+      return hookData.waitFor(() => hookData.result.current.isSyncing)
+    })
+
+    it('returns syncing true', () => {
+      expect(hookData.result.current.isSyncing).toBeTruthy()
+    })
+  })
+
+  describe('when a sync finises', () => {
+    beforeEach(async () => {
+      syncStatus = true
+      setup()
+      await hookData.waitFor(() => hookData.result.current.isSyncing)
+      // sync on server finishes
+      syncStatus = false
+      // and wait for the request to get the new isSyncing
+      await hookData.waitFor(() => !hookData.result.current.isSyncing, {
+        // we need to make a longer timeout because the polling of the
+        // isSyncing is 2000ms; and we can't use fake timers as it
+        // doesn't work well with waitFor()
+        timeout: 3000,
+      })
+    })
+
+    it('returns syncing false', () => {
+      expect(hookData.result.current.isSyncing).toBeFalsy()
+    })
+
+    it('calls onSyncFinish', () => {
+      expect(onSyncFinish).toHaveBeenCalled()
     })
   })
 })
