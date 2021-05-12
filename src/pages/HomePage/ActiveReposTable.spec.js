@@ -33,7 +33,6 @@ describe('ActiveReposTable', () => {
           },
           name: 'Repo name 3',
           updatedAt: subDays(new Date(), 5),
-          coverage: 0,
           active: true,
         },
       ],
@@ -48,7 +47,7 @@ describe('ActiveReposTable', () => {
       setup()
     })
 
-    describe('renders sessions first column', () => {
+    describe('renders table', () => {
       it('renders table repo name', () => {
         const buttons = screen.getAllByText(/Repo name/)
         expect(buttons.length).toBe(3)
@@ -64,7 +63,11 @@ describe('ActiveReposTable', () => {
       it('renders third column', () => {
         const bars = screen.getAllByTestId('org-progress-bar')
 
-        expect(bars.length).toBe(3)
+        expect(bars.length).toBe(2)
+      })
+      it('renders handles null coverage', () => {
+        const noData = screen.getByText(/No data available/)
+        expect(noData).toBeInTheDocument()
       })
     })
   })
