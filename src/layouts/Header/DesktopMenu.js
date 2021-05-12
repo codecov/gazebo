@@ -46,17 +46,15 @@ function DesktopMenu() {
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </AppLink>
-        <div className="hidden md:block">
-          <AppLink pageName={'docs'} className={staticLinkClasses}>
-            Docs
-          </AppLink>
-          <AppLink pageName={'support'} className={staticLinkClasses}>
-            Support
-          </AppLink>
-          <AppLink pageName={'blog'} className={staticLinkClasses}>
-            Blog
-          </AppLink>
-        </div>
+        <AppLink pageName={'docs'} className={staticLinkClasses}>
+          Docs
+        </AppLink>
+        <AppLink pageName={'support'} className={staticLinkClasses}>
+          Support
+        </AppLink>
+        <AppLink pageName={'blog'} className={staticLinkClasses}>
+          Blog
+        </AppLink>
       </div>
       {!!user ? <Dropdown user={user} /> : <LoginPrompt />}
     </>
