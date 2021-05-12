@@ -1,45 +1,39 @@
-import { useState } from 'react'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-function OptionButton({ initialStateIndex, options, onChange }) {
-  const [active, setActive] = useState(initialStateIndex || 0)
-
-  function handleClick(option, index) {
-    setActive(index)
-    if (onChange) onChange(option)
-  }
-
+function OptionButton({ active, options, onChange }) {
   return (
     <div className="rounded border inline-flex">
       {options.map((o, index) => (
-        <div
+        <option
           className={cs('py-1 px-2 text-sm', {
-            'bg-ds-blue-darker': active === index,
-            'text-white': active === index,
-            'font-semibold': active === index,
+            'bg-ds-blue-darker text-white font-semibold':
+              active?.text === o.text,
             'rounded-l': index === 0,
             'rounded-r': index === options.length - 1,
+            'cursor-pointer': active?.text !== o.text,
           })}
-          onClick={() => handleClick(o, index)}
+          onClick={() => onChange(o)}
           key={index}
         >
           {o.text}
-        </div>
+        </option>
       ))}
     </div>
   )
 }
 
 OptionButton.propTypes = {
-  initialStateIndex: PropTypes.number,
+  active: PropTypes.shape({
+    text: PropTypes.string,
+  }),
   options: PropTypes.arrayOf(
     PropTypes.shape({
       text: PropTypes.string,
     })
   ),
   name: PropTypes.string,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
 }
 
 export default OptionButton

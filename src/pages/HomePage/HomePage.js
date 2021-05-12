@@ -15,7 +15,6 @@ function HomePage() {
         pageNameCurrentUser="providerInternal"
       />
       <OptionButton
-        initialStateIndex={1}
         onChange={(option) => {}}
         options={[{ text: 'Enabled' }, { text: 'Not yet setup' }]}
       />
