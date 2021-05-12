@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { subDays } from 'date-fns'
-import OrgsTable from './OrgsTable'
+import ActiveReposTable from './ActiveReposTable'
 
-describe('OrgsTable', () => {
+describe('ActiveReposTable', () => {
   function setup(props) {
     const data = {
       repos: [
@@ -14,6 +14,7 @@ describe('OrgsTable', () => {
           name: 'Repo name 1',
           updatedAt: subDays(new Date(), 3),
           coverage: 43,
+          active: true,
         },
         {
           private: true,
@@ -23,6 +24,7 @@ describe('OrgsTable', () => {
           name: 'Repo name 2',
           updatedAt: subDays(new Date(), 2),
           coverage: 100,
+          active: true,
         },
         {
           private: true,
@@ -31,13 +33,13 @@ describe('OrgsTable', () => {
           },
           name: 'Repo name 3',
           updatedAt: subDays(new Date(), 5),
-          coverage: 0,
+          active: true,
         },
       ],
     }
 
     const _props = { ...props, ...data }
-    render(<OrgsTable {..._props} />)
+    render(<ActiveReposTable {..._props} />)
   }
 
   describe('when rendering OrgsTable', () => {
@@ -45,7 +47,7 @@ describe('OrgsTable', () => {
       setup()
     })
 
-    describe('renders sessions first column', () => {
+    describe('renders table', () => {
       it('renders table repo name', () => {
         const buttons = screen.getAllByText(/Repo name/)
         expect(buttons.length).toBe(3)
@@ -61,7 +63,11 @@ describe('OrgsTable', () => {
       it('renders third column', () => {
         const bars = screen.getAllByTestId('org-progress-bar')
 
-        expect(bars.length).toBe(3)
+        expect(bars.length).toBe(2)
+      })
+      it('renders handles null coverage', () => {
+        const noData = screen.getByText(/No data available/)
+        expect(noData).toBeInTheDocument()
       })
     })
   })
