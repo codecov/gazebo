@@ -14,7 +14,7 @@ export function LoginPrompt() {
   return (
     <div
       data-testid="login-prompt"
-      className="flex items-center justify-between"
+      className="flex items-center justify-between mx-2 md:mx-0"
     >
       <a href={signIn.path(provider)}>Log in</a>
       <div className="ml-7">
@@ -56,7 +56,13 @@ function DesktopMenu() {
           Blog
         </AppLink>
       </div>
-      {!!user ? <Dropdown user={user} /> : <LoginPrompt />}
+      {!!user ? (
+        <div className="mx-2 md:mx-0">
+          <Dropdown user={user} />
+        </div>
+      ) : (
+        <LoginPrompt />
+      )}
     </>
   )
 }

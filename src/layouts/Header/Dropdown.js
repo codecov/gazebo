@@ -11,7 +11,7 @@ function Dropdown({ user }) {
       <Menu>
         <MenuButton className="flex items-center justify-between">
           <Avatar user={user} bordered={true} />
-          <div className="ml-1">
+          <div className="ml-1" aria-hidden="true">
             <Icon size={'sm'} name="chevron-down" variant={'solid'} />
           </div>
         </MenuButton>
