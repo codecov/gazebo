@@ -28,13 +28,17 @@ export function useRepos({ provider }) {
       }
   `
 
+  function filterRepos(repos) {
+    return {
+      active: repos.filter((r) => r.active === true),
+      inactive: repos.filter((r) => r.active !== true),
+    }
+  }
+
   return useQuery(['repos', provider], () => {
     return Api.graphql({ provider, query }).then((res) => {
-      const data = res?.data
-      console.log('dataaa', data)
-      return {
-        repos: mapEdges(data.me.viewableRepositories),
-      }
+      const me = res?.data?.me
+      return filterRepos(mapEdges(me.viewableRepositories))
     })
   })
 }

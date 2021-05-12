@@ -14,7 +14,8 @@ describe('HomePage', () => {
   function setup() {
     useRepos.mockReturnValue({
       data: {
-        repos: [],
+        active: [],
+        ionactive: [],
       },
     })
 
@@ -27,7 +28,7 @@ describe('HomePage', () => {
     })
 
     it('renders the children', () => {
-      expect(screen.getByText(/SHOW ALL THE REPOS/)).toBeInTheDocument()
+      expect(screen.getByText(/Enabled/)).toBeInTheDocument()
     })
   })
 })

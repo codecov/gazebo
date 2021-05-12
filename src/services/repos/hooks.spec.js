@@ -28,7 +28,7 @@ const data = {
         {
           node: {
             name: 'codecov-bash',
-            active: null,
+            active: true,
             private: false,
             coverage: null,
             updatedAt: '2021-04-22T14:09:39.822872+00:00',
@@ -84,8 +84,10 @@ describe('useRepos', () => {
     })
 
     it('returns sessions', () => {
+      const _data = mapEdges(data.me.viewableRepositories)
       expect(hookData.result.current.data).toEqual({
-        repos: mapEdges(data.me.viewableRepositories),
+        active: _data.filter((d) => d.active === true),
+        inactive: _data.filter((d) => d.active !== true),
       })
     })
   })
