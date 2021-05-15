@@ -83,7 +83,7 @@ describe('useRepos', () => {
       return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns sessions', () => {
+    it('returns active repositories', () => {
       const _data = mapEdges(data.me.viewableRepositories)
       expect(hookData.result.current.data).toEqual({
         active: _data.filter((d) => d.active === true),

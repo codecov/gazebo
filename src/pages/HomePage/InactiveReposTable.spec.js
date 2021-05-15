@@ -48,7 +48,7 @@ describe('InactiveReposTable', () => {
       setup()
     })
 
-    describe('renders sessions first column', () => {
+    describe('renders first column', () => {
       it('renders table repo name', () => {
         const buttons = screen.getAllByText(/Repo name/)
         expect(buttons.length).toBe(3)
