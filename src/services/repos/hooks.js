@@ -28,7 +28,7 @@ export function useRepos({ provider, active, term }) {
       }
   `
 
-  const variables = { filters: { active: active.text === 'Enabled', term } }
+  const variables = { filters: { active, term } }
 
   return useQuery(['repos', provider, active, term], () => {
     return Api.graphql({ provider, query, variables }).then((res) => {
