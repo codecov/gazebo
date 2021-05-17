@@ -62,7 +62,7 @@ OrgControlTable.propTypes = {
   sortItem: PropTypes.string.isRequired,
   setSortItem: PropTypes.func.isRequired,
   active: PropTypes.bool.isRequired,
-  setActive: PropTypes.bool.isRequired,
+  setActive: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
 }
 
