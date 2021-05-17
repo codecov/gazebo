@@ -6,11 +6,7 @@ export function useRepos({ provider, active, term }) {
   const query = `
     query MyRepos($filters: RepositorySetFilters!) {
         me {
-          user {
-            username
-          },
           viewableRepositories(filters: $filters) {
-            totalCount
             edges {
               node {
                 name
@@ -19,7 +15,7 @@ export function useRepos({ provider, active, term }) {
                 coverage
                 updatedAt
                 author {
-                    username
+                  username
                 }
               }
             }
