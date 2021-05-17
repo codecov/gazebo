@@ -242,8 +242,8 @@ describe('useResyncUser', () => {
       syncStatus = false
       setup()
       return act(() => {
-        hookData.result.current.triggerResync()
-        return Promise.resolve()
+        // triggerResync returns a promise on which we can await
+        return hookData.result.current.triggerResync()
       })
     })
 

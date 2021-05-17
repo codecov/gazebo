@@ -117,6 +117,7 @@ export function useResyncUser(onSyncFinish = noop) {
 
   // when mutation, we set the isSyncing of the cache the return of the
   const mutationData = useMutation(() => triggerSync(provider), {
+    useErrorBoundary: false,
     onSuccess: (data) => queryClient.setQueryData(keyCache, data),
   })
 
@@ -142,6 +143,6 @@ export function useResyncUser(onSyncFinish = noop) {
 
   return {
     isSyncing,
-    triggerResync: mutationData.mutate,
+    triggerResync: mutationData.mutateAsync,
   }
 }
