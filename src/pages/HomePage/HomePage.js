@@ -1,13 +1,9 @@
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
-import ActiveReposTable from './ActiveReposTable'
-import InactiveReposTable from './InactiveReposTable'
-import { useRepos } from 'services/repos/hooks'
-import { useParams } from 'react-router-dom'
-import OptionButton from 'ui/OptionButton'
-import { useState } from 'react'
-import TextInput from 'ui/TextInput/TextInput'
-import Select from 'old_ui/Select'
-import { debounce } from 'lodash'
+import { useState, Suspense } from 'react'
+
+import OrgControlTable from './OrgControlTable'
+import ReposTable from './ReposTable'
+import Spinner from 'ui/Spinner'
 
 const sortItems = [
   'Most recent commit',
@@ -18,25 +14,16 @@ const sortItems = [
   'Name [Z-A]',
 ]
 
-const optionButtonOptions = [
-  {
-    text: 'Enabled',
-  },
-  {
-    text: 'Not yet setup',
-  },
-]
-
 function HomePage() {
-  const { provider } = useParams()
-  const [activeTable, setActiveTable] = useState(optionButtonOptions[0])
+  const [active, setActive] = useState(true)
   const [sortItem, setSortItem] = useState(sortItems[0])
   const [searchValue, setSearchValue] = useState('')
-  const { data } = useRepos({
-    provider,
-    active: activeTable,
-    term: searchValue,
-  })
+
+  const loadingState = (
+    <div className="flex justify-center py-8">
+      <Spinner />
+    </div>
+  )
 
   return (
     <>
@@ -44,34 +31,16 @@ function HomePage() {
         pageName="ownerInternal"
         pageNameCurrentUser="providerInternal"
       />
-      <div className="flex justify-between h-8 my-4">
-        <div className="flex">
-          <div className="w-52 mr-2">
-            <Select
-              className="h-8"
-              value={sortItem}
-              items={sortItems}
-              onChange={setSortItem}
-            />
-          </div>
-          <div className="w-52">
-            <TextInput
-              onChange={debounce((e) => setSearchValue(e.target.value))}
-            />
-          </div>
-        </div>
-        <OptionButton
-          active={activeTable}
-          onChange={(option) => setActiveTable(option)}
-          options={optionButtonOptions}
-        />
-      </div>
-
-      {activeTable.text === 'Enabled' ? (
-        <ActiveReposTable repos={data.repos} />
-      ) : (
-        <InactiveReposTable repos={data.repos} />
-      )}
+      <OrgControlTable
+        sortItem={sortItem}
+        setSortItem={setSortItem}
+        active={active}
+        setActive={setActive}
+        setSearchValue={setSearchValue}
+      />
+      <Suspense fallback={loadingState}>
+        <ReposTable active={active} searchValue={searchValue} />
+      </Suspense>
     </>
   )
 }
