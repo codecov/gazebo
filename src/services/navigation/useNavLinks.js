@@ -38,6 +38,11 @@ function useNavLinks() {
         `/${provider}/${owner}`,
       isExternalLink: false,
     },
+    analytics: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/analytics/${provider}/${owner}`,
+      isExternalLink: true,
+    },
     repo: {
       path: (
         { provider = p, owner = o, repo = r } = {

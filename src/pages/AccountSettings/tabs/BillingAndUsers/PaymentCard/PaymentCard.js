@@ -1,57 +1,26 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
-import { format, fromUnixTime } from 'date-fns'
 
 import Card from 'old_ui/Card'
 import Button from 'old_ui/Button'
 import { subscriptionDetailType } from 'services/account'
 
-import amexLogo from './assets/amex.png'
-import discoverLogo from './assets/discover.jpg'
-import mastercardLogo from './assets/mastercard.png'
-import visaLogo from './assets/visa.png'
 import CreditCardForm from './CreditCardForm'
+import CardInformation from './CardInformation'
 
-const cardBrand = {
-  amex: {
-    logo: amexLogo,
-    name: 'American Express',
-  },
-  discover: {
-    logo: discoverLogo,
-    name: 'Discover',
-  },
-  mastercard: {
-    logo: mastercardLogo,
-    name: 'MasterCard',
-  },
-  visa: {
-    logo: visaLogo,
-    name: 'Visa',
-  },
-  fallback: {
-    logo: visaLogo,
-    name: 'Credit card',
-  },
-}
-
-function getNextBilling(subscriptionDetail) {
-  const isCancelled = subscriptionDetail.cancelAtPeriodEnd
-
-  if (isCancelled) return null
-
-  const periodEnd = fromUnixTime(subscriptionDetail.currentPeriodEnd)
-  return format(periodEnd, 'do MMMM, yyyy')
-}
+const proPlans = [
+  'users-pr-inappm',
+  'users-pr-inappy',
+  'users-inappm',
+  'users-inappy',
+]
 
 function PaymentCard({ subscriptionDetail, provider, owner }) {
-  const card = subscriptionDetail?.defaultPaymentMethod?.card
+  const isPayingCustomer = proPlans.includes(subscriptionDetail?.plan?.value)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const card = subscriptionDetail?.defaultPaymentMethod?.card
 
-  if (!card) return null
-
-  const typeCard = cardBrand[card.brand] ?? cardBrand.fallback
-  const nextBilling = getNextBilling(subscriptionDetail)
+  if (!card && !isPayingCustomer) return null
 
   return (
     <Card className="p-6 mb-4">
@@ -62,38 +31,19 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
           owner={owner}
           closeForm={() => setIsFormOpen(false)}
         />
+      ) : card ? (
+        <CardInformation
+          card={card}
+          subscriptionDetail={subscriptionDetail}
+          openForm={() => setIsFormOpen(true)}
+        />
       ) : (
         <>
-          <div className="flex mt-6">
-            <div className="w-12 mr-6">
-              <img
-                className="w-full"
-                alt="credit card logo"
-                src={typeCard.logo}
-              />
-            </div>
-            <div>
-              <b className="tracking-widest">
-                ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card.last4}
-              </b>
-              <p className="text-gray-500">
-                {typeCard.name} - Expires {card.expMonth}/{card.expYear}
-              </p>
-            </div>
-          </div>
-          {nextBilling && (
-            <p className="text-gray-500 my-4 text-sm">
-              Next billing on{' '}
-              <span className="text-gray-900">{nextBilling}</span>.
-            </p>
-          )}
-          <Button
-            color="pink"
-            variant="outline"
-            onClick={() => setIsFormOpen(true)}
-          >
-            Edit card
-          </Button>
+          <p className="my-4 text-gray-500">
+            No credit card set. Please contact support if you think it’s an
+            error or set it yourself.
+          </p>
+          <Button onClick={() => setIsFormOpen(true)}>Set card</Button>
         </>
       )}
     </Card>
