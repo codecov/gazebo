@@ -97,7 +97,7 @@
     "husky": "^6.0.0",
     "jest-junit": "^12.0.0",
     "lint-staged": "^11.0.0",
-    "msw": "^0.27.2",
+    "msw": "^0.28.2",
     "postcss": "^7.0.35",
     "postcss-font-magician": "2.3.1",
     "prettier": "^2.3.0",

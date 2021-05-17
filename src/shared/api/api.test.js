@@ -29,7 +29,7 @@ const userData = {
 
 const server = setupServer(
   rest.get('/internal/test', (req, res, ctx) => {
-    const hasToken = Boolean(req.headers.map['authorization'])
+    const hasToken = Boolean(req.headers.get('authorization'))
     return res(ctx.status(hasToken ? 200 : 401), ctx.json(rawUserData))
   }),
   rest.post('/internal/test', (req, res, ctx) => {
