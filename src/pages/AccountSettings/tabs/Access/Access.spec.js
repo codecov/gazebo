@@ -1,6 +1,6 @@
 import Access from './Access'
 import { subDays } from 'date-fns'
-import { render, screen } from '@testing-library/react'
+import { render, screen } from 'custom-testing-library'
 import {
   useSessions,
   useDeleteSession,

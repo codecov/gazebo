@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 
 import OptionButton from 'ui/OptionButton'
-import TextInput from 'ui/TextInput/TextInput'
-import Select from 'old_ui/Select'
+import Select from 'ui/Select'
+import TextInput from 'ui/TextInput'
 
 const sortItems = [
   'Most recent commit',
@@ -33,12 +33,7 @@ function OrgControlTable({
     <div className="flex justify-between h-8 my-4">
       <div className="flex">
         <div className="w-52 mr-2">
-          <Select
-            className="h-8"
-            value={sortItem}
-            items={sortItems}
-            onChange={setSortItem}
-          />
+          <Select value={sortItem} items={sortItems} onChange={setSortItem} />
         </div>
         <div className="w-52">
           <TextInput

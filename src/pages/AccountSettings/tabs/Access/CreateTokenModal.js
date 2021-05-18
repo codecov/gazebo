@@ -98,7 +98,6 @@ function CreateTokenModal({ closeModal, provider }) {
 }
 
 CreateTokenModal.propTypes = {
-  showModal: PropTypes.bool.isRequired,
   provider: PropTypes.string.isRequired,
   closeModal: PropTypes.func.isRequired,
 }
