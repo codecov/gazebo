@@ -1,13 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import HomePage from './HomePage'
 import { useRepos } from 'services/repos/hooks'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-jest.mock('react-router-dom', () => ({
-  useParams: () => ({
-    provider: 'gh',
-  }),
-}))
 jest.mock('services/repos/hooks')
 jest.mock('./OrgControlTable/ResyncButton', () => () => 'ResyncButton')
 
@@ -19,7 +15,16 @@ describe('HomePage', () => {
       },
     })
 
-    render(<HomePage />)
+    render(
+      <MemoryRouter initialEntries={['/gh']}>
+        <Route path="/:provider">
+          <HomePage />
+        </Route>
+        <Route path="/:provider/:owner">
+          <HomePage />
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('renders', () => {

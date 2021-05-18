@@ -1,9 +1,11 @@
-import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import { useState, Suspense } from 'react'
+import { useParams } from 'react-router-dom'
 
+import Spinner from 'ui/Spinner'
+
+import Header from './Header'
 import OrgControlTable from './OrgControlTable'
 import ReposTable from './ReposTable'
-import Spinner from 'ui/Spinner'
 
 const sortItems = [
   'Most recent commit',
@@ -17,6 +19,7 @@ const sortItems = [
 
 
 function HomePage() {
+  const { owner } = useParams()
   const [active, setActive] = useState(true)
   const [sortItem, setSortItem] = useState(sortItems[0])
   const [searchValue, setSearchValue] = useState('')
@@ -29,10 +32,7 @@ function HomePage() {
 
   return (
     <>
-      <MyContextSwitcher
-        pageName="ownerInternal"
-        pageNameCurrentUser="providerInternal"
-      />
+      <Header owner={owner} />
       <OrgControlTable
         sortItem={sortItem}
         setSortItem={setSortItem}
@@ -41,7 +41,7 @@ function HomePage() {
         setSearchValue={setSearchValue}
       />
       <Suspense fallback={loadingState}>
-        <ReposTable active={active} searchValue={searchValue} />
+        <ReposTable owner={owner} active={active} searchValue={searchValue} />
       </Suspense>
     </>
   )
