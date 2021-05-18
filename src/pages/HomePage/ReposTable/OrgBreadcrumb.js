@@ -28,7 +28,13 @@ function OrgBreadcrumb({ repo }) {
 }
 
 OrgBreadcrumb.propTypes = {
-  repo: PropTypes.object,
+  repo: PropTypes.shape({
+    private: PropTypes.bool.isRequired,
+    author: PropTypes.shape({
+      username: PropTypes.string,
+    }),
+    name: PropTypes.string,
+  }),
 }
 
 export default OrgBreadcrumb

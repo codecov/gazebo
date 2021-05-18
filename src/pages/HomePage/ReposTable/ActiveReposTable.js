@@ -22,18 +22,22 @@ const tableColumns = [
   },
 ]
 
-function RepoTable({ repos = [] }) {
+function ActiveReposTable({ repos }) {
   const dataTable = repos.map((repo) => ({
     col1: <OrgBreadcrumb repo={repo} />,
     col2: formatDistanceToNow(new Date(repo.updatedAt)),
-    col3: <Progress amount={repo.coverage} label={true} />,
+    col3: repo?.coverage ? (
+      <Progress amount={repo.coverage} label={true} />
+    ) : (
+      <span className="text-gray-quinary text-sm">No data available</span>
+    ),
   }))
 
   return <Table data={dataTable} columns={tableColumns} />
 }
 
-RepoTable.propTypes = {
+ActiveReposTable.propTypes = {
   repos: PropTypes.array,
 }
 
-export default RepoTable
+export default ActiveReposTable

@@ -4,7 +4,7 @@ const Template = (args) => <Avatar {...args} />
 
 const constantArgs = {
   user: {
-    userName: 'andrewyaeger',
+    username: 'andrewyaeger',
     avatarUrl: 'https://avatars0.githubusercontent.com/u/1060902?v=3&s=55',
   },
 }
@@ -18,7 +18,7 @@ Bordered.args = { bordered: true, ...constantArgs }
 export const WithFaultyImage = Template.bind({})
 WithFaultyImage.args = {
   user: {
-    userName: 'andrewyaeger',
+    username: 'andrewyaeger',
     avatarUrl: 'https://avatars0.githubusercontent.com/u/?v=3&s=55', // doesn't resolve
   },
 }
@@ -26,7 +26,7 @@ WithFaultyImage.args = {
 export const WithFaultyImageAndNoUserName = Template.bind({})
 WithFaultyImageAndNoUserName.args = {
   user: {
-    userName: null,
+    username: null,
     avatarUrl: 'https://avatars0.githubusercontent.com/u/?v=3&s=55', // doesn't resolve
   },
 }
