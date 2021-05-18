@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
 
 import { useRepos } from 'services/repos/hooks'
 
@@ -7,9 +6,7 @@ import ActiveReposTable from './ActiveReposTable'
 import InactiveReposTable from './InactiveReposTable'
 
 function ReposTable({ active, searchValue }) {
-  const { provider } = useParams()
   const { data } = useRepos({
-    provider,
     active,
     term: searchValue,
   })

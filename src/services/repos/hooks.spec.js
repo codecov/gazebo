@@ -14,8 +14,6 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-const provider = 'gh'
-
 const repo1 = {
   name: 'codecov-bash',
   active: true,
@@ -74,7 +72,7 @@ describe('useRepos', () => {
         return res(ctx.status(200), ctx.json({ data: dataReturned || data }))
       })
     )
-    hookData = renderHook(() => useRepos({ provider }), {
+    hookData = renderHook(() => useRepos({}), {
       wrapper,
     })
   }

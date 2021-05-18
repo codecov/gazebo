@@ -2,11 +2,6 @@ import { render, screen } from '@testing-library/react'
 import ReposTable from './ReposTable'
 import { useRepos } from 'services/repos/hooks'
 
-jest.mock('react-router-dom', () => ({
-  useParams: () => ({
-    provider: 'gh',
-  }),
-}))
 jest.mock('services/repos/hooks')
 jest.mock('./ActiveReposTable', () => () => 'ActiveReposTable')
 jest.mock('./InactiveReposTable', () => () => 'InactiveReposTable')
@@ -36,7 +31,6 @@ describe('ReposTable', () => {
 
     it('calls useRepos with the right data', () => {
       expect(useRepos).toHaveBeenCalledWith({
-        provider: 'gh',
         active: true,
         term: '',
       })
@@ -56,7 +50,6 @@ describe('ReposTable', () => {
 
     it('calls useRepos with the right data', () => {
       expect(useRepos).toHaveBeenCalledWith({
-        provider: 'gh',
         active: false,
         term: '',
       })
