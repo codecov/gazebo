@@ -40,11 +40,42 @@ function fetchMyRepos({ provider, variables }) {
   })
 }
 
-export function useRepos({ active, term }) {
+function fetchReposForOwner({ provider, variables, owner }) {
+  const query = `
+    query ReposForOwner($filters: RepositorySetFilters!, $owner: String!) {
+        owner(username: $owner) {
+          repositories(filters: $filters) {
+            edges {
+              node {
+                ...RepoForList
+              }
+            }
+          }
+        }
+      }
+
+      ${repositoryFragment}
+  `
+
+  return Api.graphql({
+    provider,
+    query,
+    variables: {
+      ...variables,
+      owner,
+    },
+  }).then((res) => {
+    return { repos: mapEdges(res?.data?.owner?.repositories) }
+  })
+}
+
+export function useRepos({ active, term, owner }) {
   const { provider } = useParams()
   const variables = { filters: { active, term } }
 
-  const keys = ['repos', provider, variables]
-
-  return useQuery(keys, () => fetchMyRepos({ provider, variables }))
+  return useQuery(['repos', provider, variables, owner], () => {
+    return owner
+      ? fetchReposForOwner({ provider, variables, owner })
+      : fetchMyRepos({ provider, variables })
+  })
 }
