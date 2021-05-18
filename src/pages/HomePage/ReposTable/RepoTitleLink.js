@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
 
-function OrgBreadcrumb({ repo, showRepoOwner }) {
+function RepoTitleLink({ repo, showRepoOwner }) {
   const options = {
     owner: repo.author.username,
     repo: repo.name,
@@ -38,7 +38,7 @@ function OrgBreadcrumb({ repo, showRepoOwner }) {
   )
 }
 
-OrgBreadcrumb.propTypes = {
+RepoTitleLink.propTypes = {
   repo: PropTypes.shape({
     private: PropTypes.bool.isRequired,
     author: PropTypes.shape({
@@ -49,4 +49,4 @@ OrgBreadcrumb.propTypes = {
   showRepoOwner: PropTypes.bool.isRequired,
 }
 
-export default OrgBreadcrumb
+export default RepoTitleLink

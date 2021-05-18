@@ -5,7 +5,8 @@ import Progress from 'ui/Progress'
 import Table from 'ui/Table'
 import { useRepos } from 'services/repos/hooks'
 import AppLink from 'shared/AppLink'
-import OrgBreadcrumb from './OrgBreadcrumb'
+
+import RepoTitleLink from './RepoTitleLink'
 
 const tableActive = [
   {
@@ -43,7 +44,7 @@ function transformRepoToTable(repos, owner) {
   const showRepoOwner = !owner
 
   return repos.map((repo) => ({
-    title: <OrgBreadcrumb repo={repo} showRepoOwner={showRepoOwner} />,
+    title: <RepoTitleLink repo={repo} showRepoOwner={showRepoOwner} />,
     lastUpdated: formatDistanceToNow(new Date(repo.updatedAt)),
     coverage: repo?.coverage ? (
       <Progress amount={repo.coverage} label={true} />

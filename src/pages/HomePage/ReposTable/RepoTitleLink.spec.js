@@ -1,14 +1,14 @@
 import { render, screen } from 'custom-testing-library'
-import OrgBreadcrumb from './OrgBreadcrumb'
+import RepoTitleLink from './RepoTitleLink'
 
-describe('OrgBreadcrumb', () => {
+describe('RepoTitleLink', () => {
   let props
 
   function setup(over = {}) {
     props = {
       ...over,
     }
-    render(<OrgBreadcrumb {...props} />)
+    render(<RepoTitleLink {...props} />)
   }
 
   describe('display private', () => {
