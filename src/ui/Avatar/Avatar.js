@@ -6,7 +6,7 @@ import AvatarSVG from './AvatarSVG.js'
 let baseClasses = 'rounded-full h-6 w-6 flex items-center justify-center'
 let borderedClasses = 'border-ds-grey-secondary border-2'
 
-function Avatar({ user, bordered }) {
+function Avatar({ user, bordered, ariaLabel }) {
   const classes = cs(baseClasses, bordered ? borderedClasses : '')
 
   const { src, error } = useImage({
@@ -14,13 +14,13 @@ function Avatar({ user, bordered }) {
     useSuspense: false,
   })
 
-  const letter = user.userName ? user.userName[0] : '?'
+  const letter = user.username ? user.username[0] : '?'
   const alt = 'avatar'
 
   return (
     <>
       {error ? (
-        <AvatarSVG letter={letter} />
+        <AvatarSVG letter={letter} ariaLabel={ariaLabel} />
       ) : (
         <img src={src} alt={alt} className={classes} />
       )}
@@ -30,10 +30,11 @@ function Avatar({ user, bordered }) {
 
 Avatar.propTypes = {
   user: PropTypes.shape({
-    userName: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
     avatarUrl: PropTypes.string.isRequired,
   }),
   bordered: PropTypes.bool,
+  ariaLabel: PropTypes.string,
 }
 
 export default Avatar

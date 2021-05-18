@@ -1,65 +1,68 @@
 import { Fragment } from 'react'
-import Icon from 'old_ui/Icon'
-import AppLink from 'old_ui/AppLink'
+import AppLink from 'shared/AppLink'
 
-import ServerStatus from './ServerStatus'
 import Dropdown from './Dropdown'
-import { MainNavLink } from './NavLink'
-import { useMainNav } from 'services/header'
+import Button from 'ui/Button'
 import { useNavLinks } from 'services/navigation'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import { useUser } from 'services/user'
+
+const staticLinkClasses = 'ml-7 font-sans font-semibold text-ds-gray-secondary'
+
+export function LoginPrompt() {
+  const { provider, signIn } = useNavLinks()
+  return (
+    <div
+      data-testid="login-prompt"
+      className="flex items-center justify-between mx-2 md:mx-0"
+    >
+      <a href={signIn.path(provider)}>Log in</a>
+      <div className="ml-7">
+        <Button
+          to={{ pageName: 'signUp' }}
+          className="text-ds-gray-secondary"
+          variant={'primary'}
+        >
+          Sign up
+        </Button>
+      </div>
+    </div>
+  )
+}
 
 function DesktopMenu() {
-  const main = useMainNav()
-  const { provider } = useNavLinks()
+  const { data: user } = useUser({
+    suspense: false,
+  })
 
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center">
         <AppLink
-          to={provider.path()}
-          useRouter={!provider.isExternalLink}
+          pageName={'provider'}
           tabIndex="0"
           className="mx-2 md:mx-0 flex-shrink-0"
         >
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </AppLink>
-        <div className="hidden md:block">
-          <div className="ml-10 flex items-center space-x-2">
-            {main.map(({ useRouter, ...props }, i) => {
-              const activeProps = useRouter && {
-                activeClassName: 'opacity-100',
-                exact: true,
-              }
-
-              return (
-                <Fragment key={`desktopMenu-${i}`}>
-                  {i !== 0 && (
-                    <Icon
-                      name="rightChevron"
-                      color="text-white"
-                      className="flex-shrink-0 h-5 w-5"
-                    />
-                  )}
-                  <MainNavLink
-                    className="opacity-50 px-3 py-2 rounded-md hover:opacity-100 transition-opacity"
-                    useRouter={useRouter}
-                    {...activeProps}
-                    {...props}
-                  />
-                </Fragment>
-              )
-            })}
-          </div>
-        </div>
+        <AppLink pageName={'docs'} className={staticLinkClasses}>
+          Docs
+        </AppLink>
+        <AppLink pageName={'support'} className={staticLinkClasses}>
+          Support
+        </AppLink>
+        <AppLink pageName={'blog'} className={staticLinkClasses}>
+          Blog
+        </AppLink>
       </div>
-      <div className="hidden md:block">
-        <div className="ml-4 flex items-center md:ml-6">
-          <ServerStatus />
-          <Dropdown />
+      {!!user ? (
+        <div className="mx-2 md:mx-0">
+          <Dropdown user={user} />
         </div>
-      </div>
+      ) : (
+        <LoginPrompt />
+      )}
     </>
   )
 }

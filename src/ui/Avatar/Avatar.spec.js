@@ -5,7 +5,7 @@ import Avatar from '.'
 describe('Avatar', () => {
   const args = {
     user: {
-      userName: 'andrewyaeger',
+      username: 'andrewyaeger',
       avatarUrl: 'https://avatars0.githubusercontent.com/u/1060902?v=3&s=55',
     },
   }
