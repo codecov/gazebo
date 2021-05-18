@@ -1,9 +1,20 @@
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 
-function OrgBreadcrumb({ repo }) {
+import AppLink from 'shared/AppLink'
+
+function OrgBreadcrumb({ repo, showRepoOwner }) {
+  const options = {
+    owner: repo.author.username,
+    repo: repo.name,
+  }
+
   return (
-    <div className="flex text-ds-gray-quinary items-center">
+    <AppLink
+      pageName="repo"
+      options={options}
+      className="flex text-ds-gray-quinary items-center hover:underline"
+    >
       {repo.private ? (
         <Icon
           size="sm"
@@ -20,10 +31,10 @@ function OrgBreadcrumb({ repo }) {
         />
       )}
       <span className="ml-2.5 text-sm text-black">
-        {repo.author.username} /{' '}
+        {showRepoOwner && `${repo.author.username} / `}
         <span className="font-semibold">{repo.name}</span>
       </span>
-    </div>
+    </AppLink>
   )
 }
 
@@ -35,6 +46,7 @@ OrgBreadcrumb.propTypes = {
     }),
     name: PropTypes.string,
   }),
+  showRepoOwner: PropTypes.bool.isRequired,
 }
 
 export default OrgBreadcrumb
