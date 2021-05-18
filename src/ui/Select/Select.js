@@ -9,7 +9,7 @@ const SelectClasses = {
   root: 'w-full relative',
   item: 'block cursor-pointer py-1 px-3 text-sm',
   button:
-    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 py-1 outline-none',
+    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 outline-none h-8',
   ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10',
 }
 
@@ -28,7 +28,6 @@ function Select({
    */
   renderSelected,
   ariaName,
-  className,
 }) {
   const {
     isOpen,
@@ -69,7 +68,7 @@ function Select({
   }
 
   return (
-    <div className={cs(className, SelectClasses.root)}>
+    <div className={SelectClasses.root}>
       <button
         aria-label={ariaName}
         type="button"
