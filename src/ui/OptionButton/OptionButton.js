@@ -5,7 +5,7 @@ function OptionButton({ active, options, onChange }) {
   return (
     <div className="rounded border inline-flex">
       {options.map((o, index) => (
-        <option
+        <button
           className={cs('py-1 px-2 text-sm', {
             'bg-ds-blue-darker text-white font-semibold':
               active?.text === o.text,
@@ -17,7 +17,7 @@ function OptionButton({ active, options, onChange }) {
           key={index}
         >
           {o.text}
-        </option>
+        </button>
       ))}
     </div>
   )

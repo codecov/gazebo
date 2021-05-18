@@ -14,8 +14,7 @@ describe('HomePage', () => {
   function setup() {
     useRepos.mockReturnValue({
       data: {
-        active: [],
-        ionactive: [],
+        repos: [],
       },
     })
 

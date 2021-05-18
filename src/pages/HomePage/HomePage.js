@@ -1,24 +1,29 @@
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
-import ActiveReposTable from './ActiveReposTable'
-import InactiveReposTable from './InactiveReposTable'
-import { useRepos } from 'services/repos/hooks'
-import { useParams } from 'react-router-dom'
-import OptionButton from 'ui/OptionButton'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 
-const optionButtonOptions = [
-  {
-    text: 'Enabled',
-  },
-  {
-    text: 'Not yet setup',
-  },
+import OrgControlTable from './OrgControlTable'
+import ReposTable from './ReposTable'
+import Spinner from 'ui/Spinner'
+
+const sortItems = [
+  'Most recent commit',
+  'Least recent commit',
+  'Highest coverage',
+  'Lowest coverage',
+  'Name [A-Z]',
+  'Name [Z-A]',
 ]
 
 function HomePage() {
-  const { provider } = useParams()
-  const [activeTable, setActiveTable] = useState(optionButtonOptions[0])
-  const { data } = useRepos({ provider })
+  const [active, setActive] = useState(true)
+  const [sortItem, setSortItem] = useState(sortItems[0])
+  const [searchValue, setSearchValue] = useState('')
+
+  const loadingState = (
+    <div className="flex justify-center py-8">
+      <Spinner />
+    </div>
+  )
 
   return (
     <>
@@ -26,19 +31,16 @@ function HomePage() {
         pageName="ownerInternal"
         pageNameCurrentUser="providerInternal"
       />
-      <div className="flex my-4">
-        <OptionButton
-          active={activeTable}
-          onChange={(option) => setActiveTable(option)}
-          options={optionButtonOptions}
-        />
-      </div>
-
-      {activeTable.text === 'Enabled' ? (
-        <ActiveReposTable repos={data.active} />
-      ) : (
-        <InactiveReposTable repos={data.inactive} />
-      )}
+      <OrgControlTable
+        sortItem={sortItem}
+        setSortItem={setSortItem}
+        active={active}
+        setActive={setActive}
+        setSearchValue={setSearchValue}
+      />
+      <Suspense fallback={loadingState}>
+        <ReposTable active={active} searchValue={searchValue} />
+      </Suspense>
     </>
   )
 }

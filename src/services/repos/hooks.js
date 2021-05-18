@@ -2,15 +2,11 @@ import Api from 'shared/api'
 import { useQuery } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
 
-export function useRepos({ provider }) {
+export function useRepos({ provider, active, term }) {
   const query = `
-    query MyRepos {
+    query MyRepos($filters: RepositorySetFilters!) {
         me {
-          user {
-            username
-          },
-          viewableRepositories {
-            totalCount
+          viewableRepositories(filters: $filters) {
             edges {
               node {
                 name
@@ -19,7 +15,7 @@ export function useRepos({ provider }) {
                 coverage
                 updatedAt
                 author {
-                    username
+                  username
                 }
               }
             }
@@ -28,17 +24,12 @@ export function useRepos({ provider }) {
       }
   `
 
-  function filterRepos(repos) {
-    return {
-      active: repos.filter((r) => r.active === true),
-      inactive: repos.filter((r) => r.active !== true),
-    }
-  }
+  const variables = { filters: { active, term } }
 
-  return useQuery(['repos', provider], () => {
-    return Api.graphql({ provider, query }).then((res) => {
+  return useQuery(['repos', provider, active, term], () => {
+    return Api.graphql({ provider, query, variables }).then((res) => {
       const me = res?.data?.me
-      return filterRepos(mapEdges(me.viewableRepositories))
+      return { repos: mapEdges(me.viewableRepositories) }
     })
   })
 }
