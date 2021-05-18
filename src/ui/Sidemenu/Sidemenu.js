@@ -4,7 +4,7 @@ import AppLink from 'shared/AppLink'
 
 const styles = {
   nav:
-    'w-56 border border-ds-gray-tertiary rounded text-ds-gray-quinary overflow-hidden divide-y devide-ds-gray-tertiary',
+    'lg:w-56 mb-4 border border-ds-gray-tertiary rounded text-ds-gray-quinary overflow-hidden divide-y devide-ds-gray-tertiary',
   link: 'block p-3 hover:bg-ds-gray-quaternary hover:bg-opacity-5',
   activeLink:
     'border-l-4 pl-2 border-ds-gray-octonary text-ds-gray-octonary font-semibold bg-ds-gray-quaternary bg-opacity-5',

@@ -59,7 +59,7 @@ describe('SidebarLayout', () => {
 
     it('renders the sidebar', () => {
       const content = screen.getByTestId('sidebar-content')
-      expect(content).toHaveClass('pl-0 sm:pl-4')
+      expect(content).toHaveClass('pl-0 lg:pl-4')
     })
   })
 

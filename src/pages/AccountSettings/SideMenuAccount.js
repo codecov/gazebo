@@ -16,7 +16,7 @@ function SideMenuAccount() {
         links={[
           { pageName: 'accountAdmin', exact: true },
           { pageName: isPersonalSettings ? 'accessTab' : 'billingAndUsers' },
-          { pageName: 'yamlTab' },
+          { pageName: 'internalYamlTab' },
         ]}
       />
     </div>

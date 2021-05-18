@@ -36,7 +36,7 @@ function AccountSettings() {
               <AdminTab provider={provider} owner={owner} />
             </Route>
             <Route path="/account/:provider/:owner/yaml/" exact>
-              <YAMLTab />
+              <YAMLTab provider={provider} owner={owner} />
             </Route>
             <Route path="/account/:provider/:owner/access/" exact>
               <AccessTab provider={provider} />
