@@ -56,20 +56,25 @@ export function useDeleteSession({ provider }) {
   })
 }
 
-export function useGenerateToken({ provider }) {
+export function useGenerateToken({ provider, opts = {} }) {
   const queryClient = useQueryClient()
-  return useMutation(({ name }) => {
-    const query = `
-    mutation($input: CreateApiTokenInput!) {
+  return useMutation(
+    ({ name }) => {
+      const query = `
+      mutation($input: CreateApiTokenInput!) {
         createApiToken(input: $input) {
           error
+          fullToken
         }
       }
     `
-    const variables = { input: { name } }
-    return Api.graphql({ provider, query, variables }).then((res) => {
-      queryClient.invalidateQueries('sessions')
-      return res?.data?.deleteSession?.error
-    })
-  })
+      const variables = { input: { name } }
+      return Api.graphql({ provider, query, variables })
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('sessions')
+      },
+    }
+  )
 }

@@ -1,4 +1,5 @@
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
+import OrgsTable from './OrgsTable'
 
 function HomePage() {
   return (
@@ -7,6 +8,7 @@ function HomePage() {
         pageName="ownerInternal"
         pageNameCurrentUser="providerInternal"
       />
+      <OrgsTable />
 
       <p>SHOW ALL THE REPOS</p>
     </>
