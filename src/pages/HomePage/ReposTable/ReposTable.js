@@ -55,6 +55,7 @@ function transformRepoToTable(repos, owner) {
       <span>
         Not yet enabled{' '}
         <AppLink
+          className="text-ds-blue font-semibold"
           pageName="repo"
           options={{
             owner: repo.author.username,
