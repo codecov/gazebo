@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { sanitize } from 'dompurify'
+
 import YamlEditor from './YamlEditor'
 import Button from 'ui/Button'
 import { useYamlConfig, useUpdateYaml } from 'services/yaml'
@@ -30,7 +32,7 @@ function YAML({ owner, provider }) {
   }
 
   const onSubmit = () => {
-    mutate({ username: owner, content: newConfig })
+    mutate({ username: owner, content: sanitize(newConfig) })
   }
 
   return (
