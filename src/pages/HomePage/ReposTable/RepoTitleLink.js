@@ -10,31 +10,38 @@ function RepoTitleLink({ repo, showRepoOwner }) {
   }
 
   return (
-    <AppLink
-      pageName="repo"
-      options={options}
-      className="flex text-ds-gray-quinary items-center hover:underline"
-    >
-      {repo.private ? (
-        <Icon
-          size="sm"
-          className="fill-current"
-          variant="solid"
-          name="lock-closed"
-        />
-      ) : (
-        <Icon
-          size="sm"
-          className="fill-current"
-          variant="solid"
-          name="globe-alt"
-        />
+    <div className="flex items-center">
+      <AppLink
+        pageName="repo"
+        options={options}
+        className="flex text-ds-gray-quinary items-center hover:underline"
+      >
+        {repo.private ? (
+          <Icon
+            size="sm"
+            className="fill-current"
+            variant="solid"
+            name="lock-closed"
+          />
+        ) : (
+          <Icon
+            size="sm"
+            className="fill-current"
+            variant="solid"
+            name="globe-alt"
+          />
+        )}
+        <span className="ml-2.5 text-sm text-black">
+          {showRepoOwner && `${repo.author.username} / `}
+          <span className="font-semibold">{repo.name}</span>
+        </span>
+      </AppLink>
+      {repo.private && (
+        <span className="ml-4 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
+          Private
+        </span>
       )}
-      <span className="ml-2.5 text-sm text-black">
-        {showRepoOwner && `${repo.author.username} / `}
-        <span className="font-semibold">{repo.name}</span>
-      </span>
-    </AppLink>
+    </div>
   )
 }
 
