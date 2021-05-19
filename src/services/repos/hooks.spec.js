@@ -1,4 +1,4 @@
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -35,22 +35,15 @@ const repo2 = {
     username: 'codecov',
   },
 }
-const data = {
-  me: {
-    user: {
-      username: 'febg',
-    },
-    viewableRepositories: {
-      totalCount: 80,
-      edges: [
-        {
-          node: repo1,
-        },
-        {
-          node: repo2,
-        },
-      ],
-    },
+
+const repo3 = {
+  name: 'react',
+  active: null,
+  private: false,
+  coverage: null,
+  updatedAt: '2021-04-22T14:09:39.826948+00:00',
+  author: {
+    username: 'facebook',
   },
 }
 
@@ -66,13 +59,53 @@ afterAll(() => server.close())
 describe('useRepos', () => {
   let hookData
 
-  function setup(dataReturned = null) {
+  function setup(hookArgs = {}) {
     server.use(
-      rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ data: dataReturned || data }))
+      graphql.query('MyRepos', (req, res, ctx) => {
+        const data = {
+          me: {
+            user: {
+              username: 'febg',
+            },
+            viewableRepositories: {
+              totalCount: 80,
+              edges: [
+                {
+                  node: repo1,
+                },
+                {
+                  node: repo2,
+                },
+                {
+                  node: repo3,
+                },
+              ],
+            },
+          },
+        }
+        return res(ctx.status(200), ctx.data(data))
+      }),
+      graphql.query('ReposForOwner', (req, res, ctx) => {
+        const data = {
+          owner: {
+            username: 'codecov',
+            repositories: {
+              totalCount: 80,
+              edges: [
+                {
+                  node: repo1,
+                },
+                {
+                  node: repo2,
+                },
+              ],
+            },
+          },
+        }
+        return res(ctx.status(200), ctx.data(data))
       })
     )
-    hookData = renderHook(() => useRepos({}), {
+    hookData = renderHook(() => useRepos(hookArgs), {
       wrapper,
     })
   }
@@ -84,6 +117,21 @@ describe('useRepos', () => {
     })
 
     it('returns repositories', () => {
+      expect(hookData.result.current.data).toEqual({
+        repos: [repo1, repo2, repo3],
+      })
+    })
+  })
+
+  describe('when called for an owner', () => {
+    beforeEach(() => {
+      setup({
+        owner: 'codecov',
+      })
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
+    })
+
+    it('returns repositories of the owner', () => {
       expect(hookData.result.current.data).toEqual({
         repos: [repo1, repo2],
       })
