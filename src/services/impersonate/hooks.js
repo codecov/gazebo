@@ -16,7 +16,7 @@ export function useImpersonate() {
       // Delete staff_user from url ?user
       Cookie.remove('staff_user')
     }
-  }, [search, user])
+  }, [user])
 
   return { isImpersonating: !!Cookie.get('staff_user') }
 }
