@@ -7,11 +7,9 @@ import ResyncButton from './ResyncButton'
 jest.mock('services/user/hooks')
 
 describe('ResyncButton', () => {
-  const refetch = jest.fn()
-
   function setup(returnValueResync) {
     useResyncUser.mockReturnValue(returnValueResync)
-    render(<ResyncButton refetch={refetch} />)
+    render(<ResyncButton />)
   }
 
   describe('when rendered and the sync is not in progress', () => {

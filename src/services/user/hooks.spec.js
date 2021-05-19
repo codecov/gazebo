@@ -195,7 +195,6 @@ describe('useMyContexts', () => {
 
 describe('useResyncUser', () => {
   let hookData
-  const onSyncFinish = jest.fn()
 
   let syncStatus = false
 
@@ -223,7 +222,7 @@ describe('useResyncUser', () => {
         )
       })
     )
-    hookData = renderHook(() => useResyncUser(onSyncFinish), { wrapper })
+    hookData = renderHook(() => useResyncUser(), { wrapper })
   }
 
   describe('when the hook is called and the syncing is not in progress', () => {
@@ -265,7 +264,9 @@ describe('useResyncUser', () => {
   })
 
   describe('when a sync finises', () => {
+    let refetchQueriesSpy
     beforeEach(async () => {
+      refetchQueriesSpy = jest.spyOn(queryClient, 'refetchQueries')
       syncStatus = true
       setup()
       await hookData.waitFor(() => hookData.result.current.isSyncing)
@@ -284,8 +285,8 @@ describe('useResyncUser', () => {
       expect(hookData.result.current.isSyncing).toBeFalsy()
     })
 
-    it('calls onSyncFinish', () => {
-      expect(onSyncFinish).toHaveBeenCalled()
+    it('calls refetchQueries for repos', () => {
+      expect(refetchQueriesSpy).toHaveBeenCalledWith(['repos'])
     })
   })
 })

@@ -1,10 +1,9 @@
-import PropTypes from 'prop-types'
 import Spinner from 'ui/Spinner'
 
 import { useResyncUser } from 'services/user'
 
-function ResyncButton({ refetch }) {
-  const { triggerResync, isSyncing } = useResyncUser(refetch)
+function ResyncButton() {
+  const { triggerResync, isSyncing } = useResyncUser()
 
   return isSyncing ? (
     <div className="flex items-center text-ds-gray-senary">
@@ -21,10 +20,6 @@ function ResyncButton({ refetch }) {
       </button>
     </p>
   )
-}
-
-ResyncButton.propTypes = {
-  refetch: PropTypes.func.isRequired,
 }
 
 export default ResyncButton

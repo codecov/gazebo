@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
 import usePrevious from 'react-use/lib/usePrevious'
-import noop from 'lodash/noop'
 
 import { mapEdges } from 'shared/utils/graphql'
 import Api from 'shared/api'
@@ -105,7 +104,7 @@ function triggerSync(provider) {
 
 // takes a callback for when the sync is finished
 // return if there is a sync in progress, and a function to trigger a sync
-export function useResyncUser(onSyncFinish = noop) {
+export function useResyncUser() {
   const { provider } = useParams()
   const queryClient = useQueryClient()
 
@@ -126,7 +125,7 @@ export function useResyncUser(onSyncFinish = noop) {
   const isSyncing = mutationData.isLoading || isSyncingInCache
 
   // useQuery will automatically feed the so we don't need to care about return
-  useQuery(keyCache, fetchIsSyncing, {
+  useQuery(keyCache, () => fetchIsSyncing(provider), {
     suspense: false,
     useErrorBoundary: false,
     // refetch every 2 seconds if we are syncing
@@ -137,9 +136,9 @@ export function useResyncUser(onSyncFinish = noop) {
   const prevIsSyncing = usePrevious(isSyncing)
   useEffect(() => {
     if (prevIsSyncing && !isSyncing) {
-      onSyncFinish()
+      queryClient.refetchQueries(['repos'])
     }
-  }, [prevIsSyncing, isSyncing, onSyncFinish])
+  }, [prevIsSyncing, isSyncing, queryClient])
 
   return {
     isSyncing,
