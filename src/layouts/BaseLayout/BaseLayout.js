@@ -22,7 +22,7 @@ function BaseLayout({ children }) {
     <>
       <Header />
       <Suspense fallback={fullPageLoader}>
-        <main className="container flex-grow mt-20 mb-10 px-4 pb-4 md:p-0">
+        <main className="container flex-grow mt-6 mb-10 md:p-0">
           <ErrorBoundary sentryScopes={[['layout', 'base']]}>
             <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
           </ErrorBoundary>

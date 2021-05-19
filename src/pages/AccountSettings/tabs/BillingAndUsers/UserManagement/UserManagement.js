@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import { FormControls } from './FormControls'
 import { FormPaginate } from './FormPaginate'
 
-import { DateItem } from './DateItem'
-
 import Card from 'old_ui/Card'
 import Toggle from 'old_ui/Toggle'
 import User from 'old_ui/User'
@@ -24,8 +22,7 @@ const UserManagementClasses = {
   title: 'text-2xl font-bold',
   results: 'shadow divide-y divide-gray-200 divide-solid p-6',
   userTable: 'grid grid-cols-5 lg:gap-2 my-6',
-  user: ({ lastseen, latestPrivatePrDate }) =>
-    lastseen || latestPrivatePrDate ? 'col-span-3' : 'col-span-4',
+  user: 'col-span-4',
   ctaWrapper: 'flex items-center justify-end',
   cta: 'w-full truncate',
 }
@@ -75,33 +72,6 @@ function UserManagement({ provider, owner }) {
     data: { planAutoActivate },
   } = useAccountDetails({ owner, provider })
 
-  const Lastseen = (lastseen) => (
-    <DateItem testId="last-seen" label="Last seen:" date={lastseen} />
-  )
-  const LastPrivatePr = (latestPrivatePrDate) => (
-    <DateItem testId="last-pr" label="Last pr:" date={latestPrivatePrDate} />
-  )
-
-  const getLatestActivity = (lastPrivatePr, lastseen) => {
-    if (lastPrivatePr && lastseen) {
-      const lastPrivatePrDate = new Date(lastPrivatePr)
-      const lastseenDate = new Date(lastseen)
-      return lastPrivatePrDate > lastseenDate
-        ? LastPrivatePr(lastPrivatePr)
-        : Lastseen(lastseen)
-    }
-    return lastPrivatePr ? LastPrivatePr(lastPrivatePr) : Lastseen(lastseen)
-  }
-
-  const renderLastestActivity = (user) => {
-    const lastPrivatePr = user.latestPrivatePrDate
-    const lastseen = user.lastseen
-    if (!lastPrivatePr && !lastseen) {
-      return null
-    }
-    return getLatestActivity(lastPrivatePr, lastseen)
-  }
-
   return (
     <article className={UserManagementClasses.root}>
       <FormControls
@@ -135,13 +105,12 @@ function UserManagement({ provider, owner }) {
                 className={UserManagementClasses.userTable}
               >
                 <User
-                  className={UserManagementClasses.user(user)}
+                  className={UserManagementClasses.user}
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
                   pills={createPills(user)}
                 />
-                {renderLastestActivity(user)}
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Button
                     className={UserManagementClasses.cta}

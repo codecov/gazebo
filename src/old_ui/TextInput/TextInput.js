@@ -39,6 +39,7 @@ const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
 })
 
 TextInput.displayName = 'TextInput'
+
 TextInput.propTypes = {
   embedded: PropTypes.func,
 }
