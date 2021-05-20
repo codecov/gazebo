@@ -27,6 +27,16 @@ const data = {
       name: 'token name 2',
       lastFour: 'bbbb',
     },
+    {
+      sessionid: 8,
+      ip: null,
+      lastseen: null,
+      useragent: null,
+      owner: 2,
+      type: 'api',
+      name: 'token name 3',
+      lastFour: 'cccc',
+    },
   ],
 }
 
@@ -49,7 +59,7 @@ describe('TokensTable', () => {
     describe('renders tokens table', () => {
       it('renders tokens table revoke button', () => {
         const buttons = screen.getAllByText(/Revoke/)
-        expect(buttons.length).toBe(2)
+        expect(buttons.length).toBe(3)
       })
       it('renders tokens table name', () => {
         const name1 = screen.getByText(/token name 1/)
