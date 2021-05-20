@@ -33,7 +33,9 @@ function SessionsTable({ sessions, onRevoke }) {
         {s.ip}
       </p>
     ),
-    col2: formatDistanceToNow(new Date(s.lastseen)),
+    col2: s.lastseen
+      ? formatDistanceToNow(new Date(s.lastseen), { addSuffix: true })
+      : '-',
     col3: s.useragent,
     col4: (
       <Button onClick={() => onRevoke(s.sessionid)} variant="danger">

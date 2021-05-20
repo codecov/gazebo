@@ -32,7 +32,9 @@ function TokensTable({ tokens, onRevoke }) {
     col2: (
       <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">{`xxxx ${t.lastFour}`}</p>
     ),
-    col3: formatDistanceToNow(new Date(t.lastseen)),
+    col3: t.lastseen
+      ? formatDistanceToNow(new Date(t.lastseen), { addSuffix: true })
+      : '-',
     col4: (
       <Button onClick={() => onRevoke(t.sessionid)} variant="danger">
         Revoke

@@ -12,7 +12,7 @@ function SidebarLayout({ sidebar, children, className }) {
           {sidebar}
           <div
             data-testid="sidebar-content"
-            className={cs('flex-1', className, { 'pl-0 lg:pl-4': !className })}
+            className={cs('flex-1', className, { 'pl-0 lg:pl-8': !className })}
           >
             {children}
           </div>
