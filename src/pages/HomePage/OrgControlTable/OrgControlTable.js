@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import PropTypes from 'prop-types'
+import useDebounce from 'react-use/lib/useDebounce'
 
 import OptionButton from 'ui/OptionButton'
 import Select from 'ui/Select'
@@ -31,6 +33,16 @@ function OrgControlTable({
   setActive,
   setSearchValue,
 }) {
+  const [search, setSearch] = useState('')
+
+  useDebounce(
+    () => {
+      setSearchValue(search)
+    },
+    500,
+    [search]
+  )
+
   return (
     <div className="flex items-center h-8 my-4">
       <div className="flex">
@@ -39,8 +51,9 @@ function OrgControlTable({
         </div>
         <div className="w-52 mr-2">
           <TextInput
+            value={search}
             placeholder="Search"
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>

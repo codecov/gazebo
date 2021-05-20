@@ -89,6 +89,7 @@ describe('OrgControlTable', () => {
 
   describe('when typing in the search', () => {
     beforeEach(() => {
+      jest.useFakeTimers()
       setup()
       const searchInput = screen.getByRole('textbox', {
         name: /search/i,
@@ -96,8 +97,18 @@ describe('OrgControlTable', () => {
       userEvent.type(searchInput, 'search')
     })
 
-    it('calls setSearchValue', () => {
-      expect(props.setSearchValue).toHaveBeenLastCalledWith('search')
+    it('doesnt call setSearchValue yet', () => {
+      expect(props.setSearchValue).not.toHaveBeenCalledWith('search')
+    })
+
+    describe('after waiting some time', () => {
+      beforeEach(() => {
+        jest.advanceTimersByTime(600)
+      })
+
+      it('calls setSearchValue', () => {
+        expect(props.setSearchValue).toHaveBeenCalled()
+      })
     })
   })
 })
