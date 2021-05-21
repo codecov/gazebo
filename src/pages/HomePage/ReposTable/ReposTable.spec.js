@@ -1,9 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { subDays } from 'date-fns'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useRepos } from 'services/repos/hooks'
+import { orderingOptions } from 'services/repos'
 
 import ReposTable from './ReposTable'
-import { useRepos } from 'services/repos/hooks'
-import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('services/repos/hooks')
 
@@ -18,6 +20,7 @@ describe('ReposTable', () => {
     props = {
       active: true,
       searchValue: '',
+      sortItem: orderingOptions[0],
       ...over,
     }
     render(
@@ -73,6 +76,7 @@ describe('ReposTable', () => {
       expect(useRepos).toHaveBeenCalledWith({
         active: true,
         term: '',
+        sortItem: props.sortItem,
       })
     })
 
@@ -146,6 +150,7 @@ describe('ReposTable', () => {
       expect(useRepos).toHaveBeenCalledWith({
         active: false,
         term: '',
+        sortItem: props.sortItem,
       })
     })
 

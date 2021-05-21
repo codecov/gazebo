@@ -5,17 +5,9 @@ import useDebounce from 'react-use/lib/useDebounce'
 import OptionButton from 'ui/OptionButton'
 import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
+import { orderingOptions } from 'services/repos'
 
 import ResyncButton from './ResyncButton'
-
-const sortItems = [
-  'Most recent commit',
-  'Least recent commit',
-  'Highest coverage',
-  'Lowest coverage',
-  'Name [A-Z]',
-  'Name [Z-A]',
-]
 
 const optionButtonOptions = [
   {
@@ -47,7 +39,12 @@ function OrgControlTable({
     <div className="flex items-center h-8 my-4">
       <div className="flex">
         <div className="w-52 mr-2">
-          <Select value={sortItem} items={sortItems} onChange={setSortItem} />
+          <Select
+            value={sortItem}
+            items={orderingOptions}
+            onChange={setSortItem}
+            renderItem={(option) => option.text}
+          />
         </div>
         <div className="w-52 mr-2">
           <TextInput
@@ -72,7 +69,7 @@ function OrgControlTable({
 }
 
 OrgControlTable.propTypes = {
-  sortItem: PropTypes.string.isRequired,
+  sortItem: PropTypes.object.isRequired,
   setSortItem: PropTypes.func.isRequired,
   active: PropTypes.bool.isRequired,
   setActive: PropTypes.func.isRequired,

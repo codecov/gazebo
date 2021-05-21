@@ -2,26 +2,16 @@ import { useState, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Spinner from 'ui/Spinner'
+import { orderingOptions } from 'services/repos'
 
 import Header from './Header'
 import OrgControlTable from './OrgControlTable'
 import ReposTable from './ReposTable'
 
-const sortItems = [
-  'Most recent commit',
-  'Least recent commit',
-  'Highest coverage',
-  'Lowest coverage',
-  'Name [A-Z]',
-  'Name [Z-A]',
-]
-
-
-
 function HomePage() {
   const { owner } = useParams()
   const [active, setActive] = useState(true)
-  const [sortItem, setSortItem] = useState(sortItems[0])
+  const [sortItem, setSortItem] = useState(orderingOptions[0])
   const [searchValue, setSearchValue] = useState('')
 
   const loadingState = (
@@ -41,7 +31,12 @@ function HomePage() {
         setSearchValue={setSearchValue}
       />
       <Suspense fallback={loadingState}>
-        <ReposTable owner={owner} active={active} searchValue={searchValue} />
+        <ReposTable
+          sortItem={sortItem}
+          owner={owner}
+          active={active}
+          searchValue={searchValue}
+        />
       </Suspense>
     </>
   )
