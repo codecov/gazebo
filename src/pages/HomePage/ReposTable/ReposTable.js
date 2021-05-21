@@ -45,7 +45,9 @@ function transformRepoToTable(repos, owner) {
 
   return repos.map((repo) => ({
     title: <RepoTitleLink repo={repo} showRepoOwner={showRepoOwner} />,
-    lastUpdated: formatDistanceToNow(new Date(repo.updatedAt)),
+    lastUpdated: repo.latestCommitAt
+      ? formatDistanceToNow(new Date(repo.latestCommitAt), { addSuffix: true })
+      : '-',
     coverage:
       typeof repo.coverage === 'number' ? (
         <Progress amount={repo.coverage} label={true} />

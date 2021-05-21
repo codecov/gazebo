@@ -13,6 +13,7 @@ const repositoryFragment = `
     private
     coverage
     updatedAt
+    latestCommitAt
     author {
       username
     }

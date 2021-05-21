@@ -45,7 +45,7 @@ describe('ReposTable', () => {
               username: 'owner1',
             },
             name: 'Repo name 1',
-            updatedAt: subDays(new Date(), 3),
+            latestCommitAt: subDays(new Date(), 3),
             coverage: 43,
             active: true,
           },
@@ -55,7 +55,7 @@ describe('ReposTable', () => {
               username: 'owner1',
             },
             name: 'Repo name 2',
-            updatedAt: subDays(new Date(), 2),
+            latestCommitAt: subDays(new Date(), 2),
             coverage: 100,
             active: true,
           },
@@ -65,7 +65,7 @@ describe('ReposTable', () => {
               username: 'owner1',
             },
             name: 'Repo name 3',
-            updatedAt: subDays(new Date(), 5),
+            latestCommitAt: null,
             active: true,
           },
         ]
@@ -86,12 +86,10 @@ describe('ReposTable', () => {
     })
 
     it('renders second column', () => {
-      const lastseen1 = screen.getByText(/3 days/)
-      const lastseen2 = screen.getByText(/2 days/)
-      const lastseen3 = screen.getByText(/5 days/)
+      const lastseen1 = screen.getByText(/3 days ago/)
+      const lastseen2 = screen.getByText(/2 days ago/)
       expect(lastseen1).toBeInTheDocument()
       expect(lastseen2).toBeInTheDocument()
-      expect(lastseen3).toBeInTheDocument()
     })
 
     it('renders third column', () => {
@@ -118,7 +116,7 @@ describe('ReposTable', () => {
               username: 'owner1',
             },
             name: 'Repo name 1',
-            updatedAt: subDays(new Date(), 3),
+            latestCommitAt: subDays(new Date(), 3),
             coverage: 43,
             active: false,
           },
@@ -128,7 +126,7 @@ describe('ReposTable', () => {
               username: 'owner1',
             },
             name: 'Repo name 2',
-            updatedAt: subDays(new Date(), 2),
+            latestCommitAt: subDays(new Date(), 2),
             coverage: 100,
             active: false,
           },
@@ -138,7 +136,7 @@ describe('ReposTable', () => {
               username: 'owner1',
             },
             name: 'Repo name 3',
-            updatedAt: subDays(new Date(), 5),
+            latestCommitAt: subDays(new Date(), 5),
             coverage: 0,
             active: false,
           },
