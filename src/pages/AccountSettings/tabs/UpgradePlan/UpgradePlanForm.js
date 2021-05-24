@@ -138,7 +138,6 @@ function UpgradePlanForm({
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
 
   const { upgradePlan } = useSubmit({ owner, provider })
-
   return (
     <form className="text-gray-900" onSubmit={handleSubmit(upgradePlan)}>
       <h2 className="text-2xl text-pink-500 bold mb-8">
@@ -147,7 +146,7 @@ function UpgradePlanForm({
       <Controller
         name="newPlan"
         control={control}
-        render={({ onChange, value }) => (
+        render={({ onChange, field }) => (
           <Select
             items={planOptions}
             renderItem={(plan) => (
@@ -159,7 +158,7 @@ function UpgradePlanForm({
               </div>
             )}
             onChange={onChange}
-            value={value}
+            value={field}
           />
         )}
       />
