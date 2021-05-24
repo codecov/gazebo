@@ -39,7 +39,20 @@ const tableInactive = [
   },
 ]
 
-function transformRepoToTable(repos, owner) {
+function transformRepoToTable(repos, owner, searchValue) {
+  // if there are no repos show empty message
+  if (repos.length <= 0) {
+    return [
+      {
+        title: (
+          <span className="text-sm">
+            {searchValue ? 'no results found' : 'no repos detected'}
+          </span>
+        ),
+      },
+    ]
+  }
+
   // if we have an owner, then we don't need to show it on the repo title
   const showRepoOwner = !owner
 
@@ -76,7 +89,7 @@ function ReposTable({ active, searchValue, owner }) {
     owner,
   })
 
-  const dataTable = transformRepoToTable(data.repos, owner)
+  const dataTable = transformRepoToTable(data.repos, owner, searchValue)
 
   return (
     <Table data={dataTable} columns={active ? tableActive : tableInactive} />
