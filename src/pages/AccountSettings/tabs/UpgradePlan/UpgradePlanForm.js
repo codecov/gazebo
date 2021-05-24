@@ -64,13 +64,10 @@ function getSchema(accountDetails) {
 
 function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const planOptions = [proPlanYear, proPlanMonth]
-
-  const { register, handleSubmit, watch, control, errors, formState } = useForm(
-    {
-      defaultValues: getInitialDataForm(planOptions, accountDetails),
-      resolver: yupResolver(getSchema(accountDetails)),
-    }
-  )
+  const { register, handleSubmit, watch, control, formState } = useForm({
+    defaultValues: getInitialDataForm(planOptions, accountDetails),
+    resolver: yupResolver(getSchema(accountDetails)),
+  })
 
   const seats = watch('seats')
   const newPlan = watch('newPlan')
@@ -89,7 +86,6 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
     handleSubmit,
     control,
     isPerYear,
-    errors,
     planOptions,
     formState,
   }
@@ -137,9 +133,8 @@ function UpgradePlanForm({
     handleSubmit,
     control,
     isPerYear,
-    errors,
     planOptions,
-    formState: { isDirty },
+    formState: { isDirty, errors },
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
 
   const { upgradePlan } = useSubmit({ owner, provider })
@@ -178,9 +173,8 @@ function UpgradePlanForm({
             User Seats:
           </label>
           <input
-            ref={register}
+            {...register('seats')}
             id="nb-seats"
-            name="seats"
             size="40"
             className="bg-gray-100 p-2 rounded border"
             type="number"
