@@ -45,12 +45,15 @@ function transformRepoToTable(repos, owner) {
 
   return repos.map((repo) => ({
     title: <RepoTitleLink repo={repo} showRepoOwner={showRepoOwner} />,
-    lastUpdated: formatDistanceToNow(new Date(repo.updatedAt)),
-    coverage: repo?.coverage ? (
-      <Progress amount={repo.coverage} label={true} />
-    ) : (
-      <span className="text-gray-quinary text-sm">No data available</span>
-    ),
+    lastUpdated: repo.latestCommitAt
+      ? formatDistanceToNow(new Date(repo.latestCommitAt), { addSuffix: true })
+      : '-',
+    coverage:
+      typeof repo.coverage === 'number' ? (
+        <Progress amount={repo.coverage} label={true} />
+      ) : (
+        <span className="text-gray-quinary text-sm">No data available</span>
+      ),
     notEnabled: (
       <span>
         Not yet enabled{' '}
@@ -69,9 +72,10 @@ function transformRepoToTable(repos, owner) {
   }))
 }
 
-function ReposTable({ active, searchValue, owner }) {
+function ReposTable({ active, searchValue, owner, sortItem }) {
   const { data } = useRepos({
     active,
+    sortItem,
     term: searchValue,
     owner,
   })
@@ -87,6 +91,7 @@ ReposTable.propTypes = {
   owner: PropTypes.string,
   active: PropTypes.bool.isRequired,
   searchValue: PropTypes.string.isRequired,
+  sortItem: PropTypes.object.isRequired,
 }
 
 export default ReposTable

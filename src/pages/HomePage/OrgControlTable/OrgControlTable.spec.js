@@ -1,5 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
+import { orderingOptions } from 'services/repos'
+
 import OrgControlTable from './OrgControlTable'
 
 jest.mock('./ResyncButton', () => () => 'ResyncButton')
@@ -9,7 +12,7 @@ describe('OrgControlTable', () => {
 
   function setup(over = {}) {
     props = {
-      sortItem: 'Most recent commit',
+      sortItem: orderingOptions[0],
       setSortItem: jest.fn(),
       active: true,
       setActive: jest.fn(),
