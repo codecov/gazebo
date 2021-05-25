@@ -162,4 +162,33 @@ describe('ReposTable', () => {
       expect(notActiveRepos.length).toBe(3)
     })
   })
+  describe('when rendered empty repos', () => {
+    beforeEach(() => {
+      setup(
+        {
+          active: true,
+        },
+        []
+      )
+    })
+    it('renders no repos detected', () => {
+      const buttons = screen.getAllByText(/no repos detected/)
+      expect(buttons.length).toBe(1)
+    })
+  })
+  describe('when rendered empty search', () => {
+    beforeEach(() => {
+      setup(
+        {
+          active: true,
+          searchValue: 'something',
+        },
+        []
+      )
+    })
+    it('renders no results found', () => {
+      const buttons = screen.getAllByText(/no results found/)
+      expect(buttons.length).toBe(1)
+    })
+  })
 })
