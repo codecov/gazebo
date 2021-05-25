@@ -20,15 +20,19 @@ const repositoryFragment = `
   }
 `
 
-function fetchMyRepos({ provider, variables }) {
+function fetchMyRepos({ provider, variables, after }) {
   const query = `
-    query MyRepos($filters: RepositorySetFilters!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!) {
+    query MyRepos($filters: RepositorySetFilters!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String) {
         me {
-          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 2) {
+          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 2, after: $after) {
             edges {
               node {
                 ...RepoForList
               }
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
             }
           }
         }
@@ -37,21 +41,32 @@ function fetchMyRepos({ provider, variables }) {
       ${repositoryFragment}
   `
 
-  return Api.graphql({ provider, query, variables }).then((res) => {
+  return Api.graphql({
+    provider,
+    query,
+    variable: { ...variables, after },
+  }).then((res) => {
     const me = res?.data?.me
-    return mapEdges(me.viewableRepositories)
+    return {
+      repos: mapEdges(me.viewableRepositories),
+      pageInfo: me?.viewableRepositories.pageInfo,
+    }
   })
 }
 
-function fetchReposForOwner({ provider, variables, owner }) {
+function fetchReposForOwner({ provider, variables, owner, after }) {
   const query = `
-    query ReposForOwner($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!) {
+    query ReposForOwner($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String) {
         owner(username: $owner) {
-          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 2) {
+          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 2, after: $after) {
             edges {
               node {
                 ...RepoForList
               }
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
             }
           }
         }
@@ -66,9 +81,14 @@ function fetchReposForOwner({ provider, variables, owner }) {
     variables: {
       ...variables,
       owner,
+      after,
     },
   }).then((res) => {
-    return mapEdges(res?.data?.owner?.repositories)
+    const owner = res?.data?.owner
+    return {
+      repos: mapEdges(owner?.repositories),
+      pageInfo: owner?.repositories?.pageInfo,
+    }
   })
 }
 
@@ -85,13 +105,17 @@ export function useRepos({
     direction: sortItem.direction,
   }
 
-  const { data } = useInfiniteQuery(
+  const { data, fetchNextPage } = useInfiniteQuery(
     ['repos', provider, variables, owner],
-    () => {
+    ({ pageParam }) => {
       return owner
-        ? fetchReposForOwner({ provider, variables, owner })
-        : fetchMyRepos({ provider, variables })
-    }
+        ? fetchReposForOwner({ provider, variables, owner, after: pageParam })
+        : fetchMyRepos({ provider, variables, after: pageParam })
+    },
+    { getNextPageParam: (data) => data.pageInfo.endCursor }
   )
-  return { data: { repos: data.pages.flat() } }
+  return {
+    data: { repos: data.pages.map((page) => page.repos).flat() },
+    fetchNextPage,
+  }
 }
