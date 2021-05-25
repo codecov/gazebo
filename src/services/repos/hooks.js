@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { useQuery } from 'react-query'
+import { useInfiniteQuery } from 'react-query'
 
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
@@ -24,7 +24,7 @@ function fetchMyRepos({ provider, variables }) {
   const query = `
     query MyRepos($filters: RepositorySetFilters!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!) {
         me {
-          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction) {
+          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 2) {
             edges {
               node {
                 ...RepoForList
@@ -39,7 +39,7 @@ function fetchMyRepos({ provider, variables }) {
 
   return Api.graphql({ provider, query, variables }).then((res) => {
     const me = res?.data?.me
-    return { repos: mapEdges(me.viewableRepositories) }
+    return mapEdges(me.viewableRepositories)
   })
 }
 
@@ -47,7 +47,7 @@ function fetchReposForOwner({ provider, variables, owner }) {
   const query = `
     query ReposForOwner($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!) {
         owner(username: $owner) {
-          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction) {
+          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 2) {
             edges {
               node {
                 ...RepoForList
@@ -68,7 +68,7 @@ function fetchReposForOwner({ provider, variables, owner }) {
       owner,
     },
   }).then((res) => {
-    return { repos: mapEdges(res?.data?.owner?.repositories) }
+    return mapEdges(res?.data?.owner?.repositories)
   })
 }
 
@@ -85,9 +85,13 @@ export function useRepos({
     direction: sortItem.direction,
   }
 
-  return useQuery(['repos', provider, variables, owner], () => {
-    return owner
-      ? fetchReposForOwner({ provider, variables, owner })
-      : fetchMyRepos({ provider, variables })
-  })
+  const { data } = useInfiniteQuery(
+    ['repos', provider, variables, owner],
+    () => {
+      return owner
+        ? fetchReposForOwner({ provider, variables, owner })
+        : fetchMyRepos({ provider, variables })
+    }
+  )
+  return { data: { repos: data.pages.flat() } }
 }
