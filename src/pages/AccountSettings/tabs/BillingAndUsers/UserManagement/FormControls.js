@@ -129,7 +129,7 @@ export function FormControls({ onChange, current, defaultValues }) {
             aria-label="search users"
             className={FormClasses.search}
             name="search"
-            ref={register}
+            {...register('search')}
             placeholder="Search"
             embedded={() => (
               <Icon
