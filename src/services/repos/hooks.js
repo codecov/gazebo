@@ -24,7 +24,7 @@ function fetchMyRepos({ provider, variables, after }) {
   const query = `
     query MyRepos($filters: RepositorySetFilters!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String) {
         me {
-          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 2, after: $after) {
+          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 20, after: $after) {
             edges {
               node {
                 ...RepoForList
@@ -58,7 +58,7 @@ function fetchReposForOwner({ provider, variables, owner, after }) {
   const query = `
     query ReposForOwner($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String) {
         owner(username: $owner) {
-          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 2, after: $after) {
+          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 20, after: $after) {
             edges {
               node {
                 ...RepoForList
@@ -105,17 +105,21 @@ export function useRepos({
     direction: sortItem.direction,
   }
 
-  const { data, fetchNextPage } = useInfiniteQuery(
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery(
     ['repos', provider, variables, owner],
     ({ pageParam }) => {
       return owner
         ? fetchReposForOwner({ provider, variables, owner, after: pageParam })
         : fetchMyRepos({ provider, variables, after: pageParam })
     },
-    { getNextPageParam: (data) => data.pageInfo.endCursor }
+    {
+      getNextPageParam: (data) =>
+        data.pageInfo.hasNextPage ? data.pageInfo.endCursor : undefined,
+    }
   )
   return {
     data: { repos: data.pages.map((page) => page.repos).flat() },
     fetchNextPage,
+    hasNextPage,
   }
 }
