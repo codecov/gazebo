@@ -146,7 +146,7 @@ function UpgradePlanForm({
       <Controller
         name="newPlan"
         control={control}
-        render={({ onChange, field }) => (
+        render={({ field }) => (
           <Select
             items={planOptions}
             renderItem={(plan) => (
@@ -157,8 +157,8 @@ function UpgradePlanForm({
                 <span>${plan.baseUnitPrice} /month</span>
               </div>
             )}
-            onChange={onChange}
-            value={field}
+            onChange={field.onChange}
+            value={field.value}
           />
         )}
       />
