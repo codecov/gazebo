@@ -1,14 +1,13 @@
 import { render, screen } from '@testing-library/react'
-import HomePage from './HomePage'
+import OwnerPage from './OwnerPage'
 import { useRepos } from 'services/repos/hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('services/repos/hooks')
 jest.mock('./Header', () => () => 'Header')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 
-describe('HomePage', () => {
+describe('OwnerPage', () => {
   function setup() {
     useRepos.mockReturnValue({
       data: {
@@ -17,9 +16,9 @@ describe('HomePage', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/gh']}>
-        <Route path="/:provider">
-          <HomePage />
+      <MemoryRouter initialEntries={['/gh/codecov']}>
+        <Route path="/:provider/:owner">
+          <OwnerPage />
         </Route>
       </MemoryRouter>
     )
