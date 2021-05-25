@@ -23,20 +23,6 @@ describe('Header', () => {
     )
   }
 
-  describe('when rendered without owner', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('renders links to the current user settings', () => {
-      expect(
-        screen.getByRole('link', {
-          name: /settings/i,
-        })
-      ).toHaveAttribute('href', '/account/gh/lewis')
-    })
-  })
-
   describe('when rendered with owner', () => {
     beforeEach(() => {
       setup({ owner: 'codecov' })

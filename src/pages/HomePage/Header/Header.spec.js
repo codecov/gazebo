@@ -23,7 +23,7 @@ describe('Header', () => {
     )
   }
 
-  describe('when rendered without owner', () => {
+  describe('when rendered', () => {
     beforeEach(() => {
       setup()
     })
@@ -34,20 +34,6 @@ describe('Header', () => {
           name: /settings/i,
         })
       ).toHaveAttribute('href', '/account/gh/lewis')
-    })
-  })
-
-  describe('when rendered with owner', () => {
-    beforeEach(() => {
-      setup({ owner: 'codecov' })
-    })
-
-    it('renders links to the owner settings', () => {
-      expect(
-        screen.getByRole('link', {
-          name: /settings/i,
-        })
-      ).toHaveAttribute('href', '/account/gh/codecov')
     })
   })
 })
