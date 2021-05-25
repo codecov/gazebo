@@ -87,7 +87,7 @@ function transformRepoToTable(repos, owner, searchValue) {
 }
 
 function ReposTable({ active, searchValue, owner, sortItem }) {
-  const { data, fetchNextPage, hasNextPage } = useRepos({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
     active,
     sortItem,
     term: searchValue,
@@ -100,7 +100,9 @@ function ReposTable({ active, searchValue, owner, sortItem }) {
       <Table data={dataTable} columns={active ? tableActive : tableInactive} />
       {hasNextPage && (
         <div className="w-full mt-4 flex justify-center">
-          <Button onClick={fetchNextPage}>Load More</Button>
+          <Button isLoading={isFetchingNextPage} onClick={fetchNextPage}>
+            Load More
+          </Button>
         </div>
       )}
     </>

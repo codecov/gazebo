@@ -105,7 +105,7 @@ export function useRepos({
     direction: sortItem.direction,
   }
 
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery(
+  const { data, ...rest } = useInfiniteQuery(
     ['repos', provider, variables, owner],
     ({ pageParam }) => {
       return owner
@@ -119,7 +119,6 @@ export function useRepos({
   )
   return {
     data: { repos: data.pages.map((page) => page.repos).flat() },
-    fetchNextPage,
-    hasNextPage,
+    ...rest,
   }
 }
