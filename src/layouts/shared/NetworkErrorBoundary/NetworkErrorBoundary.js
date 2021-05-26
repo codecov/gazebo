@@ -53,7 +53,7 @@ class NetworkErrorBoundary extends Component {
     const { illustration, title, description } = errorToUI[status]
 
     return (
-      <article className="mx-auto flex items-center justify-center flex-col">
+      <article className="h-full mx-auto flex items-center justify-center flex-col">
         <img
           alt="illustration error"
           className={cs(styles.illustrationError, 'mx-auto')}
