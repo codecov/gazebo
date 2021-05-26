@@ -40,7 +40,10 @@ function Header({ owner }) {
 }
 
 Header.propTypes = {
-  owner: PropTypes.string,
+  owner: PropTypes.shape({
+    username: PropTypes.string.isRequired,
+    isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
+  }).isRequired,
 }
 
 export default Header
