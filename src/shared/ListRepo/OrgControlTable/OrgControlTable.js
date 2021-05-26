@@ -24,8 +24,9 @@ function OrgControlTable({
   active,
   setActive,
   setSearchValue,
+  searchValue,
 }) {
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(searchValue)
 
   useDebounce(
     () => {
@@ -74,6 +75,7 @@ OrgControlTable.propTypes = {
   active: PropTypes.bool.isRequired,
   setActive: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
+  searchValue: PropTypes.string.isRequired,
 }
 
 export default OrgControlTable
