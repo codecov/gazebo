@@ -22,14 +22,14 @@ function Header({ currentUsername }) {
               pageName: 'analytics',
               children: 'Analytics',
               options: {
-                owner: currentUsername.username,
+                owner: currentUsername,
               },
             },
             {
               pageName: 'accountAdmin',
               children: 'Settings',
               options: {
-                owner: currentUsername.username,
+                owner: currentUsername,
               },
             },
           ]}
