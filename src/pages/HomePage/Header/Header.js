@@ -1,18 +1,15 @@
+import PropTypes from 'prop-types'
+
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
-import { useUser } from 'services/user'
 
-function Header() {
-  const { data: user } = useUser({
-    suspense: false,
-  })
-
+function Header({ currentUsername }) {
   return (
     <>
       <MyContextSwitcher
         pageName="ownerInternal"
         pageNameCurrentUser="providerInternal"
-        activeContext={user}
+        activeContext={currentUsername}
       />
       <div className="my-4">
         <TabNavigation
@@ -25,14 +22,14 @@ function Header() {
               pageName: 'analytics',
               children: 'Analytics',
               options: {
-                owner: user.username,
+                owner: currentUsername.username,
               },
             },
             {
               pageName: 'accountAdmin',
               children: 'Settings',
               options: {
-                owner: user.username,
+                owner: currentUsername.username,
               },
             },
           ]}
@@ -40,6 +37,10 @@ function Header() {
       </div>
     </>
   )
+}
+
+Header.propTypes = {
+  currentUsername: PropTypes.string.isRequired,
 }
 
 export default Header
