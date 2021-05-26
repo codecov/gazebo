@@ -5,16 +5,18 @@ import Spinner from 'ui/Spinner'
 import OrgControlTable from './OrgControlTable'
 import ReposTable from './ReposTable'
 import { useLocationParams } from 'services/navigation'
+import { useLocation, useHistory } from 'react-router-dom'
 
 const defaultQueryParams = {
-  active: true,
   search: '',
   ordering: orderingOptions[0]['ordering'],
   direction: orderingOptions[0]['direction'],
 }
 
-function ListRepo({ owner }) {
+function ListRepo({ owner, active }) {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
+  const { push } = useHistory()
+  const { pathname } = useLocation()
 
   const sortItem = orderingOptions.find(
     (option) =>
@@ -39,9 +41,13 @@ function ListRepo({ owner }) {
             direction: sort.direction,
           })
         }}
-        active={params.active}
+        active={active}
         setActive={(active) => {
-          updateParams({ active })
+          if (active) {
+            push(pathname.replace('/+', ''))
+          } else {
+            push(`${pathname}/+`)
+          }
         }}
         setSearchValue={(search) => {
           updateParams({ search })
@@ -51,7 +57,7 @@ function ListRepo({ owner }) {
         <ReposTable
           sortItem={sortItem}
           owner={owner}
-          active={params.active}
+          active={active}
           searchValue={params.search}
         />
       </Suspense>
@@ -61,6 +67,7 @@ function ListRepo({ owner }) {
 
 ListRepo.propTypes = {
   owner: PropTypes.string,
+  active: PropTypes.bool,
 }
 
 export default ListRepo
