@@ -1,13 +1,17 @@
 import { render, screen } from '@testing-library/react'
-
+import { MemoryRouter } from 'react-router-dom'
 import ListRepo from './ListRepo'
 
 jest.mock('./OrgControlTable/ResyncButton', () => () => 'ResyncButton')
 jest.mock('./ReposTable', () => () => 'ReposTable')
 
 describe('ListRepo', () => {
-  function setup(owner = null) {
-    render(<ListRepo owner={owner} />)
+  function setup(owner = null, active = false) {
+    render(
+      <MemoryRouter initialEntries={['']}>
+        <ListRepo active={active} owner={owner} />
+      </MemoryRouter>
+    )
   }
 
   describe('renders', () => {
