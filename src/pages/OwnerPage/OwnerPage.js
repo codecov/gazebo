@@ -3,10 +3,15 @@ import PropTypes from 'prop-types'
 import ListRepo from 'shared/ListRepo'
 import { useOwner } from 'services/user'
 import NotFound from 'pages/NotFound'
+import { useUser } from 'services/user'
 
 import Header from './Header'
 
-function HomePage({ active = false }) {
+function OwnerPage({ active = false }) {
+  const { data: user } = useUser({
+    suspense: false,
+  })
+
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
@@ -16,14 +21,18 @@ function HomePage({ active = false }) {
 
   return (
     <>
-      <Header owner={owner} />
-      <ListRepo active={active} owner={ownerData.username} />
+      <Header owner={ownerData} currentUser={user} />
+      <ListRepo
+        active={active}
+        canRefetch={ownerData.isCurrentUserPartOfOrg}
+        owner={ownerData.username}
+      />
     </>
   )
 }
 
-HomePage.propTypes = {
+OwnerPage.propTypes = {
   active: PropTypes.bool,
 }
 
-export default HomePage
+export default OwnerPage
