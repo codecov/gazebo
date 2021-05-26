@@ -4,6 +4,7 @@ const defaultConfig = {
   API_URL: '',
   STRIPE_KEY: '',
   IS_ENTERPRISE: false,
+  SENTRY_ENVIRONMENT: 'staging',
 }
 
 function removeReactAppPrefix(obj) {
