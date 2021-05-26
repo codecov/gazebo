@@ -39,7 +39,6 @@ export function useOwner({ username }) {
 
   return useQuery(['owner', variables, provider], () => {
     return Api.graphql({ provider, query, variables }).then((res) => {
-      console.log(res)
       return res?.data?.owner
     })
   })
