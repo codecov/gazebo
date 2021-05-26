@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
+import Avatar from 'ui/Avatar'
 import { useUser } from 'services/user'
 
 function Header({ owner }) {
@@ -9,39 +10,40 @@ function Header({ owner }) {
     suspense: false,
   })
 
-  const ownerForLinks = owner || user.username
-
   return (
     <>
-      <MyContextSwitcher
-        pageName="ownerInternal"
-        pageNameCurrentUser="providerInternal"
-        activeContext={owner}
-      />
-      <div className="my-4">
-        <TabNavigation
-          tabs={[
-            {
-              pageName: owner ? 'ownerInternal' : 'providerInternal',
-              children: 'Repos',
-            },
-            {
-              pageName: 'analytics',
-              children: 'Analytics',
-              options: {
-                owner: ownerForLinks,
-              },
-            },
-            {
-              pageName: 'accountAdmin',
-              children: 'Settings',
-              options: {
-                owner: ownerForLinks,
-              },
-            },
-          ]}
+      {user ? (
+        <MyContextSwitcher
+          pageName="ownerInternal"
+          pageNameCurrentUser="providerInternal"
+          activeContext={owner.username}
         />
-      </div>
+      ) : (
+        <div className="flex items-center">
+          <Avatar user={owner} bordered />
+          <h2 className="mx-2 text-xl font-semibold">{owner.username}</h2>
+        </div>
+      )}
+      {owner.isCurrentUserPartOfOrg && (
+        <div className="my-4">
+          <TabNavigation
+            tabs={[
+              {
+                pageName: 'ownerInternal',
+                children: 'Repos',
+              },
+              {
+                pageName: 'analytics',
+                children: 'Analytics',
+              },
+              {
+                pageName: 'accountAdmin',
+                children: 'Settings',
+              },
+            ]}
+          />
+        </div>
+      )}
     </>
   )
 }
