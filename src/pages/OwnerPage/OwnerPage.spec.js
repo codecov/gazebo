@@ -1,20 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import OwnerPage from './OwnerPage'
-import { useRepos } from 'services/repos/hooks'
+import { useOwner } from 'services/user'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-jest.mock('services/repos/hooks')
 jest.mock('./Header', () => () => 'Header')
+jest.mock('services/user')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 
 describe('OwnerPage', () => {
-  function setup() {
-    useRepos.mockReturnValue({
-      data: {
-        repos: [],
-      },
+  function setup(owner) {
+    useOwner.mockReturnValue({
+      data: owner,
     })
-
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
         <Route path="/:provider/:owner">
@@ -24,9 +21,12 @@ describe('OwnerPage', () => {
     )
   }
 
-  describe('renders', () => {
+  describe('when the owner exists', () => {
     beforeEach(() => {
-      setup()
+      setup({
+        username: 'codecov',
+        isCurrentUserPartOfOrg: false,
+      })
     })
 
     it('renders the ListRepo', () => {
@@ -35,6 +35,28 @@ describe('OwnerPage', () => {
 
     it('renders the header', () => {
       expect(screen.getByText(/Header/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the owner doesnt exist', () => {
+    beforeEach(() => {
+      setup(null)
+    })
+
+    it('doesnt render the ListRepo', () => {
+      expect(screen.queryByText(/ListRepo/)).not.toBeInTheDocument()
+    })
+
+    it('doesnt render the header', () => {
+      expect(screen.queryByText(/Header/)).not.toBeInTheDocument()
+    })
+
+    it('renders a not found error page', () => {
+      expect(
+        screen.getByRole('heading', {
+          name: /not found/i,
+        })
+      ).toBeInTheDocument()
     })
   })
 })
