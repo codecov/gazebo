@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 
 import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
+import '@reach/menu-button/styles.css'
 import AppLink from 'shared/AppLink'
 import Avatar from 'ui/Avatar'
 import Icon from 'ui/Icon'
