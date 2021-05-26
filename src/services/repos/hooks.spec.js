@@ -80,6 +80,10 @@ describe('useRepos', () => {
                   node: repo3,
                 },
               ],
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+              },
             },
           },
         }
@@ -99,6 +103,10 @@ describe('useRepos', () => {
                   node: repo2,
                 },
               ],
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+              },
             },
           },
         }

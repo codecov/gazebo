@@ -114,7 +114,7 @@ export function useRepos({
     },
     {
       getNextPageParam: (data) =>
-        data.pageInfo.hasNextPage ? data.pageInfo.endCursor : undefined,
+        data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
     }
   )
   return {
