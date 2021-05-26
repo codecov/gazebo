@@ -14,7 +14,7 @@ const defaultQueryParams = {
   direction: orderingOptions[0]['direction'],
 }
 
-function ListRepo({ owner, active }) {
+function ListRepo({ owner, active, canRefetch }) {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { push } = useHistory()
   const {
@@ -75,6 +75,7 @@ function ListRepo({ owner, active }) {
         setSearchValue={(search) => {
           updateParams({ search })
         }}
+        canRefetch={canRefetch}
       />
       <Suspense fallback={loadingState}>
         <ReposTable
@@ -91,6 +92,7 @@ function ListRepo({ owner, active }) {
 ListRepo.propTypes = {
   owner: PropTypes.string,
   active: PropTypes.bool,
+  canRefetch: PropTypes.bool.isRequired,
 }
 
 export default ListRepo
