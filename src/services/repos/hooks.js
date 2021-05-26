@@ -118,7 +118,7 @@ export function useRepos({
     }
   )
   return {
-    data: { repos: data.pages.map((page) => page.repos).flat() },
+    data: { repos: data?.pages.map((page) => page.repos).flat() },
     ...rest,
   }
 }
