@@ -6,6 +6,7 @@ Sentry.init({
   dsn: config.SENTRY_DSN,
   debug: config.node_env !== 'production',
   release: config.SENTRY_RELEASE,
+  environment: config.SENTRY_ENVIRONMENT,
   ...declutterConfig(),
 })
 
