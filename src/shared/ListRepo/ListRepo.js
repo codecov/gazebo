@@ -18,11 +18,12 @@ function ListRepo({ owner, active }) {
   const { push } = useHistory()
   const { pathname } = useLocation()
 
-  const sortItem = orderingOptions.find(
-    (option) =>
-      option.ordering === params.ordering &&
-      option.direction === params.direction
-  )
+  const sortItem =
+    orderingOptions.find(
+      (option) =>
+        option.ordering === params.ordering &&
+        option.direction === params.direction
+    ) || orderingOptions[0]
 
   const loadingState = (
     <div className="flex justify-center py-8">
