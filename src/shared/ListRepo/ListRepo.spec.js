@@ -12,7 +12,7 @@ describe('ListRepo', () => {
   function setup(owner = null, active = false, url = '', path = '') {
     render(
       <MemoryRouter initialEntries={[url]}>
-        <ListRepo active={active} owner={owner} />
+        <ListRepo active={active} owner={owner} canRefetch />
         <Route
           path={path}
           render={({ location }) => {
