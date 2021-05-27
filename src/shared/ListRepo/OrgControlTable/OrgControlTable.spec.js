@@ -17,6 +17,7 @@ describe('OrgControlTable', () => {
       active: true,
       setActive: jest.fn(),
       setSearchValue: jest.fn(),
+      canRefetch: true,
       ...over,
     }
     render(<OrgControlTable {...props} />)
@@ -112,6 +113,30 @@ describe('OrgControlTable', () => {
       it('calls setSearchValue', () => {
         expect(props.setSearchValue).toHaveBeenCalled()
       })
+    })
+  })
+
+  describe('when the user can refetch', () => {
+    beforeEach(() => {
+      setup({
+        canRefetch: true,
+      })
+    })
+
+    it('renders the ResyncButton', () => {
+      expect(screen.getByText(/ResyncButton/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user cant refetch', () => {
+    beforeEach(() => {
+      setup({
+        canRefetch: false,
+      })
+    })
+
+    it('doesnt render the ResyncButton', () => {
+      expect(screen.queryByText(/ResyncButton/)).not.toBeInTheDocument()
     })
   })
 })

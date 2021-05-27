@@ -25,6 +25,7 @@ function OrgControlTable({
   setActive,
   setSearchValue,
   searchValue,
+  canRefetch,
 }) {
   const [search, setSearch] = useState(searchValue)
 
@@ -55,16 +56,16 @@ function OrgControlTable({
           />
         </div>
       </div>
-      <div className="mr-auto">
-        <ResyncButton refetch={console.log} />
+      {canRefetch && <ResyncButton />}
+      <div className="ml-auto">
+        <OptionButton
+          active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
+          onChange={(option) =>
+            setActive(option.text === optionButtonOptions[0].text)
+          }
+          options={optionButtonOptions}
+        />
       </div>
-      <OptionButton
-        active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
-        onChange={(option) =>
-          setActive(option.text === optionButtonOptions[0].text)
-        }
-        options={optionButtonOptions}
-      />
     </div>
   )
 }
@@ -76,6 +77,7 @@ OrgControlTable.propTypes = {
   setActive: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
   searchValue: PropTypes.string.isRequired,
+  canRefetch: PropTypes.bool.isRequired,
 }
 
 export default OrgControlTable

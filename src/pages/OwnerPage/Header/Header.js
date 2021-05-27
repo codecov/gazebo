@@ -2,52 +2,48 @@ import PropTypes from 'prop-types'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
-import { useUser } from 'services/user'
+import Avatar from 'ui/Avatar'
 
 function Header({ owner }) {
-  const { data: user } = useUser({
-    suspense: false,
-  })
-
-  const ownerForLinks = owner || user.username
-
-  return (
+  return owner.isCurrentUserPartOfOrg ? (
     <>
       <MyContextSwitcher
         pageName="ownerInternal"
         pageNameCurrentUser="providerInternal"
-        activeContext={owner}
+        activeContext={owner.username}
       />
       <div className="my-4">
         <TabNavigation
           tabs={[
             {
-              pageName: owner ? 'ownerInternal' : 'providerInternal',
+              pageName: 'ownerInternal',
               children: 'Repos',
             },
             {
               pageName: 'analytics',
               children: 'Analytics',
-              options: {
-                owner: ownerForLinks,
-              },
             },
             {
               pageName: 'accountAdmin',
               children: 'Settings',
-              options: {
-                owner: ownerForLinks,
-              },
             },
           ]}
         />
       </div>
     </>
+  ) : (
+    <div className="flex items-center">
+      <Avatar user={owner} bordered />
+      <h2 className="mx-2 text-xl font-semibold">{owner.username}</h2>
+    </div>
   )
 }
 
 Header.propTypes = {
-  owner: PropTypes.string,
+  owner: PropTypes.shape({
+    username: PropTypes.string.isRequired,
+    isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
+  }).isRequired,
 }
 
 export default Header

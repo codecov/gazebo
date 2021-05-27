@@ -9,6 +9,7 @@ import {
   useUpdateProfile,
   useMyContexts,
   useResyncUser,
+  useOwner,
 } from './hooks'
 
 const user = {
@@ -189,6 +190,40 @@ describe('useMyContexts', () => {
         currentUser: user,
         myOrganizations: [org1, org2],
       })
+    })
+  })
+})
+
+describe('useOwner', () => {
+  let hookData
+
+  function setup(dataReturned) {
+    server.use(
+      graphql.query('DetailOwner', (req, res, ctx) => {
+        return res(
+          ctx.data({
+            owner: dataReturned,
+          })
+        )
+      })
+    )
+    hookData = renderHook(() => useOwner({ username: 'codecov' }), { wrapper })
+  }
+
+  describe('when called and user is authenticated', () => {
+    const codecovOrg = {
+      username: 'codecov',
+      avatarUrl: '',
+      isCurrentUserPartOfOrg: true,
+    }
+
+    beforeEach(() => {
+      setup(codecovOrg)
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
+    })
+
+    it('returns the org', () => {
+      expect(hookData.result.current.data).toEqual(codecovOrg)
     })
   })
 })
