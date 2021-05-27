@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 import ListRepo from './ListRepo'
+import userEvent from '@testing-library/user-event'
 
 const mockHistoryPush = jest.fn()
 
@@ -15,10 +16,19 @@ jest.mock('react-router-dom', () => ({
 }))
 
 describe('ListRepo', () => {
+  let testLocation
+
   function setup(owner = null, active = false, url = '') {
     render(
       <MemoryRouter initialEntries={[url]}>
         <ListRepo active={active} owner={owner} />
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
       </MemoryRouter>
     )
   }
@@ -85,6 +95,27 @@ describe('ListRepo', () => {
         })
         .click()
       expect(mockHistoryPush).toHaveBeenCalledWith('//+')
+    })
+  })
+
+  describe('update params after typing', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+      setup()
+      const searchInput = screen.getByRole('textbox', {
+        name: /search/i,
+      })
+      userEvent.type(searchInput, 'search')
+    })
+
+    describe('after waiting some time', () => {
+      beforeEach(() => {
+        jest.advanceTimersByTime(600)
+      })
+
+      it('calls setSearchValue', () => {
+        expect(testLocation).toBe({})
+      })
     })
   })
 })
