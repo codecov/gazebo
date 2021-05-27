@@ -41,10 +41,21 @@ function App() {
               </Route>
               <Route path="/:provider/" exact>
                 <BaseLayout>
-                  <HomePage />
+                  <HomePage active={true} />
                 </BaseLayout>
               </Route>
               <Route path="/:provider/:owner/" exact>
+                <BaseLayout>
+                  <OwnerPage active={true} />
+                </BaseLayout>
+              </Route>
+
+              <Route path="/:provider/+" exact>
+                <BaseLayout>
+                  <HomePage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/+" exact>
                 <BaseLayout>
                   <OwnerPage />
                 </BaseLayout>
