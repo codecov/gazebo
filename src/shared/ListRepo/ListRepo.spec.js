@@ -9,12 +9,12 @@ jest.mock('./ReposTable', () => () => 'ReposTable')
 describe('ListRepo', () => {
   let testLocation
 
-  function setup(owner = null, active = false, url = '') {
+  function setup(owner = null, active = false, url = '', path = '') {
     render(
       <MemoryRouter initialEntries={[url]}>
         <ListRepo active={active} owner={owner} />
         <Route
-          path="*"
+          path={path}
           render={({ location }) => {
             testLocation = location
             return null
@@ -68,24 +68,41 @@ describe('ListRepo', () => {
   })
 
   describe('switches active/inactive repos', () => {
-    beforeEach(() => {
-      setup()
-    })
     it('switches to active repos', () => {
+      setup(null, false, '/gh', '/:provider')
       screen
         .getByRole('button', {
           name: /enabled/i,
         })
         .click()
-      expect(testLocation.pathname).toBe('/')
+      expect(testLocation.pathname).toEqual(expect.not.stringContaining('+'))
     })
     it('switches to inactive repos', () => {
+      setup(null, false, '/gh', '/:provider')
       screen
         .getByRole('button', {
           name: /Not yet setup/i,
         })
         .click()
-      expect(testLocation.pathname).toBe('//+')
+      expect(testLocation.pathname).toEqual(expect.stringContaining('+'))
+    })
+    it('switches to active repos owner page', () => {
+      setup('owner', false, '/gh', '/:provider/:owner')
+      screen
+        .getByRole('button', {
+          name: /enabled/i,
+        })
+        .click()
+      expect(testLocation.pathname).toEqual(expect.not.stringContaining('+'))
+    })
+    it('switches to inactive repos owner page', () => {
+      setup('owner', false, '/gh', '/:provider/:owner')
+      screen
+        .getByRole('button', {
+          name: /Not yet setup/i,
+        })
+        .click()
+      expect(testLocation.pathname).toEqual(expect.stringContaining('+'))
     })
   })
 

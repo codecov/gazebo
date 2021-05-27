@@ -5,7 +5,8 @@ import Spinner from 'ui/Spinner'
 import OrgControlTable from './OrgControlTable'
 import ReposTable from './ReposTable'
 import { useLocationParams } from 'services/navigation'
-import { useLocation, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
+import { useNavLinks } from 'services/navigation'
 
 const defaultQueryParams = {
   search: '',
@@ -16,7 +17,12 @@ const defaultQueryParams = {
 function ListRepo({ owner, active }) {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { push } = useHistory()
-  const { pathname } = useLocation()
+  const {
+    owner: ownerLink,
+    ownerAddRepo,
+    provider: providerLink,
+    providerAddRepo,
+  } = useNavLinks()
 
   const sortItem =
     orderingOptions.find(
@@ -31,6 +37,22 @@ function ListRepo({ owner, active }) {
     </div>
   )
 
+  function handleOwnerLinks(active) {
+    if (active) {
+      push(ownerLink.path())
+    } else {
+      push(ownerAddRepo.path())
+    }
+  }
+
+  function handleUserLinks(active) {
+    if (active) {
+      push(providerLink.path())
+    } else {
+      push(providerAddRepo.path())
+    }
+  }
+
   return (
     <>
       <OrgControlTable
@@ -44,10 +66,10 @@ function ListRepo({ owner, active }) {
         }}
         active={active}
         setActive={(active) => {
-          if (active) {
-            push(pathname.replace('/+', ''))
+          if (owner) {
+            handleOwnerLinks(active)
           } else {
-            push(`${pathname}/+`)
+            handleUserLinks(active)
           }
         }}
         setSearchValue={(search) => {
