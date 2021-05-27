@@ -3,17 +3,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ListRepo from './ListRepo'
 import userEvent from '@testing-library/user-event'
 
-const mockHistoryPush = jest.fn()
-
 jest.mock('./OrgControlTable/ResyncButton', () => () => 'ResyncButton')
 jest.mock('./ReposTable', () => () => 'ReposTable')
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
-}))
 
 describe('ListRepo', () => {
   let testLocation
@@ -86,7 +77,7 @@ describe('ListRepo', () => {
           name: /enabled/i,
         })
         .click()
-      expect(mockHistoryPush).toHaveBeenCalledWith('/')
+      expect(testLocation.pathname).toBe('/')
     })
     it('switches to inactive repos', () => {
       screen
@@ -94,7 +85,7 @@ describe('ListRepo', () => {
           name: /Not yet setup/i,
         })
         .click()
-      expect(mockHistoryPush).toHaveBeenCalledWith('//+')
+      expect(testLocation.pathname).toBe('//+')
     })
   })
 
@@ -114,8 +105,23 @@ describe('ListRepo', () => {
       })
 
       it('calls setSearchValue', () => {
-        expect(testLocation).toBe({})
+        expect(testLocation.state.search).toBe('search')
       })
+    })
+  })
+
+  describe('update params after usign select', () => {
+    beforeEach(() => {
+      setup()
+      const button = screen.getByText('Most recent commit')
+      userEvent.click(button)
+    })
+
+    it('renders the option user the custom rendered', () => {
+      const options = screen.getAllByRole('option')
+      userEvent.click(options[3])
+      expect(testLocation.state.direction).toBe('ASC')
+      expect(testLocation.state.ordering).toBe('COVERAGE')
     })
   })
 })
