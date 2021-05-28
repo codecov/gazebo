@@ -44,7 +44,7 @@ function fetchMyRepos({ provider, variables, after }) {
   return Api.graphql({
     provider,
     query,
-    variable: { ...variables, after },
+    variables: { ...variables, after },
   }).then((res) => {
     const me = res?.data?.me
     return {

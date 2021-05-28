@@ -1,6 +1,6 @@
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { useRepos } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -47,6 +47,17 @@ const repo3 = {
   },
 }
 
+const repo4 = {
+  name: 'python',
+  active: null,
+  private: false,
+  coverage: null,
+  updatedAt: '2021-04-22T14:09:39.826948+00:00',
+  author: {
+    username: 'felipe',
+  },
+}
+
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -59,7 +70,7 @@ afterAll(() => server.close())
 describe('useRepos', () => {
   let hookData
 
-  function setup(hookArgs = {}) {
+  function setup(hookArgs = { filters: { active: true } }) {
     server.use(
       graphql.query('MyRepos', (req, res, ctx) => {
         const data = {
@@ -69,20 +80,28 @@ describe('useRepos', () => {
             },
             viewableRepositories: {
               totalCount: 80,
-              edges: [
-                {
-                  node: repo1,
-                },
-                {
-                  node: repo2,
-                },
-                {
-                  node: repo3,
-                },
-              ],
+              edges: req.variables.after
+                ? [
+                    {
+                      node: repo4,
+                    },
+                  ]
+                : [
+                    {
+                      node: repo1,
+                    },
+                    {
+                      node: repo2,
+                    },
+                    {
+                      node: repo3,
+                    },
+                  ],
               pageInfo: {
-                hasNextPage: false,
-                endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                hasNextPage: req.variables.after ? false : true,
+                endCursor: req.variables.after
+                  ? 'aa'
+                  : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
               },
             },
           },
@@ -142,6 +161,22 @@ describe('useRepos', () => {
     it('returns repositories of the owner', () => {
       expect(hookData.result.current.data).toEqual({
         repos: [repo1, repo2],
+      })
+    })
+  })
+
+  describe('when call next page', () => {
+    beforeEach(async () => {
+      setup()
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      await act(() => {
+        return hookData.result.current.fetchNextPage()
+      })
+    })
+
+    it('returns repositories of the user', () => {
+      expect(hookData.result.current.data).toEqual({
+        repos: [repo1, repo2, repo3, repo4],
       })
     })
   })
