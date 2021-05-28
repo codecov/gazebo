@@ -7,6 +7,7 @@ import { useRepos } from 'services/repos/hooks'
 import AppLink from 'shared/AppLink'
 
 import RepoTitleLink from './RepoTitleLink'
+import Button from 'ui/Button'
 
 const tableActive = [
   {
@@ -86,17 +87,25 @@ function transformRepoToTable(repos, owner, searchValue) {
 }
 
 function ReposTable({ active, searchValue, owner, sortItem }) {
-  const { data } = useRepos({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
     active,
     sortItem,
     term: searchValue,
     owner,
   })
-
   const dataTable = transformRepoToTable(data.repos, owner, searchValue)
 
   return (
-    <Table data={dataTable} columns={active ? tableActive : tableInactive} />
+    <>
+      <Table data={dataTable} columns={active ? tableActive : tableInactive} />
+      {hasNextPage && (
+        <div className="w-full mt-4 flex justify-center">
+          <Button isLoading={isFetchingNextPage} onClick={fetchNextPage}>
+            Load More
+          </Button>
+        </div>
+      )}
+    </>
   )
 }
 
