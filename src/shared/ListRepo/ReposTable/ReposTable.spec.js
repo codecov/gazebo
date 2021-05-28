@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -11,11 +11,14 @@ jest.mock('services/repos/hooks')
 
 describe('ReposTable', () => {
   let props
-  function setup(over = {}, repos) {
+  let fetchNextPage = jest.fn(() => {})
+  function setup(over = {}, repos, hasNextPage) {
     useRepos.mockReturnValue({
       data: {
         repos,
       },
+      hasNextPage,
+      fetchNextPage,
     })
     props = {
       active: true,
@@ -161,6 +164,10 @@ describe('ReposTable', () => {
       const notActiveRepos = screen.getAllByText(/Not yet enabled/)
       expect(notActiveRepos.length).toBe(3)
     })
+    it('does not render next page button', () => {
+      const button = screen.queryByText(/Load More/)
+      expect(button).not.toBeInTheDocument()
+    })
   })
   describe('when rendered empty repos', () => {
     beforeEach(() => {
@@ -189,6 +196,26 @@ describe('ReposTable', () => {
     it('renders no results found', () => {
       const buttons = screen.getAllByText(/no results found/)
       expect(buttons.length).toBe(1)
+    })
+  })
+  describe('render next page button', () => {
+    beforeEach(() => {
+      setup(
+        {
+          active: true,
+          searchValue: 'something',
+        },
+        [],
+        true
+      )
+    })
+    it('renders button', () => {
+      const button = screen.getByText(/Load More/)
+      expect(button).toBeInTheDocument()
+    })
+    it('fires next page button click', () => {
+      fireEvent.click(screen.getByText(/Load More/))
+      expect(fetchNextPage).toHaveBeenCalled()
     })
   })
 })
