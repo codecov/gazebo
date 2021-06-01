@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { Suspense } from 'react'
-import { orderingOptions } from 'services/repos'
+import { orderingOptions, nonActiveOrderingOptions } from 'services/repos'
 import Spinner from 'ui/Spinner'
 import OrgControlTable from './OrgControlTable'
 import ReposTable from './ReposTable'
@@ -24,12 +24,14 @@ function ListRepo({ owner, active, canRefetch }) {
     providerAddRepo,
   } = useNavLinks()
 
+  const orderOptions = active ? orderingOptions : nonActiveOrderingOptions
+
   const sortItem =
-    orderingOptions.find(
+    orderOptions.find(
       (option) =>
         option.ordering === params.ordering &&
         option.direction === params.direction
-    ) || orderingOptions[0]
+    ) || orderOptions[0]
 
   const loadingState = (
     <div className="flex justify-center py-8">

@@ -49,7 +49,6 @@ function App() {
                   <OwnerPage active={true} />
                 </BaseLayout>
               </Route>
-
               <Route path="/:provider/+" exact>
                 <BaseLayout>
                   <HomePage />

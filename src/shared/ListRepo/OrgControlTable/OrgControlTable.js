@@ -5,7 +5,7 @@ import useDebounce from 'react-use/lib/useDebounce'
 import OptionButton from 'ui/OptionButton'
 import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
-import { orderingOptions } from 'services/repos'
+import { orderingOptions, nonActiveOrderingOptions } from 'services/repos'
 
 import ResyncButton from './ResyncButton'
 
@@ -43,7 +43,7 @@ function OrgControlTable({
         <div className="w-52 mr-2">
           <Select
             value={sortItem}
-            items={orderingOptions}
+            items={active ? orderingOptions : nonActiveOrderingOptions}
             onChange={setSortItem}
             renderItem={(option) => option.text}
           />
