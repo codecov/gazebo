@@ -28,7 +28,7 @@
     "react-scripts": "^4.0.3",
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
-    "web-vitals": "^1.1.2",
+    "web-vitals": "^2.0.0",
     "websocket-extensions": "^0.1.4",
     "yup": "^0.32.9"
   },
