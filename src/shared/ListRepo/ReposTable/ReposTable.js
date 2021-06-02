@@ -60,7 +60,7 @@ function transformRepoToTable(repos, owner, searchValue) {
   return repos.map((repo) => ({
     title: <RepoTitleLink repo={repo} showRepoOwner={showRepoOwner} />,
     lastUpdated: (
-      <span className="w-full text-right">
+      <span className="w-full text-right text-ds-gray-quinary">
         {repo.latestCommitAt
           ? formatDistanceToNow(new Date(repo.latestCommitAt), {
               addSuffix: true,
@@ -70,7 +70,7 @@ function transformRepoToTable(repos, owner, searchValue) {
     ),
     coverage:
       typeof repo.coverage === 'number' ? (
-        <div className="w-80">
+        <div className="w-80 max-w-xs">
           <Progress amount={repo.coverage} label={true} />
         </div>
       ) : (

@@ -4,7 +4,7 @@ import { useTable, useFlexLayout } from 'react-table'
 import cs from 'classnames'
 
 const TableClasses = {
-  headerCell: 'py-2 text-sm flex font-semibold px-3.5 text-ds-gray-quaternary',
+  headerCell: 'py-2 text-sm flex font-semibold px-3.5 text-ds-gray-quinary',
   headerRow: 'text-left border-t border-b border-ds-black-secondary',
   tableRow: 'border-t border-ds-black-secondary',
   tableCell: 'py-3 items-center flex px-4 text-ds-gray-octonary text-sm',
