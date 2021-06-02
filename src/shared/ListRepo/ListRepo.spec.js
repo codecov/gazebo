@@ -9,7 +9,7 @@ jest.mock('./ReposTable', () => () => 'ReposTable')
 describe('ListRepo', () => {
   let testLocation
 
-  function setup(owner = null, active = false, url = '', path = '') {
+  function setup(owner = null, active = true, url = '', path = '') {
     render(
       <MemoryRouter initialEntries={[url]}>
         <ListRepo active={active} owner={owner} canRefetch />
@@ -59,7 +59,7 @@ describe('ListRepo', () => {
       expect(select).toBeInTheDocument()
     })
     it('default fallback for ordering & direction parameter from URL', () => {
-      setup(null, false, '?ordering=NAMEe&direction=DESC')
+      setup(null, true, '?ordering=NAMEe&direction=DESC')
       const select = screen.getByRole('button', {
         name: /Most recent commit/,
       })
@@ -139,6 +139,19 @@ describe('ListRepo', () => {
       userEvent.click(options[3])
       expect(testLocation.state.direction).toBe('ASC')
       expect(testLocation.state.ordering).toBe('COVERAGE')
+    })
+  })
+
+  describe('renders sorting options for nin active repos', () => {
+    it('render sorting for non active repos', () => {
+      setup(null, false, '')
+      const buttons = screen.getAllByRole('button')
+      expect(buttons.length).toBe(3)
+    })
+    it('render sorting for non active reposL', () => {
+      setup(null, true, '')
+      const buttons = screen.getAllByRole('button')
+      expect(buttons.length).toBe(3)
     })
   })
 })
