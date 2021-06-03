@@ -39,6 +39,11 @@ function App() {
                   <AccountSettings />
                 </BaseLayout>
               </Route>
+              <Route path="/:provider/+" exact>
+                <BaseLayout>
+                  <HomePage />
+                </BaseLayout>
+              </Route>
               <Route path="/:provider/" exact>
                 <BaseLayout>
                   <HomePage active={true} />
@@ -47,12 +52,6 @@ function App() {
               <Route path="/:provider/:owner/" exact>
                 <BaseLayout>
                   <OwnerPage active={true} />
-                </BaseLayout>
-              </Route>
-
-              <Route path="/:provider/+" exact>
-                <BaseLayout>
-                  <HomePage />
                 </BaseLayout>
               </Route>
               <Route path="/:provider/:owner/+" exact>
