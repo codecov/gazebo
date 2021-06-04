@@ -6,24 +6,14 @@ import YamlEditor from './YamlEditor'
 import Button from 'ui/Button'
 import { useYamlConfig, useUpdateYaml } from 'services/yaml'
 
-function YAML({ owner, provider }) {
+function YAML({ owner }) {
   const [isDirty, setDirty] = useState(false)
-  const [newConfig, setNewConfig] = useState('')
   const { data: yamlConfig, isSuccess } = useYamlConfig({
-    provider,
     variables: { username: owner },
   })
-
-  const {
-    // error,
-    // data,
-    isLoading,
-    // isError,
-    // isSuccess: updateSuccess,
-    mutate,
-  } = useUpdateYaml({
-    provider,
-    variables: { username: owner },
+  const [newConfig, setNewConfig] = useState(yamlConfig)
+  const { isLoading, mutate } = useUpdateYaml({
+    username: owner,
   })
 
   const onChange = (value) => {
@@ -32,7 +22,7 @@ function YAML({ owner, provider }) {
   }
 
   const onSubmit = () => {
-    mutate({ username: owner, content: sanitize(newConfig) })
+    mutate({ yaml: sanitize(newConfig) })
   }
 
   return (
@@ -54,7 +44,7 @@ function YAML({ owner, provider }) {
       </div>
       <YamlEditor
         placeholder={`All ${owner} repos will inherit this configuration`}
-        value={isSuccess && yamlConfig}
+        value={isSuccess && newConfig}
         onChange={onChange}
       />
       <div className="mt-4 float-right">

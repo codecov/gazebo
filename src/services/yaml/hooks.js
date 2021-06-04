@@ -1,40 +1,44 @@
 import Api from 'shared/api'
+import { useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 
-export function useYamlConfig({ provider, variables }) {
+export function useYamlConfig({ variables }) {
+  const { provider } = useParams()
   const query = `
-  query YamlConfig ($username: String!) {
-    owner(username: $username) {
-      yaml
+    query YamlConfig($username: String!){
+      owner(username: $username) {
+        yaml
+      }
     }
-  }
   `
-
-  return useQuery(['yaml', provider], () => {
-    return Api.graphql({ provider, query, variables }).then((res) => {
+  return useQuery(['YamlConfig', provider, variables?.username], () =>
+    Api.graphql({ provider, query, variables }).then((res) => {
       const yaml = res?.data?.owner?.yaml
-      if (!yaml) return null
       return yaml
     })
-  })
+  )
 }
 
-export function useUpdateYaml({ provider, variables }) {
+export function useUpdateYaml({ username }) {
+  const { provider } = useParams()
+
   const queryClient = useQueryClient()
-  return useMutation(() => {
+  return useMutation(({ yaml }) => {
     const query = `
-    mutation($username: String!) {
-      me {
-        yaml(content: $content) {
-          error
+    mutation($input: SetYamlOnOwnerInput!) {
+      setYamlOnOwner(input: $input) {
+        error
+        owner {
+          username
+          yaml
         }
       }
     }
   `
-    console.log('Do update later')
 
+    const variables = { input: { username, yaml } }
     return Api.graphql({ provider, query, variables }).then((res) => {
-      queryClient.invalidateQueries('yaml')
+      queryClient.invalidateQueries('yamlConfig')
       return res?.data?.yaml?.error
     })
   })
