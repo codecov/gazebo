@@ -30,3 +30,16 @@ export const orderingOptions = [
     direction: 'DESC',
   },
 ]
+
+export const nonActiveOrderingOptions = [
+  {
+    text: 'Name [A-Z]',
+    ordering: 'NAME',
+    direction: 'ASC',
+  },
+  {
+    text: 'Name [Z-A]',
+    ordering: 'NAME',
+    direction: 'DESC',
+  },
+]

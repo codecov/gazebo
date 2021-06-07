@@ -16,7 +16,7 @@ const tableActive = [
     width: 'w-7/12',
   },
   {
-    Header: 'Last Updated',
+    Header: <span className="w-full text-right">Last Updated</span>,
     accessor: 'lastUpdated',
     width: 'w-2/12',
   },
@@ -59,12 +59,20 @@ function transformRepoToTable(repos, owner, searchValue) {
 
   return repos.map((repo) => ({
     title: <RepoTitleLink repo={repo} showRepoOwner={showRepoOwner} />,
-    lastUpdated: repo.latestCommitAt
-      ? formatDistanceToNow(new Date(repo.latestCommitAt), { addSuffix: true })
-      : '-',
+    lastUpdated: (
+      <span className="w-full text-right text-ds-gray-quinary">
+        {repo.latestCommitAt
+          ? formatDistanceToNow(new Date(repo.latestCommitAt), {
+              addSuffix: true,
+            })
+          : '-'}
+      </span>
+    ),
     coverage:
       typeof repo.coverage === 'number' ? (
-        <Progress amount={repo.coverage} label={true} />
+        <div className="w-80 max-w-xs">
+          <Progress amount={repo.coverage} label={true} />
+        </div>
       ) : (
         <span className="text-gray-quinary text-sm">No data available</span>
       ),
