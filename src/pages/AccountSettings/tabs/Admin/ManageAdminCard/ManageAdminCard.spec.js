@@ -3,8 +3,10 @@ import userEvent from '@testing-library/user-event'
 
 import ManageAdminCard from './ManageAdminCard'
 import { useUsers, useUpdateUser } from 'services/users'
+import { useAccountDetails } from 'services/account'
 
 jest.mock('services/users')
+jest.mock('services/account')
 jest.mock('./AddAdmins', () => () => 'AddAdmins')
 jest.mock('react-router-dom', () => ({
   useParams: () => ({
@@ -17,15 +19,22 @@ const admins = [
   { username: 'dorian', email: 'dorian@codecov.io', name: 'dorian' },
 ]
 
+const account = {
+  isCurrentUserAdmin: true,
+}
+
 describe('ManageAdminCard', () => {
   const refetch = jest.fn()
   const mutate = jest.fn()
-  function setup(adminResults = []) {
+  function setup(adminResults = [], accountData = account) {
     useUsers.mockReturnValue({
       data: {
         results: adminResults,
       },
       refetch,
+    })
+    useAccountDetails.mockReturnValue({
+      data: accountData,
     })
     useUpdateUser.mockReturnValue({
       isLoading: false,
@@ -45,6 +54,10 @@ describe('ManageAdminCard', () => {
           /No admins yet. Note that admins in your Github organization are automatically considered admins./
         )
       ).toBeInTheDocument()
+    })
+
+    it('renders the add admin', () => {
+      expect(screen.queryByText(/AddAdmins/)).toBeInTheDocument()
     })
   })
 
@@ -88,6 +101,30 @@ describe('ManageAdminCard', () => {
         targetUser: admins[0].username,
         is_admin: false,
       })
+    })
+  })
+
+  describe('when the user is not admin', () => {
+    beforeEach(() => {
+      setup(admins, { isCurrentUserAdmin: false })
+    })
+
+    it('doesnt render the add admin', () => {
+      expect(screen.queryByText(/AddAdmins/)).not.toBeInTheDocument()
+    })
+
+    it('renders the admins', () => {
+      expect(screen.getAllByText(admins[0].name)).not.toHaveLength(0)
+      expect(screen.getAllByText(admins[0].username)).not.toHaveLength(0)
+      expect(screen.getAllByText(admins[0].email)).not.toHaveLength(0)
+    })
+
+    it('doesnt render revoke buttons', () => {
+      expect(
+        screen.queryByRole('button', {
+          name: /revoke/i,
+        })
+      ).not.toBeInTheDocument()
     })
   })
 })

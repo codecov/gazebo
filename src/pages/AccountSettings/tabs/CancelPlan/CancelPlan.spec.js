@@ -38,7 +38,7 @@ describe('CancelPlan', () => {
   const addNotification = jest.fn()
   let testLocation
 
-  function setup(currentPlan = proPlan) {
+  function setup(currentPlan = proPlan, isCurrentUserAdmin = true) {
     useAddNotification.mockReturnValue(addNotification)
     useAccountDetails.mockReturnValue({
       data: {
@@ -48,6 +48,7 @@ describe('CancelPlan', () => {
         subscriptionDetail: {
           currentPeriodEnd: 1638614662,
         },
+        isCurrentUserAdmin,
       },
     })
     usePlans.mockReturnValue({
@@ -177,6 +178,22 @@ describe('CancelPlan', () => {
 
     it('has the button disabled', () => {
       expect(screen.getByRole('button')).toHaveAttribute('disabled')
+    })
+  })
+
+  describe('when the user is not admin', () => {
+    beforeEach(() => {
+      setup(proPlan, false)
+    })
+
+    it('has the button disabled', () => {
+      expect(screen.getByRole('button')).toHaveAttribute('disabled')
+    })
+
+    it('renders a message only admin can do this action', () => {
+      expect(
+        screen.getByText(/Only admins can update the plan/)
+      ).toBeInTheDocument()
     })
   })
 })

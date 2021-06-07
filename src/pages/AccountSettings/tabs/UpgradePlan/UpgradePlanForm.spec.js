@@ -62,6 +62,7 @@ describe('UpgradePlanForm', () => {
     proPlanMonth,
     proPlanYear,
     accountDetails: {
+      isCurrentUserAdmin: true,
       activatedUserCount: 9,
       inactiveUserCount: 0,
       plan: null,
@@ -69,11 +70,16 @@ describe('UpgradePlanForm', () => {
     },
   }
 
-  function setup(selectedPlan = null, invoice = null) {
+  function setup(
+    selectedPlan = null,
+    invoice = null,
+    isCurrentUserAdmin = true
+  ) {
     props = {
       ...defaultProps,
       accountDetails: {
         ...defaultProps.accountDetails,
+        isCurrentUserAdmin,
         plan: selectedPlan,
         latestInvoice: invoice,
       },
@@ -98,6 +104,18 @@ describe('UpgradePlanForm', () => {
     const input = screen.getByRole('spinbutton')
     return userEvent.type(input, '{backspace}{backspace}{backspace}')
   }
+
+  describe('when the user is not admin', () => {
+    beforeEach(() => {
+      setup(null, null, false)
+    })
+
+    it('renders a message only admin can do this action', () => {
+      expect(
+        screen.getByText(/Only admins can update the plan/)
+      ).toBeInTheDocument()
+    })
+  })
 
   describe('when the user doesnt have any plan', () => {
     beforeEach(() => {

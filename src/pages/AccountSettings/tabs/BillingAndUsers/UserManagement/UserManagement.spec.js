@@ -20,7 +20,7 @@ const users = {
 }
 
 const account = {
-  data: { planAutoActivate: true },
+  data: { planAutoActivate: true, isCurrentUserAdmin: true },
 }
 
 const updateUserMutate = jest.fn()
@@ -468,6 +468,44 @@ describe('UserManagerment', () => {
           expect(updateAccountMutate).toHaveBeenCalledTimes(1)
         )
       })
+    })
+  })
+
+  describe('when the user is not admin and the user arent autoactivate', () => {
+    beforeEach(() => {
+      setup({
+        mockUseAccountDetails: {
+          data: {
+            isCurrentUserAdmin: false,
+            planAutoActivate: false,
+          },
+        },
+      })
+    })
+
+    it('renders a copy that user arent auto-activate', () => {
+      expect(
+        screen.getByText(/Auto activate users disabled/)
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user is not admin and the user are autoactivate', () => {
+    beforeEach(() => {
+      setup({
+        mockUseAccountDetails: {
+          data: {
+            isCurrentUserAdmin: false,
+            planAutoActivate: true,
+          },
+        },
+      })
+    })
+
+    it('renders a copy that user arent auto-activate', () => {
+      expect(
+        screen.getByText(/Auto activate users enabled/)
+      ).toBeInTheDocument()
     })
   })
 })

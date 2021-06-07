@@ -230,7 +230,7 @@ function UpgradePlanForm({
       </Button>
       {!accountDetails.isCurrentUserAdmin && (
         <p className="text-error-500 text-center">
-          Only admins can upgrade the plan
+          Only admins can update the plan
         </p>
       )}
     </form>
