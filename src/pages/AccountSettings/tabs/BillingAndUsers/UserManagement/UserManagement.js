@@ -68,9 +68,8 @@ function UserManagement({ provider, owner }) {
   // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider })
   const { mutate: autoActivate } = useAutoActivate({ owner, provider })
-  const {
-    data: { planAutoActivate },
-  } = useAccountDetails({ owner, provider })
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const { planAutoActivate, isCurrentUserAdmin } = accountDetails
 
   return (
     <article className={UserManagementClasses.root}>
@@ -88,13 +87,17 @@ function UserManagement({ provider, owner }) {
         <div className={UserManagementClasses.cardHeader}>
           <h2 className={UserManagementClasses.title}>Users</h2>
           <span className={UserManagementClasses.activateUsers}>
-            <Toggle
-              showLabel={true}
-              onClick={() => autoActivate(!planAutoActivate)}
-              value={planAutoActivate}
-              label="Auto activate users"
-              labelClass={UserManagementClasses.activateUsersText}
-            />
+            {isCurrentUserAdmin ? (
+              <Toggle
+                showLabel={true}
+                onClick={() => autoActivate(!planAutoActivate)}
+                value={planAutoActivate}
+                label="Auto activate users"
+                labelClass={UserManagementClasses.activateUsersText}
+              />
+            ) : (
+              `Auto activate users ${planAutoActivate ? 'enabled' : 'disabled'}`
+            )}
           </span>
         </div>
         <div>
@@ -111,16 +114,19 @@ function UserManagement({ provider, owner }) {
                   avatarUrl={getOwnerImg(provider, user.username)}
                   pills={createPills(user)}
                 />
-                <div className={UserManagementClasses.ctaWrapper}>
-                  <Button
-                    className={UserManagementClasses.cta}
-                    color={user.activated ? 'red' : 'blue'}
-                    variant={user.activated ? 'outline' : 'normal'}
-                    onClick={() => activate(user.username, !user.activated)}
-                  >
-                    {user.activated ? 'Deactivate' : 'Activate'}
-                  </Button>
-                </div>
+                {isCurrentUserAdmin && (
+                  <div className={UserManagementClasses.ctaWrapper}>
+                    <Button
+                      disabled={!isCurrentUserAdmin}
+                      className={UserManagementClasses.cta}
+                      color={user.activated ? 'red' : 'blue'}
+                      variant={user.activated ? 'outline' : 'normal'}
+                      onClick={() => activate(user.username, !user.activated)}
+                    >
+                      {user.activated ? 'Deactivate' : 'Activate'}
+                    </Button>
+                  </div>
+                )}
               </div>
             ))}
         </div>

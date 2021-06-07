@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useUsers, useUpdateUser } from 'services/users'
+import { useAccountDetails } from 'services/account'
 import { ApiFilterEnum } from 'services/navigation'
 import { getOwnerImg } from 'shared/utils'
 import { providerToName } from 'shared/utils/provider'
@@ -37,6 +38,7 @@ function useAdminsAndRevoke({ provider, owner }) {
 
 function AdminList() {
   const { provider, owner } = useParams()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { admins, setAdminStatus, isLoading } = useAdminsAndRevoke({
     provider,
     owner,
@@ -44,13 +46,15 @@ function AdminList() {
 
   return (
     <>
-      <div className="mb-4">
-        <AddAdmins
-          provider={provider}
-          owner={owner}
-          setAdminStatus={setAdminStatus}
-        />
-      </div>
+      {accountDetails.isCurrentUserAdmin && (
+        <div className="mb-4">
+          <AddAdmins
+            provider={provider}
+            owner={owner}
+            setAdminStatus={setAdminStatus}
+          />
+        </div>
+      )}
       <div className="max-h-56 overflow-y-auto">
         {admins.length === 0 ? (
           <p className="text-gray-800">
@@ -70,15 +74,17 @@ function AdminList() {
                 pills={[admin.email]}
                 compact
               />
-              <Button
-                disabled={isLoading}
-                className="ml-auto"
-                variant="outline"
-                color="gray"
-                onClick={() => setAdminStatus(admin, false)}
-              >
-                Revoke
-              </Button>
+              {accountDetails.isCurrentUserAdmin && (
+                <Button
+                  disabled={isLoading}
+                  className="ml-auto"
+                  variant="outline"
+                  color="gray"
+                  onClick={() => setAdminStatus(admin, false)}
+                >
+                  Revoke
+                </Button>
+              )}
             </div>
           ))
         )}

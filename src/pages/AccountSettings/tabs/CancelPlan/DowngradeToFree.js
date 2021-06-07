@@ -44,6 +44,7 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
   const isAlreadyFreeUser = accountDetails.plan?.value === 'users-free'
   const isDisabled = [
     // disable button if
+    !accountDetails.isCurrentUserAdmin, // not an admin
     isLoading, // request in fly
     isAlreadyFreeUser, // user is a free user
     accountDetails.subscriptionDetail?.cancelAtPeriodEnd, // the subscription is already getting cancelled
@@ -61,6 +62,11 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
       >
         {isAlreadyFreeUser ? 'Already free user' : 'Downgrade to Free'}
       </Button>
+      {!accountDetails.isCurrentUserAdmin && (
+        <p className="text-error-500 text-center">
+          Only admins can upgrade the plan
+        </p>
+      )}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

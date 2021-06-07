@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropType from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
 import { useForm, Controller } from 'react-hook-form'
@@ -220,9 +221,18 @@ function UpgradePlanForm({
           {errors.seats?.message}
         </p>
       )}
-      <Button disabled={!isDirty} type="submit" className="w-full block mt-4">
+      <Button
+        disabled={!isDirty || !accountDetails.isCurrentUserAdmin}
+        type="submit"
+        className="w-full block mt-4"
+      >
         Update
       </Button>
+      {!accountDetails.isCurrentUserAdmin && (
+        <p className="text-error-500 text-center">
+          Only admins can upgrade the plan
+        </p>
+      )}
     </form>
   )
 }
