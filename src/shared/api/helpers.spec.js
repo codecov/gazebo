@@ -48,23 +48,18 @@ describe('getHeaders', () => {
   })
 
   test.each([
-    ['gh', { Authorization: 'Bearer github token' }, 'github-token'],
-    ['gl', { Authorization: 'Bearer gitlab token' }, 'gitlab-token'],
-    ['bb', { Authorization: 'Bearer bitbucket token' }, 'bitbucket-token'],
-    ['github', { Authorization: 'Bearer github token' }, 'github-token'],
-    [
-      'bitbucket',
-      { Authorization: 'Bearer bitbucket token' },
-      'bitbucket-token',
-    ],
-    ['gitlab', { Authorization: 'Bearer gitlab token' }, 'gitlab-token'],
-    ['invalid', {}, undefined],
+    ['gh', { Authorization: 'Bearer github token' }],
+    ['gl', { Authorization: 'Bearer gitlab token' }],
+    ['bb', { Authorization: 'Bearer bitbucket token' }],
+    ['github', { Authorization: 'Bearer github token' }],
+    ['bitbucket', { Authorization: 'Bearer bitbucket token' }],
+    ['gitlab', { Authorization: 'Bearer gitlab token' }],
+    ['invalid', {}],
   ])(
     'Passing %i as a provider creates the correct auth header',
-    (provider, auth, token) => {
+    (provider, auth) => {
       expect(getHeaders(provider)).toStrictEqual({
         Accept: 'application/json',
-        'Token-Type': token,
         ...auth,
       })
     }
