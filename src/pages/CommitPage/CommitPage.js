@@ -1,3 +1,7 @@
+import CoverageReportCard from './CoverageReportCard'
+import UploadsCard from './UploadsCard'
+import CommitsTable from './CommitsTable'
+
 function CommitPage() {
   return (
     <div className="flex flex-col">
@@ -15,11 +19,18 @@ function CommitPage() {
       </div>
       <hr className="mt-6" />
       <div className="flex flex-col md:flex-row mt-8">
-        <div className="flex w-full mr-8 md:max-w-md flex-col">
-          <div className="h-44 bg-ds-gray-octonary"></div>
-          <div className="h-44 mt-2 md:mt-8 bg-ds-gray-octonary"></div>
+        <div className="flex w-full mr-8 md:max-w-sm flex-col">
+          <div className="">
+            <CoverageReportCard />
+          </div>
+          <div className="mt-2 md:mt-8">
+            <UploadsCard />
+          </div>
         </div>
-        <div className="h-96 w-full mt-2 md:mt-0 bg-ds-gray-secondary"></div>
+        <div className="flex flex-col w-full mt-2 md:mt-0">
+          <span className="text-base mb-4 font-semibold">Impacted files</span>
+          <CommitsTable />
+        </div>
       </div>
     </div>
   )
