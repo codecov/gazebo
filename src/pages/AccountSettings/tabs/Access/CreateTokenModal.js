@@ -42,7 +42,7 @@ function CreateTokenModal({ closeModal, provider }) {
           id="token-name"
           name="name"
           placeholder="Name"
-          ref={register}
+          {...register('name', { required: true })}
         />
       }
       footer={

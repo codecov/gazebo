@@ -9,7 +9,7 @@ const NotFound = () => {
   }
 
   return (
-    <article className="mx-auto flex items-center justify-center flex-col">
+    <article className="mx-auto h-full flex items-center justify-center flex-col">
       <img
         alt="illustration error"
         className={cs(styles.illustrationError, 'mx-auto')}

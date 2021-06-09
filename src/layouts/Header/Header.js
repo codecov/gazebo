@@ -1,8 +1,18 @@
+import cs from 'classnames'
+import { useImpersonate } from 'services/impersonate'
+
 import DesktopMenu from './DesktopMenu'
 
 function Header() {
+  const { isImpersonating } = useImpersonate()
+
   return (
-    <header className="bg-ds-gray-octonary text-white">
+    <header
+      className={cs('text-white', {
+        'bg-ds-gray-octonary': !isImpersonating,
+        'bg-ds-pink-tertiary': isImpersonating,
+      })}
+    >
       <nav className="h-14 flex items-center container justify-between mx-auto">
         <DesktopMenu />
       </nav>

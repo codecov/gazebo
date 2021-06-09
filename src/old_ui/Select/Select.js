@@ -10,8 +10,7 @@ const SelectClasses = {
   item: 'block hover:bg-gray-200 cursor-pointer p-2 text-sm',
   button:
     'flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none',
-  ul:
-    'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10',
+  ul: 'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10',
 }
 
 function Select({
@@ -43,7 +42,6 @@ function Select({
     onSelectedItemChange: ({ selectedItem }) => onChange(selectedItem),
     selectedItem: value ?? null,
   })
-
   function renderButton() {
     const _render = renderSelected || renderItem
     return (

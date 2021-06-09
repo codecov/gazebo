@@ -1,5 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
+import { orderingOptions } from 'services/repos'
+
 import OrgControlTable from './OrgControlTable'
 
 jest.mock('./ResyncButton', () => () => 'ResyncButton')
@@ -9,11 +12,12 @@ describe('OrgControlTable', () => {
 
   function setup(over = {}) {
     props = {
-      sortItem: 'Most recent commit',
+      sortItem: orderingOptions[0],
       setSortItem: jest.fn(),
       active: true,
       setActive: jest.fn(),
       setSearchValue: jest.fn(),
+      canRefetch: true,
       ...over,
     }
     render(<OrgControlTable {...props} />)
@@ -89,6 +93,7 @@ describe('OrgControlTable', () => {
 
   describe('when typing in the search', () => {
     beforeEach(() => {
+      jest.useFakeTimers()
       setup()
       const searchInput = screen.getByRole('textbox', {
         name: /search/i,
@@ -96,8 +101,42 @@ describe('OrgControlTable', () => {
       userEvent.type(searchInput, 'search')
     })
 
-    it('calls setSearchValue', () => {
-      expect(props.setSearchValue).toHaveBeenLastCalledWith('search')
+    it('doesnt call setSearchValue yet', () => {
+      expect(props.setSearchValue).not.toHaveBeenCalledWith('search')
+    })
+
+    describe('after waiting some time', () => {
+      beforeEach(() => {
+        jest.advanceTimersByTime(600)
+      })
+
+      it('calls setSearchValue', () => {
+        expect(props.setSearchValue).toHaveBeenCalled()
+      })
+    })
+  })
+
+  describe('when the user can refetch', () => {
+    beforeEach(() => {
+      setup({
+        canRefetch: true,
+      })
+    })
+
+    it('renders the ResyncButton', () => {
+      expect(screen.getByText(/ResyncButton/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user cant refetch', () => {
+    beforeEach(() => {
+      setup({
+        canRefetch: false,
+      })
+    })
+
+    it('doesnt render the ResyncButton', () => {
+      expect(screen.queryByText(/ResyncButton/)).not.toBeInTheDocument()
     })
   })
 })

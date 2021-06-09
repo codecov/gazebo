@@ -64,13 +64,10 @@ function getSchema(accountDetails) {
 
 function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const planOptions = [proPlanYear, proPlanMonth]
-
-  const { register, handleSubmit, watch, control, errors, formState } = useForm(
-    {
-      defaultValues: getInitialDataForm(planOptions, accountDetails),
-      resolver: yupResolver(getSchema(accountDetails)),
-    }
-  )
+  const { register, handleSubmit, watch, control, formState } = useForm({
+    defaultValues: getInitialDataForm(planOptions, accountDetails),
+    resolver: yupResolver(getSchema(accountDetails)),
+  })
 
   const seats = watch('seats')
   const newPlan = watch('newPlan')
@@ -89,7 +86,6 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
     handleSubmit,
     control,
     isPerYear,
-    errors,
     planOptions,
     formState,
   }
@@ -137,13 +133,11 @@ function UpgradePlanForm({
     handleSubmit,
     control,
     isPerYear,
-    errors,
     planOptions,
-    formState: { isDirty },
+    formState: { isDirty, errors },
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
 
   const { upgradePlan } = useSubmit({ owner, provider })
-
   return (
     <form className="text-gray-900" onSubmit={handleSubmit(upgradePlan)}>
       <h2 className="text-2xl text-pink-500 bold mb-8">
@@ -152,7 +146,7 @@ function UpgradePlanForm({
       <Controller
         name="newPlan"
         control={control}
-        render={({ onChange, value }) => (
+        render={({ field }) => (
           <Select
             items={planOptions}
             renderItem={(plan) => (
@@ -163,8 +157,8 @@ function UpgradePlanForm({
                 <span>${plan.baseUnitPrice} /month</span>
               </div>
             )}
-            onChange={onChange}
-            value={value}
+            onChange={field.onChange}
+            value={field.value}
           />
         )}
       />
@@ -178,9 +172,8 @@ function UpgradePlanForm({
             User Seats:
           </label>
           <input
-            ref={register}
+            {...register('seats')}
             id="nb-seats"
-            name="seats"
             size="40"
             className="bg-gray-100 p-2 rounded border"
             type="number"

@@ -1,29 +1,33 @@
 import { useParams } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import ListRepo from 'shared/ListRepo'
+import { useOwner } from 'services/user'
+import NotFound from 'pages/NotFound'
 
-import MyContextSwitcher from 'layouts/MyContextSwitcher'
-import TabNavigation from 'ui/TabNavigation'
+import Header from './Header'
 
-function OwnerPage() {
+function OwnerPage({ active = false }) {
   const { owner } = useParams()
+  const { data: ownerData } = useOwner({ username: owner })
+
+  if (!ownerData) {
+    return <NotFound />
+  }
+
   return (
     <>
-      <MyContextSwitcher
-        pageName="ownerInternal"
-        pageNameCurrentUser="providerInternal"
-        activeContext={owner}
+      <Header owner={ownerData} />
+      <ListRepo
+        active={active}
+        canRefetch={ownerData.isCurrentUserPartOfOrg}
+        owner={ownerData.username}
       />
-      <div className="my-4">
-        <TabNavigation
-          tabs={[
-            { pageName: 'ownerInternal', children: 'Repos' },
-            { pageName: 'analytics', children: 'Analytics' },
-            { pageName: 'accountAdmin', children: 'Settings' },
-          ]}
-        />
-      </div>
-      <p>SHOW ALL THE REPOS OF {owner}</p>
     </>
   )
+}
+
+OwnerPage.propTypes = {
+  active: PropTypes.bool,
 }
 
 export default OwnerPage

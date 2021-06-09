@@ -1,50 +1,22 @@
-import MyContextSwitcher from 'layouts/MyContextSwitcher'
-import { useState, Suspense } from 'react'
+import { useUser } from 'services/user'
+import ListRepo from 'shared/ListRepo'
 
-import OrgControlTable from './OrgControlTable'
-import ReposTable from './ReposTable'
-import Spinner from 'ui/Spinner'
+import Header from './Header'
+import PropTypes from 'prop-types'
 
-const sortItems = [
-  'Most recent commit',
-  'Least recent commit',
-  'Highest coverage',
-  'Lowest coverage',
-  'Name [A-Z]',
-  'Name [Z-A]',
-]
-
-
-
-function HomePage() {
-  const [active, setActive] = useState(true)
-  const [sortItem, setSortItem] = useState(sortItems[0])
-  const [searchValue, setSearchValue] = useState('')
-
-  const loadingState = (
-    <div className="flex justify-center py-8">
-      <Spinner />
-    </div>
-  )
+function HomePage({ active = false }) {
+  const { data: currentUser } = useUser()
 
   return (
     <>
-      <MyContextSwitcher
-        pageName="ownerInternal"
-        pageNameCurrentUser="providerInternal"
-      />
-      <OrgControlTable
-        sortItem={sortItem}
-        setSortItem={setSortItem}
-        active={active}
-        setActive={setActive}
-        setSearchValue={setSearchValue}
-      />
-      <Suspense fallback={loadingState}>
-        <ReposTable active={active} searchValue={searchValue} />
-      </Suspense>
+      <Header currentUsername={currentUser.username} />
+      <ListRepo active={active} canRefetch />
     </>
   )
+}
+
+HomePage.propTypes = {
+  active: PropTypes.bool,
 }
 
 export default HomePage

@@ -10,13 +10,13 @@ const Template = (args) => {
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(_handleSubmit)}>
-      <RadioInput ref={register} {...args} value="test1" name="test" />
+      <RadioInput {...register('test')} {...args} value="test1" name="test" />
       <div>
         <input
           id="secondaryRadio"
           className="mr-2"
           type="radio"
-          ref={register}
+          {...register('test')}
           {...args}
           value="test2"
           name="test"

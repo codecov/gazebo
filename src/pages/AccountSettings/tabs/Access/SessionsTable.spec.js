@@ -32,6 +32,15 @@ describe('SessionsTable', () => {
           type: 'login',
           name: null,
         },
+        {
+          sessionid: 8,
+          ip: '172.23.0.3',
+          lastseen: null,
+          useragent: null,
+          owner: 2,
+          type: 'login',
+          name: null,
+        },
       ],
     }
 
@@ -47,7 +56,7 @@ describe('SessionsTable', () => {
     describe('renders sessions table', () => {
       it('renders sessions table revoke button', () => {
         const buttons = screen.getAllByText(/Revoke/)
-        expect(buttons.length).toBe(2)
+        expect(buttons.length).toBe(3)
       })
       it('renders sessions table user agent', () => {
         const useragent1 = screen.getByText(/Macintosh/)

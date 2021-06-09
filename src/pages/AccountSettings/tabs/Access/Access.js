@@ -24,18 +24,20 @@ function Access({ provider }) {
 
   return (
     <div className="flex flex-col">
-      <h2 className="text-lg font-semibold text-gray-octonary">API Tokens</h2>
+      <h2 className="text-lg font-semibold">API Tokens</h2>
       <div className="flex justify-between items-center">
-        <p data-testid="tokens-summary" className="text-sm text-gray-octonary">
-          Tokens created to access Codecov`s API as an authenticated user{' '}
+        <p data-testid="tokens-summary">
+          Tokens created to access Codecov’s API as an authenticated user{' '}
           <a
             data-testid="tokens-docs-link"
             rel="noreferrer"
             target="_blank"
             href="https://docs.codecov.io/reference#authorization"
+            className="text-ds-blue"
           >
             learn more
           </a>
+          .
         </p>
         <Button onClick={() => setShowModal(true)}>Generate Token</Button>
         {showModal && (
@@ -46,9 +48,7 @@ function Access({ provider }) {
         )}
       </div>
       <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
-      <h2 className="mt-8 mb-4 text-lg font-semibold text-gray-octonary">
-        Login Sessions
-      </h2>
+      <h2 className="mt-8 mb-4 text-lg font-semibold">Login Sessions</h2>
       <div className="max-w-screen-md">
         <SessionsTable onRevoke={handleRevoke} sessions={data.sessions} />
       </div>
