@@ -1,7 +1,9 @@
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 
-function UploadsCard({ uploads }) {
+function UploadsCard() {
+  const uploads = [1, 2, 3, 4]
+
   return (
     <div className="flex w-full flex-col border border-ds-gray-secondary text-ds-gray-octonary">
       <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
