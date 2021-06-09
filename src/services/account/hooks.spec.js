@@ -180,7 +180,7 @@ describe('usePlans', () => {
         return res(ctx.status(200), ctx.json(getPlans()))
       })
     )
-    hookData = renderHook(() => usePlans({ provider, owner }), {
+    hookData = renderHook(() => usePlans(provider), {
       wrapper,
     })
   }
