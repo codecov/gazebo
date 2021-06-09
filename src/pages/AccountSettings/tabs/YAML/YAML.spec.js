@@ -1,44 +1,31 @@
 import { render, screen } from '@testing-library/react'
 
+import { useYamlConfig, useUpdateYaml } from 'services/yaml'
 import YAML from './YAML'
 
-xdescribe('YAMLTab', () => {
-  function setup(url) {
-    render(<YAML />)
+jest.mock('services/yaml')
+jest.mock('./YamlEditor', () => () => <input test-id="fake-ace" />)
+
+describe('YAMLTab', () => {
+  function setup(props = {}) {
+    useYamlConfig.mockReturnValue({ data: 'hello' })
+    useUpdateYaml.mockReturnValue({})
+    render(<YAML {...props} />)
   }
 
-  describe('when rendering on base url', () => {
-    beforeEach(() => {
-      setup('/')
-    })
-
-    it('renders something', () => {
-      const tab = screen.getByText(
-        /Changes made to the Global yml will override the default repo settings and is applied to all repositories in the org./
-      )
-      expect(tab).toBeInTheDocument()
-    })
+  beforeEach(() => {
+    setup({ owner: 'doggo' })
   })
 
-  // Moving sanatize tests to the submit button
-  // describe('onSubmit', () => {
-  //     beforeEach(() => {
-  //       jest.resetAllMocks()
-  //       setup({ value: 'Banana' })
-  //     })
-  //     // Having a hard time getting ace runs its lifecycle correctly.
-  //     it('sanatizes the returned value', async () => {
-  //       expect(onChangeMock).toHaveBeenCalledTimes(0)
-  //       screen.debug()
-  //       userEvent.click(screen.getByTitle())
-  //       userEvent.type(screen.getByRole('textbox'), 'Hello,{enter}World!')
-  //       await fireEvent.change(screen.getByRole('textbox'), {
-  //         target: {
-  //           value: '<p>abc<iframe//src=jAva&Tab;script:alert(3)>def</p>',
-  //         },
-  //       })
+  it('renders the description text', () => {
+    const tab = screen.getByText(
+      /Changes made to the Global yml will override the default repo settings and is applied to all repositories in the org./
+    )
+    expect(tab).toBeInTheDocument()
+  })
 
-  //       expect(onChangeMock).toHaveBeenCalledTimes(1)
-  //       expect(onChangeMock).toReturnWith('<p>abc</p>')
-  //     })
+  it('The save button is disabled initially', () => {
+    const save = screen.getByText(/Save Changes/)
+    expect(save.getAttribute('disabled')).toBe('')
+  })
 })

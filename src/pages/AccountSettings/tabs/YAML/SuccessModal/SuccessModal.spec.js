@@ -1,44 +1,47 @@
-import ResModal from './SuccessModal'
+import SuccessModal from './SuccessModal'
 import { render, screen } from 'custom-testing-library'
-import { useGenerateToken } from 'services/access'
+import userEvent from '@testing-library/user-event'
 
-jest.mock('services/access')
-
-describe('ResModal', () => {
+describe('SuccessModal', () => {
   const closeModal = jest.fn()
   const defaultProps = {
-    provider: 'gh',
-    showModal: true,
+    owner: 'gh',
+    isOpen: true,
     closeModal: closeModal,
   }
-  const mutate = jest.fn()
 
   function setup(props) {
-    useGenerateToken.mockReturnValue({
-      mutate,
-    })
-
     const _props = { ...defaultProps, ...props }
-    render(<ResModal {..._props} />)
+    render(<SuccessModal {..._props} />)
   }
 
-  describe('renders initial ResModal', () => {
+  describe('renders initial SuccessModal', () => {
     beforeEach(() => {
-      setup()
+      setup({ owner: 'doggo' })
     })
     it('renders title', () => {
-      const title = screen.getByText(/Generate new API access token/)
+      const title = screen.getByText(/Yaml configuration updated/)
       expect(title).toBeInTheDocument()
     })
     it('renders body', () => {
-      const label = screen.getByText(/Token Name/)
+      const label = screen.getByText(
+        /doggo yaml configuration has been successfully saved. New coverage reports will reflect these changes. Repositories with a codecov.yaml file extend this account level Codecov config./
+      )
       expect(label).toBeInTheDocument()
-      const input = document.querySelector('#token-name')
-      expect(input).toBeInTheDocument()
     })
     it('renders footer', () => {
-      const buttons = screen.getAllByRole('button')
-      expect(buttons.length).toBe(2)
+      const button = screen.getByRole('button')
+      expect(button).toBeInTheDocument()
+    })
+
+    it('closes on done click', () => {
+      userEvent.click(screen.getByText('Done'))
+      expect(closeModal).toHaveBeenCalled()
+    })
+
+    it('closes on X click', () => {
+      userEvent.click(screen.getByText('x.svg'))
+      expect(closeModal).toHaveBeenCalled()
     })
   })
 })

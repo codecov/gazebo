@@ -27,16 +27,16 @@ export function useUpdateYaml({ username }) {
   return useMutation(
     ({ yaml }) => {
       const query = `
-    mutation UpdateYamlConfig ($input: SetYamlOnOwnerInput!) {
-      setYamlOnOwner(input: $input) {
-        error
-        owner {
-          username
-          yaml
+        mutation UpdateYamlConfig ($input: SetYamlOnOwnerInput!) {
+          setYamlOnOwner(input: $input) {
+            error
+            owner {
+              username
+              yaml
+            }
+          }
         }
-      }
-    }
-  `
+      `
 
       const variables = { input: { username, yaml } }
       return Api.graphql({ provider, query, variables })

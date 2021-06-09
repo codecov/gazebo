@@ -2,7 +2,7 @@ import Modal from 'ui/Modal'
 import Button from 'ui/Button'
 import PropTypes from 'prop-types'
 
-function ResModal({ closeModal, owner, ...props }) {
+function SuccessModal({ closeModal, owner, ...props }) {
   const title = 'Yaml configuration updated'
   const body = (
     <p>
@@ -24,9 +24,9 @@ function ResModal({ closeModal, owner, ...props }) {
   )
 }
 
-ResModal.propTypes = {
+SuccessModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
   owner: PropTypes.string.isRequired,
 }
 
-export default ResModal
+export default SuccessModal
