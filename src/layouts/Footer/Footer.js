@@ -3,16 +3,8 @@ import { FooterItem } from './FooterItem'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 
 function Footer() {
-  const {
-    terms,
-    privacy,
-    security,
-    gdpr,
-    pricing,
-    support,
-    docs,
-    enterprise,
-  } = useStaticNavLinks()
+  const { terms, privacy, security, gdpr, pricing, support, docs, enterprise } =
+    useStaticNavLinks()
 
   const leftMenu = [{ text: '© 2021 Codecov' }, terms, privacy, security, gdpr]
   const rightMenu = [pricing, support, docs, enterprise]
