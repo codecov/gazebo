@@ -22,12 +22,16 @@ export function generatePath({ path, query }) {
 }
 
 export function getHeaders(provider) {
-  const baseHeader = { Accept: 'application/json' }
+  const p = provider.toLowerCase()
+  const tokenType = ProviderCookieKeyMapping[p]
+  const baseHeader = {
+    Accept: 'application/json',
+    'Token-Type': tokenType,
+  }
 
   if (typeof provider !== 'string') return baseHeader
 
-  const p = provider.toLowerCase()
-  const token = Cookie.get(ProviderCookieKeyMapping[p])
+  const token = Cookie.get(tokenType)
 
   const authorizationHeader =
     typeof token === 'string'
