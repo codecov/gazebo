@@ -41,7 +41,7 @@ export function useUpdateYaml({ username }) {
       return Api.graphql({ provider, query, variables })
     },
     {
-      onSuccess: ({ data, ...args }) => {
+      onSuccess: ({ data }) => {
         if (data?.setYamlOnOwner?.error === 'unauthenticated') {
           history.go() // Force refresh to trigger error, throwing error didnt catch error boundary. I don't love that graphQL errors are not getting caught by the error boundary
         }
