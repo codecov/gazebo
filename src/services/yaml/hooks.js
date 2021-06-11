@@ -1,6 +1,6 @@
 import Api from 'shared/api'
 import { useParams, useHistory } from 'react-router-dom'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 
 export function useYamlConfig({ variables }) {
   const { provider } = useParams()
@@ -21,7 +21,6 @@ export function useYamlConfig({ variables }) {
 
 export function useUpdateYaml({ username }) {
   const { provider } = useParams()
-  const queryClient = useQueryClient()
   const history = useHistory()
 
   return useMutation(
@@ -46,7 +45,6 @@ export function useUpdateYaml({ username }) {
         if (data?.setYamlOnOwner?.error === 'unauthenticated') {
           history.go() // Force refresh to trigger error, throwing error didnt catch error boundary. I don't love that graphQL errors are not getting caught by the error boundary
         }
-        queryClient.invalidateQueries('YamlConfig')
       },
     }
   )

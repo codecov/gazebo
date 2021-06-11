@@ -33,9 +33,8 @@ function YAML({ owner }) {
     mutate(
       { yaml: sanitize(newConfig) },
       {
-        onSuccess: ({ data, errors }) => {
-          if (data?.setYamlOnOwner?.error === 'unauthenticated') {
-          }
+        onSuccess: ({ errors }) => {
+          console.log(errors, 'help')
           if (!errors) {
             openModal(true)
             setButton(DEFAULT_BUTTON)
