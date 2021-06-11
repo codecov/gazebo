@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
+import { render, screen, waitFor } from 'custom-testing-library'
+import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -20,6 +20,14 @@ const wrapper = ({ children }) => (
 // The ace-editor is currently not really testable so I'm mocking the whole component with something to respond to the onChange event
 jest.mock('./YamlEditor', () => (props) => <MockEditor {...props} />)
 
+const basicYamlConfig = { data: { owner: { yaml: 'hello' } } }
+const updateYamlConfig = (y) => ({
+  data: { owner: { yaml: y, username: 'doggo' } },
+})
+const updateYamlConfigError = (e) => ({
+  errors: e,
+})
+
 function MockEditor({ onChange, annotations, value }) {
   function onInputChange(e) {
     onChange(e.target.value)
@@ -33,14 +41,14 @@ function MockEditor({ onChange, annotations, value }) {
           </li>
         ))}
       </ul>
-      <input onChange={onInputChange} value={value} />
+      <input onChange={onInputChange} value={!value ? '' : value} />
     </>
   )
 }
 MockEditor.propTypes = {
   onChange: PropTypes.func,
   annotations: PropTypes.array,
-  value: PropTypes.string,
+  value: PropTypes.any,
 }
 
 const server = setupServer()
@@ -52,36 +60,27 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-xdescribe('YAMLTab', () => {
-  function setup(props = {}) {
+describe('YAMLTab', () => {
+  function setup(dataReturned) {
     server.use(
-      graphql.query('YamlConfig', (req, res, ctx) => {
-        return res(
-          ctx.data({
-            me: {},
-          })
-        )
-      }),
-      graphql.mutation('UpdateYamlConfig', (req, res, ctx) => {
-        return res(
-          ctx.data({
-            setYamlOnOwner: {
-              error: null,
-              owner: {
-                username: 'doggo',
-                yaml: 'hello',
-              },
-            },
-          })
-        )
+      rest.post(`/graphql/gh`, (req, res, ctx) => {
+        if (req.body.query.includes('UpdateYamlConfig')) {
+          return res(ctx.status(200), ctx.json(dataReturned.UpdateYamlConfig))
+        }
+        if (req.body.query.includes('YamlConfig')) {
+          return res(ctx.status(200), ctx.json(dataReturned.YamlConfig))
+        }
       })
     )
 
-    render(<YAML {...props} owner="doggo" />, wrapper)
+    render(<YAML owner="doggo" />, { wrapper })
   }
   describe('basic tests', () => {
     beforeEach(() => {
-      setup({ owner: 'doggo' })
+      setup({
+        YamlConfig: basicYamlConfig,
+        UpdateYamlConfig: updateYamlConfig(''),
+      })
     })
 
     it('renders the description text', () => {
@@ -93,27 +92,75 @@ xdescribe('YAMLTab', () => {
 
     it('The save button is disabled initially', () => {
       const save = screen.getByText(/Save Changes/)
-      expect(save.getAttribute('disabled')).toBe('')
+      expect(save).toBeDisabled()
     })
   })
 
-  describe('make a valid change', () => {
-    beforeEach(() => {
-      setup({ owner: 'doggo' })
+  describe('saves a valid yaml file', () => {
+    beforeEach(async () => {
+      setup({
+        YamlConfig: basicYamlConfig,
+        UpdateYamlConfig: updateYamlConfig(''),
+      })
+
       const editor = screen.getByRole('textbox')
-      userEvent.type(editor, 'test: test')
-      expect(editor).toHaveValue('test: test')
+      userEvent.paste(editor, 'test: test')
+      await waitFor(() => expect(editor).toHaveValue('test: test'))
     })
 
     it('The save button is enabled after editor input', () => {
       const save = screen.getByText(/Save Changes/)
-      expect(save.getAttribute('disabled')).toBe(null)
+      expect(save).not.toBeDisabled()
     })
 
-    it('On save', async () => {
+    it('Opens modal on save', async () => {
+      const save = screen.getByText(/Save Changes/)
+      userEvent.click(save)
+      await screen.findByText(/Yaml configuration updated/)
+    })
+
+    it('You can close the modal by clicking done', async () => {
+      const save = screen.getByText(/Save Changes/)
+      userEvent.click(save)
+      await screen.findByText(/Yaml configuration updated/)
+      userEvent.click(screen.getByRole('button', { text: /Done/ }))
+      expect(
+        screen.queryByText(/Yaml configuration updated/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('You can close the modal', async () => {
+      const save = screen.getByText(/Save Changes/)
+      userEvent.click(save)
+      await screen.findByText(/Yaml configuration updated/)
+      userEvent.click(screen.getByText(/x.svg/))
+      expect(
+        screen.queryByText(/Yaml configuration updated/)
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('fails and annotates linting errors', () => {
+    beforeEach(async () => {
+      setup({
+        YamlConfig: basicYamlConfig,
+        UpdateYamlConfig: updateYamlConfigError([
+          { message: 'bad config', locations: [{ column: 2, line: 20 }] },
+          { message: 'some error', locations: [{ column: 6, line: 5 }] },
+        ]),
+      })
+
+      const editor = screen.getByRole('textbox')
+      userEvent.paste(editor, 'test: test')
+      await waitFor(() => expect(editor).toHaveValue('test: test'))
+    })
+
+    it('The save bulled becomes unsaved changes and annotations are passed to the ace editor', async () => {
       const save = screen.getByText(/Save Changes/)
       userEvent.click(save)
       await screen.findByText(/Unsaved changes/)
+      expect(screen.getByText(/bad config/)).toBeInTheDocument()
+      expect(screen.getByText(/some error/)).toBeInTheDocument()
     })
   })
 })

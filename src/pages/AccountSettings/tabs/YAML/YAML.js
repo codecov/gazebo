@@ -33,8 +33,7 @@ function YAML({ owner }) {
     mutate(
       { yaml: sanitize(newConfig) },
       {
-        onSuccess: ({ errors }) => {
-          console.log(errors, 'help')
+        onSuccess: ({ errors, ...args }) => {
           if (!errors) {
             openModal(true)
             setButton(DEFAULT_BUTTON)
