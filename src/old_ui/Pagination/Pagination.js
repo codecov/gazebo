@@ -10,8 +10,7 @@ const endClasses =
   'px-4 bg-white hover:bg-gray-100 text-black disabled:text-gray-200 disabled:bg-white'
 
 const PaginationClasses = {
-  nav:
-    'rounded-full relative z-0 inline-flex shadow-sm -space-x-px bg-gray-300 border border-gray-200 text-white',
+  nav: 'rounded-full relative z-0 inline-flex shadow-sm -space-x-px bg-gray-300 border border-gray-200 text-white',
   previous: cs(pageClasses, endClasses, 'rounded-l-full'),
   next: cs(pageClasses, endClasses, 'rounded-r-full'),
   current: cs(pageClasses, 'rounded-md bg-blue-400 hover:bg-blue-300'),
