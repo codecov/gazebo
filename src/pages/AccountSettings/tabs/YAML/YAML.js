@@ -33,22 +33,33 @@ function YAML({ owner }) {
     mutate(
       { yaml: sanitize(newConfig) },
       {
-        onSuccess: ({ errors }) => {
-          if (!errors) {
+        onSuccess: ({ errors, data }) => {
+          if (!errors && !data?.setYamlOnOwner?.error) {
             openModal(true)
             setButton(DEFAULT_BUTTON)
             setAnnotations([])
             return
           }
+          if (data?.setYamlOnOwner?.error) {
+            setAnnotations([
+              {
+                row: 0,
+                column: 0,
+                text: data.setYamlOnOwner.error,
+                type: 'error',
+              },
+            ])
+          } else if (errors) {
+            setAnnotations(
+              errors.map((err) => ({
+                row: err.locations[0].line - 1 || 0,
+                column: err.locations[0].column - 1 || 0,
+                text: err.message,
+                type: 'error',
+              }))
+            )
+          }
           setButton({ type: 'danger', text: 'Unsaved changes' })
-          setAnnotations(
-            errors.map((err) => ({
-              row: err.locations[0].line - 1,
-              column: err.locations[0].column - 1,
-              text: err.message,
-              type: 'error',
-            }))
-          )
         },
       }
     )
