@@ -18,9 +18,11 @@ const wrapper = ({ children }) => (
 )
 
 // The ace-editor is currently not really testable so I'm mocking the whole component with something to respond to the onChange event
-jest.mock('./YamlEditor', () => (props) => <MockEditor {...props} />)
+jest.mock('react-ace', () => (props) => <MockEditor {...props} />)
+jest.mock('ace-builds/src-noconflict/theme-github', () => {})
+jest.mock('ace-builds/src-noconflict/mode-yaml', () => {})
 
-const basicYamlConfig = { data: { owner: { yaml: 'hello' } } }
+const basicYamlConfig = { data: { owner: { yaml: '' } } }
 const updateYamlConfig = (y) => ({
   data: { owner: { yaml: y, username: 'doggo' } },
 })

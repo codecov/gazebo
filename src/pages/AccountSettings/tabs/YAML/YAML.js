@@ -62,7 +62,7 @@ function YAML({ owner }) {
         owner={owner}
       />
       <div className="border-b border-ds-gray-secondary pb-4 mb-4">
-        <p className="font-bold text-lg">Global yml</p>
+        <p className="font-semimbold text-lg">Global yml</p>
         <p>
           Changes made to the Global yml will override the default repo settings
           and is applied to all repositories in the org.{' '}

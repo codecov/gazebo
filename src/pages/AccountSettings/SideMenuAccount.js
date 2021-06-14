@@ -20,7 +20,7 @@ function SideMenuAccount() {
               ? 'internalAccessTab'
               : 'billingAndUsers',
           },
-          { pageName: 'yamlTab' },
+          { pageName: 'internalYamlTab' },
         ]}
       />
     </div>
