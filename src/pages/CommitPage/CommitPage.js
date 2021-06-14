@@ -1,13 +1,25 @@
+import { useParams } from 'react-router-dom'
+
 import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
 import CommitsTable from './CommitsTable'
+import Breadcrumb from 'ui/Breadcrumb'
 
 function CommitPage() {
+  const { owner, repo } = useParams()
+
   return (
     <div className="flex flex-col">
-      <span className="w-full border-b border-ds-gray-secondary pb-3">
-        Febg/repo-test/Commits/jsdfhjksd
-      </span>
+      <div className="w-full flex border-b border-ds-gray-secondary pb-3">
+        <Breadcrumb
+          paths={[
+            { pageName: 'owner', text: owner },
+            { pageName: 'repo', text: repo },
+            { pageName: 'commits' },
+            { pageName: 'a675fas', readOnly: true, text: 'a675fas' },
+          ]}
+        />
+      </div>
       <span className="mt-4 text-lg font-semibold text-ds-gray-octonary">
         Update Graphql mutation
       </span>

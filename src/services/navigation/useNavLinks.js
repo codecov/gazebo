@@ -126,6 +126,17 @@ function useNavLinks() {
       ) => `/account/${provider}/${owner}/invoices/${id}`,
       isExternalLink: false,
     },
+    commits: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/commits`,
+      isExternalLink: true,
+      text: 'Commits',
+    },
   }
 }
 
