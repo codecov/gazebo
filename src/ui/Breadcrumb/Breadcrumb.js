@@ -2,30 +2,13 @@ import PropTypes from 'prop-types'
 import cs from 'classnames'
 import AppLink from 'shared/AppLink'
 
-const styles = {
-  md: {
-    link: '',
-    readOnly: 'text-xs',
-  },
-  lg: {
-    link: 'text-xl',
-    readOnly: 'text-xl',
-  },
-}
-
-function Breadcrumb({ paths, size = 'md' }) {
+function Breadcrumb({ paths }) {
   return (
-    <div className={cs('flex items-center', styles[size].link)}>
+    <div className={cs('flex items-center')}>
       {paths.map((path, i) => (
         <>
-          {path.readOnly ? (
-            <span
-              key={i}
-              className={cs(
-                'text-ds-gray-octonary font-semibold',
-                styles[size].readOnly
-              )}
-            >
+          {i === paths.length - 1 ? (
+            <span key={i} className={cs('text-ds-gray-octonary font-semibold')}>
               {path.text}
             </span>
           ) : (
@@ -49,5 +32,4 @@ export default Breadcrumb
 
 Breadcrumb.propTypes = {
   paths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
-  size: PropTypes.oneOf(['md', 'lg']),
 }
