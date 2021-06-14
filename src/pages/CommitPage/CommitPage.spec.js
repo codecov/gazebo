@@ -1,9 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import CommitPage from './CommitPage'
+import { MemoryRouter } from 'react-router-dom'
 
 describe('HomePage', () => {
   function setup() {
-    render(<CommitPage />)
+    render(<CommitPage />, {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('renders', () => {
