@@ -2,7 +2,7 @@ import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 
 function UploadsCard() {
-  const uploads = [1, 2, 3, 4]
+  const uploads = [1, 2, 3, 4, 5, 6, 7]
 
   return (
     <div className="flex w-full flex-col border border-ds-gray-secondary text-ds-gray-octonary">
@@ -13,7 +13,7 @@ function UploadsCard() {
         </div>
         <span className="text-ds-gray-quinary">4 successful</span>
       </div>
-      <div className="bg-ds-gray-primary flex flex-col w-full">
+      <div className="bg-ds-gray-primary max-h-64 overflow-scroll flex flex-col w-full">
         <span className="text-sm font-semibold w-full py-1 px-4">
           Circle CI
         </span>
