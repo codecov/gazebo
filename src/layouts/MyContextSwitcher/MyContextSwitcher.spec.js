@@ -58,26 +58,6 @@ describe('MyContextSwitcher', () => {
     })
   })
 
-  describe('when the user has some contexts', () => {
-    beforeEach(() => {
-      setup(
-        {},
-        {
-          currentUser,
-          myOrganizations,
-        }
-      )
-    })
-
-    it('renders the button with the current user', () => {
-      expect(
-        screen.getByRole('button', {
-          name: /dorianamouroux/i,
-        })
-      ).toBeInTheDocument()
-    })
-  })
-
   describe('when the user has some contexts and activeContext is passed to an organization', () => {
     beforeEach(() => {
       setup(

@@ -21,30 +21,20 @@ function useNavLinks() {
     },
     provider: {
       path: ({ provider = p } = { provider: p }) => `/${provider}`,
-      isExternalLink: true,
+      isExternalLink: false,
     },
     providerAddRepo: {
       path: ({ provider = p } = { provider: p }) => `/${provider}/+`,
-      isExternalLink: true,
-    },
-    providerInternal: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}`,
       isExternalLink: false,
     },
     owner: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/${provider}/${owner}`,
-      isExternalLink: true,
+      isExternalLink: false,
     },
     ownerAddRepo: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/${provider}/${owner}/+`,
-      isExternalLink: true,
-    },
-    // Like owner but internal
-    ownerInternal: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}`,
       isExternalLink: false,
     },
     analytics: {

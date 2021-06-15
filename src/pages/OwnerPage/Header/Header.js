@@ -7,16 +7,12 @@ import Avatar from 'ui/Avatar'
 function Header({ owner }) {
   return owner.isCurrentUserPartOfOrg ? (
     <>
-      <MyContextSwitcher
-        pageName="ownerInternal"
-        pageNameCurrentUser="providerInternal"
-        activeContext={owner.username}
-      />
+      <MyContextSwitcher pageName="owner" activeContext={owner.username} />
       <div className="my-4">
         <TabNavigation
           tabs={[
             {
-              pageName: 'ownerInternal',
+              pageName: 'owner',
               children: 'Repos',
             },
             {

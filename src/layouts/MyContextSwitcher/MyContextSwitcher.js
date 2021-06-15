@@ -17,20 +17,15 @@ function MyContextSwitcher({
   const contexts = [
     {
       owner: currentUser,
-      pageName: pageNameCurrentUser,
+      pageName,
     },
     ...myOrganizations.map((context) => ({
       owner: context,
-      pageName: pageName,
+      pageName,
     })),
   ]
 
-  return (
-    <ContextSwitcher
-      activeContext={activeContext || currentUser.username}
-      contexts={contexts}
-    />
-  )
+  return <ContextSwitcher activeContext={activeContext} contexts={contexts} />
 }
 
 MyContextSwitcher.propTypes = {
