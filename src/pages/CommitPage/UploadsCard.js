@@ -1,7 +1,7 @@
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 
-function UploadsCard() {
+function UploadsCard({ showYAMLModal, setShowYAMLModal }) {
   const uploads = [1, 2, 3, 4]
 
   return (
@@ -9,7 +9,12 @@ function UploadsCard() {
       <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
         <div className="flex justify-between">
           <span className="text-base font-semibold">Uploads</span>
-          <span className="text-ds-blue-darker text-xs">view yml file</span>
+          <span
+            onClick={() => setShowYAMLModal(true)}
+            className="text-ds-blue-darker cursor-pointer text-xs"
+          >
+            view yml file
+          </span>
         </div>
         <span className="text-ds-gray-quinary">4 successful</span>
       </div>
@@ -45,6 +50,8 @@ function UploadsCard() {
 
 UploadsCard.propTypes = {
   uploads: PropTypes.array,
+  showYAMLModal: PropTypes.bool.isRequired,
+  setShowYAMLModal: PropTypes.func.isRequired,
 }
 
 export default UploadsCard
