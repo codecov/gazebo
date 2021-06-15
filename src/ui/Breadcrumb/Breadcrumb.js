@@ -12,11 +12,7 @@ function Breadcrumb({ paths }) {
               {path.text}
             </span>
           ) : (
-            <AppLink
-              {...path}
-              className="text-ds-blue-darker"
-              key={path.pageName}
-            >
+            <AppLink {...path} className="text-ds-blue-darker" key={i}>
               {path.text}
             </AppLink>
           )}
