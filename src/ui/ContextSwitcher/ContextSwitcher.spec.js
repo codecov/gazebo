@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import ContextSwitcher from '.'
 
-const props = {
+const defaultProps = {
   activeContext: 'dorianamouroux',
   contexts: [
     {
@@ -36,8 +36,12 @@ function fireClickAndMouseEvents(element) {
 }
 
 describe('ContextSwitcher', () => {
-  let wrapper
-  function setup() {
+  let wrapper, props
+  function setup(over = {}) {
+    props = {
+      ...defaultProps,
+      ...over,
+    }
     wrapper = render(<ContextSwitcher {...props} />, {
       wrapper: (props) => (
         <MemoryRouter initialEntries={['/gh']}>
@@ -70,6 +74,18 @@ describe('ContextSwitcher', () => {
         '[data-reach-menu-popover]'
       )
       expect(popover).toBeVisible()
+    })
+  })
+
+  describe('when rendered with no active context', () => {
+    beforeEach(() => {
+      setup({
+        activeContext: null,
+      })
+    })
+
+    it('renders all orgs and repos', () => {
+      expect(screen.getByText(/all my orgs and repos/i)).toBeInTheDocument()
     })
   })
 })

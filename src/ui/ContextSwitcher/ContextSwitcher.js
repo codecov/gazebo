@@ -44,7 +44,7 @@ function ContextSwitcher({ activeContext, contexts }) {
   return (
     <Menu>
       <MenuButton className={styles.button}>
-        {activeContext ? (
+        {currentContext ? (
           <>
             <Avatar user={currentContext.owner} bordered />
             <div className="ml-2 mr-1">{currentContext.owner.username}</div>
