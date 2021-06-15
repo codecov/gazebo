@@ -26,11 +26,13 @@ describe('HomePage', () => {
       expect(screen.getByText(/Impacted files/)).toBeInTheDocument()
     })
 
-    it('opens YAMl modal', () => {
+    it('opens & close YAMl modal', () => {
       fireEvent.click(screen.getByText('view yml file'))
       expect(
         screen.getByText('Includes default yaml, global yaml, and repo')
       ).toBeInTheDocument()
+      fireEvent.click(screen.getByText('view yml file'))
+      fireEvent.click(screen.getByLabelText('Close'))
     })
   })
 })
