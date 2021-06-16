@@ -19,7 +19,7 @@ const Template = (args) => (
 export const SimpleTabNavigation = Template.bind({})
 SimpleTabNavigation.args = {
   tabs: [
-    { pageName: 'ownerInternal', children: 'Repos' },
+    { pageName: 'owner', children: 'Repos' },
     { pageName: 'accountAdmin', children: 'Settings' },
   ],
 }

@@ -6,16 +6,12 @@ import TabNavigation from 'ui/TabNavigation'
 function Header({ currentUsername }) {
   return (
     <>
-      <MyContextSwitcher
-        pageName="ownerInternal"
-        pageNameCurrentUser="providerInternal"
-        activeContext={currentUsername}
-      />
+      <MyContextSwitcher pageName="owner" activeContext={null} />
       <div className="my-4">
         <TabNavigation
           tabs={[
             {
-              pageName: 'providerInternal',
+              pageName: 'provider',
               children: 'Repos',
             },
             {
