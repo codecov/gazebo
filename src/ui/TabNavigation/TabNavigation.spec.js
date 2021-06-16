@@ -7,7 +7,7 @@ describe('TabNavigation', () => {
     const location = '/gh/codecov'
     const props = {
       tabs: [
-        { pageName: 'ownerInternal', children: 'Repos' },
+        { pageName: 'owner', children: 'Repos' },
         { pageName: 'accountAdmin', children: 'Settings' },
       ],
     }

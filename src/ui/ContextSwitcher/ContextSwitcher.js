@@ -16,12 +16,13 @@ const styles = {
 
 function getCurrentContext({ activeContext, contexts }) {
   return contexts.find((context) => {
-    return context.owner.username.toLowerCase() === activeContext.toLowerCase()
+    return context.owner.username.toLowerCase() === activeContext?.toLowerCase()
   })
 }
 
 function ContextSwitcher({ activeContext, contexts }) {
   const currentContext = getCurrentContext({ activeContext, contexts })
+
   function renderContext(context) {
     const { owner, pageName } = context
     const isActiveContext = context === currentContext
@@ -43,8 +44,17 @@ function ContextSwitcher({ activeContext, contexts }) {
   return (
     <Menu>
       <MenuButton className={styles.button}>
-        <Avatar user={currentContext.owner} bordered />
-        <div className="ml-2 mr-1">{currentContext.owner.username}</div>
+        {currentContext ? (
+          <>
+            <Avatar user={currentContext.owner} bordered />
+            <div className="ml-2 mr-1">{currentContext.owner.username}</div>
+          </>
+        ) : (
+          <>
+            <Icon name="home" />
+            <div className="ml-2 mr-1">All my orgs and repos</div>
+          </>
+        )}
         <span aria-hidden="true">
           <Icon variant="solid" name="chevron-down" />
         </span>
@@ -52,6 +62,12 @@ function ContextSwitcher({ activeContext, contexts }) {
       <MenuList>
         <div className={styles.switchContext}>Switch context</div>
         <div className="max-h-64 overflow-y-auto">
+          <MenuLink as={AppLink} pageName="provider">
+            <Icon name="home" />
+            <div className={cs('mx-2', { 'font-semibold': !activeContext })}>
+              All orgs and repos
+            </div>
+          </MenuLink>
           {contexts.map(renderContext)}
         </div>
       </MenuList>
@@ -60,7 +76,7 @@ function ContextSwitcher({ activeContext, contexts }) {
 }
 
 ContextSwitcher.propTypes = {
-  activeContext: PropTypes.string.isRequired,
+  activeContext: PropTypes.string,
   contexts: PropTypes.arrayOf(
     PropTypes.shape({
       owner: PropTypes.shape({
