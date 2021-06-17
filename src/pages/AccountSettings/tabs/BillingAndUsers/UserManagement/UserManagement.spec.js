@@ -16,6 +16,7 @@ const queryClient = new QueryClient()
 const users = {
   data: {
     totalPages: 1,
+    results: [],
   },
 }
 
@@ -261,13 +262,14 @@ describe('UserManagerment', () => {
         isSuccess: true,
         data: {
           totalPages: 1,
-          results: [{ username: 'earthspirit' }, { username: 'dazzle' }].filter(
-            ({ username }) => {
-              // mock query search
-              if (query.search) return username.includes(query.search)
-              return true
-            }
-          ),
+          results: [
+            { username: 'earthspirit', avatarUrl: '' },
+            { username: 'dazzle', avatarUrl: '' },
+          ].filter(({ username }) => {
+            // mock query search
+            if (query.search) return username.includes(query.search)
+            return true
+          }),
         },
       })
       setup({ mockUseUsersImplementation })
@@ -332,6 +334,8 @@ describe('UserManagerment', () => {
             {
               ownerid: 10,
               activated: false,
+              username: 'test',
+              avatarUrl: '',
             },
           ],
         },
@@ -375,6 +379,8 @@ describe('UserManagerment', () => {
             {
               ownerid: 11,
               activated: true,
+              username: 'test',
+              avatarUrl: '',
             },
           ],
         },
@@ -407,8 +413,8 @@ describe('UserManagerment', () => {
     describe('On page change', () => {
       beforeEach(() => {
         const mockUseUsersImplementation = ({ query }) => {
-          const dazzle = { username: 'dazzle' }
-          const es = { username: 'earthspirit' }
+          const dazzle = { username: 'dazzle', avatarUrl: '' }
+          const es = { username: 'earthspirit', avatarUrl: '' }
           return {
             isSuccess: true,
             data: {

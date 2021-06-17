@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen } from 'custom-testing-library'
 import UploadsCard from './UploadsCard'
 
 describe('HomePage', () => {
   function setup() {
-    render(<UploadsCard />)
+    render(<UploadsCard setShowYAMLModal={() => {}} />)
   }
 
   describe('renders', () => {
