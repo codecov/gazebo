@@ -85,7 +85,7 @@ describe('ManageAdminCard', () => {
 
     it('calls the mutation with the user and is_admin=false', () => {
       expect(mutate).toHaveBeenCalledWith({
-        targetUser: admins[0].username,
+        targetUserOwnerid: admins[0].ownerid,
         is_admin: false,
       })
     })
