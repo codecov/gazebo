@@ -6,22 +6,26 @@ const table = [
   {
     Header: 'Name',
     accessor: 'name',
-    width: 'w-6/12',
+    width: 'w-5/12',
   },
   {
-    Header: 'HEAD file coverage %',
+    Header: (
+      <span className="w-full text-right">
+        <span className="font-mono">HEAD</span> file coverage %
+      </span>
+    ),
     accessor: 'coverage',
-    width: 'w-4/12 text-right',
+    width: 'w-4/12',
   },
   {
-    Header: 'Patch',
+    Header: <span className="w-full text-sm text-right">Patch</span>,
     accessor: 'patch',
-    width: 'w-2/12',
+    width: 'w-1/12',
   },
   {
-    Header: 'Change',
+    Header: <span className="w-full text-right">Change</span>,
     accessor: 'change',
-    width: 'w-2/12',
+    width: 'w-1/12',
   },
 ]
 
@@ -31,7 +35,7 @@ function CommitsTable() {
       name: 'detec.js',
       path: 'root/specs',
       coverage: 73.55,
-      patch: 99.98,
+      patch: 100.01,
       change: -0.6,
     },
     {
@@ -52,9 +56,17 @@ function CommitsTable() {
       </div>
     ),
     coverage: <Progress amount={d.coverage} label={true} />,
-    patch: <span className="text-sm text-ds-gray-octonary">{d.patch}%</span>,
+    patch: (
+      <span className="text-sm text-right w-full text-ds-gray-octonary">
+        {d.patch}%
+      </span>
+    ),
     change: (
-      <span className={cs('text-sm font-semibold text-ds-gray-octonary')}>
+      <span
+        className={cs(
+          'text-sm text-right w-full font-semibold text-ds-gray-octonary'
+        )}
+      >
         {d.change}
       </span>
     ),

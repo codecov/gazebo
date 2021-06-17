@@ -5,8 +5,8 @@ function getPathUsers({ provider, owner }) {
   return `/${provider}/${owner}/users/`
 }
 
-function patchPathUsers({ provider, owner, targetUser }) {
-  return `/${provider}/${owner}/users/${targetUser}/`
+function patchPathUsers({ provider, owner, targetUserOwnerid }) {
+  return `/${provider}/${owner}/users/${targetUserOwnerid}/`
 }
 
 function fetchUsers({ provider, owner, query }) {
@@ -42,8 +42,8 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
   }
 
   return useMutation(
-    ({ targetUser, ...body }) => {
-      const path = patchPathUsers({ provider, owner, targetUser })
+    ({ targetUserOwnerid, ...body }) => {
+      const path = patchPathUsers({ provider, owner, targetUserOwnerid })
       return Api.patch({ path, provider, body })
     },
     { onSuccess: successHandler, ...passedOpts }
