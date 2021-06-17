@@ -33,8 +33,8 @@ function useActivateUser({ provider, owner }) {
     owner,
   })
 
-  function activate(ownerid, activated) {
-    return mutate({ targetUserOwnerid: ownerid, activated })
+  function activate(user, activated) {
+    return mutate({ targetUser: user, activated })
   }
 
   return { activate, ...rest }
@@ -116,7 +116,7 @@ function UserManagement({ provider, owner }) {
                     className={UserManagementClasses.cta}
                     color={user.activated ? 'red' : 'blue'}
                     variant={user.activated ? 'outline' : 'normal'}
-                    onClick={() => activate(user.ownerid, !user.activated)}
+                    onClick={() => activate(user.username, !user.activated)}
                   >
                     {user.activated ? 'Deactivate' : 'Activate'}
                   </Button>
