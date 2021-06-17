@@ -330,7 +330,7 @@ describe('UserManagerment', () => {
           totalPages: 1,
           results: [
             {
-              username: 'kumar',
+              ownerid: 10,
               activated: false,
             },
           ],
@@ -354,7 +354,7 @@ describe('UserManagerment', () => {
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
       expect(mutateMock).toHaveBeenLastCalledWith({
-        targetUser: 'kumar',
+        targetUserOwnerid: 10,
         activated: true,
       })
     })
@@ -373,7 +373,7 @@ describe('UserManagerment', () => {
           totalPages: 1,
           results: [
             {
-              username: 'kumar',
+              ownerid: 11,
               activated: true,
             },
           ],
@@ -397,7 +397,7 @@ describe('UserManagerment', () => {
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
       expect(mutateMock).toHaveBeenLastCalledWith({
-        targetUser: 'kumar',
+        targetUserOwnerid: 11,
         activated: false,
       })
     })

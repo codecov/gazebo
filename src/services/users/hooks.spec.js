@@ -117,10 +117,10 @@ describe('useUsers', () => {
 describe('useUpdateUser', () => {
   let hookData
 
-  function setup({ username, body, opts = {} }) {
+  function setup({ ownerid, body, opts = {} }) {
     server.use(
       rest.patch(
-        `/internal/${provider}/${owner}/users/${username}`,
+        `/internal/${provider}/${owner}/users/${ownerid}`,
         (req, res, ctx) => {
           return res(ctx.status(200), ctx.json(body))
         }
@@ -135,7 +135,7 @@ describe('useUpdateUser', () => {
     beforeEach(() => {
       // pass mock response
       const mockRes = { ...mundo, activated: true, isAdmin: true }
-      setup({ username: 'mundo', body: mockRes })
+      setup({ ownerid: 11, username: 'mundo', body: mockRes })
     })
 
     it('returns isLoading false', () => {
@@ -146,7 +146,7 @@ describe('useUpdateUser', () => {
       beforeEach(() => {
         return act(async () => {
           hookData.result.current.mutate({
-            targetUser: 'mundo',
+            targetUserOwnerid: 11,
             admin: true,
             activated: true,
           })
@@ -168,6 +168,7 @@ describe('useUpdateUser', () => {
       const mockRes = 'new account details data'
       setup({
         username: 'mundo',
+        ownerid: 1,
         body: mockRes,
         opts: { onSuccess: mockSuccess },
       })
@@ -177,7 +178,7 @@ describe('useUpdateUser', () => {
       beforeEach(() => {
         return act(async () => {
           hookData.result.current.mutate({
-            targetUser: 'mundo',
+            targetUserOwnerid: 1,
             admin: true,
             activated: true,
           })
