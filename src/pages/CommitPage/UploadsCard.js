@@ -9,12 +9,12 @@ function UploadsCard({ setShowYAMLModal }) {
       <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
         <div className="flex justify-between">
           <span className="text-base font-semibold">Uploads</span>
-          <span
+          <button
             onClick={() => setShowYAMLModal(true)}
             className="text-ds-blue-darker cursor-pointer text-xs"
           >
             view yml file
-          </span>
+          </button>
         </div>
         <span className="text-ds-gray-quinary">4 successful</span>
       </div>

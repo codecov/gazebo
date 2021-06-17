@@ -5,7 +5,7 @@ import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
 import CommitsTable from './CommitsTable'
 import Breadcrumb from 'ui/Breadcrumb'
-import LogoSpinner from 'old_ui/LogoSpinner'
+import Spinner from 'ui/Spinner'
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
@@ -16,7 +16,7 @@ codecov:\n  max_report_age: false\n  require_ci_to_pass: true\ncomment:\n  behav
 function CommitPage() {
   const { owner, repo } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
-  const loadingState = <LogoSpinner size={40} />
+  const loadingState = <Spinner size={40} />
 
   return (
     <div className="flex flex-col">
