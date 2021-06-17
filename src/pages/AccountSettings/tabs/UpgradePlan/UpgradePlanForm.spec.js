@@ -278,7 +278,9 @@ describe('UpgradePlanForm', () => {
     describe('when mutation is not successful', () => {
       beforeEach(() => {
         // simulating the onError callback given to useCancelPlan
-        mutate.mock.calls[0][1].onError({ detail: 'Something went wrong' })
+        mutate.mock.calls[0][1].onError({
+          data: { detail: 'Something went wrong' },
+        })
       })
 
       it('adds an error notification', () => {
