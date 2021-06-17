@@ -18,38 +18,26 @@ const wrapper = ({ children }) => (
 )
 
 // The ace-editor is currently not really testable so I'm mocking the whole component with something to respond to the onChange event
-jest.mock('react-ace', () => (props) => <MockEditor {...props} />)
+jest.mock('react-ace', () => (props) => <MockReactAce {...props} />)
 jest.mock('ace-builds/src-noconflict/theme-github', () => {})
 jest.mock('ace-builds/src-noconflict/mode-yaml', () => {})
 
 const basicYamlConfig = { data: { owner: { yaml: '' } } }
 const updateYamlConfig = (y) => ({
-  data: { owner: { yaml: y, username: 'doggo' } },
+  data: { setYamlOnOwner: { owner: { yaml: y, username: 'doggo' } } },
 })
 const updateYamlConfigError = (e) => ({
-  errors: e,
+  data: { setYamlOnOwner: { error: e } },
 })
 
-function MockEditor({ onChange, annotations, value }) {
+function MockReactAce({ onChange, value }) {
   function onInputChange(e) {
     onChange(e.target.value)
   }
-  return (
-    <>
-      <ul>
-        {annotations.map((err, i) => (
-          <li key={i}>
-            {err.type} {err.row} {err.column} {err.text}
-          </li>
-        ))}
-      </ul>
-      <input onChange={onInputChange} value={!value ? '' : value} />
-    </>
-  )
+  return <input onChange={onInputChange} value={!value ? '' : value} />
 }
-MockEditor.propTypes = {
+MockReactAce.propTypes = {
   onChange: PropTypes.func,
-  annotations: PropTypes.array,
   value: PropTypes.any,
 }
 
@@ -93,8 +81,16 @@ describe('YAMLTab', () => {
     })
 
     it('The save button is disabled initially', () => {
-      const save = screen.getByText(/Save Changes/)
+      const save = screen.getByRole('button', { name: /Save Changes/ })
       expect(save).toBeDisabled()
+    })
+
+    it('The save button is enabled after editor input', async () => {
+      const editor = screen.getByRole('textbox')
+      userEvent.paste(editor, 'test: test')
+      await waitFor(() => expect(editor).toHaveValue('test: test'))
+      const save = screen.getByRole('button', { name: /Save Changes/ })
+      expect(save).not.toBeDisabled()
     })
   })
 
@@ -108,23 +104,12 @@ describe('YAMLTab', () => {
       const editor = screen.getByRole('textbox')
       userEvent.paste(editor, 'test: test')
       await waitFor(() => expect(editor).toHaveValue('test: test'))
-    })
-
-    it('The save button is enabled after editor input', () => {
-      const save = screen.getByText(/Save Changes/)
-      expect(save).not.toBeDisabled()
-    })
-
-    it('Opens modal on save', async () => {
-      const save = screen.getByText(/Save Changes/)
+      const save = screen.getByRole('button', { name: /Save Changes/ })
       userEvent.click(save)
       await screen.findByText(/Yaml configuration updated/)
     })
 
     it('You can close the modal by clicking done', async () => {
-      const save = screen.getByText(/Save Changes/)
-      userEvent.click(save)
-      await screen.findByText(/Yaml configuration updated/)
       userEvent.click(screen.getByRole('button', { text: /Done/ }))
       expect(
         screen.queryByText(/Yaml configuration updated/)
@@ -132,9 +117,6 @@ describe('YAMLTab', () => {
     })
 
     it('You can close the modal', async () => {
-      const save = screen.getByText(/Save Changes/)
-      userEvent.click(save)
-      await screen.findByText(/Yaml configuration updated/)
       userEvent.click(screen.getByText(/x.svg/))
       expect(
         screen.queryByText(/Yaml configuration updated/)
@@ -142,14 +124,11 @@ describe('YAMLTab', () => {
     })
   })
 
-  describe('fails and annotates linting errors', () => {
+  describe('fails and displays linting errors', () => {
     beforeEach(async () => {
       setup({
         YamlConfig: basicYamlConfig,
-        UpdateYamlConfig: updateYamlConfigError([
-          { message: 'bad config', locations: [{ column: 2, line: 20 }] },
-          { message: 'some error', locations: [{ column: 6, line: 5 }] },
-        ]),
+        UpdateYamlConfig: updateYamlConfigError('bad config'),
       })
 
       const editor = screen.getByRole('textbox')
@@ -157,12 +136,30 @@ describe('YAMLTab', () => {
       await waitFor(() => expect(editor).toHaveValue('test: test'))
     })
 
-    it('The save bulled becomes unsaved changes and annotations are passed to the ace editor', async () => {
-      const save = screen.getByText(/Save Changes/)
+    it('The save button becomes unsaved changes and an error is displayed', async () => {
+      const save = screen.getByRole('button', { name: /Save Changes/ })
       userEvent.click(save)
-      await screen.findByText(/Unsaved changes/)
+      await screen.findByRole('button', { name: /Unsaved changes/ })
       expect(screen.getByText(/bad config/)).toBeInTheDocument()
-      expect(screen.getByText(/some error/)).toBeInTheDocument()
+    })
+  })
+  describe('The api fails', () => {
+    beforeEach(async () => {
+      setup({
+        YamlConfig: basicYamlConfig,
+        UpdateYamlConfig: { errors: [{ message: 'something' }] },
+      })
+
+      const editor = screen.getByRole('textbox')
+      userEvent.paste(editor, 'test: test')
+      await waitFor(() => expect(editor).toHaveValue('test: test'))
+    })
+
+    it('The save button becomes unsaved changes and an error is displayed', async () => {
+      const save = screen.getByRole('button', { name: /Save Changes/ })
+      userEvent.click(save)
+      await screen.findByRole('button', { name: /Unsaved changes/ })
+      expect(screen.getByText(/Something went wrong/)).toBeInTheDocument()
     })
   })
 })

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { sanitize } from 'dompurify'
+import { useForm, Controller } from 'react-hook-form'
 
 import { useYamlConfig, useUpdateYaml } from 'services/yaml'
 import Button from 'ui/Button'
@@ -11,53 +12,45 @@ import SuccessModal from './SuccessModal'
 const DEFAULT_BUTTON = { type: 'primary', text: 'Save Changes' }
 
 function YAML({ owner }) {
-  const [isDirty, setDirty] = useState(false)
   const [modal, openModal] = useState(false)
-  const [annotations, setAnnotations] = useState([])
+  const [error, setErrorMessage] = useState('')
   const [button, setButton] = useState(DEFAULT_BUTTON)
 
-  const { data: yamlConfig, isSuccess } = useYamlConfig({
+  const { data: yamlConfig } = useYamlConfig({
     variables: { username: owner },
   })
-  const [newConfig, setNewConfig] = useState(yamlConfig)
   const { isLoading, mutate } = useUpdateYaml({
     username: owner,
   })
+  const {
+    control,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: { editor: yamlConfig },
+    criteriaMode: 'firstError',
+  })
 
-  const onChange = (value) => {
-    setDirty(true)
-    setNewConfig(value)
-  }
-
-  const onSubmit = () => {
+  const onSubmitHandler = (formData) => {
     mutate(
-      { yaml: sanitize(newConfig) },
+      { yaml: sanitize(formData.editor) },
       {
-        onSuccess: ({ errors, data }) => {
-          if (!errors && !data?.setYamlOnOwner?.error) {
+        onSuccess: ({ data, errors }) => {
+          if (
+            data?.setYamlOnOwner?.owner?.yaml ||
+            data?.setYamlOnOwner?.owner?.yaml === ''
+          ) {
             openModal(true)
             setButton(DEFAULT_BUTTON)
-            setAnnotations([])
+            setErrorMessage('')
             return
           }
           if (data?.setYamlOnOwner?.error) {
-            setAnnotations([
-              {
-                row: 0,
-                column: 0,
-                text: data.setYamlOnOwner.error,
-                type: 'error',
-              },
-            ])
+            setErrorMessage(data.setYamlOnOwner.error)
           } else if (errors) {
-            setAnnotations(
-              errors.map((err) => ({
-                row: err.locations[0].line - 1 || 0,
-                column: err.locations[0].column - 1 || 0,
-                text: err.message,
-                type: 'error',
-              }))
-            )
+            setErrorMessage('Something went wrong.')
           }
           setButton({ type: 'danger', text: 'Unsaved changes' })
         },
@@ -66,7 +59,7 @@ function YAML({ owner }) {
   }
 
   return (
-    <>
+    <form onSubmit={handleSubmit(onSubmitHandler)}>
       <SuccessModal
         isOpen={modal}
         closeModal={() => openModal(false)}
@@ -87,23 +80,28 @@ function YAML({ owner }) {
           </a>
         </p>
       </div>
-      <YamlEditor
-        placeholder={`All ${owner} repos will inherit this configuration`}
-        value={isSuccess && newConfig}
-        onChange={onChange}
-        annotations={annotations}
+      {error && (
+        <div className="p-2 my-4 text-ds-primary-red border-ds-primary-red border rounded bg-ds-coverage-uncovered">
+          <p>{error}</p>
+        </div>
+      )}
+      <Controller
+        control={control}
+        name="editor"
+        render={({ field: { onChange, value } }) => (
+          <YamlEditor
+            value={value}
+            onChange={onChange}
+            placeholder={`All ${owner} repos will inherit this configuration`}
+          />
+        )}
       />
       <div className="mt-4 float-right">
-        <Button
-          variant={button.type}
-          disabled={!isDirty}
-          onClick={onSubmit}
-          isLoading={isLoading}
-        >
+        <Button variant={button.type} disabled={!isDirty} isLoading={isLoading}>
           {button.text}
         </Button>
       </div>
-    </>
+    </form>
   )
 }
 
