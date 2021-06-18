@@ -17,6 +17,7 @@ describe('OrgControlTable', () => {
       active: true,
       setActive: jest.fn(),
       setSearchValue: jest.fn(),
+      searchValue: '',
       canRefetch: true,
       ...over,
     }

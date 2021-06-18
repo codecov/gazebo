@@ -13,14 +13,20 @@ function YAMLViewer({ YAML }) {
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre className={className} style={style}>
           {tokens.map((line, i) => (
-            <tr key={i} {...getLineProps({ line, key: i })}>
-              <td className="px-2 text-right bg-ds-gray-secondary">{i + 1}</td>
-              <td className="pl-2">
+            <div
+              key={i}
+              {...getLineProps({ line, key: i })}
+              className="table-row"
+            >
+              <div className="table-cell px-2 text-right bg-ds-gray-secondary">
+                {i + 1}
+              </div>
+              <div className="table-cell pl-2">
                 {line.map((token, key) => (
                   <span key={key} {...getTokenProps({ token, key })} />
                 ))}
-              </td>
-            </tr>
+              </div>
+            </div>
           ))}
         </pre>
       )}
