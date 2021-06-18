@@ -108,7 +108,7 @@ function useSubmit({ owner, provider }) {
       onError: (error) =>
         addToast({
           type: 'error',
-          text: error.data.detail,
+          text: error.data.detail || 'Something went wrong',
         }),
     })
   }
