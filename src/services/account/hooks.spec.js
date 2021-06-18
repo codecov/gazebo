@@ -410,6 +410,8 @@ describe('useUpdateCard', () => {
         }
         beforeEach(() => {
           return act(() => {
+            const spy = jest.spyOn(console, 'error')
+            spy.mockImplementation(jest.fn())
             resolver({ error })
             return hookData.waitFor(() => hookData.result.current.error)
           })
