@@ -174,6 +174,9 @@ describe('useTracking', () => {
 
   describe('when user is not logged in', () => {
     beforeEach(() => {
+      const spy = jest.spyOn(console, 'error')
+      spy.mockImplementation(jest.fn())
+
       server.use(
         rest.get(`/internal/profile`, (req, res, ctx) => {
           return res(ctx.status(401), ctx.json({}))
