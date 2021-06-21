@@ -6,17 +6,24 @@ import UploadsCard from './UploadsCard'
 import CommitsTable from './CommitsTable'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
+import { useCommit } from 'services/commit/hooks'
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
-const exampleCode = `
-codecov:\n  max_report_age: false\n  require_ci_to_pass: true\ncomment:\n  behavior: default\n  layout: reach,diff,flags,tree,reach\n  show_carryforward_flags: false\ncoverage:\n  precision: 2\n  range:\n  - 70.0\n  - 100.0\n  round: down\n  status:\n    changes: false\n    default_rules:\n      flag_coverage_not_uploaded_behavior: include\n    patch: true\n    project: true\ngithub_checks:\n  annotations: true\n
-`
-
 function CommitPage() {
-  const { owner, repo } = useParams()
+  const { owner, repo, commit } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
   const loadingState = <Spinner size={40} />
+
+  const { data } = useCommit({
+    provider: 'gh',
+    owner,
+    repo,
+    commitid: commit,
+  })
+
+  const commitid = commit?.substr(0, 7)
 
   return (
     <div className="flex flex-col">
@@ -26,27 +33,34 @@ function CommitPage() {
             { pageName: 'owner', text: owner },
             { pageName: 'repo', text: repo },
             { pageName: 'commits' },
-            { pageName: 'a675fas', readOnly: true, text: 'a675fas' },
+            { pageName: commitid, readOnly: true, text: commitid },
           ]}
         />
       </div>
       <span className="mt-4 text-lg font-semibold text-ds-gray-octonary">
-        Update Graphql mutation
+        {data?.commit?.message}
       </span>
-      <div className="flex mt-1 text-ds-gray-">
-        2 hours ago Pierce-m authored commit
-        <a className="ml-1.5" href="somethinf">
-          jsdfhjksd
+      <div className="flex mt-1 text-ds-gray-quinary">
+        {formatDistanceToNow(new Date(data?.commit?.createdAt), {
+          addSuffix: true,
+        })}{' '}
+        <span className="text-ds-gray-octonary mx-1">
+          {data?.commit?.author?.username}
+        </span>{' '}
+        authored commit
+        <a className="ml-1.5 font-mono text-ds-blue-darker" href="somethinf">
+          {commitid}
         </a>
       </div>
       <hr className="mt-6" />
       <div className="flex flex-col md:flex-row mt-8">
         <div className="flex w-full mr-8 md:max-w-sm flex-col">
           <div className="">
-            <CoverageReportCard />
+            <CoverageReportCard data={data?.commit} />
           </div>
           <div className="mt-2 md:mt-8">
             <UploadsCard
+              data={data?.commit?.uploads}
               showYAMLModal={showYAMLModal}
               setShowYAMLModal={setShowYAMLModal}
             />
@@ -57,7 +71,7 @@ function CommitPage() {
                 title="Yaml"
                 body={
                   <Suspense fallback={loadingState}>
-                    <YAMLViewer YAML={exampleCode} />
+                    <YAMLViewer YAML={data?.commit?.yaml || ''} />
                   </Suspense>
                 }
                 footer={

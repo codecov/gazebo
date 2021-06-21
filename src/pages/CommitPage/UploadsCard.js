@@ -1,9 +1,57 @@
+import { Fragment } from 'react'
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
+import { mapEdges } from 'shared/utils/graphql'
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-function UploadsCard({ setShowYAMLModal }) {
-  const uploads = [1, 2, 3, 4, 5, 6, 7]
+function UploadsCard({ setShowYAMLModal, data = [] }) {
+  const uploads = _.groupBy(mapEdges(data), 'provider')
 
+  function renderUploads() {
+    const _uploads = []
+    for (const key in uploads) {
+      _uploads.push(
+        <Fragment key={key}>
+          <span className="text-sm font-semibold w-full py-1 px-4">{key}</span>
+          {uploads[key].map((d, i) => (
+            <div
+              className="border-t border-ds-gray-secondary py-2 px-4 flex flex-col"
+              key={i}
+            >
+              <div className="flex justify-between">
+                <div className="flex">
+                  <span className="text-ds-blue-darker mr-1">
+                    {d.ciUrl.split('/').pop()}
+                  </span>
+                  <Icon size="sm" name="external-link" />
+                </div>
+                <span className="text-xs text-ds-gray-quinary">
+                  {formatDistanceToNow(new Date(d.createdAt), {
+                    addSuffix: true,
+                  })}
+                </span>
+              </div>
+              <div className="flex justify-between mt-1">
+                <div className="flex">
+                  {d.flags.length > 0 && (
+                    <>
+                      <Icon variant="solid" size="sm" name="flag" />
+                      <span className="text-xs ml-1">macros</span>
+                    </>
+                  )}
+                </div>
+                <span className="text-xs justify-self-end text-ds-blue-darker">
+                  Download
+                </span>
+              </div>
+            </div>
+          ))}
+        </Fragment>
+      )
+    }
+    return _uploads
+  }
   return (
     <div className="flex w-full flex-col border border-ds-gray-secondary text-ds-gray-octonary">
       <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
@@ -19,37 +67,14 @@ function UploadsCard({ setShowYAMLModal }) {
         <span className="text-ds-gray-quinary">4 successful</span>
       </div>
       <div className="bg-ds-gray-primary max-h-64 overflow-scroll flex flex-col w-full">
-        <span className="text-sm font-semibold w-full py-1 px-4">
-          Circle CI
-        </span>
-        {uploads.map((d, i) => (
-          <div
-            className="border-t border-ds-gray-secondary py-2 px-4 flex flex-col"
-            key={i}
-          >
-            <div className="flex justify-between">
-              <div className="flex">
-                <span className="text-ds-blue-darker mr-1">2563</span>
-                <Icon size="sm" name="external-link" />
-              </div>
-              <span className="text-xs text-ds-gray-quinary">2 days ago</span>
-            </div>
-            <div className="flex justify-between mt-1">
-              <div className="flex">
-                <Icon variant="solid" size="sm" name="flag" />
-                <span className="text-xs ml-1">macros</span>
-              </div>
-              <span className="text-xs text-ds-blue-darker">Download</span>
-            </div>
-          </div>
-        ))}
+        {renderUploads()}
       </div>
     </div>
   )
 }
 
 UploadsCard.propTypes = {
-  uploads: PropTypes.array,
+  data: PropTypes.array,
   setShowYAMLModal: PropTypes.func.isRequired,
 }
 
