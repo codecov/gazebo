@@ -127,6 +127,17 @@ function useNavLinks() {
       isExternalLink: true,
       text: 'Commits',
     },
+    treeView: {
+      path: (
+        { provider = p, owner = o, repo = r, tree = '' } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/tree/${tree}`,
+      isExternalLink: true,
+      text: 'Tree View',
+    },
   }
 }
 

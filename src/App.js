@@ -12,6 +12,7 @@ import { ReactQueryDevtools } from 'react-query/devtools'
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
+const FileViewPage = lazy(() => import('./pages/FileView'))
 
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const FullLayout = lazy(() => import('./layouts/FullLayout'))
@@ -69,6 +70,16 @@ function App() {
               <Route path="/:provider/:owner/:repo/commit/:commit" exact>
                 <BaseLayout>
                   <CommitPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/:repo/tree/*" exact>
+                <BaseLayout>
+                  <p>Tree</p>
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/:repo/*" exact>
+                <BaseLayout>
+                  <FileViewPage />
                 </BaseLayout>
               </Route>
               <Route path="/">

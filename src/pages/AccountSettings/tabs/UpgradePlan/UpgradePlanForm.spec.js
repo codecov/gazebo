@@ -276,12 +276,38 @@ describe('UpgradePlanForm', () => {
     })
 
     describe('when mutation is not successful', () => {
-      beforeEach(() => {
-        // simulating the onError callback given to useCancelPlan
-        mutate.mock.calls[0][1].onError()
+      it('adds an error notification with detail message', () => {
+        mutate.mock.calls[0][1].onError({
+          data: { detail: 'Insufficent funds.' },
+        })
+
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Insufficent funds.',
+        })
       })
 
-      it('adds an error notification', () => {
+      it('adds a default error notification with no detail message', () => {
+        mutate.mock.calls[0][1].onError({
+          data: {},
+        })
+
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong',
+        })
+
+        mutate.mock.calls[0][1].onError({
+          data: undefined,
+        })
+
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong',
+        })
+
+        mutate.mock.calls[0][1].onError(undefined)
+
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
           text: 'Something went wrong',
