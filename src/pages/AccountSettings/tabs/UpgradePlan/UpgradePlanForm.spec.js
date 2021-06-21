@@ -296,6 +296,22 @@ describe('UpgradePlanForm', () => {
           type: 'error',
           text: 'Something went wrong',
         })
+
+        mutate.mock.calls[0][1].onError({
+          data: undefined,
+        })
+
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong',
+        })
+
+        mutate.mock.calls[0][1].onError(undefined)
+
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong',
+        })
       })
     })
   })
