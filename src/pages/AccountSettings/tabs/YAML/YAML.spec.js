@@ -51,6 +51,8 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('YAMLTab', () => {
+  let mockError = jest.fn()
+
   function setup(dataReturned) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
@@ -124,8 +126,12 @@ describe('YAMLTab', () => {
     })
   })
 
-  describe('fails and displays linting errors', () => {
+  describe('fails and displays linting error', () => {
     beforeEach(async () => {
+      jest.resetAllMocks()
+      const spy = jest.spyOn(console, 'error')
+      spy.mockImplementation(mockError)
+
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: updateYamlConfigError('bad config'),
@@ -139,12 +145,19 @@ describe('YAMLTab', () => {
     it('The save button becomes unsaved changes and an error is displayed', async () => {
       const save = screen.getByRole('button', { name: /Save Changes/ })
       userEvent.click(save)
-      await screen.findByRole('button', { name: /Unsaved changes/ })
-      expect(screen.getByText(/bad config/)).toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.getByText(/bad config/)).toBeInTheDocument()
+      )
+      expect(mockError).toHaveBeenLastCalledWith('bad config')
     })
   })
+
   describe('The api fails', () => {
     beforeEach(async () => {
+      jest.resetAllMocks()
+      const spy = jest.spyOn(console, 'error')
+      spy.mockImplementation(mockError)
+
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: { errors: [{ message: 'something' }] },
@@ -158,8 +171,11 @@ describe('YAMLTab', () => {
     it('The save button becomes unsaved changes and an error is displayed', async () => {
       const save = screen.getByRole('button', { name: /Save Changes/ })
       userEvent.click(save)
-      await screen.findByRole('button', { name: /Unsaved changes/ })
-      expect(screen.getByText(/Something went wrong/)).toBeInTheDocument()
+
+      await waitFor(() =>
+        expect(screen.getByText(/Something went wrong/)).toBeInTheDocument()
+      )
+      expect(mockError).toHaveBeenLastCalledWith('Something went wrong')
     })
   })
 })

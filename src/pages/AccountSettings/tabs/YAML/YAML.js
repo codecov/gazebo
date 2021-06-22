@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { sanitize } from 'dompurify'
 import { useForm, Controller } from 'react-hook-form'
@@ -9,60 +8,45 @@ import Button from 'ui/Button'
 import YamlEditor from './YamlEditor'
 import SuccessModal from './SuccessModal'
 
-const DEFAULT_BUTTON = { type: 'primary', text: 'Save Changes' }
-
 function YAML({ owner }) {
-  const [modal, openModal] = useState(false)
-  const [error, setErrorMessage] = useState('')
-  const [button, setButton] = useState(DEFAULT_BUTTON)
-
   const { data: yamlConfig } = useYamlConfig({
     variables: { username: owner },
   })
-  const { isLoading, mutate } = useUpdateYaml({
+  const { mutateAsync } = useUpdateYaml({
     username: owner,
   })
-  const {
-    control,
-    handleSubmit,
-    formState: { isDirty },
-  } = useForm({
+  const { control, handleSubmit, formState, setError, reset } = useForm({
     mode: 'onSubmit',
     reValidateMode: 'onChange',
     defaultValues: { editor: yamlConfig },
     criteriaMode: 'firstError',
   })
 
-  const onSubmitHandler = (formData) => {
-    mutate(
-      { yaml: sanitize(formData.editor) },
-      {
-        onSuccess: ({ data, errors }) => {
-          if (
-            data?.setYamlOnOwner?.owner?.yaml ||
-            data?.setYamlOnOwner?.owner?.yaml === ''
-          ) {
-            openModal(true)
-            setButton(DEFAULT_BUTTON)
-            setErrorMessage('')
-            return
-          }
-          if (data?.setYamlOnOwner?.error) {
-            setErrorMessage(data.setYamlOnOwner.error)
-          } else if (errors) {
-            setErrorMessage('Something went wrong.')
-          }
-          setButton({ type: 'danger', text: 'Unsaved changes' })
-        },
-      }
-    )
+  const formError = (message) => {
+    setError('editor', {
+      type: 'manual',
+      message,
+    })
+    throw message
   }
 
+  const onSubmit = handleSubmit((formData) => {
+    return mutateAsync({ yaml: sanitize(formData.editor) })
+      .then(({ data, errors }) => {
+        if (data?.setYamlOnOwner?.error) {
+          formError(data?.setYamlOnOwner?.error)
+        } else if (errors) {
+          formError('Something went wrong')
+        }
+      })
+      .catch((e) => console.error(e))
+  })
+
   return (
-    <form onSubmit={handleSubmit(onSubmitHandler)}>
+    <form onSubmit={onSubmit}>
       <SuccessModal
-        isOpen={modal}
-        closeModal={() => openModal(false)}
+        isOpen={formState.isSubmitSuccessful}
+        closeModal={() => reset({}, { keepValues: true })}
         owner={owner}
       />
       <div className="border-b border-ds-gray-secondary pb-4 mb-4">
@@ -80,9 +64,9 @@ function YAML({ owner }) {
           </a>
         </p>
       </div>
-      {error && (
+      {formState.errors.editor && (
         <div className="p-2 my-4 text-ds-primary-red border-ds-primary-red border rounded bg-ds-coverage-uncovered">
-          <p>{error}</p>
+          <p>{formState.errors.editor.message}</p>
         </div>
       )}
       <Controller
@@ -97,8 +81,12 @@ function YAML({ owner }) {
         )}
       />
       <div className="mt-4 float-right">
-        <Button variant={button.type} disabled={!isDirty} isLoading={isLoading}>
-          {button.text}
+        <Button
+          disabled={!formState.isDirty}
+          isLoading={formState.isSubmitting}
+          variant="primary"
+        >
+          Save Changes
         </Button>
       </div>
     </form>
