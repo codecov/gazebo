@@ -6,7 +6,7 @@ import UploadsCard from './UploadsCard'
 import CommitsTable from './CommitsTable'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
-import { useCommit } from 'services/commit/hooks'
+import { useCommit } from 'services/commit'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
