@@ -1,8 +1,6 @@
-
 version: 2.1 # using 2.1 provides access to orbs and other features
 
 jobs:
-
   install:
     docker:
       - image: circleci/node:14.5.0
@@ -16,7 +14,7 @@ jobs:
           paths:
             - node_modules
 
-  eslint: 
+  eslint:
     docker:
       - image: circleci/node:14.5.0
     steps:
@@ -50,13 +48,15 @@ jobs:
       - run:
           name: Upload coverage to codecov
           command: |
-            # wget https://github.com/codecov/uploader/releases/download/v0.1.0_1681/codecov-linux
-            # chmod +x ./codecov-linux
-            # ./codecov-linux
-            bash <(curl -s https://codecov.io/bash)
+            wget https://uploader.codecov.io/latest/codecov-alpine
+            chmod +x ./codecov-alpine
+            ./codecov-alpine
       - run:
           name: Upload coverage to staging
-          command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING -u stage-web.codecov.dev
+          command: |
+            wget https://uploader.codecov.io/latest/codecov-alpine
+            chmod +x ./codecov-alpine
+            ./codecov-alpine -t $CODECOV_TOKEN_STAGING --url https://stage-web.codecov.dev
 
   sentry:
     docker:
@@ -115,8 +115,8 @@ workflows:
           requires:
             - install
       # Disabling because we are no longer monitoring bundlesize
-      # leaving the job to re enable this when I find a 
-      # replacement. 
+      # leaving the job to re enable this when I find a
+      # replacement.
       # - build:
       #     requires:
       #       - install
