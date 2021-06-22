@@ -8,8 +8,9 @@ jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')
 jest.mock('./PaymentCard', () => () => 'PaymentCard')
 jest.mock('./InfoMessageCancellation', () => () => 'InfoMessageCancellation')
 jest.mock('./UserManagement', () => () => 'UserManagement')
-jest.mock('./InfoMessageStripeCallback', () => () =>
-  'InfoMessageStripeCallback'
+jest.mock(
+  './InfoMessageStripeCallback',
+  () => () => 'InfoMessageStripeCallback'
 )
 jest.mock('./LegacyUser', () => () => 'LegacyUser')
 jest.mock('services/account/hooks')

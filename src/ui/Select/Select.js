@@ -7,11 +7,10 @@ import Icon from 'ui/Icon'
 
 const SelectClasses = {
   root: 'w-full relative',
-  item: 'block hover:bg-gray-200 cursor-pointer p-2 text-sm',
+  item: 'block cursor-pointer py-1 px-3 text-sm',
   button:
-    'flex justify-between items-center w-full border border-gray-300 rounded-md bg-white text-left px-4 py-2 outline-none',
-  ul:
-    'overflow-hidden rounded-md bg-white border-gray-200 outline-none absolute w-full z-10',
+    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 outline-none h-8',
+  ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10',
 }
 
 function Select({
@@ -29,7 +28,6 @@ function Select({
    */
   renderSelected,
   ariaName,
-  className,
 }) {
   const {
     isOpen,
@@ -54,22 +52,23 @@ function Select({
   }
 
   function _renderItem(item, index) {
+    const isHover = highlightedIndex === index
+    const isSelected = selectedItem === item
     return (
       <li
-        className={SelectClasses.item}
+        className={cs(SelectClasses.item, {
+          'bg-ds-gray-secondary': isHover,
+        })}
         key={`${item}${index}`}
         {...getItemProps({ item, index })}
       >
-        {renderItem(item, {
-          isHover: highlightedIndex === index,
-          isSelected: selectedItem === item,
-        })}
+        {renderItem(item, { isHover, isSelected })}
       </li>
     )
   }
 
   return (
-    <div className={cs(className, SelectClasses.root)}>
+    <div className={SelectClasses.root}>
       <button
         aria-label={ariaName}
         type="button"
@@ -77,13 +76,13 @@ function Select({
         {...getToggleButtonProps()}
       >
         {renderButton()}
-        <Icon name={isOpen ? 'angleUp' : 'angleDown'} />
+        <Icon variant="solid" name={isOpen ? 'chevron-up' : 'chevron-down'} />
       </button>
       <ul
         aria-label={ariaName}
         className={cs(SelectClasses.ul, {
           border: isOpen,
-          'border-solid': isOpen,
+          'border-gray-ds-tertiary': isOpen,
         })}
         {...getMenuProps()}
       >

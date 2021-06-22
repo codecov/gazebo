@@ -180,7 +180,7 @@ describe('usePlans', () => {
         return res(ctx.status(200), ctx.json(getPlans()))
       })
     )
-    hookData = renderHook(() => usePlans({ provider, owner }), {
+    hookData = renderHook(() => usePlans(provider), {
       wrapper,
     })
   }
@@ -410,6 +410,8 @@ describe('useUpdateCard', () => {
         }
         beforeEach(() => {
           return act(() => {
+            const spy = jest.spyOn(console, 'error')
+            spy.mockImplementation(jest.fn())
             resolver({ error })
             return hookData.waitFor(() => hookData.result.current.error)
           })

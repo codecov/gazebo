@@ -1,0 +1,15 @@
+@import '@reach/menu-button/styles.css';
+
+[data-reach-menu-list],
+[data-reach-menu-items] {
+  @apply p-0 w-56 rounded border-ds-gray-secondary mt-2 shadow;
+}
+
+[data-reach-menu-item] {
+  @apply px-4 py-2 flex items-center text-sm;
+}
+
+/* pseudo pseudo selector */
+[data-reach-menu-item][data-selected] {
+  @apply bg-ds-gray-quaternary bg-opacity-5 text-ds-gray-octonary;
+}

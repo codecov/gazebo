@@ -1,33 +1,24 @@
 import { Suspense, lazy } from 'react'
-import {
-  useParams,
-  Switch,
-  Route,
-  Redirect,
-  useRouteMatch,
-} from 'react-router-dom'
+import { useParams, Switch, Route, Redirect } from 'react-router-dom'
 
-import LogoSpinner from 'ui/LogoSpinner'
-import { useBaseUrl } from 'shared/router'
+import LogoSpinner from 'old_ui/LogoSpinner'
 import SidebarLayout from 'layouts/SidebarLayout'
-import { useUser } from 'services/user'
 
-import SideMenu from './SideMenu'
-import AdminTab from './tabs/Admin'
-import BillingAndUsersTab from './tabs/BillingAndUsers'
-import YAMLTab from './tabs/YAML'
+import SideMenuAccount from './SideMenuAccount'
+import Header from './shared/Header'
 
 const CancelPlanTab = lazy(() => import('./tabs/CancelPlan'))
 const UpgradePlanTab = lazy(() => import('./tabs/UpgradePlan'))
 const InvoicesTab = lazy(() => import('./tabs/Invoices'))
 const InvoiceDetailTab = lazy(() => import('./tabs/InvoiceDetail'))
+const BillingAndUsersTab = lazy(() => import('./tabs/BillingAndUsers'))
+const AdminTab = lazy(() => import('./tabs/Admin'))
+const YAMLTab = lazy(() => import('./tabs/YAML'))
+const AccessTab = lazy(() => import('./tabs/Access'))
+const NotFound = lazy(() => import('../NotFound'))
 
 function AccountSettings() {
-  const { data: user } = useUser()
   const { provider, owner } = useParams()
-  const { path } = useRouteMatch()
-  const baseUrl = useBaseUrl()
-  const isPersonalSettings = user.username === owner
 
   const tabLoading = (
     <div className="h-full w-full flex items-center justify-center">
@@ -36,47 +27,45 @@ function AccountSettings() {
   )
 
   return (
-    <SidebarLayout
-      sidebar={
-        <SideMenu baseUrl={baseUrl} isPersonalSettings={isPersonalSettings} />
-      }
-    >
-      <Suspense fallback={tabLoading}>
-        <Switch>
-          <Route path={path} exact>
-            <AdminTab
-              isPersonalSettings={isPersonalSettings}
-              provider={provider}
-              owner={owner}
-            />
-          </Route>
-          <Route path={path + 'yaml'} exact>
-            <YAMLTab />
-          </Route>
-          <Route path={path + 'access'} exact>
-            AccessTab :)
-          </Route>
-          <Route path={path + 'billing'} exact>
-            <BillingAndUsersTab provider={provider} owner={owner} />
-          </Route>
-          <Route path={path + 'users'} exact>
-            <Redirect to={baseUrl + 'billing'} />
-          </Route>
-          <Route path={path + 'billing/upgrade'} exact>
-            <UpgradePlanTab provider={provider} owner={owner} />
-          </Route>
-          <Route path={path + 'billing/cancel'} exact>
-            <CancelPlanTab provider={provider} owner={owner} />
-          </Route>
-          <Route path={path + 'invoices'} exact>
-            <InvoicesTab provider={provider} owner={owner} />
-          </Route>
-          <Route path={path + 'invoices/:id'} exact>
-            <InvoiceDetailTab provider={provider} owner={owner} />
-          </Route>
-        </Switch>
-      </Suspense>
-    </SidebarLayout>
+    <>
+      <Header />
+      <SidebarLayout sidebar={<SideMenuAccount />}>
+        <Suspense fallback={tabLoading}>
+          <Switch>
+            <Route path="/account/:provider/:owner/" exact>
+              <AdminTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/yaml/" exact>
+              <YAMLTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/access/" exact>
+              <AccessTab provider={provider} />
+            </Route>
+            <Route path="/account/:provider/:owner/billing/" exact>
+              <BillingAndUsersTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/users/" exact>
+              <Redirect to={`/account/${provider}/${owner}/billing/`} />
+            </Route>
+            <Route path="/account/:provider/:owner/billing/upgrade/" exact>
+              <UpgradePlanTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/billing/cancel/" exact>
+              <CancelPlanTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/invoices/" exact>
+              <InvoicesTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/invoices/:id/" exact>
+              <InvoiceDetailTab provider={provider} owner={owner} />
+            </Route>
+            <Route path="/account/:provider/:owner/*">
+              <NotFound />
+            </Route>
+          </Switch>
+        </Suspense>
+      </SidebarLayout>
+    </>
   )
 }
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import Card from 'ui/Card'
+import Card from 'old_ui/Card'
 import { useDateFormatted } from 'shared/utils/dates'
 
 function StudentCard({ user }) {

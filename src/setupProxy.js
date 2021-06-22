@@ -9,5 +9,12 @@ module.exports = function (app) {
         changeOrigin: true,
       })
     )
+    app.use(
+      '/graphql',
+      createProxyMiddleware({
+        target: process.env.PROXY_TO,
+        changeOrigin: true,
+      })
+    )
   }
 }

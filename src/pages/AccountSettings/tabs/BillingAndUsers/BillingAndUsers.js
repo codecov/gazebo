@@ -26,7 +26,7 @@ function BillingAndUsers({ provider, owner }) {
       <div className="block md:flex flex-wrap justify-between">
         {accountDetails.plan ? (
           <>
-            <div className="sm:mr-4 sm:flex-initial flex-1">
+            <div className="sm:mr-4 sm:flex-initial flex-1 max-w-sm">
               <CurrentPlanCard accountDetails={accountDetails} />
               {shouldRenderBillingDetails && (
                 <>
@@ -36,8 +36,6 @@ function BillingAndUsers({ provider, owner }) {
                     owner={owner}
                   />
                   <LatestInvoiceCard
-                    provider={provider}
-                    owner={owner}
                     invoice={accountDetails.subscriptionDetail?.latestInvoice}
                   />
                 </>

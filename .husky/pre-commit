@@ -4,8 +4,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm run format-staged
-npm run lint-staged
+npx --no-install lint-staged
 
 # Uncomment for testing pre commit (will stop commit)
 # exit 1

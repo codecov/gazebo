@@ -1,0 +1,28 @@
+.controlGroup {
+  @apply flex flex-wrap items-center divide-x divide-gray-200 divide-solid;
+}
+
+.controlGroup > * > button,
+.controlGroup > button {
+  @apply border-none rounded-none;
+}
+
+.controlGroup > * > ul,
+.controlGroup > * > input[type='text'],
+.controlGroup > input[type='text'] {
+  @apply rounded-none bg-white;
+}
+
+/* Round the edges of the control group */
+.controlGroup > *:first-child > button,
+.controlGroup > button:first-child,
+.controlGroup > input[type='text']:first-child {
+  @apply rounded-tl-md rounded-bl-md;
+}
+
+.controlGroup > *:last-child,
+.controlGroup > *:last-child > button,
+.controlGroup > * > input[type='text']:last-child,
+.controlGroup > input[type='text']:last-child {
+  @apply rounded-tr-md rounded-br-md;
+}

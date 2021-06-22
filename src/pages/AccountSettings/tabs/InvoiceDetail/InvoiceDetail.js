@@ -6,7 +6,8 @@ import { useParams, Link } from 'react-router-dom'
 import cs from 'classnames'
 
 import { useInvoice, useAccountDetails } from 'services/account'
-import Button from 'ui/Button'
+import { useNavLinks } from 'services/navigation'
+import Button from 'old_ui/Button'
 
 import BackLink from '../../shared/BackLink'
 import InvoiceHeader from './sections/InvoiceHeader'
@@ -15,7 +16,7 @@ import InvoiceFooter from './sections/InvoiceFooter'
 import InvoiceSubTotal from './sections/InvoiceSubTotal'
 
 const classNameSection =
-  'py-8 px-16 border-t first:border-0 border-gray-200 print:px-0'
+  'py-8 px-16 border border-t-0 print:border-0 print:border-b border-gray-200 print:px-0'
 // make the Invoice container full screen so only that part is printed
 const printClassnames = 'print:absolute print:inset-0 print:z-50'
 
@@ -39,14 +40,18 @@ function InvoiceDetail({ provider, owner }) {
   const { id } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: invoice } = useInvoice({ provider, owner, id })
-  const backLinkUrl = `/account/${provider}/${owner}/invoices`
+  const { invoiceTab } = useNavLinks()
 
   usePrintPage()
 
   return (
     <>
       <div className="mb-8">
-        <BackLink to={backLinkUrl} textLink="Invoice overview" />
+        <BackLink
+          to={invoiceTab.path()}
+          useRouter={!invoiceTab.isExternalLink}
+          textLink={invoiceTab.text}
+        />
       </div>
       <div
         className={cs(
@@ -68,7 +73,12 @@ function InvoiceDetail({ provider, owner }) {
         </div>
       </div>
       <div className="my-8">
-        <Button to={backLinkUrl} Component={Link} variant="outline">
+        <Button
+          to={invoiceTab.path()}
+          useRouter={!invoiceTab.isExternalLink}
+          Component={Link}
+          variant="outline"
+        >
           Back to invoices
         </Button>
         <Button className="ml-4" onClick={window.print}>

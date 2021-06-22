@@ -81,9 +81,6 @@ jobs:
       - run:
           name: Build the spa
           command: npm run build
-      - run:
-          name: Check bundlesize
-          command: npm run bundlesize
 
   storybook:
     docker:
@@ -117,6 +114,9 @@ workflows:
       - sentry:
           requires:
             - install
-      - build:
-          requires:
-            - install
+      # Disabling because we are no longer monitoring bundlesize
+      # leaving the job to re enable this when I find a 
+      # replacement. 
+      # - build:
+      #     requires:
+      #       - install

@@ -29,7 +29,7 @@ const userData = {
 
 const server = setupServer(
   rest.get('/internal/test', (req, res, ctx) => {
-    const hasToken = Boolean(req.headers.map['authorization'])
+    const hasToken = Boolean(req.headers.get('authorization'))
     return res(ctx.status(hasToken ? 200 : 401), ctx.json(rawUserData))
   }),
   rest.post('/internal/test', (req, res, ctx) => {
@@ -40,6 +40,14 @@ const server = setupServer(
   }),
   rest.delete('/internal/test', (req, res, ctx) => {
     return res(ctx.status(204), null)
+  }),
+  rest.post('/graphql/gh', (req, res, ctx) => {
+    return res(
+      ctx.status(204),
+      ctx.json({
+        me: 'Codecov',
+      })
+    )
   })
 )
 
@@ -141,5 +149,22 @@ describe('when using a delete request', () => {
 
   it('returns null', () => {
     expect(result).toEqual(null)
+  })
+})
+
+describe('when using a graphql request', () => {
+  beforeEach(() => {
+    return Api.graphql({
+      provider: 'gh',
+      query: '{ me }',
+    }).then((data) => {
+      result = data
+    })
+  })
+
+  it('returns what the server retuns', () => {
+    expect(result).toEqual({
+      me: 'Codecov',
+    })
   })
 })

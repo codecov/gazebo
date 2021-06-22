@@ -78,7 +78,7 @@ const subscriptionDetail = {
 }
 
 describe('InvoiceDetail', () => {
-  function setup(invoiceOver = {}, url = '') {
+  function setup(invoiceOver = {}, url = '', subscriptionOver = {}) {
     useInvoice.mockReturnValue({
       data: {
         ...invoice,
@@ -87,7 +87,10 @@ describe('InvoiceDetail', () => {
     })
     useAccountDetails.mockReturnValue({
       data: {
-        subscriptionDetail,
+        subscriptionDetail: {
+          ...subscriptionOver,
+          ...subscriptionDetail,
+        },
       },
     })
     render(
@@ -188,6 +191,18 @@ describe('InvoiceDetail', () => {
 
     it('prompts the user for printing', () => {
       expect(window.print).toHaveBeenCalled()
+    })
+  })
+
+  describe('when there are no subscriptionDetail', () => {
+    beforeEach(() => {
+      setup({}, '/invoice/123', {
+        subscriptionDetail: null,
+      })
+    })
+
+    it('renders the total', () => {
+      expect(screen.queryAllByText(/\$625\.51/i)[1]).toBeInTheDocument()
     })
   })
 })

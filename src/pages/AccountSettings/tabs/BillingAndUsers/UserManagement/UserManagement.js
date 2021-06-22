@@ -3,12 +3,10 @@ import PropTypes from 'prop-types'
 import { FormControls } from './FormControls'
 import { FormPaginate } from './FormPaginate'
 
-import { DateItem } from './DateItem'
-
-import Card from 'ui/Card'
-import Toggle from 'ui/Toggle'
-import User from 'ui/User'
-import Button from 'ui/Button'
+import Card from 'old_ui/Card'
+import Toggle from 'old_ui/Toggle'
+import User from 'old_ui/User'
+import Button from 'old_ui/Button'
 
 import { useLocationParams, ApiFilterEnum } from 'services/navigation'
 import { useAutoActivate, useAccountDetails } from 'services/account'
@@ -24,15 +22,9 @@ const UserManagementClasses = {
   title: 'text-2xl font-bold',
   results: 'shadow divide-y divide-gray-200 divide-solid p-6',
   userTable: 'grid grid-cols-5 lg:gap-2 my-6',
-  user: getUserClass,
+  user: 'col-span-4',
   ctaWrapper: 'flex items-center justify-end',
   cta: 'w-full truncate',
-}
-
-function getUserClass({ lastseen, latestPrivatePrDate }) {
-  if (lastseen && latestPrivatePrDate) return 'col-span-2'
-  else if (!lastseen && !latestPrivatePrDate) return 'col-span-4'
-  return 'col-span-3'
 }
 
 function useActivateUser({ provider, owner }) {
@@ -41,8 +33,8 @@ function useActivateUser({ provider, owner }) {
     owner,
   })
 
-  function activate(user, activated) {
-    return mutate({ targetUser: user, activated })
+  function activate(ownerid, activated) {
+    return mutate({ targetUserOwnerid: ownerid, activated })
   }
 
   return { activate, ...rest }
@@ -113,28 +105,18 @@ function UserManagement({ provider, owner }) {
                 className={UserManagementClasses.userTable}
               >
                 <User
-                  className={UserManagementClasses.user(user)}
+                  className={UserManagementClasses.user}
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
                   pills={createPills(user)}
-                />
-                <DateItem
-                  testId="last-seen"
-                  label="Last seen:"
-                  date={user.lastseen}
-                />
-                <DateItem
-                  testId="last-pr"
-                  label="Last pr:"
-                  date={user.latestPrivatePrDate}
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Button
                     className={UserManagementClasses.cta}
                     color={user.activated ? 'red' : 'blue'}
                     variant={user.activated ? 'outline' : 'normal'}
-                    onClick={() => activate(user.username, !user.activated)}
+                    onClick={() => activate(user.ownerid, !user.activated)}
                   >
                     {user.activated ? 'Deactivate' : 'Activate'}
                   </Button>

@@ -9,6 +9,9 @@ export const ProviderCookieKeyMapping = {
   gh: 'github-token',
   gl: 'gitlab-token',
   bb: 'bitbucket-token',
+  github: 'github-token',
+  gitlab: 'gitlab-token',
+  bitbucket: 'bitbucket-token',
 }
 
 export function generatePath({ path, query }) {
@@ -19,16 +22,26 @@ export function generatePath({ path, query }) {
 }
 
 export function getHeaders(provider) {
-  const token = Cookie.get(ProviderCookieKeyMapping[provider])
+  const p = provider.toLowerCase()
+  const tokenType = ProviderCookieKeyMapping[p]
+  const baseHeader = {
+    Accept: 'application/json',
+    'Token-Type': tokenType,
+  }
 
-  const authorizationHeader = token
-    ? {
-        Authorization: `Bearer ${token}`,
-      }
-    : {}
+  if (typeof provider !== 'string') return baseHeader
+
+  const token = Cookie.get(tokenType)
+
+  const authorizationHeader =
+    typeof token === 'string'
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : {}
 
   return {
-    Accept: 'application/json',
+    ...baseHeader,
     ...authorizationHeader,
   }
 }

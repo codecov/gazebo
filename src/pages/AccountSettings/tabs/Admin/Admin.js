@@ -8,8 +8,10 @@ import ManageAdminCard from './ManageAdminCard'
 import GithubIntegrationCard from './GithubIntegrationCard'
 import DeletionCard from './DeletionCard'
 
-function Admin({ isPersonalSettings, provider, owner }) {
+function Admin({ provider, owner }) {
   const { data: user } = useUser({ provider })
+  const isPersonalSettings = user.username.toLowerCase() === owner.toLowerCase()
+
   return (
     <div>
       {isPersonalSettings ? (
@@ -35,9 +37,7 @@ function Admin({ isPersonalSettings, provider, owner }) {
 }
 
 Admin.propTypes = {
-  isPersonalSettings: PropTypes.bool.isRequired,
   provider: PropTypes.string.isRequired,
   owner: PropTypes.string.isRequired,
 }
-
 export default Admin

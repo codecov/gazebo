@@ -1,23 +1,32 @@
 import PropType from 'prop-types'
 import get from 'lodash/get'
-import cs from 'classnames'
+import camelCase from 'lodash/camelCase'
 
-import * as svg from './svg'
+import * as svgOutline from './svg/outline'
+import * as svgSolid from './svg/solid'
 
-function Icon({ className = '', name, color = 'text-gray-500', testId }) {
-  const IconSvg = get(svg, name, null)
+const IconClasses = {
+  sm: 'w-4 h-4',
+  md: 'w-6 h-6',
+  lg: 'w-16 h-16',
+}
+
+const IconCollection = {
+  outline: svgOutline,
+  solid: svgSolid,
+}
+
+function Icon({ name, variant = 'outline', size = 'md' }) {
+  const IconSvg = get(IconCollection, `${variant}.${camelCase(name)}`, null)
   if (!IconSvg) return null
-  return (
-    <span className={cs(color, className)} data-testid={testId}>
-      <IconSvg className="fill-current" />
-    </span>
-  )
+  return <IconSvg className={IconClasses[size]} />
 }
 
 Icon.propTypes = {
+  /* To add more icons, update /scripts/icons.js and run "npm run generate-icons"*/
   name: PropType.string.isRequired,
-  color: PropType.string,
-  testId: PropType.string,
+  variant: PropType.string,
+  size: PropType.oneOf(['sm', 'md', 'lg']),
 }
 
 export default Icon

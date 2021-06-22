@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import LogoSpinner from 'ui/LogoSpinner'
+import LogoSpinner from 'old_ui/LogoSpinner'
 import { useTracking } from 'services/tracking'
 
 import ErrorBoundary from '../shared/ErrorBoundary'
@@ -22,7 +22,7 @@ function BaseLayout({ children }) {
     <>
       <Header />
       <Suspense fallback={fullPageLoader}>
-        <main className="flex-grow bg-gray-200 mt-20">
+        <main className="container flex-grow mt-6 mb-10 md:p-0">
           <ErrorBoundary sentryScopes={[['layout', 'base']]}>
             <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
           </ErrorBoundary>

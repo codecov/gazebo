@@ -1,28 +1,74 @@
-import { render, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import Button from '.'
 
 describe('Button', () => {
-  let wrapper
+  function setup(props = {}, location = '/gh/codecov') {
+    render(<Button {...props} />, {
+      wrapper: MemoryRouter,
+    })
+  }
 
-  const onClick = jest.fn()
-
-  describe('when rendered', () => {
+  describe('when rendered with the prop `to`', () => {
     beforeEach(() => {
-      wrapper = render(<Button onClick={onClick}>Click me</Button>)
+      setup({
+        to: {
+          pageName: 'account',
+          options: {
+            provider: 'gh',
+            owner: 'spotify',
+          },
+        },
+      })
+    })
+
+    it('renders a link with the right URL', () => {
+      expect(screen.getByRole('link')).toHaveAttribute(
+        'href',
+        '/account/gh/spotify'
+      )
+    })
+  })
+
+  describe('when rendered without `to` prop', () => {
+    beforeEach(() => {
+      setup({
+        children: 'hola',
+      })
     })
 
     it('renders a button', () => {
-      expect(wrapper.container.querySelector('button')).not.toBeNull()
+      expect(screen.getByRole('button')).toHaveTextContent('hola')
+    })
+  })
+
+  describe('when isLoading', () => {
+    beforeEach(() => {
+      setup({
+        children: 'bonjour',
+        isLoading: true,
+      })
     })
 
-    describe('when clicking', () => {
-      beforeEach(() => {
-        fireEvent.click(wrapper.getByText('Click me'))
-      })
+    it('disables the button', () => {
+      expect(screen.getByRole('button')).toHaveAttribute('disabled')
+    })
 
-      it('calls the handler', () => {
-        expect(onClick).toHaveBeenCalled()
+    it('The spinner is displayed', () => {
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
+    })
+  })
+
+  describe('when not isLoading', () => {
+    beforeEach(() => {
+      setup({
+        children: 'bonjour',
+        isLoading: false,
       })
+    })
+
+    it('The spinner is displayed', () => {
+      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
     })
   })
 })

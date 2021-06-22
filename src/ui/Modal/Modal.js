@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types'
 import ReactModal from 'react-modal'
 
-import Card from 'ui/Card'
-import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
-function Modal({ isOpen, onClose, children, title, ...rest }) {
+function Modal({ isOpen, onClose, body, footer, title, ...rest }) {
   if (!isOpen) return null
   return (
     <ReactModal
@@ -15,15 +13,28 @@ function Modal({ isOpen, onClose, children, title, ...rest }) {
       overlayClassName="fixed top-0 bottom-0 left-0 right-0 bg-gray-900 bg-opacity-75"
       {...rest}
     >
-      <Card className="w-1/2 p-8">
-        <header className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl bold">{title}</h2>
-          <Button variant="text" onClick={onClose} aria-label="Close">
-            <Icon name="times" />
-          </Button>
+      <div className="w-1/2 bg-white rounded">
+        <header className="flex justify-between items-center p-4">
+          <h2 className="font-semibold">{title}</h2>
+          <span
+            className="cursor-pointer fill-current text-ds-gray-septenary"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <Icon name="x" />
+          </span>
         </header>
-        {children}
-      </Card>
+        {body && (
+          <div className="w-full p-4 text-ds-gray-octonary border-t text-sm">
+            {body}
+          </div>
+        )}
+        {footer && (
+          <footer className="border-t flex justify-end rounded-b p-4 bg-ds-gray-primary">
+            {footer}
+          </footer>
+        )}
+      </div>
     </ReactModal>
   )
 }
@@ -32,6 +43,11 @@ Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
+  body: PropTypes.oneOfType([
+    PropTypes.element.isRequired,
+    PropTypes.string.isRequired,
+  ]),
+  footer: PropTypes.element,
 }
 
 export default Modal

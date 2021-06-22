@@ -1,0 +1,18 @@
+// mainly taken from https://github.com/antonreshetov/vue-unicons/blob/master/src/icons.js
+
+export { ReactComponent as angleDown } from './angleDown.svg'
+export { ReactComponent as angleUp } from './angleUp.svg'
+export { ReactComponent as arrowLeft } from './arrowLeft.svg'
+export { ReactComponent as ban } from './ban.svg'
+export { ReactComponent as check } from './check.svg'
+export { ReactComponent as creditCard } from './creditCard.svg'
+export { ReactComponent as exclamationCircle } from './exclamationCircle.svg'
+export { ReactComponent as infoCircle } from './infoCircle.svg'
+export { ReactComponent as times } from './times.svg'
+export { ReactComponent as rightChevron } from './chevronRight.svg'
+export { ReactComponent as leftChevron } from './chevronLeft.svg'
+export { ReactComponent as fileAlt } from './fileAlt.svg'
+export { ReactComponent as hamburger } from './hamburger.svg'
+export { ReactComponent as setting } from './setting.svg'
+export { ReactComponent as signOut } from './signOut.svg'
+export { ReactComponent as search } from './search.svg'

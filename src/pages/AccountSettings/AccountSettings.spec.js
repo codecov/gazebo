@@ -4,6 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useUser } from 'services/user'
 import AccountSettings from './AccountSettings'
 
+jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('./tabs/Admin', () => () => 'AdminTab')
 jest.mock('./tabs/BillingAndUsers', () => () => 'BillingAndUsersTab')
 jest.mock('./tabs/CancelPlan', () => () => 'CancelPlan')

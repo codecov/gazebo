@@ -1,3 +1,7 @@
+import githubLogo from 'assets/providers/github-icon.svg'
+import gitlabLogo from 'assets/providers/gitlab-icon.svg'
+import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
+
 export function providerToName(provider) {
   return {
     gh: 'Github',
@@ -11,8 +15,8 @@ export function providerToName(provider) {
 
 export function providerImage(providerName) {
   return {
-    Github: '/logos/providers/github-icon.svg',
-    Gitlab: '/logos/providers/gitlab-icon.svg',
-    BitBucket: '/logos/providers/bitbucket-icon.svg',
+    Github: githubLogo,
+    Gitlab: gitlabLogo,
+    BitBucket: bitbucketLogo,
   }[providerToName(providerName)]
 }

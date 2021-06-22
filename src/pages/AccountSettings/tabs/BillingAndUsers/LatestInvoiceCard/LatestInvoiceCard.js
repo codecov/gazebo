@@ -1,14 +1,16 @@
-import PropTypes from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
 import { Link } from 'react-router-dom'
 
-import Button from 'ui/Button'
-import Card from 'ui/Card'
+import Button from 'old_ui/Button'
+import Card from 'old_ui/Card'
+import AppLink from 'old_ui/AppLink'
 import { invoicePropType } from 'services/account'
+import { useNavLinks } from 'services/navigation'
 
 import invoiceImg from './invoice.svg'
 
-function LatestInvoiceCard({ invoice, provider, owner }) {
+function LatestInvoiceCard({ invoice }) {
+  const { invoiceDetail, invoiceTab } = useNavLinks()
   if (!invoice) return null
   return (
     <Card className="p-6 mb-4">
@@ -22,19 +24,21 @@ function LatestInvoiceCard({ invoice, provider, owner }) {
           <div className="italic text-gray-400">
             Due date {format(fromUnixTime(invoice.dueDate), 'do MMM')} - $
             {(invoice.total / 100).toFixed(2)}
-            <Link
+            <AppLink
               className="inline-block not-italic underline hover:underline text-blue-200 ml-2"
-              to={`/account/${provider}/${owner}/invoices/${invoice.id}`}
+              to={invoiceDetail.path({ id: invoice.id })}
+              useRouter={!invoiceDetail.isExternalLink}
             >
               View
-            </Link>
+            </AppLink>
           </div>
         </div>
       </div>
       <Button
         color="pink"
         variant="outline"
-        to={`/account/${provider}/${owner}/invoices`}
+        to={invoiceTab.path()}
+        useRouter={!invoiceTab.isExternalLink}
         Component={Link}
       >
         See all invoices
@@ -45,8 +49,6 @@ function LatestInvoiceCard({ invoice, provider, owner }) {
 
 LatestInvoiceCard.propTypes = {
   invoice: invoicePropType,
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default LatestInvoiceCard

@@ -7,17 +7,46 @@ module.exports = {
     content: ['./src/**/*.js', './src/*.js', './public/*.html'],
   },
   theme: {
-    fontFamily: {
-      body: ['sans-serif', 'Lato'],
-    },
     container: {
       center: true,
     },
     extend: {
       fontFamily: {
-        sans: ['Lato', ...defaultTheme.fontFamily.sans],
+        sans: ['Poppins', ...defaultTheme.fontFamily.sans],
+        mono: ['"Source Code Pro"', ...defaultTheme.fontFamily.mono],
       },
       colors: {
+        ds: {
+          pink: {
+            DEFAULT: '#F01F7A',
+            secondary: '#FF4A89',
+            tertiary: '#D10D62',
+          },
+          blue: {
+            DEFAULT: '#0088E9',
+            light: '#52B7FF',
+            medium: '#0095FF',
+            darker: '#0071C2',
+            quinary: '#015896',
+            senary: '#002D4D',
+          },
+          gray: {
+            DEFAULT: '#0E1B29',
+            primary: '#F7F8FB',
+            secondary: '#EAEBEF',
+            tertiary: '#D8DCE2',
+            quaternary: '#999FA7',
+            quinary: '#68737E',
+            senary: '#394754',
+            septenary: '#222F3D',
+            octonary: '#0E1B29',
+          },
+          primary: {
+            green: '#27B340',
+            red: '#CE2019',
+            purple: '#AC39CF',
+          },
+        },
         codecov: {
           red: '#CE2019',
           orange: '#FFC273',
@@ -85,7 +114,7 @@ module.exports = {
       transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
       borderRadius: ['focus', 'last'],
       borderStyle: ['first'],
-      borderColor: ['first'],
+      borderColor: ['first', 'disabled'],
       borderWidth: ['first'],
       padding: ['responsive', 'last'],
       backgroundColor: ['disabled'],

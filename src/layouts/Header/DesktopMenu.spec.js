@@ -1,40 +1,66 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-
-import { useMainNav } from 'services/header'
+import { useUser } from 'services/user'
 
 import DesktopMenu from './DesktopMenu'
+import { LoginPrompt } from './DesktopMenu'
 
-jest.mock('layouts/Header/ServerStatus.js', () => () => 'ServerStatus')
-jest.mock('services/header')
-jest.mock('./Dropdown', () => () => 'Dropdown')
+jest.mock('services/user')
 
-const mockMainNav = [
-  { label: 'Haunted Code', to: '/👻', iconName: 'ghost' },
-  { label: 'Thriller Video', to: '/👻/👅/💃🏽', imageUrl: '💃🏽.jpeg' },
-]
+const loggedInUser = {
+  username: 'p',
+  avatarUrl: '',
+}
 
 describe('DesktopMenu', () => {
   function setup() {
-    render(
-      <MemoryRouter>
-        <DesktopMenu />
-      </MemoryRouter>
-    )
+    render(<DesktopMenu />, { wrapper: MemoryRouter })
   }
 
-  describe('renders from service data', () => {
-    beforeEach(() => {
-      useMainNav.mockReturnValue(mockMainNav)
+  it('renders static links', () => {
+    useUser.mockReturnValue({ data: loggedInUser })
+    setup()
 
-      setup()
+    const expectedStaticLinks = [
+      { label: 'Docs', to: 'https://docs.codecov.io/' },
+      { label: 'Support', to: 'https://codecov.freshdesk.com/support/home' },
+      { label: 'Blog', to: 'https://about.codecov.io/blog' },
+    ]
+
+    expectedStaticLinks.forEach((expectedLink) => {
+      const a = screen.getByText(expectedLink.label).closest('a')
+      expect(a).toHaveAttribute('href', expectedLink.to)
     })
+  })
 
-    it('renders main nav links', () => {
-      mockMainNav.forEach((link) => {
-        const navLink = screen.getByText(link.label).closest('a')
-        expect(navLink).toHaveAttribute('href', link.to)
-      })
+  it('renders the dropdown when user is logged in', () => {
+    useUser.mockReturnValue({ data: loggedInUser })
+    setup()
+
+    const dropdown = screen.getByTestId('dropdown')
+    expect(dropdown).toBeInTheDocument()
+  })
+
+  it('renders the login prompt when user not logged in', () => {
+    useUser.mockReturnValue({ data: null })
+    setup()
+    const login = screen.getByTestId('login-prompt')
+    expect(login).toBeInTheDocument()
+  })
+})
+
+describe('LoginPrompt', () => {
+  it('renders a login button and a sign up button', () => {
+    render(<LoginPrompt />, { wrapper: MemoryRouter })
+
+    const expectedLinks = [
+      { label: 'Log in', to: 'https://stage-web.codecov.dev/login/undefined' },
+      { label: 'Sign up', to: 'https://about.codecov.io/sign-up' },
+    ]
+
+    expectedLinks.forEach((expectedLink) => {
+      const a = screen.getByText(expectedLink.label).closest('a')
+      expect(a).toHaveAttribute('href', expectedLink.to)
     })
   })
 })

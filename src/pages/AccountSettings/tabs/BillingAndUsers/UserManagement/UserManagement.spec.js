@@ -2,8 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import user from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
-import formatDistance from 'date-fns/formatDistance'
-import parseISO from 'date-fns/parseISO'
 
 import { useUsers, useUpdateUser } from 'services/users'
 import { useAccountDetails, useAutoActivate } from 'services/account'
@@ -18,6 +16,7 @@ const queryClient = new QueryClient()
 const users = {
   data: {
     totalPages: 1,
+    results: [],
   },
 }
 
@@ -42,12 +41,6 @@ const defaultQuery = {
   search: '',
   page: 1,
   pageSize: 50,
-}
-
-function assertFromToday(date) {
-  // Due to last seen/past pr being based on the current date
-  // we need to asset the expected date format is rendered vs hard coding the expect.
-  return formatDistance(parseISO(date), new Date(), 'MM/dd/yyyy')
 }
 
 describe('UserManagerment', () => {
@@ -181,168 +174,6 @@ describe('UserManagerment', () => {
         expect(studentLabel).toBeInTheDocument()
       })
     })
-
-    describe('Last seen', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 1,
-            results: [{ username: 'kumar', lastseen: '2021-01-20T05:03:56Z' }],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-      it('renders correct date', () => {
-        const placeholder = screen.getByText(/kumar/)
-        expect(placeholder).toBeInTheDocument()
-
-        const lastSeen = screen.getByText(
-          assertFromToday('2021-01-20T05:03:56Z')
-        )
-        expect(lastSeen).toBeInTheDocument()
-      })
-    })
-
-    describe('No last seen', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 1,
-            results: [{ username: 'kumar' }],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-      it('not rendered', () => {
-        const placeholder = screen.getByText(/kumar/)
-        expect(placeholder).toBeInTheDocument()
-
-        const lastSeen = screen.queryByTestId('last-seen')
-        expect(lastSeen).not.toBeInTheDocument()
-      })
-    })
-
-    describe('Last pr', () => {
-      beforeEach(() => {
-        const mockUseUsersValue = {
-          isSuccess: true,
-          data: {
-            totalPages: 1,
-            results: [
-              {
-                username: 'kumar',
-                latestPrivatePrDate: '2021-01-20T05:03:56Z',
-              },
-            ],
-          },
-        }
-        setup({ mockUseUsersValue })
-      })
-      it('renders correct date', () => {
-        const placeholder = screen.getByText(/kumar/)
-        expect(placeholder).toBeInTheDocument()
-
-        const lastPr = screen.getByText(assertFromToday('2021-01-20T05:03:56Z'))
-        expect(lastPr).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('No last pr', () => {
-    beforeEach(() => {
-      const mockUseUsersValue = {
-        isSuccess: true,
-        data: {
-          totalPages: 1,
-          results: [{ username: 'kumar' }],
-        },
-      }
-      setup({ mockUseUsersValue })
-    })
-    it('not rendered', () => {
-      const placeholder = screen.getByText(/kumar/)
-      expect(placeholder).toBeInTheDocument()
-
-      const lastPr = screen.queryByTestId('last-pr')
-      expect(lastPr).not.toBeInTheDocument()
-    })
-  })
-
-  describe('Sort By', () => {
-    describe('Default Selection', () => {
-      beforeEach(() => {
-        setup()
-      })
-
-      it(`Renders the correct selection: Name A-Z`, () => {
-        const SortSelect = screen.getByRole('button', { name: 'ordering' })
-        user.click(SortSelect)
-        expect(
-          screen.getByRole('option', { name: /Name A-Z/ })
-        ).toBeInTheDocument()
-        user.click(screen.getByRole('option', { name: /Name A-Z/ }))
-        expect(
-          screen.queryByRole('option', { name: /Name A-Z/ })
-        ).not.toBeInTheDocument()
-      })
-
-      it(`Makes the correct query to the api: Name A-Z`, () => {
-        const SortSelect = screen.getByRole('button', { name: 'ordering' })
-        user.click(SortSelect)
-        user.click(screen.getByRole('option', { name: /Name Z-A/ }))
-
-        user.click(SortSelect)
-        user.click(screen.getByRole('option', { name: /Name A-Z/ }))
-
-        expect(useUsers).toHaveBeenLastCalledWith({
-          owner: 'radient',
-          provider: 'gh',
-          query: defaultQuery,
-        })
-      })
-    })
-
-    describe.each([
-      [/Name Z-A/, { ...defaultQuery, ordering: '-name' }],
-      [/Username A-Z/, { ...defaultQuery, ordering: 'username' }],
-      [/Username Z-A/, { ...defaultQuery, ordering: '-username' }],
-      [/Email A-Z/, { ...defaultQuery, ordering: 'email' }],
-      [/Email Z-A/, { ...defaultQuery, ordering: '-email' }],
-    ])('ordering', (label, expected) => {
-      beforeEach(() => {
-        setup()
-      })
-
-      it(`Renders the correct selection: ${label}`, () => {
-        const SortSelect = screen.getByRole('button', { name: 'ordering' })
-        user.click(SortSelect)
-        expect(screen.getByRole('option', { name: label })).toBeInTheDocument()
-        user.click(screen.getByRole('option', { name: label }))
-        expect(
-          screen.queryByRole('option', { name: label })
-        ).not.toBeInTheDocument()
-      })
-
-      it(`Makes the correct query to the api: ${label}`, () => {
-        expect(useUsers).toHaveBeenLastCalledWith({
-          owner: 'radient',
-          provider: 'gh',
-          query: defaultQuery,
-        })
-
-        const SortSelect = screen.getByRole('button', { name: 'ordering' })
-        user.click(SortSelect)
-        user.click(screen.getByRole('option', { name: label }))
-
-        expect(useUsers).toHaveBeenLastCalledWith({
-          owner: 'radient',
-          provider: 'gh',
-          query: expected,
-        })
-      })
-    })
   })
 
   describe('Filter by Activated', () => {
@@ -431,13 +262,14 @@ describe('UserManagerment', () => {
         isSuccess: true,
         data: {
           totalPages: 1,
-          results: [{ username: 'earthspirit' }, { username: 'dazzle' }].filter(
-            ({ username }) => {
-              // mock query search
-              if (query.search) return username.includes(query.search)
-              return true
-            }
-          ),
+          results: [
+            { username: 'earthspirit', avatarUrl: '' },
+            { username: 'dazzle', avatarUrl: '' },
+          ].filter(({ username }) => {
+            // mock query search
+            if (query.search) return username.includes(query.search)
+            return true
+          }),
         },
       })
       setup({ mockUseUsersImplementation })
@@ -470,6 +302,21 @@ describe('UserManagerment', () => {
 
       expect(screen.queryByText(/earthspirit$/)).not.toBeInTheDocument()
     })
+
+    it('Search users on enter', () => {
+      const SearchInput = screen.getByRole('textbox', {
+        name: 'search users',
+      })
+      expect(useUsers).toHaveBeenCalledTimes(1)
+      user.type(SearchInput, 'd')
+      user.type(SearchInput, '{enter}')
+      expect(useUsers).toHaveBeenCalledTimes(3)
+      expect(useUsers).toHaveBeenLastCalledWith({
+        owner: 'radient',
+        provider: 'gh',
+        query: { ...defaultQuery, search: 'd' },
+      })
+    })
   })
 
   describe('Activate user', () => {
@@ -485,8 +332,10 @@ describe('UserManagerment', () => {
           totalPages: 1,
           results: [
             {
-              username: 'kumar',
+              ownerid: 10,
               activated: false,
+              username: 'test',
+              avatarUrl: '',
             },
           ],
         },
@@ -509,7 +358,7 @@ describe('UserManagerment', () => {
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
       expect(mutateMock).toHaveBeenLastCalledWith({
-        targetUser: 'kumar',
+        targetUserOwnerid: 10,
         activated: true,
       })
     })
@@ -528,8 +377,10 @@ describe('UserManagerment', () => {
           totalPages: 1,
           results: [
             {
-              username: 'kumar',
+              ownerid: 11,
               activated: true,
+              username: 'test',
+              avatarUrl: '',
             },
           ],
         },
@@ -552,7 +403,7 @@ describe('UserManagerment', () => {
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
       expect(mutateMock).toHaveBeenLastCalledWith({
-        targetUser: 'kumar',
+        targetUserOwnerid: 11,
         activated: false,
       })
     })
@@ -562,8 +413,8 @@ describe('UserManagerment', () => {
     describe('On page change', () => {
       beforeEach(() => {
         const mockUseUsersImplementation = ({ query }) => {
-          const dazzle = { username: 'dazzle' }
-          const es = { username: 'earthspirit' }
+          const dazzle = { username: 'dazzle', avatarUrl: '' }
+          const es = { username: 'earthspirit', avatarUrl: '' }
           return {
             isSuccess: true,
             data: {

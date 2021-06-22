@@ -4,8 +4,8 @@ import { useUsers, useUpdateUser } from 'services/users'
 import { ApiFilterEnum } from 'services/navigation'
 import { getOwnerImg } from 'shared/utils'
 import { providerToName } from 'shared/utils/provider'
-import Button from 'ui/Button'
-import User from 'ui/User'
+import Button from 'old_ui/Button'
+import User from 'old_ui/User'
 
 import AddAdmins from './AddAdmins'
 
@@ -20,8 +20,10 @@ function useAdminsAndRevoke({ provider, owner }) {
 
   function setAdminStatus(user, isAdmin) {
     const body = {
-      targetUser: user.username,
+      /* eslint-disable camelcase */
+      targetUserOwnerid: user.ownerid,
       is_admin: isAdmin,
+      /* eslint-enable camelcase */
     }
     mutate(body)
   }

@@ -2,7 +2,9 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import SidebarLayout from './SidebarLayout'
+
 jest.mock('../shared/ErrorBoundary', () => ({ children }) => <>{children}</>)
+jest.mock('layouts/Footer', () => () => 'Footer')
 
 const robinQuote = 'Holy Tintinnabulation!'
 const batmanQuote =
@@ -57,7 +59,7 @@ describe('SidebarLayout', () => {
 
     it('renders the sidebar', () => {
       const content = screen.getByTestId('sidebar-content')
-      expect(content).toHaveClass('pl-0 sm:pl-4')
+      expect(content).toHaveClass('pl-0 lg:pl-8')
     })
   })
 

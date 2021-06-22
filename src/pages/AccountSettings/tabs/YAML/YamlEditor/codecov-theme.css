@@ -1,0 +1,35 @@
+.ace-github {
+  @apply text-base text-ds-gray-octonary font-mono border-ds-gray-secondary border border-solid;
+}
+
+.ace_text-input,
+.ace_scroller,
+.ace_scrollbar,
+.ace-github:last-child {
+  @apply top-4;
+}
+
+.ace-github .ace_gutter {
+  @apply bg-ds-gray-primary text-ds-gray-quinary;
+}
+
+.ace_gutter-layer:first-child {
+  @apply mt-4;
+}
+
+.ace_gutter-active-line {
+  @apply bg-ds-gray-secondary;
+}
+
+.ace_print-margin[style] {
+  left: inherit !important;
+  right: 0;
+}
+
+.ace_meta {
+  @apply text-ds-pink;
+}
+
+.ace_scroller[style] {
+  left: 4rem !important;
+}

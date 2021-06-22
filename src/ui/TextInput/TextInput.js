@@ -1,46 +1,66 @@
-import { forwardRef } from 'react'
 import PropTypes from 'prop-types'
 import cs from 'classnames'
+import uniqueId from 'lodash/uniqueId'
+import defaultTo from 'lodash/defaultTo'
+import { forwardRef } from 'react'
 
-const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
-  const classes = cs(
-    {
-      [className]: !embedded,
-    },
-    'border-box block w-full px-6 py-2 rounded-full',
-    'bg-gray-100 text-gray-900 caret-pink-500',
-    {
-      'pl-9': embedded,
-    }
-  )
+import Icon from 'ui/Icon'
 
-  function _render() {
-    return <input ref={ref} type="text" className={classes} {...props} />
-  }
+const styles = {
+  input: 'block rounded border border-ds-gray-tertiary px-3 text-sm w-full h-8',
+  label: 'block font-semibold mb-2',
+  iconWrapper:
+    'absolute text-ds-gray-quaternary left-2 h-full flex items-center',
+}
 
-  function _embedded() {
+const TextInput = forwardRef(
+  ({ type = 'text', icon, label, placeholder, ...props }, ref) => {
+    const id = uniqueId('text-input')
+
+    // If no label, the placeholder is used as a hidden label for a11y
+    const textLabel = defaultTo(label, placeholder)
+
     return (
-      <span className="absolute top-0 left-0 m-3 w-4 h-4 z-10">
-        {embedded()}
-      </span>
+      <div>
+        <label
+          htmlFor={id}
+          className={cs(styles.label, {
+            'sr-only': !label,
+          })}
+        >
+          {textLabel}
+        </label>
+        <div className="relative">
+          {icon && (
+            <div className={styles.iconWrapper}>
+              <Icon size="sm" variant="outline" name={icon} />
+            </div>
+          )}
+          <input
+            ref={ref}
+            id={id}
+            type={type}
+            className={cs(styles.input, {
+              'pl-7': Boolean(icon),
+            })}
+            placeholder={placeholder}
+            {...props}
+          />
+        </div>
+      </div>
     )
   }
-
-  if (embedded) {
-    return (
-      <span className={cs(className, 'relative')}>
-        {_embedded()}
-        {_render()}
-      </span>
-    )
-  }
-
-  return _render()
-})
+)
 
 TextInput.displayName = 'TextInput'
+
 TextInput.propTypes = {
-  embedded: PropTypes.func,
+  label: PropTypes.string,
+  type: PropTypes.string,
+  icon: PropTypes.string,
+  placeholder: PropTypes.string,
+  onChange: PropTypes.func,
+  value: PropTypes.string,
 }
 
 export default TextInput

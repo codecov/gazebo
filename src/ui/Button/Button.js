@@ -1,60 +1,98 @@
 import PropTypes from 'prop-types'
+import cs from 'classnames'
 
-const basicClass =
-  'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 transition-colors duration-200 ease-in-out'
+import AppLink from 'shared/AppLink'
+import Spinner from 'ui/Spinner'
 
-const variantToClass = {
-  normal:
-    'py-2 px-4 rounded-full hover:text-white visited:text-white text-white',
-  outline: 'py-2 px-4 rounded-full border border-solid hover:text-white',
-  text: 'underline hover:no-underline py-0 px-0',
+const baseClass = `
+  flex justify-center items-center gap-1
+  border-solid border
+  font-semibold rounded py-1 px-4 shadow
+  transition-colors duration-150 motion-reduce:transition-none
+
+  focus:outline-none focus:ring
+
+  disabled:cursor-not-allowed 
+`
+const baseDisabledClasses = `disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-primary`
+const variantClasses = {
+  default: `
+    text-ds-gray-octonary bg-ds-gray-primary border-ds-gray-quaternary
+
+    hover:bg-ds-gray-secondary
+  `,
+  primary: `
+    text-white bg-ds-blue-medium border-ds-blue-quinary
+    
+    hover:bg-ds-blue-darker
+  `,
+  danger: `
+    text-ds-primary-red border-ds-primary-red 
+
+    hover:text-white hover:bg-ds-primary-red
+  `,
 }
 
-const colorToClass = {
-  pink: {
-    normal: 'bg-pink-500 hover:bg-pink-100',
-    text: 'text-pink-500',
-    outline: 'border-current text-pink-500 hover:bg-pink-500',
-  },
-  blue: {
-    normal: 'bg-blue-400 hover:bg-blue-600',
-    text: 'text-blue-400',
-    outline: 'border-current text-blue-400 hover:bg-blue-400',
-  },
-  gray: {
-    normal: 'bg-gray-500 hover:bg-gray-600',
-    text: 'text-gray-500',
-    outline: 'border-current text-gray-500 hover:bg-gray-900',
-  },
-  red: {
-    normal: 'bg-codecov-red hover:bg-red-800',
-    text: 'text-codecov-red',
-    outline: 'border-current text-codecov-red hover:bg-codecov-red',
-  },
+const loadingVariantClasses = {
+  default: `disabled:bg-ds-gray-secondary disabled:text-ds-gray-octonary disabled:border-ds-gray-quaternary`,
+  primary: `disabled:bg-ds-blue-darker disabled:bg-ds-blue-medium text-white disabled:border-ds-blue-quinary`,
+  danger: `disabled:text-white disabled:border-ds-primary-red disabled:bg-ds-primary-red`,
+}
+
+function pickVariant(variant, loading) {
+  const set = loading ? loadingVariantClasses : variantClasses
+
+  return set[variant]
 }
 
 function Button({
-  color = 'blue',
-  variant = 'normal',
-  Component = 'button',
-  className = '',
+  to,
+  variant = 'default',
+  isLoading = false,
+  disabled,
+  children,
   ...props
 }) {
-  // concat all the different classNames
-  const classes = [
-    basicClass,
-    variantToClass[variant],
-    colorToClass[color][variant],
-    className,
-  ].join(' ')
+  const className = cs(
+    baseClass,
+    { [baseDisabledClasses]: !isLoading },
+    pickVariant(variant, isLoading)
+  )
 
-  return <Component className={classes} {...props} />
+  const content = (
+    <>
+      {isLoading && (
+        <span className="text-white mr-0.5">
+          <Spinner />
+        </span>
+      )}
+      {children}
+    </>
+  )
+
+  const completeProps = {
+    ...props,
+    disabled: disabled || isLoading,
+    className,
+    children: content,
+  }
+
+  return to ? (
+    <AppLink {...to} {...completeProps}>
+      {content}
+    </AppLink>
+  ) : (
+    <button {...completeProps} className={className}>
+      {content}
+    </button>
+  )
 }
 
 Button.propTypes = {
-  color: PropTypes.oneOf(Object.keys(colorToClass)),
-  variant: PropTypes.oneOf(Object.keys(variantToClass)),
-  Component: PropTypes.elementType,
+  to: PropTypes.shape(AppLink.propTypes),
+  variant: PropTypes.oneOf(['default', 'primary', 'danger']),
+  isLoading: PropTypes.bool,
+  disabled: PropTypes.bool,
 }
 
 export default Button

@@ -8,7 +8,7 @@ describe('Modal', () => {
   const defaultProps = {
     isOpen: true,
     onClose: jest.fn(),
-    children: 'hello',
+    body: 'hello',
     title: 'modal title',
   }
 
@@ -42,18 +42,27 @@ describe('Modal', () => {
     })
 
     it('renders the children', () => {
-      expect(screen.queryByText(props.children)).toBeInTheDocument()
+      expect(screen.queryByText(props.body)).toBeInTheDocument()
     })
   })
 
   describe('when clicking on the close button', () => {
     beforeEach(() => {
       setup()
-      userEvent.click(wrapper.getByRole('button'))
+      userEvent.click(wrapper.getByLabelText('Close'))
     })
 
     it('calls the close handler', () => {
       expect(props.onClose).toHaveBeenCalled()
+    })
+  })
+  describe('renders a footer', () => {
+    beforeEach(() => {
+      setup({ footer: <span>this is the footer</span> })
+    })
+
+    it('redners footer', () => {
+      expect(screen.queryByText(/this is the footer/)).toBeInTheDocument()
     })
   })
 })

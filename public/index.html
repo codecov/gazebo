@@ -47,11 +47,6 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Codecov</title>
-    <style>
-      body {
-        background-color: #EAEBEF;
-      }
-    </style>
     <% if(process.env.NODE_ENV === "production") { %>
     <script>
       window.dataLayer = [{
@@ -77,7 +72,7 @@
     <% } %>
     </head>
   </head>
-  <body>
+  <body class="text-sm text-ds-gray-octonary">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <% if(process.env.NODE_ENV === "production") { %>
@@ -91,7 +86,7 @@
     ></noscript>
     <% } %>
     <script type="text/javascript">
-      window.configEnv = {}
+      window.configEnv = window.configEnv || {}
     </script>
     <!--
       This HTML file is a template.

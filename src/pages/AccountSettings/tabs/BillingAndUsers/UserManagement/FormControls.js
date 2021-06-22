@@ -1,23 +1,15 @@
 import PropTypes from 'prop-types'
 import { Controller, useForm } from 'react-hook-form'
 
-import Select from 'ui/Select'
-import TextInput from 'ui/TextInput'
-import ControlGroup from 'ui/ControlGroup'
+import Select from 'old_ui/Select'
+import TextInput from 'old_ui/TextInput'
+import ControlGroup from 'old_ui/ControlGroup'
 
 import { ApiFilterEnum } from 'services/navigation'
 
-import Card from 'ui/Card'
-import Icon from 'ui/Icon'
-
-const OrderingItems = [
-  { label: 'Name A-Z', value: 'name' },
-  { label: 'Name Z-A', value: '-name' },
-  { label: 'Username A-Z', value: 'username' },
-  { label: 'Username Z-A', value: '-username' },
-  { label: 'Email A-Z', value: 'email' },
-  { label: 'Email Z-A', value: '-email' },
-]
+import Card from 'old_ui/Card'
+import Icon from 'old_ui/Icon'
+import { useState } from 'react'
 
 const AdminItems = [
   { label: 'Everyone', value: ApiFilterEnum.none },
@@ -33,10 +25,10 @@ const ActivatedItems = [
 
 const FormClasses = {
   search:
-    'flex-none md:flex-1 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
+    'flex-none md:w-1/2 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
-  firstFilter: 'flex-1 rounded-tl-md rounded-bl-md',
-  filter: 'flex-1',
+  firstFilter: 'flex-1 md:w-1/4 rounded-tl-md rounded-bl-md',
+  filter: 'flex-1 md:w-1/4',
   item: 'flex justify-between text-base py-2 truncate',
   itemContent: 'flex justify-between text-base truncate',
   icon: 'w-6 h-6 bg-gray-100 rounded-full list-item-type ml-3',
@@ -75,8 +67,21 @@ export function FormControls({ onChange, current, defaultValues }) {
     defaultValues,
   })
 
+  const [searchText, setSearchText] = useState('')
+
+  function handleInput(event) {
+    const value = event?.target?.value
+    setSearchText(value)
+    onChange({ search: value })
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault()
+    onChange({ search: searchText })
+  }
+
   return (
-    <form onSubmit={onChange}>
+    <form onSubmit={handleSubmit}>
       <Card>
         <ControlGroup>
           <Controller
@@ -119,35 +124,22 @@ export function FormControls({ onChange, current, defaultValues }) {
               />
             )}
           />
-          <Controller
-            name="ordering"
-            control={control}
-            render={() => (
-              <Select
-                ariaName="ordering"
-                className={FormClasses.filter}
-                control={control}
-                items={OrderingItems}
-                renderSelected={SelectedItem}
-                renderItem={Item}
-                value={OrderingItems.find(
-                  ({ value }) => value === current?.ordering
-                )}
-                onChange={({ value }) => {
-                  onChange({ ordering: value })
-                }}
-              />
-            )}
-          />
           <TextInput
             variant="light"
             aria-label="search users"
             className={FormClasses.search}
             name="search"
-            ref={register}
+            {...register('search')}
             placeholder="Search"
-            embedded={() => <Icon name="search" className="absolute top-2" />}
-            onChange={(event) => onChange({ search: event.target.value })}
+            embedded={() => (
+              <Icon
+                iconClass="w-4 h-4 fill-current"
+                name="search"
+                size="sm"
+                className="absolute top-2"
+              />
+            )}
+            onChange={handleInput}
           />
         </ControlGroup>
         {/* Hidden input for screen readers */}

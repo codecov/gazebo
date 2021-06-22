@@ -1,21 +1,23 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams, useRouteMatch } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
 
+import config from 'config'
 import { useUser } from 'services/user'
 
 import { useMainNav, useSubNav } from './hooks'
 
 jest.mock('services/user')
 jest.mock('react-router-dom', () => ({
-  Link: jest.fn(),
   useParams: jest.fn(),
+  useRouteMatch: jest.fn(),
 }))
 
 describe('useMainNav', () => {
   let hookData
 
-  function setup(currentResource) {
-    useParams.mockReturnValue(currentResource)
+  function setup(params) {
+    useParams.mockReturnValue(params)
+    useRouteMatch.mockReturnValue({ params })
     hookData = renderHook(() => useMainNav())
   }
 
@@ -41,7 +43,8 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          imageUrl: '/logos/providers/github-icon.svg',
+          useRouter: true,
+          imageUrl: 'github-icon.svg',
         },
       ])
     })
@@ -60,11 +63,13 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          imageUrl: '/logos/providers/github-icon.svg',
+          useRouter: true,
+          imageUrl: 'github-icon.svg',
         },
         {
           label: 'codecov',
           to: '/gh/codecov',
+          useRouter: true,
           imageUrl: 'https://github.com/codecov.png?size=40',
         },
       ])
@@ -85,16 +90,19 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          imageUrl: '/logos/providers/github-icon.svg',
+          useRouter: true,
+          imageUrl: 'github-icon.svg',
         },
         {
           label: 'codecov',
           to: '/gh/codecov',
+          useRouter: true,
           imageUrl: 'https://github.com/codecov.png?size=40',
         },
         {
           label: 'gazebo',
           to: '/gh/codecov/gazebo',
+          useRouter: false,
           iconName: 'infoCircle',
         },
       ])
@@ -106,9 +114,13 @@ describe('useSubNav', () => {
   let hookData
 
   function setup(currentUser) {
-    useParams.mockReturnValue({
+    const params = {
       provider: 'gh',
-    })
+      owner: 'codecov',
+      repo: 'gazebo',
+    }
+    useRouteMatch.mockReturnValue({ params })
+    useParams.mockReturnValue(params)
     useUser.mockReturnValue({ data: currentUser })
     hookData = renderHook(() => useSubNav())
   }
@@ -138,13 +150,16 @@ describe('useSubNav', () => {
         {
           label: 'Personal Settings',
           to: `/account/gh/${user.username}`,
+          useRouter: true,
           imageUrl: user.avatarUrl,
-          LinkComponent: Link,
+          hideAvatar: true,
         },
         {
           label: 'Sign Out',
-          href: '/sign-out',
+          to: `${config.BASE_URL}/logout/gh`,
+          useRouter: false,
           iconName: 'signOut',
+          hideAvatar: true,
         },
       ])
     })

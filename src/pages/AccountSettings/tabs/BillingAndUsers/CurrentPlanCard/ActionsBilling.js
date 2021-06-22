@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Button from 'ui/Button'
+import Button from 'old_ui/Button'
 import githubLogo from 'assets/githublogo.png'
-import { useBaseUrl } from 'shared/router'
+import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 import { accountDetailsPropType } from 'services/account'
 
 function shouldRenderCancelLink(accountDetails, isFreePlan) {
@@ -17,7 +17,8 @@ function shouldRenderCancelLink(accountDetails, isFreePlan) {
 }
 
 function ActionsBilling({ accountDetails, isFreePlan }) {
-  const baseUrl = useBaseUrl()
+  const { upgradePlan, cancelPlan, billingAndUsers } = useNavLinks()
+  const { githubMarketplace } = useStaticNavLinks()
 
   if (accountDetails.planProvider === 'github') {
     return (
@@ -33,7 +34,10 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
           Your account is configured via GitHub Marketplace
         </p>
         <div className="text-center">
-          <Button Component="a" href="https://github.com/marketplace/codecov">
+          <Button
+            href={githubMarketplace.path()}
+            useRouter={!githubMarketplace.isExternalLink}
+          >
             Manage billing in GitHub
           </Button>
         </div>
@@ -41,7 +45,7 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
     )
   }
 
-  if (accountDetails.rootOrganization) {
+  if (accountDetails.rootOrganization?.username) {
     return (
       <div className="border-t border-gray-200 pb-4">
         <p className="mt-4 mb-6 text-sm">
@@ -51,7 +55,10 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
         <div className="text-center">
           <Button
             Component={Link}
-            to={`/account/gl/${accountDetails.rootOrganization.username}/billing`}
+            to={billingAndUsers.path({
+              owner: accountDetails.rootOrganization.username,
+            })}
+            useRouter={!billingAndUsers.isExternalLink}
           >
             View Billing
           </Button>
@@ -62,12 +69,17 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
 
   return (
     <>
-      <Button Component={Link} to={`${baseUrl}upgrade`}>
+      <Button
+        Component={Link}
+        to={upgradePlan.path()}
+        useRouter={!upgradePlan.isExternalLink}
+      >
         {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
       </Button>
       {shouldRenderCancelLink(accountDetails, isFreePlan) && (
         <Button
-          to={`${baseUrl}cancel`}
+          to={cancelPlan.path()}
+          useRouter={!cancelPlan.isExternalLink}
           Component={Link}
           variant="text"
           color="gray"

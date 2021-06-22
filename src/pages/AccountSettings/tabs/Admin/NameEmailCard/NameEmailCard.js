@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
-import Card from 'ui/Card'
-import Button from 'ui/Button'
-import TextInput from 'ui/TextInput'
+import Card from 'old_ui/Card'
+import Button from 'old_ui/Button'
+import TextInput from 'old_ui/TextInput'
 import { useAddNotification } from 'services/toastNotification'
 import { useUpdateProfile } from 'services/user'
 
@@ -21,7 +21,7 @@ function getSchema() {
 
 function NameEmailCard({ user, provider }) {
   const addToast = useAddNotification()
-  const { register, handleSubmit, errors, formState, reset } = useForm({
+  const { register, handleSubmit, formState, reset } = useForm({
     resolver: yupResolver(getSchema()),
     defaultValues: {
       email: user.email,
@@ -66,13 +66,14 @@ function NameEmailCard({ user, provider }) {
             <TextInput
               id="name-edit"
               className="mt-2"
-              name="name"
               placeholder="Your name"
               disabled={isLoading}
-              ref={register}
+              {...register('name', { required: true })}
             />
-            {errors.name && (
-              <p className="text-error-900 mt-1">{errors.name?.message}</p>
+            {formState?.errors.name && (
+              <p className="text-error-900 mt-1">
+                {formState?.errors.name?.message}
+              </p>
             )}
           </div>
           <div className="w-full md:w-1/2 ml-2 mt-4 md:mt-0">
@@ -82,13 +83,14 @@ function NameEmailCard({ user, provider }) {
             <TextInput
               id="email-edit"
               className="mt-2"
-              name="email"
               placeholder="Your email"
               disabled={isLoading}
-              ref={register}
+              {...register('email', { required: true })}
             />
-            {errors.email && (
-              <p className="text-error-900 mt-1">{errors.email?.message}</p>
+            {formState.errors.email && (
+              <p className="text-error-900 mt-1">
+                {formState.errors.email?.message}
+              </p>
             )}
           </div>
         </div>

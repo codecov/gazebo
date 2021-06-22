@@ -1,4 +1,4 @@
-import Card from 'ui/Card'
+import Card from 'old_ui/Card'
 import { accountDetailsPropType } from 'services/account'
 
 import ActionsBilling from './ActionsBilling'

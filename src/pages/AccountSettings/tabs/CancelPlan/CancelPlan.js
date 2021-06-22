@@ -1,8 +1,9 @@
 import PropType from 'prop-types'
 import difference from 'lodash/difference'
 
-import Card from 'ui/Card'
+import Card from 'old_ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
+import { useNavLinks } from 'services/navigation'
 
 import umbrellaImg from './umbrella.svg'
 import DowngradeToFree from './DowngradeToFree'
@@ -12,6 +13,7 @@ import BackLink from '../../shared/BackLink'
 function CancelPlan({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = usePlans(provider)
+  const { billingAndUsers } = useNavLinks()
 
   const freePlan = plans.find((plan) => plan.value === 'users-free')
   const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')
@@ -23,8 +25,9 @@ function CancelPlan({ provider, owner }) {
   return (
     <>
       <BackLink
-        to={`/account/${provider}/${owner}/billing`}
-        textLink="Billing & Users"
+        to={billingAndUsers.path()}
+        useRouter={!billingAndUsers.isExternalLink}
+        textLink={billingAndUsers.text}
       />
       <article className="grid grid-cols-12 gap-8 mt-10">
         <div className="col-span-7">

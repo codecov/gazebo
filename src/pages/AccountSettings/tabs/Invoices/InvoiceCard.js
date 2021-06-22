@@ -1,11 +1,12 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
 import { Link } from 'react-router-dom'
 import { format, fromUnixTime } from 'date-fns'
 
 import { invoicePropType } from 'services/account'
-import Card from 'ui/Card'
-import Button from 'ui/Button'
+import { useNavLinks } from 'services/navigation'
+
+import Card from 'old_ui/Card'
+import Button from 'old_ui/Button'
 
 const statusToColor = {
   draft: 'text-gray-500',
@@ -15,8 +16,8 @@ const statusToColor = {
   uncollectible: 'text-error-500',
 }
 
-function InvoiceCard({ invoice, provider, owner }) {
-  const invoiceUrl = `/account/${provider}/${owner}/invoices/${invoice.id}`
+function InvoiceCard({ invoice }) {
+  const { invoiceDetail } = useNavLinks()
   return (
     <Card className="p-4 mt-4 flex text-sm items-center">
       Invoice on {format(fromUnixTime(invoice.created), 'MMMM do yyyy')}
@@ -28,13 +29,18 @@ function InvoiceCard({ invoice, provider, owner }) {
       </span>
       <Button
         Component={Link}
-        to={invoiceUrl + '?print'}
+        to={invoiceDetail.path({ id: invoice.id }) + '?print'}
         target="_blank"
         variant="outline"
       >
         Download
       </Button>
-      <Button Component={Link} to={invoiceUrl} className="ml-4">
+      <Button
+        Component={Link}
+        to={invoiceDetail.path({ id: invoice.id })}
+        useRouter={!invoiceDetail.isExternalLink}
+        className="ml-4"
+      >
         View
       </Button>
     </Card>
@@ -43,8 +49,6 @@ function InvoiceCard({ invoice, provider, owner }) {
 
 InvoiceCard.propTypes = {
   invoice: invoicePropType.isRequired,
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default InvoiceCard

@@ -1,43 +1,46 @@
 import Button from './Button'
+import Icon from '../Icon'
 
 const Template = (args) => <Button {...args} />
 
 export const NormalButton = Template.bind({})
 NormalButton.args = {
   children: 'Normal button',
+  variant: 'default',
+  disabled: false,
 }
 
-export const PinkButton = Template.bind({})
-PinkButton.args = {
-  children: 'Normal button',
-  color: 'pink',
+export const PrimaryButton = Template.bind({})
+PrimaryButton.args = {
+  children: 'Primary button',
+  variant: 'primary',
+  disabled: false,
 }
 
-export const RedButton = Template.bind({})
-RedButton.args = {
-  children: 'Normal Red button',
-  color: 'red',
+export const DangerButton = Template.bind({})
+DangerButton.args = {
+  children: 'Danger button',
+  variant: 'danger',
+  disabled: false,
 }
 
-export const GrayButton = Template.bind({})
-GrayButton.args = {
-  children: 'Normal Gray button',
-  color: 'gray',
+export const DisabledButton = Template.bind({})
+DisabledButton.args = {
+  children: 'Disabled button',
+  disabled: true,
 }
 
-export const OutlineButton = Template.bind({})
-OutlineButton.args = {
-  children: 'Outline button',
-  variant: 'outline',
-}
-
-export const TextButton = Template.bind({})
-TextButton.args = {
-  children: 'Outline button',
-  variant: 'text',
+export const MixedButton = Template.bind({})
+MixedButton.args = {
+  children: (
+    <>
+      Mixed content <Icon name="search" size="sm" />
+    </>
+  ),
 }
 
 export default {
   title: 'Components/Button',
   component: Button,
+  argTypes: { onClick: { action: 'clicked' } },
 }

@@ -1,92 +1,59 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-
-import { useUser } from 'services/user'
-import { useSubNav } from 'services/header'
-
+import { render, fireEvent } from '@testing-library/react'
+import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import Dropdown from './Dropdown'
 
-jest.mock('services/header')
-jest.mock('services/user')
+const provider = 'gh'
 
-const mockSubMenu = [
-  { label: 'Chatty Ghosts', href: '/👻/👅', imageUrl: '🗣.png' },
+const user = {
+  username: 'p',
+  avatarUrl: 'f',
+}
+
+const links = [
+  { label: 'Settings', to: `/account/${provider}/${user.username}` },
+  { label: 'Organizations', to: `/${provider}` },
+  { label: 'Sign Out', to: `https://stage-web.codecov.dev/logout/${provider}` },
 ]
-const mockUseUser = { username: 'Shaggy', avatarUrl: '🚶‍♂️.jpeg' }
 
 describe('Dropdown', () => {
-  function setup(currentUser) {
-    render(
-      <MemoryRouter>
-        <Dropdown />
-      </MemoryRouter>
-    )
-  }
+  let wrapper
 
-  describe('check rendered links', () => {
-    beforeEach(() => {
-      useSubNav.mockReturnValue(mockSubMenu)
-      useUser.mockReturnValue({ data: mockUseUser })
+  beforeEach(() => {
+    wrapper = render(<Dropdown user={user} />, {
+      wrapper: (props) => (
+        <MemoryRouter initialEntries={[`/${provider}`]}>
+          <Switch>
+            <Route path="/:provider" exact>
+              {props.children}
+            </Route>
+          </Switch>
+        </MemoryRouter>
+      ),
+    })
+  })
 
-      setup()
+  describe('when rendered', () => {
+    it('renders the users avatar', () => {
+      const img = wrapper.getByRole('img')
+      expect(img).toHaveAttribute('alt', 'avatar')
     })
 
-    it('renders sub menu links', () => {
-      mockSubMenu.forEach((link) => {
-        const navLink = screen.getByText(link.label).closest('a')
-        expect(navLink).toHaveAttribute('href', link.href)
+    it('the links arent visible', () => {
+      links.forEach((link) => {
+        const a = wrapper.getByText(link.label).closest('a')
+        expect(a).not.toBeVisible()
       })
     })
   })
 
-  describe('opens Dropdown', () => {
-    beforeEach(() => {
-      useSubNav.mockReturnValue(mockSubMenu)
-      useUser.mockReturnValue({ data: mockUseUser })
-
-      setup()
-    })
-    it('clicking on user opens the Dropdown', () => {
-      const toggle = screen.getByRole('button')
-
-      expect(screen.getByRole('menu')).toHaveClass('hidden')
-      toggle.click()
-      expect(screen.getByRole('menu')).not.toHaveClass('hidden')
-    })
-  })
-
-  describe('when clicking on a link', () => {
-    beforeEach(() => {
-      useSubNav.mockReturnValue(mockSubMenu)
-      useUser.mockReturnValue({ data: mockUseUser })
-
-      setup()
-
-      const toggle = screen.getByRole('button')
-      toggle.click()
-
-      screen.getByRole('link', { name: /Chatty Ghosts/ }).click()
-    })
-
-    it('closes the dropdown', () => {
-      expect(screen.getByRole('menu')).toHaveClass('hidden')
-    })
-  })
-
-  describe('when the user isnt authenticated', () => {
-    beforeEach(() => {
-      useSubNav.mockReturnValue(mockSubMenu)
-      useUser.mockReturnValue({ data: null })
-
-      setup()
-    })
-
-    it('doesnt render the menu', () => {
-      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    })
-
-    it('renders a login long', () => {
-      expect(screen.getByRole('link', { name: /Log in/ })).toBeInTheDocument()
+  describe('when the avatar is clicked', () => {
+    it('the links become visible', () => {
+      fireEvent.mouseDown(wrapper.getByRole('button'))
+      links.forEach((link) => {
+        const a = wrapper.getByText(link.label).closest('a')
+        expect(a).toBeVisible()
+        expect(a).toHaveAttribute('href', link.to)
+      })
     })
   })
 })

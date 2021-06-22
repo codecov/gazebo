@@ -45,7 +45,7 @@ We are using the [Testing Library](https://testing-library.com/docs/react-testin
 ## Linting
 
 ```bash
-> npm run test
+> npm run lint
 ```
 
 will lint the whole project.
@@ -95,10 +95,11 @@ import config from 'config'
 console.log(config.MY_CUSTOM_VAR) // foobar
 ```
 
-Currently there's two env variables you may want to change when working locally:
+Currently there's three env variables you may want to change when working locally:
 
 - PROXY_TO (Change where Gazebo api services are pointing to)
 - REACT_APP_MSW_BROWSER (boolean to enable mocking api requests in browser, see [How to mock HTTP responses in the browser](#How-to-mock-HTTP-responses-in-the-browser))
+- REACT_APP_BASE_URL (This is the base url where the legacy web container resides, needed for login/signout links)
 
 ## How to mock HTTP responses in the browser:
 
@@ -121,9 +122,26 @@ export const handlers = [
 
 Read more at the [official documentation.](https://mswjs.io/docs/getting-started/mocks/rest-api)
 
+## Impersonation
+
+It is possible to impersonate other users for debugging purposes if you are a `Codecov Staff User`. Details on how to impersonate users are explained below:
+
+1. Make sure your codecov user is marked as staff. You can do this by checking the `is_staff` column of the User table. If you are not a staff user, reach out to the [#eng-help](https://codecovteam.slack.com/archives/CDMMWG602)
+   channel on Slack.
+2. Log in to your codecov account.
+3. Once logged in, open the inspect panel and navigate to the `Application` tab.
+4. Open the cookies section and add a new cookie with the username you want to impersonate:
+   4.1. The cookie key should be `staff_user`
+   4.2. The cookie value should be the username you want to impersonate
+5. Save the cookie and reload the page... you should be impersonating!
+
+**NOTE: Make sure you delete the staff_user cookie after you are done impersonating**
+
 ## Debugging failed checks
 
 ### Bundsize
+
+(PR checks temporarirly disabled)
 
 We have a relatively agressive bundlesize check in place to ensure we serve a lean and performance web application.
 
