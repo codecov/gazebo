@@ -1,0 +1,7 @@
+
+> gazebo@0.1.0 test /Users/febg/Documents/Work/CodeCov/gazebo
+> craco test
+
+
+
+

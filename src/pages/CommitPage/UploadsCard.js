@@ -2,11 +2,11 @@ import { Fragment } from 'react'
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import { mapEdges } from 'shared/utils/graphql'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 function UploadsCard({ setShowYAMLModal, data = [] }) {
-  const uploads = _.groupBy(mapEdges(data), 'provider')
+  console.log(data)
+  const uploads = _.groupBy(data, 'provider')
 
   function renderUploads() {
     const _uploads = []
@@ -22,7 +22,7 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
               <div className="flex justify-between">
                 <div className="flex">
                   <span className="text-ds-blue-darker mr-1">
-                    {d.ciUrl.split('/').pop()}
+                    {d?.ciUrl?.split('/').pop()}
                   </span>
                   <Icon size="sm" name="external-link" />
                 </div>
@@ -74,7 +74,18 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
 }
 
 UploadsCard.propTypes = {
-  data: PropTypes.array,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      state: PropTypes.string,
+      provider: PropTypes.string,
+      ciUrl: PropTypes.string,
+      createdAt: PropTypes.string,
+      downloadUrl: PropTypes.string,
+      flags: PropTypes.arrayOf(PropTypes.string),
+      uploadType: PropTypes.string,
+      updatedAt: PropTypes.string,
+    })
+  ),
   setShowYAMLModal: PropTypes.func.isRequired,
 }
 

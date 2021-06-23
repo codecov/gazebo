@@ -1,5 +1,6 @@
 import Api from 'shared/api'
 import { useQuery } from 'react-query'
+import { mapEdges } from 'shared/utils/graphql'
 
 export function useCommit({ provider, owner, repo, commitid }) {
   const query = `
@@ -61,8 +62,10 @@ export function useCommit({ provider, owner, repo, commitid }) {
         commitid,
       },
     }).then((res) => {
+      const commit = res?.data?.owner?.repository?.commit
+      commit.uploads = mapEdges(commit.uploads)
       return {
-        commit: res?.data?.owner?.repository?.commit,
+        commit,
       }
     })
   })

@@ -99,7 +99,23 @@ function CoverageReportCard({ data }) {
 }
 
 CoverageReportCard.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.shape({
+    totals: PropTypes.shape({
+      coverage: PropTypes.number,
+      diff: PropTypes.shape({
+        coverage: PropTypes.number,
+      }),
+    }),
+    commitid: PropTypes.string,
+    parent: PropTypes.shape({
+      commitid: PropTypes.string,
+      totals: PropTypes.shape({
+        coverage: PropTypes.number,
+      }),
+    }),
+    ciPassed: PropTypes.bool,
+    pullId: PropTypes.number,
+  }),
 }
 
 export default CoverageReportCard
