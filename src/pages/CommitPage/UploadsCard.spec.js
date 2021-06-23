@@ -1,7 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 import UploadsCard from './UploadsCard'
 
-describe('HomePage', () => {
+describe('UploadsCard', () => {
   function setup() {
     render(<UploadsCard setShowYAMLModal={() => {}} />)
   }

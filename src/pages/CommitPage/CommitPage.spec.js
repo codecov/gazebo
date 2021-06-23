@@ -56,7 +56,7 @@ const dataReturned = {
   },
 }
 
-describe('HomePage', () => {
+describe('CommitPage', () => {
   function setup() {
     useCommit.mockReturnValue({ data: dataReturned })
 

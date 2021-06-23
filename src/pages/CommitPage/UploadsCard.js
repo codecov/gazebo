@@ -5,7 +5,6 @@ import _ from 'lodash'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 function UploadsCard({ setShowYAMLModal, data = [] }) {
-  console.log(data)
   const uploads = _.groupBy(data, 'provider')
 
   function renderUploads() {
@@ -37,7 +36,7 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
                   {d.flags.length > 0 && (
                     <>
                       <Icon variant="solid" size="sm" name="flag" />
-                      <span className="text-xs ml-1">macros</span>
+                      <span className="text-xs ml-1">{d.flags[0]}</span>
                     </>
                   )}
                 </div>
