@@ -1,7 +1,7 @@
 import Api from 'shared/api'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
-import _ from 'lodash'
+import groupBy from 'lodash/groupBy'
 
 export function useSessions({ provider }) {
   const query = `
@@ -28,7 +28,7 @@ export function useSessions({ provider }) {
     return Api.graphql({ provider, query }).then((res) => {
       const me = res?.data?.me
       if (!me) return null
-      const data = _.groupBy(mapEdges(me.sessions), 'type')
+      const data = groupBy(mapEdges(me.sessions), 'type')
       return {
         sessions: data.login || [],
         tokens: data.api || [],

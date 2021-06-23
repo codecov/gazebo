@@ -1,11 +1,11 @@
 import { Fragment } from 'react'
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
-import _ from 'lodash'
+import groupBy from 'lodash/groupBy'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 function UploadsCard({ setShowYAMLModal, data = [] }) {
-  const uploads = _.groupBy(data, 'provider')
+  const uploads = groupBy(data, 'provider')
 
   function renderUploads() {
     const _uploads = []
