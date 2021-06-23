@@ -46,6 +46,11 @@ module.exports = {
             red: '#CE2019',
             purple: '#AC39CF',
           },
+          coverage: {
+            covered: '#DEFFE8',
+            uncovered: '#FFEDF0',
+            partial: '#FFF9D8',
+          },
         },
         codecov: {
           red: '#CE2019',
