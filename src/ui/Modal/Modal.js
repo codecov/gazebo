@@ -10,7 +10,7 @@ function Modal({ isOpen, onClose, body, footer, title, ...rest }) {
       isOpen={isOpen}
       onRequestClose={onClose}
       className="h-screen w-screen flex items-center justify-center"
-      overlayClassName="fixed top-0 bottom-0 left-0 right-0 bg-gray-900 bg-opacity-75"
+      overlayClassName="fixed top-0 bottom-0 left-0 right-0 bg-gray-900 bg-opacity-75 z-10"
       {...rest}
     >
       <div className="w-1/2 bg-white rounded">
