@@ -329,6 +329,67 @@ describe('useNavLinks', () => {
       )
     })
   })
+
+  describe('commits link', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.commits.path()).toBe(
+        '/gl/doggo/squirrel-locator/commits'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.commits.path({ provider: 'bb' })).toBe(
+        '/bb/doggo/squirrel-locator/commits'
+      )
+      expect(hookData.result.current.commits.path({ owner: 'cat' })).toBe(
+        '/gl/cat/squirrel-locator/commits'
+      )
+      expect(hookData.result.current.commits.path({ repo: 'test' })).toBe(
+        '/gl/doggo/test/commits'
+      )
+    })
+  })
+
+  describe('treeView link', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/watch/src/view/catWatch.php'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.treeView.path()).toBe(
+        '/gl/doggo/watch/tree/'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.treeView.path({ provider: 'bb' })).toBe(
+        '/bb/doggo/watch/tree/'
+      )
+      expect(hookData.result.current.treeView.path({ owner: 'cat' })).toBe(
+        '/gl/cat/watch/tree/'
+      )
+      expect(hookData.result.current.treeView.path({ repo: 'sleep' })).toBe(
+        '/gl/doggo/sleep/tree/'
+      )
+    })
+    it('accepts a tree option', () => {
+      expect(
+        hookData.result.current.treeView.path({
+          tree: 'src/view/catWatch.php',
+        })
+      ).toBe('/gl/doggo/watch/tree/src/view/catWatch.php')
+      expect(hookData.result.current.treeView.path({ tree: 'src' })).toBe(
+        '/gl/doggo/watch/tree/src'
+      )
+      expect(
+        hookData.result.current.treeView.path({
+          tree: 'src/view',
+        })
+      ).toBe('/gl/doggo/watch/tree/src/view')
+    })
+  })
 })
 
 describe('useStaticNavLinks', () => {

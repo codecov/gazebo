@@ -105,10 +105,10 @@ function useSubmit({ owner, provider }) {
         })
         redirect(`/account/${provider}/${owner}/billing`)
       },
-      onError: () =>
+      onError: (error) =>
         addToast({
           type: 'error',
-          text: 'Something went wrong',
+          text: error?.data?.detail || 'Something went wrong',
         }),
     })
   }
