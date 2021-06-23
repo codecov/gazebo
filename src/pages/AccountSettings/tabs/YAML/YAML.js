@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { sanitize } from 'dompurify'
 import { useForm, Controller } from 'react-hook-form'
+import noop from 'lodash/noop'
 
 import { useYamlConfig, useUpdateYaml } from 'services/yaml'
 import Button from 'ui/Button'
@@ -39,7 +40,7 @@ function YAML({ owner }) {
           formError('Something went wrong')
         }
       })
-      .catch((e) => console.error(e))
+      .catch(noop)
   })
 
   return (

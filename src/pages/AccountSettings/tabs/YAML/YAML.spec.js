@@ -51,8 +51,6 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('YAMLTab', () => {
-  let mockError = jest.fn()
-
   function setup(dataReturned) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
@@ -128,10 +126,6 @@ describe('YAMLTab', () => {
 
   describe('fails and displays linting error', () => {
     beforeEach(async () => {
-      jest.resetAllMocks()
-      const spy = jest.spyOn(console, 'error')
-      spy.mockImplementation(mockError)
-
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: updateYamlConfigError('bad config'),
@@ -148,16 +142,11 @@ describe('YAMLTab', () => {
       await waitFor(() =>
         expect(screen.getByText(/bad config/)).toBeInTheDocument()
       )
-      expect(mockError).toHaveBeenLastCalledWith('bad config')
     })
   })
 
   describe('The api fails', () => {
     beforeEach(async () => {
-      jest.resetAllMocks()
-      const spy = jest.spyOn(console, 'error')
-      spy.mockImplementation(mockError)
-
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: { errors: [{ message: 'something' }] },
@@ -175,7 +164,6 @@ describe('YAMLTab', () => {
       await waitFor(() =>
         expect(screen.getByText(/Something went wrong/)).toBeInTheDocument()
       )
-      expect(mockError).toHaveBeenLastCalledWith('Something went wrong')
     })
   })
 })
