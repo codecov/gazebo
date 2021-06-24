@@ -1,3 +1,4 @@
+import get from 'lodash/get'
 import { camelizeKeys, generatePath, getHeaders } from './helpers'
 
 import config from 'config'
@@ -67,12 +68,30 @@ function graphql({ provider, query, variables = {} }) {
   }).then((d) => d.json())
 }
 
+function graphqlMutation({ mutationPath, dispatchError, ...graphqlParams }) {
+  return graphql(graphqlParams).then((res) => {
+    const mutationData = get(res.data, mutationPath)
+    // only throw if we encounter these errors to get a full page error via NetworkErrorBoundary
+    const throwableErrors = [
+      'UnauthenticatedError',
+      'UnauthorizedError',
+      'NotFoundError',
+    ]
+    const error = mutationData?.error
+    if (error && throwableErrors.includes(error.__typename)) {
+      throw error
+    }
+    return res
+  })
+}
+
 const Api = {
   get: prefillMethod('GET'),
   post: prefillMethod('POST'),
   patch: prefillMethod('PATCH'),
   delete: prefillMethod('DELETE'),
   graphql,
+  graphqlMutation,
 }
 
 export default Api
