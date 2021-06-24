@@ -8,16 +8,17 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 import { useCommit } from 'services/commit'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import Icon from 'ui/Icon'
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
 function CommitPage() {
-  const { owner, repo, commit } = useParams()
+  const { provider, owner, repo, commit } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
   const loadingState = <Spinner size={40} />
 
   const { data } = useCommit({
-    provider: 'gh',
+    provider: provider,
     owner,
     repo,
     commitid: commit,
@@ -40,7 +41,7 @@ function CommitPage() {
       <span className="mt-4 text-lg font-semibold text-ds-gray-octonary">
         {data?.commit?.message}
       </span>
-      <div className="flex mt-1 text-ds-gray-quinary">
+      <div className="flex items-center mt-1 text-ds-gray-quinary">
         {formatDistanceToNow(new Date(data?.commit?.createdAt), {
           addSuffix: true,
         })}{' '}
@@ -48,15 +49,21 @@ function CommitPage() {
           {data?.commit?.author?.username}
         </span>{' '}
         authored commit
-        <a className="ml-1.5 font-mono text-ds-blue-darker" href="somethinf">
+        <a
+          className="flex ml-1.5 items-center font-mono text-ds-blue-darker"
+          href="somethinf"
+        >
           {commitid}
+          <div className="text-ds-gray-quinary ml-0.5">
+            <Icon size="sm" name="external-link" />
+          </div>
         </a>
       </div>
       <hr className="mt-6" />
       <div className="flex flex-col md:flex-row mt-8">
         <div className="flex w-full mr-8 md:max-w-sm flex-col">
           <div className="">
-            <CoverageReportCard data={data?.commit} />
+            <CoverageReportCard provider={provider} data={data?.commit} />
           </div>
           <div className="mt-2 md:mt-8">
             <UploadsCard

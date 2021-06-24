@@ -124,6 +124,28 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commits`,
+      isExternalLink: false,
+      text: 'Commits',
+    },
+    commit: {
+      path: (
+        { provider = p, owner = o, repo = r, commit } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/commit/${commit}`,
+      isExternalLink: true,
+      text: 'Commits',
+    },
+    pull: {
+      path: (
+        { provider = p, owner = o, repo = r, pullid } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullid}`,
       isExternalLink: true,
       text: 'Commits',
     },

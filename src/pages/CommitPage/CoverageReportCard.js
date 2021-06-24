@@ -1,12 +1,15 @@
+/* eslint-disable max-statements */
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 import cs from 'classnames'
+import { providerToName } from 'shared/utils'
+import AppLink from 'shared/AppLink'
 
-function CoverageReportCard({ data }) {
+function CoverageReportCard({ data, provider }) {
   const coverage = data?.totals?.coverage.toFixed(2)
   const patch = data?.totals?.diff?.coverage?.toFixed(2)
   const commitid = data?.commitid?.substr(0, 7)
-  const parentCommitid = data?.parent?.commitid?.substr(0, 7)
+  const parentCommitid = data?.parent?.commitid
   const ciPassed = data?.ciPassed
   const pullId = data?.pullId
   const change = (coverage - data?.parent?.totals?.coverage).toFixed(2)
@@ -22,30 +25,38 @@ function CoverageReportCard({ data }) {
         >
           <Icon size="sm" name={ciPassed ? 'check' : 'x'} />
         </div>
-        <span className="text-ds-blue-darker">
+        <a href={'cibuild?'} className="flex text-ds-blue-darker">
           CI {ciPassed ? 'Passed' : 'Failed'}
-        </span>
-        <div className="text-ds-gray-quinary ml-0.5">
-          <Icon size="sm" name="external-link" />
-        </div>
+          <div className="text-ds-gray-quinary ml-0.5">
+            <Icon size="sm" name="external-link" />
+          </div>
+        </a>
       </div>
     )
   }
 
   function renderPullLabel() {
-    if (pullId)
+    if (pullId) {
       return (
         <div className="flex items-center">
-          <a className="mr-1 text-ds-blue-darker" href="pullid">
+          <AppLink
+            className="text-ds-blue-darker"
+            pageName="pull"
+            options={{ pullid: pullId }}
+          >
             #{pullId}
-          </a>
+          </AppLink>
           (
-          <a href="github" className="mr-0.5 text-ds-blue-darker">
-            GitHub
+          <a href="github" className="mr-0.5 flex text-ds-blue-darker">
+            {providerToName(provider)}
+            <div className="text-ds-gray-quinary ml-0.5">
+              <Icon size="sm" name="external-link" />
+            </div>
           </a>
-          <Icon size="sm" name="external-link" />)
+          )
         </div>
       )
+    }
     return null
   }
 
@@ -87,7 +98,13 @@ function CoverageReportCard({ data }) {
       <div className="w-full text-ds-gray-quinary text-xs mt-4">
         The average coverage of changes for this commit is{' '}
         {patch ? `${patch} %` : '-'} (patch). Data source from comparing between{' '}
-        <span className="font-mono text-ds-blue-darker">{parentCommitid}</span>{' '}
+        <AppLink
+          pageName="commit"
+          options={{ commit: parentCommitid }}
+          className="text-ds-blue-darker"
+        >
+          {parentCommitid.substr(0, 7)}
+        </AppLink>{' '}
         and <span className="font-mono">{commitid}</span>
       </div>
       <div className="mt-4 text-xs flex">
@@ -115,7 +132,9 @@ CoverageReportCard.propTypes = {
     }),
     ciPassed: PropTypes.bool,
     pullId: PropTypes.number,
+    ciUrl: PropTypes.string,
   }),
+  provider: PropTypes.string,
 }
 
 export default CoverageReportCard

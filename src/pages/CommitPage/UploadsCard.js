@@ -20,9 +20,9 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
             >
               <div className="flex justify-between">
                 <div className="flex">
-                  <span className="text-ds-blue-darker mr-1">
+                  <a href={d?.ciUrl} className="text-ds-blue-darker mr-1">
                     {d?.ciUrl?.split('/').pop()}
-                  </span>
+                  </a>
                   <Icon size="sm" name="external-link" />
                 </div>
                 <span className="text-xs text-ds-gray-quinary">
