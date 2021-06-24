@@ -68,7 +68,7 @@ function graphql({ provider, query, variables = {} }) {
   }).then((d) => d.json())
 }
 
-function graphqlMutation({ mutationPath, dispatchError, ...graphqlParams }) {
+function graphqlMutation({ mutationPath, ...graphqlParams }) {
   return graphql(graphqlParams).then((res) => {
     const mutationData = get(res.data, mutationPath)
     // only throw if we encounter these errors to get a full page error via NetworkErrorBoundary

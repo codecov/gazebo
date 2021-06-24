@@ -1,7 +1,6 @@
 import Api from 'shared/api'
 import { useParams } from 'react-router-dom'
 import { useMutation, useQuery } from 'react-query'
-import useError from 'react-use/lib/useError'
 
 export function useYamlConfig({ variables }) {
   const { provider } = useParams()
@@ -48,7 +47,6 @@ const query = `
 
 export function useUpdateYaml({ username }) {
   const { provider } = useParams()
-  const dispatchError = useError()
 
   return useMutation(
     ({ yaml }) => {
@@ -58,7 +56,6 @@ export function useUpdateYaml({ username }) {
         query,
         variables,
         mutationPath: 'setYamlOnOwner',
-        dispatchError,
       })
     },
     {
