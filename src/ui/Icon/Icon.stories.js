@@ -3,6 +3,7 @@ import Icon from './Icon'
 
 import * as svgOutline from './svg/outline'
 import * as svgSolid from './svg/solid'
+import * as svgDeveloper from './svg/developer'
 
 function Description() {
   return (
@@ -10,8 +11,22 @@ function Description() {
       <h1 className="text-2xl">Icon component</h1>
       <p className="my-4">
         Those components are sourced from{' '}
-        <a href="https://heroicons.com/" className="text-ds-blue">
+        <a
+          href="https://heroicons.com/"
+          target="_blank"
+          rel="noreferrer"
+          className="text-ds-blue"
+        >
           https://heroicons.com/
+        </a>{' '}
+        and{' '}
+        <a
+          href="https://gitlab-org.gitlab.io/gitlab-svgs/"
+          target="_blank"
+          rel="noreferrer"
+          className="text-ds-blue"
+        >
+          https://gitlab-org.gitlab.io/gitlab-svgs/
         </a>
         . Unfortunately we don’t have a way to tree-shake so if you need to use
         a component that is not in this list but is on the heroicons website,{' '}
@@ -60,6 +75,29 @@ export const AllSolidIcons = () => {
             >
               <Icon name={iconName} variant="solid" />
               <p className="ml-2">{iconName}</p>
+            </div>
+          )
+        })}
+      </div>
+    </>
+  )
+}
+
+export const AllDeveloperIcons = () => {
+  const options = Object.keys(svgDeveloper)
+
+  return (
+    <>
+      <Description />
+      <div className="w-full flex flex-wrap">
+        {options.map((iconName) => {
+          return (
+            <div
+              key={iconName}
+              className="p-3 center flex border border-gray-200"
+            >
+              <Icon name={iconName} variant="developer" />
+              <p className="ml-2">{kebabCase(iconName)}</p>
             </div>
           )
         })}

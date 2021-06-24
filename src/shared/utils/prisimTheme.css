@@ -1,0 +1,168 @@
+/* Generated with http://k88hudson.github.io/syntax-highlighting-theme-generator/www and revised for Codecov text viewer UI (SEE GAZEBO PROTOTYPE)
+*/
+
+/*********************************************************
+* General
+*/
+
+pre[class*='language-'],
+code[class*='language-'] {
+  color: #0e1b29;
+  /* default - octonary */
+  font-size: 0.75rem;
+  text-shadow: none;
+  font-family: 'Source Code Pro', monospace;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  line-height: 1.5;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+pre[class*='language-']::selection,
+code[class*='language-']::selection,
+pre[class*='language-']::mozselection,
+code[class*='language-']::mozselection {
+  text-shadow: none;
+  background: #b3d4fc;
+}
+
+@media print {
+  pre[class*='language-'],
+  code[class*='language-'] {
+    text-shadow: none;
+  }
+}
+
+pre[class*='language-'] {
+  /*
+  padding: 1em;
+  margin: .5em 0;
+*/
+  overflow: auto;
+  background: white;
+}
+
+:not(pre) > code[class*='language-'] {
+  padding: 0.1em 0.3em;
+  border-radius: 0.3em;
+  color: #d73a49;
+  background: #f9f2f4;
+}
+
+/*********************************************************
+* Tokens
+*/
+
+.namespace {
+  opacity: 0.7;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #999fa7;
+  /* quaternary */
+}
+
+.token.punctuation {
+  color: #999999;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #68737e;
+  /* quinary */
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #394754;
+  /* senary */
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #a67f59;
+  background: #ffffff;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #015896;
+  /* blue, quinary */
+}
+
+.token.function {
+  color: #394754;
+  /* senary */
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #0e1b29;
+  /* default - octonary */
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+/*********************************************************
+* Line highlighting
+*/
+
+pre[data-line] {
+  position: relative;
+}
+
+pre[class*='language-'] > code[class*='language-'] {
+  position: relative;
+  z-index: 1;
+}
+
+.line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: white;
+  box-shadow: inset 5px 0 0 #f7d87c;
+  z-index: 0;
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}

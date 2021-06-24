@@ -1,24 +1,27 @@
 import PropTypes from 'prop-types'
+import cs from 'classnames'
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import githubTheme from 'prism-react-renderer/themes/github'
+import 'shared/utils/prisimTheme.css'
+import './YAMLViewer.css'
 
 function YAMLViewer({ YAML }) {
   return (
-    <Highlight
-      {...defaultProps}
-      theme={githubTheme}
-      code={YAML}
-      language="yaml"
-    >
+    <Highlight {...defaultProps} code={YAML} language="yaml" theme={undefined}>
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
-        <pre className={className} style={style}>
+        <pre
+          className={cs(
+            className,
+            'border-solid border-ds-gray-tertiary border pl-2'
+          )}
+          style={style}
+        >
           {tokens.map((line, i) => (
             <div
               key={i}
               {...getLineProps({ line, key: i })}
               className="table-row"
             >
-              <div className="table-cell px-2 text-right bg-ds-gray-secondary">
+              <div className="line-number table-cell px-2 text-right border-r border-solid border-ds-gray-tertiary">
                 {i + 1}
               </div>
               <div className="table-cell pl-2">
