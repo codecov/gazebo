@@ -38,13 +38,13 @@ describe('UploadsCard', () => {
     },
   ]
 
-  function setup() {
-    render(<UploadsCard data={mockData} setShowYAMLModal={() => {}} />)
+  function setup(data) {
+    render(<UploadsCard data={data} setShowYAMLModal={() => {}} />)
   }
 
   describe('renders', () => {
     beforeEach(() => {
-      setup()
+      setup(mockData)
     })
 
     it('renders the title', () => {
@@ -61,6 +61,20 @@ describe('UploadsCard', () => {
     })
     it('renders flags', () => {
       expect(screen.getByText(/flagone/)).toBeInTheDocument()
+    })
+  })
+  describe('renders no Uploads', () => {
+    beforeEach(() => {
+      setup([])
+    })
+
+    it('renders the title', () => {
+      expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+    })
+    it('renders different cis', () => {
+      expect(
+        screen.getByText(/Currently, no successful uploads/)
+      ).toBeInTheDocument()
     })
   })
 })

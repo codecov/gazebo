@@ -21,7 +21,6 @@ describe('CoverageReportCard', () => {
       },
     },
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-    pullId: 10,
     createdAt: '2020-08-25T16:35:32',
     ciPassed: true,
     parent: {
