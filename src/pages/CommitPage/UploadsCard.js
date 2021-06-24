@@ -6,7 +6,6 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 function UploadsCard({ setShowYAMLModal, data = [] }) {
   const uploads = groupBy(data, 'provider')
-
   function renderUploads() {
     const _uploads = []
     for (const key in uploads) {
@@ -63,10 +62,18 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
             view yml file
           </button>
         </div>
-        <span className="text-ds-gray-quinary">4 successful</span>
+        <span className="text-ds-gray-quinary">
+          {data.length > 0 ? `${data.length} successful` : ''}
+        </span>
       </div>
-      <div className="bg-ds-gray-primary max-h-64 overflow-scroll flex flex-col w-full">
-        {renderUploads()}
+      <div className="bg-ds-gray-primary h-64 max-h-64 overflow-scroll flex flex-col w-full">
+        {data.length > 0 ? (
+          renderUploads()
+        ) : (
+          <span className="py-2.5 px-4 text-xs text-ds-gray-quinary">
+            Currently, no successful uploads
+          </span>
+        )}
       </div>
     </div>
   )

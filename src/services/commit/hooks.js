@@ -4,7 +4,7 @@ import { mapEdges } from 'shared/utils/graphql'
 
 export function useCommit({ provider, owner, repo, commitid }) {
   const query = `
-    query MyRepos($owner: String!, $repo: String!, $commitid: String!) {
+    query Commit($owner: String!, $repo: String!, $commitid: String!) {
         owner(username: $owner) {
           repository(name: $repo) {
             commit(id: $commitid) {

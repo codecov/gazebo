@@ -34,7 +34,7 @@ function CommitPage() {
             { pageName: 'owner', text: owner },
             { pageName: 'repo', text: repo },
             { pageName: 'commits' },
-            { pageName: commitid, readOnly: true, text: commitid },
+            { pageName: commit, readOnly: true, text: commitid },
           ]}
         />
       </div>

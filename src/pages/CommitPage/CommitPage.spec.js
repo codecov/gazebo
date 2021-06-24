@@ -4,7 +4,14 @@ import { MemoryRouter } from 'react-router-dom'
 import { useCommit } from 'services/commit'
 
 jest.mock('services/commit')
-
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({
+    provider: 'gh',
+    owner: 'codecov',
+    commit: 'f00162848a3cebc0728d915763c2fd9e92132408',
+  }),
+}))
 const dataReturned = {
   commit: {
     totals: {
