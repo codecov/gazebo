@@ -39,21 +39,32 @@ export function useSessions({ provider }) {
 
 export function useDeleteSession({ provider }) {
   const queryClient = useQueryClient()
-  return useMutation(({ sessionid }) => {
-    const query = `
-    mutation($input: DeleteSessionInput!) {
-        deleteSession(input: $input) {
-          error
+  return useMutation(
+    ({ sessionid }) => {
+      const query = `
+    mutation DeleteSession($input: DeleteSessionInput!) {
+      deleteSession(input: $input) {
+        error: newError {
+          __typename
         }
       }
+    }
   `
-    const variables = { input: { sessionid } }
+      const variables = { input: { sessionid } }
 
-    return Api.graphql({ provider, query, variables }).then((res) => {
-      queryClient.invalidateQueries('sessions')
-      return res?.data?.deleteSession?.error
-    })
-  })
+      return Api.graphqlMutation({
+        provider,
+        query,
+        variables,
+        mutationPath: 'deleteSession',
+      }).then((res) => {
+        queryClient.invalidateQueries('sessions')
+      })
+    },
+    {
+      useErrorBoundary: true,
+    }
+  )
 }
 
 export function useGenerateToken({ provider, opts = {} }) {
@@ -63,15 +74,23 @@ export function useGenerateToken({ provider, opts = {} }) {
       const query = `
       mutation($input: CreateApiTokenInput!) {
         createApiToken(input: $input) {
-          error
+          error: newError {
+            __typename
+          }
           fullToken
         }
       }
     `
       const variables = { input: { name } }
-      return Api.graphql({ provider, query, variables })
+      return Api.graphqlMutation({
+        provider,
+        query,
+        variables,
+        mutationPath: 'createApiToken',
+      })
     },
     {
+      useErrorBoundary: true,
       onSuccess: () => {
         queryClient.invalidateQueries('sessions')
       },
