@@ -4,8 +4,9 @@ import PropTypes from 'prop-types'
 import cs from 'classnames'
 import { providerToName } from 'shared/utils'
 import AppLink from 'shared/AppLink'
+import { getProviderPullURL } from './helpers'
 
-function CoverageReportCard({ data, provider }) {
+function CoverageReportCard({ data, provider, repo, owner }) {
   const coverage = data?.totals?.coverage.toFixed(2)
   const patch = data?.totals?.diff?.coverage?.toFixed(2)
   const commitid = data?.commitid?.substr(0, 7)
@@ -39,15 +40,21 @@ function CoverageReportCard({ data, provider }) {
     if (pullId) {
       return (
         <div className="flex items-center">
+          <div className="text-ds-gray-senary">
+            <Icon size="sm" variant="developer" name="pull-request-open" />
+          </div>
           <AppLink
-            className="text-ds-blue-darker"
+            className="text-ds-blue-darker text-regular mx-1"
             pageName="pull"
             options={{ pullid: pullId }}
           >
             #{pullId}
           </AppLink>
           (
-          <a href="github" className="mr-0.5 flex text-ds-blue-darker">
+          <a
+            href={`${getProviderPullURL(provider, owner, repo)}/${pullId}`}
+            className="mr-0.5 flex text-ds-blue-darker"
+          >
             {providerToName(provider)}
             <div className="text-ds-gray-quinary ml-0.5">
               <Icon size="sm" name="external-link" />
@@ -135,6 +142,8 @@ CoverageReportCard.propTypes = {
     ciUrl: PropTypes.string,
   }),
   provider: PropTypes.string,
+  repo: PropTypes.string,
+  owner: PropTypes.string,
 }
 
 export default CoverageReportCard

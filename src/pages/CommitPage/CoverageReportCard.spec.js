@@ -1,30 +1,41 @@
 import { render, screen } from '@testing-library/react'
 import CoverageReportCard from './CoverageReportCard'
+import { MemoryRouter } from 'react-router-dom'
+
+jest.mock('services/commit')
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({
+    provider: 'gh',
+    owner: 'codecov',
+    commit: 'f00162848a3cebc0728d915763c2fd9e92132408',
+  }),
+}))
 
 describe('CoverageReportCard', () => {
   const mockData = {
-    commit: {
+    totals: {
+      coverage: 38.30846,
+      diff: {
+        coverage: null,
+      },
+    },
+    commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+    pullId: 10,
+    createdAt: '2020-08-25T16:35:32',
+    ciPassed: true,
+    parent: {
+      commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
       totals: {
         coverage: 38.30846,
-        diff: {
-          coverage: null,
-        },
-      },
-      commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-      pullId: 10,
-      createdAt: '2020-08-25T16:35:32',
-      ciPassed: true,
-      parent: {
-        commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-        totals: {
-          coverage: 38.30846,
-        },
       },
     },
   }
 
   function setup() {
-    render(<CoverageReportCard data={mockData} />)
+    render(<CoverageReportCard provider="gh" data={mockData} />, {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('renders', () => {
@@ -50,7 +61,7 @@ describe('CoverageReportCard', () => {
       ).toBeInTheDocument()
     })
     it('renders CI Failed Status', () => {
-      expect(screen.getByText('CI Failed')).toBeInTheDocument()
+      expect(screen.getByText('CI Passed')).toBeInTheDocument()
     })
   })
 })

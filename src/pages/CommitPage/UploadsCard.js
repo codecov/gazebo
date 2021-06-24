@@ -18,12 +18,15 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
               key={i}
             >
               <div className="flex justify-between">
-                <div className="flex">
-                  <a href={d?.ciUrl} className="text-ds-blue-darker mr-1">
-                    {d?.ciUrl?.split('/').pop()}
-                  </a>
-                  <Icon size="sm" name="external-link" />
-                </div>
+                <a
+                  href={d?.ciUrl}
+                  className="text-ds-blue-darker flex items-center mr-1"
+                >
+                  {d?.ciUrl?.split('/').pop()}
+                  <div className="mx-1 text-ds-gray-quinary">
+                    <Icon size="sm" name="external-link" />
+                  </div>
+                </a>
                 <span className="text-xs text-ds-gray-quinary">
                   {formatDistanceToNow(new Date(d.createdAt), {
                     addSuffix: true,

@@ -9,6 +9,8 @@ import Spinner from 'ui/Spinner'
 import { useCommit } from 'services/commit'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import Icon from 'ui/Icon'
+import AppLink from 'shared/AppLink'
+import { getProviderCommitURL } from './helpers'
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
@@ -45,13 +47,17 @@ function CommitPage() {
         {formatDistanceToNow(new Date(data?.commit?.createdAt), {
           addSuffix: true,
         })}{' '}
-        <span className="text-ds-gray-octonary mx-1">
+        <AppLink
+          pageName="owner"
+          options={{ owner: data?.commit?.author?.username }}
+          className="text-ds-gray-octonary mx-1 hover:underline"
+        >
           {data?.commit?.author?.username}
-        </span>{' '}
+        </AppLink>{' '}
         authored commit
         <a
-          className="flex ml-1.5 items-center font-mono text-ds-blue-darker"
-          href="somethinf"
+          className="flex ml-1.5 items-center hover:underline font-mono text-ds-blue-darker"
+          href={`${getProviderCommitURL(provider, owner, repo)}/${commit}`}
         >
           {commitid}
           <div className="text-ds-gray-quinary ml-0.5">
@@ -63,7 +69,12 @@ function CommitPage() {
       <div className="flex flex-col md:flex-row mt-8">
         <div className="flex w-full mr-8 md:max-w-sm flex-col">
           <div className="">
-            <CoverageReportCard provider={provider} data={data?.commit} />
+            <CoverageReportCard
+              provider={provider}
+              repo={repo}
+              owner={owner}
+              data={data?.commit}
+            />
           </div>
           <div className="mt-2 md:mt-8">
             <UploadsCard
