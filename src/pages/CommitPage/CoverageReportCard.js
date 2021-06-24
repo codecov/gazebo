@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 import cs from 'classnames'
