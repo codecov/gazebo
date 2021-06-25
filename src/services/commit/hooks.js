@@ -63,7 +63,8 @@ export function useCommit({ provider, owner, repo, commitid }) {
       },
     }).then((res) => {
       const commit = res?.data?.owner?.repository?.commit
-      commit.uploads = mapEdges(commit.uploads)
+      if (!commit) return null
+      commit.uploads = mapEdges(commit?.uploads)
       return {
         commit,
       }
