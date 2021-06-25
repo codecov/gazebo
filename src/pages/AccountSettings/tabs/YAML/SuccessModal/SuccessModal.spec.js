@@ -25,7 +25,7 @@ describe('SuccessModal', () => {
     })
     it('renders body', () => {
       const label = screen.getByText(
-        /doggo yaml configuration has been successfully saved. New coverage reports will reflect these changes. Repositories with a codecov.yaml file extend this account level Codecov config./
+        /doggo yaml configuration has been successfully saved. New coverage reports will reflect these changes. Repositories with a codecov.yaml file extend and override this account level Codecov config/
       )
       expect(label).toBeInTheDocument()
     })

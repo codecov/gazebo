@@ -8,7 +8,7 @@ function SuccessModal({ closeModal, owner, ...props }) {
     <p>
       {owner} yaml configuration has been successfully saved. New coverage
       reports will reflect these changes. Repositories with a codecov.yaml file
-      extend this account level Codecov config.
+      extend and override this account level Codecov config.
     </p>
   )
 
