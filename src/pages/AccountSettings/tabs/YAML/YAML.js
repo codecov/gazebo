@@ -18,7 +18,7 @@ function YAML({ owner }) {
   })
   const { control, handleSubmit, formState, setError, reset } = useForm({
     mode: 'onSubmit',
-    reValidateMode: 'onChange',
+    reValidateMode: 'onSubmit',
     defaultValues: { editor: yamlConfig },
     criteriaMode: 'firstError',
   })
