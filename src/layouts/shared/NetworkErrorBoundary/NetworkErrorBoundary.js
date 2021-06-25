@@ -34,12 +34,10 @@ const graphQLerrorToUI = {
   UnauthenticatedError: {
     illustration: img401,
     title: <a href="/login">Please log in.</a>,
-    description: (data) => data.message,
   },
   UnauthorizedError: {
     illustration: img403,
     title: 'Unauthorized',
-    description: (data) => data.message,
   },
   NotFoundError: {
     illustration: img404,
