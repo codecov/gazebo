@@ -21,3 +21,7 @@ const config = {
 }
 
 export default config
+
+export function thatWontBeTested() {
+  return 'no it wont'
+}
