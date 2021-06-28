@@ -71,7 +71,7 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
         </span>
       </div>
       <div className="bg-ds-gray-primary h-64 max-h-64 overflow-scroll flex flex-col w-full">
-        {data.length > 0 ? (
+        {Array.isArray(data) && data.length > 0 ? (
           renderUploads()
         ) : (
           <span className="py-2.5 px-4 text-xs text-ds-gray-quinary">
