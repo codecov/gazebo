@@ -60,7 +60,12 @@ function CommitPage() {
             authored commit
             <a
               className="flex ml-1.5 items-center hover:underline font-mono text-ds-blue-darker"
-              href={`${getProviderCommitURL(provider, owner, repo)}/${commit}`}
+              href={`${getProviderCommitURL({
+                provider,
+                owner,
+                repo,
+                commit,
+              })}`}
             >
               {commitid}
               <div className="text-ds-gray-quinary ml-0.5">
