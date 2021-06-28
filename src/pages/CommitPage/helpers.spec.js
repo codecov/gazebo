@@ -1,6 +1,6 @@
 import { getProviderCommitURL, getProviderPullURL } from './helpers'
 
-const repo = 'pyhton'
+const repo = 'python'
 const owner = 'codecov'
 const commit = '12de'
 const pullId = 'aebf'
