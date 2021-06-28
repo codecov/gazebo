@@ -1,6 +1,5 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import * as Cookie from 'js-cookie'
 
 import Api from './api'
 
@@ -29,8 +28,8 @@ const userData = {
 
 const server = setupServer(
   rest.get('/internal/test', (req, res, ctx) => {
-    const hasToken = Boolean(req.headers.get('authorization'))
-    return res(ctx.status(hasToken ? 200 : 401), ctx.json(rawUserData))
+    const hasTokenType = Boolean(req.headers.get('token-type'))
+    return res(ctx.status(hasTokenType ? 200 : 401), ctx.json(rawUserData))
   }),
   rest.post('/internal/test', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(req.body))
@@ -56,11 +55,12 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 let result, error
-function callApi() {
+function callApi(provider = null) {
   result = null
   error = null
   return Api.get({
     path: '/test',
+    provider,
   })
     .then((data) => {
       result = data
@@ -80,12 +80,7 @@ describe('when calling an endpoint without a token', () => {
 
 describe('when calling an endpoint with a token', () => {
   beforeEach(() => {
-    Cookie.set('github-token', 'hello')
-    return callApi()
-  })
-
-  afterEach(() => {
-    Cookie.remove('github-token')
+    return callApi('gh')
   })
 
   it('has the data and no error', () => {

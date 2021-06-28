@@ -1,7 +1,6 @@
 import camelCase from 'lodash/camelCase'
 import snakeCase from 'lodash/snakeCase'
 import qs from 'qs'
-import * as Cookie from 'js-cookie'
 
 import config from 'config'
 
@@ -22,27 +21,18 @@ export function generatePath({ path, query }) {
 }
 
 export function getHeaders(provider) {
-  const p = provider.toLowerCase()
-  const tokenType = ProviderCookieKeyMapping[p]
   const baseHeader = {
     Accept: 'application/json',
-    'Token-Type': tokenType,
   }
 
   if (typeof provider !== 'string') return baseHeader
 
-  const token = Cookie.get(tokenType)
-
-  const authorizationHeader =
-    typeof token === 'string'
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
-      : {}
+  const p = provider.toLowerCase()
+  const tokenType = ProviderCookieKeyMapping[p]
 
   return {
     ...baseHeader,
-    ...authorizationHeader,
+    'Token-Type': tokenType,
   }
 }
 
