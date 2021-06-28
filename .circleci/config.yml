@@ -54,6 +54,7 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
+      - checkout
       - restore_cache:
           keys:
             - coverage-{{ checksum "package-lock.json" }}
@@ -63,10 +64,12 @@ jobs:
             wget https://uploader.codecov.io/latest/codecov-linux
             chmod +x ./codecov-linux
             ./codecov-linux
+
   codecovstage:
     docker:
       - image: cimg/base:stable
     steps:
+      - checkout
       - restore_cache:
           keys:
             - coverage-{{ checksum "package-lock.json" }}
