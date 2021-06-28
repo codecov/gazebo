@@ -51,7 +51,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           </AppLink>
           (
           <a
-            href={`${getProviderPullURL({ provider, owner, repo, pullId })}`}
+            href={getProviderPullURL({ provider, owner, repo, pullId })}
             className="mr-0.5 flex text-ds-blue-darker"
           >
             {providerToName(provider)}

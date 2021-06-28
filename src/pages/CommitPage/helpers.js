@@ -1,15 +1,17 @@
+import { providerToName } from 'shared/utils/provider'
+
 export function getProviderCommitURL({ provider, owner, repo, commit }) {
   return {
-    gh: `https://github.com/${owner}/${repo}/commit/${commit}`,
-    bb: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
-    gl: `https://gitlab.com/${owner}/${repo}/-/commit/${commit}`,
-  }[provider]
+    Github: `https://github.com/${owner}/${repo}/commit/${commit}`,
+    BitBucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
+    Gitlab: `https://gitlab.com/${owner}/${repo}/-/commit/${commit}`,
+  }[providerToName(provider)]
 }
 
 export function getProviderPullURL({ provider, owner, repo, pullId }) {
   return {
-    gh: `https://github.com/${owner}/${repo}/pull/${pullId}`,
-    bb: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
-    gl: `https://gitlab.com/${owner}/${repo}/-/merge_requests/${pullId}`,
-  }[provider]
+    Github: `https://github.com/${owner}/${repo}/pull/${pullId}`,
+    BitBucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
+    Gitlab: `https://gitlab.com/${owner}/${repo}/-/merge_requests/${pullId}`,
+  }[providerToName(provider)]
 }
