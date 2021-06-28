@@ -29,7 +29,7 @@ jobs:
   test:
     docker:
       - image: circleci/node:14.5.0
-    parallelism: 2
+    parallelism: 3
     steps:
       - checkout
       - restore_cache:
@@ -39,7 +39,7 @@ jobs:
           name: Run tests
           command: |
             TESTFILES=$(circleci tests glob "src/**/*.spec.js" | circleci tests split --split-by=timings)
-            CI=true npm run test:ci -- --maxWorkers=2 $TESTFILES
+            CI=true npm run test:ci -- --maxWorkers=3 $TESTFILES
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
