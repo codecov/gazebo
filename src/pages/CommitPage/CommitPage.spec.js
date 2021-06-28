@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from 'custom-testing-library'
 import CommitPage from './CommitPage'
 import { MemoryRouter } from 'react-router-dom'
 import { useCommit } from 'services/commit'
+import { waitFor } from '@testing-library/react'
 
 jest.mock('services/commit')
 jest.mock('react-router-dom', () => ({
@@ -64,8 +65,8 @@ const dataReturned = {
 }
 
 describe('CommitPage', () => {
-  function setup() {
-    useCommit.mockReturnValue({ data: dataReturned })
+  function setup(data) {
+    useCommit.mockReturnValue({ data })
 
     render(<CommitPage />, {
       wrapper: MemoryRouter,
@@ -74,7 +75,7 @@ describe('CommitPage', () => {
 
   describe('renders', () => {
     beforeEach(() => {
-      setup()
+      setup(dataReturned)
     })
 
     it('renders the Uploads', () => {
@@ -96,6 +97,27 @@ describe('CommitPage', () => {
       ).toBeInTheDocument()
       fireEvent.click(screen.getByText('view yml file'))
       fireEvent.click(screen.getByLabelText('Close'))
+    })
+  })
+})
+
+describe('CommitPage Not Found', () => {
+  function setup(data) {
+    useCommit.mockReturnValue({ data: null })
+
+    render(<CommitPage />, {
+      wrapper: MemoryRouter,
+    })
+  }
+
+  describe('renders 404', () => {
+    beforeEach(() => {
+      setup({ commit: null })
+    })
+    it('renders the Uploads', async () => {
+      await waitFor(() =>
+        expect(screen.getByText(/Not found/)).toBeInTheDocument()
+      )
     })
   })
 })

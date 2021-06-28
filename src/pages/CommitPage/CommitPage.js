@@ -121,7 +121,9 @@ function CommitPage() {
           </div>
         </div>
       ) : (
-        <NotFound />
+        <Suspense fallback={loadingState}>
+          <NotFound />
+        </Suspense>
       )}
     </>
   )
