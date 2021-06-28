@@ -29,6 +29,7 @@ export function useCommit({ provider, owner, repo, commitid }) {
                           createdAt
                           updatedAt
                           flags
+                          jobCode
                           downloadUrl
                           ciUrl
                           uploadType
@@ -64,9 +65,11 @@ export function useCommit({ provider, owner, repo, commitid }) {
     }).then((res) => {
       const commit = res?.data?.owner?.repository?.commit
       if (!commit) return null
-      commit.uploads = mapEdges(commit?.uploads)
       return {
-        commit,
+        commit: {
+          ...commit,
+          uploads: mapEdges(commit?.uploads),
+        },
       }
     })
   })
