@@ -49,14 +49,14 @@ jobs:
           name: Upload coverage to codecov
           command: |
             wget https://uploader.codecov.io/latest/codecov-alpine
-            chmod +x codecov-alpine
-            codecov-alpine
+            chmod +x ./codecov-alpine
+            ./codecov-alpine
       - run:
           name: Upload coverage to staging
           command: |
             wget https://uploader.codecov.io/latest/codecov-alpine
-            chmod +x codecov-alpine
-            codecov-alpine -t $CODECOV_TOKEN_STAGING --url https://stage-web.codecov.dev
+            chmod +x ./codecov-alpine
+            ./codecov-alpine -t $CODECOV_TOKEN_STAGING --url https://stage-web.codecov.dev
 
   sentry:
     docker:
