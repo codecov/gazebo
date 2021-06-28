@@ -52,7 +52,7 @@ jobs:
 
   codecov:
     docker:
-      - image: cimg/base
+      - image: cimg/base:stable
     steps:
       - restore_cache:
           keys:
@@ -65,7 +65,7 @@ jobs:
             ./codecov-linux
   codecovstage:
     docker:
-      - image: cimg/base
+      - image: cimg/base:stable
     steps:
       - restore_cache:
           keys:
