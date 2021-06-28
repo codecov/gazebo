@@ -1,8 +1,7 @@
-import { render, screen, fireEvent } from 'custom-testing-library'
+import { render, screen, fireEvent, waitFor } from 'custom-testing-library'
 import CommitPage from './CommitPage'
 import { MemoryRouter } from 'react-router-dom'
 import { useCommit } from 'services/commit'
-import { waitFor } from '@testing-library/react'
 
 jest.mock('services/commit')
 jest.mock('react-router-dom', () => ({
@@ -66,7 +65,7 @@ const dataReturned = {
 
 describe('CommitPage', () => {
   function setup(data) {
-    useCommit.mockReturnValue({ data })
+    useCommit.mockReturnValue(data)
 
     render(<CommitPage />, {
       wrapper: MemoryRouter,
@@ -75,7 +74,7 @@ describe('CommitPage', () => {
 
   describe('renders', () => {
     beforeEach(() => {
-      setup(dataReturned)
+      setup({ data: dataReturned, isSuccess: true })
     })
 
     it('renders the Uploads', () => {
@@ -103,7 +102,7 @@ describe('CommitPage', () => {
 
 describe('CommitPage Not Found', () => {
   function setup(data) {
-    useCommit.mockReturnValue({ data: null })
+    useCommit.mockReturnValue(data)
 
     render(<CommitPage />, {
       wrapper: MemoryRouter,
@@ -112,7 +111,7 @@ describe('CommitPage Not Found', () => {
 
   describe('renders 404', () => {
     beforeEach(() => {
-      setup({ commit: null })
+      setup({ data: { commit: null }, isSuccess: false })
     })
     it('renders the Uploads', async () => {
       await waitFor(() =>
