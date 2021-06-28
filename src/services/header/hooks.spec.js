@@ -43,7 +43,7 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          useRouter: false,
+          useRouter: true,
           imageUrl: 'github-icon.svg',
         },
       ])
@@ -63,13 +63,13 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          useRouter: false,
+          useRouter: true,
           imageUrl: 'github-icon.svg',
         },
         {
           label: 'codecov',
           to: '/gh/codecov',
-          useRouter: false,
+          useRouter: true,
           imageUrl: 'https://github.com/codecov.png?size=40',
         },
       ])
@@ -90,13 +90,13 @@ describe('useMainNav', () => {
         {
           label: 'Github',
           to: '/gh',
-          useRouter: false,
+          useRouter: true,
           imageUrl: 'github-icon.svg',
         },
         {
           label: 'codecov',
           to: '/gh/codecov',
-          useRouter: false,
+          useRouter: true,
           imageUrl: 'https://github.com/codecov.png?size=40',
         },
         {

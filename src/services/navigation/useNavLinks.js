@@ -21,30 +21,20 @@ function useNavLinks() {
     },
     provider: {
       path: ({ provider = p } = { provider: p }) => `/${provider}`,
-      isExternalLink: true,
+      isExternalLink: false,
     },
     providerAddRepo: {
       path: ({ provider = p } = { provider: p }) => `/${provider}/+`,
-      isExternalLink: true,
-    },
-    providerInternal: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}`,
       isExternalLink: false,
     },
     owner: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/${provider}/${owner}`,
-      isExternalLink: true,
+      isExternalLink: false,
     },
     ownerAddRepo: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/${provider}/${owner}/+`,
-      isExternalLink: true,
-    },
-    // Like owner but internal
-    ownerInternal: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}`,
       isExternalLink: false,
     },
     analytics: {
@@ -125,6 +115,28 @@ function useNavLinks() {
         { provider = p, owner = o, id = i } = { provider: p, owner: o, id: i }
       ) => `/account/${provider}/${owner}/invoices/${id}`,
       isExternalLink: false,
+    },
+    commits: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/commits`,
+      isExternalLink: true,
+      text: 'Commits',
+    },
+    treeView: {
+      path: (
+        { provider = p, owner = o, repo = r, tree = '' } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/tree/${tree}`,
+      isExternalLink: true,
+      text: 'Tree View',
     },
   }
 }

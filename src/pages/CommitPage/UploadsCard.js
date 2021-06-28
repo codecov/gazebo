@@ -1,19 +1,24 @@
 import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 
-function UploadsCard() {
-  const uploads = [1, 2, 3, 4]
+function UploadsCard({ setShowYAMLModal }) {
+  const uploads = [1, 2, 3, 4, 5, 6, 7]
 
   return (
     <div className="flex w-full flex-col border border-ds-gray-secondary text-ds-gray-octonary">
       <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
         <div className="flex justify-between">
           <span className="text-base font-semibold">Uploads</span>
-          <span className="text-ds-blue-darker text-xs">view yml file</span>
+          <button
+            onClick={() => setShowYAMLModal(true)}
+            className="text-ds-blue-darker cursor-pointer text-xs"
+          >
+            view yml file
+          </button>
         </div>
         <span className="text-ds-gray-quinary">4 successful</span>
       </div>
-      <div className="bg-ds-gray-primary flex flex-col w-full">
+      <div className="bg-ds-gray-primary max-h-64 overflow-scroll flex flex-col w-full">
         <span className="text-sm font-semibold w-full py-1 px-4">
           Circle CI
         </span>
@@ -45,6 +50,7 @@ function UploadsCard() {
 
 UploadsCard.propTypes = {
   uploads: PropTypes.array,
+  setShowYAMLModal: PropTypes.func.isRequired,
 }
 
 export default UploadsCard
