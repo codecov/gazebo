@@ -4,6 +4,7 @@ import camelCase from 'lodash/camelCase'
 
 import * as svgOutline from './svg/outline'
 import * as svgSolid from './svg/solid'
+import * as svgDeveloper from './svg/developer'
 
 const IconClasses = {
   sm: 'w-4 h-4',
@@ -14,6 +15,7 @@ const IconClasses = {
 const IconCollection = {
   outline: svgOutline,
   solid: svgSolid,
+  developer: svgDeveloper,
 }
 
 function Icon({ name, variant = 'outline', size = 'md' }) {
