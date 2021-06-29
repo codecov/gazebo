@@ -14,6 +14,7 @@ const enabledIcons = [
   'external-link',
   'home',
   'merge',
+  'pull-request-open'
 ]
 
 console.log('Generating Icons import')
