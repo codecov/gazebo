@@ -45,9 +45,11 @@ function CommitPage() {
         {data?.commit?.message}
       </span>
       <div className="flex items-center mt-1 text-ds-gray-quinary">
-        {formatDistanceToNow(new Date(data?.commit?.createdAt), {
-          addSuffix: true,
-        })}{' '}
+        {data?.commit?.createdAt
+          ? formatDistanceToNow(new Date(data?.commit?.createdAt), {
+              addSuffix: true,
+            })
+          : ''}{' '}
         <AppLink
           pageName="owner"
           options={{ owner: data?.commit?.author?.username }}

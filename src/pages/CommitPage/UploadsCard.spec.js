@@ -80,4 +80,13 @@ describe('UploadsCard', () => {
       ).toBeInTheDocument()
     })
   })
+  describe('renders empty Uploads', () => {
+    beforeEach(() => {
+      setup([{}])
+    })
+
+    it('renders the title', () => {
+      expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+    })
+  })
 })

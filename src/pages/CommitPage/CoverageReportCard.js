@@ -109,7 +109,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           options={{ commit: parentCommitid }}
           className="text-ds-blue-darker"
         >
-          {parentCommitid.substr(0, 7)}
+          {parentCommitid?.substr(0, 7)}
         </AppLink>{' '}
         and <span className="font-mono">{commitid}</span>
       </div>

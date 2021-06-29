@@ -119,4 +119,13 @@ describe('CommitPage Not Found', () => {
       )
     })
   })
+
+  describe('renders empty data', () => {
+    beforeEach(() => {
+      setup({ data: { commit: {} }, isSuccess: true })
+    })
+    it('renders the Uploads', () => {
+      expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+    })
+  })
 })

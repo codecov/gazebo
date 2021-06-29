@@ -31,15 +31,15 @@ describe('CoverageReportCard', () => {
     },
   }
 
-  function setup() {
-    render(<CoverageReportCard provider="gh" data={mockData} />, {
+  function setup(data) {
+    render(<CoverageReportCard provider="gh" data={data} />, {
       wrapper: MemoryRouter,
     })
   }
 
   describe('renders', () => {
     beforeEach(() => {
-      setup()
+      setup(mockData)
     })
 
     it('renders the title', () => {
@@ -61,6 +61,16 @@ describe('CoverageReportCard', () => {
     })
     it('renders CI Failed Status', () => {
       expect(screen.getByText('CI Passed')).toBeInTheDocument()
+    })
+  })
+
+  describe('renders with incomplete info', () => {
+    beforeEach(() => {
+      setup({})
+    })
+
+    it('renders the title', () => {
+      expect(screen.getByText(/Coverage report/)).toBeInTheDocument()
     })
   })
 })

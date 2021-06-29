@@ -27,9 +27,11 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
                 </div>
               </a>
               <span className="text-xs text-ds-gray-quinary">
-                {formatDistanceToNow(new Date(d.createdAt), {
-                  addSuffix: true,
-                })}
+                {d.createdAt
+                  ? formatDistanceToNow(new Date(d.createdAt), {
+                      addSuffix: true,
+                    })
+                  : ''}
               </span>
             </div>
             <div className="flex justify-between mt-1">
