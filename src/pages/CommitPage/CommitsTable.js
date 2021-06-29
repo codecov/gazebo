@@ -15,7 +15,7 @@ const table = [
       </span>
     ),
     accessor: 'coverage',
-    width: 'w-4/12',
+    width: 'w-5/12',
   },
   {
     Header: <span className="w-full text-sm text-right">Patch</span>,
@@ -67,7 +67,7 @@ function CommitsTable() {
           'text-sm text-right w-full font-semibold text-ds-gray-octonary'
         )}
       >
-        {d.change}
+        {`${d.change}%`}
       </span>
     ),
   }))
