@@ -122,4 +122,20 @@ describe('NetworkErrorBoundary', () => {
       expect(screen.getByText(/Server error/)).toBeInTheDocument()
     })
   })
+
+  describe('when the children component has an UnauthenticatedError GraphQL error', () => {
+    beforeEach(() => {
+      function ToRender() {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          __typename: 'UnauthenticatedError',
+        }
+      }
+      setup(ToRender)
+    })
+
+    it('renders a Not found', () => {
+      expect(screen.getByText(/Please log in/)).toBeInTheDocument()
+    })
+  })
 })

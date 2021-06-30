@@ -117,10 +117,17 @@ function triggerSync(provider) {
         me {
           isSyncing: isSyncingWithGitProvider
         }
+        error: newError {
+          __typename
+        }
       }
     }
   `
-  return Api.graphql({ provider, query: mutation }).then((res) => {
+  return Api.graphqlMutation({
+    provider,
+    query: mutation,
+    mutationPath: 'syncWithGitProvider',
+  }).then((res) => {
     return Boolean(res?.data?.syncWithGitProvider?.me?.isSyncing)
   })
 }
