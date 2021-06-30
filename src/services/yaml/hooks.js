@@ -1,5 +1,5 @@
 import Api from 'shared/api'
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useMutation, useQuery } from 'react-query'
 
 export function useYamlConfig({ variables }) {
@@ -8,7 +8,7 @@ export function useYamlConfig({ variables }) {
     query YamlConfig($username: String!){
       owner(username: $username) {
         yaml
-      } 
+      }
     }
   `
   return useQuery(['YamlConfig', provider, variables?.username], () =>
@@ -19,33 +19,47 @@ export function useYamlConfig({ variables }) {
   )
 }
 
+const query = `
+  mutation UpdateYamlConfig ($input: SetYamlOnOwnerInput!) {
+    setYamlOnOwner(input: $input) {
+      error: newError {
+        __typename
+        ... on ValidationError {
+          message
+        }
+        ... on UnauthorizedError {
+          message
+        }
+        ... on NotFoundError {
+          message
+        }
+        ... on UnauthenticatedError {
+          message
+        }
+      }
+      owner {
+        username
+        yaml
+      }
+    }
+  }
+`
+
 export function useUpdateYaml({ username }) {
   const { provider } = useParams()
-  const history = useHistory()
 
   return useMutation(
     ({ yaml }) => {
-      const query = `
-        mutation UpdateYamlConfig ($input: SetYamlOnOwnerInput!) {
-          setYamlOnOwner(input: $input) {
-            error
-            owner {
-              username
-              yaml
-            }
-          }
-        }
-      `
-
-      const variables = { input: { username, yaml } }
-      return Api.graphql({ provider, query, variables })
+      const variables = { input: { username: username, yaml } }
+      return Api.graphqlMutation({
+        provider,
+        query,
+        variables,
+        mutationPath: 'setYamlOnOwner',
+      })
     },
     {
-      onSuccess: ({ data }) => {
-        if (data?.setYamlOnOwner?.error === 'unauthenticated') {
-          history.go() // Force refresh to trigger error, throwing error didnt catch error boundary. I don't love that graphQL errors are not getting caught by the error boundary
-        }
-      },
+      useErrorBoundary: true,
     }
   )
 }

@@ -27,7 +27,7 @@ const updateYamlConfig = (y) => ({
   data: { setYamlOnOwner: { owner: { yaml: y, username: 'doggo' } } },
 })
 const updateYamlConfigError = (e) => ({
-  data: { setYamlOnOwner: { error: e } },
+  data: { setYamlOnOwner: { error: { message: e } } },
 })
 
 function MockReactAce({ onChange, value }) {

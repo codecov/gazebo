@@ -35,7 +35,7 @@ function YAML({ owner }) {
     return mutateAsync({ yaml: sanitize(formData.editor) })
       .then(({ data, errors }) => {
         if (data?.setYamlOnOwner?.error) {
-          formError(data?.setYamlOnOwner?.error)
+          formError(data?.setYamlOnOwner?.error.message)
         } else if (errors) {
           formError('Something went wrong')
         }

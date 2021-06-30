@@ -15,14 +15,6 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-const mockGo = jest.fn()
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: () => ({
-    go: mockGo,
-  }),
-}))
-
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -114,17 +106,6 @@ describe('useUpdateYaml', () => {
         return hookData.waitFor(() => hookData.result.current.isSuccess)
       })
 
-      it('to not call a reload', () => {
-        expect(hookData.result.current.data).toStrictEqual({
-          data: {
-            setYamlOnOwner: {
-              owner: { yaml: 'hello: there', username: 'doggo' },
-            },
-          },
-        })
-        expect(mockGo).not.toHaveBeenCalled()
-      })
-
       it('to return the new yaml', () => {
         expect(hookData.result.current.data).toStrictEqual({
           data: {
@@ -133,28 +114,6 @@ describe('useUpdateYaml', () => {
             },
           },
         })
-      })
-    })
-    describe('and is not authenticated', () => {
-      beforeEach(async () => {
-        jest.resetAllMocks()
-        setup({ data: { setYamlOnOwner: { error: 'unauthenticated' } } })
-
-        hookData.result.current.mutate({
-          yaml: 'hello: there',
-        })
-
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
-
-      it('returns an error', () => {
-        expect(hookData.result.current.data).toStrictEqual({
-          data: { setYamlOnOwner: { error: 'unauthenticated' } },
-        })
-      })
-
-      it('calls a reload', () => {
-        expect(mockGo).toHaveBeenCalled()
       })
     })
   })
