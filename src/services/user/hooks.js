@@ -117,7 +117,7 @@ function triggerSync(provider) {
         me {
           isSyncing: isSyncingWithGitProvider
         }
-        error: newError {
+        error {
           __typename
         }
       }
