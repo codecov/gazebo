@@ -22,7 +22,7 @@ export function useYamlConfig({ variables }) {
 const query = `
   mutation UpdateYamlConfig ($input: SetYamlOnOwnerInput!) {
     setYamlOnOwner(input: $input) {
-      error: newError {
+      error {
         __typename
         ... on ValidationError {
           message
