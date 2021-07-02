@@ -7,6 +7,7 @@ import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
 import { orderingOptions, nonActiveOrderingOptions } from 'services/repos'
 
+import GithubPrivateScopeLogin from './GithubPrivateScopeLogin'
 import ResyncButton from './ResyncButton'
 
 const optionButtonOptions = [
@@ -57,7 +58,8 @@ function OrgControlTable({
         </div>
       </div>
       {canRefetch && <ResyncButton />}
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center">
+        <GithubPrivateScopeLogin />
         <OptionButton
           active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
           onChange={(option) =>
