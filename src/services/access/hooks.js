@@ -44,7 +44,7 @@ export function useDeleteSession({ provider }) {
       const query = `
     mutation DeleteSession($input: DeleteSessionInput!) {
       deleteSession(input: $input) {
-        error: newError {
+        error {
           __typename
         }
       }
@@ -74,7 +74,7 @@ export function useGenerateToken({ provider, opts = {} }) {
       const query = `
       mutation($input: CreateApiTokenInput!) {
         createApiToken(input: $input) {
-          error: newError {
+          error {
             __typename
           }
           fullToken

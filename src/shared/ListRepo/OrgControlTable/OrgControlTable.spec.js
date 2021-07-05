@@ -5,6 +5,7 @@ import { orderingOptions } from 'services/repos'
 
 import OrgControlTable from './OrgControlTable'
 
+jest.mock('./GithubPrivateScopeLogin', () => () => 'GithubPrivateScopeLogin')
 jest.mock('./ResyncButton', () => () => 'ResyncButton')
 
 describe('OrgControlTable', () => {
