@@ -24,7 +24,7 @@
     "react-hook-form": "^7.9.0",
     "react-image": "^4.0.3",
     "react-modal": "^3.14.3",
-    "react-query": "^3.17.2",
+    "react-query": "^3.18.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
     "react-table": "^7.7.0",
@@ -80,7 +80,7 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.14.6",
-    "@craco/craco": "^6.1.2",
+    "@craco/craco": "^6.2.0",
     "@sentry/cli": "^1.66.0",
     "@storybook/addon-a11y": "^6.3.1",
     "@storybook/addon-actions": "^6.3.1",
