@@ -48,9 +48,12 @@ function CreateTokenModal({ closeModal, provider }) {
       footer={
         <form onSubmit={handleSubmit(submit)} className="flex">
           <div className="mr-2.5">
-            <Button onClick={closeModal}>Cancel</Button>
+            <Button hook="close-modal" onClick={closeModal}>
+              Cancel
+            </Button>
           </div>
           <Button
+            hook="generate-token"
             isLoading={isLoading}
             type="submit"
             variant="primary"
@@ -90,7 +93,11 @@ function CreateTokenModal({ closeModal, provider }) {
           </span>
         </div>
       }
-      footer={<Button onClick={closeModal}>Done</Button>}
+      footer={
+        <Button hook="close-modal" onClick={closeModal}>
+          Done
+        </Button>
+      }
     />
   )
 

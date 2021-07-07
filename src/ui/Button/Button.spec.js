@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import Button from '.'
 
 describe('Button', () => {
-  function setup(props = {}, location = '/gh/codecov') {
+  function setup(props = {}) {
     render(<Button {...props} />, {
       wrapper: MemoryRouter,
     })
@@ -30,10 +30,11 @@ describe('Button', () => {
     })
   })
 
-  describe('when rendered without `to` prop', () => {
+  describe('when rendered without `to` prop with a hook', () => {
     beforeEach(() => {
       setup({
         children: 'hola',
+        hook: 'hola',
       })
     })
 
@@ -42,11 +43,31 @@ describe('Button', () => {
     })
   })
 
+  describe('when rendered without `to` prop', () => {
+    let mockError
+
+    beforeEach(() => {
+      mockError = jest.fn()
+      const spy = jest.spyOn(console, 'error')
+      spy.mockImplementation(mockError)
+
+      setup({
+        children: 'hola',
+      })
+    })
+    afterEach(() => jest.resetAllMocks())
+
+    it('PropTypes warning is thrown that developers need to provide a hook prop if not using to', () => {
+      expect(mockError).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('when isLoading', () => {
     beforeEach(() => {
       setup({
         children: 'bonjour',
         isLoading: true,
+        hook: 'bonjour',
       })
     })
 
@@ -64,6 +85,7 @@ describe('Button', () => {
       setup({
         children: 'bonjour',
         isLoading: false,
+        hook: 'bonjour',
       })
     })
 
