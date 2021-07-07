@@ -9,7 +9,7 @@ import Icon from 'ui/Icon'
 function Dropdown({ user }) {
   return (
     <div data-testid="dropdown">
-      <Menu>
+      <Menu id="main-dropdown">
         <MenuButton className="flex items-center justify-between">
           <Avatar user={user} bordered={true} />
           <div className="ml-1" aria-hidden="true">
