@@ -57,7 +57,18 @@ function DesktopMenu() {
         </AppLink>
       </div>
       {!!user ? (
-        <div className="mx-2 md:mx-0">
+        <div className="flex items-center space-between mx-2 md:mx-4">
+          {user.plan === 'users-free' && (
+            <div className="mr-5">
+              <Button
+                //TODO: figure page this needs to be linked to
+                to={{ pageName: 'signUp' }}
+                variant={'primary'}
+              >
+                Request demo
+              </Button>
+            </div>
+          )}
           <Dropdown user={user} />
         </div>
       ) : (
