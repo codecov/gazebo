@@ -113,6 +113,7 @@ function UserManagement({ provider, owner }) {
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Button
+                    data-cy={`activate-${user.ownerid}`}
                     className={UserManagementClasses.cta}
                     color={user.activated ? 'red' : 'blue'}
                     variant={user.activated ? 'outline' : 'normal'}
