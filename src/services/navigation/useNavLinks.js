@@ -177,6 +177,11 @@ function useStaticNavLinks() {
       path: () => `${config.MARKETING_BASE_URL}/demo`,
       isExternalLink: true,
     },
+    trial: {
+      text: 'Trial',
+      path: () => `${config.MARKETING_BASE_URL}/trial`,
+      isExternalLink: true,
+    },
     terms: {
       text: 'Terms',
       path: () => `${config.MARKETING_BASE_URL}/terms`,

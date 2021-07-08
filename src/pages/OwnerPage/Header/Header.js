@@ -8,7 +8,7 @@ function Header({ owner }) {
   return owner.isCurrentUserPartOfOrg ? (
     <>
       <MyContextSwitcher pageName="owner" activeContext={owner.username} />
-      <div className="my-4">
+      <div className="my-4 border-b border-ds-gray-tertiary">
         <TabNavigation
           tabs={[
             {

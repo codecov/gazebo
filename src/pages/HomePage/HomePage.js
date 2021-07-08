@@ -9,7 +9,7 @@ function HomePage({ active = false }) {
 
   return (
     <>
-      <Header currentUsername={currentUser.username} />
+      <Header currentUser={currentUser} />
       <ListRepo active={active} canRefetch />
     </>
   )
