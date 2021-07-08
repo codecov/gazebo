@@ -23,13 +23,18 @@ const variantClasses = {
   `,
   primary: `
     text-white bg-ds-blue-medium border-ds-blue-quinary
-    
+
     hover:bg-ds-blue-darker
   `,
   danger: `
-    text-ds-primary-red border-ds-primary-red 
+    text-ds-primary-red border-ds-primary-red
 
     hover:text-white hover:bg-ds-primary-red
+  `,
+  pink: `
+    text-white bg-ds-pink border-ds-pink
+
+    hover:bg-ds-pink-secondary
   `,
 }
 
@@ -37,6 +42,7 @@ const loadingVariantClasses = {
   default: `disabled:bg-ds-gray-secondary disabled:text-ds-gray-octonary disabled:border-ds-gray-quaternary`,
   primary: `disabled:bg-ds-blue-darker disabled:bg-ds-blue-medium text-white disabled:border-ds-blue-quinary`,
   danger: `disabled:text-white disabled:border-ds-primary-red disabled:bg-ds-primary-red`,
+  pink: `disabled:text-white disabled:border-ds-pink disabled:bg-ds-pink-secondary`,
 }
 
 function pickVariant(variant, loading) {
@@ -90,7 +96,7 @@ function Button({
 
 Button.propTypes = {
   to: PropTypes.shape(AppLink.propTypes),
-  variant: PropTypes.oneOf(['default', 'primary', 'danger']),
+  variant: PropTypes.oneOf(['default', 'primary', 'danger', 'pink']),
   isLoading: PropTypes.bool,
   disabled: PropTypes.bool,
 }

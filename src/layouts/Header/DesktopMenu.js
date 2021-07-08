@@ -60,11 +60,7 @@ function DesktopMenu() {
         <div className="flex items-center space-between mx-2 md:mx-4">
           {user.plan === 'users-free' && (
             <div className="mr-5">
-              <Button
-                //TODO: figure page this needs to be linked to
-                to={{ pageName: 'signUp' }}
-                variant={'primary'}
-              >
+              <Button to={{ pageName: 'demo' }} variant={'pink'}>
                 Request demo
               </Button>
             </div>
