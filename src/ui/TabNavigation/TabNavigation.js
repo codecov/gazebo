@@ -19,6 +19,16 @@ function TabNavigation({ tabs }) {
           key={tab.pageName}
         />
       ))}
+      {/* {user.plan === "users-free" &&
+        <div>
+          { user.planUserCount === 0 && 
+            <h2>Looks like you're up to 5 users.<a> Upgrade</a> plan today!</h2>
+          }
+          { user.planUserCount < 5 &&
+            <h2>Need more than 5 users? <a> Request</a> free trial</h2>
+          }
+        </div>
+      } */}
     </nav>
   )
 }
