@@ -60,7 +60,7 @@ function DesktopMenu() {
         <div className="flex items-center space-between mx-2 md:mx-4">
           {user.plan === 'users-free' && (
             <div className="mr-5">
-              <Button to={{ pageName: 'demo' }} variant={'pink'}>
+              <Button to={{ pageName: 'demo' }} variant={'secondary'}>
                 Request demo
               </Button>
             </div>
