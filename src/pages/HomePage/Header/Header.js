@@ -36,15 +36,7 @@ function Header({ currentUser }) {
           ]}
         />
         <div className="mx-4">
-          {plan === 'users-free' && planUserCount <= 5 ? (
-            <span>
-              Need more than 5 users?{' '}
-              <AppLink pageName="trial" className="text-ds-blue-light">
-                Request
-              </AppLink>{' '}
-              free trial
-            </span>
-          ) : planUserCount === 0 ? (
+          {plan === 'users-free' && planUserCount === 0 ? (
             <span>
               Looks like you&#39;re up to 5 users.
               <a
@@ -57,6 +49,14 @@ function Header({ currentUser }) {
                 Upgrade{' '}
               </a>
               plan today!
+            </span>
+          ) : plan === 'users-free' && planUserCount <= 5 ? (
+            <span>
+              Need more than 5 users?{' '}
+              <AppLink pageName="trial" className="text-ds-blue-light">
+                Request
+              </AppLink>{' '}
+              free trial
             </span>
           ) : null}
         </div>
