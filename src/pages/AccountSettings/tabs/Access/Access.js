@@ -39,7 +39,9 @@ function Access({ provider }) {
           </a>
           .
         </p>
-        <Button onClick={() => setShowModal(true)}>Generate Token</Button>
+        <Button hook="generate-token" onClick={() => setShowModal(true)}>
+          Generate Token
+        </Button>
         {showModal && (
           <CreateTokenModal
             provider={provider}
