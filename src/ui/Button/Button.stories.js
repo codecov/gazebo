@@ -39,10 +39,10 @@ MixedButton.args = {
   ),
 }
 
-export const PinkButton = Template.bind({})
-PinkButton.args = {
-  children: 'Pink button',
-  variant: 'pink',
+export const SecondaryButton = Template.bind({})
+SecondaryButton.args = {
+  children: 'Secondary button',
+  variant: 'secondary',
   disabled: false,
 }
 
