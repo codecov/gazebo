@@ -14,7 +14,8 @@ const enabledIcons = [
   'external-link',
   'home',
   'merge',
-  'pull-request-open'
+  'pull-request-open',
+  'speakerphone',
 ]
 
 console.log('Generating Icons import')
