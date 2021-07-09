@@ -148,9 +148,13 @@ function UpgradePlanForm({
         control={control}
         render={({ field }) => (
           <Select
+            data-cy="plan-pricing"
             items={planOptions}
             renderItem={(plan) => (
-              <div className="flex justify-between flex-1 p-2 text-base w-full">
+              <div
+                className="flex justify-between flex-1 p-2 text-base w-full"
+                data-cy={`select-${plan.billingRate}`}
+              >
                 <span className="capitalize text-gray-600">
                   {plan.billingRate} User Pricing
                 </span>
@@ -172,6 +176,7 @@ function UpgradePlanForm({
             User Seats:
           </label>
           <input
+            data-cy="seats"
             {...register('seats')}
             id="nb-seats"
             size="40"
@@ -220,7 +225,12 @@ function UpgradePlanForm({
           {errors.seats?.message}
         </p>
       )}
-      <Button disabled={!isDirty} type="submit" className="w-full block mt-4">
+      <Button
+        data-cy="update"
+        disabled={!isDirty}
+        type="submit"
+        className="w-full block mt-4"
+      >
         Update
       </Button>
     </form>

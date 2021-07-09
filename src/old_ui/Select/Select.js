@@ -29,6 +29,7 @@ function Select({
   renderSelected,
   ariaName,
   className,
+  ...props
 }) {
   const {
     isOpen,
@@ -67,7 +68,7 @@ function Select({
   }
 
   return (
-    <div className={cs(className, SelectClasses.root)}>
+    <div className={cs(className, SelectClasses.root)} {...props}>
       <button
         aria-label={ariaName}
         type="button"

@@ -42,7 +42,7 @@ function ContextSwitcher({ activeContext, contexts }) {
   }
 
   return (
-    <Menu>
+    <Menu id="context-switcher">
       <MenuButton className={styles.button}>
         {currentContext ? (
           <>

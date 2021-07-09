@@ -43,7 +43,9 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
             No credit card set. Please contact support if you think it’s an
             error or set it yourself.
           </p>
-          <Button onClick={() => setIsFormOpen(true)}>Set card</Button>
+          <Button hook="open-modal" onClick={() => setIsFormOpen(true)}>
+            Set card
+          </Button>
         </>
       )}
     </Card>

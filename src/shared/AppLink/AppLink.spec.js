@@ -33,6 +33,17 @@ describe('AppLink', () => {
         '/account/gh/spotify'
       )
     })
+
+    it('attaches a hook for e2e tests', () => {
+      expect(screen.getByRole('link')).toHaveAttribute('data-cy', 'account')
+    })
+
+    it('attaches a hook for marketing tracking', () => {
+      expect(screen.getByRole('link')).toHaveAttribute(
+        'data-marketing',
+        'account'
+      )
+    })
   })
 
   describe('when rendered to a link we dont have in gazebo', () => {

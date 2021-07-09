@@ -7,7 +7,9 @@ const Template = (args) => {
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>Open</button>
+      <button hook="open" onClick={() => setIsOpen(true)}>
+        Open
+      </button>
       <Modal
         {...args}
         isOpen={isOpen}

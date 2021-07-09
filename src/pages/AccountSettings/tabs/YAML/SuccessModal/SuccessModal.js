@@ -18,7 +18,11 @@ function SuccessModal({ closeModal, owner, ...props }) {
       onClose={() => closeModal()}
       title={title}
       body={body}
-      footer={<Button onClick={closeModal}>Done</Button>}
+      footer={
+        <Button hook="close-modal" onClick={closeModal}>
+          Done
+        </Button>
+      }
       {...props}
     />
   )

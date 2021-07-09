@@ -9,25 +9,25 @@ import Icon from 'ui/Icon'
 function Dropdown({ user }) {
   return (
     <div data-testid="dropdown">
-      <Menu>
+      <Menu id="main-dropdown">
         <MenuButton className="flex items-center justify-between">
-          <Avatar user={user} bordered={true} />
+          <Avatar user={user} bordered />
           <div className="ml-1" aria-hidden="true">
-            <Icon size={'sm'} name="chevron-down" variant={'solid'} />
+            <Icon size="sm" name="chevron-down" variant="solid" />
           </div>
         </MenuButton>
         <MenuList>
           <MenuLink
             as={AppLink}
-            pageName={'account'}
+            pageName="account"
             options={{ owner: user.username }}
           >
             Settings
           </MenuLink>
-          <MenuLink as={AppLink} pageName={'provider'}>
+          <MenuLink as={AppLink} pageName="provider">
             Organizations
           </MenuLink>
-          <MenuLink as={AppLink} pageName={'signOut'}>
+          <MenuLink as={AppLink} pageName="signOut">
             Sign Out
           </MenuLink>
         </MenuList>

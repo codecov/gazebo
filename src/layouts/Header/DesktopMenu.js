@@ -1,31 +1,21 @@
-import { Fragment } from 'react'
-import AppLink from 'shared/AppLink'
-
 import Dropdown from './Dropdown'
 import Button from 'ui/Button'
-import { useNavLinks } from 'services/navigation'
+import A from 'ui/A'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 
-const staticLinkClasses = 'ml-7 font-sans font-semibold text-ds-gray-secondary'
-
 export function LoginPrompt() {
-  const { provider, signIn } = useNavLinks()
   return (
     <div
       data-testid="login-prompt"
-      className="flex items-center justify-between mx-2 md:mx-0"
+      className="flex items-center justify-between mx-2 md:mx-0 gap-4"
     >
-      <a href={signIn.path(provider)}>Log in</a>
-      <div className="ml-7">
-        <Button
-          to={{ pageName: 'signUp' }}
-          className="text-ds-gray-secondary"
-          variant={'primary'}
-        >
-          Sign up
-        </Button>
-      </div>
+      <A to={{ pageName: 'signIn' }} variant="header">
+        Log in
+      </A>
+      <Button to={{ pageName: 'signUp' }} variant="primary">
+        Sign up
+      </Button>
     </div>
   )
 }
@@ -37,24 +27,20 @@ function DesktopMenu() {
 
   return (
     <>
-      <div data-testid="desktop-menu" className="flex items-center">
-        <AppLink
-          pageName={'provider'}
-          tabIndex="0"
-          className="mx-2 md:mx-0 flex-shrink-0"
-        >
+      <div data-testid="desktop-menu" className="flex items-center gap-4">
+        <A to={{ pageName: 'provider' }}>
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
-        </AppLink>
-        <AppLink pageName={'docs'} className={staticLinkClasses}>
+        </A>
+        <A to={{ pageName: 'docs' }} variant="header">
           Docs
-        </AppLink>
-        <AppLink pageName={'support'} className={staticLinkClasses}>
+        </A>
+        <A to={{ pageName: 'support' }} variant="header">
           Support
-        </AppLink>
-        <AppLink pageName={'blog'} className={staticLinkClasses}>
+        </A>
+        <A to={{ pageName: 'blog' }} variant="header">
           Blog
-        </AppLink>
+        </A>
       </div>
       {!!user ? (
         <div className="mx-2 md:mx-0">
