@@ -10,6 +10,7 @@ jest.mock('services/user')
 const loggedInUser = {
   username: 'p',
   avatarUrl: '',
+  plan: 'users-free',
 }
 
 describe('DesktopMenu', () => {
@@ -39,6 +40,29 @@ describe('DesktopMenu', () => {
 
     const dropdown = screen.getByTestId('dropdown')
     expect(dropdown).toBeInTheDocument()
+  })
+
+  it('renders request demo button when user with free plan is logged in', () => {
+    useUser.mockReturnValue({ data: loggedInUser })
+    setup()
+
+    const requestDemoButton = screen.getByTestId('request-demo')
+    expect(requestDemoButton).toBeInTheDocument()
+    expect(requestDemoButton).toHaveAttribute(
+      'href',
+      'https://about.codecov.io/demo'
+    )
+  })
+
+  it('does not render request demo button when user without free plan is logged in', () => {
+    const paidLoggedInUser = {
+      username: 'p',
+      avatarUrl: '',
+      plan: 'not-users-free',
+    }
+    useUser.mockReturnValue({ data: paidLoggedInUser })
+    setup()
+    expect(screen.queryByText(/Request demo/)).toBeNull()
   })
 
   it('renders the login prompt when user not logged in', () => {
