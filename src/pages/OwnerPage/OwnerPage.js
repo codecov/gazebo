@@ -8,7 +8,7 @@ import Header from './Header'
 
 function OwnerPage({ active = false }) {
   const { owner } = useParams()
-  const { data: user } = useUser()
+  const { data: currentUser } = useUser()
   const { data: ownerData } = useOwner({ username: owner })
 
   if (!ownerData) {
@@ -17,7 +17,7 @@ function OwnerPage({ active = false }) {
 
   return (
     <>
-      <Header owner={ownerData} user={user} />
+      <Header owner={ownerData} currentUser={currentUser} />
       <ListRepo
         active={active}
         canRefetch={ownerData.isCurrentUserPartOfOrg}

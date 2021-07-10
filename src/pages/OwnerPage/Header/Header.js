@@ -6,8 +6,8 @@ import AppLink from 'shared/AppLink'
 import { useNavLinks } from 'services/navigation'
 import Avatar from 'ui/Avatar'
 
-function Header({ owner, user }) {
-  const { username, plan, planUserCount } = user
+function Header({ owner, currentUser }) {
+  const { username, plan, planUserCount } = currentUser
   const { upgradePlan } = useNavLinks()
 
   return owner.isCurrentUserPartOfOrg ? (
@@ -74,7 +74,7 @@ Header.propTypes = {
     username: PropTypes.string.isRequired,
     isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
   }).isRequired,
-  user: PropTypes.shape({
+  currentUser: PropTypes.shape({
     username: PropTypes.string.isRequired,
     plan: PropTypes.string.isRequired,
     planUserCount: PropTypes.number.isRequired,

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import OwnerPage from './OwnerPage'
-import { useOwner } from 'services/user'
+import { useOwner, useUser } from 'services/user'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('./Header', () => () => 'Header')
@@ -8,9 +8,12 @@ jest.mock('services/user')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 
 describe('OwnerPage', () => {
-  function setup(owner) {
+  function setup(owner, user) {
     useOwner.mockReturnValue({
       data: owner,
+    })
+    useUser.mockReturnValue({
+      data: user,
     })
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -23,10 +26,15 @@ describe('OwnerPage', () => {
 
   describe('when the owner exists', () => {
     beforeEach(() => {
-      setup({
-        username: 'codecov',
-        isCurrentUserPartOfOrg: false,
-      })
+      setup(
+        {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
+        },
+        {
+          username: 'tobias',
+        }
+      )
     })
 
     it('renders the ListRepo', () => {

@@ -10,7 +10,7 @@ describe('Header', () => {
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
         <Route path="/:provider/:owner">
-          <Header {...props} />
+          <Header owner={props.owner} currentUser={props.currentUser} />
         </Route>
       </MemoryRouter>
     )
@@ -22,6 +22,11 @@ describe('Header', () => {
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
+        },
+        currentUser: {
+          username: 'caleb',
+          plan: 'users-free',
+          planUserCount: 5,
         },
       })
     })
@@ -46,6 +51,11 @@ describe('Header', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: false,
         },
+        currentUser: {
+          username: 'caleb',
+          plan: 'users-free',
+          planUserCount: 5,
+        },
       })
     })
 
@@ -67,6 +77,67 @@ describe('Header', () => {
           name: /settings/i,
         })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when user is under free trial', () => {
+    it('renders "request free trial" text if user count is less than 5 but not 0', () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+        currentUser: {
+          username: 'caleb',
+          plan: 'users-free',
+          planUserCount: 5,
+        },
+      })
+      expect(screen.getByRole('link', { name: /request/i })).toHaveAttribute(
+        'href',
+        'https://about.codecov.io/trial'
+      )
+    })
+
+    it('renders "upgrade plan today" when there are 0 seats remaining', () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+        currentUser: {
+          username: 'caleb',
+          plan: 'users-free',
+          planUserCount: 0,
+        },
+      })
+      expect(screen.getByRole('link', { name: /upgrade/i })).toHaveAttribute(
+        'href',
+        '/account/gh/caleb/billing/upgrade'
+      )
+    })
+  })
+
+  describe('when user is not under free trial', () => {
+    it('does not render any trial', () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+        currentUser: {
+          username: 'caleb',
+          plan: 'not-users-free',
+          planUserCount: 5,
+        },
+      })
+      expect(screen.queryByText(/Need more than 5 users?/)).toBeNull()
+      expect(screen.queryByText(/Request/)).toBeNull()
+      expect(screen.queryByText(/free trial/)).toBeNull()
+
+      expect(screen.queryByText(/Looks like you're up to 5 users./)).toBeNull()
+      expect(screen.queryByText(/Upgrade/)).toBeNull()
+      expect(screen.queryByText(/plan today/)).toBeNull()
     })
   })
 })
