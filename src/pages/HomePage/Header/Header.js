@@ -38,22 +38,24 @@ function Header({ currentUser }) {
         <div className="mx-4">
           {plan === 'users-free' && planUserCount === 0 ? (
             <span>
-              Looks like you&#39;re up to 5 users.
+              Looks like you&#39;re up to 5 users.{' '}
               <a
                 href={upgradePlan.path({
                   owner: username,
                 })}
-                className="text-ds-blue-light"
+                className="text-ds-blue-darker hover:underline focus:ring-2"
               >
-                {' '}
-                Upgrade{' '}
-              </a>
+                Upgrade
+              </a>{' '}
               plan today!
             </span>
           ) : plan === 'users-free' && planUserCount <= 5 ? (
             <span>
               Need more than 5 users?{' '}
-              <AppLink pageName="trial" className="text-ds-blue-light">
+              <AppLink
+                pageName="trial"
+                className="text-ds-blue-darker hover:underline focus:ring-2"
+              >
                 Request
               </AppLink>{' '}
               free trial
