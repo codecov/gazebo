@@ -38,7 +38,11 @@ function SessionsTable({ sessions, onRevoke }) {
       : '-',
     col3: s.useragent,
     col4: (
-      <Button onClick={() => onRevoke(s.sessionid)} variant="danger">
+      <Button
+        hook="revoke-session"
+        onClick={() => onRevoke(s.sessionid)}
+        variant="danger"
+      >
         Revoke
       </Button>
     ),

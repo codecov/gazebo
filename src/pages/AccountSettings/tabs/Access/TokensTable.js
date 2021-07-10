@@ -36,7 +36,11 @@ function TokensTable({ tokens, onRevoke }) {
       ? formatDistanceToNow(new Date(t.lastseen), { addSuffix: true })
       : '-',
     col4: (
-      <Button onClick={() => onRevoke(t.sessionid)} variant="danger">
+      <Button
+        hook="revoke-sesson"
+        onClick={() => onRevoke(t.sessionid)}
+        variant="danger"
+      >
         Revoke
       </Button>
     ),

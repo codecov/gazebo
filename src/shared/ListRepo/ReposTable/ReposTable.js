@@ -108,7 +108,11 @@ function ReposTable({ active, searchValue, owner, sortItem }) {
       <Table data={dataTable} columns={active ? tableActive : tableInactive} />
       {hasNextPage && (
         <div className="w-full mt-4 flex justify-center">
-          <Button isLoading={isFetchingNextPage} onClick={fetchNextPage}>
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
             Load More
           </Button>
         </div>

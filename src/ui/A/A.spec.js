@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import Button from '.'
+import A from '.'
 
-describe('Button', () => {
+describe('A', () => {
   function setup(props = {}) {
-    render(<Button {...props} />, {
+    render(<A {...props} />, {
       wrapper: MemoryRouter,
     })
   }
@@ -30,16 +30,17 @@ describe('Button', () => {
     })
   })
 
-  describe('when rendered without `to` prop with a hook', () => {
+  describe('when rendered without `to` prop with a hook passed', () => {
     beforeEach(() => {
       setup({
         children: 'hola',
-        hook: 'hola',
+        href: '/banana',
+        hook: 'banana',
       })
     })
 
-    it('renders a button', () => {
-      expect(screen.getByRole('button')).toHaveTextContent('hola')
+    it('renders a A', () => {
+      expect(screen.getByRole('link')).toHaveAttribute('href', '/banana')
     })
   })
 
@@ -52,45 +53,13 @@ describe('Button', () => {
       spy.mockImplementation(mockError)
 
       setup({
-        children: 'hola',
+        href: '/banana',
       })
     })
     afterEach(() => jest.resetAllMocks())
 
     it('PropTypes warning is thrown that developers need to provide a hook prop if not using to', () => {
       expect(mockError).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('when isLoading', () => {
-    beforeEach(() => {
-      setup({
-        children: 'bonjour',
-        isLoading: true,
-        hook: 'bonjour',
-      })
-    })
-
-    it('disables the button', () => {
-      expect(screen.getByRole('button')).toHaveAttribute('disabled')
-    })
-
-    it('The spinner is displayed', () => {
-      expect(screen.getByRole('presentation')).toBeInTheDocument()
-    })
-  })
-
-  describe('when not isLoading', () => {
-    beforeEach(() => {
-      setup({
-        children: 'bonjour',
-        isLoading: false,
-        hook: 'bonjour',
-      })
-    })
-
-    it('The spinner is displayed', () => {
-      expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
     })
   })
 })

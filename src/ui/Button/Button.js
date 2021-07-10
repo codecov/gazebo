@@ -56,6 +56,7 @@ function Button({
   variant = 'default',
   isLoading = false,
   disabled,
+  hook,
   children,
   ...props
 }) {
@@ -88,7 +89,12 @@ function Button({
       {content}
     </AppLink>
   ) : (
-    <button {...completeProps} className={className}>
+    <button
+      {...completeProps}
+      className={className}
+      data-cy={hook}
+      data-marketing={hook}
+    >
       {content}
     </button>
   )
@@ -99,6 +105,16 @@ Button.propTypes = {
   variant: PropTypes.oneOf(['default', 'primary', 'danger', 'secondary']),
   isLoading: PropTypes.bool,
   disabled: PropTypes.bool,
+  hook: function (props, propName) {
+    if (
+      props['to'] === undefined &&
+      (props[propName] === undefined || typeof props[propName] != 'string')
+    ) {
+      return new Error(
+        'If not using prop "to" you must provide prop "hook" of type string.'
+      )
+    }
+  },
 }
 
 export default Button
