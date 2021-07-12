@@ -83,6 +83,7 @@ function YAML({ owner }) {
       />
       <div className="mt-4 float-right">
         <Button
+          hook="save-yaml"
           disabled={!formState.isDirty}
           isLoading={formState.isSubmitting}
           variant="primary"
