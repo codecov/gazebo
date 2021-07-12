@@ -11,6 +11,7 @@ const baseClass = `
 const variantClasses = {
   default: ``,
   header: `font-semibold text-ds-gray-secondary`,
+  link: `text-ds-blue-darker hover:underline focus:ring-2`,
 }
 
 function A({ to, hook, variant = 'default', children, ...props }) {
@@ -49,7 +50,7 @@ A.propTypes = {
       )
     }
   },
-  variant: PropTypes.oneOf(['default', 'header']),
+  variant: PropTypes.oneOf(['default', 'header', 'link']),
 }
 
 export default A

@@ -177,7 +177,7 @@ function useStaticNavLinks() {
       path: () => `${config.MARKETING_BASE_URL}/demo`,
       isExternalLink: true,
     },
-    trial: {
+    freeTrial: {
       text: 'Trial',
       path: () => `${config.MARKETING_BASE_URL}/trial`,
       isExternalLink: true,

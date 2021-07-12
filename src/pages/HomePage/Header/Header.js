@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import AppLink from 'shared/AppLink'
+import A from 'ui/A'
 import { useNavLinks } from 'services/navigation'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
@@ -44,6 +44,7 @@ function Header({ currentUser }) {
                   href={upgradePlan.path({
                     owner: username,
                   })}
+                  data-marketing="upgradePlan"
                   className="text-ds-blue-darker hover:underline focus:ring-2"
                 >
                   Upgrade
@@ -53,12 +54,9 @@ function Header({ currentUser }) {
             ) : planUserCount <= 5 ? (
               <span>
                 Need more than 5 users?{' '}
-                <AppLink
-                  pageName="trial"
-                  className="text-ds-blue-darker hover:underline focus:ring-2"
-                >
+                <A to={{ pageName: 'freeTrial' }} variant="link">
                   Request
-                </AppLink>{' '}
+                </A>{' '}
                 free trial
               </span>
             ) : null}
