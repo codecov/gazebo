@@ -54,6 +54,21 @@ describe('Header', () => {
       )
     })
 
+    it('does not render any trial if user count is outside 0-5 range', () => {
+      setup({
+        username: 'caleb',
+        plan: 'users-free',
+        planUserCount: 9,
+      })
+      expect(screen.queryByText(/Need more than 5 users?/)).toBeNull()
+      expect(screen.queryByText(/Request/)).toBeNull()
+      expect(screen.queryByText(/free trial/)).toBeNull()
+
+      expect(screen.queryByText(/Looks like you're up to 5 users./)).toBeNull()
+      expect(screen.queryByText(/Upgrade/)).toBeNull()
+      expect(screen.queryByText(/plan today/)).toBeNull()
+    })
+
     it('does not render any trial if user plan is not free', () => {
       setup({
         username: 'lewis',

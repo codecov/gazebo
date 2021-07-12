@@ -116,6 +116,27 @@ describe('Header', () => {
         '/account/gh/caleb/billing/upgrade'
       )
     })
+
+    it('does not render any trial if user count is outside 0-5 range', () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+        currentUser: {
+          username: 'caleb',
+          plan: 'users-free',
+          planUserCount: 9,
+        },
+      })
+      expect(screen.queryByText(/Need more than 5 users?/)).toBeNull()
+      expect(screen.queryByText(/Request/)).toBeNull()
+      expect(screen.queryByText(/free trial/)).toBeNull()
+
+      expect(screen.queryByText(/Looks like you're up to 5 users./)).toBeNull()
+      expect(screen.queryByText(/Upgrade/)).toBeNull()
+      expect(screen.queryByText(/plan today/)).toBeNull()
+    })
   })
 
   describe('when user is not under free trial', () => {
