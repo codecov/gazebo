@@ -6,6 +6,7 @@ import indexOf from 'lodash/indexOf'
 import NotFound from 'pages/NotFound'
 
 import Breadcrumb from 'ui/Breadcrumb'
+import FileViewer from './FileViewer'
 
 function getTreeLocation(paths, location) {
   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
@@ -35,7 +36,7 @@ function FileView() {
         ]}
       />
       <div className="border-t border-solid border-ds-gray-tertiary mt-4 py-6">
-        file view
+        <FileViewer />
       </div>
     </>
   )
