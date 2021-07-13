@@ -29,17 +29,14 @@ describe('FileView', () => {
       })
     })
 
-    it('renders the file view', () => {
-      expect(screen.getByText(/file view/)).toBeInTheDocument()
+    it('renders toggles title', () => {
+      expect(screen.getByText(/View coverage by:/)).toBeInTheDocument()
     })
 
     it('renders the breadcrumb', () => {
-      expect(screen.getByText('codecov')).toBeInTheDocument()
-      expect(screen.getByText('repo')).toBeInTheDocument()
-      expect(screen.getByText('src')).toBeInTheDocument()
-      expect(screen.getByText('controller')).toBeInTheDocument()
-      expect(screen.getByText('nav')).toBeInTheDocument()
-      expect(screen.getByText('controller.ts')).toBeInTheDocument()
+      expect(screen.getAllByText('src').length).toBe(2)
+      expect(screen.getByText('specs')).toBeInTheDocument()
+      expect(screen.getByText('config.js')).toBeInTheDocument()
     })
   })
 
@@ -53,12 +50,9 @@ describe('FileView', () => {
     })
 
     it('doesnt render the breadcrumb', () => {
-      expect(screen.queryByText('codecov')).not.toBeInTheDocument()
-      expect(screen.queryByText('repo')).not.toBeInTheDocument()
       expect(screen.queryByText('src')).not.toBeInTheDocument()
-      expect(screen.queryByText('controller')).not.toBeInTheDocument()
-      expect(screen.queryByText('nav')).not.toBeInTheDocument()
-      expect(screen.queryByText('controller.ts')).not.toBeInTheDocument()
+      expect(screen.queryByText('specs')).not.toBeInTheDocument()
+      expect(screen.queryByText('config.js')).not.toBeInTheDocument()
     })
 
     it('renders a not found error page', () => {
