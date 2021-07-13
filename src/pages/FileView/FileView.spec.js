@@ -31,10 +31,10 @@ describe('FileView', () => {
 
     it('renders toggles', () => {
       expect(screen.getByText(/View coverage by:/)).toBeInTheDocument()
-      screen.getAllByLabelText('show-covered-lines').toBeInTheDocument()
-      screen.getAllByLabelText('show-uncovered-lines').toBeInTheDocument()
-      fireEvent.click(screen.getAllByLabelText('show-covered-lines'))
-      fireEvent.click(screen.getAllByLabelText('show-uncovered-lines'))
+      expect(screen.getByLabelText('show-covered-lines')).toBeInTheDocument()
+      expect(screen.getByLabelText('show-uncovered-lines')).toBeInTheDocument()
+      fireEvent.click(screen.getByLabelText('show-covered-lines'))
+      fireEvent.click(screen.getByLabelText('show-uncovered-lines'))
     })
 
     it('renders the breadcrumb', () => {
