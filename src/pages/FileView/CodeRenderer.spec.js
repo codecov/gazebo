@@ -90,4 +90,14 @@ describe('CodeRenderer', () => {
       expect(screen.getAllByLabelText('covered').length).toBe(2)
     })
   })
+
+  describe('renders with default props', () => {
+    beforeEach(() => {
+      setup(code)
+    })
+
+    it('render', () => {
+      expect(screen.getAllByLabelText('code-line').length).toBe(11)
+    })
+  })
 })

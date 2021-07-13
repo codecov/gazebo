@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import FileView from './FileView'
 import { useOwner } from 'services/user'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -29,8 +29,12 @@ describe('FileView', () => {
       })
     })
 
-    it('renders toggles title', () => {
+    it('renders toggles', () => {
       expect(screen.getByText(/View coverage by:/)).toBeInTheDocument()
+      screen.getAllByLabelText('show-covered-lines').toBeInTheDocument()
+      screen.getAllByLabelText('show-uncovered-lines').toBeInTheDocument()
+      fireEvent.click(screen.getAllByLabelText('show-covered-lines'))
+      fireEvent.click(screen.getAllByLabelText('show-uncovered-lines'))
     })
 
     it('renders the breadcrumb', () => {

@@ -5,6 +5,7 @@ function CoverageSelect({ covered, checked, onChange }) {
   return (
     <div className="flex text-xs font-mono items-center">
       <input
+        aria-label={`show-${covered ? 'covered' : 'uncovered'}-lines`}
         onChange={onChange}
         checked={checked}
         className="cursor-pointer mr-2"
