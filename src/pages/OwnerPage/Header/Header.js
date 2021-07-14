@@ -3,12 +3,10 @@ import PropTypes from 'prop-types'
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
 import A from 'ui/A'
-import { useNavLinks } from 'services/navigation'
 import Avatar from 'ui/Avatar'
 
 function Header({ owner, currentUser }) {
   const { username, plan, planUserCount } = currentUser
-  const { upgradePlan } = useNavLinks()
 
   return owner.isCurrentUserPartOfOrg ? (
     <>
@@ -35,18 +33,16 @@ function Header({ owner, currentUser }) {
             {planUserCount === 0 ? (
               <span>
                 Looks like you&#39;re up to 5 users.{' '}
-                <a
-                  href={upgradePlan.path({
-                    owner: username,
-                  })}
-                  data-marketing="upgradePlan"
-                  className="text-ds-blue-darker hover:underline focus:ring-2"
+                <A
+                  to={{ pageName: 'upgradePlan' }}
+                  options={{ owner: username }}
+                  variant="link"
                 >
                   Upgrade
-                </a>{' '}
+                </A>{' '}
                 plan today!
               </span>
-            ) : planUserCount === 5 ? (
+            ) : planUserCount <= 5 ? (
               <span>
                 Need more than 5 users?{' '}
                 <A to={{ pageName: 'freeTrial' }} variant="link">

@@ -34,7 +34,7 @@ describe('Header', () => {
       setup({
         username: 'lewis',
         plan: 'users-free',
-        planUserCount: 5,
+        planUserCount: 3,
       })
       expect(screen.getByRole('link', { name: /request/i })).toHaveAttribute(
         'href',

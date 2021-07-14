@@ -48,7 +48,7 @@ function DesktopMenu() {
             <div className="mr-5">
               <Button
                 to={{ pageName: 'demo' }}
-                variant={'secondary'}
+                variant="secondary"
                 data-testid="request-demo"
               >
                 Request demo

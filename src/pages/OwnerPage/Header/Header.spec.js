@@ -90,7 +90,7 @@ describe('Header', () => {
         currentUser: {
           username: 'caleb',
           plan: 'users-free',
-          planUserCount: 5,
+          planUserCount: 2,
         },
       })
       expect(screen.getByRole('link', { name: /request/i })).toHaveAttribute(
