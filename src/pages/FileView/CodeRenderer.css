@@ -1,0 +1,7 @@
+pre > div:first-child > .line-number {
+  @apply pt-2; /* padding because table-cell's don't use margins */
+}
+
+pre > div:last-child > .line-number {
+  @apply pb-2; /* padding because table-cell's don't use margins */
+}
