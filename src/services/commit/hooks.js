@@ -10,10 +10,6 @@ export function useCommit({ provider, owner, repo, commitid }) {
             commit(id: $commitid) {
               totals {
                 coverage # Absolute coverage of the commit
-                diff {
-                  coverage # patch coverage of the commit from the previous commit
-                }
-                coverage
               }
               commitid
               pullId
@@ -41,8 +37,8 @@ export function useCommit({ provider, owner, repo, commitid }) {
               ciPassed
               parent {
                 commitid # commitid of the parent, used for the comparison
-                
-                totals { 
+
+                totals {
                   coverage # coverage of the parent
                 }
               }
