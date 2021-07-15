@@ -5,9 +5,7 @@ import TabNavigation from 'ui/TabNavigation'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
 
-function Header({ owner, currentUser }) {
-  const { username, plan, planUserCount } = currentUser
-
+function Header({ owner, accountDetails }) {
   return owner.isCurrentUserPartOfOrg ? (
     <>
       <MyContextSwitcher pageName="owner" activeContext={owner.username} />
@@ -28,21 +26,21 @@ function Header({ owner, currentUser }) {
             },
           ]}
         />
-        {plan === 'users-free' && (
+        {accountDetails?.plan?.value === 'users-free' && (
           <div className="mx-4">
-            {planUserCount === 0 ? (
+            {accountDetails.activatedUserCount === 5 ? (
               <span>
                 Looks like you&#39;re up to 5 users.{' '}
                 <A
                   to={{ pageName: 'upgradePlan' }}
-                  options={{ owner: username }}
+                  options={{ owner: owner.username }}
                   variant="link"
                 >
                   Upgrade
                 </A>{' '}
                 plan today!
               </span>
-            ) : planUserCount <= 5 ? (
+            ) : accountDetails?.activatedUserCount < 5 ? (
               <span>
                 Need more than 5 users?{' '}
                 <A to={{ pageName: 'freeTrial' }} variant="link">
@@ -68,11 +66,12 @@ Header.propTypes = {
     username: PropTypes.string.isRequired,
     isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
   }).isRequired,
-  currentUser: PropTypes.shape({
-    username: PropTypes.string.isRequired,
-    plan: PropTypes.string.isRequired,
-    planUserCount: PropTypes.number.isRequired,
-  }).isRequired,
+  accountDetails: PropTypes.shape({
+    activatedUserCount: PropTypes.number.isRequired,
+    plan: PropTypes.shape({
+      value: PropTypes.string.isRequired,
+    }).isRequired,
+  }),
 }
 
 export default Header

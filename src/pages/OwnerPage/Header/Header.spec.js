@@ -10,7 +10,7 @@ describe('Header', () => {
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
         <Route path="/:provider/:owner">
-          <Header owner={props.owner} currentUser={props.currentUser} />
+          <Header owner={props.owner} accountDetails={props.accountDetails} />
         </Route>
       </MemoryRouter>
     )
@@ -23,10 +23,11 @@ describe('Header', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        currentUser: {
-          username: 'caleb',
-          plan: 'users-free',
-          planUserCount: 5,
+        accountDetails: {
+          activatedUserCount: 0,
+          plan: {
+            value: 'users-free',
+          },
         },
       })
     })
@@ -51,10 +52,11 @@ describe('Header', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: false,
         },
-        currentUser: {
-          username: 'caleb',
-          plan: 'users-free',
-          planUserCount: 5,
+        accountDetails: {
+          activatedUserCount: 0,
+          plan: {
+            value: 'users-free',
+          },
         },
       })
     })
@@ -81,16 +83,17 @@ describe('Header', () => {
   })
 
   describe('when user is under free trial', () => {
-    it('renders "request free trial" text if user count is less than 5 but not 0', () => {
+    it('renders "request free trial" text if there are is less than 5 activated users', () => {
       setup({
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        currentUser: {
-          username: 'caleb',
-          plan: 'users-free',
-          planUserCount: 2,
+        accountDetails: {
+          activatedUserCount: 2,
+          plan: {
+            value: 'users-free',
+          },
         },
       })
       expect(screen.getByRole('link', { name: /request/i })).toHaveAttribute(
@@ -99,21 +102,22 @@ describe('Header', () => {
       )
     })
 
-    it('renders "upgrade plan today" when there are 0 seats remaining', () => {
+    it('renders "upgrade plan today" when user has used all seats', () => {
       setup({
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        currentUser: {
-          username: 'caleb',
-          plan: 'users-free',
-          planUserCount: 0,
+        accountDetails: {
+          activatedUserCount: 5,
+          plan: {
+            value: 'users-free',
+          },
         },
       })
       expect(screen.getByRole('link', { name: /upgrade/i })).toHaveAttribute(
         'href',
-        '/account/gh/caleb/billing/upgrade'
+        '/account/gh/codecov/billing/upgrade'
       )
     })
 
@@ -123,10 +127,11 @@ describe('Header', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        currentUser: {
-          username: 'caleb',
-          plan: 'users-free',
-          planUserCount: 9,
+        accountDetails: {
+          activatedUserCount: 9,
+          plan: {
+            value: 'users-free',
+          },
         },
       })
       expect(screen.queryByText(/Need more than 5 users?/)).toBeNull()
@@ -146,10 +151,11 @@ describe('Header', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        currentUser: {
-          username: 'caleb',
-          plan: 'not-users-free',
-          planUserCount: 5,
+        accountDetails: {
+          activatedUserCount: 5,
+          plan: {
+            value: 'not-users-free',
+          },
         },
       })
       expect(screen.queryByText(/Need more than 5 users?/)).toBeNull()
