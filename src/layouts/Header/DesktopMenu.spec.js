@@ -1,16 +1,28 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { useUser } from 'services/user'
+import { useAccountDetails } from 'services/account'
+import { useParams } from 'react-router-dom'
 
 import DesktopMenu from './DesktopMenu'
 import { LoginPrompt } from './DesktopMenu'
 
 jest.mock('services/user')
+jest.mock('services/account')
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
+  useParams: jest.fn(),
+}))
 
 const loggedInUser = {
   username: 'p',
   avatarUrl: '',
-  plan: 'users-free',
+}
+
+const accountDetails = {
+  plan: {
+    value: 'users-free',
+  },
 }
 
 describe('DesktopMenu', () => {
@@ -20,6 +32,8 @@ describe('DesktopMenu', () => {
 
   it('renders static links', () => {
     useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: 'fjord', provider: 'gh' })
+    useAccountDetails.mockReturnValue({ data: accountDetails })
     setup()
 
     const expectedStaticLinks = [
@@ -36,14 +50,18 @@ describe('DesktopMenu', () => {
 
   it('renders the dropdown when user is logged in', () => {
     useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: 'fjord', provider: 'gh' })
+    useAccountDetails.mockReturnValue({ data: accountDetails })
     setup()
 
     const dropdown = screen.getByTestId('dropdown')
     expect(dropdown).toBeInTheDocument()
   })
 
-  it('renders request demo button when user with free plan is logged in', () => {
+  it('renders request demo button when there is owner with free plan is logged in', () => {
     useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: 'fjord', provider: 'gh' })
+    useAccountDetails.mockReturnValue({ data: accountDetails })
     setup()
 
     const requestDemoButton = screen.getByTestId('request-demo')
@@ -54,19 +72,27 @@ describe('DesktopMenu', () => {
     )
   })
 
-  it('does not render request demo button when user without free plan is logged in', () => {
-    const paidLoggedInUser = {
-      username: 'p',
-      avatarUrl: '',
-      plan: 'not-users-free',
-    }
-    useUser.mockReturnValue({ data: paidLoggedInUser })
+  it('does not render request demo button when owner without free plan is logged in', () => {
+    useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: 'fjord', provider: 'gh' })
+    useAccountDetails.mockReturnValue({
+      data: { plan: { value: 'not-users-free' } },
+    })
+    setup()
+    expect(screen.queryByText(/Request demo/)).toBeNull()
+  })
+
+  it('does not render request demo button when owner is undefined', () => {
+    useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: undefined, provider: 'gh' })
+    useAccountDetails.mockReturnValue({ data: accountDetails })
     setup()
     expect(screen.queryByText(/Request demo/)).toBeNull()
   })
 
   it('renders the login prompt when user not logged in', () => {
     useUser.mockReturnValue({ data: null })
+    useParams.mockReturnValue({ owner: undefined, provider: 'gh' })
     setup()
     const login = screen.getByTestId('login-prompt')
     expect(login).toBeInTheDocument()
