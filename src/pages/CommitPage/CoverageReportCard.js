@@ -7,7 +7,6 @@ import { getProviderPullURL } from './helpers'
 
 function CoverageReportCard({ data, provider, repo, owner }) {
   const coverage = data?.totals?.coverage.toFixed(2)
-  const patch = data?.totals?.diff?.coverage?.toFixed(2)
   const commitid = data?.commitid?.substr(0, 7)
   const parentCommitid = data?.parent?.commitid
   const ciPassed = data?.ciPassed
@@ -83,9 +82,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           <span className="text-ds-gray-quinary text-xs font-semibold">
             Patch
           </span>
-          <span className="text-xl text-center mt-1 font-light">
-            {patch ? `${patch} %` : '-'}
-          </span>
+          <span className="text-xl text-center mt-1 font-light">TODO</span>
         </div>
         <div className="flex flex-col items-center justify-center">
           <span className="text-ds-gray-quinary text-xs font-semibold">
@@ -102,8 +99,8 @@ function CoverageReportCard({ data, provider, repo, owner }) {
         </div>
       </div>
       <div className="w-full text-ds-gray-quinary text-xs mt-4">
-        The average coverage of changes for this commit is{' '}
-        {patch ? `${patch} %` : '-'} (patch). Data source from comparing between{' '}
+        The average coverage of changes for this commit is TODO (patch). Data
+        source from comparing between{' '}
         <AppLink
           pageName="commit"
           options={{ commit: parentCommitid }}
@@ -125,9 +122,6 @@ CoverageReportCard.propTypes = {
   data: PropTypes.shape({
     totals: PropTypes.shape({
       coverage: PropTypes.number,
-      diff: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
     }),
     commitid: PropTypes.string,
     parent: PropTypes.shape({
