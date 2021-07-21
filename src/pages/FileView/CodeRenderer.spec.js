@@ -14,50 +14,19 @@ describe('CodeRenderer', () => {
     
   `
 
-  const coverage = [
-    {
-      coverage: {
-        base: null,
-        head: null,
-      },
-    },
-    {
-      coverage: {
-        base: 1,
-        head: 1,
-      },
-    },
-    {
-      coverage: {
-        base: 1,
-        head: 1,
-      },
-    },
-    {
-      coverage: {
-        base: 0,
-        head: 0,
-      },
-    },
-    {
-      coverage: {
-        base: 0,
-        head: 0,
-      },
-    },
-    {
-      coverage: {
-        base: 1,
-        head: 1,
-      },
-    },
-    {
-      coverage: {
-        base: 1,
-        head: 1,
-      },
-    },
-  ]
+  const coverage = {
+    1: 1,
+    2: 0,
+    3: 1,
+    4: 1,
+    5: 0,
+    6: 1,
+    7: 0,
+    8: 1,
+    9: 1,
+    10: 1,
+    11: 0,
+  }
 
   function setup(code, coverage, showCovered, showUncovered) {
     render(
@@ -87,7 +56,7 @@ describe('CodeRenderer', () => {
 
     it('render', () => {
       expect(screen.getAllByLabelText('uncovered').length).toBe(4)
-      expect(screen.getAllByLabelText('covered').length).toBe(2)
+      expect(screen.getAllByLabelText('covered').length).toBe(7)
     })
   })
 
