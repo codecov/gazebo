@@ -81,7 +81,7 @@
     "@babel/core": "^7.14.6",
     "@craco/craco": "^6.2.0",
     "@sentry/cli": "^1.66.0",
-    "@storybook/addon-a11y": "^6.3.3",
+    "@storybook/addon-a11y": "^6.3.4",
     "@storybook/addon-actions": "^6.3.3",
     "@storybook/addon-essentials": "^6.3.3",
     "@storybook/addon-links": "^6.3.3",
