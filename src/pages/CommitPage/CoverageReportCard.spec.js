@@ -16,9 +16,6 @@ describe('CoverageReportCard', () => {
   const mockData = {
     totals: {
       coverage: 38.30846,
-      diff: {
-        coverage: null,
-      },
     },
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
     createdAt: '2020-08-25T16:35:32',

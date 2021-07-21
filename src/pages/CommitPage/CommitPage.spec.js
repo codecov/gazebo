@@ -16,9 +16,6 @@ const dataReturned = {
   commit: {
     totals: {
       coverage: 38.30846,
-      diff: {
-        coverage: null,
-      },
     },
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
     pullId: 10,
