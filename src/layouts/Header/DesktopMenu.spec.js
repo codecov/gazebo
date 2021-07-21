@@ -72,16 +72,6 @@ describe('DesktopMenu', () => {
     )
   })
 
-  it('does not render request demo button when owner without free plan is logged in', () => {
-    useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: 'gh' })
-    useAccountDetails.mockReturnValue({
-      data: { plan: { value: 'not-users-free' } },
-    })
-    setup()
-    expect(screen.queryByText(/Request demo/)).toBeNull()
-  })
-
   it('does not render request demo button when owner is undefined', () => {
     useUser.mockReturnValue({ data: loggedInUser })
     useParams.mockReturnValue({ owner: undefined, provider: 'gh' })

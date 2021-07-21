@@ -1,12 +1,11 @@
 import Dropdown from './Dropdown'
 import Button from 'ui/Button'
-import PropTypes from 'prop-types'
 import A from 'ui/A'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 import { useParams } from 'react-router-dom'
-import { useAccountDetails } from 'services/account'
 import { Suspense } from 'react'
+import RequestButton from './RequestButton'
 
 export function LoginPrompt() {
   return (
@@ -22,28 +21,6 @@ export function LoginPrompt() {
       </Button>
     </div>
   )
-}
-
-export function RequestButton({ owner, provider }) {
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
-  return (
-    accountDetails.plan.value === 'users-free' && (
-      <div className="mr-5">
-        <Button
-          to={{ pageName: 'demo' }}
-          variant="secondary"
-          data-testid="request-demo"
-        >
-          Request demo
-        </Button>
-      </div>
-    )
-  )
-}
-
-RequestButton.propTypes = {
-  owner: PropTypes.string.isRequired,
-  provider: PropTypes.string.isRequired,
 }
 
 function DesktopMenu() {
