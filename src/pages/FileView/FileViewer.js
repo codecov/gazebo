@@ -3,68 +3,12 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Progress from 'ui/Progress'
 import CodeRenderer from './CodeRenderer'
 import CoverageSelect from './CoverageSelect'
+import PropTypes from 'prop-types'
+import AppLink from 'shared/AppLink'
 
-function FileViewer() {
+function FileViewer({ treePaths, content, coverage }) {
   const [covered, setCovered] = useState(false)
   const [uncovered, setUncovered] = useState(false)
-
-  const lineCoverage = [
-    {
-      coverage: {
-        base: null,
-        head: null,
-      },
-    },
-    {
-      coverage: {
-        base: 1,
-        head: 1,
-      },
-    },
-    {
-      coverage: {
-        base: 1,
-        head: 1,
-      },
-    },
-    {
-      coverage: {
-        base: 0,
-        head: 0,
-      },
-    },
-    {
-      coverage: {
-        base: 0,
-        head: 0,
-      },
-    },
-    {
-      coverage: {
-        base: 1,
-        head: 1,
-      },
-    },
-    {
-      coverage: {
-        base: 1,
-        head: 1,
-      },
-    },
-  ]
-
-  const code = `
-  <Breadcrumb
-      paths={[
-      { pageName: 'owner', text: owner },
-      { pageName: 'repo', text: repo },
-      ...treePaths,
-      {..props}
-      ]}
-  />
-    
-  `
-
   return (
     <div className="flex flex-col">
       <div className="flex items-center mb-4 justify-between">
@@ -88,13 +32,7 @@ function FileViewer() {
         </div>
       </div>
       <div className="flex justify-between border-t px-3 border-r border-l border-solid bg-ds-gray-primary border-ds-gray-tertiary items-center h-10">
-        <Breadcrumb
-          paths={[
-            { pageName: 'owner', text: 'src' },
-            { pageName: 'repo', text: 'specs' },
-            { pageName: 'repo', text: 'config.js' },
-          ]}
-        />
+        <Breadcrumb paths={[...treePaths]} />
         <div className="w-56">
           <Progress amount={80} label={true} />
         </div>
@@ -103,12 +41,18 @@ function FileViewer() {
         <CodeRenderer
           showCovered={covered}
           showUncovered={uncovered}
-          coverage={lineCoverage}
-          code={code}
+          coverage={coverage}
+          code={content}
         />{' '}
       </div>
     </div>
   )
+}
+
+FileViewer.propTypes = {
+  content: PropTypes.string.isRequired,
+  coverage: PropTypes.shape().isRequired,
+  treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
 }
 
 export default FileViewer

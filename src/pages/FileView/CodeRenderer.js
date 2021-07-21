@@ -10,18 +10,18 @@ function CodeRenderer({
   showCovered = false,
   showUncovered = false,
 }) {
-  function isLineHighlighted(report) {
-    if (report?.coverage?.head === 1 && showUncovered) {
+  function isLineHighlighted(i) {
+    if (coverage[i] === 0 && showUncovered) {
       return 'uncovered'
-    } else if (report?.coverage?.head === 0 && showCovered) {
+    } else if (coverage[i] === 1 && showCovered) {
       return 'covered'
     }
   }
 
-  function isBaseLine(report) {
-    if (report?.coverage?.head === 1 && !showUncovered) {
+  function isBaseLine(i) {
+    if (coverage[i] === 0 && !showUncovered) {
       return true
-    } else if (report?.coverage?.head === 0 && !showCovered) {
+    } else if (coverage[i] === 1 && !showCovered) {
       return true
     }
     return false
@@ -46,41 +46,44 @@ function CodeRenderer({
           )}
           style={style}
         >
-          {tokens.map((line, i) => (
-            <div
-              key={i}
-              {...getLineProps({ line, key: i })}
-              className={'table-row'}
-            >
+          {tokens.map((line, i) => {
+            const j = i + 1
+            return (
               <div
-                aria-label={getAriaLabel(coverage[i])}
-                className={cs(
-                  'line-number text-ds-gray-quaternary font-mono table-cell pl-4 pr-2 text-right border-solid',
-                  {
-                    'bg-ds-coverage-uncovered border-ds-primary-red border-r-2':
-                      isLineHighlighted(coverage[i]) === 'uncovered',
-                  },
-                  {
-                    'bg-ds-coverage-covered border-ds-primary-green border-r-2':
-                      isLineHighlighted(coverage[i]) === 'covered',
-                  },
-                  {
-                    'border-ds-gray-tertiary border-r':
-                      isBaseLine(coverage[i]) ||
-                      coverage[i]?.coverage?.head === null ||
-                      coverage[i]?.coverage?.head === undefined,
-                  }
-                )}
+                key={i}
+                {...getLineProps({ line, key: i })}
+                className={'table-row'}
               >
-                {i + 1}
+                <div
+                  aria-label={getAriaLabel(j)}
+                  className={cs(
+                    'line-number text-ds-gray-quaternary font-mono table-cell pl-4 pr-2 text-right border-solid',
+                    {
+                      'bg-ds-coverage-uncovered border-ds-primary-red border-r-2':
+                        isLineHighlighted(j) === 'uncovered',
+                    },
+                    {
+                      'bg-ds-coverage-covered border-ds-primary-green border-r-2':
+                        isLineHighlighted(j) === 'covered',
+                    },
+                    {
+                      'border-ds-gray-tertiary border-r':
+                        isBaseLine(j) ||
+                        coverage[j] === null ||
+                        coverage[j] === undefined,
+                    }
+                  )}
+                >
+                  {j}
+                </div>
+                <div className="table-cell pl-2">
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token, key })} />
+                  ))}
+                </div>
               </div>
-              <div className="table-cell pl-2">
-                {line.map((token, key) => (
-                  <span key={key} {...getTokenProps({ token, key })} />
-                ))}
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </pre>
       )}
     </Highlight>
@@ -89,7 +92,7 @@ function CodeRenderer({
 
 CodeRenderer.propTypes = {
   code: PropTypes.string.isRequired,
-  coverage: PropTypes.array,
+  coverage: PropTypes.shape(),
   showCovered: PropTypes.bool,
   showUncovered: PropTypes.bool,
 }
