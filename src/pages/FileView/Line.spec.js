@@ -30,7 +30,7 @@ describe('Line', () => {
     })
 
     it('render base line', () => {
-      expect(screen.getAllByLabelText('BLANK').length).toBe(1)
+      expect(screen.getAllByLabelText('line of code').length).toBe(1)
     })
   })
 
@@ -40,7 +40,7 @@ describe('Line', () => {
     })
 
     it('render covered line', () => {
-      expect(screen.getAllByLabelText('COVERED').length).toBe(1)
+      expect(screen.getAllByLabelText('covered line of code').length).toBe(1)
     })
   })
 
@@ -50,7 +50,7 @@ describe('Line', () => {
     })
 
     it('render covered line', () => {
-      expect(screen.getAllByLabelText('BLANK').length).toBe(1)
+      expect(screen.getAllByLabelText('line of code').length).toBe(1)
     })
   })
 
@@ -60,7 +60,7 @@ describe('Line', () => {
     })
 
     it('render uncovered line', () => {
-      expect(screen.getAllByLabelText('UNCOVERED').length).toBe(1)
+      expect(screen.getAllByLabelText('uncovered line of code').length).toBe(1)
     })
   })
 
@@ -70,7 +70,7 @@ describe('Line', () => {
     })
 
     it('render uncovered line', () => {
-      expect(screen.getAllByLabelText('BLANK').length).toBe(1)
+      expect(screen.getAllByLabelText('line of code').length).toBe(1)
     })
   })
 })

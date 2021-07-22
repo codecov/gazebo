@@ -45,7 +45,7 @@ describe('CodeRenderer', () => {
     })
 
     it('render', () => {
-      expect(screen.getAllByLabelText('BLANK').length).toBe(11)
+      expect(screen.getAllByLabelText('line of code').length).toBe(11)
     })
   })
 
@@ -55,8 +55,8 @@ describe('CodeRenderer', () => {
     })
 
     it('render', () => {
-      expect(screen.getAllByLabelText('UNCOVERED').length).toBe(4)
-      expect(screen.getAllByLabelText('COVERED').length).toBe(7)
+      expect(screen.getAllByLabelText('uncovered line of code').length).toBe(4)
+      expect(screen.getAllByLabelText('covered line of code').length).toBe(7)
     })
   })
 
@@ -66,7 +66,7 @@ describe('CodeRenderer', () => {
     })
 
     it('render', () => {
-      expect(screen.getAllByLabelText('BLANK').length).toBe(11)
+      expect(screen.getAllByLabelText('line of code').length).toBe(11)
     })
   })
 })
