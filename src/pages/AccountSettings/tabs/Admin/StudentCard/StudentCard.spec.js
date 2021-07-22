@@ -5,16 +5,18 @@ import StudentCard from './StudentCard'
 describe('StudentCard', () => {
   let wrapper
 
-  function setup(user) {
-    wrapper = render(<StudentCard user={user} />)
+  function setup(currentUser) {
+    wrapper = render(<StudentCard currentUser={currentUser} />)
   }
 
   describe('when the user never was admin', () => {
     beforeEach(() => {
       setup({
-        student: false,
-        studentCreatedAt: null,
-        studentUpdatedAt: null,
+        user: {
+          student: false,
+          studentCreatedAt: null,
+          studentUpdatedAt: null,
+        },
       })
     })
 
@@ -26,9 +28,11 @@ describe('StudentCard', () => {
   describe('when the user is active student', () => {
     beforeEach(() => {
       setup({
-        student: true,
-        studentCreatedAt: '2020-09-08T10:45:06Z',
-        studentUpdatedAt: null,
+        user: {
+          student: true,
+          studentCreatedAt: '2020-09-08T10:45:06Z',
+          studentUpdatedAt: null,
+        },
       })
     })
 
@@ -43,9 +47,11 @@ describe('StudentCard', () => {
   describe('when the user is former student', () => {
     beforeEach(() => {
       setup({
-        student: false,
-        studentCreatedAt: '2020-09-08T10:45:06Z',
-        studentUpdatedAt: '2020-10-08T10:45:06Z',
+        user: {
+          student: false,
+          studentCreatedAt: '2020-09-08T10:45:06Z',
+          studentUpdatedAt: '2020-10-08T10:45:06Z',
+        },
       })
     })
 

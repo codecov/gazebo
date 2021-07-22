@@ -7,8 +7,10 @@ import { useUser } from 'services/user'
 jest.mock('services/user')
 
 const loggedInUser = {
-  username: 'p',
-  avatarUrl: '',
+  user: {
+    username: 'p',
+    avatarUrl: '',
+  },
 }
 
 describe('Header', () => {

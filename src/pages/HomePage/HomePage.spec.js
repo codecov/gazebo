@@ -7,7 +7,9 @@ jest.mock('shared/ListRepo', () => () => 'ListRepo')
 jest.mock('services/user', () => ({
   useUser: () => ({
     data: {
-      username: 'hamilton',
+      user: {
+        username: 'hamilton',
+      },
     },
   }),
 }))

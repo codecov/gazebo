@@ -5,12 +5,8 @@ import { useDateFormatted } from 'shared/utils/dates'
 
 function StudentCard({ currentUser }) {
   const isStudent = currentUser.user.student
-  const createdAt = useDateFormatted(
-    currentUser.trackingMetadata.studentCreatedAt
-  )
-  const updatedAt = useDateFormatted(
-    currentUser.trackingMetadata.studentUpdatedAt
-  )
+  const createdAt = useDateFormatted(currentUser.user.studentCreatedAt)
+  const updatedAt = useDateFormatted(currentUser.user.studentUpdatedAt)
 
   if (!createdAt) return null
 
@@ -41,11 +37,9 @@ StudentCard.propTypes = {
   currentUser: PropTypes.shape({
     user: PropTypes.shape({
       student: PropTypes.bool.isRequired,
-    }).isRequired,
-    trackingMetadata: PropTypes.shape({
       studentCreatedAt: PropTypes.string,
       studentUpdatedAt: PropTypes.string,
-    }),
+    }).isRequired,
   }).isRequired,
 }
 

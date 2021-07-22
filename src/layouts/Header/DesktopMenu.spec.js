@@ -8,8 +8,10 @@ import { LoginPrompt } from './DesktopMenu'
 jest.mock('services/user')
 
 const loggedInUser = {
-  username: 'p',
-  avatarUrl: '',
+  user: {
+    username: 'p',
+    avatarUrl: '',
+  },
 }
 
 describe('DesktopMenu', () => {
