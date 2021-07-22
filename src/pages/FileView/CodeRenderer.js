@@ -25,7 +25,7 @@ function CodeRenderer({
             <Line
               key={i}
               line={line}
-              number={i}
+              number={i + 1}
               coverage={coverage[i + 1]}
               showCovered={showCovered}
               showUncovered={showUncovered}

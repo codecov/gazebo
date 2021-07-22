@@ -1,6 +1,18 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
+const classNamePerLineState = {
+  COVERED: 'bg-ds-coverage-covered border-ds-primary-green border-r-2',
+  UNCOVERED: 'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
+  BLANK: 'border-ds-gray-tertiary border-r',
+}
+
+const lineStateToLabel = {
+  COVERED: 'covered line of code',
+  UNCOVERED: 'uncovered line of code',
+  BLANK: 'line of code',
+}
+
 function Line({
   showUncovered,
   showCovered,
@@ -18,12 +30,6 @@ function Line({
 
   const lineState = getLineState()
 
-  const classNamePerLineState = {
-    COVERED: 'bg-ds-coverage-covered border-ds-primary-green border-r-2',
-    UNCOVERED: 'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
-    BLANK: 'border-ds-gray-tertiary border-r',
-  }
-
   function getLineState() {
     if (coverage === 0 && showUncovered) {
       return LINE_STATE.UNCOVERED
@@ -33,19 +39,15 @@ function Line({
   }
 
   return (
-    <div
-      key={number}
-      {...getLineProps({ line, key: number })}
-      className={'table-row'}
-    >
+    <div {...getLineProps({ line, key: number })} className={'table-row'}>
       <div
-        aria-label={lineState}
+        aria-label={lineStateToLabel[lineState]}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono table-cell pl-4 pr-2 text-right border-solid',
           classNamePerLineState[lineState]
         )}
       >
-        {number + 1}
+        {number}
       </div>
       <div className="table-cell pl-2">
         {line.map((token, key) => (
