@@ -32,7 +32,7 @@ function FileView() {
     options: { tree: getTreeLocation(paths, location) },
   }))
 
-  if (!ownerData) {
+  if (!ownerData || !data) {
     return <NotFound />
   }
 
