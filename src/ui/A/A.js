@@ -7,11 +7,13 @@ const baseClass = `
   font-sans cursor-pointer
 
   hover:underline
+
+  focus:ring-2
 `
 const variantClasses = {
   default: ``,
   header: `font-semibold text-ds-gray-secondary`,
-  link: `text-ds-blue-darker hover:underline focus:ring-2`,
+  link: `text-ds-blue-darker`,
 }
 
 function A({ to, hook, variant = 'default', children, ...props }) {

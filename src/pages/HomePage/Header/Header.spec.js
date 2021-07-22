@@ -10,17 +10,20 @@ describe('Header', () => {
     render(
       <MemoryRouter initialEntries={['/gh']}>
         <Route path="/:provider">
-          <Header currentUser={props} />
+          <Header {...props} />
         </Route>
       </MemoryRouter>
     )
   }
 
   describe('when rendered', () => {
-    it('renders links to the current user settings', () => {
+    beforeEach(() => {
       setup({
-        username: 'lewis',
+        currentUsername: 'lewis',
       })
+    })
+
+    it('renders links to the current user settings', () => {
       expect(
         screen.getByRole('link', {
           name: /settings/i,

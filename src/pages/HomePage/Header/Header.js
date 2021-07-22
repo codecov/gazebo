@@ -3,13 +3,11 @@ import PropTypes from 'prop-types'
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
 
-function Header({ currentUser }) {
-  const { username } = currentUser
-
+function Header({ currentUsername }) {
   return (
     <>
       <MyContextSwitcher pageName="owner" activeContext={null} />
-      <div className="my-4 border-b border-ds-gray-tertiary flex items-center justify-between">
+      <div className="my-4">
         <TabNavigation
           tabs={[
             {
@@ -20,14 +18,14 @@ function Header({ currentUser }) {
               pageName: 'analytics',
               children: 'Analytics',
               options: {
-                owner: username,
+                owner: currentUsername,
               },
             },
             {
               pageName: 'accountAdmin',
               children: 'Settings',
               options: {
-                owner: username,
+                owner: currentUsername,
               },
             },
           ]}
@@ -38,9 +36,7 @@ function Header({ currentUser }) {
 }
 
 Header.propTypes = {
-  currentUser: PropTypes.shape({
-    username: PropTypes.string.isRequired,
-  }).isRequired,
+  currentUsername: PropTypes.string.isRequired,
 }
 
 export default Header

@@ -9,7 +9,7 @@ function Header() {
   return (
     <>
       <MyContextSwitcher pageName="accountAdmin" activeContext={owner} />
-      <div className="mt-4 mb-8 border-b border-ds-gray-tertiary">
+      <div className="mt-4 mb-8">
         <TabNavigation
           tabs={[
             { pageName: 'owner', children: 'Repos' },

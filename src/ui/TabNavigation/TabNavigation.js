@@ -10,7 +10,7 @@ const styles = {
 
 function TabNavigation({ tabs }) {
   return (
-    <nav className="flex">
+    <nav className="border-b border-ds-gray-tertiary flex">
       {tabs.map((tab) => (
         <AppLink
           {...tab}
