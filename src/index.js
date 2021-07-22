@@ -6,8 +6,11 @@ import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 
 import App from './App'
 import './globals.css'
+
+// TODO do not initialize 10 to 12 if enterprise.
 import reportWebVitals from './reportWebVitals'
 import './sentry.js'
+import { withLaunchDarkly } from 'shared/FeatureFlag'
 
 if (
   process.env.NODE_ENV === 'development' &&
@@ -19,10 +22,13 @@ if (
 
 ReactModal.setAppElement('#root')
 
+// use with pattern to not block app loading.
+const FeatureFlagApp = withLaunchDarkly(App)
+
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <App />
+      <FeatureFlagApp />
     </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById('root')

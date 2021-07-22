@@ -1,5 +1,8 @@
 import omitBy from 'lodash/omitBy'
 import isNull from 'lodash/isNull'
+import { useEffect } from 'react'
+import { useLDClient } from 'launchdarkly-react-client-sdk'
+
 import { useUser } from 'services/user'
 
 // Set default values so fields are readable by Salesforce
@@ -93,9 +96,24 @@ function setDataLayer(user) {
 }
 
 export function useTracking() {
-  return useUser({
-    onSuccess: (user) => setDataLayer(user),
-    onError: (data) => setDataLayer(null),
+  const ldClient = useLDClient()
+  const { data: user } = useUser({
+    onSuccess: (user) => {
+      setDataLayer(user)
+    },
+    onError: () => setDataLayer(null),
     suspense: false,
   })
+
+  // Register LaunchDarkly user
+  useEffect(() => {
+    if (user?.ownerid) {
+      ldClient?.identify({
+        name: user?.name,
+        email: user?.email,
+        key: user.ownerid,
+        custom: user,
+      })
+    }
+  }, [user, ldClient])
 }
