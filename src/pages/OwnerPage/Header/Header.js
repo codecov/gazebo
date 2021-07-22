@@ -2,14 +2,13 @@ import PropTypes from 'prop-types'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
-import A from 'ui/A'
 import Avatar from 'ui/Avatar'
-
+import CallToAction from './CallToAction'
 function Header({ owner, accountDetails }) {
   return owner.isCurrentUserPartOfOrg ? (
     <>
       <MyContextSwitcher pageName="owner" activeContext={owner.username} />
-      <div className="my-4 border-b border-ds-gray-tertiary flex items-center justify-between">
+      <div className="my-4">
         <TabNavigation
           tabs={[
             {
@@ -25,32 +24,10 @@ function Header({ owner, accountDetails }) {
               children: 'Settings',
             },
           ]}
+          component={
+            <CallToAction accountDetails={accountDetails} owner={owner} />
+          }
         />
-        {accountDetails?.plan?.value === 'users-free' && (
-          <div className="mx-4">
-            {accountDetails.activatedUserCount === 5 ? (
-              <span>
-                Looks like you&#39;re up to 5 users.{' '}
-                <A
-                  to={{ pageName: 'upgradePlan' }}
-                  options={{ owner: owner.username }}
-                  variant="link"
-                >
-                  Upgrade
-                </A>{' '}
-                plan today!
-              </span>
-            ) : accountDetails?.activatedUserCount < 5 ? (
-              <span>
-                Need more than 5 users?{' '}
-                <A to={{ pageName: 'freeTrial' }} variant="link">
-                  Request
-                </A>{' '}
-                free trial
-              </span>
-            ) : null}
-          </div>
-        )}
       </div>
     </>
   ) : (
