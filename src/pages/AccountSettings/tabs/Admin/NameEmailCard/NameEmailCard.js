@@ -35,14 +35,14 @@ function NameEmailCard({ currentUser, provider }) {
 
   function submit(formData) {
     mutate(formData, {
-      onSuccess: (user) => {
+      onSuccess: (updatedUser) => {
         addToast({
           type: 'success',
           text: 'Information successfully updated',
         })
         reset({
-          email: user.email,
-          name: user.name,
+          email: updatedUser.email,
+          name: updatedUser.user.name,
         })
       },
       onError: () => {

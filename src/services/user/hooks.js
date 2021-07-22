@@ -6,38 +6,46 @@ import usePrevious from 'react-use/lib/usePrevious'
 import { mapEdges } from 'shared/utils/graphql'
 import Api from 'shared/api'
 
+const currentUserFragment = `
+fragment CurrentUserFragment on Me {
+  email
+  privateAccess
+  user {
+    name
+    username
+    avatarUrl
+    student
+    studentCreatedAt
+    studentUpdatedAt
+  }
+  trackingMetadata {
+    ownerid
+    serviceId
+    plan
+    staff
+    hasYaml
+    service
+    bot
+    delinquent
+    didTrial
+    planProvider
+    planUserCount
+    createstamp
+    updatestamp
+  }
+}
+`
+
 export function useUser(options = {}) {
   const { provider } = useParams()
 
   const query = `
     query CurrentUser {
       me {
-        email
-        privateAccess
-        user {
-          name
-          username
-          avatarUrl
-          studentCreatedAt
-          studentUpdatedAt
-        }
-        trackingMetadata {
-          ownerid
-          serviceId
-          plan
-          staff
-          hasYaml
-          service
-          bot
-          delinquent
-          didTrial
-          planProvider
-          planUserCount
-          createstamp
-          updatestamp
-        }
+        ...CurrentUserFragment
       }
     }
+    ${currentUserFragment}
   `
 
   return useQuery(
@@ -120,14 +128,33 @@ export function useMyContexts() {
 
 export function useUpdateProfile({ provider }) {
   const queryClient = useQueryClient()
+  const mutation = `
+    mutation UpdateProfile($input: UpdateProfileInput!) {
+      updateProfile(input: $input) {
+        me {
+          ...CurrentUserFragment
+        }
+        error {
+          __typename
+        }
+      }
+    }
+    ${currentUserFragment}
+  `
 
   return useMutation(
-    (data) => {
-      return Api.patch({
-        path: '/profile/',
+    ({ name, email }) => {
+      return Api.graphqlMutation({
         provider,
-        body: data,
-      })
+        query: mutation,
+        mutationPath: 'updateProfile',
+        variables: {
+          input: {
+            name,
+            email,
+          },
+        },
+      }).then((res) => res?.data?.updateProfile?.me)
     },
     {
       onSuccess: (user) => {
