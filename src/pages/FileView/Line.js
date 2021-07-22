@@ -10,30 +10,26 @@ function Line({
   getLineProps,
   getTokenProps,
 }) {
-  function isLineHighlighted() {
+  const LINE_STATE = Object.freeze({
+    COVERED: 'COVERED',
+    UNCOVERED: 'UNCOVERED',
+    BLANK: 'BLANK',
+  })
+
+  const lineState = getLineState()
+
+  const classNamePerLineState = {
+    COVERED: 'bg-ds-coverage-covered border-ds-primary-green border-r-2',
+    UNCOVERED: 'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
+    BLANK: 'border-ds-gray-tertiary border-r',
+  }
+
+  function getLineState() {
     if (coverage === 0 && showUncovered) {
-      return 'uncovered'
+      return LINE_STATE.UNCOVERED
     } else if (coverage === 1 && showCovered) {
-      return 'covered'
-    }
-  }
-
-  function isBaseLine() {
-    if (coverage === 0 && !showUncovered) {
-      return true
-    } else if (coverage === 1 && !showCovered) {
-      return true
-    }
-    return false
-  }
-
-  function getAriaLabel() {
-    if (isLineHighlighted() === 'uncovered' && showUncovered) {
-      return 'uncovered'
-    } else if (isLineHighlighted() === 'covered' && showCovered) {
-      return 'covered'
-    }
-    return 'code-line'
+      return LINE_STATE.COVERED
+    } else return LINE_STATE.BLANK
   }
 
   return (
@@ -43,21 +39,10 @@ function Line({
       className={'table-row'}
     >
       <div
-        aria-label={getAriaLabel()}
+        aria-label={lineState}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono table-cell pl-4 pr-2 text-right border-solid',
-          {
-            'bg-ds-coverage-uncovered border-ds-primary-red border-r-2':
-              isLineHighlighted() === 'uncovered',
-          },
-          {
-            'bg-ds-coverage-covered border-ds-primary-green border-r-2':
-              isLineHighlighted() === 'covered',
-          },
-          {
-            'border-ds-gray-tertiary border-r':
-              isBaseLine() || coverage === null || coverage === undefined,
-          }
+          classNamePerLineState[lineState]
         )}
       >
         {number + 1}
