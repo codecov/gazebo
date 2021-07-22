@@ -1,14 +1,17 @@
+import { useParams } from 'react-router-dom'
+
 import { useNavLinks } from 'services/navigation'
 import { useUser } from 'services/user'
 import Icon from 'ui/Icon'
 
 function GithubPrivateScopeLogin() {
+  const { provider } = useParams()
   const { signIn } = useNavLinks()
-  const { data: user } = useUser({
+  const { data: currentUser } = useUser({
     suspense: false,
   })
 
-  if (!user || user.service !== 'github' || user.privateAccess) {
+  if (!currentUser || provider !== 'gh' || currentUser.privateAccess) {
     return null
   }
 
@@ -20,7 +23,7 @@ function GithubPrivateScopeLogin() {
       <span className="ml-1 mr-1 text-ds-gray-quinary">Public repos only</span>
       <a
         className="text-xs font-semibold mt-1 text-ds-blue-darker"
-        href={`${signIn.path({ provider: user.service })}?private=t`}
+        href={`${signIn.path({ provider })}?private=t`}
       >
         add private
       </a>

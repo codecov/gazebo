@@ -21,7 +21,7 @@ export function LoginPrompt() {
 }
 
 function DesktopMenu() {
-  const { data: user } = useUser({
+  const { data: currentUser } = useUser({
     suspense: false,
   })
 
@@ -42,9 +42,9 @@ function DesktopMenu() {
           Blog
         </A>
       </div>
-      {!!user ? (
+      {currentUser ? (
         <div className="mx-2 md:mx-0">
-          <Dropdown user={user} />
+          <Dropdown currentUser={currentUser} />
         </div>
       ) : (
         <LoginPrompt />

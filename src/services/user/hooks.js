@@ -9,14 +9,54 @@ import Api from 'shared/api'
 export function useUser(options = {}) {
   const { provider } = useParams()
 
+  const query = `
+    query CurrentUser {
+      me {
+        email
+        privateAccess
+        user {
+          name
+          username
+          avatarUrl
+          studentCreatedAt
+          studentUpdatedAt
+        }
+        trackingMetadata {
+          ownerid
+          serviceId
+          plan
+          staff
+          hasYaml
+          service
+          bot
+          delinquent
+          didTrial
+          planProvider
+          planUserCount
+          createstamp
+          updatestamp
+        }
+      }
+    }
+  `
+
   return useQuery(
     ['currentUser', provider],
-    () => {
-      return Api.get({
-        path: '/profile',
-        provider,
-      })
-    },
+    () =>
+      Api.graphql({ provider, query }).then((res) => {
+        const currentUser = res?.data?.me
+
+        if (currentUser) return currentUser
+
+        // imitate REST behavior until we implement getting the current user
+        // with a better approach
+        return Promise.reject({
+          status: 401,
+          data: {
+            message: 'Unauthenticated',
+          },
+        })
+      }),
     options
   )
 }

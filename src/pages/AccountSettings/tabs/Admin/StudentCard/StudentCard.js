@@ -3,9 +3,14 @@ import PropTypes from 'prop-types'
 import Card from 'old_ui/Card'
 import { useDateFormatted } from 'shared/utils/dates'
 
-function StudentCard({ user }) {
-  const createdAt = useDateFormatted(user.studentCreatedAt)
-  const updatedAt = useDateFormatted(user.studentUpdatedAt)
+function StudentCard({ currentUser }) {
+  const isStudent = currentUser.user.student
+  const createdAt = useDateFormatted(
+    currentUser.trackingMetadata.studentCreatedAt
+  )
+  const updatedAt = useDateFormatted(
+    currentUser.trackingMetadata.studentUpdatedAt
+  )
 
   if (!createdAt) return null
 
@@ -15,13 +20,13 @@ function StudentCard({ user }) {
       <div className="mt-4 flex">
         <div>
           <h5 className="bold">Status</h5>
-          {user.student ? 'Active' : 'Inactive'}
+          {isStudent ? 'Active' : 'Inactive'}
         </div>
         <div className="ml-32">
-          <h5 className="bold">{user.student ? 'Since' : 'Started'}</h5>
+          <h5 className="bold">{isStudent ? 'Since' : 'Started'}</h5>
           {createdAt}
         </div>
-        {!user.student && (
+        {!isStudent && (
           <div className="ml-32">
             <h5 className="bold">Ended</h5>
             {updatedAt}
@@ -33,10 +38,14 @@ function StudentCard({ user }) {
 }
 
 StudentCard.propTypes = {
-  user: PropTypes.shape({
-    student: PropTypes.bool.isRequired,
-    studentCreatedAt: PropTypes.string,
-    studentUpdatedAt: PropTypes.string,
+  currentUser: PropTypes.shape({
+    user: PropTypes.shape({
+      student: PropTypes.bool.isRequired,
+    }).isRequired,
+    trackingMetadata: PropTypes.shape({
+      studentCreatedAt: PropTypes.string,
+      studentUpdatedAt: PropTypes.string,
+    }),
   }).isRequired,
 }
 
