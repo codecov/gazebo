@@ -1,16 +1,16 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import Header from './Header'
+import Tabs from './Tabs'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
-describe('Header', () => {
+describe('Tabs', () => {
   function setup(props = {}) {
     render(
       <MemoryRouter initialEntries={['/gh']}>
         <Route path="/:provider">
-          <Header {...props} />
+          <Tabs {...props} />
         </Route>
       </MemoryRouter>
     )
@@ -21,6 +21,14 @@ describe('Header', () => {
       setup({
         currentUsername: 'lewis',
       })
+    })
+
+    it('renders links to the current user settings', () => {
+      expect(
+        screen.getByRole('link', {
+          name: /settings/i,
+        })
+      ).toHaveAttribute('href', '/account/gh/lewis')
     })
   })
 })

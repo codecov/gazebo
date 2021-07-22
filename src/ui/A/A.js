@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import cs from 'classnames'
 
 import AppLink from 'shared/AppLink'
+import Icon from 'ui/Icon'
 
 const baseClass = `
   font-sans cursor-pointer
@@ -9,12 +10,16 @@ const baseClass = `
   hover:underline
 `
 const variantClasses = {
-  default: ``,
+  default: `text-ds-blue`,
   header: `font-semibold text-ds-gray-secondary`,
 }
 
-function A({ to, hook, variant = 'default', children, ...props }) {
-  const className = cs(baseClass, variantClasses[variant])
+function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
+  const className = cs(
+    baseClass,
+    variantClasses[variant],
+    'inline-flex items-center gap-1'
+  )
 
   const completeProps = {
     ...props,
@@ -31,8 +36,10 @@ function A({ to, hook, variant = 'default', children, ...props }) {
       className={className}
       data-cy={hook}
       data-marketing={hook}
+      target={isExternal && 'blank'}
     >
       {children}
+      {isExternal && <Icon size="sm" name="external-link"></Icon>}
     </a>
   )
 }
@@ -50,6 +57,7 @@ A.propTypes = {
     }
   },
   variant: PropTypes.oneOf(['default', 'header']),
+  isExternal: PropTypes.bool,
 }
 
 export default A

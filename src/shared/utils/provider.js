@@ -20,3 +20,13 @@ export function providerImage(providerName) {
     BitBucket: bitbucketLogo,
   }[providerToName(providerName)]
 }
+
+export function providerFeedback(providerName) {
+  return {
+    Github: 'https://github.com/codecov/Codecov-user-feedback/issues/1',
+    Gitlab:
+      'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1',
+    BitBucket:
+      'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback',
+  }[providerToName(providerName)]
+}

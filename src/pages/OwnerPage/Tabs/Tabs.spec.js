@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import Header from './Header'
+import Tabs from './Tabs'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
-describe('Header', () => {
+describe('Tabs', () => {
   function setup(props = {}) {
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
         <Route path="/:provider/:owner">
-          <Header {...props} />
+          <Tabs {...props} />
         </Route>
       </MemoryRouter>
     )
@@ -26,8 +26,12 @@ describe('Header', () => {
       })
     })
 
-    it('renders the context switcher', () => {
-      expect(screen.getByText(/MyContextSwitcher/)).toBeInTheDocument()
+    it('renders links to the owner settings', () => {
+      expect(
+        screen.getByRole('link', {
+          name: /settings/i,
+        })
+      ).toHaveAttribute('href', '/account/gh/codecov')
     })
   })
 
@@ -49,8 +53,12 @@ describe('Header', () => {
       ).toBeInTheDocument()
     })
 
-    it('doesnt render the context switcher', () => {
-      expect(screen.queryByText(/MyContextSwitcher/)).not.toBeInTheDocument()
+    it('doesnt render links to the settings', () => {
+      expect(
+        screen.queryByRole('link', {
+          name: /settings/i,
+        })
+      ).not.toBeInTheDocument()
     })
   })
 })

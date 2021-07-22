@@ -5,6 +5,7 @@ import { useOwner } from 'services/user'
 import NotFound from 'pages/NotFound'
 
 import Header from './Header'
+import Tabs from './Tabs'
 
 function OwnerPage({ active = false }) {
   const { owner } = useParams()
@@ -15,14 +16,17 @@ function OwnerPage({ active = false }) {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <Header owner={ownerData} />
-      <ListRepo
-        active={active}
-        canRefetch={ownerData.isCurrentUserPartOfOrg}
-        owner={ownerData.username}
-      />
-    </>
+      <div>
+        {ownerData && <Tabs owner={ownerData} />}
+        <ListRepo
+          active={active}
+          canRefetch={ownerData.isCurrentUserPartOfOrg}
+          owner={ownerData.username}
+        />
+      </div>
+    </div>
   )
 }
 
