@@ -3,11 +3,12 @@ import isNull from 'lodash/isNull'
 import defaults from 'lodash/defaults'
 import mapKeys from 'lodash/mapKeys'
 import snakeCase from 'lodash/snakeCase'
+import pick from 'lodash/pick'
 import { useUser } from 'services/user'
 
 const defaultData = {
   ownerid: null,
-  avatarUrl: null,
+  avatar: null,
   serviceId: null,
   plan: null,
   staff: null,
@@ -23,20 +24,22 @@ const defaultData = {
   privateAccess: false,
   planProvider: '',
   planUserCount: 5,
-  createstamp: new Date('2014-01-01 12:00:00').toISOString(),
-  updatestamp: new Date('2014-01-01 12:00:00').toISOString(),
+  createdAt: new Date('2014-01-01 12:00:00').toISOString(),
+  updatedAt: new Date('2014-01-01 12:00:00').toISOString(),
   studentCreatedAt: new Date('2014-01-01 12:00:00').toISOString(),
   studentUpdatedAt: new Date('2014-01-01 12:00:00').toISOString(),
 }
 
 function getUserData(userData) {
+  // only limiting the keys from the defaults data
+  const keysWeNeed = Object.keys(defaultData)
+
   // fields we need are in different place in userData
   // so we need to build a flat object
   const flatObject = {
-    ...userData.trackingMetadata,
-    ...userData.user,
-    privateAccess: userData.privateAccess,
-    email: userData.email,
+    ...pick(userData.trackingMetadata, keysWeNeed),
+    ...pick(userData.user, keysWeNeed),
+    ...pick(userData, keysWeNeed),
     guest: false,
   }
 

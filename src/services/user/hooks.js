@@ -14,11 +14,13 @@ fragment CurrentUserFragment on Me {
     name
     username
     avatarUrl
+    avatar: avatarUrl
     student
     studentCreatedAt
     studentUpdatedAt
   }
   trackingMetadata {
+    service
     ownerid
     serviceId
     plan
@@ -30,8 +32,8 @@ fragment CurrentUserFragment on Me {
     didTrial
     planProvider
     planUserCount
-    createstamp
-    updatestamp
+    createdAt: createstamp
+    updatedAt: updatestamp
   }
 }
 `
