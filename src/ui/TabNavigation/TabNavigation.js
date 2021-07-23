@@ -8,27 +8,23 @@ const styles = {
     'text-ds-gray-octonary border-b-2 border-ds-gray-octonary font-semibold',
 }
 
-function TabNavigation({ tabs, component }) {
+function TabNavigation({ tabs }) {
   return (
-    <div className="flex border-b border-ds-gray-tertiary justify-between">
-      <nav className="flex">
-        {tabs.map((tab) => (
-          <AppLink
-            {...tab}
-            className={styles.link}
-            activeClassName={styles.activeLink}
-            key={tab.pageName}
-          />
-        ))}
-      </nav>
-      {component || null}
-    </div>
+    <nav className="border-b border-ds-gray-tertiary flex">
+      {tabs.map((tab) => (
+        <AppLink
+          {...tab}
+          className={styles.link}
+          activeClassName={styles.activeLink}
+          key={tab.pageName}
+        />
+      ))}
+    </nav>
   )
 }
 
 TabNavigation.propTypes = {
   tabs: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
-  component: PropTypes.node,
 }
 
 export default TabNavigation

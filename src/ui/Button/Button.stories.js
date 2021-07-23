@@ -39,13 +39,6 @@ MixedButton.args = {
   ),
 }
 
-export const SecondaryButton = Template.bind({})
-SecondaryButton.args = {
-  children: 'Secondary button',
-  variant: 'secondary',
-  disabled: false,
-}
-
 export default {
   title: 'Components/Button',
   component: Button,
