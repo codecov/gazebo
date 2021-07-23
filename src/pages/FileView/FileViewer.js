@@ -7,8 +7,8 @@ import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 
 function FileViewer({ treePaths, content, coverage }) {
-  const [covered, setCovered] = useState(false)
-  const [uncovered, setUncovered] = useState(false)
+  const [covered, setCovered] = useState(true)
+  const [uncovered, setUncovered] = useState(true)
   return (
     <div className="flex flex-col">
       <div className="flex items-center mb-4 justify-between">
