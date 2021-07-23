@@ -3,14 +3,13 @@ import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import TabNavigation from '.'
 
 describe('TabNavigation', () => {
-  function setup(component) {
+  function setup() {
     const location = '/gh/codecov'
     const props = {
       tabs: [
         { pageName: 'owner', children: 'Repos' },
         { pageName: 'accountAdmin', children: 'Settings' },
       ],
-      component,
     }
     render(<TabNavigation {...props} />, {
       wrapper: (props) => (
@@ -31,8 +30,9 @@ describe('TabNavigation', () => {
   }
 
   describe('when rendered on the repo list', () => {
+    beforeEach(setup)
+
     it('renders the first tab with the right URL', () => {
-      setup(undefined)
       expect(screen.queryAllByRole('link')[0]).toHaveAttribute(
         'href',
         '/gh/codecov'
@@ -40,21 +40,10 @@ describe('TabNavigation', () => {
     })
 
     it('renders the second tab with the right URL', () => {
-      setup(undefined)
       expect(screen.queryAllByRole('link')[1]).toHaveAttribute(
         'href',
         '/account/gh/codecov'
       )
-    })
-
-    it('renders a component if a component is provided', () => {
-      setup(<div>Test Component 123</div>)
-      expect(screen.getByText('Test Component 123')).toBeDefined()
-    })
-
-    it('does not render a component if a component is not provided', () => {
-      setup(undefined)
-      expect(screen.queryByText('Test Component 123')).toBeNull()
     })
   })
 })

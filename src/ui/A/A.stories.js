@@ -17,12 +17,6 @@ MixedA.args = {
   ),
 }
 
-export const LinkA = Template.bind({})
-LinkA.args = {
-  children: 'Link A',
-  variant: 'link',
-}
-
 export default {
   title: 'Components/A',
   component: A,
