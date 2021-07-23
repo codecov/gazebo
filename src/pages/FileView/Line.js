@@ -1,16 +1,24 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
+const LINE_STATE = Object.freeze({
+  COVERED: 'COVERED',
+  UNCOVERED: 'UNCOVERED',
+  BLANK: 'BLANK',
+})
+
 const classNamePerLineState = {
-  COVERED: 'bg-ds-coverage-covered border-ds-primary-green border-r-2',
-  UNCOVERED: 'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
-  BLANK: 'border-ds-gray-tertiary border-r',
+  [LINE_STATE.COVERED]:
+    'bg-ds-coverage-covered border-ds-primary-green border-r-2',
+  [LINE_STATE.UNCOVERED]:
+    'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
+  [LINE_STATE.BLANK]: 'border-ds-gray-tertiary border-r',
 }
 
 const lineStateToLabel = {
-  COVERED: 'covered line of code',
-  UNCOVERED: 'uncovered line of code',
-  BLANK: 'line of code',
+  [LINE_STATE.COVERED]: 'covered line of code',
+  [LINE_STATE.UNCOVERED]: 'uncovered line of code',
+  [LINE_STATE.BLANK]: 'line of code',
 }
 
 function Line({
@@ -22,12 +30,6 @@ function Line({
   getLineProps,
   getTokenProps,
 }) {
-  const LINE_STATE = Object.freeze({
-    COVERED: 'COVERED',
-    UNCOVERED: 'UNCOVERED',
-    BLANK: 'BLANK',
-  })
-
   const lineState = getLineState()
 
   function getLineState() {
