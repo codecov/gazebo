@@ -1,6 +1,7 @@
 import Api from 'shared/api'
 import { useQuery } from 'react-query'
-import _ from 'lodash'
+import keyBy from 'lodash/keyBy'
+import mapValues from 'lodash/mapValues'
 
 const coverageFileFragment = `
     fragment CoverageForFile on Commit {
@@ -52,11 +53,8 @@ export function useFileCoverage({ provider, owner, repo, ref, path }) {
       const coverageSource = commit || branch
       const coverageFile = coverageSource.coverageFile
       if (!coverageFile) return null
-      const fileCoverage = _.chain(coverageFile.coverage)
-        .keyBy('line')
-        .mapValues('coverage')
-        .value()
-
+      const lineWithCoverage = keyBy(coverageFile.coverage, 'line')
+      const fileCoverage = mapValues(lineWithCoverage, 'coverage')
       return {
         content: coverageFile.content,
         coverage: fileCoverage,
