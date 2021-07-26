@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
 import Avatar from 'ui/Avatar'
-
-function Header({ owner }) {
+import CallToAction from './CallToAction'
+function Header({ owner, accountDetails }) {
   return owner.isCurrentUserPartOfOrg ? (
     <>
       <MyContextSwitcher pageName="owner" activeContext={owner.username} />
@@ -24,6 +24,9 @@ function Header({ owner }) {
               children: 'Settings',
             },
           ]}
+          component={
+            <CallToAction accountDetails={accountDetails} owner={owner} />
+          }
         />
       </div>
     </>
@@ -40,6 +43,12 @@ Header.propTypes = {
     username: PropTypes.string.isRequired,
     isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
   }).isRequired,
+  accountDetails: PropTypes.shape({
+    activatedUserCount: PropTypes.number.isRequired,
+    plan: PropTypes.shape({
+      value: PropTypes.string.isRequired,
+    }).isRequired,
+  }),
 }
 
 export default Header
