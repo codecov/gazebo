@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { useAccountDetails } from 'services/account'
-import RequestButton from './RequestButton'
+import RequestButton from './ButtonWrapper'
 
 jest.mock('services/account')
 

@@ -1,6 +1,7 @@
 import Button from 'ui/Button'
 import PropTypes from 'prop-types'
 import { useAccountDetails } from 'services/account'
+import { useOwner } from 'services/user'
 
 function RequestButton({ owner, provider }) {
   const { data: accountDetails } = useAccountDetails({
@@ -30,4 +31,23 @@ RequestButton.propTypes = {
   provider: PropTypes.string.isRequired,
 }
 
-export default RequestButton
+function ButtonWrapper({ owner, provider }) {
+  const { data: ownerData } = useOwner({ username: owner })
+
+  if (!ownerData) {
+    return null
+  }
+
+  return (
+    ownerData.isCurrentUserPartOfOrg && (
+      <RequestButton owner={ownerData.username} provider={provider} />
+    )
+  )
+}
+
+ButtonWrapper.propTypes = {
+  owner: PropTypes.string.isRequired,
+  provider: PropTypes.string.isRequired,
+}
+
+export default ButtonWrapper

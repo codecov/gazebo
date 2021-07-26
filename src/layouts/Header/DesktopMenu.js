@@ -6,7 +6,7 @@ import { useUser } from 'services/user'
 import { useParams } from 'react-router-dom'
 import { Suspense } from 'react'
 import ErrorBoundary from '../shared/ErrorBoundary'
-import RequestButton from './RequestButton'
+import ButtonWrapper from './ButtonWrapper'
 
 export function LoginPrompt() {
   return (
@@ -52,7 +52,7 @@ function DesktopMenu() {
           {!!owner && (
             <Suspense fallback={null}>
               <ErrorBoundary errorComponent={null}>
-                <RequestButton owner={owner} provider={provider} />
+                <ButtonWrapper owner={owner} provider={provider} />
               </ErrorBoundary>
             </Suspense>
           )}

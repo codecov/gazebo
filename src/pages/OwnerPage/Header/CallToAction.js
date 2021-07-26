@@ -1,7 +1,15 @@
 import PropTypes from 'prop-types'
+import { useAccountDetails } from 'services/account'
 import A from 'ui/A'
 
-function CallToAction({ accountDetails, owner }) {
+function CallToAction({ provider, owner }) {
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+    opts: {
+      useErrorBoundary: true,
+    },
+  })
   return (
     accountDetails?.plan?.value === 'users-free' && (
       <div className="mx-4 self-center">
@@ -10,7 +18,7 @@ function CallToAction({ accountDetails, owner }) {
             Looks like you&#39;re up to 5 users.{' '}
             <A
               to={{ pageName: 'upgradePlan' }}
-              options={{ owner: owner.username }}
+              options={{ owner: owner }}
               variant="link"
             >
               Upgrade
@@ -32,15 +40,8 @@ function CallToAction({ accountDetails, owner }) {
 }
 
 CallToAction.propTypes = {
-  owner: PropTypes.shape({
-    username: PropTypes.string.isRequired,
-  }).isRequired,
-  accountDetails: PropTypes.shape({
-    activatedUserCount: PropTypes.number.isRequired,
-    plan: PropTypes.shape({
-      value: PropTypes.string.isRequired,
-    }).isRequired,
-  }),
+  owner: PropTypes.string.isRequired,
+  provider: PropTypes.string.isRequired,
 }
 
 export default CallToAction
