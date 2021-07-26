@@ -33,10 +33,9 @@ jobs:
       - run:
           name: Upload coverage to codecov
           command: |
-            wget https://github.com/codecov/uploader/releases/download/v0.1.0_1681/codecov-linux
-            chmod +x ./codecov-linux
-            ./codecov-linux
-            # bash <(curl -s https://codecov.io/bash)
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
+            ./codecov
       - run:
           name: Upload coverage to codecov staging
           command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
@@ -98,8 +97,8 @@ workflows:
           requires:
             - install
       # Disabling because we are no longer monitoring bundlesize
-      # leaving the job to re enable this when I find a 
-      # replacement. 
+      # leaving the job to re enable this when I find a
+      # replacement.
       # - build:
       #     requires:
       #       - install
