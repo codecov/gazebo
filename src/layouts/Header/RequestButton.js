@@ -3,7 +3,13 @@ import PropTypes from 'prop-types'
 import { useAccountDetails } from 'services/account'
 
 function RequestButton({ owner, provider }) {
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+    opts: {
+      useErrorBoundary: true,
+    },
+  })
   return (
     accountDetails.plan.value === 'users-free' && (
       <div className="mr-5">
