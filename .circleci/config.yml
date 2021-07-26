@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Upload coverage to codecov
           command: |
-            curl -Os https://uploader.codecov.io/alpine/v0.1.0_6843 
+            curl -Os https://uploader.codecov.io/v0.1.0_6843/alpine/codecov
             chmod +x codecov
             ./codecov -v
       - run:
