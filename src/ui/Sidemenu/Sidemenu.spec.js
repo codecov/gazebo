@@ -10,7 +10,7 @@ describe('Sidemenu', () => {
         { pageName: 'accountAdmin', exact: true },
         { pageName: 'billingAndUsers' },
         { pageName: 'internalAccessTab' },
-        { pageName: 'internalYamlTab', children: 'Global Yaml' },
+        { pageName: 'yamlTab', children: 'Global Yaml' },
       ],
     }
     render(<Sidemenu {...props} />, {

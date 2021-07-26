@@ -6,12 +6,12 @@ import AppLink from 'shared/AppLink'
 import Avatar from 'ui/Avatar'
 import Icon from 'ui/Icon'
 
-function Dropdown({ user }) {
+function Dropdown({ currentUser }) {
   return (
     <div data-testid="dropdown">
       <Menu id="main-dropdown">
         <MenuButton className="flex items-center justify-between">
-          <Avatar user={user} bordered />
+          <Avatar user={currentUser.user} bordered />
           <div className="ml-1" aria-hidden="true">
             <Icon size="sm" name="chevron-down" variant="solid" />
           </div>
@@ -20,7 +20,7 @@ function Dropdown({ user }) {
           <MenuLink
             as={AppLink}
             pageName="account"
-            options={{ owner: user.username }}
+            options={{ owner: currentUser.user.username }}
           >
             Settings
           </MenuLink>
@@ -37,9 +37,11 @@ function Dropdown({ user }) {
 }
 
 Dropdown.propTypes = {
-  user: PropTypes.shape({
-    avatarUrl: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired,
+  currentUser: PropTypes.shape({
+    user: PropTypes.shape({
+      avatarUrl: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired,
+    }).isRequired,
   }),
 }
 

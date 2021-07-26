@@ -18,7 +18,9 @@ describe('AccountSettings', () => {
   function setup(url = '/account/gh/codecov') {
     useUser.mockReturnValue({
       data: {
-        username: 'dorian',
+        user: {
+          username: 'dorian',
+        },
       },
     })
     render(
