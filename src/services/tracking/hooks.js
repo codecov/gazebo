@@ -24,10 +24,10 @@ const defaultData = {
   privateAccess: false,
   planProvider: '',
   planUserCount: 5,
-  createdAt: new Date('2014-01-01 12:00:00').toISOString(),
-  updatedAt: new Date('2014-01-01 12:00:00').toISOString(),
-  studentCreatedAt: new Date('2014-01-01 12:00:00').toISOString(),
-  studentUpdatedAt: new Date('2014-01-01 12:00:00').toISOString(),
+  createdAt: '2014-01-01T12:00:00.000Z',
+  updatedAt: '2014-01-01T12:00:00.000Z',
+  studentCreatedAt: '2014-01-01T12:00:00.000Z',
+  studentUpdatedAt: '2014-01-01T12:00:00.000Z',
 }
 
 function getUserData(userData) {
