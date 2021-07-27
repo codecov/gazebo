@@ -7,9 +7,9 @@ import RequestButton from './RequestButton'
 jest.mock('services/account')
 jest.mock('services/user')
 
-let container
-
 describe('RequestButton', () => {
+  let container
+
   function setup(owner, accountDetails) {
     useOwner.mockReturnValue({
       data: owner,
@@ -29,15 +29,7 @@ describe('RequestButton', () => {
 
   describe('when the owner is not part of the org', () => {
     beforeEach(() => {
-      setup(
-        {
-          isCurrentUserPartOfOrg: false,
-          username: 'codecov',
-        },
-        {
-          undefined,
-        }
-      )
+      setup(null, null)
     })
 
     it('does not render the request button', () => {
@@ -45,7 +37,7 @@ describe('RequestButton', () => {
     })
 
     it('renders null when there isnt data', () => {
-      expect(container.firstChild).toBeNull()
+      expect(container).toBeEmptyDOMElement()
     })
   })
 
