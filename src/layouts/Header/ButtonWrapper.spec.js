@@ -1,36 +1,85 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 import { useAccountDetails } from 'services/account'
+import { useOwner } from 'services/user'
+import ButtonWrapper from './ButtonWrapper'
 import RequestButton from './ButtonWrapper'
 
 jest.mock('services/account')
+jest.mock('services/user')
 
-const params = {
-  owner: 'yasha',
-  provider: 'gh',
-}
-
-describe('RequestButton', () => {
-  function setup(accountDetails) {
-    useAccountDetails.mockReturnValue({ data: accountDetails })
-    render(<RequestButton owner={params.owner} provider={params.provider} />, {
-      wrapper: MemoryRouter,
+describe('ButtonWrapper', () => {
+  function setup(owner, accountDetails) {
+    useOwner.mockReturnValue({
+      data: owner,
     })
+    useAccountDetails.mockReturnValue({
+      data: accountDetails,
+    })
+    render(
+      <MemoryRouter initialEntries={['/gh/codecov']}>
+        <Route path="/:provider/:owner">
+          <ButtonWrapper owner="someUser" provider="gh">
+            <RequestButton owner="someUser" provider="gh" />
+          </ButtonWrapper>
+        </Route>
+      </MemoryRouter>
+    )
   }
 
-  it('renders request demo button when there is owner with free plan is logged in', () => {
-    setup({ plan: { value: 'users-free' } })
+  describe('when the owner is not part of the org', () => {
+    beforeEach(() => {
+      setup(
+        {
+          isCurrentUserPartOfOrg: false,
+          username: 'codecov',
+        },
+        {
+          undefined,
+        }
+      )
+    })
 
-    const requestDemoButton = screen.getByTestId('request-demo')
-    expect(requestDemoButton).toBeInTheDocument()
-    expect(requestDemoButton).toHaveAttribute(
-      'href',
-      'https://about.codecov.io/demo'
-    )
+    it('does not render the request button', () => {
+      expect(screen.queryByText(/Request Button/)).toBeNull()
+    })
   })
 
-  it('does not render request demo button when owner without free plan is logged in', () => {
-    setup({ plan: { value: 'not-users-free' } })
-    expect(screen.queryByText(/Request demo/)).toBeNull()
+  describe('when the owner is part of the org', () => {
+    it('renders request demo button if org has a free plan', () => {
+      setup(
+        {
+          isCurrentUserPartOfOrg: true,
+          username: 'codecov',
+        },
+        {
+          plan: {
+            value: 'users-free',
+          },
+        }
+      )
+
+      const requestDemoButton = screen.getByTestId('request-demo')
+      expect(requestDemoButton).toBeInTheDocument()
+      expect(requestDemoButton).toHaveAttribute(
+        'href',
+        'https://about.codecov.io/demo'
+      )
+    })
+
+    it('does not render request demo button when owner without free plan is logged in', () => {
+      setup(
+        {
+          isCurrentUserPartOfOrg: true,
+          username: 'codecov',
+        },
+        {
+          plan: {
+            value: 'not-users-free',
+          },
+        }
+      )
+      expect(screen.queryByText(/Request demo/)).toBeNull()
+    })
   })
 })

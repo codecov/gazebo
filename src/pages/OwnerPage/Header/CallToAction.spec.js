@@ -1,17 +1,20 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { useAccountDetails } from 'services/account'
 
 import CallToAction from './CallToAction'
 
+jest.mock('services/account')
+
 describe('CallToAction', () => {
   function setup(props = {}) {
+    useAccountDetails.mockReturnValue({
+      data: props.accountDetails,
+    })
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
         <Route path="/:provider/:owner">
-          <CallToAction
-            owner={props.owner}
-            accountDetails={props.accountDetails}
-          />
+          <CallToAction owner={props.owner} provider={props.provider} />
         </Route>
       </MemoryRouter>
     )
@@ -20,9 +23,8 @@ describe('CallToAction', () => {
   describe('when user is under free trial', () => {
     it('renders "request free trial" text if there are is less than 5 activated users', () => {
       setup({
-        owner: {
-          username: 'codecov',
-        },
+        owner: 'codecov',
+        provider: 'gh',
         accountDetails: {
           activatedUserCount: 2,
           plan: {
@@ -38,9 +40,8 @@ describe('CallToAction', () => {
 
     it('renders "upgrade plan today" when user has used all seats', () => {
       setup({
-        owner: {
-          username: 'codecov',
-        },
+        owner: 'codecov',
+        provider: 'gh',
         accountDetails: {
           activatedUserCount: 5,
           plan: {
@@ -56,9 +57,8 @@ describe('CallToAction', () => {
 
     it('does not render any trial if user count is outside 0-5 range', () => {
       setup({
-        owner: {
-          username: 'codecov',
-        },
+        owner: 'codecov',
+        provider: 'gh',
         accountDetails: {
           activatedUserCount: 9,
           plan: {
@@ -79,9 +79,8 @@ describe('CallToAction', () => {
   describe('when user is not under free trial', () => {
     it('does not render any trial', () => {
       setup({
-        owner: {
-          username: 'codecov',
-        },
+        owner: 'codecov',
+        provider: 'gh',
         accountDetails: {
           activatedUserCount: 5,
           plan: {

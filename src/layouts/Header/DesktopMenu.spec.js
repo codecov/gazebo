@@ -13,6 +13,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(),
 }))
+jest.mock('./ButtonWrapper', () => () => 'Button Wrapper')
 
 const loggedInUser = {
   user: {
@@ -66,12 +67,8 @@ describe('DesktopMenu', () => {
     useAccountDetails.mockReturnValue({ data: accountDetails })
     setup()
 
-    const requestDemoButton = screen.getByTestId('request-demo')
+    const requestDemoButton = screen.getByText('Button Wrapper')
     expect(requestDemoButton).toBeInTheDocument()
-    expect(requestDemoButton).toHaveAttribute(
-      'href',
-      'https://about.codecov.io/demo'
-    )
   })
 
   it('does not render request demo button when owner is undefined', () => {
