@@ -38,7 +38,7 @@ describe('CallToAction', () => {
       )
     })
 
-    it('renders "upgrade plan today" when user has used all seats', () => {
+    it('renders upgrade plan today when user has used all seats', () => {
       setup({
         owner: 'codecov',
         provider: 'gh',
