@@ -2,28 +2,28 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { useAccountDetails } from 'services/account'
 import { useOwner } from 'services/user'
-import ButtonWrapper from './RequestButton'
 import RequestButton from './RequestButton'
 
 jest.mock('services/account')
 jest.mock('services/user')
 
-describe('ButtonWrapper', () => {
+let container
+
+describe('RequestButton', () => {
   function setup(owner, accountDetails) {
     useOwner.mockReturnValue({
       data: owner,
     })
     useAccountDetails.mockReturnValue({
       data: accountDetails,
-    })
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov']}>
-        <Route path="/:provider/:owner">
-          <ButtonWrapper owner="someUser" provider="gh">
+    })(
+      ({ container } = render(
+        <MemoryRouter initialEntries={['/gh/codecov']}>
+          <Route path="/:provider/:owner">
             <RequestButton owner="someUser" provider="gh" />
-          </ButtonWrapper>
-        </Route>
-      </MemoryRouter>
+          </Route>
+        </MemoryRouter>
+      ))
     )
   }
 
@@ -45,7 +45,7 @@ describe('ButtonWrapper', () => {
     })
 
     it('renders null when there isnt data', () => {
-      expect(screen.queryByText(/Request Button/)).toBeNull()
+      expect(container.firstChild).toBeNull()
     })
   })
 
