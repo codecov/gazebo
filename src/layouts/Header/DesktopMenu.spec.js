@@ -13,7 +13,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(),
 }))
-jest.mock('./ButtonWrapper', () => () => 'Button Wrapper')
+jest.mock('./RequestButton', () => () => 'Request Button')
 
 const loggedInUser = {
   user: {
@@ -67,7 +67,7 @@ describe('DesktopMenu', () => {
     useAccountDetails.mockReturnValue({ data: accountDetails })
     setup()
 
-    const requestDemoButton = screen.getByText('Button Wrapper')
+    const requestDemoButton = screen.getByText('Request Button')
     expect(requestDemoButton).toBeInTheDocument()
   })
 
