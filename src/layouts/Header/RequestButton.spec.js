@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { useAccountDetails } from 'services/account'
 import { useOwner } from 'services/user'
-import ButtonWrapper from './ButtonWrapper'
-import RequestButton from './ButtonWrapper'
+import ButtonWrapper from './RequestButton'
+import RequestButton from './RequestButton'
 
 jest.mock('services/account')
 jest.mock('services/user')
@@ -41,6 +41,10 @@ describe('ButtonWrapper', () => {
     })
 
     it('does not render the request button', () => {
+      expect(screen.queryByText(/Request Button/)).toBeNull()
+    })
+
+    it('renders null when there isnt data', () => {
       expect(screen.queryByText(/Request Button/)).toBeNull()
     })
   })

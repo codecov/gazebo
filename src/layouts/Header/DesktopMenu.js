@@ -5,8 +5,7 @@ import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 import { useParams } from 'react-router-dom'
 import { Suspense } from 'react'
-import ErrorBoundary from '../shared/ErrorBoundary'
-import ButtonWrapper from './ButtonWrapper'
+import RequestButton from './RequestButton'
 
 export function LoginPrompt() {
   return (
@@ -51,9 +50,7 @@ function DesktopMenu() {
         <div className="flex items-center space-between mx-2 md:mx-4">
           {!!owner && (
             <Suspense fallback={null}>
-              <ErrorBoundary errorComponent={null}>
-                <ButtonWrapper owner={owner} provider={provider} />
-              </ErrorBoundary>
+              <RequestButton owner={owner} provider={provider} />
             </Suspense>
           )}
           <Dropdown currentUser={currentUser} />
