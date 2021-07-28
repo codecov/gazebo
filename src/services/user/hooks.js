@@ -71,7 +71,7 @@ export function useUser(options = {}) {
   )
 }
 
-export function useOwner({ username }) {
+export function useOwner({ username, opts = {} }) {
   const { provider } = useParams()
   const query = `
     query DetailOwner($username: String!) {
@@ -87,11 +87,15 @@ export function useOwner({ username }) {
     username,
   }
 
-  return useQuery(['owner', variables, provider], () => {
-    return Api.graphql({ provider, query, variables }).then((res) => {
-      return res?.data?.owner
-    })
-  })
+  return useQuery(
+    ['owner', variables, provider],
+    () => {
+      return Api.graphql({ provider, query, variables }).then((res) => {
+        return res?.data?.owner
+      })
+    },
+    opts
+  )
 }
 
 export function useMyContexts() {

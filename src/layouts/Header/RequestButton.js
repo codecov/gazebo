@@ -4,17 +4,23 @@ import { useAccountDetails } from 'services/account'
 import { useOwner } from 'services/user'
 
 function RequestButton({ owner, provider }) {
-  const { data: ownerData } = useOwner({ username: owner })
-  const { data: accountDetails, isError } = useAccountDetails({
-    provider,
-    owner,
+  const { data: ownerData } = useOwner({
+    username: owner,
     opts: {
       suspense: false,
-      enabled: false,
     },
   })
+  const { data: accountDetails, isError: accountDetailsError } =
+    useAccountDetails({
+      provider,
+      owner,
+      opts: {
+        suspense: false,
+        enabled: false,
+      },
+    })
 
-  if (!ownerData || isError) {
+  if (!ownerData || accountDetailsError) {
     return null
   }
 
