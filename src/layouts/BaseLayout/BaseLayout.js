@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useTracking } from 'services/tracking'
-// import { useSegmentUser } from 'services/tracking/segment'
+import { useSegmentUser, useSegmentPage } from 'services/tracking/segment'
 
 import ErrorBoundary from '../shared/ErrorBoundary'
 import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
@@ -12,7 +12,8 @@ import ToastNotifications from '../ToastNotifications'
 
 function BaseLayout({ children }) {
   useTracking()
-  // useSegmentUser()
+  useSegmentUser()
+  useSegmentPage()
 
   const fullPageLoader = (
     <div className="h-screen w-screen flex items-center justify-center mt-16">

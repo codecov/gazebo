@@ -6,7 +6,7 @@ import snakeCase from 'lodash/snakeCase'
 import pick from 'lodash/pick'
 import { useUser } from 'services/user'
 
-const defaultData = {
+const defaultUser = {
   ownerid: null,
   avatar: null,
   serviceId: null,
@@ -30,7 +30,7 @@ const defaultData = {
   studentUpdatedAt: '2014-01-01T12:00:00.000Z',
 }
 
-function getUserData(userData) {
+export function getUserData(userData, defaultData = defaultUser) {
   // only limiting the keys from the defaults data
   const keysWeNeed = Object.keys(defaultData)
 
