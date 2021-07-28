@@ -5,15 +5,16 @@ import { useOwner } from 'services/user'
 
 function RequestButton({ owner, provider }) {
   const { data: ownerData } = useOwner({ username: owner })
-  const { data: accountDetails } = useAccountDetails({
+  const { data: accountDetails, isError } = useAccountDetails({
     provider,
     owner,
     opts: {
+      suspense: false,
       enabled: false,
     },
   })
 
-  if (!ownerData || !accountDetails) {
+  if (!ownerData || isError) {
     return null
   }
 
