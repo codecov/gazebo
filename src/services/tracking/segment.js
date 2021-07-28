@@ -1,6 +1,10 @@
 import React from 'react'
 import omitBy from 'lodash/omitBy'
 import isNull from 'lodash/isNull'
+import pick from 'lodash/pick'
+import mapKeys from 'lodash/mapKeys'
+import snakeCase from 'lodash/snakeCase'
+import defaults from 'lodash/defaults'
 import { useUser } from 'services/user'
 
 import { useLocation } from 'react-router-dom'
@@ -8,78 +12,87 @@ import { useLocation } from 'react-router-dom'
 let Analytics = require('analytics-node')
 let analytics = new Analytics('Btz43oSB3eMmIs4AjqAnCNt5dEjyiRoL')
 
-function getUserData(ownerid, avatarUrl, serviceId) {
-  return {
-    /* eslint-disable camelcase */
-    ownerid,
-    avatar: avatarUrl,
-    service_id: serviceId,
-  }
+// function getUserData(ownerid, avatarUrl, serviceId) {
+//   return {
+//     /* eslint-disable camelcase */
+//     ownerid,
+//     avatar: avatarUrl,
+//     service_id: serviceId,
+//   }
+// }
+
+// function setSegmentUser(user) {
+//   const userWithoutNulls = omitBy(user, isNull)
+//   return user
+//     ? getUserData(
+//         userWithoutNulls.ownerid,
+//         userWithoutNulls.avatarUrl,
+//         userWithoutNulls.serviceId
+//       )
+//     : { guest: true }
+// }
+
+const defaultUser = {
+  ownerid: null,
+  email: 'unknown@codecov.io',
+  name: 'unknown',
+  username: 'unknown',
+  service: null,
+  plan: null,
+  staff: null,
+  serviceId: null,
+  // guest
 }
 
-function setSegmentUser(user) {
-  const userWithoutNulls = omitBy(user, isNull)
-  return user
-    ? getUserData(
-        userWithoutNulls.ownerid,
-        userWithoutNulls.avatarUrl,
-        userWithoutNulls.serviceId
-      )
-    : { guest: true }
+function mapUserData(userData) {
+  // only limiting the keys from the defaults data
+  const segmentUser = Object.keys(defaultUser)
+
+  // fields we need are in different place in userData
+  // so we need to build a flat object
+  const flatObject = {
+    ...pick(userData.trackingMetadata, segmentUser),
+    ...pick(userData.user, segmentUser),
+    ...pick(userData, segmentUser),
+    guest: false,
+  }
+
+  // remove all the key that has a null value
+  // Ask if I want this to behave this way
+  const userWithoutNull = omitBy(flatObject, isNull)
+
+  // apply the default values
+  const userWithDefault = defaults(userWithoutNull, defaultUser)
+
+  // convert camelCase keys to snake_case
+  return mapKeys(userWithDefault, (_, key) => snakeCase(key))
 }
 
 export function useSegmentUser() {
-  let location = useLocation()
+  const location = useLocation()
   const { data: user } = useUser({
-    onSuccess: (user) => setSegmentUser(user),
-    onError: (data) => setSegmentUser(null),
     suspense: false,
   })
-  console.log(user)
+  let segmentUser
+
+  if (user) {
+    segmentUser = mapUserData(user)
+  }
+
+  console.log('segmentUser')
+  console.log(segmentUser)
   React.useEffect(() => {
-    user &&
-      //   analytics.identify({
-      //     // ownerid: user.ownerid,
-      // //     email,
-      // //     username,
-      // //     name,
-      // //     service,
-      // //     service_id,
-      // //     plan,
-      // //     guest,
-      // //     staff,
-      // // //     "ownerid": "{{Codecov - User - Owner ID}}",
-      // // // "email": "{{Codecov - User - Email}}",
-      // // // "username": "{{Codecov - User - Username}}",
-      // // // "name": "{{Codecov - User - Name}}",
-      // // // "service": "{{Codecov - User - Service}}",
-      // // // "service_id": "{{Codecov - User - Service ID}}",
-      // // // "plan": "{{Codecov - User - Plan}}",
-      // // // "guest": {{Codecov - User - Guest}},
-      // // // "staff": {{Codecov - User - Staff}},
-      //     userId: "Adam Gibbons",
-      //     email: "peter@example.com",
-      //     plan: "premium",
-      //     logins: 5
-      //   })
+    segmentUser &&
       analytics.identify({
-        userId: '37980cfea0067',
+        userId: segmentUser.ownerid,
         traits: {
-          // owner_id:
-          email: user.email,
-          username: user.user?.username,
-          name: user.user?.name,
-          service: user.trackingMetadata?.service,
-          service_id: user.trackingMetadata?.serviceId,
-          plan: user.trackingMetadata?.plan,
-          staff: user.trackingMetadata?.staff,
-          // guest:
+          ...segmentUser,
         },
         // TODO
-        // integrations: {
-        //   Salesforce: true,
-        //   Marketo: false
-        // },
+        integrations: {
+          Salesforce: true,
+          Marketo: false,
+        },
         // externalIds: {
         //   id: user.trackingMetadata?.serviceId,
         //   // type: user.trackingMetadata?.serviceId,
@@ -92,5 +105,5 @@ export function useSegmentUser() {
         //     "encoding": "none"
         // }]
       })
-  }, [location.pathname, user])
+  }, [location.pathname, segmentUser])
 }
