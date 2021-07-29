@@ -9,10 +9,9 @@ jest.mock('services/user')
 describe('RequestButton', () => {
   let container
 
-  function setup(accountDetails, isError = false) {
+  function setup(accountDetails) {
     useAccountDetails.mockReturnValue({
       data: accountDetails,
-      isError,
     })(
       ({ container } = render(
         <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -26,7 +25,7 @@ describe('RequestButton', () => {
 
   describe('when the owner is not part of the org', () => {
     beforeEach(() => {
-      setup(null, true)
+      setup(null)
     })
 
     it('does not render the request button', () => {

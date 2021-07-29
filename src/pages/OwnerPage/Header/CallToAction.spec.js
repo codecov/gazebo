@@ -8,10 +8,9 @@ jest.mock('services/account')
 
 describe('CallToAction', () => {
   let container
-  function setup(accountDetails, isError = false) {
+  function setup(accountDetails) {
     useAccountDetails.mockReturnValue({
       data: accountDetails,
-      isError,
     })(
       ({ container } = render(
         <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -91,7 +90,7 @@ describe('CallToAction', () => {
 
   describe('when there is an error fetching account details', () => {
     beforeEach(() => {
-      setup(null, true)
+      setup(null)
     })
 
     it('does not render the call to action', () => {
