@@ -3,13 +3,18 @@ import { useAccountDetails } from 'services/account'
 import A from 'ui/A'
 
 function CallToAction({ provider, owner }) {
-  const { data: accountDetails } = useAccountDetails({
+  const { data: accountDetails, isError } = useAccountDetails({
     provider,
     owner,
     opts: {
-      useErrorBoundary: true,
+      suspense: false,
     },
   })
+
+  if (isError) {
+    return null
+  }
+
   return (
     accountDetails?.plan?.value === 'users-free' && (
       <div className="mx-4 self-center">
