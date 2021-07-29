@@ -8,7 +8,6 @@ function RequestButton({ owner, provider }) {
     owner,
     opts: {
       suspense: false,
-      enabled: false,
     },
   })
 
