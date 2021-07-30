@@ -2,6 +2,7 @@ import React from 'react'
 import { useUser } from 'services/user'
 import { useLocation } from 'react-router-dom'
 import { getUserData } from './hooks'
+import * as Cookie from 'js-cookie'
 
 const defaultUser = {
   ownerid: null,
@@ -14,21 +15,25 @@ const defaultUser = {
   serviceId: null,
 }
 
-function identifySegmentUser(user) {
-  // const gaId = cookies._ga
-  // const marketoId = cookies._mrkt
+function identifyFromAnalytics(id, type) {
+  return window.analytics.identify({
+    integrations: {
+      Salesforce: false,
+      Marketo: false,
+    },
+    externalIds: [
+      {
+        id,
+        type,
+        collection: 'users',
+        encoding: 'none',
+      },
+    ],
+  })
+}
 
-  // if (cookies._ga) {
-
-  // }
-  // else if (cookies._mrkt) {
-
-  // }
-  // else if (user.guest) {
-
-  // }
-
-  window.analytics.identify(user.ownerid, {
+function identifyUser(user) {
+  return window.analytics.identify(user.ownerid, {
     userId: user.ownerid,
     traits: {
       ...user,
@@ -46,6 +51,21 @@ function identifySegmentUser(user) {
       },
     },
   })
+}
+
+function identifySegmentUser(user) {
+  if (user.guest) {
+    window.analytics.identify({})
+    return
+  }
+
+  const gaId = Cookie.get('_ga')
+  const marketoId = Cookie.get('_mkto_trk')
+
+  if (gaId) identifyFromAnalytics(gaId, 'ga_client_id')
+  if (marketoId) identifyFromAnalytics(marketoId, 'marketo_cookie')
+
+  identifyUser(user)
 }
 
 export function useSegmentUser() {
