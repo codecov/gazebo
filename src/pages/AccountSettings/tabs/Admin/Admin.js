@@ -9,15 +9,16 @@ import GithubIntegrationCard from './GithubIntegrationCard'
 import DeletionCard from './DeletionCard'
 
 function Admin({ provider, owner }) {
-  const { data: user } = useUser({ provider })
-  const isPersonalSettings = user.username.toLowerCase() === owner.toLowerCase()
+  const { data: currentUser } = useUser({ provider })
+  const isPersonalSettings =
+    currentUser.user.username.toLowerCase() === owner.toLowerCase()
 
   return (
     <div>
       {isPersonalSettings ? (
         <>
-          <NameEmailCard user={user} provider={provider} />
-          <StudentCard user={user} />
+          <NameEmailCard currentUser={currentUser} provider={provider} />
+          <StudentCard currentUser={currentUser} />
         </>
       ) : (
         <ManageAdminCard />

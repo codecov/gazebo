@@ -68,12 +68,6 @@ function useNavLinks() {
       text: 'Global YAML',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/yaml`,
-      isExternalLink: true,
-    },
-    internalYamlTab: {
-      text: 'Global YAML',
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/yaml`,
       isExternalLink: false,
     },
     accessTab: {
@@ -170,6 +164,16 @@ function useStaticNavLinks() {
     signUp: {
       text: 'Sign Up',
       path: () => `${config.MARKETING_BASE_URL}/sign-up`,
+      isExternalLink: true,
+    },
+    demo: {
+      text: 'Demo',
+      path: () => `${config.MARKETING_BASE_URL}/demo`,
+      isExternalLink: true,
+    },
+    freeTrial: {
+      text: 'Trial',
+      path: () => `${config.MARKETING_BASE_URL}/trial`,
       isExternalLink: true,
     },
     terms: {

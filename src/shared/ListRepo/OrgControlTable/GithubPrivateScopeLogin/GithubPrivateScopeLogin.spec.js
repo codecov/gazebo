@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 
@@ -9,26 +9,34 @@ jest.mock('services/user')
 
 const user = {
   privateAccess: false,
-  service: 'github',
 }
 
 describe('GithubPrivateScopeLogin', () => {
   describe('should not render', () => {
     it('if no user exists', () => {
       useUser.mockReturnValue({ data: undefined })
-      render(<GithubPrivateScopeLogin />, { wrapper: MemoryRouter })
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <GithubPrivateScopeLogin />
+          </Route>
+        </MemoryRouter>
+      )
 
       expect(screen.queryByText('add private')).not.toBeInTheDocument()
     })
 
     it('if the user has a service other than github', () => {
       useUser.mockReturnValue({
-        data: {
-          ...user,
-          service: 'bitbucket',
-        },
+        data: user,
       })
-      render(<GithubPrivateScopeLogin />, { wrapper: MemoryRouter })
+      render(
+        <MemoryRouter initialEntries={['/bb']}>
+          <Route path="/:provider">
+            <GithubPrivateScopeLogin />
+          </Route>
+        </MemoryRouter>
+      )
 
       expect(screen.queryByText('add private')).not.toBeInTheDocument()
     })
@@ -40,7 +48,13 @@ describe('GithubPrivateScopeLogin', () => {
           privateAccess: true,
         },
       })
-      render(<GithubPrivateScopeLogin />, { wrapper: MemoryRouter })
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <GithubPrivateScopeLogin />
+          </Route>
+        </MemoryRouter>
+      )
 
       expect(screen.queryByText('add private')).not.toBeInTheDocument()
     })
@@ -48,11 +62,17 @@ describe('GithubPrivateScopeLogin', () => {
 
   it('renders', () => {
     useUser.mockReturnValue({ data: user })
-    render(<GithubPrivateScopeLogin />, { wrapper: MemoryRouter })
+    render(
+      <MemoryRouter initialEntries={['/gh']}>
+        <Route path="/:provider">
+          <GithubPrivateScopeLogin />
+        </Route>
+      </MemoryRouter>
+    )
 
     expect(screen.queryByText('add private')).toHaveAttribute(
       'href',
-      'https://stage-web.codecov.dev/login/github?private=t'
+      'https://stage-web.codecov.dev/login/gh?private=t'
     )
   })
 })

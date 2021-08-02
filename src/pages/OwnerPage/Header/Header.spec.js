@@ -4,13 +4,14 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import Header from './Header'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
+jest.mock('./CallToAction', () => () => 'CallToAction')
 
 describe('Header', () => {
   function setup(props = {}) {
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
         <Route path="/:provider/:owner">
-          <Header {...props} />
+          <Header owner={props.owner} accountDetails={props.accountDetails} />
         </Route>
       </MemoryRouter>
     )
@@ -22,6 +23,12 @@ describe('Header', () => {
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
+        },
+        accountDetails: {
+          activatedUserCount: 0,
+          plan: {
+            value: 'users-free',
+          },
         },
       })
     })
@@ -45,6 +52,12 @@ describe('Header', () => {
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: false,
+        },
+        accountDetails: {
+          activatedUserCount: 0,
+          plan: {
+            value: 'users-free',
+          },
         },
       })
     })
