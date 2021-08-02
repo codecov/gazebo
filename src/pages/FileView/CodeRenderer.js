@@ -10,9 +10,15 @@ function CodeRenderer({
   coverage = [],
   showCovered = false,
   showUncovered = false,
+  showPartial = false,
 }) {
   return (
-    <Highlight {...defaultProps} code={code} language="yaml" theme={undefined}>
+    <Highlight
+      {...defaultProps}
+      code={code}
+      language="python"
+      theme={undefined}
+    >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
           className={cs(
@@ -28,6 +34,7 @@ function CodeRenderer({
               number={i + 1}
               coverage={coverage[i + 1]}
               showCovered={showCovered}
+              showPartial={showPartial}
               showUncovered={showUncovered}
               getLineProps={getLineProps}
               getTokenProps={getTokenProps}
@@ -44,6 +51,7 @@ CodeRenderer.propTypes = {
   coverage: PropTypes.shape(),
   showCovered: PropTypes.bool,
   showUncovered: PropTypes.bool,
+  showPartial: PropTypes.bool,
 }
 
 export default CodeRenderer

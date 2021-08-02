@@ -1,11 +1,13 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-function CoverageSelect({ covered, checked, onChange }) {
+function CoverageSelect({ coverage, checked, onChange }) {
   return (
     <div className="flex text-xs font-mono items-center">
       <input
-        aria-label={`show-${covered ? 'covered' : 'uncovered'}-lines`}
+        aria-label={`show-${
+          coverage === 1 ? 'covered' : coverage === 2 ? 'partial' : 'uncovered'
+        }-lines`}
         onChange={onChange}
         checked={checked}
         className="cursor-pointer mr-2"
@@ -13,18 +15,19 @@ function CoverageSelect({ covered, checked, onChange }) {
       />
       <span
         className={cs('px-2 border-r-2', {
-          'bg-ds-coverage-covered border-ds-primary-green': covered,
-          'bg-ds-coverage-uncovered border-ds-primary-red': !covered,
+          'bg-ds-coverage-covered border-ds-primary-green': coverage === 1,
+          'bg-ds-coverage-uncovered border-ds-primary-red': coverage === 0,
+          'bg-ds-coverage-partial border-ds-primary-yellow': coverage === 2,
         })}
       >
-        {covered ? 'Covered' : 'Uncovered'}
+        {coverage === 1 ? 'Covered' : coverage === 2 ? 'Partial' : 'Uncovered'}
       </span>
     </div>
   )
 }
 
 CoverageSelect.propTypes = {
-  covered: PropTypes.bool.isRequired,
+  coverage: PropTypes.bool.isRequired,
   checked: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
 }

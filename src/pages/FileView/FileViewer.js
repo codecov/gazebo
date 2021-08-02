@@ -9,6 +9,8 @@ import AppLink from 'shared/AppLink'
 function FileViewer({ treePaths, content, coverage }) {
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
+  const [partial, setPartial] = useState(true)
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center mb-4 justify-between">
@@ -21,13 +23,20 @@ function FileViewer({ treePaths, content, coverage }) {
             <CoverageSelect
               onChange={() => setUncovered(!uncovered)}
               checked={uncovered}
-              covered={false}
+              coverage={1}
+            />
+          </div>
+          <div className="mr-7">
+            <CoverageSelect
+              onChange={() => setPartial(!partial)}
+              checked={partial}
+              coverage={2}
             />
           </div>
           <CoverageSelect
             onChange={() => setCovered(!covered)}
             checked={covered}
-            covered={true}
+            coverage={0}
           />
         </div>
       </div>
@@ -42,6 +51,7 @@ function FileViewer({ treePaths, content, coverage }) {
           showCovered={covered}
           showUncovered={uncovered}
           coverage={coverage}
+          showPartial={partial}
           code={content}
         />{' '}
       </div>

@@ -4,15 +4,15 @@ import CoverageSelect from './CoverageSelect'
 const onChange = jest.fn(() => {})
 
 describe('CoverageSelect', () => {
-  function setup(covered) {
+  function setup(coverage) {
     render(
-      <CoverageSelect covered={covered} checked={false} onChange={onChange} />
+      <CoverageSelect coverage={coverage} checked={false} onChange={onChange} />
     )
   }
 
   describe('renders covered', () => {
     beforeEach(() => {
-      setup(true)
+      setup(1)
     })
 
     it('covered', () => {
@@ -22,11 +22,21 @@ describe('CoverageSelect', () => {
 
   describe('renders uncovered', () => {
     beforeEach(() => {
-      setup(true)
+      setup(0)
     })
 
     it('uncovered', () => {
-      expect(screen.getByText('Covered')).toBeInTheDocument()
+      expect(screen.getByText('Uncovered')).toBeInTheDocument()
+    })
+  })
+
+  describe('renders partial', () => {
+    beforeEach(() => {
+      setup(0)
+    })
+
+    it('partial', () => {
+      expect(screen.getByText('Partial')).toBeInTheDocument()
     })
   })
 })
