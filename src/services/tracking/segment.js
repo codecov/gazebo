@@ -21,14 +21,16 @@ function identifyFromAnalytics(id, type) {
       Salesforce: false,
       Marketo: false,
     },
-    externalIds: [
-      {
-        id,
-        type,
-        collection: 'users',
-        encoding: 'none',
-      },
-    ],
+    context: {
+      externalIds: [
+        {
+          id,
+          type,
+          collection: 'users',
+          encoding: 'none',
+        },
+      ],
+    },
   })
 }
 
