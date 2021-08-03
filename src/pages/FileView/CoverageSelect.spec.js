@@ -32,7 +32,7 @@ describe('CoverageSelect', () => {
 
   describe('renders partial', () => {
     beforeEach(() => {
-      setup(0)
+      setup(2)
     })
 
     it('partial', () => {

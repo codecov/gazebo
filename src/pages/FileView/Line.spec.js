@@ -18,6 +18,7 @@ describe('Line', () => {
         showUncovered={showUncovered}
         number={number}
         coverage={coverage}
+        showPartial={true}
         getTokenProps={() => {}}
         getLineProps={() => {}}
       />

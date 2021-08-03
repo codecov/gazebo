@@ -36,6 +36,7 @@ function Line({
   getTokenProps,
 }) {
   const lineState = getLineState()
+
   // eslint-disable-next-line complexity
   function getLineState() {
     if (coverage === 0 && showUncovered) {
