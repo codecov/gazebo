@@ -162,14 +162,16 @@ describe('useSegmentUser', () => {
       expect(
         window.analytics.identify.mock.instances[1].identify
       ).toBeCalledWith({
-        externalIds: [
-          {
-            collection: 'users',
-            encoding: 'none',
-            id: '123',
-            type: 'ga_client_id',
-          },
-        ],
+        context: {
+          externalIds: [
+            {
+              collection: 'users',
+              encoding: 'none',
+              id: '123',
+              type: 'ga_client_id',
+            },
+          ],
+        },
         integrations: {
           Marketo: false,
           Salesforce: false,
@@ -178,14 +180,16 @@ describe('useSegmentUser', () => {
       expect(
         window.analytics.identify.mock.instances[2].identify
       ).toBeCalledWith({
-        externalIds: [
-          {
-            collection: 'users',
-            encoding: 'none',
-            id: '456',
-            type: 'marketo_cookie',
-          },
-        ],
+        context: {
+          externalIds: [
+            {
+              collection: 'users',
+              encoding: 'none',
+              id: '456',
+              type: 'marketo_cookie',
+            },
+          ],
+        },
         integrations: {
           Marketo: false,
           Salesforce: false,
