@@ -1,13 +1,14 @@
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useSegmentUser } from './segment'
+import { useSegmentUser, useSegmentPage } from './segment'
 import * as Cookie from 'js-cookie'
 
 window.analytics = {
   identify: jest.fn(),
+  page: jest.fn(),
 }
 
 const queryClient = new QueryClient({
@@ -264,104 +265,36 @@ describe('useSegmentUser', () => {
       })
     })
   })
+})
 
-  // describe('when the user is logged-in but missing data', () => {
-  //   const user = {
-  //     trackingMetadata: {
-  //       ownerid: 3,
-  //       hasYaml: false,
-  //       serviceId: '123',
-  //       service: 'github',
-  //       plan: 'plan',
-  //       staff: false,
-  //       bot: null,
-  //       delinquent: null,
-  //       didTrial: null,
-  //       planProvider: null,
-  //       planUserCount: null,
-  //       createdAt: null,
-  //       updatedAt: null,
-  //     },
-  //     user: {
-  //       avatar: 'avatar',
-  //       name: null,
-  //       username: null,
-  //       student: null,
-  //       studentCreatedAt: null,
-  //       studentUpdatedAt: null,
-  //     },
-  //     email: null,
-  //     privateAccess: null,
-  //   }
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: jest.fn(),
+}))
 
-  //   beforeEach(() => {
-  //     server.use(
-  //       graphql.query('CurrentUser', (req, res, ctx) => {
-  //         return res(ctx.status(200), ctx.data({ me: user }))
-  //       })
-  //     )
-  //     return setup()
-  //   })
+describe('useSegmentPage', () => {
+  function setup(pathname) {
+    useLocation.mockReturnValue({ pathname })
+    renderHook(() => useSegmentPage())
+  }
 
-  //   it('set the user data in the dataLayer', () => {
-  //     expect(window.dataLayer[0]).toEqual({
-  //       codecov: {
-  //         app: {
-  //           version: 'react-app',
-  //         },
-  //         user: {
-  //           ownerid: 3,
-  //           has_yaml: false,
-  //           avatar: 'avatar',
-  //           service_id: '123',
-  //           plan: 'plan',
-  //           staff: false,
-  //           service: 'github',
-  //           email: 'unknown@codecov.io',
-  //           name: 'unknown',
-  //           username: 'unknown',
-  //           student: false,
-  //           bot: false,
-  //           delinquent: false,
-  //           did_trial: false,
-  //           private_access: false,
-  //           plan_provider: '',
-  //           plan_user_count: 5,
-  //           created_at: '2014-01-01T12:00:00.000Z',
-  //           updated_at: '2014-01-01T12:00:00.000Z',
-  //           student_created_at: '2014-01-01T12:00:00.000Z',
-  //           student_updated_at: '2014-01-01T12:00:00.000Z',
-  //           guest: false,
-  //         },
-  //       },
-  //     })
-  //   })
-  // })
+  describe('when there is a path change', () => {
+    it('makes an analytics page call', () => {
+      let pathname = '/gh/thanos'
+      setup(pathname)
+      expect(window.analytics.page).toHaveBeenCalledTimes(1)
+    })
+  })
 
-  // describe('when user is not logged in', () => {
-  //   beforeEach(() => {
-  //     const spy = jest.spyOn(console, 'error')
-  //     spy.mockImplementation(jest.fn())
+  describe('when there are a n-path changes', () => {
+    it('makes nth analytics page calls', () => {
+      const owners = ['orly', 'jester', 'nott']
 
-  //     server.use(
-  //       graphql.query('CurrentUser', (req, res, ctx) => {
-  //         return res(ctx.status(200), ctx.data({ me: null }))
-  //       })
-  //     )
-  //     return setup()
-  //   })
+      owners.forEach((owner) => {
+        setup('/gh/' + owner)
+      })
 
-  //   it('set the user as guest in the dataLayer', () => {
-  //     expect(window.dataLayer[0]).toEqual({
-  //       codecov: {
-  //         app: {
-  //           version: 'react-app',
-  //         },
-  //         user: {
-  //           guest: true,
-  //         },
-  //       },
-  //     })
-  //   })
-  // })
+      expect(window.analytics.page).toHaveBeenCalledTimes(3)
+    })
+  })
 })

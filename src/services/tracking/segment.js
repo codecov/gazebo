@@ -16,7 +16,7 @@ const defaultUser = {
 }
 
 function identifyFromAnalytics(id, type) {
-  return window.analytics.identify({
+  return window?.analytics?.identify({
     integrations: {
       Salesforce: false,
       Marketo: false,
@@ -33,7 +33,7 @@ function identifyFromAnalytics(id, type) {
 }
 
 function identifyUser(user) {
-  return window.analytics.identify(user.ownerid, {
+  return window?.analytics?.identify(user.ownerid, {
     userId: user.ownerid,
     traits: {
       ...user,
@@ -55,7 +55,7 @@ function identifyUser(user) {
 
 function identifySegmentUser(user) {
   if (user.guest) {
-    window.analytics.identify({})
+    window?.analytics?.identify({})
     return
   }
 
@@ -80,6 +80,6 @@ export function useSegmentPage() {
   const location = useLocation()
 
   React.useEffect(() => {
-    window.analytics.page()
+    window?.analytics?.page()
   }, [location.pathname])
 }
