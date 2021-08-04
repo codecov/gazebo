@@ -1,6 +1,9 @@
 import CopyClipboard from './CopyClipboard'
 import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
+import { act } from '@testing-library/react'
+
+jest.mock('copy-to-clipboard', () => () => true)
 
 describe('CopyClipboard', () => {
   function setup() {
@@ -9,14 +12,25 @@ describe('CopyClipboard', () => {
 
   describe('copies to clipboard', () => {
     beforeEach(() => {
+      jest.useFakeTimers()
       setup()
     })
+
     it('renders body', () => {
-      const copyElements = screen.getByText('copy', { exact: true })
-      expect(copyElements).toBeInTheDocument()
+      let clipboard = screen.getByText(/clipboard-copy/, { exact: true })
+      expect(clipboard).toBeInTheDocument()
+      const button = screen.getByRole('button', {
+        name: /copy/i,
+      })
       window.prompt = jest.fn()
-      userEvent.click(copyElements)
-      expect(window.prompt).toHaveBeenCalled()
+      userEvent.click(button)
+      const success = screen.getByText(/check/, { exact: true })
+      expect(success).toBeInTheDocument()
+      act(() => {
+        jest.runAllTimers()
+      })
+      clipboard = screen.getByText(/clipboard-copy/, { exact: true })
+      expect(clipboard).toBeInTheDocument()
     })
   })
 })
