@@ -1,12 +1,9 @@
-import omitBy from 'lodash/omitBy'
-import isNull from 'lodash/isNull'
-import defaults from 'lodash/defaults'
-import mapKeys from 'lodash/mapKeys'
-import snakeCase from 'lodash/snakeCase'
-import pick from 'lodash/pick'
+import React from 'react'
 import { useUser } from 'services/user'
+import { useLocation } from 'react-router-dom'
+import * as Cookie from 'js-cookie'
 
-const defaultUser = {
+const gtmUser = {
   ownerid: null,
   avatar: null,
   serviceId: null,
@@ -30,28 +27,29 @@ const defaultUser = {
   studentUpdatedAt: '2014-01-01T12:00:00.000Z',
 }
 
-export function getUserData(userData, defaultData = defaultUser) {
-  // only limiting the keys from the defaults data
-  const keysWeNeed = Object.keys(defaultData)
-
-  // fields we need are in different place in userData
-  // so we need to build a flat object
-  const flatObject = {
-    ...pick(userData.trackingMetadata, keysWeNeed),
-    ...pick(userData.user, keysWeNeed),
-    ...pick(userData, keysWeNeed),
-    guest: false,
-  }
-
-  // remove all the key that has a null value
-  const userWithoutNull = omitBy(flatObject, isNull)
-
-  // apply the default values
-  const userWithDefault = defaults(userWithoutNull, defaultData)
-
-  // convert camelCase keys to snake_case
-  return mapKeys(userWithDefault, (_, key) => snakeCase(key))
+const segmentUser = {
+  ownerid: null,
+  email: 'unknown@codecov.io',
+  name: 'unknown',
+  username: 'unknown',
+  service: null,
+  plan: null,
+  staff: null,
+  serviceId: null,
 }
+
+const trackingInfo = [
+  {
+    name: 'GTM',
+    callback: setDataLayer,
+    defaultUser: gtmUser,
+  },
+  {
+    name: 'Segment',
+    callback: identifySegmentUser,
+    defaultUser: segmentUser,
+  },
+]
 
 function setDataLayer(user) {
   window.dataLayer = [
@@ -66,10 +64,89 @@ function setDataLayer(user) {
   ]
 }
 
+function identifyFromAnalytics(id, type) {
+  return window?.analytics?.identify({
+    integrations: {
+      Salesforce: false,
+      Marketo: false,
+    },
+    context: {
+      externalIds: [
+        {
+          id,
+          type,
+          collection: 'users',
+          encoding: 'none',
+        },
+      ],
+    },
+  })
+}
+
+function identifyUser(user) {
+  return window?.analytics?.identify(user.ownerid, {
+    userId: user.ownerid,
+    traits: {
+      ...user,
+    },
+    integrations: {
+      Salesforce: true,
+      Marketo: false,
+    },
+    context: {
+      externalIds: {
+        id: user.service_id,
+        type: user.service + '_id',
+        collections: 'users',
+        encoding: 'none',
+      },
+    },
+  })
+}
+
+function identifySegmentUser(user) {
+  if (user.guest) {
+    window?.analytics?.identify({})
+    return
+  }
+
+  const gaId = Cookie.get('_ga')
+  const marketoId = Cookie.get('_mkto_trk')
+
+  if (gaId) identifyFromAnalytics(gaId, 'ga_client_id')
+  if (marketoId) identifyFromAnalytics(marketoId, 'marketo_cookie')
+
+  identifyUser(user)
+}
+
+function handleOnSuccess(user) {
+  trackingInfo.forEach((platform) => {
+    const { callback, defaultUser } = platform
+    callback(user, defaultUser)
+  })
+}
+
+function handleOnError(guest) {
+  trackingInfo.forEach((platform) => {
+    const { callback } = platform
+    callback(guest)
+  })
+}
+
+function useSegmentPage() {
+  const location = useLocation()
+
+  React.useEffect(() => {
+    window?.analytics?.page()
+  }, [location.pathname])
+}
+
 export function useTracking() {
+  useSegmentPage()
+
   return useUser({
-    onSuccess: (user) => setDataLayer(getUserData(user)),
-    onError: (data) => setDataLayer({ guest: true }),
+    onSuccess: (user) => handleOnSuccess(user),
+    onError: (data) => handleOnError({ guest: true }),
     suspense: false,
   })
 }

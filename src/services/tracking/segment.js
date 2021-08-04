@@ -1,7 +1,7 @@
 import React from 'react'
 import { useUser } from 'services/user'
 import { useLocation } from 'react-router-dom'
-import { getUserData } from './hooks'
+import { getUserData } from './utils'
 import * as Cookie from 'js-cookie'
 
 const defaultUser = {
