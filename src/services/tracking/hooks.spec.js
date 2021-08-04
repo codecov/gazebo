@@ -3,8 +3,10 @@ import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
-
+import { useSegmentPage } from './segment'
 import { useTracking } from './hooks'
+
+jest.mock('./segment')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,6 +79,7 @@ describe('useTracking', () => {
     })
 
     it('set the user data in the dataLayer', () => {
+      expect(useSegmentPage).toHaveBeenCalled()
       expect(window.dataLayer[0]).toEqual({
         codecov: {
           app: {
@@ -150,6 +153,7 @@ describe('useTracking', () => {
     })
 
     it('set the user data in the dataLayer', () => {
+      expect(useSegmentPage).toHaveBeenCalled()
       expect(window.dataLayer[0]).toEqual({
         codecov: {
           app: {
@@ -198,6 +202,7 @@ describe('useTracking', () => {
     })
 
     it('set the user as guest in the dataLayer', () => {
+      expect(useSegmentPage).toHaveBeenCalled()
       expect(window.dataLayer[0]).toEqual({
         codecov: {
           app: {

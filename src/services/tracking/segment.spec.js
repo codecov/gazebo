@@ -1,71 +1,38 @@
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
-import { MemoryRouter, useLocation } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { useSegmentUser, useSegmentPage } from './segment'
+import { useLocation } from 'react-router-dom'
 import * as Cookie from 'js-cookie'
+import { useSegmentPage, identifySegmentUser } from './segment'
 
 window.analytics = {
   identify: jest.fn(),
   page: jest.fn(),
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-      refetchOnWindowFocus: false,
-    },
-  },
-})
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: jest.fn(),
+}))
 
-const wrapper = ({ children }) => (
-  <MemoryRouter>
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  </MemoryRouter>
-)
-
-const server = setupServer()
-
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
-
-describe('useSegmentUser', () => {
-  let hookData
-
-  function setup() {
-    hookData = renderHook(() => useSegmentUser(), { wrapper })
-    return hookData.waitFor(() => {
-      return !hookData.result.current.isFetching
-    })
+describe('identifySegmentUser', () => {
+  function setup(user) {
+    identifySegmentUser(user)
   }
 
   describe('when user has all the data', () => {
     const user = {
-      trackingMetadata: {
-        ownerid: 1,
-        serviceId: '123',
-        plan: 'plan',
-        staff: true,
-        service: 'github',
-      },
-      user: {
-        name: 'Test User',
-        username: 'test_user',
-      },
+      ownerid: 1,
+      service_id: '123',
+      plan: 'plan',
+      staff: true,
+      service: 'github',
+      name: 'Test User',
+      username: 'test_user',
       email: 'tedlasso@test.com',
+      guest: false,
     }
 
     beforeEach(() => {
-      server.use(
-        graphql.query('CurrentUser', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data({ me: user }))
-        })
-      )
-      return setup()
+      setup(user)
     })
 
     it('should set full data into identify object', () => {
@@ -104,29 +71,26 @@ describe('useSegmentUser', () => {
 
   describe('when user has all the data and all the cookies', () => {
     const user = {
-      trackingMetadata: {
-        ownerid: 1,
-        serviceId: '123',
-        plan: 'plan',
-        staff: true,
-        service: 'github',
-      },
-      user: {
-        name: 'Test User',
-        username: 'test_user',
-      },
+      ownerid: 1,
+      service_id: '123',
+      plan: 'plan',
+      staff: true,
+      service: 'github',
+      name: 'Test User',
+      username: 'test_user',
       email: 'tedlasso@test.com',
+      guest: false,
     }
 
     beforeEach(() => {
-      server.use(
-        graphql.query('CurrentUser', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data({ me: user }))
-        })
-      )
       Cookie.set('_ga', '123')
       Cookie.set('_mkto_trk', '456')
-      return setup()
+      setup(user)
+    })
+
+    afterEach(() => {
+      Cookie.remove('_ga')
+      Cookie.remove('_mkto_trk')
     })
 
     it('hook should make 3 different identify calls', () => {
@@ -199,16 +163,8 @@ describe('useSegmentUser', () => {
   })
 
   describe('when user is anonymous', () => {
-    const spy = jest.spyOn(console, 'error')
-    spy.mockImplementation(jest.fn())
-
     beforeEach(() => {
-      server.use(
-        graphql.query('CurrentUser', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data({ me: null }))
-        })
-      )
-      return setup()
+      setup({ guest: true })
     })
 
     it('should make an identify call as a guest', () => {
@@ -216,65 +172,7 @@ describe('useSegmentUser', () => {
       expect(window.analytics.identify).toBeCalledWith({})
     })
   })
-
-  describe('when user has some missing data', () => {
-    const user = {
-      trackingMetadata: {
-        ownerid: 1,
-        serviceId: '123',
-        plan: 'plan',
-        staff: true,
-        service: 'github',
-      },
-    }
-
-    beforeEach(() => {
-      Cookie.remove('_ga')
-      Cookie.remove('_mkto_trk')
-      server.use(
-        graphql.query('CurrentUser', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data({ me: user }))
-        })
-      )
-      return setup()
-    })
-
-    it('should make an identify call as a guest', () => {
-      expect(window.analytics.identify.mock.instances).toHaveLength(1)
-      expect(window.analytics.identify).toBeCalledWith(1, {
-        context: {
-          externalIds: {
-            collections: 'users',
-            encoding: 'none',
-            id: '123',
-            type: 'github_id',
-          },
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: true,
-        },
-        traits: {
-          email: 'unknown@codecov.io',
-          guest: false,
-          name: 'unknown',
-          ownerid: 1,
-          plan: 'plan',
-          service: 'github',
-          service_id: '123',
-          staff: true,
-          username: 'unknown',
-        },
-        userId: 1,
-      })
-    })
-  })
 })
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(),
-}))
 
 describe('useSegmentPage', () => {
   function setup(pathname) {
