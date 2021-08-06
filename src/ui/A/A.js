@@ -42,7 +42,11 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
       target={isExternal && 'blank'}
     >
       {children}
-      {isExternal && <Icon size="sm" name="external-link"></Icon>}
+      {isExternal && (
+        <span className="text-ds-gray-quinary">
+          <Icon size="sm" name="external-link"></Icon>
+        </span>
+      )}
     </a>
   )
 }

@@ -4,6 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import Tabs from './Tabs'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
+jest.mock('../CallToAction', () => () => 'CallToAction')
 
 describe('Tabs', () => {
   function setup(props = {}) {
@@ -18,7 +19,7 @@ describe('Tabs', () => {
 
   describe('when user is part of the org', () => {
     beforeEach(() => {
-      setup()
+      setup({ owner: 'kelly', provider: 'gh' })
     })
 
     it('renders links to the owner settings', () => {
