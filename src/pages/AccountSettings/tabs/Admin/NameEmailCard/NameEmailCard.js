@@ -19,13 +19,13 @@ function getSchema() {
   })
 }
 
-function NameEmailCard({ user, provider }) {
+function NameEmailCard({ currentUser, provider }) {
   const addToast = useAddNotification()
   const { register, handleSubmit, formState, reset } = useForm({
     resolver: yupResolver(getSchema()),
     defaultValues: {
-      email: user.email,
-      name: user.name,
+      email: currentUser.email,
+      name: currentUser.user.name,
     },
   })
 
@@ -35,14 +35,14 @@ function NameEmailCard({ user, provider }) {
 
   function submit(formData) {
     mutate(formData, {
-      onSuccess: (user) => {
+      onSuccess: (updatedUser) => {
         addToast({
           type: 'success',
           text: 'Information successfully updated',
         })
         reset({
-          email: user.email,
-          name: user.name,
+          email: updatedUser.email,
+          name: updatedUser.user.name,
         })
       },
       onError: () => {
@@ -106,9 +106,11 @@ function NameEmailCard({ user, provider }) {
 }
 
 NameEmailCard.propTypes = {
-  user: PropTypes.shape({
-    name: PropTypes.string.isRequired,
+  currentUser: PropTypes.shape({
     email: PropTypes.string.isRequired,
+    user: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }),
   }),
   provider: PropTypes.string.isRequired,
 }

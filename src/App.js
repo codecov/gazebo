@@ -77,7 +77,7 @@ function App() {
                   <p>Tree</p>
                 </BaseLayout>
               </Route>
-              <Route path="/:provider/:owner/:repo/*" exact>
+              <Route path="/:provider/:owner/:repo/blob/:ref/*" exact>
                 <BaseLayout>
                   <FileViewPage />
                 </BaseLayout>

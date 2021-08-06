@@ -3,6 +3,8 @@ import Button from 'ui/Button'
 import A from 'ui/A'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
+import { useParams } from 'react-router-dom'
+import RequestButton from './RequestButton'
 
 export function LoginPrompt() {
   return (
@@ -21,9 +23,10 @@ export function LoginPrompt() {
 }
 
 function DesktopMenu() {
-  const { data: user } = useUser({
+  const { data: currentUser } = useUser({
     suspense: false,
   })
+  const { owner, provider } = useParams()
 
   return (
     <>
@@ -42,9 +45,10 @@ function DesktopMenu() {
           Blog
         </A>
       </div>
-      {!!user ? (
-        <div className="mx-2 md:mx-0">
-          <Dropdown user={user} />
+      {currentUser ? (
+        <div className="flex items-center space-between mx-2 md:mx-4">
+          {!!owner && <RequestButton owner={owner} provider={provider} />}
+          <Dropdown currentUser={currentUser} />
         </div>
       ) : (
         <LoginPrompt />

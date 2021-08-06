@@ -139,7 +139,7 @@ It is possible to impersonate other users for debugging purposes if you are a `C
 
 ## Debugging failed checks
 
-### Bundsize
+### Bundlesize
 
 (PR checks temporarirly disabled)
 

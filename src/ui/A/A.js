@@ -8,10 +8,13 @@ const baseClass = `
   font-sans cursor-pointer
 
   hover:underline
+
+  focus:ring-2
 `
 const variantClasses = {
   default: `text-ds-blue`,
   header: `font-semibold text-ds-gray-secondary`,
+  link: `text-ds-blue-darker`,
 }
 
 function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
@@ -56,7 +59,7 @@ A.propTypes = {
       )
     }
   },
-  variant: PropTypes.oneOf(['default', 'header']),
+  variant: PropTypes.oneOf(['default', 'header', 'link']),
   isExternal: PropTypes.bool,
 }
 

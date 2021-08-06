@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import { providerFeedback } from 'shared/utils'
@@ -7,9 +6,8 @@ import Avatar from 'ui/Avatar'
 import Banner from 'ui/Banner'
 import Icon from 'ui/Icon'
 import A from 'ui/A'
-function Header({ owner }) {
-  const { provider } = useParams()
 
+function Header({ owner, provider }) {
   return owner.isCurrentUserPartOfOrg ? (
     <>
       <Banner
@@ -50,6 +48,7 @@ Header.propTypes = {
     username: PropTypes.string.isRequired,
     isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
   }).isRequired,
+  provider: PropTypes.string.isRequired,
 }
 
 export default Header

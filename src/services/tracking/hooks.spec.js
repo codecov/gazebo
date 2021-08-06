@@ -1,4 +1,4 @@
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter } from 'react-router-dom'
@@ -40,32 +40,37 @@ describe('useTracking', () => {
 
   describe('when the user is logged-in and has all data', () => {
     const user = {
-      ownerid: 1,
-      yaml: { comment: 'on' },
-      avatar_url: 'avatar',
-      service_id: '123',
-      plan: 'plan',
-      staff: true,
+      trackingMetadata: {
+        ownerid: 1,
+        hasYaml: true,
+        serviceId: '123',
+        plan: 'plan',
+        staff: true,
+        bot: true,
+        delinquent: true,
+        didTrial: true,
+        planProvider: 'provider',
+        planUserCount: 1000,
+        service: 'github',
+        createdAt: new Date('2017-01-01 12:00:00').toISOString(),
+        updatedAt: new Date('2018-01-01 12:00:00').toISOString(),
+      },
+      user: {
+        avatar: 'avatar',
+        name: 'Eugene Onegin',
+        username: 'eugene_onegin',
+        student: true,
+        studentCreatedAt: new Date('2019-01-01 12:00:00').toISOString(),
+        studentUpdatedAt: new Date('2020-01-01 12:00:00').toISOString(),
+      },
+      privateAccess: true,
       email: 'fake@test.com',
-      name: 'Eugene Onegin',
-      username: 'eugene_onegin',
-      student: true,
-      bot: true,
-      delinquent: true,
-      did_trial: true,
-      private_access: true,
-      plan_provider: 'provider',
-      plan_user_count: 1000,
-      createstamp: new Date('2017-01-01 12:00:00').toISOString(),
-      updatestamp: new Date('2018-01-01 12:00:00').toISOString(),
-      student_created_at: new Date('2019-01-01 12:00:00').toISOString(),
-      student_updated_at: new Date('2020-01-01 12:00:00').toISOString(),
     }
 
     beforeEach(() => {
       server.use(
-        rest.get(`/internal/profile`, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(user))
+        graphql.query('CurrentUser', (req, res, ctx) => {
+          return res(ctx.status(200), ctx.data({ me: user }))
         })
       )
       return setup()
@@ -94,8 +99,9 @@ describe('useTracking', () => {
             private_access: true,
             plan_provider: 'provider',
             plan_user_count: 1000,
-            createdAt: new Date('2017-01-01 12:00:00').toISOString(),
-            updatedAt: new Date('2018-01-01 12:00:00').toISOString(),
+            service: 'github',
+            created_at: new Date('2017-01-01 12:00:00').toISOString(),
+            updated_at: new Date('2018-01-01 12:00:00').toISOString(),
             student_created_at: new Date('2019-01-01 12:00:00').toISOString(),
             student_updated_at: new Date('2020-01-01 12:00:00').toISOString(),
             guest: false,
@@ -107,32 +113,37 @@ describe('useTracking', () => {
 
   describe('when the user is logged-in but missing data', () => {
     const user = {
-      ownerid: 3,
-      yaml: null,
-      avatar_url: 'avatar',
-      service_id: '123',
-      plan: 'plan',
-      staff: false,
+      trackingMetadata: {
+        ownerid: 3,
+        hasYaml: false,
+        serviceId: '123',
+        service: 'github',
+        plan: 'plan',
+        staff: false,
+        bot: null,
+        delinquent: null,
+        didTrial: null,
+        planProvider: null,
+        planUserCount: null,
+        createdAt: null,
+        updatedAt: null,
+      },
+      user: {
+        avatar: 'avatar',
+        name: null,
+        username: null,
+        student: null,
+        studentCreatedAt: null,
+        studentUpdatedAt: null,
+      },
       email: null,
-      name: null,
-      username: null,
-      student: null,
-      bot: null,
-      delinquent: null,
-      did_trial: null,
-      private_access: null,
-      plan_provider: null,
-      plan_user_count: null,
-      createdAt: null,
-      updatedAt: null,
-      student_created_at: null,
-      student_updated_at: null,
+      privateAccess: null,
     }
 
     beforeEach(() => {
       server.use(
-        rest.get(`/internal/profile`, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(user))
+        graphql.query('CurrentUser', (req, res, ctx) => {
+          return res(ctx.status(200), ctx.data({ me: user }))
         })
       )
       return setup()
@@ -151,6 +162,7 @@ describe('useTracking', () => {
             service_id: '123',
             plan: 'plan',
             staff: false,
+            service: 'github',
             email: 'unknown@codecov.io',
             name: 'unknown',
             username: 'unknown',
@@ -161,10 +173,10 @@ describe('useTracking', () => {
             private_access: false,
             plan_provider: '',
             plan_user_count: 5,
-            createdAt: new Date('2014-01-01 12:00:00').toISOString(),
-            updatedAt: new Date('2014-01-01 12:00:00').toISOString(),
-            student_created_at: new Date('2014-01-01 12:00:00').toISOString(),
-            student_updated_at: new Date('2014-01-01 12:00:00').toISOString(),
+            created_at: '2014-01-01T12:00:00.000Z',
+            updated_at: '2014-01-01T12:00:00.000Z',
+            student_created_at: '2014-01-01T12:00:00.000Z',
+            student_updated_at: '2014-01-01T12:00:00.000Z',
             guest: false,
           },
         },
@@ -178,8 +190,8 @@ describe('useTracking', () => {
       spy.mockImplementation(jest.fn())
 
       server.use(
-        rest.get(`/internal/profile`, (req, res, ctx) => {
-          return res(ctx.status(401), ctx.json({}))
+        graphql.query('CurrentUser', (req, res, ctx) => {
+          return res(ctx.status(200), ctx.data({ me: null }))
         })
       )
       return setup()

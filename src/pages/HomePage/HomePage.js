@@ -13,7 +13,7 @@ function HomePage({ active = false }) {
     <div className="flex flex-col gap-4">
       <Header />
       <div>
-        <Tabs currentUsername={currentUser.username} />
+        <Tabs currentUsername={currentUser.user.username} />
         <ListRepo active={active} canRefetch />
       </div>
     </div>

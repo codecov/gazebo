@@ -4,13 +4,18 @@ import Dropdown from './Dropdown'
 
 const provider = 'gh'
 
-const user = {
-  username: 'p',
-  avatarUrl: 'f',
+const currentUser = {
+  user: {
+    username: 'p',
+    avatarUrl: 'f',
+  },
 }
 
 const links = [
-  { label: 'Settings', to: `/account/${provider}/${user.username}` },
+  {
+    label: 'Settings',
+    to: `/account/${provider}/${currentUser.user.username}`,
+  },
   { label: 'Organizations', to: `/${provider}` },
   { label: 'Sign Out', to: `https://stage-web.codecov.dev/logout/${provider}` },
 ]
@@ -19,7 +24,7 @@ describe('Dropdown', () => {
   let wrapper
 
   beforeEach(() => {
-    wrapper = render(<Dropdown user={user} />, {
+    wrapper = render(<Dropdown currentUser={currentUser} />, {
       wrapper: (props) => (
         <MemoryRouter initialEntries={[`/${provider}`]}>
           <Switch>
