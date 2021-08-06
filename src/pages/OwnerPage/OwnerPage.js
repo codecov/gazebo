@@ -19,7 +19,7 @@ function OwnerPage({ active = false }) {
     <div className="flex flex-col gap-4">
       <Header owner={ownerData} />
       <div>
-        {ownerData && <Tabs owner={ownerData} />}
+        {ownerData?.isCurrentUserPartOfOrg && <Tabs owner={ownerData} />}
         <ListRepo
           active={active}
           canRefetch={ownerData.isCurrentUserPartOfOrg}

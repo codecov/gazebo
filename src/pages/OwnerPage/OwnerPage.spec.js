@@ -25,7 +25,7 @@ describe('OwnerPage', () => {
     beforeEach(() => {
       setup({
         username: 'codecov',
-        isCurrentUserPartOfOrg: false,
+        isCurrentUserPartOfOrg: true,
       })
     })
 
@@ -35,6 +35,14 @@ describe('OwnerPage', () => {
 
     it('renders the header', () => {
       expect(screen.getByText(/Header/)).toBeInTheDocument()
+    })
+
+    it('renders links to the settings', () => {
+      expect(
+        screen.queryByRole('link', {
+          name: /settings/i,
+        })
+      ).toBeInTheDocument()
     })
   })
 
@@ -57,6 +65,25 @@ describe('OwnerPage', () => {
           name: /not found/i,
         })
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('when user is not part of the org', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
+        },
+      })
+    })
+
+    it('doesnt render links to the settings', () => {
+      expect(
+        screen.queryByRole('link', {
+          name: /settings/i,
+        })
+      ).not.toBeInTheDocument()
     })
   })
 })

@@ -18,12 +18,7 @@ describe('Tabs', () => {
 
   describe('when user is part of the org', () => {
     beforeEach(() => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-        },
-      })
+      setup()
     })
 
     it('renders links to the owner settings', () => {
@@ -32,33 +27,6 @@ describe('Tabs', () => {
           name: /settings/i,
         })
       ).toHaveAttribute('href', '/account/gh/codecov')
-    })
-  })
-
-  describe('when user is not part of the org', () => {
-    beforeEach(() => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: false,
-        },
-      })
-    })
-
-    it('renders the title of the owner', () => {
-      expect(
-        screen.getByRole('heading', {
-          name: /codecov/i,
-        })
-      ).toBeInTheDocument()
-    })
-
-    it('doesnt render links to the settings', () => {
-      expect(
-        screen.queryByRole('link', {
-          name: /settings/i,
-        })
-      ).not.toBeInTheDocument()
     })
   })
 })
