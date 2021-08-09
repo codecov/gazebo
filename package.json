@@ -100,7 +100,7 @@
     "jest-junit": "^12.2.0",
     "lint-staged": "^11.0.0",
     "msw": "^0.30.1",
-    "postcss": "^7.0.36",
+    "postcss": "^8.3.6",
     "postcss-font-magician": "2.3.1",
     "prettier": "^2.3.2",
     "react-is": "^17.0.2",
