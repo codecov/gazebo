@@ -148,3 +148,5 @@ We have a relatively agressive bundlesize check in place to ensure we serve a le
 As we add more features our bundle will grow over time. We will adjust these thresholds on a case by case basis. If you're running into this check; this command will allow us to investigate what is taking space in the final production build.
 
 `npm run build -- --stats && npx webpack-bundle-analyzer ./build/bundle-stats.json`
+
+this is a test
