@@ -89,7 +89,7 @@ export function trackSegmentEvent(action, label) {
     event &&
     window?.analytics?.track(event, {
       label,
-      category: label === 'request-demo' ? 'header cta' : 'repo list cta',
+      category: label === 'request demo' ? 'header cta' : 'repo list cta',
       value: 1,
     })
   )

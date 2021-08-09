@@ -217,7 +217,7 @@ describe('trackSegmentEvent', () => {
 
   describe('when event is defined', () => {
     it('returns an track event if part of event enums', () => {
-      const label = 'sample-button'
+      const label = 'request demo'
       const action = 'click'
       setup(action, label)
 
@@ -225,7 +225,7 @@ describe('trackSegmentEvent', () => {
       expect(
         window.analytics.track.mock.instances[0].track
       ).toHaveBeenCalledWith('clicked button', {
-        category: 'repo list cta',
+        category: 'header cta',
         label,
         value: 1,
       })
