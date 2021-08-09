@@ -88,8 +88,10 @@ describe('CreateTokenModal', () => {
         expect(warning).toBeInTheDocument()
       })
       it('renders footer', () => {
-        const buttons = screen.getAllByRole('button')
-        expect(buttons.length).toBe(1)
+        const button = screen.getByRole('button', {
+          name: /done/i,
+        })
+        expect(button).toBeInTheDocument()
       })
       it('close modals', () => {
         userEvent.click(screen.getByText('Done'))
