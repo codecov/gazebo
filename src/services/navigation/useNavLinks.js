@@ -1,3 +1,4 @@
+import qs from 'qs'
 import { useRouteMatch } from 'react-router-dom'
 
 import config from 'config'
@@ -15,8 +16,10 @@ function useNavLinks() {
     },
     signIn: {
       text: 'Log in',
-      path: ({ provider = p } = { provider: p }) =>
-        `${config.BASE_URL}/login/${provider}`,
+      path: ({ provider = p, to } = { provider: p }) => {
+        const query = to ? qs.stringify({ to }, { addQueryPrefix: true }) : ''
+        return `${config.BASE_URL}/login/${provider}${query}`
+      },
       isExternalLink: true,
     },
     provider: {
@@ -164,6 +167,16 @@ function useStaticNavLinks() {
     signUp: {
       text: 'Sign Up',
       path: () => `${config.MARKETING_BASE_URL}/sign-up`,
+      isExternalLink: true,
+    },
+    demo: {
+      text: 'Demo',
+      path: () => `${config.MARKETING_BASE_URL}/demo`,
+      isExternalLink: true,
+    },
+    freeTrial: {
+      text: 'Trial',
+      path: () => `${config.MARKETING_BASE_URL}/trial`,
       isExternalLink: true,
     },
     terms: {
