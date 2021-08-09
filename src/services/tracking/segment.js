@@ -24,12 +24,14 @@ function identifyUser(user) {
       Marketo: false,
     },
     context: {
-      externalIds: {
-        id: user.service_id,
-        type: user.service + '_id',
-        collections: 'users',
-        encoding: 'none',
-      },
+      externalIds: [
+        {
+          id: user.service_id,
+          type: user.service + '_id',
+          collections: 'users',
+          encoding: 'none',
+        },
+      ],
     },
   })
 }
@@ -74,4 +76,15 @@ export function useSegmentPage() {
   React.useEffect(() => {
     window?.analytics?.page()
   }, [location.pathname])
+}
+
+export function trackSegmentEvent(event) {
+  return (
+    event &&
+    window?.analytics?.track('clicked button', {
+      category: event === 'request-demo' ? 'header cta' : 'repo list cta',
+      label: event,
+      value: 1,
+    })
+  )
 }

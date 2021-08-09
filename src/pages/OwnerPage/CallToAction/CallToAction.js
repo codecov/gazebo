@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { useAccountDetails } from 'services/account'
 import A from 'ui/A'
+import { trackSegmentEvent } from 'services/tracking/segment'
 
 function CallToAction({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({
@@ -20,6 +21,7 @@ function CallToAction({ provider, owner }) {
             to={{ pageName: 'upgradePlan' }}
             options={{ owner: owner }}
             variant="link"
+            onClick={() => trackSegmentEvent('upgrade plan')}
           >
             Upgrade
           </A>{' '}
@@ -28,7 +30,11 @@ function CallToAction({ provider, owner }) {
       ) : accountDetails?.activatedUserCount < 5 ? (
         <span>
           Need more than 5 users?{' '}
-          <A to={{ pageName: 'freeTrial' }} variant="link">
+          <A
+            to={{ pageName: 'freeTrial' }}
+            variant="link"
+            onClick={() => trackSegmentEvent('request free trial')}
+          >
             Request
           </A>{' '}
           free trial
