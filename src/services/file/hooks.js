@@ -12,6 +12,9 @@ const coverageFileFragment = `
               line
               coverage
             }
+            totals {
+                coverage # Absolute coverage of the commit
+            }
         }
     }
 
