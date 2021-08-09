@@ -21,7 +21,7 @@ function CallToAction({ provider, owner }) {
             to={{ pageName: 'upgradePlan' }}
             options={{ owner: owner }}
             variant="link"
-            onClick={() => trackSegmentEvent('upgrade plan')}
+            onClick={() => trackSegmentEvent('click', 'upgrade plan')}
           >
             Upgrade
           </A>{' '}
@@ -33,7 +33,7 @@ function CallToAction({ provider, owner }) {
           <A
             to={{ pageName: 'freeTrial' }}
             variant="link"
-            onClick={() => trackSegmentEvent('request free trial')}
+            onClick={() => trackSegmentEvent('click', 'request free trial')}
           >
             Request
           </A>{' '}

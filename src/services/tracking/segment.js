@@ -78,12 +78,18 @@ export function useSegmentPage() {
   }, [location.pathname])
 }
 
-export function trackSegmentEvent(event) {
+const SegmentTrackEvents = Object.freeze({
+  click: 'clicked button',
+})
+
+export function trackSegmentEvent(action, label) {
+  const event = SegmentTrackEvents[action]
+
   return (
     event &&
-    window?.analytics?.track('clicked button', {
-      category: event === 'request-demo' ? 'header cta' : 'repo list cta',
-      label: event,
+    window?.analytics?.track(event, {
+      label,
+      category: label === 'request-demo' ? 'header cta' : 'repo list cta',
       value: 1,
     })
   )

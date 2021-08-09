@@ -211,15 +211,16 @@ describe('useSegmentPage', () => {
 })
 
 describe('trackSegmentEvent', () => {
-  function setup(event) {
-    trackSegmentEvent(event)
+  function setup(action, label) {
+    trackSegmentEvent(action, label)
   }
 
   describe('when event is defined', () => {
-    const event = 'sample-button'
+    const label = 'sample-button'
+    const action = 'click'
 
     beforeEach(() => {
-      setup(event)
+      setup(action, label)
     })
 
     it('returns an track event', () => {
@@ -228,7 +229,7 @@ describe('trackSegmentEvent', () => {
         window.analytics.track.mock.instances[0].track
       ).toHaveBeenCalledWith('clicked button', {
         category: 'repo list cta',
-        label: event,
+        label,
         value: 1,
       })
     })
@@ -236,9 +237,10 @@ describe('trackSegmentEvent', () => {
 
   describe('when event is undefined', () => {
     const event = undefined
+    const label = 'anything'
 
     beforeEach(() => {
-      setup(event)
+      setup(event, label)
     })
 
     it('returns an track event', () => {
