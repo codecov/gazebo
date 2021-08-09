@@ -32,7 +32,7 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
-        <A to={{ pageName: 'provider' }}>
+        <A to={{ pageName: 'provider' }} variant="header">
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </A>

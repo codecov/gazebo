@@ -62,4 +62,18 @@ describe('A', () => {
       expect(mockError).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('when a link is external render icon', () => {
+    beforeEach(() => {
+      setup({
+        children: 'hola',
+        href: '/banana',
+        hook: 'banana',
+      })
+    })
+
+    it('renders a A', () => {
+      expect(screen.getByRole('link')).toHaveAttribute('href', '/banana')
+    })
+  })
 })
