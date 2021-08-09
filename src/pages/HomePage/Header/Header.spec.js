@@ -6,11 +6,11 @@ import Header from './Header'
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Header', () => {
-  function setup(props = {}) {
+  function setup() {
     render(
       <MemoryRouter initialEntries={['/gh']}>
         <Route path="/:provider">
-          <Header {...props} />
+          <Header />
         </Route>
       </MemoryRouter>
     )
@@ -18,9 +18,7 @@ describe('Header', () => {
 
   describe('render', () => {
     beforeEach(() => {
-      setup({
-        currentUsername: 'lewis',
-      })
+      setup()
     })
 
     it('renders the context switcher', () => {
