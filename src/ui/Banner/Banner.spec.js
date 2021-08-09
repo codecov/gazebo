@@ -59,4 +59,13 @@ describe('Banner', () => {
       expect(screen.queryByText(/this is the content/)).toBeInTheDocument()
     })
   })
+
+  describe('no title', () => {
+    beforeEach(() => {
+      setup({}, <span>this is the content</span>)
+    })
+    it('renders content', () => {
+      expect(screen.queryByText(/this is the content/)).toBeInTheDocument()
+    })
+  })
 })

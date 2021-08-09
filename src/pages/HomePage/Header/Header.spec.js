@@ -6,29 +6,31 @@ import Header from './Header'
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Header', () => {
-  function setup(props = {}) {
+  function setup() {
     render(
       <MemoryRouter initialEntries={['/gh']}>
         <Route path="/:provider">
-          <Header {...props} />
+          <Header />
         </Route>
       </MemoryRouter>
     )
   }
 
-  describe('when rendered', () => {
+  describe('render', () => {
     beforeEach(() => {
-      setup({
-        currentUsername: 'lewis',
-      })
+      setup()
     })
 
-    it('renders links to the current user settings', () => {
+    it('renders the context switcher', () => {
+      expect(screen.getByText(/MyContextSwitcher/)).toBeInTheDocument()
+    })
+
+    it('Ask for feedback banner is rendered', () => {
       expect(
-        screen.getByRole('link', {
-          name: /settings/i,
-        })
-      ).toHaveAttribute('href', '/account/gh/lewis')
+        screen.queryByText(
+          /We would love to hear your feedback! Let us know what you think/
+        )
+      ).toBeInTheDocument()
     })
   })
 })
