@@ -34,9 +34,9 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short=7 HEAD); craco build",
+    "build": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && craco build",
     "test": "craco test",
-    "sentry": "export REACT_APP_SENTRY_RELEASE=$(git rev-parse --short=7 HEAD); craco build && node scripts/sentry.js",
+    "sentry": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && craco build && node scripts/sentry.js",
     "test:ci": "craco test --collectCoverage --runInBand --reporters=default --reporters=jest-junit",
     "eject": "craco eject",
     "lint": "npx eslint --no-ignore --max-warnings=0 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
