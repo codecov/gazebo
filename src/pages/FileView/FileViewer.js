@@ -21,20 +21,20 @@ function FileViewer({ treePaths, content, coverage }) {
           <span className="text-xs font-semibold mr-7">View coverage by:</span>
           <div className="mr-7">
             <CoverageSelect
-              onChange={() => setCovered(!covered)}
+              onChange={() => setCovered((c) => !c)}
               checked={covered}
               coverage={1}
             />
           </div>
           <div className="mr-7">
             <CoverageSelect
-              onChange={() => setPartial(!partial)}
+              onChange={() => setPartial((p) => !p)}
               checked={partial}
               coverage={2}
             />
           </div>
           <CoverageSelect
-            onChange={() => setUncovered(!uncovered)}
+            onChange={() => setUncovered((u) => !u)}
             checked={uncovered}
             coverage={0}
           />

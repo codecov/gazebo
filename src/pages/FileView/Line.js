@@ -1,12 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-const LINE_STATE = Object.freeze({
-  COVERED: 'COVERED',
-  UNCOVERED: 'UNCOVERED',
-  BLANK: 'BLANK',
-  PARTIAL: 'PARTIAL',
-})
+import { LINE_STATE } from './lineStates'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]:
