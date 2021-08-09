@@ -93,7 +93,10 @@ describe('LoginPrompt', () => {
     render(<LoginPrompt />, { wrapper: MemoryRouter })
 
     const expectedLinks = [
-      { label: 'Log in', to: 'https://stage-web.codecov.dev/login/undefined' },
+      {
+        label: 'Log in',
+        to: 'https://stage-web.codecov.dev/login/undefined?to=http%3A%2F%2Flocalhost%2F',
+      },
       { label: 'Sign up', to: 'https://about.codecov.io/sign-up' },
     ]
 
