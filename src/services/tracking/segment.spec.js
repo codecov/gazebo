@@ -216,14 +216,11 @@ describe('trackSegmentEvent', () => {
   }
 
   describe('when event is defined', () => {
-    const label = 'sample-button'
-    const action = 'click'
-
-    beforeEach(() => {
+    it('returns an track event if part of event enums', () => {
+      const label = 'sample-button'
+      const action = 'click'
       setup(action, label)
-    })
 
-    it('returns an track event', () => {
       expect(window.analytics.track.mock.instances[0].track).toHaveBeenCalled()
       expect(
         window.analytics.track.mock.instances[0].track
@@ -232,6 +229,14 @@ describe('trackSegmentEvent', () => {
         label,
         value: 1,
       })
+    })
+
+    it('returns an undefined track event', () => {
+      const label = 'any label'
+      const action = 'random action'
+      setup(action, label)
+
+      expect(window.analytics.track.mock.instances[0]).toBeUndefined()
     })
   })
 
@@ -243,7 +248,7 @@ describe('trackSegmentEvent', () => {
       setup(event, label)
     })
 
-    it('returns an track event', () => {
+    it('returns an undefined track event', () => {
       expect(window.analytics.track.mock.instances[0]).toBeUndefined()
     })
   })
