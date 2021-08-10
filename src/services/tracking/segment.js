@@ -82,14 +82,14 @@ const SegmentTrackEvents = Object.freeze({
   click: 'clicked button',
 })
 
-export function trackSegmentEvent(action, label) {
+export function trackSegmentEvent(action, label, category) {
   const event = SegmentTrackEvents[action]
 
   return (
     event &&
     window?.analytics?.track(event, {
       label,
-      category: label === 'request demo' ? 'header cta' : 'repo list cta',
+      category,
       value: 1,
     })
   )
