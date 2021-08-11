@@ -25,6 +25,9 @@ describe('FileView', () => {
           11: 0,
         },
         content: 'content',
+        totals: {
+          coverage: 23,
+        },
       },
     })
     useOwner.mockReturnValue({
