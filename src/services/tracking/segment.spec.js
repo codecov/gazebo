@@ -1,11 +1,16 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { useLocation } from 'react-router-dom'
 import * as Cookie from 'js-cookie'
-import { useSegmentPage, identifySegmentUser } from './segment'
+import {
+  useSegmentPage,
+  identifySegmentUser,
+  trackSegmentEvent,
+} from './segment'
 
 window.analytics = {
   identify: jest.fn(),
   page: jest.fn(),
+  track: jest.fn(),
 }
 
 jest.mock('react-router-dom', () => ({
@@ -42,12 +47,14 @@ describe('identifySegmentUser', () => {
       ).toHaveBeenCalled()
       expect(window.analytics.identify).toBeCalledWith(1, {
         context: {
-          externalIds: {
-            collections: 'users',
-            encoding: 'none',
-            id: '123',
-            type: 'github_id',
-          },
+          externalIds: [
+            {
+              collections: 'users',
+              encoding: 'none',
+              id: '123',
+              type: 'github_id',
+            },
+          ],
         },
         integrations: {
           Marketo: false,
@@ -99,12 +106,14 @@ describe('identifySegmentUser', () => {
         window.analytics.identify.mock.instances[0].identify
       ).toBeCalledWith(1, {
         context: {
-          externalIds: {
-            collections: 'users',
-            encoding: 'none',
-            id: '123',
-            type: 'github_id',
-          },
+          externalIds: [
+            {
+              collections: 'users',
+              encoding: 'none',
+              id: '123',
+              type: 'github_id',
+            },
+          ],
         },
         integrations: {
           Marketo: false,
@@ -197,6 +206,53 @@ describe('useSegmentPage', () => {
       })
 
       expect(window.analytics.page).toHaveBeenCalledTimes(3)
+    })
+  })
+})
+
+describe('trackSegmentEvent', () => {
+  function setup(action, label, category) {
+    trackSegmentEvent(action, label, category)
+  }
+
+  describe('when event is defined', () => {
+    it('returns an track event if part of event enums', () => {
+      const label = 'request demo'
+      const action = 'click'
+      const category = 'category A'
+      setup(action, label, category)
+
+      expect(window.analytics.track.mock.instances[0].track).toHaveBeenCalled()
+      expect(
+        window.analytics.track.mock.instances[0].track
+      ).toHaveBeenCalledWith('clicked button', {
+        category,
+        label,
+        value: 1,
+      })
+    })
+
+    it('returns an undefined track event', () => {
+      const label = 'any label'
+      const action = 'random action'
+      const category = 'random category'
+      setup(action, label, category)
+
+      expect(window.analytics.track.mock.instances[0]).toBeUndefined()
+    })
+  })
+
+  describe('when event is undefined', () => {
+    const event = undefined
+    const label = 'anything'
+    const category = 'anything'
+
+    beforeEach(() => {
+      setup(event, label, category)
+    })
+
+    it('returns an undefined track event', () => {
+      expect(window.analytics.track.mock.instances[0]).toBeUndefined()
     })
   })
 })

@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { useAccountDetails } from 'services/account'
-
+import * as Segment from 'services/tracking/segment'
 import CallToAction from './CallToAction'
 
+const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 jest.mock('services/account')
 
 describe('CallToAction', () => {
@@ -65,6 +66,32 @@ describe('CallToAction', () => {
       expect(screen.queryByText(/Looks like you're up to 5 users./)).toBeNull()
       expect(screen.queryByText(/Upgrade/)).toBeNull()
       expect(screen.queryByText(/plan today/)).toBeNull()
+    })
+
+    it('sends a tracking event when clicked and users are less than 5', () => {
+      setup({
+        activatedUserCount: 2,
+        plan: {
+          value: 'users-free',
+        },
+      })
+
+      const button = screen.getByRole('link', { name: /request/i })
+      fireEvent.click(button)
+      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('sends a tracking event when clicked and users are equal to 5', () => {
+      setup({
+        activatedUserCount: 5,
+        plan: {
+          value: 'users-free',
+        },
+      })
+
+      const button = screen.getByRole('link', { name: /upgrade/i })
+      fireEvent.click(button)
+      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
     })
   })
 
