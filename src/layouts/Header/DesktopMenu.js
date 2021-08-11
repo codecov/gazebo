@@ -7,12 +7,13 @@ import { useParams } from 'react-router-dom'
 import RequestButton from './RequestButton'
 
 export function LoginPrompt() {
+  const to = window.location.href
   return (
     <div
       data-testid="login-prompt"
       className="flex items-center justify-between mx-2 md:mx-0 gap-4"
     >
-      <A to={{ pageName: 'signIn' }} variant="header">
+      <A to={{ pageName: 'signIn', options: { to } }} variant="header">
         Log in
       </A>
       <Button to={{ pageName: 'signUp' }} variant="primary">
@@ -31,7 +32,7 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
-        <A to={{ pageName: 'provider' }}>
+        <A to={{ pageName: 'provider' }} variant="header">
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </A>

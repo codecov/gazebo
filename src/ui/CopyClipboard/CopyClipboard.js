@@ -1,21 +1,27 @@
 import Icon from 'ui/Icon'
 import copy from 'copy-to-clipboard'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 
 function CopyClipboard({ string }) {
   const [showSuccess, setShowSuccess] = useState(false)
 
   function handleCopy() {
-    const copied = copy(string)
-    if (copied) {
-      setShowSuccess(true)
-      setTimeout(() => setShowSuccess(false), 1500)
-    }
+    setShowSuccess(copy(string))
   }
 
+  useEffect(() => {
+    if (showSuccess) {
+      let timer = setTimeout(() => setShowSuccess(false), 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [showSuccess])
+
   return (
-    <div className="flex items-center ml-2">
+    <button
+      onClick={handleCopy}
+      className="flex outline-none focus:outline-none items-center ml-2"
+    >
       {showSuccess ? (
         <div className="text-ds-primary-green">
           <Icon className="fill-current" name="check" />
@@ -26,13 +32,10 @@ function CopyClipboard({ string }) {
         </div>
       )}
 
-      <span
-        onClick={handleCopy}
-        className="cursor-pointer text-ds-blue-darker text-xs font-semibold"
-      >
+      <span className="cursor-pointer text-ds-blue-darker text-xs font-semibold">
         copy
       </span>
-    </div>
+    </button>
   )
 }
 

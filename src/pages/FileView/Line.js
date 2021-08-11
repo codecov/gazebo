@@ -1,11 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-const LINE_STATE = Object.freeze({
-  COVERED: 'COVERED',
-  UNCOVERED: 'UNCOVERED',
-  BLANK: 'BLANK',
-})
+import { LINE_STATE } from './lineStates'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]:
@@ -13,12 +9,15 @@ const classNamePerLineState = {
   [LINE_STATE.UNCOVERED]:
     'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
   [LINE_STATE.BLANK]: 'border-ds-gray-tertiary border-r',
+  [LINE_STATE.PARTIAL]:
+    'bg-ds-coverage-partial border-ds-primary-yellow border-r-2',
 }
 
 const lineStateToLabel = {
   [LINE_STATE.COVERED]: 'covered line of code',
   [LINE_STATE.UNCOVERED]: 'uncovered line of code',
   [LINE_STATE.BLANK]: 'line of code',
+  [LINE_STATE.PARTIAL]: 'partial line of code',
 }
 
 function Line({
@@ -26,17 +25,21 @@ function Line({
   showCovered,
   line,
   number,
+  showPartial,
   coverage,
   getLineProps,
   getTokenProps,
 }) {
   const lineState = getLineState()
 
+  // eslint-disable-next-line complexity
   function getLineState() {
     if (coverage === 0 && showUncovered) {
       return LINE_STATE.UNCOVERED
     } else if (coverage === 1 && showCovered) {
       return LINE_STATE.COVERED
+    } else if (coverage === 2 && showPartial) {
+      return LINE_STATE.PARTIAL
     } else return LINE_STATE.BLANK
   }
 
@@ -51,7 +54,11 @@ function Line({
       >
         {number}
       </div>
-      <div className="table-cell pl-2">
+      <div
+        className={cs('table-cell pl-2', {
+          'opacity-50': lineState === LINE_STATE.BLANK,
+        })}
+      >
         {line.map((token, key) => (
           <span key={key} {...getTokenProps({ token, key })} />
         ))}
@@ -68,6 +75,7 @@ Line.propTypes = {
   number: PropTypes.number.isRequired,
   getLineProps: PropTypes.func,
   getTokenProps: PropTypes.func,
+  showPartial: PropTypes.bool.isRequired,
 }
 
 export default Line

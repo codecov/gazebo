@@ -1,7 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { useAccountDetails } from 'services/account'
+import * as Segment from 'services/tracking/segment'
 import RequestButton from './RequestButton'
+
+const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 
 jest.mock('services/account')
 jest.mock('services/user')
@@ -51,6 +54,18 @@ describe('RequestButton', () => {
         'href',
         'https://about.codecov.io/demo'
       )
+    })
+
+    it('sends a tracking event when clicked and users are free', () => {
+      setup({
+        plan: {
+          value: 'users-free',
+        },
+      })
+
+      const button = screen.getByTestId('request-demo')
+      fireEvent.click(button)
+      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
     })
 
     it('does not render request demo button when owner without free plan is logged in', () => {

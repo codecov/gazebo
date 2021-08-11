@@ -18,6 +18,7 @@ describe('Line', () => {
         showUncovered={showUncovered}
         number={number}
         coverage={coverage}
+        showPartial={true}
         getTokenProps={() => {}}
         getLineProps={() => {}}
       />
@@ -71,6 +72,16 @@ describe('Line', () => {
 
     it('render uncovered line', () => {
       expect(screen.getAllByLabelText('line of code').length).toBe(1)
+    })
+  })
+
+  describe('renders highlighted partial line', () => {
+    beforeEach(() => {
+      setup(2, 2, true, true)
+    })
+
+    it('render partial line', () => {
+      expect(screen.getAllByLabelText('partial line of code').length).toBe(1)
     })
   })
 })

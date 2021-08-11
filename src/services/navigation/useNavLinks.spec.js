@@ -63,9 +63,20 @@ describe('useNavLinks', () => {
         `${config.BASE_URL}/login/gl`
       )
     })
+
     it('can override the params', () => {
       expect(hookData.result.current.signIn.path({ provider: 'bb' })).toBe(
         `${config.BASE_URL}/login/bb`
+      )
+    })
+
+    it('can add a `to` redirection', () => {
+      expect(
+        hookData.result.current.signIn.path({
+          to: 'htts://app.codecov.io/gh/codecov',
+        })
+      ).toBe(
+        `${config.BASE_URL}/login/gl?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov`
       )
     })
   })

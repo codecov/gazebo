@@ -16,8 +16,8 @@ function Banner({ title, storageId, children }) {
   return (
     !dismissed && (
       <div className="bg-ds-gray-primary text-ds-gray-octonary border-l-4 border-ds-blue-quinary p-4">
-        <div className="flex justify-between items-center pb-2 font-semibold">
-          <h2 className="font-semibold">{title}</h2>
+        <div className="flex justify-between items-center pb-2">
+          {title && <h2 className="font-semibold">{title}</h2>}
           <button
             className="cursor-pointer fill-current text-ds-gray-septenary"
             onClick={dismissHandler}
@@ -26,7 +26,7 @@ function Banner({ title, storageId, children }) {
             <span className="sr-only">Dismiss banner</span>
           </button>
         </div>
-        <div className="w-full text-ds-gray-octonary text-sm">{children}</div>
+        <div className="text-sm md:w-5/6">{children}</div>
       </div>
     )
   )
