@@ -19,12 +19,13 @@ const styles = {
 
 function LoginButton({ provider }) {
   const { signIn } = useNavLinks()
+  const to = `${window.location.protocol}//${window.location.host}/${provider}`
 
   return (
     <div className={styles.box}>
       <a
         className={styles.link}
-        href={signIn.path({ provider, privateScope: true })}
+        href={signIn.path({ to, provider, privateScope: true })}
       >
         <img
           alt={`Logo of ${providerToName(provider)}`}
@@ -41,13 +42,13 @@ function LoginButton({ provider }) {
           <MenuList className={styles.dropdownList}>
             <MenuLink
               className={styles.dropdownLink}
-              href={signIn.path({ provider, privateScope: true })}
+              href={signIn.path({ to, provider, privateScope: true })}
             >
               All repos
             </MenuLink>
             <MenuLink
               className={styles.dropdownLink}
-              href={signIn.path({ provider })}
+              href={signIn.path({ to, provider })}
             >
               Public repos only
             </MenuLink>
