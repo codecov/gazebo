@@ -16,8 +16,14 @@ function useNavLinks() {
     },
     signIn: {
       text: 'Log in',
-      path: ({ provider = p, to } = { provider: p }) => {
-        const query = to ? qs.stringify({ to }, { addQueryPrefix: true }) : ''
+      path: ({ provider = p, privateScope, to } = { provider: p }) => {
+        const query = qs.stringify(
+          {
+            to,
+            'private': privateScope,
+          },
+          { addQueryPrefix: true }
+        )
         return `${config.BASE_URL}/login/${provider}${query}`
       },
       isExternalLink: true,
