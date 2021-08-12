@@ -38,12 +38,12 @@ function App() {
           <ReactQueryDevtools initialIsOpen={false} />
           <BrowserRouter>
             <Switch>
-              <Route path="/login">
+              <Route path="/login/:provider">
                 <BaseLayout>
                   <LoginPage />
                 </BaseLayout>
               </Route>
-              <Route path="/login/:provider">
+              <Route path="/login">
                 <BaseLayout>
                   <LoginPage />
                 </BaseLayout>
