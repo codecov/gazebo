@@ -10,12 +10,11 @@ function FileViewer({ treePaths, content, coverage, totals }) {
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
-
   return (
     <div className="flex flex-col">
       <div className="flex items-center mb-4 justify-between">
         <span className="text-ds-gray-senary font-semibold text-base">
-          Config.js
+          {treePaths[treePaths.length - 1].text}
         </span>
         <div className="flex">
           <span className="text-xs font-semibold mr-7">View coverage by:</span>
