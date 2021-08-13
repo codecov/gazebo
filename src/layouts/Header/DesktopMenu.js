@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router'
+
 import Dropdown from './Dropdown'
 import Button from 'ui/Button'
 import A from 'ui/A'
@@ -8,6 +10,19 @@ import RequestButton from './RequestButton'
 
 export function LoginPrompt() {
   const to = window.location.href
+  const { pathname } = useLocation()
+
+  // different page if login
+  if (pathname.startsWith('/login')) {
+    return (
+      <div className="text-ds-gray-tertiary">
+        New to Codecov?{' '}
+        <A to={{ pageName: 'root' }} variant="header">
+          Learn more
+        </A>
+      </div>
+    )
+  }
   return (
     <div
       data-testid="login-prompt"

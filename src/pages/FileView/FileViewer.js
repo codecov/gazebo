@@ -6,16 +6,15 @@ import CoverageSelect from './CoverageSelect'
 import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 
-function FileViewer({ treePaths, content, coverage }) {
+function FileViewer({ treePaths, content, coverage, totals }) {
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
-
   return (
     <div className="flex flex-col">
       <div className="flex items-center mb-4 justify-between">
         <span className="text-ds-gray-senary font-semibold text-base">
-          Config.js
+          {treePaths[treePaths.length - 1].text}
         </span>
         <div className="flex">
           <span className="text-xs font-semibold mr-7">View coverage by:</span>
@@ -43,7 +42,7 @@ function FileViewer({ treePaths, content, coverage }) {
       <div className="flex justify-between border-t px-3 border-r border-l border-solid bg-ds-gray-primary border-ds-gray-tertiary items-center h-10">
         <Breadcrumb paths={[...treePaths]} />
         <div className="w-56">
-          <Progress amount={80} label={true} />
+          <Progress amount={totals} label={true} />
         </div>
       </div>
       <div>
@@ -62,6 +61,7 @@ function FileViewer({ treePaths, content, coverage }) {
 FileViewer.propTypes = {
   content: PropTypes.string.isRequired,
   coverage: PropTypes.shape().isRequired,
+  totals: PropTypes.number.isRequired,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
 }
 

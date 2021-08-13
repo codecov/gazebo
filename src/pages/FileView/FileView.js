@@ -49,6 +49,7 @@ function FileView() {
         <FileViewer
           coverage={data.coverage}
           content={data.content}
+          totals={data.totals.coverage}
           treePaths={treePaths}
         />
       </div>
