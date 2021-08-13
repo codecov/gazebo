@@ -418,6 +418,9 @@ describe('useStaticNavLinks', () => {
     ${links.enterprise}        | ${`${config.MARKETING_BASE_URL}/self-hosted`}
     ${links.githubMarketplace} | ${`https://github.com/marketplace/codecov`}
     ${links.freshdesk}         | ${`https://codecov.freshdesk.com/support/home`}
+    ${links.freeTrial}         | ${`${config.MARKETING_BASE_URL}/trial`}
+    ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
+    ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
