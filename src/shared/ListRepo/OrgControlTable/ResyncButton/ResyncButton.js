@@ -2,12 +2,13 @@ import Spinner from 'ui/Spinner'
 
 import { useParams } from 'react-router-dom'
 import { useResyncUser } from 'services/user'
+import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 
 function ResyncButton() {
   const { triggerResync, isSyncing } = useResyncUser()
   const { provider } = useParams()
-  const isGh = provider === 'gh'
+  const isGh = providerToName(provider) === 'Github'
 
   return isSyncing ? (
     <div className="flex items-center text-ds-gray-senary">
