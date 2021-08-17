@@ -11,6 +11,7 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import Icon from 'ui/Icon'
 import AppLink from 'shared/AppLink'
 import { getProviderCommitURL } from './helpers'
+import Header from './Header'
 const NotFound = lazy(() => import('../NotFound'))
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
@@ -41,6 +42,7 @@ function CommitPage() {
           ]}
         />
       </div>
+      <Header provider={provider} />
       <span className="mt-4 text-lg font-semibold text-ds-gray-octonary">
         {data?.commit?.message}
       </span>

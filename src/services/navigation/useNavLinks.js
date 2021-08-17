@@ -20,7 +20,7 @@ function useNavLinks() {
         const query = qs.stringify(
           {
             to,
-            'private': privateScope,
+            private: privateScope,
           },
           { addQueryPrefix: true }
         )
@@ -245,6 +245,11 @@ function useStaticNavLinks() {
       path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
       text: 'Blog',
+    },
+    legacyUI: {
+      path: ({ pathname }) => config.BASE_URL + pathname,
+      isExternalLink: true,
+      text: 'Legacy User Interface',
     },
   }
 }
