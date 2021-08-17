@@ -35,6 +35,20 @@ export function useCommit({ provider, owner, repo, commitid }) {
               yaml
               message
               ciPassed
+              compareWithParent {
+                impactedFiles {
+                  path
+                  baseTotals {
+                    coverage
+                  }
+                  compareTotals {
+                    coverage
+                  }
+                  patch {
+                    coverage
+                  }
+                }
+              }
               parent {
                 commitid # commitid of the parent, used for the comparison
 

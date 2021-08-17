@@ -10,8 +10,8 @@ function CoverageReportCard({ data, provider, repo, owner }) {
   const commitid = data?.commitid?.substr(0, 7)
   const parentCommitid = data?.parent?.commitid
   const ciPassed = data?.ciPassed
-  const pullId = data?.pullId
-  const change = (coverage - data?.parent?.totals?.coverage).toFixed(2)
+  const parentCoverage = data?.parent?.totals?.coverage
+  const change = (coverage - parentCoverage).toFixed(2)
 
   function getCIStatusLabel() {
     return (
@@ -35,7 +35,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
   }
 
   function renderPullLabel() {
-    if (pullId) {
+    if (data?.pullId) {
       return (
         <div className="flex items-center">
           <div className="text-ds-gray-senary">
@@ -44,13 +44,18 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           <AppLink
             className="text-ds-blue-darker text-regular mx-1"
             pageName="pull"
-            options={{ pullid: pullId }}
+            options={{ pullid: data?.pullId }}
           >
-            #{pullId}
+            #{data?.pullId}
           </AppLink>
           (
           <a
-            href={getProviderPullURL({ provider, owner, repo, pullId })}
+            href={getProviderPullURL({
+              provider,
+              owner,
+              repo,
+              pullId: data?.pullId,
+            })}
             className="mr-0.5 flex text-ds-blue-darker"
           >
             {providerToName(provider)}
@@ -94,7 +99,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
               'text-ds-primary-green': change >= 0,
             })}
           >
-            {change ? `${change} %` : '-'}
+            {coverage && parentCoverage ? `${change} %` : '-'}
           </span>
         </div>
       </div>

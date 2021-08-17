@@ -20,7 +20,7 @@ function useNavLinks() {
         const query = qs.stringify(
           {
             to,
-            'private': privateScope,
+            private: privateScope,
           },
           { addQueryPrefix: true }
         )
@@ -138,6 +138,17 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commit/${commit}`,
+      isExternalLink: true,
+      text: 'Commits',
+    },
+    commitFile: {
+      path: (
+        { provider = p, owner = o, repo = r, commit, path } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/commit/${commit}/file/${path}`,
       isExternalLink: true,
       text: 'Commits',
     },

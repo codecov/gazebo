@@ -11,12 +11,13 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import Icon from 'ui/Icon'
 import AppLink from 'shared/AppLink'
 import { getProviderCommitURL } from './helpers'
-const NotFound = lazy(() => import('../NotFound'))
+import CommitFileView from './CommitFileView'
 
+const NotFound = lazy(() => import('../NotFound'))
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
 function CommitPage() {
-  const { provider, owner, repo, commit } = useParams()
+  const { provider, owner, repo, commit, path } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
   const loadingState = <Spinner size={40} />
 
@@ -28,6 +29,20 @@ function CommitPage() {
   })
 
   const commitid = commit?.substr(0, 7)
+
+  function renderImpactedFiles() {
+    return !path ? (
+      <>
+        <span className="text-base mb-4 font-semibold">Impacted files</span>
+        <CommitsTable
+          commit={commit}
+          data={data?.commit?.compareWithParent?.impactedFiles}
+        />
+      </>
+    ) : (
+      <CommitFileView path={path} />
+    )
+  }
 
   return isSuccess ? (
     <div className="flex flex-col">
@@ -111,8 +126,7 @@ function CommitPage() {
           </div>
         </div>
         <div className="flex flex-col w-full mt-2 md:mt-0">
-          <span className="text-base mb-4 font-semibold">Impacted files</span>
-          <CommitsTable />
+          {renderImpactedFiles()}
         </div>
       </div>
     </div>
