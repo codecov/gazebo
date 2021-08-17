@@ -26,9 +26,6 @@ function CurrentPlanCard({ accountDetails }) {
         {accountDetails.activatedUserCount ?? 0} /{' '}
         {accountDetails.plan.quantity ?? 0} Active users
       </p>
-      <p className="mt-3 text-codecov-red font-bold" data-test="inactive-users">
-        {accountDetails.inactiveUserCount} Inactive users
-      </p>
 
       <div className="flex flex-col items-center mt-6">
         <ActionsBilling
