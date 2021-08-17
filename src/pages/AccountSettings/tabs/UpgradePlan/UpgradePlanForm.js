@@ -179,8 +179,8 @@ function UpgradePlanForm({
             data-cy="seats"
             {...register('seats')}
             id="nb-seats"
-            size="40"
-            className="bg-gray-100 p-2 rounded border"
+            size="20"
+            className="bg-gray-100 p-2 rounded border w-full"
             type="number"
           />
         </div>
