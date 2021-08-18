@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from 'custom-testing-library'
 import CommitPage from './CommitPage'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 import { useCommit } from 'services/commit'
 
 jest.mock('services/commit')
@@ -64,9 +64,13 @@ describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
 
-    render(<CommitPage />, {
-      wrapper: MemoryRouter,
-    })
+    render(
+      <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+        <Route path="/:provider/:owner/:repo/commit/:commit/">
+          <CommitPage />{' '}
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('renders', () => {

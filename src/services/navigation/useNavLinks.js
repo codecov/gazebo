@@ -138,7 +138,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commit/${commit}`,
-      isExternalLink: true,
+      isExternalLink: false,
       text: 'Commits',
     },
     commitFile: {
@@ -149,7 +149,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commit/${commit}/file/${path}`,
-      isExternalLink: true,
+      isExternalLink: false,
       text: 'Commits',
     },
     pull: {
