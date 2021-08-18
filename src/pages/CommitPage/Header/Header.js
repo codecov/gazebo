@@ -22,7 +22,6 @@ function Header({ provider }) {
           We’ve been making changes to the web experience and this page is a new
           look. If you prefer, you can{' '}
           <A
-            hook="oldCommitDetails"
             to={{ pageName: 'legacyUI' }}
             options={{ pathname: location.pathname }}
           >
