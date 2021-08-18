@@ -12,7 +12,6 @@ const proAccountDetails = {
     value: 'users-inappm',
   },
   activatedUserCount: 2,
-  inactiveUserCount: 1,
 }
 
 const freeAccountDetails = {
@@ -28,7 +27,6 @@ const freeAccountDetails = {
     ],
   },
   activatedUserCount: 2,
-  inactiveUserCount: 1,
 }
 
 jest.mock('react-router-dom', () => ({
