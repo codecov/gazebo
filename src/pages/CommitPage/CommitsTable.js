@@ -49,13 +49,13 @@ function CommitsTable() {
     },
   ]
 
-  // TODO
   // We need to conditionally change background color for patch... we do not have those color on tailwind
+  // TODO Add these colors to tailwind
   const dataTable = data.map((d) => ({
     name: (
       <A
-        // TODO
-        hook="turn off warning, need to setup pagename"
+        // Unsure if this was what you planned here Felipe
+        to={{ pageName: 'treeView', options: { tree: `${d.path}/${d.name}` } }}
       >
         <div className="flex flex-col">
           <span>{d.name}</span>

@@ -108,8 +108,7 @@ function CommitPage() {
                   <span className="text-sm w-full text-left">
                     Includes default yaml, global yaml, and repo{' '}
                     <A
-                      // TODO
-                      href="learnmore"
+                      href="https://docs.codecov.com/docs/codecov-yaml"
                       hook="yaml learn more"
                       isExternal={true}
                     >
