@@ -220,6 +220,12 @@ function useStaticNavLinks() {
       path: () => 'https://docs.codecov.io/',
       isExternalLink: true,
     },
+    oauthTroubleshoot: {
+      text: 'OAuth Troubleshoot',
+      path: () =>
+        'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting',
+      isExternalLink: true,
+    },
     enterprise: {
       text: 'Self Hosted',
       path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
