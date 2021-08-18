@@ -1,22 +1,20 @@
 import { Fragment } from 'react'
 
 import PropTypes from 'prop-types'
-import cs from 'classnames'
-import AppLink from 'shared/AppLink'
+import A from 'ui/A'
 
 function Breadcrumb({ paths }) {
+  console.log(paths)
   return (
-    <div className={cs('flex items-center')}>
+    <div className="flex items-center">
       {paths.map((path, i) => (
         <Fragment key={i}>
           {i === paths.length - 1 ? (
-            <span className={cs('text-ds-gray-octonary font-semibold')}>
+            <span className="text-ds-gray-octonary font-semibold">
               {path.text}
             </span>
           ) : (
-            <AppLink {...path} className="text-ds-blue-darker">
-              {path.text}
-            </AppLink>
+            <A {...path}>{path.text}</A>
           )}
 
           {i !== paths.length - 1 && <span className="mx-1">/</span>}
@@ -29,5 +27,5 @@ function Breadcrumb({ paths }) {
 export default Breadcrumb
 
 Breadcrumb.propTypes = {
-  paths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
+  paths: PropTypes.arrayOf(PropTypes.shape(A.propTypes)).isRequired,
 }

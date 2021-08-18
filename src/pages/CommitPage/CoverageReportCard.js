@@ -1,8 +1,10 @@
-import Icon from 'ui/Icon'
-import PropTypes from 'prop-types'
 import cs from 'classnames'
+import PropTypes from 'prop-types'
+
+import Icon from 'ui/Icon'
+import A from 'ui/A'
+
 import { providerToName } from 'shared/utils'
-import AppLink from 'shared/AppLink'
 import { getProviderPullURL } from './helpers'
 
 function CoverageReportCard({ data, provider, repo, owner }) {
@@ -24,12 +26,13 @@ function CoverageReportCard({ data, provider, repo, owner }) {
         >
           <Icon size="sm" name={ciPassed ? 'check' : 'x'} />
         </div>
-        <a href={'cibuild?'} className="flex text-ds-blue-darker">
+        <A
+          // TODO
+          href={'cibuild?'}
+          isExternal={true}
+        >
           CI {ciPassed ? 'Passed' : 'Failed'}
-          <div className="text-ds-gray-quinary ml-0.5">
-            <Icon size="sm" name="external-link" />
-          </div>
-        </a>
+        </A>
       </div>
     )
   }
@@ -41,23 +44,16 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           <div className="text-ds-gray-senary">
             <Icon size="sm" variant="developer" name="pull-request-open" />
           </div>
-          <AppLink
-            className="text-ds-blue-darker text-regular mx-1"
-            pageName="pull"
-            options={{ pullid: pullId }}
-          >
+          <A pageName="pull" options={{ pullid: pullId }}>
             #{pullId}
-          </AppLink>
+          </A>
           (
-          <a
+          <A
             href={getProviderPullURL({ provider, owner, repo, pullId })}
-            className="mr-0.5 flex text-ds-blue-darker"
+            isExternal={true}
           >
             {providerToName(provider)}
-            <div className="text-ds-gray-quinary ml-0.5">
-              <Icon size="sm" name="external-link" />
-            </div>
-          </a>
+          </A>
           )
         </div>
       )
@@ -101,13 +97,9 @@ function CoverageReportCard({ data, provider, repo, owner }) {
       <div className="w-full text-ds-gray-quinary text-xs mt-4">
         The average coverage of changes for this commit is TODO (patch). Data
         source from comparing between{' '}
-        <AppLink
-          pageName="commit"
-          options={{ commit: parentCommitid }}
-          className="text-ds-blue-darker"
-        >
+        <A pageName="commit" options={{ commit: parentCommitid }}>
           {parentCommitid?.substr(0, 7)}
-        </AppLink>{' '}
+        </A>{' '}
         and <span className="font-mono">{commitid}</span>
       </div>
       <div className="mt-4 text-xs flex">

@@ -1,6 +1,8 @@
-import Table from 'ui/Table'
-import Progress from 'ui/Progress'
 import cs from 'classnames'
+
+import Table from 'ui/Table'
+import A from 'ui/A'
+import Progress from 'ui/Progress'
 
 const table = [
   {
@@ -47,13 +49,16 @@ function CommitsTable() {
     },
   ]
 
+  // TODO
   // We need to conditionally change background color for patch... we do not have those color on tailwind
   const dataTable = data.map((d) => ({
     name: (
-      <div className="flex flex-col">
-        <span className="text-ds-blue-darker text-sm">{d.name}</span>
-        <span className="text-xs mt-0.5 text-ds-gray-quinary">{d.path}</span>
-      </div>
+      <A>
+        <div className="flex flex-col">
+          <span>{d.name}</span>
+          <span className="text-xs mt-0.5 text-ds-gray-quinary">{d.path}</span>
+        </div>
+      </A>
     ),
     coverage: <Progress amount={d.coverage} label={true} />,
     patch: (
