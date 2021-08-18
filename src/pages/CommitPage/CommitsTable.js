@@ -1,6 +1,8 @@
-import Table from 'ui/Table'
-import Progress from 'ui/Progress'
 import cs from 'classnames'
+
+import Table from 'ui/Table'
+import A from 'ui/A'
+import Progress from 'ui/Progress'
 
 const table = [
   {
@@ -48,12 +50,18 @@ function CommitsTable() {
   ]
 
   // We need to conditionally change background color for patch... we do not have those color on tailwind
+  // TODO Add these colors to tailwind
   const dataTable = data.map((d) => ({
     name: (
-      <div className="flex flex-col">
-        <span className="text-ds-blue-darker text-sm">{d.name}</span>
-        <span className="text-xs mt-0.5 text-ds-gray-quinary">{d.path}</span>
-      </div>
+      <A
+        // Unsure if this was what you planned here Felipe
+        to={{ pageName: 'treeView', options: { tree: `${d.path}/${d.name}` } }}
+      >
+        <div className="flex flex-col">
+          <span>{d.name}</span>
+          <span className="text-xs mt-0.5 text-ds-gray-quinary">{d.path}</span>
+        </div>
+      </A>
     ),
     coverage: <Progress amount={d.coverage} label={true} />,
     patch: (
