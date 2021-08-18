@@ -1,8 +1,8 @@
-import Table from 'ui/Table'
-import Progress from 'ui/Progress'
 import cs from 'classnames'
-import AppLink from 'shared/AppLink'
 import PropTypes from 'prop-types'
+import Table from 'ui/Table'
+import A from 'ui/A'
+import Progress from 'ui/Progress'
 
 const table = [
   {
@@ -32,18 +32,13 @@ const table = [
 ]
 
 function CommitsTable({ data, commit }) {
-  // We need to conditionally change background color for patch... we do not have those color on tailwind
-  const dataTable = data?.map((d) => ({
+  const dataTable = data.map((d) => ({
     name: (
       <div className="flex flex-col">
-        <AppLink
-          pageName="commitFile"
-          options={{ commit, path: d?.path }}
-          className="text-ds-blue-darker"
-        >
-          {d?.path?.split('/').pop()}
-        </AppLink>{' '}
-        <span className="text-xs mt-0.5 text-ds-gray-quinary">{d?.path}</span>
+        <A to={{ pageName: 'commitFile', options: { commit, path: d.path } }}>
+          <span>{d.path?.split('/').pop()}</span>
+        </A>
+        <span className="text-xs mt-0.5 text-ds-gray-quinary">{d.path}</span>
       </div>
     ),
     coverage: <Progress amount={d?.compareTotals?.coverage} label={true} />,
