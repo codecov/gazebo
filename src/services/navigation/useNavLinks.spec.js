@@ -427,4 +427,11 @@ describe('useStaticNavLinks', () => {
       expect(link.path()).toBe(outcome)
     })
   })
+  describe('legacyUI', () => {
+    it('returns the correct url', () => {
+      expect(links.legacyUI.path({ pathname: 'random/path/name' })).toBe(
+        config.BASE_URL + 'random/path/name'
+      )
+    })
+  })
 })

@@ -12,6 +12,7 @@ import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
 import CommitsTable from './CommitsTable'
 import { getProviderCommitURL } from './helpers'
+import Header from './Header'
 
 const NotFound = lazy(() => import('../NotFound'))
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
@@ -47,6 +48,7 @@ function CommitPage() {
           ]}
         />
       </div>
+      <Header provider={provider} />
       <span className="mt-4 text-lg font-semibold text-ds-gray-octonary">
         {data?.commit?.message}
       </span>

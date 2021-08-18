@@ -12,6 +12,8 @@ jest.mock('react-router-dom', () => ({
     commit: 'f00162848a3cebc0728d915763c2fd9e92132408',
   }),
 }))
+jest.mock('./Header/Header.js', () => () => 'The Header')
+
 const dataReturned = {
   commit: {
     totals: {
@@ -80,6 +82,10 @@ describe('CommitPage', () => {
 
     it('renders the Coverage report', () => {
       expect(screen.getByText(/Coverage report/)).toBeInTheDocument()
+    })
+
+    it('renders the Header', () => {
+      expect(screen.getByText(/The Header/)).toBeInTheDocument()
     })
 
     it('renders the Impacted files', () => {

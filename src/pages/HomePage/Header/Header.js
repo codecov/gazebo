@@ -12,7 +12,6 @@ function Header() {
   return (
     <>
       <Banner
-        storageId="ui-changing-00"
         title={
           <div className="flex justify-center gap-2">
             <Icon name="speakerphone"></Icon>
