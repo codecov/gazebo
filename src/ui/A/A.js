@@ -64,7 +64,7 @@ A.propTypes = {
       )
     }
   },
-  variant: PropTypes.oneOf(['default', 'header', 'link']),
+  variant: PropTypes.oneOf(['default', 'header', 'link', 'code']),
   isExternal: PropTypes.bool,
 }
 

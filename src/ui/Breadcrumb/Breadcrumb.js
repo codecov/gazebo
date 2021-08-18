@@ -2,24 +2,26 @@ import { Fragment } from 'react'
 
 import PropTypes from 'prop-types'
 import A from 'ui/A'
+import AppLink from 'shared/AppLink'
 
-function Breadcrumb({ paths }) {
-  console.log(paths)
+function Breadcrumb({ paths = [] }) {
   return (
-    <div className="flex items-center">
-      {paths.map((path, i) => (
-        <Fragment key={i}>
-          {i === paths.length - 1 ? (
-            <span className="text-ds-gray-octonary font-semibold">
-              {path.text}
-            </span>
-          ) : (
-            <A {...path}>{path.text}</A>
-          )}
+    <div className="flex items-center gap-1">
+      {paths.map((to, i) => {
+        return (
+          <Fragment key={i}>
+            {i === paths.length - 1 ? (
+              <span className="text-ds-gray-octonary font-semibold">
+                {to.text}
+              </span>
+            ) : (
+              <A to={to}>{to.text}</A>
+            )}
 
-          {i !== paths.length - 1 && <span className="mx-1">/</span>}
-        </Fragment>
-      ))}
+            {i !== paths.length - 1 && <span>/</span>}
+          </Fragment>
+        )
+      })}
     </div>
   )
 }
@@ -27,5 +29,5 @@ function Breadcrumb({ paths }) {
 export default Breadcrumb
 
 Breadcrumb.propTypes = {
-  paths: PropTypes.arrayOf(PropTypes.shape(A.propTypes)).isRequired,
+  paths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)),
 }

@@ -20,7 +20,7 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
             key={i}
           >
             <div className="flex justify-between">
-              <A href={d?.ciUrl} isExternal={true}>
+              <A href={d?.ciUrl} hook="ci job" isExternal={true}>
                 {d?.jobCode}
               </A>
               <span className="text-xs text-ds-gray-quinary">
@@ -40,7 +40,12 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
                   </>
                 )}
               </div>
-              <A href={`${config.API_URL}${d?.downloadUrl}`}>Download</A>
+              <A
+                href={`${config.API_URL}${d?.downloadUrl}`}
+                hook="downlad report"
+              >
+                Download
+              </A>
             </div>
           </div>
         ))}
@@ -53,7 +58,7 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
       <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
         <div className="flex justify-between text-base">
           <span className="font-semibold">Uploads</span>
-          <A onClick={() => setShowYAMLModal(true)}>
+          <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
             <span className="text-xs">view yml file</span>
           </A>
         </div>

@@ -53,7 +53,10 @@ function CommitsTable() {
   // We need to conditionally change background color for patch... we do not have those color on tailwind
   const dataTable = data.map((d) => ({
     name: (
-      <A>
+      <A
+        // TODO
+        hook="turn off warning, need to setup pagename"
+      >
         <div className="flex flex-col">
           <span>{d.name}</span>
           <span className="text-xs mt-0.5 text-ds-gray-quinary">{d.path}</span>

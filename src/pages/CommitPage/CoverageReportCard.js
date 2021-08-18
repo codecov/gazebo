@@ -28,7 +28,8 @@ function CoverageReportCard({ data, provider, repo, owner }) {
         </div>
         <A
           // TODO
-          href={'cibuild?'}
+          href="cibuild?"
+          hook="ci build"
           isExternal={true}
         >
           CI {ciPassed ? 'Passed' : 'Failed'}
@@ -44,12 +45,13 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           <div className="text-ds-gray-senary">
             <Icon size="sm" variant="developer" name="pull-request-open" />
           </div>
-          <A pageName="pull" options={{ pullid: pullId }}>
+          <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
             #{pullId}
           </A>
           (
           <A
             href={getProviderPullURL({ provider, owner, repo, pullId })}
+            hook="provider url"
             isExternal={true}
           >
             {providerToName(provider)}
@@ -97,7 +99,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
       <div className="w-full text-ds-gray-quinary text-xs mt-4">
         The average coverage of changes for this commit is TODO (patch). Data
         source from comparing between{' '}
-        <A pageName="commit" options={{ commit: parentCommitid }}>
+        <A to={{ pageName: 'commit', options: { commit: parentCommitid } }}>
           {parentCommitid?.substr(0, 7)}
         </A>{' '}
         and <span className="font-mono">{commitid}</span>

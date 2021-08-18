@@ -38,7 +38,12 @@ function CommitPage() {
             { pageName: 'owner', text: owner },
             { pageName: 'repo', text: repo },
             { pageName: 'commits', text: 'commits' },
-            { pageName: commit, readOnly: true, text: commitid },
+            {
+              pageName: 'commit',
+              options: { commit },
+              readOnly: true,
+              text: commitid,
+            },
           ]}
         />
       </div>
@@ -51,7 +56,12 @@ function CommitPage() {
               addSuffix: true,
             })
           : ''}
-        <A pageName="owner" options={{ owner: data?.commit?.author?.username }}>
+        <A
+          to={{
+            pageName: 'owner',
+            options: { owner: data?.commit?.author?.username },
+          }}
+        >
           {data?.commit?.author?.username}
         </A>
         authored commit
@@ -63,6 +73,7 @@ function CommitPage() {
             repo,
             commit,
           })}
+          hook="provider commit url"
           isExternal={true}
         >
           {commitid}
@@ -99,6 +110,7 @@ function CommitPage() {
                     <A
                       // TODO
                       href="learnmore"
+                      hook="yaml learn more"
                       isExternal={true}
                     >
                       learn more
