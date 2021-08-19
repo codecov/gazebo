@@ -32,7 +32,7 @@ const table = [
 ]
 
 function CommitsTable({ data, commit }) {
-  const dataTable = data.map((d) => ({
+  const dataTable = data?.map((d) => ({
     name: (
       <div className="flex flex-col">
         <A to={{ pageName: 'commitFile', options: { commit, path: d.path } }}>

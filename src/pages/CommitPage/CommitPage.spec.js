@@ -17,6 +17,22 @@ const dataReturned = {
     totals: {
       coverage: 38.30846,
     },
+    compareWithParent: {
+      impactedFiles: [
+        {
+          path: 'src/index2.py',
+          baseTotals: {
+            coverage: 62.5,
+          },
+          compareTotals: {
+            coverage: 50,
+          },
+          patch: {
+            coverage: 37.5,
+          },
+        },
+      ],
+    },
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
     pullId: 10,
     createdAt: '2020-08-25T16:35:32',
