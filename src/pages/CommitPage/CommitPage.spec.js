@@ -6,14 +6,6 @@ import { useFileCoverage } from 'services/file/hooks'
 
 jest.mock('services/commit')
 jest.mock('services/file/hooks')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({
-    provider: 'gh',
-    owner: 'codecov',
-    commit: 'f00162848a3cebc0728d915763c2fd9e92132408',
-  }),
-}))
 jest.mock('./Header/Header.js', () => () => 'The Header')
 
 const dataReturned = {
