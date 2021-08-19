@@ -15,10 +15,10 @@ function CommitFileView() {
 
   return (
     <FileViewer
-      coverage={data.coverage}
-      content={data.content}
-      totals={data.totals.coverage}
-      treePaths={''}
+      coverage={data?.coverage}
+      content={data?.content}
+      totals={data?.totals?.coverage}
+      treePaths={[]}
       title={
         <Breadcrumb
           paths={[

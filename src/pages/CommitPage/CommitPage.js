@@ -30,7 +30,6 @@ function CommitPage() {
   })
 
   const commitid = commit?.substr(0, 7)
-
   function renderImpactedFiles() {
     return !path ? (
       <>
@@ -41,7 +40,7 @@ function CommitPage() {
         />
       </>
     ) : (
-      <CommitFileView path={path} />
+      <CommitFileView />
     )
   }
 
