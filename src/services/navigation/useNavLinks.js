@@ -263,6 +263,11 @@ function useStaticNavLinks() {
       isExternalLink: true,
       text: 'Blog',
     },
+    legacyUI: {
+      path: ({ pathname }) => config.BASE_URL + pathname,
+      isExternalLink: true,
+      text: 'Legacy User Interface',
+    },
   }
 }
 
