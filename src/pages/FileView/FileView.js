@@ -51,6 +51,7 @@ function FileView() {
           content={data.content}
           totals={data.totals.coverage}
           treePaths={treePaths}
+          title={treePaths[treePaths.length - 1].text}
         />
       </div>
     </>

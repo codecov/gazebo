@@ -16,6 +16,9 @@ describe('useNavLinks', () => {
           <Route path="/:provider/:owner">{props.children}</Route>
           <Route path="/:provider/:owner/:repo">{props.children}</Route>
           <Route path="/:provider/:owner/:repo/:id">{props.children}</Route>
+          <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
+            {props.children}
+          </Route>
         </MemoryRouter>
       ),
     })
@@ -361,6 +364,44 @@ describe('useNavLinks', () => {
       expect(hookData.result.current.commits.path({ repo: 'test' })).toBe(
         '/gl/doggo/test/commits'
       )
+    })
+  })
+
+  describe('commitFile link', () => {
+    beforeAll(() => {
+      setup(['/gh/test/test-repo/commit/abcd/file/index.js'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(
+        hookData.result.current.commitFile.path({
+          commit: 'abcd',
+          path: 'index.js',
+        })
+      ).toBe('/gh/test/test-repo/commit/abcd/file/index.js')
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.commitFile.path({
+          provider: 'bb',
+          commit: 'abcd',
+          path: 'index.js',
+        })
+      ).toBe('/bb/test/test-repo/commit/abcd/file/index.js')
+      expect(
+        hookData.result.current.commitFile.path({
+          owner: 'cat',
+          commit: 'abcd',
+          path: 'index.js',
+        })
+      ).toBe('/gh/cat/test-repo/commit/abcd/file/index.js')
+      expect(
+        hookData.result.current.commitFile.path({
+          repo: 'test',
+          commit: 'abcd',
+          path: 'index.js',
+        })
+      ).toBe('/gh/test/test/commit/abcd/file/index.js')
     })
   })
 

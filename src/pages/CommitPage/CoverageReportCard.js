@@ -12,8 +12,8 @@ function CoverageReportCard({ data, provider, repo, owner }) {
   const commitid = data?.commitid?.substr(0, 7)
   const parentCommitid = data?.parent?.commitid
   const ciPassed = data?.ciPassed
-  const pullId = data?.pullId
-  const change = (coverage - data?.parent?.totals?.coverage).toFixed(2)
+  const parentCoverage = data?.parent?.totals?.coverage
+  const change = (coverage - parentCoverage).toFixed(2)
 
   function getCIStatusLabel() {
     return (
@@ -39,18 +39,23 @@ function CoverageReportCard({ data, provider, repo, owner }) {
   }
 
   function renderPullLabel() {
-    if (pullId) {
+    if (data?.pullId) {
       return (
         <div className="flex items-center">
           <div className="text-ds-gray-senary">
             <Icon size="sm" variant="developer" name="pull-request-open" />
           </div>
-          <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
-            #{pullId}
+          <A to={{ pageName: 'pull', options: { pullid: data?.pullId } }}>
+            #{data?.pullId}
           </A>
           (
           <A
-            href={getProviderPullURL({ provider, owner, repo, pullId })}
+            href={getProviderPullURL({
+              provider,
+              owner,
+              repo,
+              pullid: data?.pullId,
+            })}
             hook="provider url"
             isExternal={true}
           >
@@ -92,7 +97,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
               'text-ds-primary-green': change >= 0,
             })}
           >
-            {change ? `${change} %` : '-'}
+            {coverage && parentCoverage ? `${change} %` : '-'}
           </span>
         </div>
       </div>

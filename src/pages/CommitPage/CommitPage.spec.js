@@ -1,23 +1,33 @@
 import { render, screen, fireEvent, waitFor } from 'custom-testing-library'
 import CommitPage from './CommitPage'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 import { useCommit } from 'services/commit'
+import { useFileCoverage } from 'services/file/hooks'
 
 jest.mock('services/commit')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({
-    provider: 'gh',
-    owner: 'codecov',
-    commit: 'f00162848a3cebc0728d915763c2fd9e92132408',
-  }),
-}))
+jest.mock('services/file/hooks')
 jest.mock('./Header/Header.js', () => () => 'The Header')
 
 const dataReturned = {
   commit: {
     totals: {
       coverage: 38.30846,
+    },
+    compareWithParent: {
+      impactedFiles: [
+        {
+          path: 'src/index2.py',
+          baseTotals: {
+            coverage: 62.5,
+          },
+          compareTotals: {
+            coverage: 50,
+          },
+          patch: {
+            coverage: 37.5,
+          },
+        },
+      ],
     },
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
     pullId: 10,
@@ -65,10 +75,15 @@ const dataReturned = {
 describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
+    useFileCoverage.mockReturnValue(fileData)
 
-    render(<CommitPage />, {
-      wrapper: MemoryRouter,
-    })
+    render(
+      <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+        <Route path="/:provider/:owner/:repo/commit/:commit/">
+          <CommitPage />{' '}
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('renders', () => {
@@ -107,9 +122,13 @@ describe('CommitPage Not Found', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
 
-    render(<CommitPage />, {
-      wrapper: MemoryRouter,
-    })
+    render(
+      <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+        <Route path="/:provider/:owner/:repo/commit/:commit/">
+          <CommitPage />{' '}
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('renders 404', () => {
@@ -129,6 +148,40 @@ describe('CommitPage Not Found', () => {
     })
     it('renders the Uploads', () => {
       expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+    })
+  })
+})
+
+const fileData = {
+  coverage: {},
+  content: '',
+  totals: {
+    coverage: 25,
+  },
+}
+
+describe('CommitPageFileView', () => {
+  function setup(data) {
+    useCommit.mockReturnValue(data)
+    useFileCoverage.mockReturnValue({ data: fileData, isSuccess: true })
+    render(
+      <MemoryRouter
+        initialEntries={['/gh/test/test-repo/commit/abcd/file/index.js']}
+      >
+        <Route path="/:provider/:owner/:repo/commit/:commit/file/:path+">
+          <CommitPage />{' '}
+        </Route>
+      </MemoryRouter>
+    )
+  }
+
+  describe('renders', () => {
+    beforeEach(() => {
+      setup({ data: dataReturned, isSuccess: true })
+    })
+
+    it('renders the Impacted files', () => {
+      expect(screen.getByText(/index.js/)).toBeInTheDocument()
     })
   })
 })
