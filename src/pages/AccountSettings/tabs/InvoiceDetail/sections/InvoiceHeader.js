@@ -8,7 +8,7 @@ function InvoiceHeader({ invoice }) {
       <div className="text-sm">
         <img
           alt="Codecov Logo"
-          src={`${process.env.PUBLIC_URL}/logo.png`}
+          src="https://codecov-cdn.storage.googleapis.com/static/codecov-logo.png"
           width={200}
         />
         <h4 className="bold text-pink-500 mt-8">FROM</h4>
