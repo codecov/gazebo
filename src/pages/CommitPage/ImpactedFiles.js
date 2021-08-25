@@ -2,22 +2,31 @@ import CommitsTable from './CommitsTable'
 import CommitFileView from './CommitFileView'
 import PropTypes from 'prop-types'
 
-function ImpactedFiles({ showTable, impactedFiles, commit }) {
+function ImpactedFiles({ path, impactedFiles, commit }) {
   // const filesPatchChanges = impactedFiles.map(d => ({d.path}))
-
-  return showTable ? (
+  return !path ? (
     <>
       <span className="text-base mb-4 font-semibold">Impacted files</span>
       <CommitsTable commit={commit} data={impactedFiles} />
     </>
   ) : (
-    <CommitFileView />
+    <CommitFileView diff={impactedFiles.find((file) => file.path === path)} />
   )
 }
 
 ImpactedFiles.propTypes = {
-  showTable: PropTypes.string,
-  impactedFiles: PropTypes.string,
+  path: PropTypes.string,
+  impactedFiles: PropTypes.arrayOf(
+    PropTypes.shape({
+      path: PropTypes.string,
+      baseTotals: PropTypes.shape({
+        coverage: PropTypes.number,
+      }),
+      compareTotals: PropTypes.shape({
+        coverage: PropTypes.number,
+      }),
+    })
+  ),
   commit: PropTypes.string,
 }
 

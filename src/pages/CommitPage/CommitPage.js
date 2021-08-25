@@ -127,7 +127,7 @@ function CommitPage() {
         <div className="flex flex-col w-full mt-2 md:mt-0">
           <ImpactedFiles
             commit={commit}
-            showTable={!path}
+            path={path}
             impactedFiles={data?.commit?.compareWithParent?.impactedFiles}
           />
         </div>

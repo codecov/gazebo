@@ -7,7 +7,7 @@ import CoverageSelect from './CoverageSelect'
 import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 
-function FileViewer({ treePaths, content, coverage, totals, title, patch }) {
+function FileViewer({ treePaths, content, coverage, totals, title, change }) {
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
@@ -46,14 +46,14 @@ function FileViewer({ treePaths, content, coverage, totals, title, patch }) {
           <div className="w-56 mr-3">
             <Progress amount={totals} label={true} />
           </div>
-          {patch && (
+          {change && (
             <span
               className={cs('font-semibold text-sm', {
-                'bg-ds-coverage-uncovered': patch < 0,
-                'bg-ds-coverage-covered': patch >= 0,
+                'bg-ds-coverage-uncovered': change < 0,
+                'bg-ds-coverage-covered': change >= 0,
               })}
             >
-              {patch}%
+              {change}%
             </span>
           )}
         </div>
@@ -77,7 +77,7 @@ FileViewer.propTypes = {
   coverage: PropTypes.shape().isRequired,
   totals: PropTypes.number.isRequired,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
-  patch: PropTypes.number,
+  change: PropTypes.number,
 }
 
 export default FileViewer
