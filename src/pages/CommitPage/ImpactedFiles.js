@@ -3,7 +3,6 @@ import CommitFileView from './CommitFileView'
 import PropTypes from 'prop-types'
 
 function ImpactedFiles({ path, impactedFiles, commit }) {
-  // const filesPatchChanges = impactedFiles.map(d => ({d.path}))
   return !path ? (
     <>
       <span className="text-base mb-4 font-semibold">Impacted files</span>
