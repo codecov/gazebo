@@ -369,7 +369,7 @@ describe('useNavLinks', () => {
 
   describe('commitFile link', () => {
     beforeAll(() => {
-      setup(['/gh/test/test-repo/commit/abcd/file/index.js'])
+      setup(['/gh/test/test-repo/commit/abcd/index.js'])
     })
 
     it('Returns the correct link with nothing passed', () => {
@@ -378,7 +378,7 @@ describe('useNavLinks', () => {
           commit: 'abcd',
           path: 'index.js',
         })
-      ).toBe('/gh/test/test-repo/commit/abcd/file/index.js')
+      ).toBe('/gh/test/test-repo/commit/abcd/index.js')
     })
     it('can override the params', () => {
       expect(
@@ -387,21 +387,21 @@ describe('useNavLinks', () => {
           commit: 'abcd',
           path: 'index.js',
         })
-      ).toBe('/bb/test/test-repo/commit/abcd/file/index.js')
+      ).toBe('/bb/test/test-repo/commit/abcd/index.js')
       expect(
         hookData.result.current.commitFile.path({
           owner: 'cat',
           commit: 'abcd',
           path: 'index.js',
         })
-      ).toBe('/gh/cat/test-repo/commit/abcd/file/index.js')
+      ).toBe('/gh/cat/test-repo/commit/abcd/index.js')
       expect(
         hookData.result.current.commitFile.path({
           repo: 'test',
           commit: 'abcd',
           path: 'index.js',
         })
-      ).toBe('/gh/test/test/commit/abcd/file/index.js')
+      ).toBe('/gh/test/test/commit/abcd/index.js')
     })
   })
 
