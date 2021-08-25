@@ -31,8 +31,6 @@ function CommitPage() {
 
   const commitid = commit?.substr(0, 7)
 
-  console.log(path)
-
   return isSuccess ? (
     <div className="flex flex-col">
       <div className="w-full flex border-b border-ds-gray-secondary pb-3">
