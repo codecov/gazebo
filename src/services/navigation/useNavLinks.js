@@ -165,12 +165,18 @@ function useNavLinks() {
     },
     treeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree = '' } = {
+        { provider = p, owner = o, repo = r, tree, ref } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/tree/${tree}`,
+      ) => {
+        if (!tree || !ref) {
+          return `/${provider}/${owner}/${repo}/tree/`
+        } else {
+          return `/${provider}/${owner}/${repo}/tree/${ref}/${tree}`
+        }
+      },
       isExternalLink: true,
       text: 'Tree View',
     },

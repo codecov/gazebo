@@ -432,14 +432,14 @@ describe('useNavLinks', () => {
           tree: 'src/view/catWatch.php',
         })
       ).toBe('/gl/doggo/watch/tree/src/view/catWatch.php')
-      expect(hookData.result.current.treeView.path({ tree: 'src' })).toBe(
-        '/gl/doggo/watch/tree/src'
-      )
+      expect(
+        hookData.result.current.treeView.path({ tree: 'src', ref: 'ref' })
+      ).toBe('/gl/doggo/watch/tree/src')
       expect(
         hookData.result.current.treeView.path({
           tree: 'src/view',
         })
-      ).toBe('/gl/doggo/watch/tree/src/view')
+      ).toBe('/gl/doggo/watch/ref/tree/src/view')
     })
   })
 })
