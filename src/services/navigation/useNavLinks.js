@@ -148,7 +148,7 @@ function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/commit/${commit}/file/${path}`,
+      ) => `/${provider}/${owner}/${repo}/commit/${commit}/${path}`,
       isExternalLink: false,
       text: 'Commits',
     },

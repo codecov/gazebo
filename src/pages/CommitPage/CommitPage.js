@@ -10,10 +10,9 @@ import { useCommit } from 'services/commit'
 
 import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
-import CommitsTable from './CommitsTable'
 import { getProviderCommitURL } from './helpers'
-import CommitFileView from './CommitFileView'
 import Header from './Header'
+import ImpactedFiles from './ImpactedFiles'
 
 const NotFound = lazy(() => import('../NotFound'))
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
@@ -31,19 +30,8 @@ function CommitPage() {
   })
 
   const commitid = commit?.substr(0, 7)
-  function renderImpactedFiles() {
-    return !path ? (
-      <>
-        <span className="text-base mb-4 font-semibold">Impacted files</span>
-        <CommitsTable
-          commit={commit}
-          data={data?.commit?.compareWithParent?.impactedFiles}
-        />
-      </>
-    ) : (
-      <CommitFileView />
-    )
-  }
+
+  console.log(path)
 
   return isSuccess ? (
     <div className="flex flex-col">
@@ -137,7 +125,11 @@ function CommitPage() {
           </div>
         </div>
         <div className="flex flex-col w-full mt-2 md:mt-0">
-          {renderImpactedFiles()}
+          <ImpactedFiles
+            commit={commit}
+            showTable={!path}
+            impactedFiles={data?.commit?.compareWithParent?.impactedFiles}
+          />
         </div>
       </div>
     </div>

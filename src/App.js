@@ -78,15 +78,12 @@ function App() {
                   <FullLayout>Repo page</FullLayout>
                 </BaseLayout>
               </Route>
-              <Route path="/:provider/:owner/:repo/commit/:commit/" exact>
+              <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
                 <BaseLayout>
                   <CommitPage />
                 </BaseLayout>
               </Route>
-              <Route
-                path="/:provider/:owner/:repo/commit/:commit/file/:path+"
-                exact
-              >
+              <Route path="/:provider/:owner/:repo/commit/:commit/" exact>
                 <BaseLayout>
                   <CommitPage />
                 </BaseLayout>
