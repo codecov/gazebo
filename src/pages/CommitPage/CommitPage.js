@@ -2,7 +2,6 @@ import { useState, lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-import Modal from 'ui/Modal'
 import Spinner from 'ui/Spinner'
 import Breadcrumb from 'ui/Breadcrumb'
 import A from 'ui/A'
@@ -13,9 +12,9 @@ import UploadsCard from './UploadsCard'
 import { getProviderCommitURL } from './helpers'
 import Header from './Header'
 import ImpactedFiles from './ImpactedFiles'
+import YamlModal from './YamlModal'
 
 const NotFound = lazy(() => import('../NotFound'))
-const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
 function CommitPage() {
   const { provider, owner, repo, commit, path } = useParams()
@@ -96,30 +95,10 @@ function CommitPage() {
               showYAMLModal={showYAMLModal}
               setShowYAMLModal={setShowYAMLModal}
             />
-            {showYAMLModal && (
-              <Modal
-                isOpen={true}
-                onClose={() => setShowYAMLModal(false)}
-                title="Yaml"
-                body={
-                  <Suspense fallback={loadingState}>
-                    <YAMLViewer YAML={data?.commit?.yaml || ''} />
-                  </Suspense>
-                }
-                footer={
-                  <span className="text-sm w-full text-left">
-                    Includes default yaml, global yaml, and repo{' '}
-                    <A
-                      href="https://docs.codecov.com/docs/codecov-yaml"
-                      hook="yaml learn more"
-                      isExternal={true}
-                    >
-                      learn more
-                    </A>
-                  </span>
-                }
-              />
-            )}
+            <YamlModal
+              showYAMLModal={showYAMLModal}
+              setShowYAMLModal={setShowYAMLModal}
+            />
           </div>
         </div>
         <div className="flex flex-col w-full mt-2 md:mt-0">
