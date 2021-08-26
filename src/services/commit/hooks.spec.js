@@ -1,8 +1,8 @@
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useCommit } from './hooks'
+import { useCommit, useCommitYaml } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 const queryClient = new QueryClient()
@@ -60,7 +60,6 @@ const dataReturned = {
             },
           ],
         },
-        yaml: 'codecov:\n  max_report_age: false\n  require_ci_to_pass: true\ncomment:\n  behavior: default\n  layout: reach,diff,flags,tree,reach\n  show_carryforward_flags: false\ncoverage:\n  precision: 2\n  range:\n  - 70.0\n  - 100.0\n  round: down\n  status:\n    changes: false\n    default_rules:\n      flag_coverage_not_uploaded_behavior: include\n    patch:\n      default:\n        target: 80.0\n    project:\n      library:\n        paths:\n        - src/path1/.*\n        target: auto\n        threshold: 0.1\n      tests:\n        paths:\n        - src/path2/.*\n        target: 100.0\ngithub_checks:\n  annotations: true\n',
         message: 'paths test',
         ciPassed: true,
         parent: {
@@ -88,8 +87,8 @@ describe('useCommit', () => {
 
   function setup(provider, owner, repo, commitid) {
     server.use(
-      rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ data: dataReturned }))
+      graphql.query(`Commit`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
     hookData = renderHook(
@@ -145,7 +144,6 @@ describe('useCommit', () => {
               uploadType: 'uploaded',
             },
           ],
-          yaml: 'codecov:\n  max_report_age: false\n  require_ci_to_pass: true\ncomment:\n  behavior: default\n  layout: reach,diff,flags,tree,reach\n  show_carryforward_flags: false\ncoverage:\n  precision: 2\n  range:\n  - 70.0\n  - 100.0\n  round: down\n  status:\n    changes: false\n    default_rules:\n      flag_coverage_not_uploaded_behavior: include\n    patch:\n      default:\n        target: 80.0\n    project:\n      library:\n        paths:\n        - src/path1/.*\n        target: auto\n        threshold: 0.1\n      tests:\n        paths:\n        - src/path2/.*\n        target: 100.0\ngithub_checks:\n  annotations: true\n',
           message: 'paths test',
           ciPassed: true,
           parent: {
@@ -157,6 +155,50 @@ describe('useCommit', () => {
         },
       }
       expect(hookData.result.current.data).toEqual(expectedResponse)
+    })
+  })
+})
+
+describe('useCommitYaml', () => {
+  let hookData
+
+  const yaml =
+    'codecov:\n  max_report_age: false\n  require_ci_to_pass: true\ncomment:\n  behavior: default\n  layout: reach,diff,flags,tree,reach\n  show_carryforward_flags: false\ncoverage:\n  precision: 2\n  range:\n  - 70.0\n  - 100.0\n  round: down\n  status:\n    changes: false\n    default_rules:\n      flag_coverage_not_uploaded_behavior: include\n    patch:\n      default:\n        target: 80.0\n    project:\n      library:\n        paths:\n        - src/path1/.*\n        target: auto\n        threshold: 0.1\n      tests:\n        paths:\n        - src/path2/.*\n        target: 100.0\ngithub_checks:\n  annotations: true\n'
+
+  function setup(provider, owner, repo, commitid) {
+    server.use(
+      graphql.query(`CommitYaml`, (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                commit: {
+                  commitid: 'abc',
+                  yaml,
+                },
+              },
+            },
+          })
+        )
+      })
+    )
+    hookData = renderHook(
+      () => useCommitYaml({ provider, owner, repo, commitid }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('when called and user is authenticated', () => {
+    beforeEach(() => {
+      setup('gh', 'febg', 'repo-test', 'a23sda3')
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
+    })
+
+    it('returns commit info', () => {
+      expect(hookData.result.current.data).toEqual(yaml)
     })
   })
 })
