@@ -66,7 +66,7 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
           {data.length > 0 ? `${data.length} successful` : ''}
         </span>
       </div>
-      <div className="bg-ds-gray-primary h-64 max-h-64 overflow-scroll flex flex-col w-full">
+      <div className="bg-ds-gray-primary h-64 max-h-64 overflow-auto flex flex-col w-full">
         {Array.isArray(data) && data.length > 0 ? (
           renderUploads()
         ) : (

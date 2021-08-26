@@ -133,7 +133,7 @@ describe('CommitPage Not Found', () => {
 
   describe('renders 404', () => {
     beforeEach(() => {
-      setup({ data: { commit: null }, isSuccess: false })
+      setup({ data: { commit: { uploads: [{}] } }, isSuccess: false })
     })
     it('renders the Uploads', async () => {
       await waitFor(() =>
