@@ -13,14 +13,23 @@ function CommitFileView({ diff }) {
     ref: commit,
     path: path,
   })
-  const change = diff?.compareTotals?.coverage - diff?.baseTotals.coverage
+
+  function getChange() {
+    const change = diff?.compareTotals?.coverage - diff?.baseTotals.coverage
+    if (isNaN(change)) {
+      return 0
+    } else {
+      return change
+    }
+  }
+
   return (
     <FileViewer
       coverage={data?.coverage}
       content={data?.content}
       totals={data?.totals?.coverage}
       treePaths={[]}
-      change={change}
+      change={getChange()}
       title={
         <Breadcrumb
           paths={[

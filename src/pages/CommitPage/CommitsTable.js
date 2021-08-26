@@ -33,7 +33,10 @@ const table = [
 
 function CommitsTable({ data, commit }) {
   const dataTable = data?.map((d) => {
-    const change = d?.compareTotals?.coverage - d?.baseTotals.coverage
+    let change = d?.compareTotals?.coverage - d?.baseTotals?.coverage
+    if (isNaN(change)) {
+      change = 0
+    }
     return {
       name: (
         <div className="flex flex-col">
