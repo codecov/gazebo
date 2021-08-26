@@ -46,7 +46,7 @@ function CommitsTable({ data, commit }) {
       coverage: <Progress amount={d?.compareTotals?.coverage} label={true} />,
       patch: (
         <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {d?.patch?.coverage}%
+          {d?.patch?.coverage.toFixed(2)}%
         </span>
       ),
       change: (
@@ -59,7 +59,7 @@ function CommitsTable({ data, commit }) {
             }
           )}
         >
-          {`${change}%`}
+          {`${change.toFixed(2)}%`}
         </span>
       ),
     }

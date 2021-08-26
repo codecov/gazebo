@@ -53,7 +53,7 @@ function FileViewer({ treePaths, content, coverage, totals, title, change }) {
                 'bg-ds-coverage-covered': change >= 0,
               })}
             >
-              {change}%
+              {change.toFixed(2)}%
             </span>
           )}
         </div>
