@@ -35,7 +35,7 @@ function CommitsTable({ data, commit }) {
   const dataTable = data?.map((d) => {
     let change = d?.compareTotals?.coverage - d?.baseTotals?.coverage
     if (isNaN(change)) {
-      change = 0
+      change = null
     }
     return {
       name: (
@@ -46,10 +46,12 @@ function CommitsTable({ data, commit }) {
           <span className="text-xs mt-0.5 text-ds-gray-quinary">{d.path}</span>
         </div>
       ),
-      coverage: <Progress amount={d?.compareTotals?.coverage} label={true} />,
+      coverage: (
+        <Progress amount={d?.compareTotals?.coverage || 0} label={true} />
+      ),
       patch: (
         <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {d?.patch?.coverage.toFixed(2)}%
+          {d?.patch?.coverage ? `${d?.patch?.coverage?.toFixed(2)}%` : '-'}
         </span>
       ),
       change: (
@@ -57,12 +59,13 @@ function CommitsTable({ data, commit }) {
           className={cs(
             'text-sm text-right w-full font-semibold text-ds-gray-octonary',
             {
+              'bg-transparent': !change,
               'bg-ds-coverage-uncovered': change < 0,
               'bg-ds-coverage-covered': change >= 0,
             }
           )}
         >
-          {`${change.toFixed(2)}%`}
+          {change ? `${change.toFixed(2)}%` : '-'}
         </span>
       ),
     }
