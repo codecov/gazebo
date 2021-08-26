@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import { useState } from 'react'
 import Breadcrumb from 'ui/Breadcrumb'
 import Progress from 'ui/Progress'
@@ -6,7 +7,7 @@ import CoverageSelect from './CoverageSelect'
 import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 
-function FileViewer({ treePaths, content, coverage, totals, title }) {
+function FileViewer({ treePaths, content, coverage, totals, title, change }) {
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
@@ -41,8 +42,20 @@ function FileViewer({ treePaths, content, coverage, totals, title }) {
       </div>
       <div className="flex justify-between border-t px-3 border-r border-l border-solid bg-ds-gray-primary border-ds-gray-tertiary items-center h-10">
         <Breadcrumb paths={[...treePaths]} />
-        <div className="w-56">
-          <Progress amount={totals} label={true} />
+        <div className="flex">
+          <div className="w-56 mr-3">
+            <Progress amount={totals} label={true} />
+          </div>
+          {change && (
+            <span
+              className={cs('font-semibold text-sm', {
+                'bg-ds-coverage-uncovered': change < 0,
+                'bg-ds-coverage-covered': change >= 0,
+              })}
+            >
+              {change.toFixed(2)}%
+            </span>
+          )}
         </div>
       </div>
       <div>
@@ -64,6 +77,7 @@ FileViewer.propTypes = {
   coverage: PropTypes.shape().isRequired,
   totals: PropTypes.number.isRequired,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
+  change: PropTypes.number,
 }
 
 export default FileViewer

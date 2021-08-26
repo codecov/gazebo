@@ -26,14 +26,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
         >
           <Icon size="sm" name={ciPassed ? 'check' : 'x'} />
         </div>
-        <A
-          // TODO
-          href="cibuild?"
-          hook="ci build"
-          isExternal={true}
-        >
-          CI {ciPassed ? 'Passed' : 'Failed'}
-        </A>
+        <span>CI {ciPassed ? 'Passed' : 'Failed'}</span>
       </div>
     )
   }
