@@ -25,6 +25,9 @@ describe('FileView', () => {
           11: 0,
         },
         content: 'content',
+        totals: {
+          coverage: 23,
+        },
       },
     })
     useOwner.mockReturnValue({
@@ -62,7 +65,7 @@ describe('FileView', () => {
 
     it('renders the breadcrumb', () => {
       expect(screen.getAllByText('src').length).toBe(2)
-      expect(screen.getAllByText('index2.py').length).toBe(2)
+      expect(screen.getAllByText('index2.py').length).toBe(3)
     })
   })
 

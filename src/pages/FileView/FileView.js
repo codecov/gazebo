@@ -29,7 +29,7 @@ function FileView() {
   const treePaths = paths.map((location) => ({
     pageName: 'treeView',
     text: location,
-    options: { tree: getTreeLocation(paths, location) },
+    options: { tree: getTreeLocation(paths, location), ref: ref },
   }))
 
   if (!ownerData || !data) {
@@ -49,7 +49,9 @@ function FileView() {
         <FileViewer
           coverage={data.coverage}
           content={data.content}
+          totals={data.totals.coverage}
           treePaths={treePaths}
+          title={treePaths[treePaths.length - 1].text}
         />
       </div>
     </>

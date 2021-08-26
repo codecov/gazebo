@@ -105,4 +105,18 @@ describe('LoginPrompt', () => {
       expect(a).toHaveAttribute('href', expectedLink.to)
     })
   })
+
+  it('renders link to marketing if url starts with /login', () => {
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <LoginPrompt />
+      </MemoryRouter>
+    )
+    expect(screen.getByText(/new to codecov\?/i)).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', {
+        name: /learn more/i,
+      })
+    ).toBeInTheDocument()
+  })
 })

@@ -6,7 +6,6 @@ const Template = (args) => {
     <>
       <Banner
         {...args}
-        storageId="storybook"
         title={
           <div className="flex justify-center gap-2">
             <Icon name="speakerphone"></Icon>A Header

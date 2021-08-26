@@ -12,6 +12,9 @@ const coverageFileFragment = `
               line
               coverage
             }
+            totals {
+                coverage # Absolute coverage of the commit
+            }
         }
     }
 
@@ -58,6 +61,7 @@ export function useFileCoverage({ provider, owner, repo, ref, path }) {
       return {
         content: coverageFile.content,
         coverage: fileCoverage,
+        totals: coverageFile.totals,
       }
     })
   })

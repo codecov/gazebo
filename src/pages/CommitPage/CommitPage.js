@@ -1,22 +1,25 @@
 import { useState, lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+
 import Modal from 'ui/Modal'
+import Spinner from 'ui/Spinner'
+import Breadcrumb from 'ui/Breadcrumb'
+import A from 'ui/A'
+import { useCommit } from 'services/commit'
+
 import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
 import CommitsTable from './CommitsTable'
-import Breadcrumb from 'ui/Breadcrumb'
-import Spinner from 'ui/Spinner'
-import { useCommit } from 'services/commit'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import Icon from 'ui/Icon'
-import AppLink from 'shared/AppLink'
 import { getProviderCommitURL } from './helpers'
-const NotFound = lazy(() => import('../NotFound'))
+import CommitFileView from './CommitFileView'
+import Header from './Header'
 
+const NotFound = lazy(() => import('../NotFound'))
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
 function CommitPage() {
-  const { provider, owner, repo, commit } = useParams()
+  const { provider, owner, repo, commit, path } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
   const loadingState = <Spinner size={40} />
 
@@ -28,6 +31,19 @@ function CommitPage() {
   })
 
   const commitid = commit?.substr(0, 7)
+  function renderImpactedFiles() {
+    return !path ? (
+      <>
+        <span className="text-base mb-4 font-semibold">Impacted files</span>
+        <CommitsTable
+          commit={commit}
+          data={data?.commit?.compareWithParent?.impactedFiles}
+        />
+      </>
+    ) : (
+      <CommitFileView />
+    )
+  }
 
   return isSuccess ? (
     <div className="flex flex-col">
@@ -36,42 +52,48 @@ function CommitPage() {
           paths={[
             { pageName: 'owner', text: owner },
             { pageName: 'repo', text: repo },
-            { pageName: 'commits' },
-            { pageName: commit, readOnly: true, text: commitid },
+            { pageName: 'commits', text: 'commits' },
+            {
+              pageName: 'commit',
+              options: { commit },
+              readOnly: true,
+              text: commitid,
+            },
           ]}
         />
       </div>
+      <Header provider={provider} />
       <span className="mt-4 text-lg font-semibold text-ds-gray-octonary">
         {data?.commit?.message}
       </span>
-      <div className="flex items-center mt-1 text-ds-gray-quinary">
+      <div className="flex items-center mt-1 text-ds-gray-quinary gap-1">
         {data?.commit?.createdAt
           ? formatDistanceToNow(new Date(data?.commit?.createdAt), {
               addSuffix: true,
             })
-          : ''}{' '}
-        <AppLink
-          pageName="owner"
-          options={{ owner: data?.commit?.author?.username }}
-          className="text-ds-gray-octonary mx-1 hover:underline"
+          : ''}
+        <A
+          to={{
+            pageName: 'owner',
+            options: { owner: data?.commit?.author?.username },
+          }}
         >
           {data?.commit?.author?.username}
-        </AppLink>{' '}
+        </A>
         authored commit
-        <a
-          className="flex ml-1.5 items-center hover:underline font-mono text-ds-blue-darker"
+        <A
+          variant="code"
           href={getProviderCommitURL({
             provider,
             owner,
             repo,
             commit,
           })}
+          hook="provider commit url"
+          isExternal={true}
         >
           {commitid}
-          <div className="text-ds-gray-quinary ml-0.5">
-            <Icon size="sm" name="external-link" />
-          </div>
-        </a>
+        </A>
       </div>
       <hr className="mt-6" />
       <div className="flex flex-col md:flex-row mt-8">
@@ -101,9 +123,13 @@ function CommitPage() {
                 footer={
                   <span className="text-sm w-full text-left">
                     Includes default yaml, global yaml, and repo{' '}
-                    <a href="learnmore" className="text-ds-blue-darker">
+                    <A
+                      href="https://docs.codecov.com/docs/codecov-yaml"
+                      hook="yaml learn more"
+                      isExternal={true}
+                    >
                       learn more
-                    </a>
+                    </A>
                   </span>
                 }
               />
@@ -111,8 +137,7 @@ function CommitPage() {
           </div>
         </div>
         <div className="flex flex-col w-full mt-2 md:mt-0">
-          <span className="text-base mb-4 font-semibold">Impacted files</span>
-          <CommitsTable />
+          {renderImpactedFiles()}
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import Button from 'ui/Button'
 import PropTypes from 'prop-types'
 import { useAccountDetails } from 'services/account'
+import { trackSegmentEvent } from 'services/tracking/segment'
 
 function RequestButton({ owner, provider }) {
   const { data: accountDetails } = useAccountDetails({
@@ -17,6 +18,7 @@ function RequestButton({ owner, provider }) {
         to={{ pageName: 'demo' }}
         variant="secondary"
         data-testid="request-demo"
+        onClick={() => trackSegmentEvent('click', 'request demo', 'header cta')}
       >
         Request demo
       </Button>

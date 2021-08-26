@@ -8,12 +8,13 @@ import { ToastNotificationProvider } from 'services/toastNotification'
 import BaseLayout from 'layouts/BaseLayout'
 import config from 'config'
 import { ReactQueryDevtools } from 'react-query/devtools'
+// Not lazy loading because the page is very small and is accessed often
 
+const LoginPage = lazy(() => import('./pages/LoginPage'))
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
-
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const FullLayout = lazy(() => import('./layouts/FullLayout'))
 
@@ -37,6 +38,16 @@ function App() {
           <ReactQueryDevtools initialIsOpen={false} />
           <BrowserRouter>
             <Switch>
+              <Route path="/login/:provider">
+                <BaseLayout>
+                  <LoginPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/login">
+                <BaseLayout>
+                  <LoginPage />
+                </BaseLayout>
+              </Route>
               <Route path="/account/:provider/:owner/">
                 <BaseLayout>
                   <AccountSettings />
@@ -67,7 +78,15 @@ function App() {
                   <FullLayout>Repo page</FullLayout>
                 </BaseLayout>
               </Route>
-              <Route path="/:provider/:owner/:repo/commit/:commit" exact>
+              <Route path="/:provider/:owner/:repo/commit/:commit/" exact>
+                <BaseLayout>
+                  <CommitPage />
+                </BaseLayout>
+              </Route>
+              <Route
+                path="/:provider/:owner/:repo/commit/:commit/file/:path+"
+                exact
+              >
                 <BaseLayout>
                   <CommitPage />
                 </BaseLayout>

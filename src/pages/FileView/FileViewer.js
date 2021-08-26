@@ -6,18 +6,17 @@ import CoverageSelect from './CoverageSelect'
 import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 
-function FileViewer({ treePaths, content, coverage }) {
+function FileViewer({ treePaths, content, coverage, totals, title }) {
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
-
   return (
     <div className="flex flex-col">
-      <div className="flex items-center mb-4 justify-between">
+      <div className="flex items-start md:items-center flex-col md:flex-row mb-4 justify-between">
         <span className="text-ds-gray-senary font-semibold text-base">
-          Config.js
+          {title}
         </span>
-        <div className="flex">
+        <div className="flex mt-4 md:mt-0">
           <span className="text-xs font-semibold mr-7">View coverage by:</span>
           <div className="mr-7">
             <CoverageSelect
@@ -43,7 +42,7 @@ function FileViewer({ treePaths, content, coverage }) {
       <div className="flex justify-between border-t px-3 border-r border-l border-solid bg-ds-gray-primary border-ds-gray-tertiary items-center h-10">
         <Breadcrumb paths={[...treePaths]} />
         <div className="w-56">
-          <Progress amount={80} label={true} />
+          <Progress amount={totals} label={true} />
         </div>
       </div>
       <div>
@@ -61,7 +60,9 @@ function FileViewer({ treePaths, content, coverage }) {
 
 FileViewer.propTypes = {
   content: PropTypes.string.isRequired,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
   coverage: PropTypes.shape().isRequired,
+  totals: PropTypes.number.isRequired,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
 }
 

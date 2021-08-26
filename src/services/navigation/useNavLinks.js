@@ -16,8 +16,14 @@ function useNavLinks() {
     },
     signIn: {
       text: 'Log in',
-      path: ({ provider = p, to } = { provider: p }) => {
-        const query = to ? qs.stringify({ to }, { addQueryPrefix: true }) : ''
+      path: ({ provider = p, privateScope, to } = { provider: p }) => {
+        const query = qs.stringify(
+          {
+            to,
+            private: privateScope,
+          },
+          { addQueryPrefix: true }
+        )
         return `${config.BASE_URL}/login/${provider}${query}`
       },
       isExternalLink: true,
@@ -132,7 +138,18 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commit/${commit}`,
-      isExternalLink: true,
+      isExternalLink: false,
+      text: 'Commits',
+    },
+    commitFile: {
+      path: (
+        { provider = p, owner = o, repo = r, commit, path } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/commit/${commit}/file/${path}`,
+      isExternalLink: false,
       text: 'Commits',
     },
     pull: {
@@ -148,12 +165,18 @@ function useNavLinks() {
     },
     treeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree = '' } = {
+        { provider = p, owner = o, repo = r, tree, ref } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/tree/${tree}`,
+      ) => {
+        if (!tree || !ref) {
+          return `/${provider}/${owner}/${repo}/tree/`
+        } else {
+          return `/${provider}/${owner}/${repo}/tree/${ref}/${tree}`
+        }
+      },
       isExternalLink: true,
       text: 'Tree View',
     },
@@ -214,6 +237,12 @@ function useStaticNavLinks() {
       path: () => 'https://docs.codecov.io/',
       isExternalLink: true,
     },
+    oauthTroubleshoot: {
+      text: 'OAuth Troubleshoot',
+      path: () =>
+        'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting',
+      isExternalLink: true,
+    },
     enterprise: {
       text: 'Self Hosted',
       path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
@@ -239,6 +268,11 @@ function useStaticNavLinks() {
       path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
       text: 'Blog',
+    },
+    legacyUI: {
+      path: ({ pathname }) => config.BASE_URL + pathname,
+      isExternalLink: true,
+      text: 'Legacy User Interface',
     },
   }
 }
