@@ -1,12 +1,28 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
 import Highlight, { defaultProps } from 'prism-react-renderer'
+import { useParams } from 'react-router-dom'
+
+import { useCommitYaml } from 'services/commit'
 import 'shared/utils/prisimTheme.css'
+
 import './YAMLViewer.css'
 
-function YAMLViewer({ YAML }) {
+function YAMLViewer() {
+  const { provider, owner, repo, commit } = useParams()
+  const { data: yamlContent } = useCommitYaml({
+    provider,
+    owner,
+    repo,
+    commitid: commit,
+  })
+
   return (
-    <Highlight {...defaultProps} code={YAML} language="yaml" theme={undefined}>
+    <Highlight
+      {...defaultProps}
+      code={yamlContent}
+      language="yaml"
+      theme={undefined}
+    >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
           className={cs(
@@ -35,10 +51,6 @@ function YAMLViewer({ YAML }) {
       )}
     </Highlight>
   )
-}
-
-YAMLViewer.propTypes = {
-  YAML: PropTypes.string.isRequired,
 }
 
 export default YAMLViewer
