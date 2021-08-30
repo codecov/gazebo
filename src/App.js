@@ -16,6 +16,7 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const FullLayout = lazy(() => import('./layouts/FullLayout'))
 
 const queryClient = new QueryClient({
@@ -51,6 +52,11 @@ function App() {
               <Route path="/account/:provider/:owner/">
                 <BaseLayout>
                   <AccountSettings />
+                </BaseLayout>
+              </Route>
+              <Route path="/analytics/:provider/:owner/" exact>
+                <BaseLayout>
+                  <AnalyticsPage />
                 </BaseLayout>
               </Route>
               <Route path="/:provider/+" exact>
