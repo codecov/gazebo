@@ -54,7 +54,7 @@ describe('FileView', () => {
     })
 
     it('renders the breadcrumb', () => {
-      expect(screen.getAllByText('src').length).toBe(2)
+      expect(screen.getAllByText('src').length).toBe(1)
       expect(screen.getAllByText('index2.py').length).toBe(3)
     })
   })
