@@ -43,8 +43,18 @@ const AppLink = forwardRef(
       ...propsActive,
     }
 
+    /*
+      data-cy: hook for cypress tests
+      data-marketing: hook for marketing tools
+    */
+
     return (
-      <Component {...completeProps} ref={ref}>
+      <Component
+        data-cy={pageName}
+        data-marketing={pageName}
+        {...completeProps}
+        ref={ref}
+      >
         {defaultTo(children, pageConfig.text)}
       </Component>
     )

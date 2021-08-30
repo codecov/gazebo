@@ -10,7 +10,7 @@ function Progress({ amount, label }) {
           style={{ width: `${amount}%` }}
         />
       </div>
-      {label && <span className="font-semibold">{amount.toFixed(2)}%</span>}
+      {label && <span className="font-semibold">{amount?.toFixed(2)}%</span>}
     </div>
   )
 }

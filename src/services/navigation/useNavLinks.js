@@ -1,3 +1,4 @@
+import qs from 'qs'
 import { useRouteMatch } from 'react-router-dom'
 
 import config from 'config'
@@ -15,8 +16,16 @@ function useNavLinks() {
     },
     signIn: {
       text: 'Log in',
-      path: ({ provider = p } = { provider: p }) =>
-        `${config.BASE_URL}/login/${provider}`,
+      path: ({ provider = p, privateScope, to } = { provider: p }) => {
+        const query = qs.stringify(
+          {
+            to,
+            private: privateScope,
+          },
+          { addQueryPrefix: true }
+        )
+        return `${config.BASE_URL}/login/${provider}${query}`
+      },
       isExternalLink: true,
     },
     provider: {
@@ -65,12 +74,6 @@ function useNavLinks() {
       isExternalLink: false,
     },
     yamlTab: {
-      text: 'Global YAML',
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/yaml`,
-      isExternalLink: true,
-    },
-    internalYamlTab: {
       text: 'Global YAML',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/yaml`,
@@ -124,17 +127,56 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commits`,
+      isExternalLink: false,
+      text: 'Commits',
+    },
+    commit: {
+      path: (
+        { provider = p, owner = o, repo = r, commit } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/commit/${commit}`,
+      isExternalLink: false,
+      text: 'Commits',
+    },
+    commitFile: {
+      path: (
+        { provider = p, owner = o, repo = r, commit, path } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/commit/${commit}/${path}`,
+      isExternalLink: false,
+      text: 'Commits',
+    },
+    pull: {
+      path: (
+        { provider = p, owner = o, repo = r, pullid } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullid}`,
       isExternalLink: true,
       text: 'Commits',
     },
     treeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree = '' } = {
+        { provider = p, owner = o, repo = r, tree, ref } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/tree/${tree}`,
+      ) => {
+        if (!tree || !ref) {
+          return `/${provider}/${owner}/${repo}/tree/`
+        } else {
+          return `/${provider}/${owner}/${repo}/tree/${ref}/${tree}`
+        }
+      },
       isExternalLink: true,
       text: 'Tree View',
     },
@@ -148,6 +190,16 @@ function useStaticNavLinks() {
     signUp: {
       text: 'Sign Up',
       path: () => `${config.MARKETING_BASE_URL}/sign-up`,
+      isExternalLink: true,
+    },
+    demo: {
+      text: 'Demo',
+      path: () => `${config.MARKETING_BASE_URL}/demo`,
+      isExternalLink: true,
+    },
+    freeTrial: {
+      text: 'Trial',
+      path: () => `${config.MARKETING_BASE_URL}/trial`,
       isExternalLink: true,
     },
     terms: {
@@ -185,6 +237,12 @@ function useStaticNavLinks() {
       path: () => 'https://docs.codecov.io/',
       isExternalLink: true,
     },
+    oauthTroubleshoot: {
+      text: 'OAuth Troubleshoot',
+      path: () =>
+        'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting',
+      isExternalLink: true,
+    },
     enterprise: {
       text: 'Self Hosted',
       path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
@@ -210,6 +268,11 @@ function useStaticNavLinks() {
       path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
       text: 'Blog',
+    },
+    legacyUI: {
+      path: ({ pathname }) => config.BASE_URL + pathname,
+      isExternalLink: true,
+      text: 'Legacy User Interface',
     },
   }
 }

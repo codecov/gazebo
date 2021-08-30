@@ -1,55 +1,98 @@
-import Icon from 'ui/Icon'
+import { Fragment } from 'react'
 import PropTypes from 'prop-types'
+import groupBy from 'lodash/groupBy'
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-function UploadsCard({ setShowYAMLModal }) {
-  const uploads = [1, 2, 3, 4, 5, 6, 7]
+import config from 'config'
 
-  return (
-    <div className="flex w-full flex-col border border-ds-gray-secondary text-ds-gray-octonary">
-      <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
-        <div className="flex justify-between">
-          <span className="text-base font-semibold">Uploads</span>
-          <button
-            onClick={() => setShowYAMLModal(true)}
-            className="text-ds-blue-darker cursor-pointer text-xs"
-          >
-            view yml file
-          </button>
-        </div>
-        <span className="text-ds-gray-quinary">4 successful</span>
-      </div>
-      <div className="bg-ds-gray-primary max-h-64 overflow-scroll flex flex-col w-full">
-        <span className="text-sm font-semibold w-full py-1 px-4">
-          Circle CI
-        </span>
-        {uploads.map((d, i) => (
+import A from 'ui/A'
+import Icon from 'ui/Icon'
+
+function UploadsCard({ setShowYAMLModal, data = [] }) {
+  const uploads = groupBy(data, 'provider')
+  function renderUploads() {
+    return Object.keys(uploads).map((key) => (
+      <Fragment key={key}>
+        <span className="text-sm font-semibold w-full py-1 px-4">{key}</span>
+        {uploads[key].map((d, i) => (
           <div
             className="border-t border-ds-gray-secondary py-2 px-4 flex flex-col"
             key={i}
           >
             <div className="flex justify-between">
-              <div className="flex">
-                <span className="text-ds-blue-darker mr-1">2563</span>
-                <Icon size="sm" name="external-link" />
-              </div>
-              <span className="text-xs text-ds-gray-quinary">2 days ago</span>
+              <A href={d?.ciUrl} hook="ci job" isExternal={true}>
+                {d?.jobCode}
+              </A>
+              <span className="text-xs text-ds-gray-quinary">
+                {d.createdAt
+                  ? formatDistanceToNow(new Date(d.createdAt), {
+                      addSuffix: true,
+                    })
+                  : ''}
+              </span>
             </div>
             <div className="flex justify-between mt-1">
               <div className="flex">
-                <Icon variant="solid" size="sm" name="flag" />
-                <span className="text-xs ml-1">macros</span>
+                {d?.flags?.length > 0 && (
+                  <>
+                    <Icon variant="solid" size="sm" name="flag" />
+                    <span className="text-xs ml-1">{d.flags[0]}</span>
+                  </>
+                )}
               </div>
-              <span className="text-xs text-ds-blue-darker">Download</span>
+              <A
+                href={`${config.API_URL}${d?.downloadUrl}`}
+                hook="downlad report"
+              >
+                Download
+              </A>
             </div>
           </div>
         ))}
+      </Fragment>
+    ))
+  }
+
+  return (
+    <div className="flex w-full flex-col border border-ds-gray-secondary text-ds-gray-octonary">
+      <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
+        <div className="flex justify-between text-base">
+          <span className="font-semibold">Uploads</span>
+          <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
+            <span className="text-xs">view yml file</span>
+          </A>
+        </div>
+        <span className="text-ds-gray-quinary">
+          {data.length > 0 ? `${data.length} successful` : ''}
+        </span>
+      </div>
+      <div className="bg-ds-gray-primary h-64 max-h-64 overflow-auto flex flex-col w-full">
+        {Array.isArray(data) && data.length > 0 ? (
+          renderUploads()
+        ) : (
+          <span className="py-2.5 px-4 text-xs text-ds-gray-quinary">
+            Currently, no successful uploads
+          </span>
+        )}
       </div>
     </div>
   )
 }
 
 UploadsCard.propTypes = {
-  uploads: PropTypes.array,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      state: PropTypes.string,
+      provider: PropTypes.string,
+      ciUrl: PropTypes.string,
+      createdAt: PropTypes.string,
+      downloadUrl: PropTypes.string,
+      flags: PropTypes.arrayOf(PropTypes.string),
+      uploadType: PropTypes.string,
+      updatedAt: PropTypes.string,
+      jobCode: PropTypes.string,
+    })
+  ),
   setShowYAMLModal: PropTypes.func.isRequired,
 }
 

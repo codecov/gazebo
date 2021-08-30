@@ -77,7 +77,7 @@ const subscriptionDetail = {
   customer: 'cus_IVd2T7puVJe1Ur',
 }
 
-xdescribe('InvoiceDetail', () => {
+describe('InvoiceDetail', () => {
   function setup(invoiceOver = {}, url = '', subscriptionOver = {}) {
     useInvoice.mockReturnValue({
       data: {

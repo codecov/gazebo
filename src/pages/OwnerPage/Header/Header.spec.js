@@ -19,32 +19,46 @@ describe('Header', () => {
   describe('when user is part of the org', () => {
     beforeEach(() => {
       setup({
+        provider: 'gh',
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
+        accountDetails: {
+          activatedUserCount: 0,
+          plan: {
+            value: 'users-free',
+          },
+        },
       })
-    })
-
-    it('renders links to the owner settings', () => {
-      expect(
-        screen.getByRole('link', {
-          name: /settings/i,
-        })
-      ).toHaveAttribute('href', '/account/gh/codecov')
     })
 
     it('renders the context switcher', () => {
       expect(screen.getByText(/MyContextSwitcher/)).toBeInTheDocument()
+    })
+
+    it('Ask for feedback banner is rendered', () => {
+      expect(
+        screen.queryByText(
+          /We would love to hear your feedback! Let us know what you think/
+        )
+      ).toBeInTheDocument()
     })
   })
 
   describe('when user is not part of the org', () => {
     beforeEach(() => {
       setup({
+        provider: 'gh',
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: false,
+        },
+        accountDetails: {
+          activatedUserCount: 0,
+          plan: {
+            value: 'users-free',
+          },
         },
       })
     })
@@ -59,14 +73,6 @@ describe('Header', () => {
 
     it('doesnt render the context switcher', () => {
       expect(screen.queryByText(/MyContextSwitcher/)).not.toBeInTheDocument()
-    })
-
-    it('doesnt render links to the settings', () => {
-      expect(
-        screen.queryByRole('link', {
-          name: /settings/i,
-        })
-      ).not.toBeInTheDocument()
     })
   })
 })

@@ -1,83 +1,119 @@
 import { useState, lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
-import Modal from 'ui/Modal'
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+
+import Spinner from 'ui/Spinner'
+import Breadcrumb from 'ui/Breadcrumb'
+import A from 'ui/A'
+import { useCommit } from 'services/commit'
+
 import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
-import CommitsTable from './CommitsTable'
-import Breadcrumb from 'ui/Breadcrumb'
-import Spinner from 'ui/Spinner'
+import { getProviderCommitURL } from './helpers'
+import Header from './Header'
+import ImpactedFiles from './ImpactedFiles'
+import YamlModal from './YamlModal'
 
-const YAMLViewer = lazy(() => import('./YAMLViewer'))
-
-const exampleCode = `
-codecov:\n  max_report_age: false\n  require_ci_to_pass: true\ncomment:\n  behavior: default\n  layout: reach,diff,flags,tree,reach\n  show_carryforward_flags: false\ncoverage:\n  precision: 2\n  range:\n  - 70.0\n  - 100.0\n  round: down\n  status:\n    changes: false\n    default_rules:\n      flag_coverage_not_uploaded_behavior: include\n    patch: true\n    project: true\ngithub_checks:\n  annotations: true\n
-`
+const NotFound = lazy(() => import('../NotFound'))
 
 function CommitPage() {
-  const { owner, repo } = useParams()
+  const { provider, owner, repo, commit, path } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
   const loadingState = <Spinner size={40} />
 
-  return (
+  const { data, isSuccess } = useCommit({
+    provider: provider,
+    owner,
+    repo,
+    commitid: commit,
+  })
+
+  const commitid = commit?.substr(0, 7)
+
+  return isSuccess ? (
     <div className="flex flex-col">
       <div className="w-full flex border-b border-ds-gray-secondary pb-3">
         <Breadcrumb
           paths={[
             { pageName: 'owner', text: owner },
             { pageName: 'repo', text: repo },
-            { pageName: 'commits' },
-            { pageName: 'a675fas', readOnly: true, text: 'a675fas' },
+            { pageName: 'commits', text: 'commits' },
+            {
+              pageName: 'commit',
+              options: { commit },
+              readOnly: true,
+              text: commitid,
+            },
           ]}
         />
       </div>
+      <Header provider={provider} />
       <span className="mt-4 text-lg font-semibold text-ds-gray-octonary">
-        Update Graphql mutation
+        {data?.commit?.message}
       </span>
-      <div className="flex mt-1 text-ds-gray-">
-        2 hours ago Pierce-m authored commit
-        <a className="ml-1.5" href="somethinf">
-          jsdfhjksd
-        </a>
+      <div className="flex items-center mt-1 text-ds-gray-quinary gap-1">
+        {data?.commit?.createdAt
+          ? formatDistanceToNow(new Date(data?.commit?.createdAt), {
+              addSuffix: true,
+            })
+          : ''}
+        <A
+          to={{
+            pageName: 'owner',
+            options: { owner: data?.commit?.author?.username },
+          }}
+        >
+          {data?.commit?.author?.username}
+        </A>
+        authored commit
+        <A
+          variant="code"
+          href={getProviderCommitURL({
+            provider,
+            owner,
+            repo,
+            commit,
+          })}
+          hook="provider commit url"
+          isExternal={true}
+        >
+          {commitid}
+        </A>
       </div>
       <hr className="mt-6" />
       <div className="flex flex-col md:flex-row mt-8">
         <div className="flex w-full mr-8 md:max-w-sm flex-col">
-          <div className="">
-            <CoverageReportCard />
-          </div>
+          <CoverageReportCard
+            provider={provider}
+            repo={repo}
+            owner={owner}
+            data={data?.commit}
+          />
           <div className="mt-2 md:mt-8">
             <UploadsCard
+              data={data?.commit?.uploads}
               showYAMLModal={showYAMLModal}
               setShowYAMLModal={setShowYAMLModal}
             />
-            {showYAMLModal && (
-              <Modal
-                isOpen={true}
-                onClose={() => setShowYAMLModal(false)}
-                title="Yaml"
-                body={
-                  <Suspense fallback={loadingState}>
-                    <YAMLViewer YAML={exampleCode} />
-                  </Suspense>
-                }
-                footer={
-                  <span className="text-sm w-full text-left">
-                    Includes default yaml, global yaml, and repo{' '}
-                    <a href="learnmore" className="text-ds-blue-darker">
-                      learn more
-                    </a>
-                  </span>
-                }
-              />
-            )}
+            <YamlModal
+              showYAMLModal={showYAMLModal}
+              setShowYAMLModal={setShowYAMLModal}
+            />
           </div>
         </div>
         <div className="flex flex-col w-full mt-2 md:mt-0">
-          <span className="text-base mb-4 font-semibold">Impacted files</span>
-          <CommitsTable />
+          <ImpactedFiles
+            commit={commit}
+            path={path}
+            impactedFiles={data?.commit?.compareWithParent?.impactedFiles}
+          />
         </div>
       </div>
     </div>
+  ) : (
+    <Suspense fallback={loadingState}>
+      <NotFound />
+    </Suspense>
   )
 }
 

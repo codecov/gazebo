@@ -6,22 +6,33 @@ import indexOf from 'lodash/indexOf'
 import NotFound from 'pages/NotFound'
 
 import Breadcrumb from 'ui/Breadcrumb'
+import FileViewer from './FileViewer'
+import { useFileCoverage } from 'services/file/hooks'
 
 function getTreeLocation(paths, location) {
   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
 }
 
 function FileView() {
-  const { owner, repo, ...path } = useParams()
+  const { owner, repo, provider, ref, ...path } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const paths = path[0].split('/')
+
+  const { data } = useFileCoverage({
+    provider,
+    owner,
+    repo,
+    ref,
+    path: path[0],
+  })
+
   const treePaths = paths.map((location) => ({
     pageName: 'treeView',
     text: location,
-    options: { tree: getTreeLocation(paths, location) },
+    options: { tree: getTreeLocation(paths, location), ref: ref },
   }))
 
-  if (!ownerData) {
+  if (!ownerData || !data) {
     return <NotFound />
   }
 
@@ -35,7 +46,13 @@ function FileView() {
         ]}
       />
       <div className="border-t border-solid border-ds-gray-tertiary mt-4 py-6">
-        file view
+        <FileViewer
+          coverage={data.coverage}
+          content={data.content}
+          totals={data.totals.coverage}
+          treePaths={treePaths}
+          title={treePaths[treePaths.length - 1].text}
+        />
       </div>
     </>
   )

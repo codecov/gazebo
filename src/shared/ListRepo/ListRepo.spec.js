@@ -3,6 +3,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ListRepo from './ListRepo'
 import userEvent from '@testing-library/user-event'
 
+jest.mock(
+  './OrgControlTable/GithubPrivateScopeLogin',
+  () => () => 'GithubPrivateScopeLogin'
+)
 jest.mock('./OrgControlTable/ResyncButton', () => () => 'ResyncButton')
 jest.mock('./ReposTable', () => () => 'ReposTable')
 

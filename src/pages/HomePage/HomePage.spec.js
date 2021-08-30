@@ -1,30 +1,39 @@
 import { render, screen } from '@testing-library/react'
 import HomePage from './HomePage'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, Switch } from 'react-router-dom'
+import { useUser } from 'services/user'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
-jest.mock('services/user', () => ({
-  useUser: () => ({
-    data: {
-      username: 'hamilton',
-    },
-  }),
-}))
+jest.mock('services/user')
+
+beforeEach(() => {
+  useUser.mockClear()
+})
 
 describe('HomePage', () => {
   function setup() {
     render(
       <MemoryRouter initialEntries={['/gh']}>
-        <Route path="/:provider">
-          <HomePage />
-        </Route>
+        <Switch>
+          <Route path="/login">LoginPage</Route>
+          <Route path="/:provider">
+            <HomePage />
+          </Route>
+        </Switch>
       </MemoryRouter>
     )
   }
 
-  describe('renders', () => {
+  describe('when user is authenticated', () => {
     beforeEach(() => {
+      useUser.mockReturnValue({
+        data: {
+          user: {
+            username: 'hamilton',
+          },
+        },
+      })
       setup()
     })
 
@@ -34,6 +43,33 @@ describe('HomePage', () => {
 
     it('renders the header', () => {
       expect(screen.getByText(/Header/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the data is loading', () => {
+    beforeEach(() => {
+      useUser.mockReturnValue({
+        isLoading: true,
+      })
+      setup()
+    })
+
+    it('renders the Spinner', () => {
+      expect(screen.getByTestId('logo-spinner')).toBeInTheDocument()
+    })
+  })
+
+  describe('when fetching the data failed', () => {
+    beforeEach(() => {
+      useUser.mockReturnValue({
+        isLoading: true,
+      })
+      setup()
+      useUser.mock.calls[0][0].onError()
+    })
+
+    it('redirects to login', () => {
+      expect(screen.getByText('LoginPage')).toBeInTheDocument()
     })
   })
 })

@@ -1,6 +1,5 @@
-import { rest } from 'msw'
+import { rest, graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import * as Cookie from 'js-cookie'
 
 import Api from './api'
 
@@ -29,8 +28,8 @@ const userData = {
 
 const server = setupServer(
   rest.get('/internal/test', (req, res, ctx) => {
-    const hasToken = Boolean(req.headers.get('authorization'))
-    return res(ctx.status(hasToken ? 200 : 401), ctx.json(rawUserData))
+    const hasTokenType = Boolean(req.headers.get('token-type'))
+    return res(ctx.status(hasTokenType ? 200 : 401), ctx.json(rawUserData))
   }),
   rest.post('/internal/test', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(req.body))
@@ -41,11 +40,31 @@ const server = setupServer(
   rest.delete('/internal/test', (req, res, ctx) => {
     return res(ctx.status(204), null)
   }),
-  rest.post('/graphql/gh', (req, res, ctx) => {
+  graphql.query('MyInfo', (req, res, ctx) => {
     return res(
-      ctx.status(204),
-      ctx.json({
+      ctx.data({
         me: 'Codecov',
+      })
+    )
+  }),
+  graphql.mutation('CreateTokenUnauthorized', (req, res, ctx) => {
+    return res(
+      ctx.data({
+        createApiToken: {
+          error: {
+            __typename: 'UnauthorizedError',
+          },
+        },
+      })
+    )
+  }),
+  graphql.mutation('CreateToken', (req, res, ctx) => {
+    return res(
+      ctx.data({
+        createApiToken: {
+          error: null,
+          token: 123,
+        },
       })
     )
   })
@@ -56,11 +75,12 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 let result, error
-function callApi() {
+function callApi(provider = null) {
   result = null
   error = null
   return Api.get({
     path: '/test',
+    provider,
   })
     .then((data) => {
       result = data
@@ -80,12 +100,7 @@ describe('when calling an endpoint without a token', () => {
 
 describe('when calling an endpoint with a token', () => {
   beforeEach(() => {
-    Cookie.set('github-token', 'hello')
-    return callApi()
-  })
-
-  afterEach(() => {
-    Cookie.remove('github-token')
+    return callApi('gh')
   })
 
   it('has the data and no error', () => {
@@ -154,17 +169,77 @@ describe('when using a delete request', () => {
 
 describe('when using a graphql request', () => {
   beforeEach(() => {
-    return Api.graphql({
+    result = Api.graphql({
       provider: 'gh',
-      query: '{ me }',
-    }).then((data) => {
-      result = data
+      query: 'query MyInfo { me }',
     })
+    return result
   })
 
   it('returns what the server retuns', () => {
-    expect(result).toEqual({
-      me: 'Codecov',
+    return expect(result).resolves.toEqual({
+      data: {
+        me: 'Codecov',
+      },
+    })
+  })
+})
+
+describe('when using a graphql mutation', () => {
+  describe('when the mutation has unauthenticated error', () => {
+    const mutation = `
+      mutation CreateTokenUnauthorized {
+        createApiToken {
+          error {
+            __typename
+          }
+          token
+        }
+      }
+    `
+    beforeEach(() => {
+      result = Api.graphqlMutation({
+        provider: 'gh',
+        query: mutation,
+        mutationPath: 'createApiToken',
+      })
+    })
+
+    it('throws an expection retuns', () => {
+      return expect(result).rejects.toEqual({
+        __typename: 'UnauthorizedError',
+      })
+    })
+  })
+
+  describe('when the mutation has no error', () => {
+    const mutation = `
+      mutation CreateToken {
+        createApiToken {
+          error {
+            __typename
+          }
+          token
+        }
+      }
+    `
+    beforeEach(() => {
+      result = Api.graphqlMutation({
+        provider: 'gh',
+        query: mutation,
+        mutationPath: 'createApiToken',
+      })
+    })
+
+    it('resolves with the data', () => {
+      return expect(result).resolves.toEqual({
+        data: {
+          createApiToken: {
+            token: 123,
+            error: null,
+          },
+        },
+      })
     })
   })
 })

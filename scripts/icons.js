@@ -1,7 +1,22 @@
 const _ = require('lodash')
 const fs = require('fs')
 
-const enabledIcons = ['flag', 'chevron-up', 'chevron-down', 'search', 'check', 'x', 'lock-closed', 'globe-alt', 'clipboard-copy', 'external-link', 'home']
+const enabledIcons = [
+  'flag',
+  'chevron-up',
+  'chevron-down',
+  'search',
+  'check',
+  'x',
+  'lock-closed',
+  'globe-alt',
+  'clipboard-copy',
+  'external-link',
+  'home',
+  'merge',
+  'pull-request-open',
+  'speakerphone',
+]
 
 console.log('Generating Icons import')
 console.log('Icons that will be generated: ')
@@ -25,5 +40,6 @@ function generateImports(path) {
 
 generateImports('./src/ui/Icon/svg/outline')
 generateImports('./src/ui/Icon/svg/solid')
+generateImports('./src/ui/Icon/svg/developer')
 
 console.log('job done')

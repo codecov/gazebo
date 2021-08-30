@@ -16,6 +16,9 @@ describe('useNavLinks', () => {
           <Route path="/:provider/:owner">{props.children}</Route>
           <Route path="/:provider/:owner/:repo">{props.children}</Route>
           <Route path="/:provider/:owner/:repo/:id">{props.children}</Route>
+          <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
+            {props.children}
+          </Route>
         </MemoryRouter>
       ),
     })
@@ -63,9 +66,20 @@ describe('useNavLinks', () => {
         `${config.BASE_URL}/login/gl`
       )
     })
+
     it('can override the params', () => {
       expect(hookData.result.current.signIn.path({ provider: 'bb' })).toBe(
         `${config.BASE_URL}/login/bb`
+      )
+    })
+
+    it('can add a `to` redirection', () => {
+      expect(
+        hookData.result.current.signIn.path({
+          to: 'htts://app.codecov.io/gh/codecov',
+        })
+      ).toBe(
+        `${config.BASE_URL}/login/gl?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov`
       )
     })
   })
@@ -353,6 +367,44 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('commitFile link', () => {
+    beforeAll(() => {
+      setup(['/gh/test/test-repo/commit/abcd/index.js'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(
+        hookData.result.current.commitFile.path({
+          commit: 'abcd',
+          path: 'index.js',
+        })
+      ).toBe('/gh/test/test-repo/commit/abcd/index.js')
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.commitFile.path({
+          provider: 'bb',
+          commit: 'abcd',
+          path: 'index.js',
+        })
+      ).toBe('/bb/test/test-repo/commit/abcd/index.js')
+      expect(
+        hookData.result.current.commitFile.path({
+          owner: 'cat',
+          commit: 'abcd',
+          path: 'index.js',
+        })
+      ).toBe('/gh/cat/test-repo/commit/abcd/index.js')
+      expect(
+        hookData.result.current.commitFile.path({
+          repo: 'test',
+          commit: 'abcd',
+          path: 'index.js',
+        })
+      ).toBe('/gh/test/test/commit/abcd/index.js')
+    })
+  })
+
   describe('treeView link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/watch/src/view/catWatch.php'])
@@ -378,16 +430,18 @@ describe('useNavLinks', () => {
       expect(
         hookData.result.current.treeView.path({
           tree: 'src/view/catWatch.php',
+          ref: 'ref',
         })
-      ).toBe('/gl/doggo/watch/tree/src/view/catWatch.php')
-      expect(hookData.result.current.treeView.path({ tree: 'src' })).toBe(
-        '/gl/doggo/watch/tree/src'
-      )
+      ).toBe('/gl/doggo/watch/tree/ref/src/view/catWatch.php')
+      expect(
+        hookData.result.current.treeView.path({ tree: 'src', ref: 'ref' })
+      ).toBe('/gl/doggo/watch/tree/ref/src')
       expect(
         hookData.result.current.treeView.path({
           tree: 'src/view',
+          ref: 'ref',
         })
-      ).toBe('/gl/doggo/watch/tree/src/view')
+      ).toBe('/gl/doggo/watch/tree/ref/src/view')
     })
   })
 })
@@ -407,10 +461,20 @@ describe('useStaticNavLinks', () => {
     ${links.enterprise}        | ${`${config.MARKETING_BASE_URL}/self-hosted`}
     ${links.githubMarketplace} | ${`https://github.com/marketplace/codecov`}
     ${links.freshdesk}         | ${`https://codecov.freshdesk.com/support/home`}
+    ${links.freeTrial}         | ${`${config.MARKETING_BASE_URL}/trial`}
+    ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
+    ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)
+    })
+  })
+  describe('legacyUI', () => {
+    it('returns the correct url', () => {
+      expect(links.legacyUI.path({ pathname: 'random/path/name' })).toBe(
+        config.BASE_URL + 'random/path/name'
+      )
     })
   })
 })

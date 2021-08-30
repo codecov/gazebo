@@ -6,22 +6,72 @@ import usePrevious from 'react-use/lib/usePrevious'
 import { mapEdges } from 'shared/utils/graphql'
 import Api from 'shared/api'
 
+const currentUserFragment = `
+fragment CurrentUserFragment on Me {
+  email
+  privateAccess
+  user {
+    name
+    username
+    avatarUrl
+    avatar: avatarUrl
+    student
+    studentCreatedAt
+    studentUpdatedAt
+  }
+  trackingMetadata {
+    service
+    ownerid
+    serviceId
+    plan
+    staff
+    hasYaml
+    service
+    bot
+    delinquent
+    didTrial
+    planProvider
+    planUserCount
+    createdAt: createstamp
+    updatedAt: updatestamp
+  }
+}
+`
+
 export function useUser(options = {}) {
   const { provider } = useParams()
 
+  const query = `
+    query CurrentUser {
+      me {
+        ...CurrentUserFragment
+      }
+    }
+    ${currentUserFragment}
+  `
+
   return useQuery(
     ['currentUser', provider],
-    () => {
-      return Api.get({
-        path: '/profile',
-        provider,
-      })
-    },
+    () =>
+      Api.graphql({ provider, query }).then((res) => {
+        const currentUser = res?.data?.me
+
+        if (currentUser) return currentUser
+
+        // imitate REST behavior until we implement getting the current user
+        // with a better approach
+        return Promise.reject({
+          status: 401,
+          data: {
+            message: 'Unauthenticated',
+          },
+        })
+      }),
     options
   )
 }
 
-export function useOwner({ username }) {
+export function useOwner({ username, opts = {} }) {
   const { provider } = useParams()
   const query = `
     query DetailOwner($username: String!) {
@@ -37,11 +87,15 @@ export function useOwner({ username }) {
     username,
   }
 
-  return useQuery(['owner', variables, provider], () => {
-    return Api.graphql({ provider, query, variables }).then((res) => {
-      return res?.data?.owner
-    })
-  })
+  return useQuery(
+    ['owner', variables, provider],
+    () => {
+      return Api.graphql({ provider, query, variables }).then((res) => {
+        return res?.data?.owner
+      })
+    },
+    opts
+  )
 }
 
 export function useMyContexts() {
@@ -80,14 +134,33 @@ export function useMyContexts() {
 
 export function useUpdateProfile({ provider }) {
   const queryClient = useQueryClient()
+  const mutation = `
+    mutation UpdateProfile($input: UpdateProfileInput!) {
+      updateProfile(input: $input) {
+        me {
+          ...CurrentUserFragment
+        }
+        error {
+          __typename
+        }
+      }
+    }
+    ${currentUserFragment}
+  `
 
   return useMutation(
-    (data) => {
-      return Api.patch({
-        path: '/profile/',
+    ({ name, email }) => {
+      return Api.graphqlMutation({
         provider,
-        body: data,
-      })
+        query: mutation,
+        mutationPath: 'updateProfile',
+        variables: {
+          input: {
+            name,
+            email,
+          },
+        },
+      }).then((res) => res?.data?.updateProfile?.me)
     },
     {
       onSuccess: (user) => {
@@ -117,10 +190,17 @@ function triggerSync(provider) {
         me {
           isSyncing: isSyncingWithGitProvider
         }
+        error {
+          __typename
+        }
       }
     }
   `
-  return Api.graphql({ provider, query: mutation }).then((res) => {
+  return Api.graphqlMutation({
+    provider,
+    query: mutation,
+    mutationPath: 'syncWithGitProvider',
+  }).then((res) => {
     return Boolean(res?.data?.syncWithGitProvider?.me?.isSyncing)
   })
 }

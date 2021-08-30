@@ -6,28 +6,28 @@ import AppLink from 'shared/AppLink'
 import Avatar from 'ui/Avatar'
 import Icon from 'ui/Icon'
 
-function Dropdown({ user }) {
+function Dropdown({ currentUser }) {
   return (
     <div data-testid="dropdown">
-      <Menu>
+      <Menu id="main-dropdown">
         <MenuButton className="flex items-center justify-between">
-          <Avatar user={user} bordered={true} />
+          <Avatar user={currentUser.user} bordered />
           <div className="ml-1" aria-hidden="true">
-            <Icon size={'sm'} name="chevron-down" variant={'solid'} />
+            <Icon size="sm" name="chevron-down" variant="solid" />
           </div>
         </MenuButton>
         <MenuList>
           <MenuLink
             as={AppLink}
-            pageName={'account'}
-            options={{ owner: user.username }}
+            pageName="account"
+            options={{ owner: currentUser.user.username }}
           >
             Settings
           </MenuLink>
-          <MenuLink as={AppLink} pageName={'provider'}>
+          <MenuLink as={AppLink} pageName="provider">
             Organizations
           </MenuLink>
-          <MenuLink as={AppLink} pageName={'signOut'}>
+          <MenuLink as={AppLink} pageName="signOut">
             Sign Out
           </MenuLink>
         </MenuList>
@@ -37,9 +37,11 @@ function Dropdown({ user }) {
 }
 
 Dropdown.propTypes = {
-  user: PropTypes.shape({
-    avatarUrl: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired,
+  currentUser: PropTypes.shape({
+    user: PropTypes.shape({
+      avatarUrl: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired,
+    }).isRequired,
   }),
 }
 

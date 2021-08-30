@@ -45,6 +45,12 @@ module.exports = {
             green: '#27B340',
             red: '#CE2019',
             purple: '#AC39CF',
+            yellow: '#CA8E00'
+          },
+          coverage: {
+            covered: '#DEFFE8',
+            uncovered: '#FFEDF0',
+            partial: '#FFF9D8',
           },
         },
         codecov: {

@@ -1,20 +1,44 @@
 import { render, screen } from '@testing-library/react'
 import FileView from './FileView'
 import { useOwner } from 'services/user'
+import { useFileCoverage } from 'services/file/hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('services/user')
+jest.mock('services/file/hooks')
 
 describe('FileView', () => {
   function setup(owner) {
+    useFileCoverage.mockReturnValue({
+      data: {
+        coverage: {
+          1: 1,
+          2: 0,
+          3: 1,
+          4: 1,
+          5: 0,
+          6: 1,
+          7: 0,
+          8: 1,
+          9: 1,
+          10: 1,
+          11: 0,
+        },
+        content: 'content',
+        totals: {
+          coverage: 23,
+        },
+      },
+    })
     useOwner.mockReturnValue({
       data: owner,
     })
+
     render(
       <MemoryRouter
-        initialEntries={['/gh/codecov/repo/src/controller/nav/controller.ts']}
+        initialEntries={['/gh/codecov/repo-test/blob/master/src/index2.py']}
       >
-        <Route path="/:provider/:owner/:repo/*">
+        <Route path="/:provider/:owner/:repo/blob/:ref/*">
           <FileView />
         </Route>
       </MemoryRouter>
@@ -29,17 +53,9 @@ describe('FileView', () => {
       })
     })
 
-    it('renders the file view', () => {
-      expect(screen.getByText(/file view/)).toBeInTheDocument()
-    })
-
     it('renders the breadcrumb', () => {
-      expect(screen.getByText('codecov')).toBeInTheDocument()
-      expect(screen.getByText('repo')).toBeInTheDocument()
-      expect(screen.getByText('src')).toBeInTheDocument()
-      expect(screen.getByText('controller')).toBeInTheDocument()
-      expect(screen.getByText('nav')).toBeInTheDocument()
-      expect(screen.getByText('controller.ts')).toBeInTheDocument()
+      expect(screen.getAllByText('src').length).toBe(2)
+      expect(screen.getAllByText('index2.py').length).toBe(3)
     })
   })
 
@@ -53,12 +69,8 @@ describe('FileView', () => {
     })
 
     it('doesnt render the breadcrumb', () => {
-      expect(screen.queryByText('codecov')).not.toBeInTheDocument()
-      expect(screen.queryByText('repo')).not.toBeInTheDocument()
       expect(screen.queryByText('src')).not.toBeInTheDocument()
-      expect(screen.queryByText('controller')).not.toBeInTheDocument()
-      expect(screen.queryByText('nav')).not.toBeInTheDocument()
-      expect(screen.queryByText('controller.ts')).not.toBeInTheDocument()
+      expect(screen.queryByText('index2.py')).not.toBeInTheDocument()
     })
 
     it('renders a not found error page', () => {

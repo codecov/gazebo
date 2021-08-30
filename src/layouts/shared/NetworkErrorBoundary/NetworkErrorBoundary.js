@@ -30,12 +30,29 @@ const errorToUI = {
   },
 }
 
+const graphQLerrorToUI = {
+  UnauthenticatedError: {
+    illustration: img401,
+    title: <a href="/login">Please log in.</a>,
+  },
+  UnauthorizedError: {
+    illustration: img403,
+    title: 'Unauthorized',
+  },
+  NotFoundError: {
+    illustration: img404,
+    title: 'Not found',
+    description: null,
+  },
+}
+
 class NetworkErrorBoundary extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
       hasNetworkError: false,
+      hasGraphqlError: false,
       error: null,
     }
   }
@@ -43,9 +60,57 @@ class NetworkErrorBoundary extends Component {
   static getDerivedStateFromError(error) {
     // if the error isnt a network error, we don't do anything and
     // another error boundary will take it from there
-    return Object.keys(errorToUI).includes(String(error.status))
-      ? { hasNetworkError: true, error }
-      : {}
+    if (Object.keys(errorToUI).includes(String(error.status))) {
+      return { hasNetworkError: true, error }
+    }
+    if (Object.keys(graphQLerrorToUI).includes(error.__typename))
+      return { hasGraphqlError: true, error }
+    return {}
+  }
+
+  renderSupport() {
+    return (
+      <p className="my-4">
+        Check on{' '}
+        <a
+          rel="noreferrer"
+          className="text-blue-400"
+          href="https://status.codecov.io/"
+          target="_blank"
+        >
+          Codecov’s status
+        </a>{' '}
+        or see{' '}
+        <a
+          rel="noreferrer"
+          className="text-blue-400"
+          href="https://docs.codecov.io/"
+          target="_blank"
+        >
+          our docs
+        </a>{' '}
+        for common support.
+      </p>
+    )
+  }
+
+  renderGraphQLError() {
+    const { error } = this.state
+    const { illustration, title, description } =
+      graphQLerrorToUI[error.__typename]
+
+    return (
+      <article className="h-full mx-auto flex items-center justify-center flex-col">
+        <img
+          alt="illustration error"
+          className={cs(styles.illustrationError, 'mx-auto')}
+          src={illustration}
+        />
+        <h1 className="text-2xl mt-6">{title}</h1>
+        {description && <p className="mt-6">{description(error)}</p>}
+        {this.renderSupport()}
+      </article>
+    )
   }
 
   renderError() {
@@ -61,27 +126,7 @@ class NetworkErrorBoundary extends Component {
         />
         <h1 className="text-2xl mt-6">{title}</h1>
         {description && <p className="mt-6">{description(data)}</p>}
-        <p className="my-4">
-          Check on{' '}
-          <a
-            rel="noreferrer"
-            className="text-blue-400"
-            href="https://status.codecov.io/"
-            target="_blank"
-          >
-            Codecov’s status
-          </a>{' '}
-          or see{' '}
-          <a
-            rel="noreferrer"
-            className="text-blue-400"
-            href="https://docs.codecov.io/"
-            target="_blank"
-          >
-            our docs
-          </a>{' '}
-          for common support.
-        </p>
+        {this.renderSupport()}
         <p>
           <strong>Error {status}</strong>
         </p>
@@ -91,6 +136,7 @@ class NetworkErrorBoundary extends Component {
 
   render() {
     if (this.state.hasNetworkError) return this.renderError()
+    if (this.state.hasGraphqlError) return this.renderGraphQLError()
     return <>{this.props.children}</>
   }
 }

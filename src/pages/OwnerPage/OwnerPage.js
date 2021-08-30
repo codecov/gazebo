@@ -5,9 +5,10 @@ import { useOwner } from 'services/user'
 import NotFound from 'pages/NotFound'
 
 import Header from './Header'
+import Tabs from './Tabs'
 
 function OwnerPage({ active = false }) {
-  const { owner } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
   if (!ownerData) {
@@ -15,14 +16,19 @@ function OwnerPage({ active = false }) {
   }
 
   return (
-    <>
-      <Header owner={ownerData} />
-      <ListRepo
-        active={active}
-        canRefetch={ownerData.isCurrentUserPartOfOrg}
-        owner={ownerData.username}
-      />
-    </>
+    <div className="flex flex-col gap-4">
+      <Header owner={ownerData} provider={provider} />
+      <div>
+        {ownerData?.isCurrentUserPartOfOrg && (
+          <Tabs owner={ownerData} provider={provider} />
+        )}
+        <ListRepo
+          active={active}
+          canRefetch={ownerData.isCurrentUserPartOfOrg}
+          owner={ownerData.username}
+        />
+      </div>
+    </div>
   )
 }
 

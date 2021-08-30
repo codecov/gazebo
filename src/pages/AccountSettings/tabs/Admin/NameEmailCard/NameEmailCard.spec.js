@@ -8,8 +8,10 @@ import { useAddNotification } from 'services/toastNotification'
 jest.mock('services/user/hooks')
 jest.mock('services/toastNotification')
 
-const user = {
-  name: 'donald duck',
+const currentUser = {
+  user: {
+    name: 'donald duck',
+  },
   email: 'donald@duck.com',
 }
 
@@ -20,7 +22,7 @@ describe('NameEmailCard', () => {
   function setup() {
     useAddNotification.mockReturnValue(addNotification)
     useUpdateProfile.mockReturnValue({ mutate, isLoading: false })
-    render(<NameEmailCard user={user} provider="gh" />)
+    render(<NameEmailCard currentUser={currentUser} provider="gh" />)
   }
 
   describe('when rendered', () => {
@@ -31,12 +33,12 @@ describe('NameEmailCard', () => {
         screen.getByRole('textbox', {
           name: /name/i,
         })
-      ).toHaveValue(user.name)
+      ).toHaveValue(currentUser.user.name)
       expect(
         screen.getByRole('textbox', {
           name: /email/i,
         })
-      ).toHaveValue(user.email)
+      ).toHaveValue(currentUser.email)
     })
 
     it('has the submit button disabled', () => {
@@ -163,7 +165,9 @@ describe('NameEmailCard', () => {
         // simulating the onSuccess callback given to mutate
         act(() => {
           mutate.mock.calls[0][1].onSuccess({
-            name: 'picsou',
+            user: {
+              name: 'picsou',
+            },
             email: 'picsou@gmail.com',
           })
         })
