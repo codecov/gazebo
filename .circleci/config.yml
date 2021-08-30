@@ -61,9 +61,9 @@ jobs:
       - run:
           name: Upload coverage to codecov
           command: |
-            curl -Os https://github.com/codecov/uploader/releases/download/v0.1.0_1681/codecov-linux
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -v
+            ./codecov -v -Z
 
   codecovstage:
     docker:
@@ -78,9 +78,9 @@ jobs:
       - run:
           name: Upload coverage to staging
           command: |
-            curl -Os https://github.com/codecov/uploader/releases/download/v0.1.0_1681/codecov-linux
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov-linux -t $CODECOV_TOKEN_STAGING --url https://stage-web.codecov.dev -v
+            ./codecov-linux -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -v -Z
 
   sentry:
     docker:
