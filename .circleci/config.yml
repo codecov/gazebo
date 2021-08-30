@@ -55,6 +55,9 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - coverage-{{ checksum "package-lock.json" }}
       - run:
           name: Upload coverage to codecov
           command: |
@@ -67,6 +70,9 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - coverage-{{ checksum "package-lock.json" }}
       - run:
           name: Upload coverage to codecov staging
           command: |
