@@ -61,7 +61,7 @@ jobs:
       - run:
           name: Upload coverage to codecov
           command: |
-            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            curl -Os https://github.com/codecov/uploader/releases/download/v0.1.0_1681/codecov-linux
             chmod +x codecov
             ./codecov -v
 
@@ -78,7 +78,7 @@ jobs:
       - run:
           name: Upload coverage to staging
           command: |
-            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            curl -Os https://github.com/codecov/uploader/releases/download/v0.1.0_1681/codecov-linux
             chmod +x codecov
             ./codecov-linux -t $CODECOV_TOKEN_STAGING --url https://stage-web.codecov.dev -v
 
