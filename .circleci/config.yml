@@ -55,9 +55,6 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - coverage-{{ checksum "package-lock.json" }}
       - run:
           name: Upload coverage to codecov
           command: |
@@ -70,15 +67,12 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - coverage-{{ checksum "package-lock.json" }}
       - run:
           name: Upload coverage to codecov staging
           command: |
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov-linux -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z -v
+            ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z -v
 
   sentry:
     docker:
