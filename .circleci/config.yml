@@ -63,7 +63,7 @@ jobs:
           command: |
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -Z -v
+            ./codecov -Z
 
   codecovstage:
     docker:
@@ -78,7 +78,7 @@ jobs:
           command: |
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z -v
+            ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z
 
   sentry:
     docker:
