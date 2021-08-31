@@ -27,7 +27,7 @@ function Table({ data = [], columns = [] }) {
   )
 
   return (
-    <div className="text-ds-gray-quaternary">
+    <div className="text-ds-gray-quaternary overflow-x-auto">
       <table className={'w-full'} {...getTableProps()}>
         <thead data-testid="header-row">
           {
