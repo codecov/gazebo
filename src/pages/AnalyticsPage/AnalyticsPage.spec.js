@@ -7,6 +7,7 @@ jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
 jest.mock('services/account')
 jest.mock('./Tabs', () => () => 'Tabs')
+jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 
 describe('AnalyticsPage', () => {
   function setup(owner) {
@@ -37,6 +38,10 @@ describe('AnalyticsPage', () => {
     it('renders tabs associated with the page', () => {
       expect(screen.queryByText(/Tabs/)).toBeInTheDocument()
     })
+
+    it('renders a chart displaying repository list', () => {
+      expect(screen.queryByText(/Repos/)).toBeInTheDocument()
+    })
   })
 
   describe('when the owner doesnt exist', () => {
@@ -54,6 +59,10 @@ describe('AnalyticsPage', () => {
           name: /not found/i,
         })
       ).toBeInTheDocument()
+    })
+
+    it('does not renders a repository chart', () => {
+      expect(screen.queryByText(/Repos/)).not.toBeInTheDocument()
     })
   })
 
