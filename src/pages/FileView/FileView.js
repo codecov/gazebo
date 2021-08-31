@@ -42,7 +42,7 @@ function FileView() {
         paths={[
           { pageName: 'owner', text: owner },
           { pageName: 'repo', text: repo },
-          ...treePaths,
+          treePaths[treePaths.length - 1],
         ]}
       />
       <div className="border-t border-solid border-ds-gray-tertiary mt-4 py-6">
