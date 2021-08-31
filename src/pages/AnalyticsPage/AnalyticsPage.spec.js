@@ -1,18 +1,26 @@
 import { render, screen } from '@testing-library/react'
 import AnalyticsPage from './AnalyticsPage'
 import { useOwner } from 'services/user'
+import { useLocationParams } from 'services/navigation'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
 jest.mock('services/account')
+jest.mock('services/navigation')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 
 describe('AnalyticsPage', () => {
-  function setup(owner) {
+  function setup(owner, params) {
     useOwner.mockReturnValue({
       data: owner,
+    })
+    useLocationParams.mockReturnValue({
+      params: {
+        ordering: params?.ordering,
+        direction: params?.direction,
+      },
     })
     render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
@@ -25,10 +33,16 @@ describe('AnalyticsPage', () => {
 
   describe('when the owner exists', () => {
     beforeEach(() => {
-      setup({
-        username: 'codecov',
-        isCurrentUserPartOfOrg: true,
-      })
+      setup(
+        {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+        {
+          ordering: 'NAME',
+          direction: 'ASC',
+        }
+      )
     })
 
     it('renders the header', () => {
@@ -46,7 +60,7 @@ describe('AnalyticsPage', () => {
 
   describe('when the owner doesnt exist', () => {
     beforeEach(() => {
-      setup(null)
+      setup(null, null)
     })
 
     it('doesnt render the header', () => {
@@ -68,12 +82,18 @@ describe('AnalyticsPage', () => {
 
   describe('when user is not part of the org', () => {
     beforeEach(() => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: false,
+      setup(
+        {
+          owner: {
+            username: 'codecov',
+            isCurrentUserPartOfOrg: false,
+          },
         },
-      })
+        {
+          ordering: 'NAME',
+          direction: 'ASC',
+        }
+      )
     })
 
     it('doesnt render Tabs', () => {
