@@ -8,7 +8,7 @@ const table = [
   {
     Header: 'Name',
     accessor: 'name',
-    width: 'w-5/12',
+    width: 'w-7/12 min-w-min',
   },
   {
     Header: (
@@ -17,17 +17,17 @@ const table = [
       </span>
     ),
     accessor: 'coverage',
-    width: 'w-5/12',
+    width: 'w-7/12 min-w-min',
   },
   {
     Header: <span className="w-full text-sm text-right">Patch</span>,
     accessor: 'patch',
-    width: 'w-1/12',
+    width: 'w-28 min-w-min',
   },
   {
     Header: <span className="w-full text-right">Change</span>,
     accessor: 'change',
-    width: 'w-1/12',
+    width: 'w-28 min-w-min',
   },
 ]
 
