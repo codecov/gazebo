@@ -155,9 +155,7 @@ describe('CommitPage Not Found', () => {
 const fileData = {
   coverage: {},
   content: '',
-  totals: {
-    coverage: 25,
-  },
+  totals: 25,
   flagNames: [],
 }
 

@@ -54,7 +54,7 @@ function FileView() {
           flagNames={data.flagNames}
           coverage={data.coverage}
           content={data.content}
-          totals={data.totals.coverage}
+          totals={data.totals}
           treePaths={treePaths}
           title={treePaths[treePaths.length - 1].text}
         />

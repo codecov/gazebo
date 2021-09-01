@@ -11,11 +11,12 @@ function extractCoverageFromResponse(res) {
   if (!coverageFile) return null
   const lineWithCoverage = keyBy(coverageFile.coverage, 'line')
   const fileCoverage = mapValues(lineWithCoverage, 'coverage')
+  const coverageTotal = coverageFile.totals?.coverage
   return {
     content: coverageFile.content,
     coverage: fileCoverage,
-    totals: coverageFile.totals,
-    flagNames: coverageSource?.flagNames,
+    totals: isNaN(coverageTotal) ? 0 : coverageTotal,
+    flagNames: coverageSource?.flagNames ?? [],
   }
 }
 

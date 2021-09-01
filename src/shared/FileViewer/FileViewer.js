@@ -38,8 +38,8 @@ function useCoverageData({ coverage, totals, selectedFlags }) {
   }
 
   return {
-    coverage: queryPerFlag.data?.coverage,
-    totals: queryPerFlag.data?.coverage,
+    coverage: queryPerFlag.data?.coverage ?? {},
+    totals: queryPerFlag.data?.totals ?? 0,
     isLoading: queryPerFlag.isLoading,
   }
 }
@@ -92,6 +92,7 @@ function FileViewer({
             <div className="ml-7 flex items-center gap-2">
               {coverageData.isLoading && <Spinner />}
               <MultiSelect
+                ariaName="Filter by flags"
                 selectedItems={selectedFlags}
                 items={flagNames}
                 onChange={setSelectedFlags}
@@ -136,7 +137,7 @@ FileViewer.propTypes = {
   content: PropTypes.string.isRequired,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
   coverage: PropTypes.shape().isRequired,
-  totals: PropTypes.number.isRequired,
+  totals: PropTypes.number,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,
   flagNames: PropTypes.arrayOf(PropTypes.string).isRequired,

@@ -32,7 +32,7 @@ function CommitFileView({ diff }) {
     <FileViewer
       coverage={data?.coverage}
       content={data?.content}
-      totals={data?.totals?.coverage}
+      totals={data?.totals}
       treePaths={[]}
       change={getChange()}
       selectedFlags={selectedFlags}
