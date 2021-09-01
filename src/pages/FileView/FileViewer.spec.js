@@ -5,6 +5,9 @@ describe('FileViewer', () => {
   function setup(change) {
     render(
       <FileViewer
+        flagNames={[]}
+        selectedFlags={[]}
+        setSelectedFlags={jest.fn()}
         treePaths={[]}
         coverage={{
           1: 1,

@@ -30,6 +30,9 @@ function CommitFileView({ diff }) {
       totals={data?.totals?.coverage}
       treePaths={[]}
       change={getChange()}
+      flagNames={[]}
+      setSelectedFlags={() => null}
+      selectedFlags={[]}
       title={
         <Breadcrumb
           paths={[

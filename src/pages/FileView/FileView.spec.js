@@ -8,7 +8,7 @@ jest.mock('services/user')
 jest.mock('services/file/hooks')
 
 describe('FileView', () => {
-  function setup(owner) {
+  function setup(owner, overProps) {
     useFileCoverage.mockReturnValue({
       data: {
         coverage: {
@@ -28,6 +28,7 @@ describe('FileView', () => {
         totals: {
           coverage: 23,
         },
+        flagNames: [],
       },
     })
     useOwner.mockReturnValue({
