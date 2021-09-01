@@ -2,7 +2,7 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { useFileCoverage } from 'services/file/hooks'
+import { useFileWithMainCoverage } from 'services/file/hooks'
 import Breadcrumb from 'ui/Breadcrumb'
 
 import FileViewer from 'shared/FileViewer'
@@ -10,7 +10,7 @@ import FileViewer from 'shared/FileViewer'
 function CommitFileView({ diff }) {
   const { owner, repo, provider, commit, path } = useParams()
   const [selectedFlags, setSelectedFlags] = useState([])
-  const { data } = useFileCoverage({
+  const { data } = useFileWithMainCoverage({
     provider,
     owner,
     repo,

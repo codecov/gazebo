@@ -1,12 +1,47 @@
 import cs from 'classnames'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
+import PropTypes from 'prop-types'
+
 import Breadcrumb from 'ui/Breadcrumb'
 import Progress from 'ui/Progress'
-import CodeRenderer from './CodeRenderer'
-import CoverageSelect from './CoverageSelect'
-import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 import MultiSelect from 'ui/MultiSelect'
+import { useCoverageWithFlags } from 'services/file/hooks'
+
+import CodeRenderer from './CodeRenderer'
+import CoverageSelect from './CoverageSelect'
+
+function useCoverageData({ coverage, totals, selectedFlags }) {
+  const coverageForAllFlags = selectedFlags.length === 0
+  const { owner, repo, provider, ref, ...path } = useParams()
+  const queryPerFlag = useCoverageWithFlags(
+    {
+      provider,
+      owner,
+      repo,
+      ref,
+      path: path[0],
+      flags: selectedFlags,
+    },
+    {
+      // only run the query if we are filtering per flag
+      enabled: !coverageForAllFlags,
+      suspense: false,
+    }
+  )
+
+  if (coverageForAllFlags) {
+    // no flag selected, we can return the default coverage
+    return { coverage, totals, loading: false }
+  }
+
+  return {
+    coverage: queryPerFlag.data?.coverage,
+    totals: queryPerFlag.data?.coverage,
+    loading: queryPerFlag.loading,
+  }
+}
 
 function FileViewer({
   selectedFlags,
@@ -22,6 +57,8 @@ function FileViewer({
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
+
+  const coverageData = useCoverageData({ coverage, totals, selectedFlags })
 
   return (
     <div className="flex flex-col">
@@ -51,6 +88,7 @@ function FileViewer({
             coverage={0}
           />
           <div className="ml-7 w-40">
+            {coverageData.loading && 'loading....'}
             <MultiSelect
               selectedItems={selectedFlags}
               items={flagNames}
@@ -64,7 +102,7 @@ function FileViewer({
         <Breadcrumb paths={[...treePaths]} />
         <div className="flex">
           <div className="w-56 mr-3">
-            <Progress amount={totals} label={true} />
+            <Progress amount={coverageData.totals} label={true} />
           </div>
           {change && (
             <span
@@ -82,7 +120,7 @@ function FileViewer({
         <CodeRenderer
           showCovered={covered}
           showUncovered={uncovered}
-          coverage={coverage}
+          coverage={coverageData.coverage}
           showPartial={partial}
           code={content}
         />{' '}

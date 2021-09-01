@@ -8,7 +8,7 @@ import NotFound from 'pages/NotFound'
 
 import Breadcrumb from 'ui/Breadcrumb'
 import FileViewer from 'shared/FileViewer'
-import { useFileCoverage } from 'services/file/hooks'
+import { useFileWithMainCoverage } from 'services/file/hooks'
 
 function getTreeLocation(paths, location) {
   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
@@ -20,13 +20,12 @@ function FileView() {
   const paths = path[0].split('/')
   const [selectedFlags, setSelectedFlags] = useState([])
 
-  const { data } = useFileCoverage({
+  const { data } = useFileWithMainCoverage({
     provider,
     owner,
     repo,
     ref,
     path: path[0],
-    flags: selectedFlags,
   })
 
   const treePaths = paths.map((location) => ({
