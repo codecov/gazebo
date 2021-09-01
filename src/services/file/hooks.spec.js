@@ -2,7 +2,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useFileCoverage } from './hooks'
+import { useFileWithMainCoverage } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 import _ from 'lodash'
 
@@ -26,7 +26,7 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-describe('useFileCoverage', () => {
+describe('useFileWithMainCoverage', () => {
   let hookData
 
   function setup(dataReturned) {
@@ -35,7 +35,7 @@ describe('useFileCoverage', () => {
         return res(ctx.status(200), ctx.json({ data: dataReturned }))
       })
     )
-    hookData = renderHook(() => useFileCoverage({ provider }), {
+    hookData = renderHook(() => useFileWithMainCoverage({ provider }), {
       wrapper,
     })
   }

@@ -38,6 +38,25 @@ export function useCoverageWithFlags(
             }
           }
         }
+        branch(name: $ref) {
+          name
+          head {
+            ...CoverageForFile
+          }
+        }
+      }
+    }
+  }
+
+  fragment CoverageForFile on Commit {
+    commitid
+    coverageFile(path: $path) {
+      coverage {
+        line
+        coverage
+      }
+      totals {
+        coverage # Absolute coverage of the commit
       }
     }
   }

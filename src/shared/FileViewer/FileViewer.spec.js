@@ -1,32 +1,42 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
+
 import FileViewer from './FileViewer'
+
+jest.mock('services/file/hooks')
 
 describe('FileViewer', () => {
   function setup(change) {
     render(
-      <FileViewer
-        flagNames={[]}
-        selectedFlags={[]}
-        setSelectedFlags={jest.fn()}
-        treePaths={[]}
-        coverage={{
-          1: 1,
-          2: 0,
-          3: 1,
-          4: 1,
-          5: 0,
-          6: 1,
-          7: 0,
-          8: 1,
-          9: 1,
-          10: 1,
-          11: 0,
-        }}
-        content="testcontent"
-        totals={23}
-        title={'Title'}
-        change={change}
-      />
+      <MemoryRouter
+        initialEntries={['/gh/codecov/repo-test/blob/master/src/index2.py']}
+      >
+        <Route path="/:provider/:owner/:repo/blob/:ref/*">
+          <FileViewer
+            flagNames={[]}
+            selectedFlags={[]}
+            setSelectedFlags={jest.fn()}
+            treePaths={[]}
+            coverage={{
+              1: 1,
+              2: 0,
+              3: 1,
+              4: 1,
+              5: 0,
+              6: 1,
+              7: 0,
+              8: 1,
+              9: 1,
+              10: 1,
+              11: 0,
+            }}
+            content="testcontent"
+            totals={23}
+            title={'Title'}
+            change={change}
+          />
+        </Route>
+      </MemoryRouter>
     )
   }
 

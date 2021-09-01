@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import FileView from './FileView'
 import { useOwner } from 'services/user'
-import { useFileCoverage } from 'services/file/hooks'
+import { useFileWithMainCoverage } from 'services/file/hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('services/user')
@@ -9,7 +9,7 @@ jest.mock('services/file/hooks')
 
 describe('FileView', () => {
   function setup(owner, overProps) {
-    useFileCoverage.mockReturnValue({
+    useFileWithMainCoverage.mockReturnValue({
       data: {
         coverage: {
           1: 1,
