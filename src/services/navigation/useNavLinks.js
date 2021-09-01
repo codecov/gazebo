@@ -127,7 +127,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commits`,
-      isExternalLink: false,
+      isExternalLink: true,
       text: 'Commits',
     },
     commit: {
