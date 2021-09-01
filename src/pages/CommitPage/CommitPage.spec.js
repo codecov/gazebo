@@ -158,6 +158,7 @@ const fileData = {
   totals: {
     coverage: 25,
   },
+  flagNames: [],
 }
 
 describe('CommitPageFileView', () => {

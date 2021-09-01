@@ -1,17 +1,22 @@
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
-import FileViewer from '../FileView/FileViewer'
+
 import { useFileCoverage } from 'services/file/hooks'
 import Breadcrumb from 'ui/Breadcrumb'
-import PropTypes from 'prop-types'
+
+import FileViewer from '../FileView/FileViewer'
 
 function CommitFileView({ diff }) {
   const { owner, repo, provider, commit, path } = useParams()
+  const [selectedFlags, setSelectedFlags] = useState([])
   const { data } = useFileCoverage({
     provider,
     owner,
     repo,
     ref: commit,
     path: path,
+    flags: selectedFlags,
   })
 
   function getChange() {
@@ -30,9 +35,9 @@ function CommitFileView({ diff }) {
       totals={data?.totals?.coverage}
       treePaths={[]}
       change={getChange()}
-      flagNames={[]}
-      setSelectedFlags={() => null}
-      selectedFlags={[]}
+      selectedFlags={selectedFlags}
+      setSelectedFlags={setSelectedFlags}
+      flagNames={data.flagNames}
       title={
         <Breadcrumb
           paths={[
