@@ -21,7 +21,7 @@ const tableActive = [
     width: 'w-2/12',
   },
   {
-    Header: 'Test Coverage',
+    Header: <span className="w-full text-sm text-right">Test Coverage</span>,
     accessor: 'coverage',
     width: 'w-3/12',
   },
@@ -65,7 +65,7 @@ function transformRepoToTable(repos, owner, searchValue) {
           ? formatDistanceToNow(new Date(repo.latestCommitAt), {
               addSuffix: true,
             })
-          : '-'}
+          : ''}
       </span>
     ),
     coverage:
@@ -74,7 +74,7 @@ function transformRepoToTable(repos, owner, searchValue) {
           <Progress amount={repo.coverage} label={true} />
         </div>
       ) : (
-        <span className="text-gray-quinary text-sm">No data available</span>
+        <span className="text-ds-gray-quinary text-sm">No data available</span>
       ),
     notEnabled: (
       <span>
