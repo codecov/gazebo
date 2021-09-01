@@ -6,7 +6,8 @@ import mapValues from 'lodash/mapValues'
 const coverageFileFragment = `
     fragment CoverageForFile on Commit {
         commitid
-        coverageFile(path: $path) {
+        flagNames
+        coverageFile(path: $path, flags: $flags) {
             content
             coverage {
               line
@@ -20,9 +21,9 @@ const coverageFileFragment = `
 
 `
 
-export function useFileCoverage({ provider, owner, repo, ref, path }) {
+export function useFileCoverage({ provider, owner, repo, ref, path, flags }) {
   const query = `
-    query Commit($owner: String!, $repo: String!, $ref: String!, $path: String!) {
+    query Commit($owner: String!, $repo: String!, $ref: String!, $path: String!, $flags: [String]) {
         owner(username: $owner) {
             repository(name: $repo){
               commit(id: $ref) {
@@ -39,7 +40,7 @@ export function useFileCoverage({ provider, owner, repo, ref, path }) {
     }
     ${coverageFileFragment}
     `
-  return useQuery(['commit', provider, owner, repo, ref, path], () => {
+  return useQuery(['commit', provider, owner, repo, ref, path, flags], () => {
     return Api.graphql({
       provider,
       query,
@@ -49,6 +50,7 @@ export function useFileCoverage({ provider, owner, repo, ref, path }) {
         repo,
         ref,
         path,
+        flags,
       },
     }).then((res) => {
       const commit = res?.data?.owner?.repository?.commit
@@ -62,6 +64,7 @@ export function useFileCoverage({ provider, owner, repo, ref, path }) {
         content: coverageFile.content,
         coverage: fileCoverage,
         totals: coverageFile.totals,
+        flagNames: coverageSource?.flagNames,
       }
     })
   })
