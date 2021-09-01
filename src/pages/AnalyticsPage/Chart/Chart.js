@@ -23,9 +23,7 @@ function Chart({ data = [] }) {
         <VictoryVoronoiContainer
           voronoiDimension="x"
           labels={({ datum }) =>
-            `Coverage: ${Math.floor(datum.coverage, 2)}%, ${formatDate(
-              datum.date
-            )}`
+            `Coverage: ${datum.coverage}%, ${formatDate(datum.date)}`
           }
           labelComponent={
             <VictoryTooltip
