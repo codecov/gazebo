@@ -79,4 +79,16 @@ describe('CommitsTable', () => {
       expect(elements.length).toBe(2)
     })
   })
+  describe('when no changes', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders coverage', () => {
+      const coverage = screen.getByText(
+        'No Files covered by tests were changed'
+      )
+      expect(coverage).toBeInTheDocument()
+    })
+  })
 })
