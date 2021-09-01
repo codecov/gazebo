@@ -14,6 +14,8 @@ const SelectClasses = {
   ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10',
 }
 
+const SELECT_ALL_OPTION = '__all__'
+
 function MultiSelect({
   resourceName = 'flag',
   items,
@@ -23,6 +25,7 @@ function MultiSelect({
   renderSelected,
   ariaName,
 }) {
+  const itemsWithReset = [SELECT_ALL_OPTION, ...items]
   const {
     isOpen,
     highlightedIndex,
@@ -30,11 +33,19 @@ function MultiSelect({
     getMenuProps,
     getItemProps,
   } = useSelect({
-    items,
+    items: itemsWithReset,
     onSelectedItemChange: ({ selectedItem }) => {
+      if (selectedItem === SELECT_ALL_OPTION) {
+        // if the selected option is the select all; we clear the selection
+        onChange([])
+        return
+      }
+
+      // either add or remove the option
       const newSet = selectedItems.includes(selectedItem)
         ? selectedItems.filter((item) => item !== selectedItem)
         : [...selectedItems, selectedItem]
+
       onChange(newSet)
     },
     selectedItem: null,
@@ -42,13 +53,19 @@ function MultiSelect({
 
   function renderButton() {
     return selectedItems.length === 0
-      ? `All ${pluralize(resourceName)} selected`
-      : `${pluralize(resourceName, selectedItems, true)} selected`
+      ? `All ${pluralize(resourceName)}`
+      : `${pluralize(resourceName, selectedItems.length, true)} selected`
   }
 
   function _renderItem(item, index) {
     const isHover = highlightedIndex === index
-    const isSelected = selectedItems.includes(item)
+
+    // if the item is the SELECT_ALL; we consider it selected if no options are selected
+    const isSelected =
+      item === SELECT_ALL_OPTION
+        ? selectedItems.length === 0
+        : selectedItems.includes(item)
+
     return (
       <li
         className={cs(SelectClasses.item, {
@@ -58,7 +75,9 @@ function MultiSelect({
         key={`${item}${index}`}
         {...getItemProps({ item, index })}
       >
-        {renderItem(item, { isHover, isSelected })}
+        {item === SELECT_ALL_OPTION
+          ? `All ${pluralize(resourceName)}`
+          : renderItem(item, { isHover, isSelected })}
       </li>
     )
   }
@@ -82,7 +101,7 @@ function MultiSelect({
         })}
         {...getMenuProps()}
       >
-        {isOpen && items.map(_renderItem)}
+        {isOpen && itemsWithReset.map(_renderItem)}
       </ul>
     </div>
   )
