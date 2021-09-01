@@ -182,12 +182,9 @@ describe('useCoverageWithFlags', () => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-    hookData = renderHook(
-      () => useCoverageWithFlags({ provider }, { enabled: true }),
-      {
-        wrapper,
-      }
-    )
+    hookData = renderHook(() => useCoverageWithFlags({ provider }), {
+      wrapper,
+    })
   }
 
   describe('when called for commit', () => {

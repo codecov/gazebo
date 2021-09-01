@@ -1,40 +1,44 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { useCoverageWithFlags } from 'services/file/hooks'
 
 import FileViewer from './FileViewer'
 
 jest.mock('services/file/hooks')
+jest.mock('ui/Spinner', () => () => 'Spinner')
 
 describe('FileViewer', () => {
-  function setup(change) {
+  let props
+  const defaultProps = {
+    treePaths: [],
+    coverage: {
+      1: 1,
+      2: 0,
+      3: 1,
+      4: 1,
+      5: 0,
+      6: 1,
+      7: 0,
+      8: 1,
+      9: 1,
+      10: 1,
+      11: 0,
+    },
+    content: 'testcontent',
+    totals: 23,
+    title: 'Title',
+    change: null,
+  }
+
+  function setup(over = {}, dataCoverageWithFlag = {}) {
+    props = { ...defaultProps, ...over }
+    useCoverageWithFlags.mockReturnValue(dataCoverageWithFlag)
     render(
       <MemoryRouter
         initialEntries={['/gh/codecov/repo-test/blob/master/src/index2.py']}
       >
         <Route path="/:provider/:owner/:repo/blob/:ref/*">
-          <FileViewer
-            flagNames={[]}
-            selectedFlags={[]}
-            setSelectedFlags={jest.fn()}
-            treePaths={[]}
-            coverage={{
-              1: 1,
-              2: 0,
-              3: 1,
-              4: 1,
-              5: 0,
-              6: 1,
-              7: 0,
-              8: 1,
-              9: 1,
-              10: 1,
-              11: 0,
-            }}
-            content="testcontent"
-            totals={23}
-            title={'Title'}
-            change={change}
-          />
+          <FileViewer {...props} />
         </Route>
       </MemoryRouter>
     )
@@ -42,7 +46,11 @@ describe('FileViewer', () => {
 
   describe('renders without change', () => {
     beforeEach(() => {
-      setup(null)
+      setup()
+    })
+
+    it('renders coverage information of the file', () => {
+      expect(screen.getByText(/23\.00%/i)).toBeInTheDocument()
     })
 
     it('renders toggles', () => {
@@ -64,7 +72,9 @@ describe('FileViewer', () => {
 
   describe('renders with change', () => {
     beforeEach(() => {
-      setup(76)
+      setup({
+        change: 76,
+      })
     })
 
     it('renders toggles', () => {
@@ -84,6 +94,97 @@ describe('FileViewer', () => {
     })
     it('renders code', () => {
       expect(screen.getByText('testcontent')).toBeInTheDocument()
+    })
+  })
+
+  describe('when the file has 1 flag', () => {
+    beforeEach(() => {
+      setup({
+        flagNames: ['a'],
+      })
+    })
+
+    it('doesnt render the flag selector', () => {
+      expect(
+        screen.queryByRole('button', {
+          name: /filter by flags/i,
+        })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the file has more than one flag', () => {
+    beforeEach(() => {
+      setup({
+        flagNames: ['a', 'b'],
+      })
+    })
+
+    it('renders the flag selector', () => {
+      expect(
+        screen.getByRole('button', {
+          name: /filter by flags/i,
+        })
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when selecting flag and its loading', () => {
+    beforeEach(() => {
+      setup(
+        {
+          flagNames: ['ui', 'integration'],
+        },
+        {
+          data: {},
+          isLoading: true,
+        }
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: /filter by flags/i,
+        })
+      )
+      fireEvent.click(
+        screen.getByRole('option', {
+          name: /integration/i,
+        })
+      )
+    })
+
+    it('renders a loading state', () => {
+      expect(screen.getByText(/Spinner/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('when selecting flag and it has data', () => {
+    beforeEach(() => {
+      setup(
+        {
+          flagNames: ['ui', 'integration'],
+        },
+        {
+          data: {
+            coverage: {},
+            totals: 65,
+          },
+          isLoading: false,
+        }
+      )
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: /filter by flags/i,
+        })
+      )
+      fireEvent.click(
+        screen.getByRole('option', {
+          name: /integration/i,
+        })
+      )
+    })
+
+    it('renders coverage information of the flag', () => {
+      expect(screen.getByText(/65\.00%/i)).toBeInTheDocument()
     })
   })
 })

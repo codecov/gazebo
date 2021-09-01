@@ -139,9 +139,7 @@ FileViewer.propTypes = {
   totals: PropTypes.number,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,
-  flagNames: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedFlags: PropTypes.arrayOf(PropTypes.string).isRequired,
-  setSelectedFlags: PropTypes.func.isRequired,
+  flagNames: PropTypes.arrayOf(PropTypes.string),
 }
 
 export default FileViewer
