@@ -17,7 +17,7 @@ const SelectClasses = {
 const SELECT_ALL_OPTION = '__all__'
 
 function MultiSelect({
-  resourceName = 'flag',
+  resourceName,
   items,
   onChange,
   selectedItems,
