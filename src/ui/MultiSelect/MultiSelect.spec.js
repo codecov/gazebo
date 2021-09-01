@@ -11,6 +11,7 @@ describe('MultiSelect', () => {
     items: ['a', 'b', 'c'],
     selectedItems: [],
     onChange: jest.fn(),
+    ariaName: 'Flag selector',
   }
 
   function setup(overProps) {

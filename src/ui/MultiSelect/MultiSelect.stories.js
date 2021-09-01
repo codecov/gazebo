@@ -35,6 +35,7 @@ export const SimpleSelect = Template.bind({})
 SimpleSelect.args = {
   resourceName: 'flag',
   items: [`End-to-End`, `UI`, `Unit`],
+  ariaName: 'Select flags to filter',
 }
 
 export default {

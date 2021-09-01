@@ -113,7 +113,7 @@ MultiSelect.propTypes = {
   selectedItems: PropTypes.arrayOf(PropTypes.any).isRequired,
   renderItem: PropTypes.func,
   renderSelected: PropTypes.func,
-  ariaName: PropTypes.string,
+  ariaName: PropTypes.string.isRequired,
   resourceName: PropTypes.string.isRequired,
 }
 
