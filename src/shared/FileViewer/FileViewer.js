@@ -45,16 +45,15 @@ function useCoverageData({ coverage, totals, selectedFlags }) {
 }
 
 function FileViewer({
-  selectedFlags,
-  setSelectedFlags,
   treePaths,
   content,
   coverage,
   totals,
   title,
   change,
-  flagNames,
+  flagNames = [],
 }) {
+  const [selectedFlags, setSelectedFlags] = useState([])
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
