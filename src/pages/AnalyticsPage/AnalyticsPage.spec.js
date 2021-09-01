@@ -1,17 +1,22 @@
 import { render, screen } from '@testing-library/react'
 import AnalyticsPage from './AnalyticsPage'
 import { useOwner } from 'services/user'
+import { useOrgCoverage } from 'services/charts'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
 jest.mock('services/account')
+jest.mock('services/charts')
 jest.mock('./Tabs', () => () => 'Tabs')
 
 describe('AnalyticsPage', () => {
-  function setup(owner) {
+  function setup(owner, chart = {}) {
     useOwner.mockReturnValue({
       data: owner,
+    })
+    useOrgCoverage.mockReturnValue({
+      data: chart,
     })
     render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
