@@ -11,10 +11,11 @@ jest.mock('services/account')
 jest.mock('services/charts')
 jest.mock('services/navigation')
 jest.mock('./Tabs', () => () => 'Tabs')
+jest.mock('./Chart', () => () => 'Chart')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 
 describe('AnalyticsPage', () => {
-  function setup({ owner, chart = { coverage: [] }, params }) {
+  function setup({ owner, chart, params }) {
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -43,6 +44,7 @@ describe('AnalyticsPage', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
+        chart: { coverage: [] },
         params: {
           ordering: 'NAME',
           direction: 'ASC',
@@ -67,6 +69,7 @@ describe('AnalyticsPage', () => {
     beforeEach(() => {
       setup({
         owner: null,
+        chart: null,
         params: null,
       })
     })
@@ -97,6 +100,7 @@ describe('AnalyticsPage', () => {
             isCurrentUserPartOfOrg: false,
           },
         },
+        chart: { coverage: [] },
         params: {
           ordering: 'NAME',
           direction: 'ASC',
