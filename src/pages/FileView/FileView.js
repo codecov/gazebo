@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useOwner } from 'services/user'
 import dropRight from 'lodash/dropRight'
@@ -17,6 +18,7 @@ function FileView() {
   const { owner, repo, provider, ref, ...path } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const paths = path[0].split('/')
+  const [selectedFlags, setSelectedFlags] = useState([])
 
   const { data } = useFileCoverage({
     provider,
@@ -24,6 +26,7 @@ function FileView() {
     repo,
     ref,
     path: path[0],
+    flags: selectedFlags,
   })
 
   const treePaths = paths.map((location) => ({
@@ -47,6 +50,9 @@ function FileView() {
       />
       <div className="border-t border-solid border-ds-gray-tertiary mt-4 py-6">
         <FileViewer
+          selectedFlags={selectedFlags}
+          setSelectedFlags={setSelectedFlags}
+          flagNames={data.flagNames}
           coverage={data.coverage}
           content={data.content}
           totals={data.totals.coverage}

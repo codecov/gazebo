@@ -6,18 +6,30 @@ import CodeRenderer from './CodeRenderer'
 import CoverageSelect from './CoverageSelect'
 import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
+import MultiSelect from 'ui/MultiSelect'
 
-function FileViewer({ treePaths, content, coverage, totals, title, change }) {
+function FileViewer({
+  selectedFlags,
+  setSelectedFlags,
+  treePaths,
+  content,
+  coverage,
+  totals,
+  title,
+  change,
+  flagNames,
+}) {
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
+
   return (
     <div className="flex flex-col">
-      <div className="flex items-start md:items-center flex-col md:flex-row mb-4 justify-between">
+      <div className="flex items-start md:items-center flex-col md:flex-row mb-4">
         <span className="text-ds-gray-senary font-semibold text-base">
           {title}
         </span>
-        <div className="flex mt-4 md:mt-0">
+        <div className="flex mt-4 md:mt-0 items-center ml-auto">
           <span className="text-xs font-semibold mr-7">View coverage by:</span>
           <div className="mr-7">
             <CoverageSelect
@@ -38,6 +50,14 @@ function FileViewer({ treePaths, content, coverage, totals, title, change }) {
             checked={uncovered}
             coverage={0}
           />
+          <div className="ml-7 w-40">
+            <MultiSelect
+              selectedItems={selectedFlags}
+              items={flagNames}
+              onChange={setSelectedFlags}
+              resourceName="flag"
+            />
+          </div>
         </div>
       </div>
       <div className="flex justify-between border-t px-3 border-r border-l border-solid bg-ds-gray-primary border-ds-gray-tertiary items-center h-10">
@@ -78,6 +98,9 @@ FileViewer.propTypes = {
   totals: PropTypes.number.isRequired,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,
+  flagNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedFlags: PropTypes.arrayOf(PropTypes.string).isRequired,
+  setSelectedFlags: PropTypes.func.isRequired,
 }
 
 export default FileViewer
