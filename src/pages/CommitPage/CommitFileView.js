@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { useFileCoverage } from 'services/file/hooks'
 import Breadcrumb from 'ui/Breadcrumb'
 
-import FileViewer from '../FileView/FileViewer'
+import FileViewer from 'shared/FileViewer'
 
 function CommitFileView({ diff }) {
   const { owner, repo, provider, commit, path } = useParams()

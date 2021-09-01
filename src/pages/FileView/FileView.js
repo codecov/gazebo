@@ -7,7 +7,7 @@ import indexOf from 'lodash/indexOf'
 import NotFound from 'pages/NotFound'
 
 import Breadcrumb from 'ui/Breadcrumb'
-import FileViewer from './FileViewer'
+import FileViewer from 'shared/FileViewer'
 import { useFileCoverage } from 'services/file/hooks'
 
 function getTreeLocation(paths, location) {
