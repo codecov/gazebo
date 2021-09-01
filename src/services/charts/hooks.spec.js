@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { useOrgCoverage } from './hooks'
 
-import { getOrgCoverageHandler } from './mocks'
+import { orgCoverageHandler } from './mocks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -106,7 +106,7 @@ describe('useOrgCoverage', () => {
   let hookData
 
   beforeEach(() => {
-    server.use(getOrgCoverageHandler)
+    server.use(orgCoverageHandler)
   })
 
   function setup({

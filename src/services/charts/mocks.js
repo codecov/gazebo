@@ -2,55 +2,17 @@
 import { rest } from 'msw'
 import faker from 'faker'
 
-export const orgCoverageHandler = rest.get(
-  '/internal/charts/:provider/:owner/coverage/organization',
-  (req, res, ctx) => {
-    // This is maybe a bit redundent atm but I would like to test some data mutation utils later
-    const query = req.url.searchParams
-    if (query.get('grouping_unit') === 'yearly') {
-      return res(ctx.status(200), ctx.json(exampleYearlyRes))
-    } else if (query.get('grouping_unit') === 'quarterly') {
-      return res(ctx.status(200), ctx.json(exampleQuarterRes))
-    }
-  }
-)
+const chartUri = '/internal/charts/:provider/:owner/coverage/organization'
 
-export const randomOrgCoverageHandler = rest.get(
-  '/internal/charts/:provider/:owner/coverage/organization',
-  (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        coverage: [
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-          createCoverage(),
-        ],
-      })
-    )
+export const orgCoverageHandler = rest.get(chartUri, (req, res, ctx) => {
+  // This is maybe a bit redundent atm but I would like to test some data mutation utils later
+  const query = req.url.searchParams
+  if (query.get('grouping_unit') === 'yearly') {
+    return res(ctx.status(200), ctx.json(exampleYearlyRes))
+  } else if (query.get('grouping_unit') === 'quarterly') {
+    return res(ctx.status(200), ctx.json(exampleQuarterRes))
   }
-)
+})
 
 const createCoverage = () => ({
   date: faker.date.between('2020-01-01', '2020-12-30'),
@@ -58,7 +20,41 @@ const createCoverage = () => ({
   total_misses: faker.datatype.number({ min: 0, max: 100 }),
   total_partials: faker.datatype.number({ min: 0, max: 100 }),
   total_lines: faker.datatype.number({ min: 0, max: 100 }),
-  coverage: faker.datatype.float({ min: -100, max: 100 }),
+  coverage: faker.datatype.float({ min: 0, max: 100 }),
+})
+
+export const randomOrgCoverageHandler = rest.get(chartUri, (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.json({
+      coverage: [
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+        createCoverage(),
+      ],
+    })
+  )
 })
 
 export const exampleQuarterRes = {

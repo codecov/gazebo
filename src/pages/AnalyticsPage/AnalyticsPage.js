@@ -1,12 +1,16 @@
+import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useOwner } from 'services/user'
 import { useOrgCoverage } from 'services/charts'
 
+import LogoSpinner from 'old_ui/LogoSpinner'
+
 import Header from './Header'
 import Tabs from './Tabs'
-import Chart from './Chart'
+
+const Chart = lazy(() => import('./Chart'))
 
 function AnalyticsPage() {
   const { owner, provider } = useParams()
@@ -25,7 +29,9 @@ function AnalyticsPage() {
     <div className="flex flex-col gap-4">
       <Header owner={ownerData} />
       <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
-      <Chart data={chartData} />
+      <Suspense fallback={<LogoSpinner />}>
+        <Chart data={chartData?.coverage} />
+      </Suspense>
     </div>
   )
 }
