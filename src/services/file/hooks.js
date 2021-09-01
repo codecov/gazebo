@@ -7,8 +7,6 @@ function extractCoverageFromResponse(res) {
   const commit = res?.data?.owner?.repository?.commit
   const branch = res?.data?.owner?.repository?.branch?.head
   const coverageSource = commit || branch
-  console.log(coverageSource)
-  console.log(commit)
   const coverageFile = coverageSource.coverageFile
   if (!coverageFile) return null
   const lineWithCoverage = keyBy(coverageFile.coverage, 'line')
@@ -44,15 +42,6 @@ export function useCoverageWithFlags(
     }
   }
   `
-
-  console.log({
-    provider,
-    owner,
-    repo,
-    ref,
-    path,
-    flags,
-  })
 
   return useQuery(
     ['coverage', provider, owner, repo, ref, path, flags],

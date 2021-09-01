@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 
 import Breadcrumb from 'ui/Breadcrumb'
 import Progress from 'ui/Progress'
+import Spinner from 'ui/Spinner'
 import AppLink from 'shared/AppLink'
 import MultiSelect from 'ui/MultiSelect'
 import { useCoverageWithFlags } from 'services/file/hooks'
@@ -33,13 +34,13 @@ function useCoverageData({ coverage, totals, selectedFlags }) {
 
   if (coverageForAllFlags) {
     // no flag selected, we can return the default coverage
-    return { coverage, totals, loading: false }
+    return { coverage, totals, isLoading: false }
   }
 
   return {
     coverage: queryPerFlag.data?.coverage,
     totals: queryPerFlag.data?.coverage,
-    loading: queryPerFlag.loading,
+    isLoading: queryPerFlag.isLoading,
   }
 }
 
@@ -87,15 +88,17 @@ function FileViewer({
             checked={uncovered}
             coverage={0}
           />
-          <div className="ml-7 w-40">
-            {coverageData.loading && 'loading....'}
-            <MultiSelect
-              selectedItems={selectedFlags}
-              items={flagNames}
-              onChange={setSelectedFlags}
-              resourceName="flag"
-            />
-          </div>
+          {flagNames.length > 1 && (
+            <div className="ml-7 flex items-center gap-2">
+              {coverageData.isLoading && <Spinner />}
+              <MultiSelect
+                selectedItems={selectedFlags}
+                items={flagNames}
+                onChange={setSelectedFlags}
+                resourceName="flag"
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex justify-between border-t px-3 border-r border-l border-solid bg-ds-gray-primary border-ds-gray-tertiary items-center h-10">
