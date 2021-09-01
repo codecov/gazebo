@@ -42,7 +42,8 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
               </div>
               <A
                 href={`${config.API_URL}${d?.downloadUrl}`}
-                hook="downlad report"
+                hook="download report"
+                download
               >
                 Download
               </A>
