@@ -40,7 +40,7 @@ function CoverageSelect({ coverage, checked, onChange }) {
 }
 
 CoverageSelect.propTypes = {
-  coverage: PropTypes.bool.isRequired,
+  coverage: PropTypes.number.isRequired,
   checked: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
 }

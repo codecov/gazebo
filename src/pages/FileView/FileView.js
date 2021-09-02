@@ -6,8 +6,8 @@ import indexOf from 'lodash/indexOf'
 import NotFound from 'pages/NotFound'
 
 import Breadcrumb from 'ui/Breadcrumb'
-import FileViewer from './FileViewer'
-import { useFileCoverage } from 'services/file/hooks'
+import FileViewer from 'shared/FileViewer'
+import { useFileWithMainCoverage } from 'services/file/hooks'
 
 function getTreeLocation(paths, location) {
   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
@@ -18,7 +18,7 @@ function FileView() {
   const { data: ownerData } = useOwner({ username: owner })
   const paths = path[0].split('/')
 
-  const { data } = useFileCoverage({
+  const { data } = useFileWithMainCoverage({
     provider,
     owner,
     repo,
@@ -47,6 +47,7 @@ function FileView() {
       />
       <div className="border-t border-solid border-ds-gray-tertiary mt-4 py-6">
         <FileViewer
+          flagNames={data.flagNames}
           coverage={data.coverage}
           content={data.content}
           totals={data.totals?.coverage}
