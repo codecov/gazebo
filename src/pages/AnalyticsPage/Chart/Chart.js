@@ -18,10 +18,12 @@ const TailwindFontFamily = 'Poppins, ui-sans-serif, system-ui'
 
 function Chart({ data = [] }) {
   const formatDate = (d) => format(new Date(d), 'MMM d, yyyy')
-  const formatDateShort = (d) => format(new Date(d), 'MMM do')
+  const formatDateShort = (d) => format(new Date(d), 'MMM d, yy')
 
   return (
     <VictoryChart
+      width={768}
+      height={250}
       yDomain={[0, 100]}
       scale={{ x: 'time', y: 'linear' }}
       // Custom padding tightens the whitespace around the chart.
