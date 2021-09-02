@@ -100,7 +100,7 @@ const exampleYearlyHookData = {
 }
 
 describe('useOrgCoverage', () => {
-  const provider = 'woofhub'
+  const provider = 'gl'
   const owner = 'doggo'
 
   let hookData
