@@ -49,7 +49,7 @@ function FileView() {
         <FileViewer
           coverage={data.coverage}
           content={data.content}
-          totals={data.totals.coverage}
+          totals={data.totals?.coverage}
           treePaths={treePaths}
           title={treePaths[treePaths.length - 1].text}
         />

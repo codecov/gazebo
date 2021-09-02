@@ -15,7 +15,7 @@ function CommitFileView({ diff }) {
   })
 
   function getChange() {
-    const change = diff?.compareTotals?.coverage - diff?.baseTotals.coverage
+    const change = diff?.compareTotals?.coverage - diff?.baseTotals?.coverage
     if (isNaN(change)) {
       return 0
     } else {
