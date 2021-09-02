@@ -8,6 +8,8 @@ import {
 } from 'victory'
 import { format } from 'date-fns'
 
+import './chart.css'
+
 const TailwindFontFamily = 'Poppins, ui-sans-serif, system-ui'
 
 /* 
@@ -30,7 +32,7 @@ function Chart({ data = [] }) {
       padding={{
         top: 20,
         bottom: 80,
-        left: 45,
+        left: 52,
         right: 0,
       }}
       containerComponent={
@@ -41,7 +43,7 @@ function Chart({ data = [] }) {
         <VictoryVoronoiContainer
           voronoiDimension="x"
           labels={({ datum }) =>
-            `Coverage: ${Math.floor(datum.coverage, 2)}% ${formatDate(
+            `Coverage: ${Math.floor(datum.coverage, 2)}%  ${formatDate(
               datum.date
             )}`
           }
@@ -65,6 +67,7 @@ function Chart({ data = [] }) {
             fontFamily: TailwindFontFamily,
             angle: -45,
             textAnchor: 'end',
+            fontSize: '3rem',
           },
         }}
       />

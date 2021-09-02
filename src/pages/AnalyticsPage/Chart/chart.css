@@ -1,0 +1,16 @@
+/* 
+  CSS selector in English: 
+  target only the first and second role='presentation' (axis group)'s labels
+*/
+
+.VictoryContainer [role='presentation']:first-child tspan,
+.VictoryContainer [role='presentation']:nth-child(2) tspan {
+  @apply text-lg !important;
+}
+
+@media screen(md) {
+  .VictoryContainer [role='presentation']:first-child tspan,
+  .VictoryContainer [role='presentation']:nth-child(2) tspan {
+    @apply text-xs !important;
+  }
+}
