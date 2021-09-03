@@ -1,5 +1,5 @@
 import Chart from './Chart'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 describe('Analytics coverage chart', () => {
   function setup(props) {
@@ -38,16 +38,6 @@ describe('Analytics coverage chart', () => {
           'Organization wide coverage chart from Jan 15, 2020 to Jan 17, 2020, coverage change is +20%'
         )
       ).toBeInTheDocument()
-    })
-
-    xit('shows the correct tooltip', async () => {
-      // Can't get the tooltip to show up
-      const chart = screen.getByRole('img')
-      fireEvent.mouseOver(chart, {
-        clientX: 60,
-        clientY: 10,
-      })
-      expect(await screen.findByText(/Coverage:/)).toBeInTheDocument()
     })
   })
 })
