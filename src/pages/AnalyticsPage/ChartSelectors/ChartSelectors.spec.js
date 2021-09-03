@@ -5,7 +5,7 @@ import { useRepos } from 'services/repos/hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('services/repos/hooks')
-jest.mock('ui/Multiselect', () => () => 'Multiselect')
+jest.mock('ui/MultiSelect', () => () => 'MultiSelect')
 jest.mock('ui/Datepicker', () => () => 'Datepicker')
 
 describe('AnalyticsPage', () => {
@@ -66,8 +66,8 @@ describe('AnalyticsPage', () => {
       expect(screen.getByText(/Datepicker/)).toBeInTheDocument()
     })
 
-    it('renders the multiselect', () => {
-      expect(screen.getByText(/Multiselect/)).toBeInTheDocument()
+    it('renders the MultiSelect', () => {
+      expect(screen.getByText(/MultiSelect/)).toBeInTheDocument()
     })
   })
 })
