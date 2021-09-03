@@ -9,6 +9,7 @@ jest.mock('services/user')
 jest.mock('services/account')
 jest.mock('services/navigation')
 jest.mock('./Tabs', () => () => 'Tabs')
+jest.mock('./ChartSelectors', () => () => 'Chart Selectors')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 
 describe('AnalyticsPage', () => {
@@ -53,8 +54,12 @@ describe('AnalyticsPage', () => {
       expect(screen.queryByText(/Tabs/)).toBeInTheDocument()
     })
 
-    it('renders a chart displaying repository list', () => {
+    it('renders a table displaying repository list', () => {
       expect(screen.queryByText(/Repos/)).toBeInTheDocument()
+    })
+
+    it('renders a selectors displaying chart options list', () => {
+      expect(screen.queryByText(/Chart Selectors/)).toBeInTheDocument()
     })
   })
 
@@ -75,8 +80,12 @@ describe('AnalyticsPage', () => {
       ).toBeInTheDocument()
     })
 
-    it('does not renders a repository chart', () => {
+    it('does not renders a repository table', () => {
       expect(screen.queryByText(/Repos/)).not.toBeInTheDocument()
+    })
+
+    it('renders a selectors displaying chart options list', () => {
+      expect(screen.queryByText(/Chart Selectors/)).not.toBeInTheDocument()
     })
   })
 
