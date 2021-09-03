@@ -2,8 +2,13 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useCommit, useCommitYaml } from './hooks'
+import { useCommit, useCommitYaml, useImpactedFiles } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+jest.mock('./hooks', () => ({
+  ...jest.requireActual('./hooks'),
+  fetchCompareTotals: () => ({ state: 'pending' }),
+}))
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -199,6 +204,58 @@ describe('useCommitYaml', () => {
 
     it('returns commit info', () => {
       expect(hookData.result.current.data).toEqual(yaml)
+    })
+  })
+})
+
+describe('useImpactedFiles', () => {
+  let hookData
+
+  function setup(compare) {
+    server.use(
+      graphql.query('impactedFiles', (req, res, ctx) => {
+        return res(
+          ctx.data({
+            owner: {
+              repository: {
+                commit: {
+                  compare,
+                },
+              },
+            },
+          })
+        )
+      })
+    )
+    hookData = renderHook(() => useImpactedFiles({}), { wrapper })
+  }
+
+  describe('when the hook is called and its loading', () => {
+    beforeEach(() => {
+      setup({
+        compareWithParent: {
+          state: 'PENDINNG',
+        },
+      })
+    })
+
+    it('returns loading true', () => {
+      expect(hookData.result.current.loading).toBeTruthy()
+    })
+  })
+
+  describe('when the hook is called and its not loading', () => {
+    beforeEach(async () => {
+      setup({
+        compareWithParent: {
+          state: 'PROCESSED',
+        },
+      })
+      await hookData.waitFor(() => !hookData.result.current.loading)
+    })
+
+    it('returns loading true', () => {
+      expect(hookData.result.current.loading).toBeFalsy()
     })
   })
 })

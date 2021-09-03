@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import Api from 'shared/api'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
+import usePrevious from 'react-use/lib/usePrevious'
 
 export function useCommitYaml({ provider, owner, repo, commitid }) {
   const query = `
@@ -29,6 +31,79 @@ export function useCommitYaml({ provider, owner, repo, commitid }) {
       return res?.data?.owner?.repository?.commit?.yaml
     })
   })
+}
+
+async function fetchCompareTotals({ provider, owner, repo, commitid }) {
+  const query = `
+  query Commit($owner: String!, $repo: String!, $commitid: String!) {
+      owner(username: $owner) {
+        repository(name: $repo) {
+          commit(id: $commitid) {
+            compareWithParent {
+              state
+              impactedFiles {
+                path
+                baseTotals {
+                  coverage
+                }
+                compareTotals {
+                  coverage
+                }
+                patch {
+                  coverage
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `
+  const res = await Api.graphql({
+    provider,
+    query,
+    variables: {
+      provider,
+      owner,
+      repo,
+      commitid,
+    },
+  })
+  return res?.data?.owner?.repository?.commit?.compareWithParent || {}
+}
+
+export function useImpactedFiles({ provider, owner, repo, commitid }) {
+  const queryClient = useQueryClient()
+
+  const keyCache = ['impactedFiles', provider, owner, repo, commitid]
+
+  const impactedFilesCache = queryClient.getQueryData(keyCache)
+  const isPolling = impactedFilesCache
+    ? impactedFilesCache.state === 'PENDING'
+    : true
+
+  useQuery(
+    keyCache,
+    async () => await fetchCompareTotals({ provider, owner, repo, commitid }),
+    {
+      suspense: false,
+      useErrorBoundary: false,
+      // refetch every 2 seconds if we are syncing
+      refetchInterval: isPolling ? 2000 : null,
+    }
+  )
+  const prevIsPolling = usePrevious(isPolling)
+
+  useEffect(() => {
+    if (prevIsPolling && !isPolling) {
+      queryClient.refetchQueries(['repos'])
+    }
+  }, [prevIsPolling, isPolling, queryClient])
+
+  return {
+    impactedFiles: impactedFilesCache?.impactedFiles,
+    loading: isPolling,
+  }
 }
 
 export function useCommit({ provider, owner, repo, commitid }) {
@@ -63,20 +138,6 @@ export function useCommit({ provider, owner, repo, commitid }) {
               }
               message
               ciPassed
-              compareWithParent {
-                impactedFiles {
-                  path
-                  baseTotals {
-                    coverage
-                  }
-                  compareTotals {
-                    coverage
-                  }
-                  patch {
-                    coverage
-                  }
-                }
-              }
               parent {
                 commitid # commitid of the parent, used for the comparison
 
