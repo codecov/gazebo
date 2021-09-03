@@ -5,22 +5,28 @@ import {
   VictoryAxis,
   VictoryVoronoiContainer,
   VictoryTooltip,
+  VictoryAccessibleGroup,
 } from 'victory'
 import { format } from 'date-fns'
 
 import './chart.css'
 
-const TailwindFontFamily = 'Poppins, ui-sans-serif, system-ui'
-
-/* 
-  Victory uses inline styles (style={}) for charts. While we can disable inline
-  styling, for the first itteration I've just extending the default theme
-  rather then rolling our own.
-*/
-
 function Chart({ data = [] }) {
   const formatDate = (d) => format(new Date(d), 'MMM d, yyyy')
   const formatDateShort = (d) => format(new Date(d), 'MMM d, yy')
+
+  function makeTitle(first, last) {
+    const firstDateFormatted = formatDate(first.date)
+    const lastDateFormatted = formatDate(last.date)
+    const coverageDiff = Math.abs(first.coverage, last.coverage)
+    const change = first.coverage < last.coverage ? '+' : '-'
+
+    return `Organization wide coverage chart from ${firstDateFormatted} to ${lastDateFormatted}, coverage change is ${change}${coverageDiff}%`
+  }
+
+  if (data.length < 2) {
+    return null
+  }
 
   return (
     <VictoryChart
@@ -41,6 +47,9 @@ function Chart({ data = [] }) {
         // which is hard/tiny to hit.
         // Refrence: https://en.wikipedia.org/wiki/Voronoi_diagram
         <VictoryVoronoiContainer
+          title="Organization wide coverage chart"
+          // TODO make a human readable sentance with the min max dates, erpos and change in coverage.
+          desc={makeTitle(data[0], data[data.length - 1])}
           voronoiDimension="x"
           labels={({ datum }) =>
             `Coverage: ${Math.floor(datum.coverage, 2)}%  ${formatDate(
@@ -49,9 +58,15 @@ function Chart({ data = [] }) {
           }
           labelComponent={
             <VictoryTooltip
+              groupComponent={
+                <VictoryAccessibleGroup
+                  className="chart-tooltip"
+                  aria-label="coverage tooltip"
+                />
+              }
               constrainToVisibleArea
               cornerRadius={0}
-              flyoutStyle={{ fill: 'white', fontFamily: TailwindFontFamily }}
+              pointerLength={0}
             />
           }
         />
@@ -59,35 +74,42 @@ function Chart({ data = [] }) {
     >
       <VictoryAxis
         // Dates (x)
+        groupComponent={
+          <VictoryAccessibleGroup
+            className="date-axis"
+            aria-label="date axis"
+          />
+        }
         labelPlacement="vertical"
         tickFormat={(t) => formatDateShort(t)}
         fixLabelOverlap={true}
         style={{
           tickLabels: {
-            fontFamily: TailwindFontFamily,
             angle: -45,
-            textAnchor: 'end',
-            fontSize: '3rem',
           },
         }}
       />
       <VictoryAxis
         // Coverage (y)
-        style={{
-          tickLabels: {
-            fontFamily: TailwindFontFamily,
-          },
-        }}
+        groupComponent={
+          <VictoryAccessibleGroup
+            className="coverage-axis"
+            aria-label="coverage axis"
+          />
+        }
         dependentAxis
         domain={[0, 100]}
         tickFormat={(t) => `${t}%`}
       />
       <VictoryLine
+        groupComponent={
+          <VictoryAccessibleGroup
+            className="coverage-line"
+            aria-label="coverage line"
+          />
+        }
         x="date"
         y="coverage"
-        style={{
-          data: { stroke: '#F01F7A' },
-        }}
         data={data}
       />
     </VictoryChart>

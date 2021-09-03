@@ -11,7 +11,6 @@ jest.mock('services/account')
 jest.mock('services/charts')
 jest.mock('services/navigation')
 jest.mock('./Tabs', () => () => 'Tabs')
-jest.mock('./Chart', () => () => 'Chart')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 
 describe('AnalyticsPage', () => {
