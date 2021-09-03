@@ -1,12 +1,14 @@
-import { useParams } from 'react-router-dom'
-import FileViewer from '../FileView/FileViewer'
-import { useFileCoverage } from 'services/file/hooks'
-import Breadcrumb from 'ui/Breadcrumb'
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
+
+import { useFileWithMainCoverage } from 'services/file/hooks'
+import Breadcrumb from 'ui/Breadcrumb'
+
+import FileViewer from 'shared/FileViewer'
 
 function CommitFileView({ diff }) {
   const { owner, repo, provider, commit, path } = useParams()
-  const { data } = useFileCoverage({
+  const { data } = useFileWithMainCoverage({
     provider,
     owner,
     repo,
@@ -27,9 +29,10 @@ function CommitFileView({ diff }) {
     <FileViewer
       coverage={data?.coverage}
       content={data?.content}
-      totals={data?.totals?.coverage}
+      totals={data?.totals}
       treePaths={[]}
       change={getChange()}
+      flagNames={data?.flagNames}
       title={
         <Breadcrumb
           paths={[
