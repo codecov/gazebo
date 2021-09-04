@@ -29,6 +29,7 @@
     "react-scripts": "^4.0.3",
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
+    "victory": "^35.11.2",
     "web-vitals": "^2.1.0",
     "websocket-extensions": "^0.1.4",
     "yup": "^0.32.9"
@@ -96,6 +97,7 @@
     "@testing-library/user-event": "^13.2.1",
     "autoprefixer": "^9.8.6",
     "eslint-config-prettier": "^8.3.0",
+    "faker": "^5.5.3",
     "http-proxy-middleware": "^2.0.1",
     "husky": "^7.0.2",
     "jest-junit": "^12.2.0",
@@ -107,5 +109,13 @@
     "react-is": "^17.0.2",
     "react-test-renderer": "^17.0.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.3"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!d3)/"
+    ]
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }
