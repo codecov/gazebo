@@ -127,30 +127,24 @@ workflows:
   test-and-build:
     jobs:
       - install
-      # - eslint:
-      #     requires:
-      #       - install
-      # - storybook:
-      #     filters:
-      #       branches:
-      #         ignore: /^dependabot.*/
-      #     requires:
-      #       - install
+      - eslint:
+          requires:
+            - install
+      - storybook:
+          filters:
+            branches:
+              ignore: /^dependabot.*/
+          requires:
+            - install
       - test:
           requires:
             - install
-      # - sentry:
-      #     requires:
-      #       - install
+      - sentry:
+          requires:
+            - install
       - codecov:
           requires:
             - test
       - codecovstage:
           requires:
             - test
-      # Disabling because we are no longer monitoring bundlesize
-      # leaving the job to re enable this when I find a
-      # replacement.
-      # - build:
-      #     requires:
-      #       - install
