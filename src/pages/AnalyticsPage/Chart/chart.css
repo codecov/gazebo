@@ -1,0 +1,37 @@
+.VictoryContainer title {
+  pointer-events: none;
+}
+
+.VictoryContainer .coverage-line path {
+  @apply text-ds-pink stroke-current !important;
+}
+
+.VictoryContainer .chart-tooltip path {
+  @apply text-ds-gray-tertiary stroke-current !important;
+  fill: white !important;
+}
+
+.VictoryContainer .chart-tooltip tspan {
+  @apply text-ds-gray-octonary text-xs font-extralight font-sans stroke-current !important;
+}
+
+.VictoryContainer .date-axis tspan {
+  text-anchor: end !important;
+}
+
+.VictoryContainer .date-axis line,
+.VictoryContainer .coverage-axis line {
+  @apply text-ds-gray-tertiary stroke-current !important;
+}
+
+.VictoryContainer .date-axis tspan,
+.VictoryContainer .coverage-axis tspan {
+  @apply font-sans text-lg font-extralight text-ds-gray-quinary stroke-current !important;
+}
+
+@media screen(md) {
+  .VictoryContainer .date-axis tspan,
+  .VictoryContainer .coverage-axis tspan {
+    @apply font-sans text-xs !important;
+  }
+}

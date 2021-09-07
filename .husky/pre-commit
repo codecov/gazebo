@@ -1,7 +1,8 @@
+#!/bin/sh
+
 # Don't run in CI
 [ -n "$CI" ] && exit 0
 
-#!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
 npx --no-install lint-staged

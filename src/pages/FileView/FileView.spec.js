@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import FileView from './FileView'
 import { useOwner } from 'services/user'
-import { useFileCoverage } from 'services/file/hooks'
+import { useFileWithMainCoverage } from 'services/file/hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('services/user')
 jest.mock('services/file/hooks')
 
 describe('FileView', () => {
-  function setup(owner) {
-    useFileCoverage.mockReturnValue({
+  function setup(owner, overProps) {
+    useFileWithMainCoverage.mockReturnValue({
       data: {
         coverage: {
           1: 1,
@@ -25,9 +25,8 @@ describe('FileView', () => {
           11: 0,
         },
         content: 'content',
-        totals: {
-          coverage: 23,
-        },
+        totals: 23,
+        flagNames: [],
       },
     })
     useOwner.mockReturnValue({
@@ -54,7 +53,7 @@ describe('FileView', () => {
     })
 
     it('renders the breadcrumb', () => {
-      expect(screen.getAllByText('src').length).toBe(2)
+      expect(screen.getAllByText('src').length).toBe(1)
       expect(screen.getAllByText('index2.py').length).toBe(3)
     })
   })
