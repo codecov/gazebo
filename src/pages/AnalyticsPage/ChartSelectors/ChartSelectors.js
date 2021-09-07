@@ -35,7 +35,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
       <div className="flex flex-col w-52 gap-3">
         <span className="font-semibold">Repositories</span>
         <MultiSelect
-          ariaName="Select flags to filter"
+          ariaName="Select repos to choose"
           items={items}
           onChange={onChangeHandler}
           resourceName="Repo"
