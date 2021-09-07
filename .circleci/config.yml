@@ -125,18 +125,18 @@ workflows:
       - eslint:
           requires:
             - install
-      - storybook:
-          filters:
-            branches:
-              ignore: /^dependabot.*/
-          requires:
-            - install
+      # - storybook:
+      #     filters:
+      #       branches:
+      #         ignore: /^dependabot.*/
+      #     requires:
+      #       - install
       - test:
           requires:
             - install
-      - sentry:
-          requires:
-            - install
+      # - sentry:
+      #     requires:
+      #       - install
       - codecov:
           requires:
             - test
