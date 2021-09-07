@@ -55,11 +55,15 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
+      # parallelism: 3 so 0-2
       - restore_cache:
           keys:
-            # parallelism: 3 so 0-2
             - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{0}}
+      - restore_cache:
+          keys:
             - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{1}}
+      - restore_cache:
+          keys:
             - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{2}}
       - run:
           name: Upload coverage to codecov
@@ -75,9 +79,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            # parallelism: 3 so 0-2
             - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{0}}
+      - restore_cache:
+          keys:
             - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{1}}
+      - restore_cache:
+          keys:
             - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{2}}
       - run:
           name: Upload coverage to codecov staging
