@@ -44,11 +44,11 @@ jobs:
             JEST_JUNIT_OUTPUT_DIR: ./reports-{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
       - store_test_results:
-          path: ./reports/junit/
+          path: ./reports-{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
       - save_cache:
           key: coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{ .Environment.CIRCLE_NODE_INDEX }}
           paths:
-            - ./reports-{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
+            - reports-{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
 
   codecov:
     docker:
