@@ -47,7 +47,7 @@ jobs:
       - store_test_results:
           path: ./reports/junit/
       - save_cache:
-          key: coverage-{{ $CIRCLE_BUILD_NUM }}
+          key: coverage-$CIRCLE_BUILD_NUM
           paths:
             - codecov
 
@@ -58,7 +58,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - coverage-{{ $CIRCLE_BUILD_NUM }}
+            - coverage-$CIRCLE_BUILD_NUM
       - run:
           name: Upload coverage to codecov
           command: |
@@ -73,7 +73,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - coverage-{{ $CIRCLE_BUILD_NUM }}
+            - coverage-$CIRCLE_BUILD_NUM
       - run:
           name: Upload coverage to codecov staging
           command: |
