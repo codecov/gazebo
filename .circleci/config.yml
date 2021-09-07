@@ -39,17 +39,16 @@ jobs:
           name: Run tests
           command: |
             TESTFILES=$(circleci tests glob "src/**/*.spec.js" | circleci tests split --split-by=timings)
-            CI=true npm run test:ci -- --maxWorkers=3 $TESTFILES 
-            mkdir -p ./codecov && cp -a ./reports/junit/junit.xml ./codecov/coverage-$CIRCLE_JOB-$CIRCLE_NODE_INDEX.xml
+            CI=true npm run test:ci -- --maxWorkers=3 $TESTFILES
           environment:
-            JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+            JEST_JUNIT_OUTPUT_DIR: ./reports-{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
       - store_test_results:
           path: ./reports/junit/
       - save_cache:
-          key: coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{.Environment.CIRCLE_NODE_INDEX}}
+          key: coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{ .Environment.CIRCLE_NODE_INDEX }}
           paths:
-            - codecov
+            - ./reports-{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
 
   codecov:
     docker:
@@ -58,7 +57,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{.Environment.CIRCLE_NODE_INDEX}}
+            - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{ .Environment.CIRCLE_NODE_INDEX }}
       - run:
           name: Upload coverage to codecov
           command: |
