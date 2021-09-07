@@ -1,12 +1,20 @@
-import Header from './Header'
-import NotFound from 'pages/NotFound'
-import Tabs from './Tabs'
+import { lazy, Suspense } from 'react'
+import { useParams } from 'react-router-dom'
+
 import { orderingOptions, nonActiveOrderingOptions } from 'services/repos'
 import { useLocationParams } from 'services/navigation'
 import ReposTable from 'shared/ListRepo/ReposTable'
 import ChartSelectors from './ChartSelectors'
-import { useParams } from 'react-router-dom'
 import { useOwner } from 'services/user'
+import { useOrgCoverage } from 'services/charts'
+
+import NotFound from 'pages/NotFound'
+import LogoSpinner from 'old_ui/LogoSpinner'
+
+import Header from './Header'
+import Tabs from './Tabs'
+
+const Chart = lazy(() => import('./Chart'))
 
 const defaultQueryParams = {
   search: '',
@@ -17,8 +25,13 @@ const defaultQueryParams = {
 
 function AnalyticsPage() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const { owner } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+  const { data: chartData } = useOrgCoverage({
+    provider,
+    owner,
+    query: { groupingUnit: 'month' },
+  })
 
   const orderOptions = nonActiveOrderingOptions
 
@@ -44,6 +57,9 @@ function AnalyticsPage() {
         active={true}
         sortItem={sortItem}
       />
+      <Suspense fallback={<LogoSpinner />}>
+        <Chart data={chartData?.coverage} />
+      </Suspense>
       <ReposTable
         owner={owner}
         active={true}

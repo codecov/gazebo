@@ -1,9 +1,12 @@
 import { useQuery } from 'react-query'
 
 import Api from 'shared/api'
+import { providerToName } from 'shared/utils'
 
 function getOrgCoverage({ provider, owner }) {
-  return `/charts/${provider}/${owner}/coverage/organization`
+  return `/charts/${providerToName(
+    provider
+  ).toLowerCase()}/${owner}/coverage/organization`
 }
 
 function fetchOrgCoverage({ provider, owner, query }) {
