@@ -61,9 +61,7 @@ describe('AnalyticsPage', () => {
             },
           ],
         },
-        updateParams: () => {
-          console.log('hello')
-        },
+        updateParams: () => {},
         owner: 'bob',
         active: true,
         sortItem: {
@@ -83,8 +81,11 @@ describe('AnalyticsPage', () => {
 
     it('triggers the onChange when clicked', () => {
       const button = wrapper.getByRole('button')
-      fireEvent.change(button, { target: { value: 'All Repos' } })
-      expect(button.value).toBe('All Repos')
+      fireEvent.click(button)
+      const allRepos = screen.getAllByRole('option')[0]
+      fireEvent.click(allRepos)
+      expect(screen.queryByText(/2 Repos selected/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/All Repos/)).toBeInTheDocument()
     })
   })
 })
