@@ -21,8 +21,10 @@ function Datepicker() {
       <DateRangePicker
         startDate={startDate}
         startDateId="start-date"
+        startDateAriaLabel="Start Date"
         endDate={endDate}
         endDateId="end-date"
+        endDateAriaLabel="End Date"
         onDatesChange={({ startDate, endDate }) =>
           handleOnDatesChange({ startDate, endDate })
         }

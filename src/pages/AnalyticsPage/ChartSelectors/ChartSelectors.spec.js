@@ -49,6 +49,16 @@ describe('AnalyticsPage', () => {
               coverage: 43,
               active: true,
             },
+            {
+              private: false,
+              author: {
+                username: 'owner2',
+              },
+              name: 'Repo name 3',
+              latestCommitAt: subDays(new Date(), 4),
+              coverage: 35,
+              active: false,
+            },
           ],
         },
         updateParams: () => {
@@ -68,7 +78,7 @@ describe('AnalyticsPage', () => {
     })
 
     it('renders the MultiSelect', () => {
-      expect(screen.getByText(/1 Repo selected/)).toBeInTheDocument()
+      expect(screen.getByText(/2 Repos selected/)).toBeInTheDocument()
     })
 
     it('triggers the onChange when clicked', () => {
