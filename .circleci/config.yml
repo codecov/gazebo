@@ -45,11 +45,11 @@ jobs:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
       - store_test_results:
-          path: ./codecov/
+          path: ./reports/junit/
       - save_cache:
           key: coverage-{{ checksum "package-lock.json" }}
           paths:
-            - coverage
+            - codecov
 
   codecov:
     docker:
