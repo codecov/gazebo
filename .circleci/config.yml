@@ -39,12 +39,13 @@ jobs:
           name: Run tests
           command: |
             TESTFILES=$(circleci tests glob "src/**/*.spec.js" | circleci tests split --split-by=timings)
-            CI=true npm run test:ci -- --maxWorkers=3 $TESTFILES
+            CI=true npm run test:ci -- --maxWorkers=3 $TESTFILES 
+            mkdir -p ./codecov && cp -a ./reports/junit/junit.xml ./codecov/coverage-$CIRCLE_JOB-$CIRCLE_NODE_INDEX.xml
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
       - store_test_results:
-          path: ./reports/junit/
+          path: ./codecov/
       - save_cache:
           key: coverage-{{ checksum "package-lock.json" }}
           paths:
@@ -63,7 +64,7 @@ jobs:
           command: |
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -Z
+            ./codecov -Z -s ./codecov
 
   codecovstage:
     docker:
@@ -78,7 +79,7 @@ jobs:
           command: |
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z
+            ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z -s ./codecov
 
   sentry:
     docker:
