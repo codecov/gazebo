@@ -99,18 +99,18 @@ workflows:
   test-and-build:
     jobs:
       - install
-      # - eslint:
-      #     requires:
-      #       - install
-      # - storybook:
-      #     filters:
-      #       branches:
-      #         ignore: /^dependabot.*/
-      #     requires:
-      #       - install
-      # - sentry:
-      #     requires:
-      #       - install
+      - eslint:
+          requires:
+            - install
+      - storybook:
+          filters:
+            branches:
+              ignore: /^dependabot.*/
+          requires:
+            - install
+      - sentry:
+          requires:
+            - install
       - test:
           requires:
             - install
