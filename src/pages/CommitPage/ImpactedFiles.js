@@ -20,7 +20,7 @@ function ImpactedFiles() {
       <CommitsTable commit={commit} loading={loading} data={impactedFiles} />
     </>
   ) : (
-    <CommitFileView diff={impactedFiles.find((file) => file.path === path)} />
+    <CommitFileView diff={impactedFiles?.find((file) => file.path === path)} />
   )
 }
 
