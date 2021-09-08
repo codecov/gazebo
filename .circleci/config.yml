@@ -41,57 +41,22 @@ jobs:
             TESTFILES=$(circleci tests glob "src/**/*.spec.js" | circleci tests split --split-by=timings)
             CI=true npm run test:ci -- --maxWorkers=3 $TESTFILES
           environment:
-            JEST_JUNIT_OUTPUT_DIR: ./reports-{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
+            JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
       - store_test_results:
-          path: ./reports/{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
-      - save_cache:
-          key: coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{ .Environment.CIRCLE_NODE_INDEX }}
-          paths:
-            - reports/{{ .Environment.CIRCLE_NODE_INDEX }}/junit/
-
-  codecov:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - checkout
-      # parallelism: 3 so 0-2
-      - restore_cache:
-          keys:
-            - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{0}}
-      - restore_cache:
-          keys:
-            - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{1}}
-      - restore_cache:
-          keys:
-            - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{2}}
+          path: ./reports/junit/
       - run:
           name: Upload coverage to codecov
           command: |
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -Z -d ./reports -f *.xml
-
-  codecovstage:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{0}}
-      - restore_cache:
-          keys:
-            - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{1}}
-      - restore_cache:
-          keys:
-            - coverage-{{ .Environment.CIRCLE_WORKFLOW_ID }}-{{2}}
+            ./codecov -Z
       - run:
           name: Upload coverage to codecov staging
           command: |
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z -d ./reports -f *.xml
+            ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z
 
   sentry:
     docker:
@@ -149,9 +114,3 @@ workflows:
       - test:
           requires:
             - install
-      - codecov:
-          requires:
-            - test
-      - codecovstage:
-          requires:
-            - test
