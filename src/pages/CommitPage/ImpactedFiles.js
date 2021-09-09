@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom'
 function ImpactedFiles() {
   const { provider, owner, repo, commit, path } = useParams()
 
-  const { impactedFiles, loading } = useImpactedFiles({
+  const { data, isLoading } = useImpactedFiles({
     provider: provider,
     owner,
     repo,
@@ -17,10 +17,10 @@ function ImpactedFiles() {
   return !path ? (
     <>
       <span className="text-base mb-4 font-semibold">Impacted files</span>
-      <CommitsTable commit={commit} loading={loading} data={impactedFiles} />
+      <CommitsTable commit={commit} loading={isLoading} data={data} />
     </>
   ) : (
-    <CommitFileView diff={impactedFiles?.find((file) => file.path === path)} />
+    <CommitFileView diff={data?.find((file) => file.path === path)} />
   )
 }
 

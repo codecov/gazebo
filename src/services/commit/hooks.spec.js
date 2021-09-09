@@ -5,11 +5,6 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { useCommit, useCommitYaml, useImpactedFiles } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-jest.mock('./hooks', () => ({
-  ...jest.requireActual('./hooks'),
-  fetchCompareTotals: () => ({ state: 'pending' }),
-}))
-
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh']}>
@@ -210,52 +205,100 @@ describe('useCommitYaml', () => {
 
 describe('useImpactedFiles', () => {
   let hookData
+  let count = 0
+  const provider = 'bb'
+  const owner = 'doggo'
+  const repo = 'test'
+  const commitid = 1234
 
-  function setup(compare) {
+  function setup({ firstRes, finalRes, pollingAttempts = 2 }) {
+    count = 0 // count number of times api was called. Can return different stuff
     server.use(
-      graphql.query('impactedFiles', (req, res, ctx) => {
-        return res(
-          ctx.data({
-            owner: {
-              repository: {
-                commit: {
-                  compare,
+      graphql.query(`CompareTotals`, (req, res, ctx) => {
+        count++
+        if (count === pollingAttempts) {
+          return res(ctx.status(200), ctx.data(finalRes))
+        }
+        return res(ctx.status(200), ctx.data(firstRes))
+      })
+    )
+    hookData = renderHook(
+      () =>
+        useImpactedFiles({
+          provider,
+          owner,
+          repo,
+          commitid,
+          opts: { pollingMs: 500 },
+        }),
+      { wrapper }
+    )
+  }
+
+  describe('when the hook is first called', () => {
+    beforeEach(() => {
+      const firstRes = {
+        owner: {
+          repository: {
+            commit: {
+              compare: {
+                compareWithParent: {
+                  state: 'PENDINNG',
                 },
               },
             },
-          })
-        )
-      })
-    )
-    hookData = renderHook(() => useImpactedFiles({}), { wrapper })
-  }
-
-  describe('when the hook is called and its loading', () => {
-    beforeEach(() => {
-      setup({
-        compareWithParent: {
-          state: 'PENDINNG',
+          },
         },
-      })
-    })
+      }
 
-    it('returns loading true', () => {
-      expect(hookData.result.current.loading).toBeTruthy()
-    })
-  })
-
-  describe('when the hook is called and its not loading', () => {
-    beforeEach(async () => {
-      setup({
-        compareWithParent: {
-          state: 'PROCESSED',
+      const finalRes = {
+        owner: {
+          repository: {
+            commit: {
+              compare: {
+                compareWithParent: {
+                  state: 'PROCESSED',
+                },
+              },
+            },
+          },
         },
+      }
+
+      setup({
+        firstRes,
+        finalRes,
       })
-      await hookData.waitFor(() => !hookData.result.current.loading)
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns loading true', () => {
-      expect(hookData.result.current.loading).toBeFalsy()
+    it('returns initial commits data', () => {
+      const expectedData = {
+        state: 'PENDINNG',
+      }
+
+      expect(hookData.result.current.data).toStrictEqual(expectedData)
+    })
+
+    it('polls', async () => {
+      const expectedData = {
+        state: 'PROCESSED',
+      }
+
+      await hookData.waitForNextUpdate()
+
+      expect(hookData.result.current.data).toStrictEqual(expectedData)
+    })
+
+    it('stops polling once the state is processed', async () => {
+      const expectedData = {
+        state: 'PROCESSED',
+      }
+
+      await hookData.waitForNextUpdate()
+
+      expect(hookData.result.current.data).toStrictEqual(expectedData)
+      expect(count).toBe(2) // final request is processed
     })
   })
 })

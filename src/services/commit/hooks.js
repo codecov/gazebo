@@ -1,8 +1,7 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Api from 'shared/api'
-import { useQuery, useQueryClient } from 'react-query'
+import { useQuery } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
-import usePrevious from 'react-use/lib/usePrevious'
 
 export function useCommitYaml({ provider, owner, repo, commitid }) {
   const query = `
@@ -33,9 +32,9 @@ export function useCommitYaml({ provider, owner, repo, commitid }) {
   })
 }
 
-async function fetchCompareTotals({ provider, owner, repo, commitid }) {
+function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
   const query = `
-  query Commit($owner: String!, $repo: String!, $commitid: String!) {
+    query CompareTotals($owner: String!, $repo: String!, $commitid: String!) {
       owner(username: $owner) {
         repository(name: $repo) {
           commit(id: $commitid) {
@@ -59,51 +58,60 @@ async function fetchCompareTotals({ provider, owner, repo, commitid }) {
       }
     }
   `
-  const res = await Api.graphql({
-    provider,
-    query,
-    variables: {
-      provider,
-      owner,
-      repo,
-      commitid,
+  const defaultOpts = {
+    pollingMs: 2000,
+    enabled: true,
+  }
+  const { pollingMs: refetchInterval, enabled } = Object.assign(
+    {},
+    defaultOpts,
+    opts
+  )
+
+  return useQuery(
+    ['impactedFiles', provider, owner, repo, commitid],
+    () => {
+      return Api.graphql({
+        provider,
+        query,
+        variables: {
+          owner,
+          repo,
+          commitid,
+        },
+      }).then(
+        (res) =>
+          res?.data?.owner?.repository?.commit?.compare?.compareWithParent
+      )
     },
-  })
-  return res?.data?.owner?.repository?.commit?.compareWithParent || {}
-}
-
-export function useImpactedFiles({ provider, owner, repo, commitid }) {
-  const queryClient = useQueryClient()
-
-  const keyCache = ['impactedFiles', provider, owner, repo, commitid]
-
-  const impactedFilesCache = queryClient.getQueryData(keyCache)
-  const isPolling = impactedFilesCache
-    ? impactedFilesCache.state === 'PENDING'
-    : true
-
-  useQuery(
-    keyCache,
-    async () => await fetchCompareTotals({ provider, owner, repo, commitid }),
     {
-      suspense: false,
-      useErrorBoundary: false,
-      // refetch every 2 seconds if we are syncing
-      refetchInterval: isPolling ? 2000 : null,
+      refetchInterval,
+      enabled,
     }
   )
-  const prevIsPolling = usePrevious(isPolling)
+}
+
+export function useImpactedFiles({
+  provider,
+  owner,
+  repo,
+  commitid,
+  opts = {},
+}) {
+  const [pollingEnabled, setPollingEnabled] = useState(true)
+  const { data, isLoading, ...all } = useCompareTotals({
+    provider,
+    owner,
+    repo,
+    commitid,
+    opts: { enabled: pollingEnabled, ...opts },
+  })
 
   useEffect(() => {
-    if (prevIsPolling && !isPolling) {
-      queryClient.refetchQueries(['repos'])
-    }
-  }, [prevIsPolling, isPolling, queryClient])
+    setPollingEnabled(!isLoading && data?.state !== 'PROCESSED')
+  }, [pollingEnabled, isLoading, data])
 
-  return {
-    impactedFiles: impactedFilesCache?.impactedFiles,
-    loading: isPolling,
-  }
+  return { data, isLoading, ...all }
 }
 
 export function useCommit({ provider, owner, repo, commitid }) {
