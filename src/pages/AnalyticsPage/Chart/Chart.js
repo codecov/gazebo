@@ -25,6 +25,7 @@ function Chart({ data = [] }) {
   }
 
   if (data.length < 2) {
+    // TODO: Display something informative when there isn't anything to show
     return null
   }
 
