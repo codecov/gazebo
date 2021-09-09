@@ -58,15 +58,6 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
       }
     }
   `
-  const defaultOpts = {
-    pollingMs: 2000,
-    enabled: true,
-  }
-  const { pollingMs: refetchInterval, enabled } = Object.assign(
-    {},
-    defaultOpts,
-    opts
-  )
 
   return useQuery(
     ['impactedFiles', provider, owner, repo, commitid],
@@ -85,8 +76,7 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
       )
     },
     {
-      refetchInterval,
-      enabled,
+      ...opts,
     }
   )
 }
@@ -98,18 +88,24 @@ export function useImpactedFiles({
   commitid,
   opts = {},
 }) {
-  const [pollingEnabled, setPollingEnabled] = useState(true)
+  const defaultOpts = {
+    pollingMs: 2000,
+  }
+  const { pollingMs } = Object.assign({}, defaultOpts, opts)
+  const [polling, setPolling] = useState(pollingMs)
   const { data, isLoading, ...all } = useCompareTotals({
     provider,
     owner,
     repo,
     commitid,
-    opts: { enabled: pollingEnabled, ...opts },
+    opts: { refetchInterval: polling, ...opts },
   })
 
   useEffect(() => {
-    setPollingEnabled(!isLoading && data?.state !== 'PROCESSED')
-  }, [pollingEnabled, isLoading, data])
+    const newPolling =
+      !isLoading && data && data?.state === 'PROCESSED' ? false : polling
+    setPolling(newPolling)
+  }, [polling, isLoading, data])
 
   return { data, isLoading, ...all }
 }

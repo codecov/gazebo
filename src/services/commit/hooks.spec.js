@@ -229,7 +229,7 @@ describe('useImpactedFiles', () => {
           owner,
           repo,
           commitid,
-          opts: { pollingMs: 500 },
+          opts: { pollingMs: 5 },
         }),
       { wrapper }
     )
@@ -272,7 +272,7 @@ describe('useImpactedFiles', () => {
       return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns initial commits data', () => {
+    it('returns initial totals data', () => {
       const expectedData = {
         state: 'PENDINNG',
       }
@@ -280,25 +280,15 @@ describe('useImpactedFiles', () => {
       expect(hookData.result.current.data).toStrictEqual(expectedData)
     })
 
-    it('polls', async () => {
+    it('stops polling once the totals are processed', async () => {
       const expectedData = {
         state: 'PROCESSED',
       }
 
-      await hookData.waitForNextUpdate()
+      await hookData.waitForNextUpdate() // second call
+      await hookData.waitForNextUpdate() // third call
 
       expect(hookData.result.current.data).toStrictEqual(expectedData)
-    })
-
-    it('stops polling once the state is processed', async () => {
-      const expectedData = {
-        state: 'PROCESSED',
-      }
-
-      await hookData.waitForNextUpdate()
-
-      expect(hookData.result.current.data).toStrictEqual(expectedData)
-      expect(count).toBe(2) // final request is processed
     })
   })
 })
