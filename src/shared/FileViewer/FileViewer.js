@@ -61,34 +61,32 @@ function FileViewer({
   const coverageData = useCoverageData({ coverage, totals, selectedFlags })
 
   return (
-    <div className="flex flex-col">
-      <div className="flex items-start md:items-center flex-col md:flex-row mb-4">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap px-3 md:p-0">
         <span className="text-ds-gray-senary font-semibold text-base">
           {title}
         </span>
-        <div className="flex mt-4 md:mt-0 items-center ml-auto">
-          <span className="text-xs font-semibold mr-7">View coverage by:</span>
-          <div className="mr-7">
-            <CoverageSelect
-              onChange={() => setCovered((c) => !c)}
-              checked={covered}
-              coverage={1}
-            />
-          </div>
-          <div className="mr-7">
-            <CoverageSelect
-              onChange={() => setPartial((p) => !p)}
-              checked={partial}
-              coverage={2}
-            />
-          </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-7">
+          <span className="mb-2 sm:mb-0 text-xs font-semibold">
+            View coverage by:
+          </span>
+          <CoverageSelect
+            onChange={() => setCovered((c) => !c)}
+            checked={covered}
+            coverage={1}
+          />
+          <CoverageSelect
+            onChange={() => setPartial((p) => !p)}
+            checked={partial}
+            coverage={2}
+          />
           <CoverageSelect
             onChange={() => setUncovered((u) => !u)}
             checked={uncovered}
             coverage={0}
           />
           {flagNames.length > 1 && (
-            <div className="ml-7 flex items-center gap-2">
+            <div>
               {coverageData.isLoading && <Spinner />}
               <MultiSelect
                 ariaName="Filter by flags"
@@ -101,32 +99,39 @@ function FileViewer({
           )}
         </div>
       </div>
-      <div className="flex justify-between border-t px-3 border-r border-l border-solid bg-ds-gray-primary border-ds-gray-tertiary items-center h-10">
-        <Breadcrumb paths={[...treePaths]} />
-        <div className="flex">
-          <div className="w-56 mr-3">
-            <Progress amount={coverageData.totals} label={true} />
-          </div>
-          {change && (
-            <span
-              className={cs('font-semibold text-sm', {
-                'bg-ds-coverage-uncovered': change < 0,
-                'bg-ds-coverage-covered': change >= 0,
-              })}
-            >
-              {change.toFixed(2)}%
-            </span>
-          )}
-        </div>
-      </div>
+
       <div>
+        <div
+          className={`
+            flex flex-col sm:flex-row flex-wrap items-start justify-between gap-2 sm:items-center
+            bg-ds-gray-primary
+            border-t p-3 border-r border-l border-solid border-ds-gray-tertiary 
+          `}
+        >
+          <Breadcrumb paths={[...treePaths]} />
+          <div className="flex w-full sm:w-auto gap-2">
+            <div className="w-full sm:w-56">
+              <Progress amount={coverageData.totals} label={true} />
+            </div>
+            {change && (
+              <span
+                className={cs('font-semibold text-sm', {
+                  'bg-ds-coverage-uncovered': change < 0,
+                  'bg-ds-coverage-covered': change >= 0,
+                })}
+              >
+                {change.toFixed(2)}%
+              </span>
+            )}
+          </div>
+        </div>
         <CodeRenderer
           showCovered={covered}
           showUncovered={uncovered}
           coverage={coverageData.coverage}
           showPartial={partial}
           code={content}
-        />{' '}
+        />
       </div>
     </div>
   )
