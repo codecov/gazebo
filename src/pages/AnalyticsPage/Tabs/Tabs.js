@@ -1,4 +1,5 @@
 import TabNavigation from 'ui/TabNavigation'
+import './tabs.css'
 
 function Tabs() {
   return (

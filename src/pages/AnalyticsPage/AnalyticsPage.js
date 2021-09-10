@@ -18,19 +18,30 @@ const Chart = lazy(() => import('./Chart'))
 
 const defaultQueryParams = {
   search: '',
-  repos: [],
+  repositories: [],
   ordering: orderingOptions[0]['ordering'],
   direction: orderingOptions[0]['direction'],
+  startDate: '',
+  endDate: '',
+}
+
+function chartQuery({ params }) {
+  const groupingUnit = 'day'
+  const startDate = params?.startDate ? params?.startDate : undefined
+  const endDate = params?.endDate ? params?.endDate : undefined
+
+  return { groupingUnit, startDate, endDate }
 }
 
 function AnalyticsPage() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+
   const { data: chartData } = useOrgCoverage({
     provider,
     owner,
-    query: { groupingUnit: 'month' },
+    query: chartQuery({ params }),
   })
 
   const orderOptions = nonActiveOrderingOptions
@@ -64,8 +75,8 @@ function AnalyticsPage() {
         owner={owner}
         active={true}
         sortItem={sortItem}
-        searchValue={params.search}
-        filterValues={params.repos}
+        searchValue={params?.search}
+        filterValues={params?.repositories}
       />
     </div>
   )
