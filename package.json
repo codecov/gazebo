@@ -30,7 +30,7 @@
     "react-scripts": "^4.0.3",
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
-    "victory": "^35.11.2",
+    "victory": "^36.0.0",
     "web-vitals": "^2.1.0",
     "websocket-extensions": "^0.1.4",
     "yup": "^0.32.9"
@@ -106,7 +106,7 @@
     "msw": "^0.35.0",
     "postcss": "^7.0.36",
     "postcss-font-magician": "2.3.1",
-    "prettier": "^2.3.2",
+    "prettier": "^2.4.0",
     "react-is": "^17.0.2",
     "react-test-renderer": "^17.0.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.3"
