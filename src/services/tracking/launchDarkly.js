@@ -31,16 +31,12 @@ const guestUser = {
 }
 
 function createUser(user) {
-  const { custom: defaultCustom, ...defaultMain } = defaultUser
-  const topLevelUser = Object.assign(
-    {},
-    defaultMain,
-    {
-      key: user.trackingMetadata.ownerid,
-    },
-    { name: user.user.name },
-    { email: user.email }
-  )
+  const { custom: defaultCustom, ...defaultTopLevel } = defaultUser
+  const topLevelUser = Object.assign({}, defaultTopLevel, {
+    key: user.trackingMetadata.ownerid,
+    name: user.user.name,
+    email: user.email,
+  })
   return { ...topLevelUser, custom: getUserData(user, defaultCustom) }
 }
 
@@ -60,5 +56,3 @@ export function useLaunchDarkly(user) {
     }
   }, [user, ldClient])
 }
-
-export function setDataLayer() {}

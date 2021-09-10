@@ -8,7 +8,6 @@ import { useRepos } from 'services/repos/hooks'
 import AppLink from 'shared/AppLink'
 
 import RepoTitleLink from './RepoTitleLink'
-import ExampleFlag from './ExampleFlag'
 
 const tableActive = [
   {
@@ -133,7 +132,6 @@ function ReposTable({
           </Button>
         </div>
       )}
-      <ExampleFlag />
     </>
   )
 }

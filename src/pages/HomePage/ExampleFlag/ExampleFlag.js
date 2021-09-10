@@ -1,5 +1,5 @@
 const ExampleFlag = () => {
-  return null // if disabled render nothing
+  return null // render nothing for enterprise
 }
 
 export default ExampleFlag
