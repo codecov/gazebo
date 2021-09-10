@@ -70,7 +70,7 @@ class NetworkErrorBoundary extends Component {
 
   renderSupport() {
     return (
-      <p className="my-4">
+      <p className="my-4 px-3 sm:px-0">
         Check on{' '}
         <a
           rel="noreferrer"

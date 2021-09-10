@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 function ImpactedFiles({ path, impactedFiles, commit }) {
   return !path ? (
     <>
-      <span className="text-base mb-4 font-semibold">Impacted files</span>
+      <span className="text-base font-semibold">Impacted files</span>
       <CommitsTable commit={commit} data={impactedFiles} />
     </>
   ) : (
