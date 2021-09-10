@@ -103,7 +103,9 @@ export function useImpactedFiles({
 
   useEffect(() => {
     const newPolling =
-      !isLoading && data && data?.state === 'PROCESSED' ? false : polling
+      !isLoading && data && data?.state.toUpperCase() === 'PROCESSED'
+        ? false
+        : polling
     setPolling(newPolling)
   }, [polling, isLoading, data])
 
