@@ -17,7 +17,13 @@ describe('AdminTab', () => {
   }
 
   function setup(over = {}) {
-    useUser.mockReturnValue({ data: { username: 'terry' } })
+    useUser.mockReturnValue({
+      data: {
+        user: {
+          username: 'terry',
+        },
+      },
+    })
     const props = {
       ...defaultProps,
       ...over,

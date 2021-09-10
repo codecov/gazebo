@@ -28,3 +28,6 @@ junit.xml
 
 # vim temp files
 *.swp
+
+# temporary
+/src/mock-window-property.js

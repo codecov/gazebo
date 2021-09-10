@@ -1,3 +1,5 @@
 // import { rest } from 'msw'
 
-export const handlers = []
+import { randomOrgCoverageHandler } from 'services/charts/mocks'
+
+export const handlers = [randomOrgCoverageHandler]

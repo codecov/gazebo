@@ -22,7 +22,7 @@ const tableActive = [
     width: 'w-2/12',
   },
   {
-    Header: 'Test Coverage',
+    Header: <span className="w-full text-sm text-right">Test Coverage</span>,
     accessor: 'coverage',
     width: 'w-3/12',
   },
@@ -66,16 +66,16 @@ function transformRepoToTable(repos, owner, searchValue) {
           ? formatDistanceToNow(new Date(repo.latestCommitAt), {
               addSuffix: true,
             })
-          : '-'}
+          : ''}
       </span>
     ),
     coverage:
       typeof repo.coverage === 'number' ? (
-        <div className="w-80 max-w-xs">
+        <div className="w-80 max-w-xs text-right">
           <Progress amount={repo.coverage} label={true} />
         </div>
       ) : (
-        <span className="text-gray-quinary text-sm">No data available</span>
+        <span className="text-ds-gray-quinary text-sm">No data available</span>
       ),
     notEnabled: (
       <span>
@@ -95,14 +95,29 @@ function transformRepoToTable(repos, owner, searchValue) {
   }))
 }
 
-function ReposTable({ active, searchValue, owner, sortItem }) {
+function ReposTable({
+  active,
+  searchValue,
+  owner,
+  sortItem,
+  filterValues = [],
+}) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
     active,
     sortItem,
     term: searchValue,
     owner,
   })
-  const dataTable = transformRepoToTable(data.repos, owner, searchValue)
+
+  let _data = data
+
+  if (filterValues?.length > 0) {
+    _data.repos = _data.repos.filter((entry) =>
+      filterValues.includes(entry.name)
+    )
+  }
+
+  const dataTable = transformRepoToTable(_data.repos, owner, searchValue)
 
   return (
     <>
@@ -128,6 +143,7 @@ ReposTable.propTypes = {
   active: PropTypes.bool.isRequired,
   searchValue: PropTypes.string.isRequired,
   sortItem: PropTypes.object.isRequired,
+  filterValues: PropTypes.array,
 }
 
 export default ReposTable

@@ -13,7 +13,7 @@ function Header() {
         'bg-ds-pink-tertiary': isImpersonating,
       })}
     >
-      <nav className="h-14 flex items-center container justify-between mx-auto">
+      <nav className="py-4 flex items-center container justify-between mx-auto">
         <DesktopMenu />
       </nav>
     </header>

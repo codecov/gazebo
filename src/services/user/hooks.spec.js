@@ -42,8 +42,8 @@ describe('useUser', () => {
 
   function setup() {
     server.use(
-      rest.get(`/internal/profile`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(user))
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({ me: user }))
       })
     )
     hookData = renderHook(() => useUser(), { wrapper })
@@ -76,12 +76,20 @@ describe('useUpdateProfile', () => {
 
   function setup() {
     server.use(
-      rest.patch(`/internal/profile`, (req, res, ctx) => {
+      graphql.mutation('UpdateProfile', (req, res, ctx) => {
         const newUser = {
           ...user,
-          ...req.body,
+          name: req.body.variables.input.name,
+          email: req.body.variables.input.email,
         }
-        return res(ctx.status(200), ctx.json(newUser))
+        return res(
+          ctx.status(200),
+          ctx.data({
+            updateProfile: {
+              me: newUser,
+            },
+          })
+        )
       })
     )
     hookData = renderHook(() => useUpdateProfile({ provider: 'gh' }), {
