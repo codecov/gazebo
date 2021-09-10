@@ -29,8 +29,10 @@ function chartQuery({ params }) {
   const groupingUnit = 'day'
   const startDate = params?.startDate ? params?.startDate : undefined
   const endDate = params?.endDate ? params?.endDate : undefined
+  const repositories =
+    params?.repositories?.length > 0 ? params?.repositories : undefined
 
-  return { groupingUnit, startDate, endDate }
+  return { groupingUnit, startDate, endDate, repositories }
 }
 
 function AnalyticsPage() {
