@@ -27,16 +27,20 @@ const defaultUser = {
 }
 
 const guestUser = {
-  name: 'guest',
-  email: null,
-  key: 'guest',
+  anonymous: true,
 }
 
 function createUser(user) {
   const { custom: defaultCustom, ...defaultMain } = defaultUser
-  const topLevelUser = Object.assign({}, defaultMain, user, {
-    key: user.trackingMetadata.ownerid,
-  })
+  const topLevelUser = Object.assign(
+    {},
+    defaultMain,
+    {
+      key: user.trackingMetadata.ownerid,
+    },
+    { name: user.user.name },
+    { email: user.email }
+  )
   return { ...topLevelUser, custom: getUserData(user, defaultCustom) }
 }
 

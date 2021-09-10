@@ -1,8 +1,12 @@
 import { useFlags } from 'launchdarkly-react-client-sdk'
 
-const RenderText = () => {
+const ExampleFlag = () => {
   const { productTestFlagGazebo2272022 } = useFlags()
-  return <p>Test: {productTestFlagGazebo2272022}</p>
+  return (
+    productTestFlagGazebo2272022 !== 'isVisible' && (
+      <p>Test: {productTestFlagGazebo2272022}</p>
+    )
+  )
 }
 
-export default RenderText
+export default ExampleFlag

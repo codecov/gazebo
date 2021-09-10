@@ -1,19 +1,19 @@
 import { Suspense, lazy } from 'react'
 import config from 'config'
 
-export default function RenderTextMain() {
-  let RenderText
+export default function ExampleFlagMain() {
+  let ExampleFlag
   if (config.LAUNCHDARKLY) {
-    RenderText = lazy(() =>
+    ExampleFlag = lazy(() =>
       import('./flags/product-test-flag-gazebo-22-7-2022')
     )
   } else {
-    RenderText = lazy(() => import('./RenderText'))
+    ExampleFlag = lazy(() => import('./ExampleFlag'))
   }
 
   return (
     <Suspense fallback={null}>
-      <RenderText />
+      <ExampleFlag />
     </Suspense>
   )
 }
