@@ -43,7 +43,7 @@ function FileView() {
           paths={[
             { pageName: 'owner', text: owner },
             { pageName: 'repo', text: repo },
-            treePaths[treePaths.length - 1],
+            { pageName: '', readOnly: true, text: 'file viewer' },
           ]}
         />
       </div>
