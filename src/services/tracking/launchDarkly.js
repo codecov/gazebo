@@ -3,10 +3,12 @@ import { useEffect } from 'react'
 
 import { getUserData } from './utils'
 
+// https://launchdarkly.github.io/js-client-sdk/interfaces/_launchdarkly_js_client_sdk_.lduser.html
 const defaultUser = {
   name: null,
   email: null,
   key: null,
+  avatar: null,
   custom: {
     student: false,
     username: null,
@@ -36,6 +38,7 @@ function createUser(user) {
     key: user.trackingMetadata.ownerid,
     name: user.user.name,
     email: user.email,
+    avatar: user.user.avatarUrl,
   })
   return { ...topLevelUser, custom: getUserData(user, defaultCustom) }
 }
@@ -44,13 +47,13 @@ export function useLaunchDarkly(user) {
   const ldClient = useLDClient()
 
   useEffect(() => {
-    if (user) {
+    if (ldClient && user) {
       if (user.guest) {
-        ldClient?.identify(guestUser)
+        ldClient.identify(guestUser)
       } else {
         const data = createUser(user)
         if (data.key) {
-          ldClient?.identify(data)
+          ldClient.identify(data)
         }
       }
     }
