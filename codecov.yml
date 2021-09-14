@@ -27,5 +27,5 @@ ignore:
   - ./src/index.js
   - ./src/sentry.js
   - ./src/mocks/*.js
-  - ./src/**/flags/*.js
+  - ./src/**/flags/**/*.js
   - ./src/**/mocks.js
