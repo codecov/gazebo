@@ -8,7 +8,6 @@ export const withLaunchDarkly = (App) => {
       clientSideID: config.LAUNCHDARKLY,
       options: {
         bootstrap: 'localStorage',
-        diagnosticOptOut: true,
       },
     })(App)
   }
