@@ -1,13 +1,34 @@
+/* Selected Date Input Border */
+.DateInput_input__focused {
+  @apply border-ds-blue-darker;
+}
+
+/* Selected Start/End Date Field */
 .CalendarDay__selected {
-  @apply bg-ds-blue-darker;
+  @apply bg-ds-blue-darker border-ds-blue-darker;
 }
 
 .CalendarDay__selected:hover {
-  background: orange;
+  @apply bg-ds-blue-darker border-ds-blue-darker;
   color: white;
 }
 
-.CalendarDay__hovered_span:hover,
-.CalendarDay__hovered_span {
-  background: #e6f1ff;
+/* Selected In Between Date Fields */
+.CalendarDay__selected_span {
+  @apply bg-ds-blue-selected text-ds-blue-darker border-ds-blue-selected;
+}
+
+.CalendarDay__selected_span:hover {
+  @apply bg-ds-blue-darker border-ds-blue-darker;
+}
+
+/* Not Selected In Between Date Fields */
+.CalendarDay__hovered_span,
+.CalendarDay__hovered_span:hover {
+  @apply bg-ds-blue-selected border-ds-blue-selected text-ds-blue-darker;
+}
+
+/* Font Family */
+.DateRangePicker {
+  @apply font-sans;
 }
