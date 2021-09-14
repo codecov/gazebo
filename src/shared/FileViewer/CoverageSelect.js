@@ -21,20 +21,29 @@ function CoverageSelect({ coverage, checked, onChange }) {
     }
   }
 
+  const id = `show-${
+    coverage === 1 ? 'covered' : coverage === 2 ? 'partial' : 'uncovered'
+  }-lines`
+
   return (
-    <div className="flex text-xs font-mono items-center">
+    <div className="flex text-xs font-mono items-center gap-2">
       <input
-        aria-label={`show-${
-          coverage === 1 ? 'covered' : coverage === 2 ? 'partial' : 'uncovered'
-        }-lines`}
+        id={id}
+        aria-label={id}
         onChange={onChange}
         checked={checked}
-        className="cursor-pointer mr-2"
+        className="cursor-pointer"
         type="checkbox"
       />
-      <span className={cs('px-2 border-r-2', classNamePerLineState[lineState])}>
+      <label
+        htmlFor={id}
+        className={cs(
+          'cursor-pointer px-2 border-r-2 flex-1',
+          classNamePerLineState[lineState]
+        )}
+      >
         {coverage === 1 ? 'Covered' : coverage === 2 ? 'Partial' : 'Uncovered'}
-      </span>
+      </label>
     </div>
   )
 }
