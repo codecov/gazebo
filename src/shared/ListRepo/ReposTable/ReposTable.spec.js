@@ -106,6 +106,59 @@ describe('ReposTable', () => {
     })
   })
 
+  describe('when rendered when active and filterValues', () => {
+    beforeEach(() => {
+      setup(
+        {
+          active: true,
+          filterValues: ['Repo name 1', 'Repo name 3'],
+        },
+        [
+          {
+            private: false,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 1',
+            latestCommitAt: subDays(new Date(), 3),
+            coverage: 43,
+            active: true,
+          },
+          {
+            private: true,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 2',
+            latestCommitAt: subDays(new Date(), 2),
+            coverage: 100,
+            active: true,
+          },
+          {
+            private: true,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 3',
+            latestCommitAt: null,
+            active: true,
+          },
+        ]
+      )
+    })
+
+    it('renders table repo name', () => {
+      const buttons = screen.getAllByText(/Repo name/)
+      expect(buttons.length).toBe(2)
+      const repo1 = screen.queryByText(/Repo name 1/)
+      expect(repo1).toBeInTheDocument()
+      const repo2 = screen.queryByText(/Repo name 2/)
+      expect(repo2).not.toBeInTheDocument()
+      const repo3 = screen.queryByText(/Repo name 3/)
+      expect(repo3).toBeInTheDocument()
+    })
+  })
+
   describe('when rendered with active false', () => {
     beforeEach(() => {
       setup(

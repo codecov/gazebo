@@ -32,7 +32,7 @@ function CommitPage() {
 
   return isSuccess && data ? (
     <div className="flex divide-y gap-4 flex-col">
-      <div className="flex">
+      <div className="px-3 sm:px-0">
         <Breadcrumb
           paths={[
             { pageName: 'owner', text: owner },
@@ -47,7 +47,7 @@ function CommitPage() {
           ]}
         />
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col px-3 sm:px-0">
         <Header provider={provider} />
         <div className="flex gap-2 flex-col">
           <span className="text-lg font-semibold text-ds-gray-octonary">

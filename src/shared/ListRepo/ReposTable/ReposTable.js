@@ -70,7 +70,7 @@ function transformRepoToTable(repos, owner, searchValue) {
     ),
     coverage:
       typeof repo.coverage === 'number' ? (
-        <div className="w-80 max-w-xs">
+        <div className="w-80 max-w-xs text-right">
           <Progress amount={repo.coverage} label={true} />
         </div>
       ) : (
@@ -94,14 +94,29 @@ function transformRepoToTable(repos, owner, searchValue) {
   }))
 }
 
-function ReposTable({ active, searchValue, owner, sortItem }) {
+function ReposTable({
+  active,
+  searchValue,
+  owner,
+  sortItem,
+  filterValues = [],
+}) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
     active,
     sortItem,
     term: searchValue,
     owner,
   })
-  const dataTable = transformRepoToTable(data.repos, owner, searchValue)
+
+  let _data = data
+
+  if (filterValues?.length > 0) {
+    _data.repos = _data.repos.filter((entry) =>
+      filterValues.includes(entry.name)
+    )
+  }
+
+  const dataTable = transformRepoToTable(_data.repos, owner, searchValue)
 
   return (
     <>
@@ -126,6 +141,7 @@ ReposTable.propTypes = {
   active: PropTypes.bool.isRequired,
   searchValue: PropTypes.string.isRequired,
   sortItem: PropTypes.object.isRequired,
+  filterValues: PropTypes.array,
 }
 
 export default ReposTable
