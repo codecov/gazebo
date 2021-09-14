@@ -31,7 +31,7 @@
     "react-scripts": "^4.0.3",
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
-    "victory": "^35.11.2",
+    "victory": "^36.0.0",
     "web-vitals": "^2.1.0",
     "websocket-extensions": "^0.1.4",
     "yup": "^0.32.9"

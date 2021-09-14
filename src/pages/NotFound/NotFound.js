@@ -16,7 +16,7 @@ const NotFound = () => {
         src={illustration}
       />
       <h1 className="text-2xl mt-6">{title}</h1>
-      <p className="my-4">
+      <p className="my-4 px-3 sm:px-0">
         Check on{' '}
         <a
           rel="noreferrer"
