@@ -70,10 +70,9 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
           repo,
           commitid,
         },
-      }).then(
-        (res) =>
-          res?.data?.owner?.repository?.commit?.compare?.compareWithParent
-      )
+      }).then((res) => {
+        return res?.data?.owner?.repository?.commit?.compareWithParent
+      })
     },
     {
       ...opts,
@@ -100,10 +99,9 @@ export function useImpactedFiles({
     commitid,
     opts: { refetchInterval: polling, ...opts },
   })
-
   useEffect(() => {
     const newPolling =
-      !isLoading && data && data?.state.toUpperCase() === 'PROCESSED'
+      !isLoading && data && data?.state.toUpperCase() !== 'PENDING'
         ? false
         : polling
     setPolling(newPolling)

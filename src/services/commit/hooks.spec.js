@@ -243,7 +243,7 @@ describe('useImpactedFiles', () => {
             commit: {
               compare: {
                 compareWithParent: {
-                  state: 'PENDINNG',
+                  state: 'PENDING',
                 },
               },
             },
@@ -274,7 +274,7 @@ describe('useImpactedFiles', () => {
 
     it('returns initial totals data', () => {
       const expectedData = {
-        state: 'PENDINNG',
+        state: 'PENDING',
       }
 
       expect(hookData.result.current.data).toStrictEqual(expectedData)

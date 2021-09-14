@@ -89,8 +89,7 @@ function CommitsTable({ data = [], commit, loading }) {
             name: 'No Files covered by tests were changed',
           },
         ]
-
-  return loading ? (
+  return loading === 'pending' ? (
     <div className="w-full flex h-44 justify-center">
       <Spinner size={60} />
     </div>
