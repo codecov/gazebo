@@ -28,10 +28,6 @@ const defaultUser = {
   },
 }
 
-const guestUser = {
-  anonymous: true,
-}
-
 function createUser(user) {
   const { custom: defaultCustom, ...defaultTopLevel } = defaultUser
   const topLevelUser = Object.assign({}, defaultTopLevel, {
@@ -48,9 +44,7 @@ export function useLaunchDarkly(user) {
 
   useEffect(() => {
     if (ldClient && user) {
-      if (user.guest) {
-        ldClient.identify(guestUser)
-      } else {
+      if (!user.guest) {
         const data = createUser(user)
         if (data.key) {
           ldClient.identify(data)
