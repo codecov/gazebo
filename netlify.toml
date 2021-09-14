@@ -7,4 +7,5 @@
 [[headers]]
   for = "/*"
   [headers.values]
+    Access-Control-Allow-Origin = "clientstream.launchdarkly.com"
     Access-Control-Allow-Origin = "events.launchdarkly.com"
