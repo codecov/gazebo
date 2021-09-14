@@ -37,7 +37,7 @@ describe('Line', () => {
 
   describe('renders highlighted covered line', () => {
     beforeEach(() => {
-      setup(1, 1, true, false)
+      setup(1, 0, true, false)
     })
 
     it('render covered line', () => {
@@ -47,7 +47,7 @@ describe('Line', () => {
 
   describe('renders base covered line', () => {
     beforeEach(() => {
-      setup(1, 1, false, false)
+      setup(1, 0, false, false)
     })
 
     it('render covered line', () => {
@@ -57,7 +57,7 @@ describe('Line', () => {
 
   describe('renders highlighted uncovered line', () => {
     beforeEach(() => {
-      setup(1, 0, true, true)
+      setup(1, 1, true, true)
     })
 
     it('render uncovered line', () => {
@@ -67,7 +67,7 @@ describe('Line', () => {
 
   describe('renders base uncovered line', () => {
     beforeEach(() => {
-      setup(1, 0, false, false)
+      setup(1, 1, false, false)
     })
 
     it('render uncovered line', () => {

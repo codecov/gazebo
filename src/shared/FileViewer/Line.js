@@ -32,12 +32,13 @@ function Line({
 }) {
   const lineState = getLineState()
 
+  // Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
   // eslint-disable-next-line complexity
   function getLineState() {
-    if (coverage === 0 && showUncovered) {
-      return LINE_STATE.UNCOVERED
-    } else if (coverage === 1 && showCovered) {
+    if (coverage === 0 && showCovered) {
       return LINE_STATE.COVERED
+    } else if (coverage === 1 && showUncovered) {
+      return LINE_STATE.UNCOVERED
     } else if (coverage === 2 && showPartial) {
       return LINE_STATE.PARTIAL
     } else return LINE_STATE.BLANK
