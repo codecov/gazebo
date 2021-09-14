@@ -6,7 +6,7 @@ import { useLocationParams } from 'services/navigation'
 import ReposTable from 'shared/ListRepo/ReposTable'
 import ChartSelectors from './ChartSelectors'
 import { useOwner } from 'services/user'
-import { useOrgCoverage } from 'services/charts'
+import './analytics.css'
 
 import NotFound from 'pages/NotFound'
 import LogoSpinner from 'old_ui/LogoSpinner'
@@ -25,26 +25,10 @@ const defaultQueryParams = {
   endDate: '',
 }
 
-function chartQuery({ params }) {
-  const groupingUnit = 'day'
-  const startDate = params?.startDate ? params?.startDate : undefined
-  const endDate = params?.endDate ? params?.endDate : undefined
-  const repositories =
-    params?.repositories?.length > 0 ? params?.repositories : undefined
-
-  return { groupingUnit, startDate, endDate, repositories }
-}
-
 function AnalyticsPage() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-
-  const { data: chartData } = useOrgCoverage({
-    provider,
-    owner,
-    query: chartQuery({ params }),
-  })
 
   const orderOptions = nonActiveOrderingOptions
 
@@ -60,7 +44,7 @@ function AnalyticsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 analytics-page">
       <Header owner={ownerData} />
       <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
       <ChartSelectors
@@ -71,13 +55,13 @@ function AnalyticsPage() {
         sortItem={sortItem}
       />
       <Suspense fallback={<LogoSpinner />}>
-        <Chart data={chartData?.coverage} />
+        <Chart provider={provider} owner={owner} params={params} />
       </Suspense>
       <ReposTable
         owner={owner}
         active={true}
         sortItem={sortItem}
-        searchValue={params?.search}
+        searchValue={params.search}
         filterValues={params?.repositories}
       />
     </div>
