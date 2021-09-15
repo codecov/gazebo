@@ -16,6 +16,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
     sortItem,
     term: search,
     owner,
+    first: Infinity,
   })
 
   // TODO: Ensure this brings all data and bypasses pagination

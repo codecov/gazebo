@@ -56,9 +56,9 @@ function fetchMyRepos({ provider, variables, after }) {
 
 function fetchReposForOwner({ provider, variables, owner, after }) {
   const query = `
-    query ReposForOwner($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String) {
+    query ReposForOwner($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String, $first: Int) {
         owner(username: $owner) {
-          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 20, after: $after) {
+          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: $first, after: $after) {
             edges {
               node {
                 ...RepoForList
@@ -97,12 +97,14 @@ export function useRepos({
   term,
   owner,
   sortItem = orderingOptions[0],
+  first = 20,
 }) {
   const { provider } = useParams()
   const variables = {
     filters: { active, term },
     ordering: sortItem.ordering,
     direction: sortItem.direction,
+    first,
   }
 
   const { data, ...rest } = useInfiniteQuery(

@@ -39,8 +39,6 @@ function AnalyticsPage() {
         option.direction === params.direction
     ) || orderOptions[0]
 
-  console.log(sortItem)
-
   if (!ownerData) {
     return <NotFound />
   }
