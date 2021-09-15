@@ -18,6 +18,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
     owner,
     first: Infinity,
   })
+  const customClasses = { button: 'py-1' }
 
   // TODO: Ensure this brings all data and bypasses pagination
   const items = formatDataForMultiselect(data?.repos)
@@ -41,6 +42,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           onChange={onChangeHandler}
           resourceName="Repo"
           selectedItems={selectedRepos}
+          customClasses={customClasses}
         />
       </div>
     </div>
