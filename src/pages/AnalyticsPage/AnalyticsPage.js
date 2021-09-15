@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { orderingOptions, nonActiveOrderingOptions } from 'services/repos'
+import { orderingOptions } from 'services/repos'
 import { useLocationParams } from 'services/navigation'
 import ReposTable from 'shared/ListRepo/ReposTable'
 import ChartSelectors from './ChartSelectors'
@@ -30,7 +30,7 @@ function AnalyticsPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
-  const orderOptions = nonActiveOrderingOptions
+  const orderOptions = orderingOptions
 
   const sortItem =
     orderOptions.find(
@@ -38,6 +38,8 @@ function AnalyticsPage() {
         option.ordering === params.ordering &&
         option.direction === params.direction
     ) || orderOptions[0]
+
+  console.log(sortItem)
 
   if (!ownerData) {
     return <NotFound />
@@ -57,13 +59,15 @@ function AnalyticsPage() {
       <Suspense fallback={<LogoSpinner />}>
         <Chart provider={provider} owner={owner} params={params} />
       </Suspense>
-      <ReposTable
-        owner={owner}
-        active={true}
-        sortItem={sortItem}
-        searchValue={params.search}
-        filterValues={params?.repositories}
-      />
+      <Suspense fallback={<LogoSpinner />}>
+        <ReposTable
+          owner={owner}
+          active={true}
+          sortItem={sortItem}
+          searchValue={params.search}
+          filterValues={params?.repositories}
+        />
+      </Suspense>
     </div>
   )
 }
