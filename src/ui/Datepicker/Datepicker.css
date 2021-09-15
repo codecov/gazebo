@@ -34,6 +34,12 @@
   border-color: #e4e7e7;
 }
 
+/* Keyboard Shortcuts */
+.DayPickerKeyboardShortcuts_show__bottomRight:before,
+.DayPickerKeyboardShortcuts_show__bottomRight:hover::before {
+  border-right: 33px solid #0071c2;
+}
+
 /* Font Family */
 .DateRangePicker {
   @apply font-sans;
