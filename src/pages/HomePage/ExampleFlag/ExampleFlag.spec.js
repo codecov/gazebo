@@ -2,13 +2,14 @@ import { render, screen } from '@testing-library/react'
 
 import ExampleFlag from './ExampleFlag'
 
-// I need to be tested because I'm long term code.
+// Needs to be tested because I'm long term code.
 describe('Example Flag', () => {
-  function setup(LD) {
+  function setup() {
     render(<ExampleFlag />)
   }
 
-  it('self hosted render', async () => {
+  it('self hosted render', () => {
+    // Example doesnt render anything
     setup()
     expect(screen.queryByText(/Self Hosted/)).not.toBeInTheDocument()
   })
