@@ -1,26 +1,22 @@
 import { render, screen } from '@testing-library/react'
 import AnalyticsPage from './AnalyticsPage'
 import { useOwner } from 'services/user'
-import { useOrgCoverage } from 'services/charts'
 import { useLocationParams } from 'services/navigation'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
 jest.mock('services/account')
-jest.mock('services/charts')
 jest.mock('services/navigation')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('./ChartSelectors', () => () => 'Chart Selectors')
+jest.mock('./Chart', () => () => 'Line Chart')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 
 describe('AnalyticsPage', () => {
-  function setup({ owner, chart, params }) {
+  function setup({ owner, params }) {
     useOwner.mockReturnValue({
       data: owner,
-    })
-    useOrgCoverage.mockReturnValue({
-      data: chart,
     })
     useLocationParams.mockReturnValue({
       params: {
@@ -44,7 +40,6 @@ describe('AnalyticsPage', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        chart: { coverage: [] },
         params: {
           ordering: 'NAME',
           direction: 'ASC',
@@ -67,13 +62,16 @@ describe('AnalyticsPage', () => {
     it('renders a selectors displaying chart options list', () => {
       expect(screen.queryByText(/Chart Selectors/)).toBeInTheDocument()
     })
+
+    it('renders the line chart', () => {
+      expect(screen.queryByText(/Line Chart/)).toBeInTheDocument()
+    })
   })
 
   describe('when the owner doesnt exist', () => {
     beforeEach(() => {
       setup({
         owner: null,
-        chart: null,
         params: null,
       })
     })
@@ -94,8 +92,12 @@ describe('AnalyticsPage', () => {
       expect(screen.queryByText(/Repos/)).not.toBeInTheDocument()
     })
 
-    it('renders a selectors displaying chart options list', () => {
+    it('does not render a selectors displaying chart options list', () => {
       expect(screen.queryByText(/Chart Selectors/)).not.toBeInTheDocument()
+    })
+
+    it('does not render the line chart', () => {
+      expect(screen.queryByText(/Line Chart/)).not.toBeInTheDocument()
     })
   })
 
@@ -108,7 +110,6 @@ describe('AnalyticsPage', () => {
             isCurrentUserPartOfOrg: false,
           },
         },
-        chart: { coverage: [] },
         params: {
           ordering: 'NAME',
           direction: 'ASC',

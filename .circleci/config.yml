@@ -1,8 +1,6 @@
-
 version: 2.1 # using 2.1 provides access to orbs and other features
 
 jobs:
-
   install:
     docker:
       - image: circleci/node:14.5.0
@@ -15,7 +13,7 @@ jobs:
           key: npm-deps-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
-  test:
+  eslint:
     docker:
       - image: circleci/node:14.5.0
     steps:
@@ -24,24 +22,39 @@ jobs:
           keys:
             - npm-deps-{{ checksum "package-lock.json" }}
       - run:
+          name: Run linter
+          command: npm run lint
+  test:
+    docker:
+      - image: circleci/node:14.5.0
+    parallelism: 3
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-deps-{{ checksum "package-lock.json" }}
+      - run:
           name: Run tests
-          command: npm run test:ci
+          command: |
+            TESTFILES=$(circleci tests glob "src/**/*.spec.js" "src/**/*.test.js" | circleci tests split --split-by=timings)
+            CI=true npm run test:ci -- --maxWorkers=3 $TESTFILES
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
       - store_test_results:
           path: ./reports/junit/
+          JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
       - run:
           name: Upload coverage to codecov
           command: |
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -v
+            ./codecov -Z
       - run:
           name: Upload coverage to codecov staging
-          command: bash <(curl -s https://stage-web.codecov.dev/bash) -t $CODECOV_TOKEN_STAGING
-      - run:
-          name: Run eslint
-          command: npm run lint
+          command: |
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
+            ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z
 
   sentry:
     docker:
@@ -84,6 +97,9 @@ workflows:
   test-and-build:
     jobs:
       - install
+      - eslint:
+          requires:
+            - install
       - storybook:
           filters:
             branches:
@@ -96,9 +112,3 @@ workflows:
       - sentry:
           requires:
             - install
-      # Disabling because we are no longer monitoring bundlesize
-      # leaving the job to re enable this when I find a
-      # replacement.
-      # - build:
-      #     requires:
-      #       - install
