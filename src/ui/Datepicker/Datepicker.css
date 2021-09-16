@@ -1,13 +1,46 @@
+/* Default Hovered Date */
+.CalendarDay__default:hover {
+  @apply bg-ds-blue-darker border-ds-blue-darker text-white;
+}
+
+/* Selected Date Input Border */
+.DateInput_input__focused {
+  @apply border-ds-blue-darker;
+}
+
+/* Selected Start/End Date Field */
 .CalendarDay__selected {
-  @apply bg-ds-blue-darker;
+  @apply bg-ds-blue-darker border-ds-blue-darker;
 }
 
 .CalendarDay__selected:hover {
-  background: orange;
-  color: white;
+  @apply bg-ds-blue-darker border-ds-blue-darker text-white;
 }
 
-.CalendarDay__hovered_span:hover,
-.CalendarDay__hovered_span {
-  background: #e6f1ff;
+/* Selected In Between Date Fields */
+.CalendarDay__selected_span {
+  @apply bg-ds-blue-selected text-ds-blue-darker;
+  border-color: #e4e7e7;
+}
+
+.CalendarDay__selected_span:hover {
+  @apply bg-ds-blue-darker border-ds-blue-darker;
+}
+
+/* Not Selected In Between Date Fields */
+.CalendarDay__hovered_span,
+.CalendarDay__hovered_span:hover {
+  @apply bg-ds-blue-selected text-ds-blue-darker;
+  border-color: #e4e7e7;
+}
+
+/* Keyboard Shortcuts */
+.DayPickerKeyboardShortcuts_show__bottomRight:before,
+.DayPickerKeyboardShortcuts_show__bottomRight:hover::before {
+  border-right: 33px solid #0071c2;
+}
+
+/* Font Family */
+.DateRangePicker {
+  @apply font-sans;
 }
