@@ -114,6 +114,18 @@
   "jest": {
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!d3)/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/src/**/*.stories.js",
+      "<rootDir>/src/setupTests.js",
+      "<rootDir>/src/setupProxy.js",
+      "<rootDir>/src/reportWebVitals.js",
+      "<rootDir>/scripts/*",
+      "<rootDir>/src/index.js",
+      "<rootDir>/src/sentry.js",
+      "<rootDir>/src/mocks/*.js",
+      "<rootDir>/src/**/mocks.js"
     ]
   },
   "msw": {
