@@ -12,6 +12,7 @@ function ImpactedFiles() {
     owner,
     repo,
     commitid: commit,
+    opts: { pollingMs: 2000 },
   })
 
   return !path ? (

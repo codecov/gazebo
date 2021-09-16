@@ -99,7 +99,7 @@ function CommitsTable({ data = [], commit, loading }) {
 }
 
 CommitsTable.propTypes = {
-  loading: PropTypes.bool,
+  loading: PropTypes.string,
   data: PropTypes.arrayOf(
     PropTypes.shape({
       path: PropTypes.string,
