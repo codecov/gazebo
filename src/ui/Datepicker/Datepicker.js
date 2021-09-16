@@ -44,6 +44,7 @@ function Datepicker({ params, updateParams }) {
         onFocusChange={(focusedInput) => setFocusedInput(focusedInput)}
         small={true}
         noBorder={true}
+        initialVisibleMonth={() => moment().subtract(1, 'month')}
       />
     </div>
   )
