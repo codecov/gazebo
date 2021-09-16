@@ -270,7 +270,7 @@ function useStaticNavLinks() {
       text: 'Blog',
     },
     legacyUI: {
-      path: ({ pathname }) => config.BASE_URL + pathname,
+      path: ({ pathname }) => 'http://localhost' + pathname,
       isExternalLink: true,
       text: 'Legacy User Interface',
     },

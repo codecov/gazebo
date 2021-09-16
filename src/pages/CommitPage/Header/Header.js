@@ -4,9 +4,16 @@ import PropTypes from 'prop-types'
 import Banner from 'ui/Banner'
 import Icon from 'ui/Icon'
 import A from 'ui/A'
+import * as Cookie from 'js-cookie'
 
 function Header({ provider }) {
   const location = useLocation()
+
+  function handleOnClick() {
+    Cookie.set('new_commit_page', 'old', {
+      expires: 90,
+    })
+  }
 
   return (
     <div className="my-4">
@@ -24,6 +31,7 @@ function Header({ provider }) {
           <A
             to={{ pageName: 'legacyUI' }}
             options={{ pathname: location.pathname }}
+            onClick={() => handleOnClick()}
           >
             switch back to the previous user interface
           </A>
