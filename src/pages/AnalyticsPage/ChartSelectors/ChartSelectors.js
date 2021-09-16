@@ -9,28 +9,29 @@ function formatDataForMultiselect(repos) {
 }
 
 function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
-  const { search, repos } = params
-  const [selectedRepos, setSelectedRepos] = useState(repos)
+  const { search, repositories } = params
+  const [selectedRepos, setSelectedRepos] = useState(repositories)
   const { data } = useRepos({
     active,
     sortItem,
     term: search,
     owner,
+    first: Infinity,
   })
+  const customClasses = { button: 'py-1' }
 
-  // TODO: Ensure this brings all data and bypasses pagination
   const items = formatDataForMultiselect(data?.repos)
 
   const onChangeHandler = (item) => {
     setSelectedRepos(item)
-    updateParams({ repos: item })
+    updateParams({ repositories: item })
   }
 
   return (
     <div className="flex gap-4">
       <div className="flex flex-col gap-3">
         <span className="font-semibold">Dates</span>
-        <Datepicker />
+        <Datepicker params={params} updateParams={updateParams} />
       </div>
       <div className="flex flex-col w-52 gap-3">
         <span className="font-semibold">Repositories</span>
@@ -40,6 +41,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           onChange={onChangeHandler}
           resourceName="Repo"
           selectedItems={selectedRepos}
+          customClasses={customClasses}
         />
       </div>
     </div>
