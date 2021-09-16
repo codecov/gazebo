@@ -3,6 +3,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useCoverageWithFlags } from 'services/file/hooks'
 
 import FileViewer from './FileViewer'
+import { LINE_TYPE } from './lineStates'
 
 jest.mock('services/file/hooks')
 jest.mock('ui/Spinner', () => () => 'Spinner')
@@ -12,17 +13,17 @@ describe('FileViewer', () => {
   const defaultProps = {
     treePaths: [],
     coverage: {
-      1: 1,
-      2: 0,
-      3: 1,
-      4: 1,
-      5: 0,
-      6: 1,
-      7: 0,
-      8: 1,
-      9: 1,
-      10: 1,
-      11: 0,
+      1: LINE_TYPE.MISS,
+      2: LINE_TYPE.HIT,
+      3: LINE_TYPE.MISS,
+      4: LINE_TYPE.MISS,
+      5: LINE_TYPE.HIT,
+      6: LINE_TYPE.MISS,
+      7: LINE_TYPE.HIT,
+      8: LINE_TYPE.MISS,
+      9: LINE_TYPE.MISS,
+      10: LINE_TYPE.MISS,
+      11: LINE_TYPE.HIT,
     },
     content: 'testcontent',
     totals: 23,

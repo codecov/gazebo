@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import { LINE_STATE } from './lineStates'
+import { LINE_STATE, LINE_TYPE } from './lineStates'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]:
@@ -32,13 +32,14 @@ function Line({
 }) {
   const lineState = getLineState()
 
+  // Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
   // eslint-disable-next-line complexity
   function getLineState() {
-    if (coverage === 0 && showUncovered) {
-      return LINE_STATE.UNCOVERED
-    } else if (coverage === 1 && showCovered) {
+    if (coverage === LINE_TYPE.HIT && showCovered) {
       return LINE_STATE.COVERED
-    } else if (coverage === 2 && showPartial) {
+    } else if (coverage === LINE_TYPE.MISS && showUncovered) {
+      return LINE_STATE.UNCOVERED
+    } else if (coverage === LINE_TYPE.PARTIAL && showPartial) {
       return LINE_STATE.PARTIAL
     } else return LINE_STATE.BLANK
   }
@@ -69,7 +70,7 @@ function Line({
 
 Line.propTypes = {
   line: PropTypes.array.isRequired,
-  coverage: PropTypes.number,
+  coverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
   showCovered: PropTypes.bool.isRequired,
   showUncovered: PropTypes.bool.isRequired,
   number: PropTypes.number.isRequired,

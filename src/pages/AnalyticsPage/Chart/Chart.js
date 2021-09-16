@@ -8,10 +8,30 @@ import {
   VictoryAccessibleGroup,
 } from 'victory'
 import { format } from 'date-fns'
+import { useOrgCoverage } from 'services/charts'
 
 import './chart.css'
 
-function Chart({ data = [] }) {
+function chartQuery({ params }) {
+  const groupingUnit = 'day'
+  const startDate = params?.startDate ? params?.startDate : undefined
+  const endDate = params?.endDate ? params?.endDate : undefined
+
+  const repositories =
+    params?.repositories?.length > 0 ? params?.repositories : undefined
+
+  return { groupingUnit, startDate, endDate, repositories }
+}
+
+function Chart({ provider, owner, params }) {
+  const {
+    data: { coverage: chartData },
+  } = useOrgCoverage({
+    provider,
+    owner,
+    query: chartQuery({ params }),
+  })
+
   const formatDate = (d) => format(new Date(d), 'MMM d, yyyy')
   const formatDateShort = (d) => format(new Date(d), 'MMM d, yy')
 
@@ -24,7 +44,7 @@ function Chart({ data = [] }) {
     return `Organization wide coverage chart from ${firstDateFormatted} to ${lastDateFormatted}, coverage change is ${change}${coverageDiff}%`
   }
 
-  if (data.length < 2) {
+  if (chartData.length < 2) {
     // TODO: Display something informative when there isn't anything to show
     return null
   }
@@ -50,7 +70,7 @@ function Chart({ data = [] }) {
         <VictoryVoronoiContainer
           title="Organization wide coverage chart"
           // TODO make a human readable sentance with the min max dates, erpos and change in coverage.
-          desc={makeTitle(data[0], data[data.length - 1])}
+          desc={makeTitle(chartData[0], chartData[chartData.length - 1])}
           voronoiDimension="x"
           labels={({ datum }) =>
             `Coverage: ${Math.floor(datum.coverage, 2)}%  ${formatDate(
@@ -111,16 +131,20 @@ function Chart({ data = [] }) {
         }
         x="date"
         y="coverage"
-        data={data}
+        data={chartData}
       />
     </VictoryChart>
   )
 }
 
 Chart.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({ date: PropTypes.date, coverage: PropTypes.number })
-  ),
+  provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
+  params: PropTypes.shape({
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    repositories: PropTypes.array,
+  }),
 }
 
 export default Chart

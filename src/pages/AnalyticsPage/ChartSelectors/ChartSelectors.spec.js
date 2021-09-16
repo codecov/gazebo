@@ -11,10 +11,10 @@ describe('AnalyticsPage', () => {
   let props
   let wrapper
   function setup({ params, owner, active, sortItem, updateParams }) {
-    const { repos } = params
+    const { repositories } = params
     useRepos.mockReturnValue({
       data: {
-        repos,
+        repos: repositories,
       },
     })
     props = {
@@ -38,7 +38,7 @@ describe('AnalyticsPage', () => {
       setup({
         params: {
           search: 'Repo name 1',
-          repos: [
+          repositories: [
             {
               private: false,
               author: {
