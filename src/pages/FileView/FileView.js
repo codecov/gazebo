@@ -37,25 +37,27 @@ function FileView() {
   }
 
   return (
-    <>
-      <Breadcrumb
-        paths={[
-          { pageName: 'owner', text: owner },
-          { pageName: 'repo', text: repo },
-          treePaths[treePaths.length - 1],
-        ]}
-      />
-      <div className="border-t border-solid border-ds-gray-tertiary mt-4 py-6">
+    <div className="flex flex-col gap-4">
+      <div className="px-3 sm:px-0">
+        <Breadcrumb
+          paths={[
+            { pageName: 'owner', text: owner },
+            { pageName: 'repo', text: repo },
+            { pageName: '', readOnly: true, text: 'file viewer' },
+          ]}
+        />
+      </div>
+      <div className="border-t border-solid border-ds-gray-tertiary pt-6">
         <FileViewer
           flagNames={data.flagNames}
           coverage={data.coverage}
           content={data.content}
-          totals={data.totals?.coverage}
+          totals={data.totals}
           treePaths={treePaths}
           title={treePaths[treePaths.length - 1].text}
         />
       </div>
-    </>
+    </div>
   )
 }
 
