@@ -57,15 +57,13 @@ function AnalyticsPage() {
       <Suspense fallback={<LogoSpinner />}>
         <Chart provider={provider} owner={owner} params={params} />
       </Suspense>
-      <Suspense fallback={<LogoSpinner />}>
-        <ReposTable
-          owner={owner}
-          active={true}
-          sortItem={sortItem}
-          searchValue={params.search}
-          filterValues={params?.repositories}
-        />
-      </Suspense>
+      <ReposTable
+        owner={owner}
+        active={true}
+        sortItem={sortItem}
+        searchValue={params.search}
+        filterValues={params?.repositories}
+      />
     </div>
   )
 }

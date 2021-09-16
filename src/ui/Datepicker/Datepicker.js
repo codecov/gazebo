@@ -25,6 +25,13 @@ function Datepicker({ params, updateParams }) {
         endDate: moment(endDate).format(),
       })
     }
+
+    if (startDate === null && endDate === null) {
+      updateParams({
+        startDate: '',
+        endDate: '',
+      })
+    }
   }
 
   return (
