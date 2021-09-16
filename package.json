@@ -41,7 +41,7 @@
     "build": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && craco build",
     "test": "craco test",
     "sentry": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && craco build && node scripts/sentry.js",
-    "test:ci": "craco test --collectCoverage --runInBand --reporters=default --reporters=jest-junit",
+    "test:ci": "craco test --collectCoverage --reporters=default --reporters=jest-junit",
     "eject": "craco eject",
     "lint": "npx eslint --no-ignore --max-warnings=0 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
     "storybook": "start-storybook -p 6006 -s public --no-dll",

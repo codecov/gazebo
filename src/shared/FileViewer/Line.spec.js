@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import Line from './Line'
+import { LINE_TYPE } from './lineStates'
 
 describe('Line', () => {
   const line = [
@@ -37,7 +38,7 @@ describe('Line', () => {
 
   describe('renders highlighted covered line', () => {
     beforeEach(() => {
-      setup(1, 1, true, false)
+      setup(1, LINE_TYPE.HIT, true, false)
     })
 
     it('render covered line', () => {
@@ -47,7 +48,7 @@ describe('Line', () => {
 
   describe('renders base covered line', () => {
     beforeEach(() => {
-      setup(1, 1, false, false)
+      setup(1, LINE_TYPE.HIT, false, false)
     })
 
     it('render covered line', () => {
@@ -57,7 +58,7 @@ describe('Line', () => {
 
   describe('renders highlighted uncovered line', () => {
     beforeEach(() => {
-      setup(1, 0, true, true)
+      setup(1, LINE_TYPE.MISS, true, true)
     })
 
     it('render uncovered line', () => {
@@ -67,7 +68,7 @@ describe('Line', () => {
 
   describe('renders base uncovered line', () => {
     beforeEach(() => {
-      setup(1, 0, false, false)
+      setup(1, LINE_TYPE.MISS, false, false)
     })
 
     it('render uncovered line', () => {
@@ -77,7 +78,7 @@ describe('Line', () => {
 
   describe('renders highlighted partial line', () => {
     beforeEach(() => {
-      setup(2, 2, true, true)
+      setup(2, LINE_TYPE.PARTIAL, true, true)
     })
 
     it('render partial line', () => {
