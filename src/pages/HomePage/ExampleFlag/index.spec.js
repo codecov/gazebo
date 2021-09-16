@@ -6,7 +6,7 @@ import FlagLoader from './index'
 jest.mock('./ExampleFlag', () => () => 'Self Hosted')
 jest.mock('./flags/product-test-flag-gazebo-22-7-2022', () => () => 'Flagged')
 
-describe('Example Flag loader', () => {
+describe('Example Flag', () => {
   beforeEach(() => {
     jest.resetAllMocks()
   })

@@ -36,6 +36,11 @@ import { useFlags } from 'launchdarkly-react-client-sdk'
 */
 const ExampleFlag = ({ provider }) => {
   const { productTestFlagGazebo2272022 } = useFlags()
+  /* 
+    Note! productTestFlagGazebo2272022 variation "Don't show in UI"'s 
+    value is still isVisible in code. A good example of labeling for human's
+    from the dashboard but in code the variations value is only provided.
+  */
   return (
     productTestFlagGazebo2272022 !== 'isVisible' && (
       <p>

@@ -10,7 +10,7 @@ import config from 'config'
 
   This conditional entry point is needed to handle self hosted builds.
 */
-export default function ExampleFlagMain(props) {
+export default function FlagLoader(props) {
   let Component
 
   if (config.LAUNCHDARKLY) {
