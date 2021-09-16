@@ -29,6 +29,7 @@ module.exports = {
             darker: '#0071C2',
             quinary: '#015896',
             senary: '#002D4D',
+            selected: '#e6f1ff'
           },
           gray: {
             DEFAULT: '#0E1B29',
