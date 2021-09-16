@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import CodeRenderer from './CodeRenderer'
+import { LINE_TYPE } from './lineStates'
 
 describe('CodeRenderer', () => {
   const code = `
@@ -11,21 +12,21 @@ describe('CodeRenderer', () => {
       {..props}
       ]}
   />
-    
+
   `
 
   const coverage = {
-    1: 1,
-    2: 0,
-    3: 1,
-    4: 1,
-    5: 0,
-    6: 1,
-    7: 0,
-    8: 1,
-    9: 1,
-    10: 1,
-    11: 0,
+    1: LINE_TYPE.HIT,
+    2: LINE_TYPE.MISS,
+    3: LINE_TYPE.HIT,
+    4: LINE_TYPE.HIT,
+    5: LINE_TYPE.MISS,
+    6: LINE_TYPE.HIT,
+    7: LINE_TYPE.MISS,
+    8: LINE_TYPE.HIT,
+    9: LINE_TYPE.HIT,
+    10: LINE_TYPE.HIT,
+    11: LINE_TYPE.MISS,
   }
 
   function setup(code, coverage, showCovered, showUncovered) {
