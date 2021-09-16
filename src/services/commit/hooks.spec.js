@@ -241,10 +241,8 @@ describe('useImpactedFiles', () => {
         owner: {
           repository: {
             commit: {
-              compare: {
-                compareWithParent: {
-                  state: 'PENDING',
-                },
+              compareWithParent: {
+                state: 'PENDING',
               },
             },
           },
@@ -255,10 +253,8 @@ describe('useImpactedFiles', () => {
         owner: {
           repository: {
             commit: {
-              compare: {
-                compareWithParent: {
-                  state: 'PROCESSED',
-                },
+              compareWithParent: {
+                state: 'PROCESSED',
               },
             },
           },
@@ -287,7 +283,6 @@ describe('useImpactedFiles', () => {
 
       await hookData.waitForNextUpdate() // second call
       await hookData.waitForNextUpdate() // third call
-
       expect(hookData.result.current.data).toStrictEqual(expectedData)
     })
   })
