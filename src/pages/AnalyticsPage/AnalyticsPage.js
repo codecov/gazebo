@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
+import { useState } from 'react'
 
 import { orderingOptions } from 'services/repos'
 import { useLocationParams } from 'services/navigation'
@@ -7,6 +8,7 @@ import ReposTable from 'shared/ListRepo/ReposTable'
 import ChartSelectors from './ChartSelectors'
 import { useOwner } from 'services/user'
 import './analytics.css'
+import { useLegacyRedirects } from 'services/redirects'
 
 import NotFound from 'pages/NotFound'
 import LogoSpinner from 'old_ui/LogoSpinner'
@@ -29,6 +31,9 @@ function AnalyticsPage() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+
+  const [selectedOldUI] = useState(false)
+  useLegacyRedirects({ cookieName: 'new_analytics_page', selectedOldUI })
 
   const orderOptions = orderingOptions
 
