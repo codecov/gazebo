@@ -1,19 +1,16 @@
 import { providerFeedback } from 'shared/utils'
 import { useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { useLegacyRedirects } from 'services/redirects'
 import PropTypes from 'prop-types'
 import Banner from 'ui/Banner'
 import Icon from 'ui/Icon'
 import A from 'ui/A'
-import * as Cookie from 'js-cookie'
 
 function Header({ provider }) {
   const location = useLocation()
-
-  function handleOnClick() {
-    Cookie.set('new_commit_page', 'old', {
-      expires: 90,
-    })
-  }
+  const [selectedOldUI, setSelectedOldUI] = useState(false)
+  useLegacyRedirects({ cookieName: 'new_commit_page', selectedOldUI })
 
   return (
     <div className="my-4">
@@ -31,7 +28,7 @@ function Header({ provider }) {
           <A
             to={{ pageName: 'legacyUI' }}
             options={{ pathname: location.pathname }}
-            onClick={() => handleOnClick()}
+            onClick={() => setSelectedOldUI(true)}
           >
             switch back to the previous user interface
           </A>
