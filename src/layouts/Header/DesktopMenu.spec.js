@@ -11,7 +11,7 @@ jest.mock('services/user')
 jest.mock('services/account')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(),
+  useParams: jest.fn(() => {}),
 }))
 jest.mock('./RequestButton', () => () => 'Request Button')
 
@@ -90,14 +90,15 @@ describe('DesktopMenu', () => {
 
 describe('LoginPrompt', () => {
   it('renders a login button and a sign up button', () => {
+    useParams.mockReturnValue({ provider: '' })
     render(<LoginPrompt />, { wrapper: MemoryRouter })
 
     const expectedLinks = [
       {
         label: 'Log in',
-        to: 'https://stage-web.codecov.dev/login/undefined?to=http%3A%2F%2Flocalhost%2F',
+        to: 'https://stage-web.codecov.dev/login/?to=http%3A%2F%2Flocalhost%2F',
       },
-      { label: 'Sign up', to: 'https://about.codecov.io/sign-up' },
+      { label: 'Sign up', to: 'https://about.codecov.io/sign-up?' },
     ]
 
     expectedLinks.forEach((expectedLink) => {
@@ -107,6 +108,7 @@ describe('LoginPrompt', () => {
   })
 
   it('renders link to marketing if url starts with /login', () => {
+    useParams.mockReturnValue({ provider: '' })
     render(
       <MemoryRouter initialEntries={['/login']}>
         <LoginPrompt />
