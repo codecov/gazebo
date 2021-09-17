@@ -7,8 +7,11 @@ export function useLegacyRedirects({ cookieName, selectedOldUI }) {
       expires: 90,
     })
 
+    // window.location.href = 'https://google.com'
+
     if (selectedOldUI) {
       Cookie.remove(cookieName)
+      // send/redirect http request with cookie ^
     }
   }, [cookieName, selectedOldUI])
 }
