@@ -80,13 +80,7 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
   )
 }
 
-export function useImpactedFiles({
-  provider,
-  owner,
-  repo,
-  commitid,
-  opts = {},
-}) {
+export function useImpactedFiles({ provider, owner, repo, commitid, opts }) {
   const defaultOpts = {
     pollingMs: 2000,
   }

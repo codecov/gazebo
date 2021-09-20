@@ -164,7 +164,7 @@ const fileData = {
 describe('CommitPageFileView', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
-    useImpactedFiles.mockReturnValue({ data: [] })
+    useImpactedFiles.mockReturnValue({ data: [{ path: 'index.js' }] })
 
     useFileWithMainCoverage.mockReturnValue({ data: fileData, isSuccess: true })
     render(
