@@ -15,7 +15,9 @@ export const ProviderCookieKeyMapping = {
 
 export function generatePath({ path, query }) {
   const baseUrl = `${config.API_URL}/internal`
-  const queryString = qs.stringify(snakeifyKeys(query), {})
+  const queryString = qs.stringify(snakeifyKeys(query), {
+    arrayFormat: 'repeat',
+  })
 
   return `${baseUrl}${path}${queryString && '?' + queryString}`
 }
