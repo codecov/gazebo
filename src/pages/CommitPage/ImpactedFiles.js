@@ -1,15 +1,33 @@
 import CommitsTable from './CommitsTable'
 import CommitFileView from './CommitFileView'
 import PropTypes from 'prop-types'
+import { useImpactedFiles } from 'services/commit'
+import { useParams } from 'react-router-dom'
 
-function ImpactedFiles({ path, impactedFiles, commit }) {
+function ImpactedFiles() {
+  const { provider, owner, repo, commit, path } = useParams()
+
+  const { data } = useImpactedFiles({
+    provider: provider,
+    owner,
+    repo,
+    commitid: commit,
+    opts: { pollingMs: 2000 },
+  })
+
   return !path ? (
     <>
-      <span className="text-base font-semibold">Impacted files</span>
-      <CommitsTable commit={commit} data={impactedFiles} />
+      <span className="text-base mb-4 font-semibold">Impacted files</span>
+      <CommitsTable
+        commit={commit}
+        loading={data?.state}
+        data={data?.impactedFiles}
+      />
     </>
   ) : (
-    <CommitFileView diff={impactedFiles.find((file) => file.path === path)} />
+    <CommitFileView
+      diff={data?.impactedFiles?.find((file) => file.path === path)}
+    />
   )
 }
 

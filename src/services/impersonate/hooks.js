@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import * as Cookie from 'js-cookie'
+import Cookie from 'js-cookie'
 import qs from 'qs'
 
 export function useImpersonate() {
