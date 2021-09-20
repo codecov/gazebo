@@ -6,9 +6,10 @@ jest.mock('services/repos/hooks')
 
 describe('CommitsTable', () => {
   let props
-  function setup(data = [], repos, hasNextPage) {
+  function setup(data = [], loading = 'processed') {
     props = {
       data,
+      loading,
     }
     render(
       <MemoryRouter initialEntries={['/gh']}>
@@ -89,6 +90,15 @@ describe('CommitsTable', () => {
         'No Files covered by tests were changed'
       )
       expect(coverage).toBeInTheDocument()
+    })
+  })
+  describe('when impacted files are loading', () => {
+    beforeEach(() => {
+      setup([], 'pending')
+    })
+
+    it('renders spinner', () => {
+      expect(screen.getByTestId('spinner')).toBeInTheDocument()
     })
   })
 })
