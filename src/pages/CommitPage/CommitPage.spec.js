@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from 'custom-testing-library'
 import CommitPage from './CommitPage'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { useCommit } from 'services/commit'
+import { useCommit, useImpactedFiles } from 'services/commit'
 import { useFileWithMainCoverage } from 'services/file/hooks'
 
 jest.mock('services/commit')
@@ -76,6 +76,7 @@ describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
     useFileWithMainCoverage.mockReturnValue(fileData)
+    useImpactedFiles.mockReturnValue({})
 
     render(
       <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
@@ -121,6 +122,7 @@ describe('CommitPage', () => {
 describe('CommitPage Not Found', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
+    useImpactedFiles.mockReturnValue({})
 
     render(
       <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
@@ -162,6 +164,10 @@ const fileData = {
 describe('CommitPageFileView', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
+    useImpactedFiles.mockReturnValue({
+      data: { impactedFiles: [{ path: 'index.js' }] },
+    })
+
     useFileWithMainCoverage.mockReturnValue({ data: fileData, isSuccess: true })
     render(
       <MemoryRouter

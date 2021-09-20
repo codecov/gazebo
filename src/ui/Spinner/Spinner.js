@@ -1,6 +1,7 @@
 export default function Spinner() {
   return (
     <svg
+      data-testid="spinner"
       role="presentation"
       className="animate-spin h-3 w-3"
       xmlns="http://www.w3.org/2000/svg"
