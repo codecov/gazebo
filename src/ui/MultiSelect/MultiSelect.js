@@ -24,6 +24,7 @@ function MultiSelect({
   renderItem = identity,
   renderSelected,
   ariaName,
+  customClasses,
 }) {
   const itemsWithReset = [SELECT_ALL_OPTION, ...items]
   const {
@@ -87,7 +88,7 @@ function MultiSelect({
       <button
         aria-label={ariaName}
         type="button"
-        className={SelectClasses.button}
+        className={cs(SelectClasses.button, customClasses?.button)}
         {...getToggleButtonProps()}
       >
         {renderButton()}
@@ -115,6 +116,9 @@ MultiSelect.propTypes = {
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string.isRequired,
   resourceName: PropTypes.string.isRequired,
+  customClasses: PropTypes.shape({
+    button: PropTypes.string,
+  }),
 }
 
 export default MultiSelect

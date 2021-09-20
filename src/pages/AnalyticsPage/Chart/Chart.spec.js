@@ -1,15 +1,28 @@
 import Chart from './Chart'
 import { render, screen } from '@testing-library/react'
+import { useOrgCoverage } from 'services/charts'
+
+jest.mock('services/charts')
 
 describe('Analytics coverage chart', () => {
-  function setup(props) {
-    render(<Chart {...props} />)
+  function setup({ provider, owner, params, chart }) {
+    useOrgCoverage.mockReturnValue({
+      data: { coverage: chart },
+    })
+    render(<Chart provider={provider} owner={owner} params={params} />)
   }
 
   describe('No coverage data exists', () => {
     beforeEach(() => {
       setup({
-        data: [],
+        provider: 'gh',
+        owner: 'codecov',
+        params: {
+          startDate: '2020-01-15',
+          endDate: '2020-01-19',
+          repositories: [],
+        },
+        chart: [],
       })
     })
 
@@ -21,7 +34,14 @@ describe('Analytics coverage chart', () => {
   describe('Chart with data', () => {
     beforeEach(() => {
       setup({
-        data: [
+        provider: 'gh',
+        owner: 'codecov',
+        params: {
+          startDate: '2020-01-15',
+          endDate: '2020-01-19',
+          repositories: [],
+        },
+        chart: [
           { date: '2020-01-15T20:18:39.413Z', coverage: 20 },
           { date: '2020-01-17T20:18:39.413Z', coverage: 50 },
         ],
