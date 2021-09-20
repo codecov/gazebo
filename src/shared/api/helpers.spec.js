@@ -1,5 +1,5 @@
 import { snakeifyKeys, getHeaders, generatePath } from './helpers'
-import * as Cookie from 'js-cookie'
+import Cookie from 'js-cookie'
 
 import config from 'config'
 describe('generatePath', () => {
