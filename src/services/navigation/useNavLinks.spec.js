@@ -506,7 +506,7 @@ describe('useStaticNavLinks', () => {
     it('returns the correct url', () => {
       expect(signupLink.path({ pathname: 'random/path/name' })).toBe(
         config.MARKETING_BASE_URL +
-          '/sign-up?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
       )
     })
   })
