@@ -1,4 +1,4 @@
-import * as Cookie from 'js-cookie'
+import Cookie from 'js-cookie'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
