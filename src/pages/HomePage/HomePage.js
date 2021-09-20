@@ -7,7 +7,6 @@ import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
 import Tabs from './Tabs'
-import ExampleFlag from './ExampleFlag'
 
 function HomePage({ active = false }) {
   const { push } = useHistory()
@@ -31,7 +30,6 @@ function HomePage({ active = false }) {
       <div>
         <Tabs currentUsername={currentUser.user.username} />
         <ListRepo active={active} canRefetch />
-        <ExampleFlag provider={provider} />
       </div>
     </div>
   )

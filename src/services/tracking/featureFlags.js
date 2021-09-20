@@ -1,9 +1,6 @@
-import { useLDClient } from 'launchdarkly-react-client-sdk'
-import { useEffect } from 'react'
-
+import { useIdentifyUser } from 'shared/featureFlags'
 import { getUserData } from './utils'
 
-// https://launchdarkly.github.io/js-client-sdk/interfaces/_launchdarkly_js_client_sdk_.lduser.html
 const defaultUser = {
   name: null,
   email: null,
@@ -29,6 +26,7 @@ const defaultUser = {
 }
 
 function createUser(user) {
+  if (!user) return
   const { custom: defaultCustom, ...defaultTopLevel } = defaultUser
   const topLevelUser = Object.assign({}, defaultTopLevel, {
     key: user.trackingMetadata.ownerid,
@@ -39,17 +37,6 @@ function createUser(user) {
   return { ...topLevelUser, custom: getUserData(user, defaultCustom) }
 }
 
-export function useLaunchDarkly(user) {
-  const ldClient = useLDClient()
-
-  useEffect(() => {
-    if (ldClient && user) {
-      if (!user.guest) {
-        const data = createUser(user)
-        if (data.key) {
-          ldClient.identify(data)
-        }
-      }
-    }
-  }, [user, ldClient])
+export function useTrackFeatureFlags(user) {
+  useIdentifyUser(createUser(user))
 }

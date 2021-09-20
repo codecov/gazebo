@@ -1,7 +1,7 @@
 import { useUser } from 'services/user'
 import { gtmUser, setDataLayer } from './gtm'
 import { segmentUser, identifySegmentUser, useSegmentPage } from './segment'
-import { useLaunchDarkly } from './launchDarkly'
+import { useTrackFeatureFlags } from './featureFlags'
 import { getUserData } from './utils'
 
 const trackingInfo = [
@@ -38,7 +38,7 @@ export function useTracking() {
     suspense: false,
   })
 
-  useLaunchDarkly(user)
+  useTrackFeatureFlags(user)
   useSegmentPage()
 
   return { data: user, ...all }
