@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-import Button from 'ui/Button'
 import Progress from 'ui/Progress'
 import Table from 'ui/Table'
 import { useRepos } from 'services/repos/hooks'
 import AppLink from 'shared/AppLink'
 
 import RepoTitleLink from './RepoTitleLink'
+import Button from 'ui/Button'
 
 const tableActive = [
   {
