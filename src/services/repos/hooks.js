@@ -102,7 +102,7 @@ export function useRepos({
 }) {
   const { provider } = useParams()
   const variables = {
-    filters: { active, term, terms },
+    filters: { active, term },
     ordering: sortItem.ordering,
     direction: sortItem.direction,
     first,
