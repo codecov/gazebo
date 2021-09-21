@@ -1,4 +1,5 @@
 import { render, screen } from 'custom-testing-library'
+import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 
 import DeletionCard from './DeletionCard'
@@ -21,7 +22,9 @@ describe('DeletionCard', () => {
     }
     useAddNotification.mockReturnValue(addNotification)
     useEraseAccount.mockReturnValue({ mutate, isLoading: false })
-    render(<DeletionCard {...props} />)
+    render(<DeletionCard {...props} />, {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('when rendered for organization', () => {

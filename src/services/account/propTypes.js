@@ -30,6 +30,5 @@ export const subscriptionDetailType = PropType.shape({
 export const accountDetailsPropType = PropType.shape({
   plan: planPropType,
   activatedUserCount: PropType.number.isRequired,
-  inactiveUserCount: PropType.number.isRequired,
   subscriptionDetail: subscriptionDetailType,
 })
