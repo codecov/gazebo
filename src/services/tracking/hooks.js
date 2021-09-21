@@ -1,7 +1,6 @@
 import { useUser } from 'services/user'
 import { gtmUser, setDataLayer } from './gtm'
 import { segmentUser, identifySegmentUser, useSegmentPage } from './segment'
-import { useTrackFeatureFlags } from './featureFlags'
 import { getUserData } from './utils'
 
 const trackingInfo = [
@@ -32,14 +31,11 @@ export function handleOnError(guest) {
 }
 
 export function useTracking() {
-  const { data: user, ...all } = useUser({
-    onSuccess: (user) => handleOnSuccess(user),
-    onError: () => handleOnError({ guest: true }),
-    suspense: false,
-  })
-
-  useTrackFeatureFlags(user)
   useSegmentPage()
 
-  return { data: user, ...all }
+  return useUser({
+    onSuccess: (user) => handleOnSuccess(user),
+    onError: (data) => handleOnError({ guest: true }),
+    suspense: false,
+  })
 }
