@@ -18,12 +18,12 @@ const tableActive = [
   {
     Header: <span className="w-full text-right">Last Updated</span>,
     accessor: 'lastUpdated',
-    width: 'w-44',
+    width: 'w-2/12',
   },
   {
     Header: <span className="w-full text-sm text-right">Test Coverage</span>,
     accessor: 'coverage',
-    width: 'w-52',
+    width: 'w-3/12',
   },
 ]
 
