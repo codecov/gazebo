@@ -8,12 +8,78 @@ import {
   VictoryAccessibleGroup,
 } from 'victory'
 import { format } from 'date-fns'
+import { useWindowSize, useDebounce } from 'react-use'
+import { useState } from 'react'
+
+import { useOrgCoverage } from 'services/charts'
 
 import './chart.css'
 
-function Chart({ data = [] }) {
+const tailwindResponsive = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536,
+}
+
+function chartQuery({ params }) {
+  const groupingUnit = 'day'
+  const startDate = params?.startDate ? params?.startDate : undefined
+  const endDate = params?.endDate ? params?.endDate : undefined
+
+  const repositories =
+    params?.repositories?.length > 0 ? params?.repositories : undefined
+
+  return { groupingUnit, startDate, endDate, repositories }
+}
+
+const defaultStyles = {
+  tooltip: {
+    style: { fontSize: 7 },
+    flyout: { top: 5, bottom: 6, left: 7, right: 7 },
+  },
+  chartPadding: {
+    top: 10,
+    bottom: 50,
+    left: 30,
+    right: 10,
+  },
+  axisLabels: { fontSize: 7 },
+}
+function Chart({ provider, owner, params }) {
+  const {
+    data: { coverage: chartData },
+  } = useOrgCoverage({
+    provider,
+    owner,
+    query: chartQuery({ params }),
+  })
+  const [styles, setStyles] = useState(defaultStyles)
+  const { width } = useWindowSize()
+  const [,] = useDebounce(
+    () => {
+      setStyles({
+        tooltip: {
+          style: { fontSize: 15 },
+          flyout: { top: 10, bottom: 10, left: 15, right: 15 },
+        },
+        chartPadding: {
+          top: 10,
+          bottom: 85,
+          left: 60,
+          right: 0,
+        },
+        axisLabels: { fontSize: 15 },
+      })
+      if (width >= tailwindResponsive.md) {
+        setStyles(defaultStyles)
+      }
+    },
+    2000,
+    [width]
+  )
   const formatDate = (d) => format(new Date(d), 'MMM d, yyyy')
-  const formatDateShort = (d) => format(new Date(d), 'MMM d, yy')
 
   function makeTitle(first, last) {
     const firstDateFormatted = formatDate(first.date)
@@ -24,24 +90,18 @@ function Chart({ data = [] }) {
     return `Organization wide coverage chart from ${firstDateFormatted} to ${lastDateFormatted}, coverage change is ${change}${coverageDiff}%`
   }
 
-  if (data.length < 2) {
-    // TODO: Display something informative when there isn't anything to show
+  if (chartData.length < 2) {
     return null
   }
 
   return (
     <VictoryChart
-      width={768}
-      height={250}
+      width={500}
+      height={220}
       yDomain={[0, 100]}
       scale={{ x: 'time', y: 'linear' }}
       // Custom padding tightens the whitespace around the chart.
-      padding={{
-        top: 20,
-        bottom: 80,
-        left: 52,
-        right: 0,
-      }}
+      padding={styles.chartPadding}
       containerComponent={
         // Veronoi is a algorythem that defines invisible mouse hover regions for data points.
         // For line charts this is a better tooltip then using a normal hover target
@@ -50,7 +110,7 @@ function Chart({ data = [] }) {
         <VictoryVoronoiContainer
           title="Organization wide coverage chart"
           // TODO make a human readable sentance with the min max dates, erpos and change in coverage.
-          desc={makeTitle(data[0], data[data.length - 1])}
+          desc={makeTitle(chartData[0], chartData[chartData.length - 1])}
           voronoiDimension="x"
           labels={({ datum }) =>
             `Coverage: ${Math.floor(datum.coverage, 2)}%  ${formatDate(
@@ -65,6 +125,8 @@ function Chart({ data = [] }) {
                   aria-label="coverage tooltip"
                 />
               }
+              flyoutPadding={styles.tooltip.flyout}
+              style={styles.tooltip.style}
               constrainToVisibleArea
               cornerRadius={0}
               pointerLength={0}
@@ -82,11 +144,12 @@ function Chart({ data = [] }) {
           />
         }
         labelPlacement="vertical"
-        tickFormat={(t) => formatDateShort(t)}
+        tickFormat={(t) => formatDate(t)}
         fixLabelOverlap={true}
         style={{
           tickLabels: {
             angle: -45,
+            ...styles.axisLabels,
           },
         }}
       />
@@ -101,6 +164,9 @@ function Chart({ data = [] }) {
         dependentAxis
         domain={[0, 100]}
         tickFormat={(t) => `${t}%`}
+        style={{
+          tickLabels: styles.axisLabels,
+        }}
       />
       <VictoryLine
         groupComponent={
@@ -111,16 +177,20 @@ function Chart({ data = [] }) {
         }
         x="date"
         y="coverage"
-        data={data}
+        data={chartData}
       />
     </VictoryChart>
   )
 }
 
 Chart.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({ date: PropTypes.date, coverage: PropTypes.number })
-  ),
+  provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
+  params: PropTypes.shape({
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    repositories: PropTypes.array,
+  }),
 }
 
 export default Chart

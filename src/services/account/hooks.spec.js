@@ -4,7 +4,7 @@ import { renderHook, act } from '@testing-library/react-hooks'
 import { waitFor } from '@testing-library/react'
 import { useStripe } from '@stripe/react-stripe-js'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import * as Cookie from 'js-cookie'
+import Cookie from 'js-cookie'
 
 import {
   useAccountDetails,
