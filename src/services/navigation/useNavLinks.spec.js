@@ -447,7 +447,14 @@ describe('useNavLinks', () => {
 })
 
 describe('useStaticNavLinks', () => {
-  let links = useStaticNavLinks()
+  const hookData = renderHook(() => useStaticNavLinks(), {
+    wrapper: (props) => (
+      <MemoryRouter initialEntries={['/gh']} initialIndex={0}>
+        <Route path="/:provider">{props.children}</Route>
+      </MemoryRouter>
+    ),
+  })
+  const links = hookData.result.current
   describe.each`
     link                       | outcome
     ${links.root}              | ${`${config.MARKETING_BASE_URL}`}
@@ -474,6 +481,32 @@ describe('useStaticNavLinks', () => {
     it('returns the correct url', () => {
       expect(links.legacyUI.path({ pathname: 'random/path/name' })).toBe(
         config.BASE_URL + 'random/path/name'
+      )
+    })
+  })
+
+  describe('signup forward the marketing link', () => {
+    let signupLink
+    beforeEach(() => {
+      const hookData = renderHook(() => useStaticNavLinks(), {
+        wrapper: (props) => (
+          <MemoryRouter
+            initialEntries={[
+              '/gh?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e&not=f',
+            ]}
+            initialIndex={0}
+          >
+            <Route path="/:provider">{props.children}</Route>
+          </MemoryRouter>
+        ),
+      })
+      signupLink = hookData.result.current.signUp
+    })
+
+    it('returns the correct url', () => {
+      expect(signupLink.path({ pathname: 'random/path/name' })).toBe(
+        config.MARKETING_BASE_URL +
+          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
       )
     })
   })

@@ -1,11 +1,11 @@
+import pick from 'lodash/pick'
 import qs from 'qs'
-import { useRouteMatch } from 'react-router-dom'
+import { useParams, useLocation } from 'react-router-dom'
 
 import config from 'config'
 
 function useNavLinks() {
-  const { params } = useRouteMatch()
-  const { provider: p, owner: o, repo: r, id: i } = params
+  const { provider: p, owner: o, repo: r, id: i } = useParams()
 
   return {
     signOut: {
@@ -183,13 +183,30 @@ function useNavLinks() {
   }
 }
 
+function forwardMarketingTag(search) {
+  const queryParams = qs.parse(search, {
+    ignoreQueryPrefix: true,
+  })
+  const onlyMarketingParams = pick(queryParams, [
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_term',
+    'utm_content',
+  ])
+  return qs.stringify(onlyMarketingParams)
+}
+
 // Seperate function which doesn't unessisarily use the router.
 function useStaticNavLinks() {
+  const { search } = useLocation()
+
   return {
     root: { path: () => `${config.MARKETING_BASE_URL}`, isExternalLink: true },
     signUp: {
       text: 'Sign Up',
-      path: () => `${config.MARKETING_BASE_URL}/sign-up`,
+      path: () =>
+        `${config.MARKETING_BASE_URL}/sign-up/?${forwardMarketingTag(search)}`,
       isExternalLink: true,
     },
     demo: {

@@ -31,7 +31,7 @@ const freeAccountDetails = {
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ params: { provider: 'gl' } }),
+  useParams: () => ({ provider: 'gl' }),
 }))
 
 describe('CurrentPlanCard', () => {

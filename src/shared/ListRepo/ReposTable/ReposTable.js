@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
+import Button from 'ui/Button'
 import Progress from 'ui/Progress'
 import Table from 'ui/Table'
 import { useRepos } from 'services/repos/hooks'
 import AppLink from 'shared/AppLink'
 
 import RepoTitleLink from './RepoTitleLink'
-import Button from 'ui/Button'
 
 const tableActive = [
   {
@@ -18,12 +18,12 @@ const tableActive = [
   {
     Header: <span className="w-full text-right">Last Updated</span>,
     accessor: 'lastUpdated',
-    width: 'w-2/12',
+    width: 'w-44',
   },
   {
     Header: <span className="w-full text-sm text-right">Test Coverage</span>,
     accessor: 'coverage',
-    width: 'w-3/12',
+    width: 'w-52',
   },
 ]
 
