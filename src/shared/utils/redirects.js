@@ -1,0 +1,20 @@
+import { useEffect } from 'react'
+import * as Cookie from 'js-cookie'
+import config from 'config'
+
+export function useLegacyRedirects({ cookieName, selectedOldUI, location }) {
+  const pathname = location?.pathname
+
+  useEffect(() => {
+    if (Cookie.get(cookieName) === 'old') {
+      window.location.replace(config.BASE_URL + pathname)
+    }
+
+    if (selectedOldUI) {
+      Cookie.set(cookieName, 'old', {
+        expires: 90,
+        path: pathname,
+      })
+    }
+  }, [cookieName, selectedOldUI, pathname])
+}

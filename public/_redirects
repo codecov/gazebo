@@ -1,8 +1,1 @@
-/gh/:org/:repo/commit/*          https://codecov.io/gh/:org/:repo/commit/:splat            200     Cookie=old_commit_page
-/bb/:org/:repo/commit/*          https://codecov.io/bb/:org/:repo/commit/:splat            200     Cookie=old_commit_page
-/gl/:org/:repo/commit/*          https://codecov.io/gl/:org/:repo/commit/:splat            200     Cookie=old_commit_page
-/github/:org/:repo/commit/*      https://codecov.io/github/:org/:repo/commit/:splat        200     Cookie=old_commit_page
-/bitbucket/:org/:repo/commit/*   https://codecov.io/bitbucket/:org/:repo/commit/:splat     200     Cookie=old_commit_page
-/gitlab/:org/:repo/commit/*      https://codecov.io/gitlab/:org/:repo/commit/:splat        200     Cookie=old_commit_page
-
 /*    /index.html   200
