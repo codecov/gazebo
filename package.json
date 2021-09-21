@@ -13,6 +13,7 @@
     "dompurify": "^2.3.3",
     "downshift": "^6.1.7",
     "js-cookie": "^3.0.1",
+    "launchdarkly-react-client-sdk": "^2.23.0",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
     "prism-react-renderer": "^1.2.1",
