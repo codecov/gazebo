@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { useLocation } from 'react-router-dom'
-import * as Cookie from 'js-cookie'
+import Cookie from 'js-cookie'
+
 import {
   useSegmentPage,
   identifySegmentUser,
