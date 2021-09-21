@@ -44,8 +44,8 @@ export function useIdentifyUser(user) {
   const ldClient = useLDClient()
 
   useEffect(() => {
-    if (user && config.LAUNCHDARKLY) {
-      if (!user.guest && user.key) {
+    if (config.LAUNCHDARKLY && ldClient) {
+      if (!user?.guest && user?.key) {
         ldClient.identify(user)
       }
     }
