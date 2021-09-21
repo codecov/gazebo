@@ -98,11 +98,11 @@ export function useRepos({
   owner,
   sortItem = orderingOptions[0],
   first = 20,
-  terms,
+  repoNames,
 }) {
   const { provider } = useParams()
   const variables = {
-    filters: { active, term },
+    filters: { active, term, repoNames },
     ordering: sortItem.ordering,
     direction: sortItem.direction,
     first,

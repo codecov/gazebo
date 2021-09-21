@@ -105,7 +105,7 @@ function ReposTable({
     active,
     sortItem,
     term: searchValue,
-    terms: filterValues,
+    repoNames: filterValues,
     owner,
   })
 

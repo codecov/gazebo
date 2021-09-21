@@ -80,7 +80,7 @@ describe('ReposTable', () => {
         active: true,
         term: '',
         sortItem: props.sortItem,
-        terms: [],
+        repoNames: [],
       })
     })
 
@@ -206,7 +206,7 @@ describe('ReposTable', () => {
         active: false,
         term: '',
         sortItem: props.sortItem,
-        terms: [],
+        repoNames: [],
       })
     })
 
