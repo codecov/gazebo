@@ -1,7 +1,7 @@
 import { providerFeedback } from 'shared/utils'
 import { useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import { useLegacyRedirects } from 'shared/utils/redirects'
+import { useLegacyRedirects } from 'services/redirects/hooks'
 
 import PropTypes from 'prop-types'
 import Banner from 'ui/Banner'
