@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 
 import GithubIntegrationCard from './GithubIntegrationCard'
 import { useAccountDetails } from 'services/account'
@@ -21,7 +22,9 @@ describe('GithubIntegrationCard', () => {
       ...defaultProps,
       ...over,
     }
-    wrapper = render(<GithubIntegrationCard {...props} />)
+    wrapper = render(<GithubIntegrationCard {...props} />, {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('when rendered for not a github user', () => {
