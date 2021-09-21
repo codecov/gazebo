@@ -104,12 +104,8 @@ function CommitPage() {
             />
           </div>
         </div>
-        <div className="flex flex-col flex-1 gap-4 px-3 sm:px-0">
-          <ImpactedFiles
-            commit={commit}
-            path={path}
-            impactedFiles={data?.commit?.compareWithParent?.impactedFiles}
-          />
+        <div className="flex flex-col flex-1">
+          <ImpactedFiles commit={commit} path={path} />
         </div>
       </div>
     </div>
