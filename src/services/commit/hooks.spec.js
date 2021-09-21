@@ -2,7 +2,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useCommit, useCommitYaml } from './hooks'
+import { useCommit, useCommitYaml, useImpactedFiles } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 const queryClient = new QueryClient()
@@ -199,6 +199,91 @@ describe('useCommitYaml', () => {
 
     it('returns commit info', () => {
       expect(hookData.result.current.data).toEqual(yaml)
+    })
+  })
+})
+
+describe('useImpactedFiles', () => {
+  let hookData
+  let count = 0
+  const provider = 'bb'
+  const owner = 'doggo'
+  const repo = 'test'
+  const commitid = 1234
+
+  function setup({ firstRes, finalRes, pollingAttempts = 2 }) {
+    count = 0 // count number of times api was called. Can return different stuff
+    server.use(
+      graphql.query(`CompareTotals`, (req, res, ctx) => {
+        count++
+        if (count === pollingAttempts) {
+          return res(ctx.status(200), ctx.data(finalRes))
+        }
+        return res(ctx.status(200), ctx.data(firstRes))
+      })
+    )
+    hookData = renderHook(
+      () =>
+        useImpactedFiles({
+          provider,
+          owner,
+          repo,
+          commitid,
+          opts: { pollingMs: 5 },
+        }),
+      { wrapper }
+    )
+  }
+
+  describe('when the hook is first called', () => {
+    beforeEach(() => {
+      const firstRes = {
+        owner: {
+          repository: {
+            commit: {
+              compareWithParent: {
+                state: 'PENDING',
+              },
+            },
+          },
+        },
+      }
+
+      const finalRes = {
+        owner: {
+          repository: {
+            commit: {
+              compareWithParent: {
+                state: 'PROCESSED',
+              },
+            },
+          },
+        },
+      }
+
+      setup({
+        firstRes,
+        finalRes,
+      })
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
+    })
+
+    it('returns initial totals data', () => {
+      const expectedData = {
+        state: 'PENDING',
+      }
+
+      expect(hookData.result.current.data).toStrictEqual(expectedData)
+    })
+
+    it('stops polling once the totals are processed', async () => {
+      const expectedData = {
+        state: 'PROCESSED',
+      }
+
+      await hookData.waitForNextUpdate() // second call
+      await hookData.waitForNextUpdate() // third call
+      expect(hookData.result.current.data).toStrictEqual(expectedData)
     })
   })
 })

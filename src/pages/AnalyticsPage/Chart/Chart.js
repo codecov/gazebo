@@ -8,9 +8,20 @@ import {
   VictoryAccessibleGroup,
 } from 'victory'
 import { format } from 'date-fns'
+import { useWindowSize, useDebounce } from 'react-use'
+import { useState } from 'react'
+
 import { useOrgCoverage } from 'services/charts'
 
 import './chart.css'
+
+const tailwindResponsive = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536,
+}
 
 function chartQuery({ params }) {
   const groupingUnit = 'day'
@@ -23,6 +34,19 @@ function chartQuery({ params }) {
   return { groupingUnit, startDate, endDate, repositories }
 }
 
+const defaultStyles = {
+  tooltip: {
+    style: { fontSize: 7 },
+    flyout: { top: 5, bottom: 6, left: 7, right: 7 },
+  },
+  chartPadding: {
+    top: 10,
+    bottom: 50,
+    left: 30,
+    right: 10,
+  },
+  axisLabels: { fontSize: 7 },
+}
 function Chart({ provider, owner, params }) {
   const {
     data: { coverage: chartData },
@@ -31,9 +55,31 @@ function Chart({ provider, owner, params }) {
     owner,
     query: chartQuery({ params }),
   })
-
+  const [styles, setStyles] = useState(defaultStyles)
+  const { width } = useWindowSize()
+  const [,] = useDebounce(
+    () => {
+      setStyles({
+        tooltip: {
+          style: { fontSize: 15 },
+          flyout: { top: 10, bottom: 10, left: 15, right: 15 },
+        },
+        chartPadding: {
+          top: 10,
+          bottom: 85,
+          left: 60,
+          right: 0,
+        },
+        axisLabels: { fontSize: 15 },
+      })
+      if (width >= tailwindResponsive.md) {
+        setStyles(defaultStyles)
+      }
+    },
+    2000,
+    [width]
+  )
   const formatDate = (d) => format(new Date(d), 'MMM d, yyyy')
-  const formatDateShort = (d) => format(new Date(d), 'MMM d, yy')
 
   function makeTitle(first, last) {
     const firstDateFormatted = formatDate(first.date)
@@ -45,23 +91,17 @@ function Chart({ provider, owner, params }) {
   }
 
   if (chartData.length < 2) {
-    // TODO: Display something informative when there isn't anything to show
     return null
   }
 
   return (
     <VictoryChart
-      width={768}
-      height={250}
+      width={500}
+      height={220}
       yDomain={[0, 100]}
       scale={{ x: 'time', y: 'linear' }}
       // Custom padding tightens the whitespace around the chart.
-      padding={{
-        top: 20,
-        bottom: 80,
-        left: 52,
-        right: 0,
-      }}
+      padding={styles.chartPadding}
       containerComponent={
         // Veronoi is a algorythem that defines invisible mouse hover regions for data points.
         // For line charts this is a better tooltip then using a normal hover target
@@ -85,6 +125,8 @@ function Chart({ provider, owner, params }) {
                   aria-label="coverage tooltip"
                 />
               }
+              flyoutPadding={styles.tooltip.flyout}
+              style={styles.tooltip.style}
               constrainToVisibleArea
               cornerRadius={0}
               pointerLength={0}
@@ -102,11 +144,12 @@ function Chart({ provider, owner, params }) {
           />
         }
         labelPlacement="vertical"
-        tickFormat={(t) => formatDateShort(t)}
+        tickFormat={(t) => formatDate(t)}
         fixLabelOverlap={true}
         style={{
           tickLabels: {
             angle: -45,
+            ...styles.axisLabels,
           },
         }}
       />
@@ -121,6 +164,9 @@ function Chart({ provider, owner, params }) {
         dependentAxis
         domain={[0, 100]}
         tickFormat={(t) => `${t}%`}
+        style={{
+          tickLabels: styles.axisLabels,
+        }}
       />
       <VictoryLine
         groupComponent={

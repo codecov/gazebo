@@ -12,7 +12,8 @@
 }
 
 .VictoryContainer .chart-tooltip tspan {
-  @apply text-ds-gray-octonary text-xs font-extralight font-sans stroke-current !important;
+  @apply font-sans !important;
+  @apply text-ds-gray-octonary font-extralight stroke-current;
 }
 
 .VictoryContainer .date-axis tspan {
@@ -26,12 +27,6 @@
 
 .VictoryContainer .date-axis tspan,
 .VictoryContainer .coverage-axis tspan {
-  @apply font-sans text-lg font-extralight text-ds-gray-quinary stroke-current !important;
-}
-
-@media screen(md) {
-  .VictoryContainer .date-axis tspan,
-  .VictoryContainer .coverage-axis tspan {
-    @apply font-sans text-xs !important;
-  }
+  @apply font-sans !important;
+  @apply font-sans font-light text-ds-gray-quinary stroke-current;
 }

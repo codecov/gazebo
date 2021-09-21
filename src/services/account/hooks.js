@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useStripe } from '@stripe/react-stripe-js'
-import * as Cookie from 'js-cookie'
+import Cookie from 'js-cookie'
 
 import Api from 'shared/api'
 import { ProviderCookieKeyMapping } from 'shared/api/helpers'
