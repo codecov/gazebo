@@ -98,7 +98,7 @@ describe('LoginPrompt', () => {
         label: 'Log in',
         to: 'https://stage-web.codecov.dev/login/?to=http%3A%2F%2Flocalhost%2F',
       },
-      { label: 'Sign up', to: 'https://about.codecov.io/sign-up?' },
+      { label: 'Sign up', to: 'https://about.codecov.io/sign-up/?' },
     ]
 
     expectedLinks.forEach((expectedLink) => {

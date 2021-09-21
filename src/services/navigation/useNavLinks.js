@@ -206,7 +206,7 @@ function useStaticNavLinks() {
     signUp: {
       text: 'Sign Up',
       path: () =>
-        `${config.MARKETING_BASE_URL}/sign-up?${forwardMarketingTag(search)}`,
+        `${config.MARKETING_BASE_URL}/sign-up/?${forwardMarketingTag(search)}`,
       isExternalLink: true,
     },
     demo: {
