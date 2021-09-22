@@ -79,7 +79,7 @@ function CoverageReportCard({ data, provider, repo, owner, patch }) {
             Patch
           </span>
           <span className="text-xl text-center mt-1 font-light">
-            {patch ? patch : '-'}
+            {patch?.coverage ? `${patch.coverage} %` : '-'}
           </span>
         </div>
         <div className="flex flex-col items-center justify-center">
