@@ -1,5 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
+import isNumber from 'lodash/isNumber'
+
 import Table from 'ui/Table'
 import A from 'ui/A'
 import Progress from 'ui/Progress'
@@ -35,7 +37,7 @@ const table = [
 function CommitsTable({ data = [], commit, loading }) {
   function getDataRow() {
     return data?.map((d) => {
-      let change = d?.compareTotals?.coverage - d?.baseTotals?.coverage
+      let change = d?.headCoverage?.coverage - d?.baseCoverage?.coverage
       if (isNaN(change)) {
         change = null
       }
@@ -45,22 +47,24 @@ function CommitsTable({ data = [], commit, loading }) {
             <A
               to={{
                 pageName: 'commitFile',
-                options: { commit, path: d.path },
+                options: { commit, path: d.headName },
               }}
             >
-              <span>{d.path?.split('/').pop()}</span>
+              <span>{d.headName?.split('/').pop()}</span>
             </A>
             <span className="text-xs mt-0.5 text-ds-gray-quinary">
-              {d.path}
+              {d.headName}
             </span>
           </div>
         ),
         coverage: (
-          <Progress amount={d?.compareTotals?.coverage || 0} label={true} />
+          <Progress amount={d?.headCoverage?.coverage || 0} label={true} />
         ),
         patch: (
           <span className="text-sm text-right w-full text-ds-gray-octonary">
-            {d?.patch?.coverage ? `${d?.patch?.coverage?.toFixed(2)}%` : '-'}
+            {isNumber(d?.patchCoverage?.coverage)
+              ? `${d?.patchCoverage?.coverage?.toFixed(2)}%`
+              : '-'}
           </span>
         ),
         change: (
@@ -74,7 +78,7 @@ function CommitsTable({ data = [], commit, loading }) {
               }
             )}
           >
-            {change ? `${change.toFixed(2)}%` : '-'}
+            {isNumber(change) ? `${change.toFixed(2)}%` : '-'}
           </span>
         ),
       }
@@ -102,14 +106,14 @@ CommitsTable.propTypes = {
   loading: PropTypes.string,
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      path: PropTypes.string,
-      compareTotals: PropTypes.shape({
+      headName: PropTypes.string,
+      headCoverage: PropTypes.shape({
         coverage: PropTypes.number,
       }),
-      baseTotals: PropTypes.shape({
+      baseCoverage: PropTypes.shape({
         coverage: PropTypes.number,
       }),
-      patch: PropTypes.shape({
+      patchCoverage: PropTypes.shape({
         coverage: PropTypes.number,
       }),
     })
