@@ -72,6 +72,24 @@
         ]
       }
     },
+    // All
+    {
+      "files": ["src/**/*.js"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "Launch Darkly",
+                "message": "Always access Launch Darkly through 'shared/featureFlags instead"
+              }
+            ],
+            "patterns": ["launchdarkly-react-client-sdk"]
+          }
+        ]
+      }
+    },
     // Testing Rules
     {
       "files": ["*-test.js", "*.spec.js", "*.test.js"],
