@@ -13,6 +13,7 @@ import { getProviderCommitURL } from './helpers'
 import Header from './Header'
 import ImpactedFiles from './ImpactedFiles'
 import YamlModal from './YamlModal'
+import { useImpactedFiles } from 'services/commit'
 
 const NotFound = lazy(() => import('../NotFound'))
 
@@ -20,6 +21,14 @@ function CommitPage() {
   const { provider, owner, repo, commit, path } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
   const loadingState = <Spinner size={40} />
+
+  const { data: impactedFiles } = useImpactedFiles({
+    provider: provider,
+    owner,
+    repo,
+    commitid: commit,
+    opts: { pollingMs: 2000 },
+  })
 
   const { data, isSuccess } = useCommit({
     provider: provider,
@@ -90,6 +99,7 @@ function CommitPage() {
             provider={provider}
             repo={repo}
             owner={owner}
+            patch={impactedFiles?.patch}
             data={data?.commit}
           />
           <div>
@@ -105,7 +115,7 @@ function CommitPage() {
           </div>
         </div>
         <div className="flex flex-col flex-1">
-          <ImpactedFiles commit={commit} path={path} />
+          <ImpactedFiles data={impactedFiles} commit={commit} path={path} />
         </div>
       </div>
     </div>

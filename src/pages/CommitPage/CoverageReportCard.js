@@ -7,7 +7,7 @@ import A from 'ui/A'
 import { providerToName } from 'shared/utils'
 import { getProviderPullURL } from './helpers'
 
-function CoverageReportCard({ data, provider, repo, owner }) {
+function CoverageReportCard({ data, provider, repo, owner, patch }) {
   const coverage = data?.totals?.coverage.toFixed(2)
   const commitid = data?.commitid?.substr(0, 7)
   const parentCommitid = data?.parent?.commitid
@@ -78,7 +78,9 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           <span className="text-ds-gray-quinary text-xs font-semibold">
             Patch
           </span>
-          <span className="text-xl text-center mt-1 font-light">TODO</span>
+          <span className="text-xl text-center mt-1 font-light">
+            {patch ? patch : '-'}
+          </span>
         </div>
         <div className="flex flex-col items-center justify-center">
           <span className="text-ds-gray-quinary text-xs font-semibold">
@@ -125,6 +127,9 @@ CoverageReportCard.propTypes = {
     ciPassed: PropTypes.bool,
     pullId: PropTypes.number,
     ciUrl: PropTypes.string,
+  }),
+  patch: PropTypes.shape({
+    coverage: PropTypes.number,
   }),
   provider: PropTypes.string,
   repo: PropTypes.string,
