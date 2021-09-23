@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import * as Cookie from 'js-cookie'
+import Cookie from 'js-cookie'
 import config from 'config'
 
 export function useLegacyRedirects({ cookieName, selectedOldUI, location }) {

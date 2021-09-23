@@ -2,8 +2,6 @@ import { renderHook } from '@testing-library/react-hooks'
 import { useLegacyRedirects } from './hooks'
 import Cookie from 'js-cookie'
 
-jest.mock('js-cookie')
-
 describe('useLegacyRedirects', () => {
   function setup({ cookieName, selectedOldUI, location }) {
     renderHook(() =>
@@ -12,26 +10,20 @@ describe('useLegacyRedirects', () => {
   }
 
   describe('when the old UI is selected', () => {
+    let props
     beforeEach(() => {
-      const props = {
+      props = {
         cookieName: 'cookie-monster',
         selectedOldUI: true,
         location: {
-          pathname: '/gh/codecov',
+          pathname: 'gh/codecov/',
         },
       }
       setup(props)
     })
 
-    afterAll(() => {
-      jest.resetAllMocks()
-    })
-
     it('sets the cookie with old name, expiration of 90 days and path of pathname', () => {
-      expect(Cookie.set).toBeCalledWith('cookie-monster', 'old', {
-        expires: 90,
-        path: '/gh/codecov',
-      })
+      expect(Cookie.get(props.cookieName)).toBe('old')
     })
   })
 
@@ -41,15 +33,24 @@ describe('useLegacyRedirects', () => {
         cookieName: 'cookie-monster',
         selectedOldUI: false,
         location: {
-          pathname: '/gh/codecov/123',
+          pathname: 'gh/codecov/123',
         },
       }
-      Cookie.set.mockReturnValue(props.cookieName, 'old')
+      delete global.window.location
+      global.window = Object.create(window)
+      global.window.location = {
+        replace: jest.fn(),
+      }
+      Cookie.set(props.cookieName, 'old')
       setup(props)
     })
 
+    afterEach(() => {
+      delete global.window.location
+    })
+
     it('changes window location', () => {
-      expect(Cookie.get).toBeCalledWith('cookie-monster')
+      expect(window.location.replace).toHaveBeenCalled()
     })
   })
 })
