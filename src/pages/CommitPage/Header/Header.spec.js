@@ -14,7 +14,6 @@ jest.mock('react-router-dom', () => ({
 describe('Header', () => {
   function setup({ provider }) {
     useLocation.mockReturnValue({ pathname: 'gh/codecov/test-repo/commit/123' })
-    useLegacyRedirects.mockReturnValue('cookie set')
     render(<Header provider={provider} />, {
       wrapper: MemoryRouter,
     })
