@@ -23,6 +23,10 @@ describe('useLegacyRedirects', () => {
       setup(props)
     })
 
+    afterAll(() => {
+      jest.resetAllMocks()
+    })
+
     it('sets the cookie with old name, expiration of 90 days and path of pathname', () => {
       expect(Cookie.set).toBeCalledWith('cookie-monster', 'old', {
         expires: 90,
