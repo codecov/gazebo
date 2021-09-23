@@ -1,9 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-
+import { useLegacyRedirects } from 'services/redirects'
+import userEvent from '@testing-library/user-event'
 import Header from './Header'
 
+jest.mock('services/redirects/hooks')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: jest.fn(),
@@ -12,6 +14,7 @@ jest.mock('react-router-dom', () => ({
 describe('Header', () => {
   function setup({ provider }) {
     useLocation.mockReturnValue({ pathname: 'gh/codecov/test-repo/commit/123' })
+    useLegacyRedirects.mockReturnValue('cookie set')
     render(<Header provider={provider} />, {
       wrapper: MemoryRouter,
     })
@@ -42,6 +45,17 @@ describe('Header', () => {
       expect(previousUILink.href).toBe(
         'https://stage-web.codecov.devgh/codecov/test-repo/commit/123'
       )
+    })
+
+    it('Calls the onclick when previous design is chosen', () => {
+      setup({ provider: 'gh' })
+      const switchBackLink = screen.getByRole('link', { name: /switch back/i })
+      userEvent.click(switchBackLink)
+      expect(useLegacyRedirects).toHaveBeenCalledWith({
+        cookieName: 'commit_detail_page',
+        location: { pathname: 'gh/codecov/test-repo/commit/123' },
+        selectedOldUI: true,
+      })
     })
   })
 })
