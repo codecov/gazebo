@@ -109,15 +109,7 @@ function ReposTable({
     owner,
   })
 
-  let _data = data
-
-  if (filterValues?.length > 0) {
-    _data.repos = _data.repos.filter((entry) =>
-      filterValues.includes(entry.name)
-    )
-  }
-
-  const dataTable = transformRepoToTable(_data.repos, owner, searchValue)
+  const dataTable = transformRepoToTable(data.repos, owner, searchValue)
 
   return (
     <>
