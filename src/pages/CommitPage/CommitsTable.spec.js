@@ -24,14 +24,14 @@ describe('CommitsTable', () => {
     beforeEach(() => {
       setup([
         {
-          path: 'src/index2.py',
-          baseTotals: {
+          headName: 'src/index2.py',
+          baseCoverage: {
             coverage: 62.5,
           },
-          compareTotals: {
+          headCoverage: {
             coverage: 50.0,
           },
-          patch: {
+          patchCoverage: {
             coverage: 37.5,
           },
         },
@@ -62,10 +62,10 @@ describe('CommitsTable', () => {
     beforeEach(() => {
       setup([
         {
-          path: '',
-          baseTotals: {},
-          compareTotals: {},
-          patch: {},
+          headName: '',
+          baseCoverage: {},
+          headCoverage: {},
+          patchCoverage: {},
         },
       ])
     })

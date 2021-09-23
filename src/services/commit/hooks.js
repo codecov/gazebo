@@ -41,14 +41,14 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
             compareWithParent {
               state
               impactedFiles {
-                path
-                baseTotals {
+                headName
+                baseCoverage {
                   coverage
                 }
-                compareTotals {
+                headCoverage {
                   coverage
                 }
-                patch {
+                patchCoverage {
                   coverage
                 }
               }
