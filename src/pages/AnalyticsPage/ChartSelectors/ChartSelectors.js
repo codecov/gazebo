@@ -27,6 +27,15 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
     updateParams({ repositories: item })
   }
 
+  const handleClearFilters = () => {
+    updateParams({
+      startDate: '',
+      endDate: '',
+      repositories: [],
+    })
+    setSelectedRepos([])
+  }
+
   return (
     <div className="flex gap-4">
       <div className="flex flex-col gap-3">
@@ -44,6 +53,9 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           customClasses={customClasses}
         />
       </div>
+      <button className="text-ds-blue-darker mt-7" onClick={handleClearFilters}>
+        Clear filters
+      </button>
     </div>
   )
 }

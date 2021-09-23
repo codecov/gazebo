@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import 'react-dates/initialize'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates'
@@ -33,6 +33,11 @@ function Datepicker({ params, updateParams }) {
       })
     }
   }
+
+  useEffect(() => {
+    setStartDate(params?.startDate ? moment(params?.startDate) : null)
+    setEndDate(params?.endDate ? moment(params?.endDate) : null)
+  }, [params])
 
   return (
     <div className="flex flex-row border rounded">

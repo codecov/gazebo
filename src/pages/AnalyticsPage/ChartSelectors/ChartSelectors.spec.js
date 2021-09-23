@@ -61,7 +61,7 @@ describe('AnalyticsPage', () => {
             },
           ],
         },
-        updateParams: () => {},
+        updateParams: jest.fn(),
         owner: 'bob',
         active: true,
         sortItem: {
@@ -79,13 +79,25 @@ describe('AnalyticsPage', () => {
       expect(screen.getByText(/2 Repos selected/)).toBeInTheDocument()
     })
 
-    it('triggers the onChange when clicked', () => {
-      const button = wrapper.getByRole('button')
+    it('triggers the multiselect onChange when clicked', () => {
+      const button = wrapper.getByRole('button', {
+        name: 'Select repos to choose',
+      })
       fireEvent.click(button)
       const allRepos = screen.getAllByRole('option')[0]
       fireEvent.click(allRepos)
       expect(screen.queryByText(/2 Repos selected/)).not.toBeInTheDocument()
       expect(screen.queryByText(/All Repos/)).toBeInTheDocument()
+    })
+
+    it('clears filters when clear filters button is clicked', () => {
+      const button = wrapper.getByRole('button', { name: 'Clear filters' })
+      fireEvent.click(button)
+      expect(props.updateParams).toHaveBeenCalledWith({
+        endDate: '',
+        repositories: [],
+        startDate: '',
+      })
     })
   })
 })

@@ -18,12 +18,12 @@ const tableActive = [
   {
     Header: <span className="w-full text-right">Last Updated</span>,
     accessor: 'lastUpdated',
-    width: 'w-44',
+    width: 'w-2/12',
   },
   {
     Header: <span className="w-full text-sm text-right">Test Coverage</span>,
     accessor: 'coverage',
-    width: 'w-52',
+    width: 'w-3/12',
   },
 ]
 
@@ -105,18 +105,11 @@ function ReposTable({
     active,
     sortItem,
     term: searchValue,
+    repoNames: filterValues,
     owner,
   })
 
-  let _data = data
-
-  if (filterValues?.length > 0) {
-    _data.repos = _data.repos.filter((entry) =>
-      filterValues.includes(entry.name)
-    )
-  }
-
-  const dataTable = transformRepoToTable(_data.repos, owner, searchValue)
+  const dataTable = transformRepoToTable(data.repos, owner, searchValue)
 
   return (
     <>

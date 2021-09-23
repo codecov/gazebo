@@ -11,7 +11,7 @@ const SelectClasses = {
   item: 'block cursor-pointer py-1 px-3 text-sm',
   button:
     'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 outline-none',
-  ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10',
+  ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10 max-h-72 overflow-y-scroll',
 }
 
 const SELECT_ALL_OPTION = '__all__'
