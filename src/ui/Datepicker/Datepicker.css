@@ -5,7 +5,7 @@
 
 /* Selected Date Input Border */
 .DateInput_input__focused {
-  @apply border-ds-blue-darker;
+  @apply border-ds-gray-octonary;
 }
 
 /* Selected Start/End Date Field */
@@ -42,5 +42,25 @@
 
 /* Font Family */
 .DateRangePicker {
-  @apply font-sans;
+  @apply font-sans text-ds-gray-octonary text-base;
+}
+
+/* Input Dates  */
+.DateInput_input,
+.DateInput_input_1,
+.DateInput_input__small,
+.DateInput_input__small_2 {
+  @apply font-sans text-sm font-normal;
+}
+
+/* Weekdays */
+.DayPicker_weekHeader_li,
+.DayPicker_weekHeader_li_1 {
+  @apply font-sans text-ds-gray-octonary text-sm font-normal;
+}
+
+/* Month Captions */
+.CalendarMonth_caption strong,
+.CalendarMonth_caption_1 strong {
+  @apply font-sans text-ds-gray-octonary text-base font-normal;
 }

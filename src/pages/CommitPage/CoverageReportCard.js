@@ -1,9 +1,10 @@
+/* eslint-disable max-statements */
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 import Icon from 'ui/Icon'
 import A from 'ui/A'
-
+import { isNumber } from 'lodash'
 import { providerToName } from 'shared/utils'
 import { getProviderPullURL } from './helpers'
 
@@ -14,6 +15,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
   const ciPassed = data?.ciPassed
   const parentCoverage = data?.parent?.totals?.coverage
   const change = (coverage - parentCoverage).toFixed(2)
+  let patch = data?.compareWithParent?.patchTotals?.coverage
 
   function getCIStatusLabel() {
     return (
@@ -78,7 +80,9 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           <span className="text-ds-gray-quinary text-xs font-semibold">
             Patch
           </span>
-          <span className="text-xl text-center mt-1 font-light">TODO</span>
+          <span className="text-xl text-center mt-1 font-light">
+            {isNumber(patch) ? `${patch * 100} %` : '-'}
+          </span>
         </div>
         <div className="flex flex-col items-center justify-center">
           <span className="text-ds-gray-quinary text-xs font-semibold">
@@ -114,6 +118,11 @@ CoverageReportCard.propTypes = {
   data: PropTypes.shape({
     totals: PropTypes.shape({
       coverage: PropTypes.number,
+    }),
+    compareWithParent: PropTypes.shape({
+      patchTotals: PropTypes.shape({
+        coverage: PropTypes.number,
+      }),
     }),
     commitid: PropTypes.string,
     parent: PropTypes.shape({
