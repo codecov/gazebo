@@ -98,7 +98,6 @@ function Chart({ provider, owner, params }) {
   }
 
   if (chartData.length < 2) {
-    console.log('hee')
     return null
   }
 
