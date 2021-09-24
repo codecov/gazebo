@@ -127,15 +127,15 @@ describe('useNavLinks', () => {
 
     it('Returns the correct link with nothing passed', () => {
       expect(hookData.result.current.analytics.path()).toBe(
-        '/analytics/gl/doggo'
+        `${config.BASE_URL}/analytics/gl/doggo`
       )
     })
     it('can override the params', () => {
       expect(hookData.result.current.analytics.path({ provider: 'bb' })).toBe(
-        '/analytics/bb/doggo'
+        `${config.BASE_URL}/analytics/bb/doggo`
       )
       expect(hookData.result.current.analytics.path({ owner: 'cat' })).toBe(
-        '/analytics/gl/cat'
+        `${config.BASE_URL}/analytics/gl/cat`
       )
     })
   })
