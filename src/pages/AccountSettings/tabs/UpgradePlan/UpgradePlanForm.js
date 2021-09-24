@@ -67,6 +67,7 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const { register, handleSubmit, watch, control, formState } = useForm({
     defaultValues: getInitialDataForm(planOptions, accountDetails),
     resolver: yupResolver(getSchema(accountDetails)),
+    mode: 'onChange',
   })
 
   const seats = watch('seats')
@@ -134,7 +135,7 @@ function UpgradePlanForm({
     control,
     isPerYear,
     planOptions,
-    formState: { isDirty, errors },
+    formState: { isValid, errors },
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
 
   const { upgradePlan } = useSubmit({ owner, provider })
@@ -227,7 +228,7 @@ function UpgradePlanForm({
       )}
       <Button
         data-cy="update"
-        disabled={!isDirty}
+        disabled={!isValid}
         type="submit"
         className="w-full block mt-4"
       >

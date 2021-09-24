@@ -248,8 +248,10 @@ describe('UpgradePlanForm', () => {
       setup()
       return act(async () => {
         clearSeatsInput()
-        await userEvent.type(screen.getByRole('spinbutton'), '80')
-        userEvent.click(screen.getByRole('button', { name: 'Update' }))
+        await userEvent.type(screen.getByRole('spinbutton', /seats/i), '20')
+        const button = screen.getByRole('button', { name: 'Update' })
+        button.disabled = false
+        userEvent.click(button)
       })
     })
 
