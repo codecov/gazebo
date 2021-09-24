@@ -5,7 +5,13 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { useCommit, useCommitYaml } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">
@@ -14,64 +20,78 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-const dataReturned = {
+const commitData = {
+  totals: {
+    coverage: 38.30846,
+    diff: {
+      coverage: null,
+    },
+  },
+  commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+  pullId: 10,
+  createdAt: '2020-08-25T16:35:32',
+  author: {
+    username: 'febg',
+  },
+  uploads: {
+    edges: [
+      {
+        node: {
+          state: 'processed',
+          provider: 'travis',
+          createdAt: '2020-08-25T16:36:19.559474+00:00',
+          updatedAt: '2020-08-25T16:36:19.679868+00:00',
+          flags: [],
+          downloadUrl:
+            '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+          ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+          uploadType: 'uploaded',
+        },
+      },
+      {
+        node: {
+          state: 'processed',
+          provider: 'travis',
+          createdAt: '2020-08-25T16:36:25.820340+00:00',
+          updatedAt: '2020-08-25T16:36:25.859889+00:00',
+          flags: [],
+          downloadUrl:
+            '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
+          ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
+          uploadType: 'uploaded',
+        },
+      },
+    ],
+  },
+  message: 'paths test',
+  ciPassed: true,
+  compareWithParent: {
+    state: 'pending',
+  },
+  parent: {
+    commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
+    totals: {
+      coverage: 38.30846,
+    },
+  },
+}
+
+const compareDoneData = {
   owner: {
     repository: {
       commit: {
-        totals: {
-          coverage: 38.30846,
-          diff: {
-            coverage: null,
-          },
-        },
-        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-        pullId: 10,
-        createdAt: '2020-08-25T16:35:32',
-        author: {
-          username: 'febg',
-        },
-        uploads: {
-          edges: [
-            {
-              node: {
-                state: 'processed',
-                provider: 'travis',
-                createdAt: '2020-08-25T16:36:19.559474+00:00',
-                updatedAt: '2020-08-25T16:36:19.679868+00:00',
-                flags: [],
-                downloadUrl:
-                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
-                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
-                uploadType: 'uploaded',
-              },
-            },
-            {
-              node: {
-                state: 'processed',
-                provider: 'travis',
-                createdAt: '2020-08-25T16:36:25.820340+00:00',
-                updatedAt: '2020-08-25T16:36:25.859889+00:00',
-                flags: [],
-                downloadUrl:
-                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
-                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
-                uploadType: 'uploaded',
-              },
-            },
-          ],
-        },
-        message: 'paths test',
-        ciPassed: true,
         compareWithParent: {
-          state: 'pending',
-        },
-        parent: {
-          commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
-          },
+          state: 'processed',
         },
       },
+    },
+  },
+}
+
+const dataReturned = {
+  owner: {
+    repository: {
+      commit: commitData,
     },
   },
 }
@@ -80,6 +100,7 @@ const server = setupServer()
 
 beforeAll(() => server.listen())
 beforeEach(() => {
+  jest.useRealTimers()
   server.resetHandlers()
   queryClient.clear()
 })
@@ -92,6 +113,9 @@ describe('useCommit', () => {
     server.use(
       graphql.query(`Commit`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
+      }),
+      graphql.query(`CompareTotals`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(compareDoneData))
       })
     )
     hookData = renderHook(
@@ -102,65 +126,83 @@ describe('useCommit', () => {
     )
   }
 
-  describe('when called and user is authenticated', () => {
+  describe('when useCommit is called', () => {
+    const expectedResponse = {
+      commit: {
+        ...commitData,
+        uploads: [
+          commitData.uploads.edges[0].node,
+          commitData.uploads.edges[1].node,
+        ],
+      },
+    }
     beforeEach(() => {
       setup('gh', 'febg', 'repo-test', 'a23sda3')
       return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
     it('returns commit info', () => {
-      const expectedResponse = {
+      expect(hookData.result.current.data).toEqual(expectedResponse)
+    })
+  })
+})
+
+describe('useCommit polling', () => {
+  let hookData
+
+  let nbCallCompare = 0
+
+  function setup(provider, owner, repo, commitid) {
+    nbCallCompare = 0
+    server.use(
+      graphql.query(`Commit`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(dataReturned))
+      }),
+      graphql.query(`CompareTotals`, (req, res, ctx) => {
+        nbCallCompare++
+        // after 10 calls, the server returns that the commit is processed
+        if (nbCallCompare < 10)
+          return res(ctx.status(200), ctx.data(dataReturned))
+        return res(ctx.status(200), ctx.data(compareDoneData))
+      })
+    )
+    hookData = renderHook(
+      () => useCommit({ provider, owner, repo, commitid, refetchInterval: 5 }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('when useCommit is called', () => {
+    const expectedResponse = {
+      commit: {
+        ...commitData,
+        uploads: [
+          commitData.uploads.edges[0].node,
+          commitData.uploads.edges[1].node,
+        ],
+      },
+    }
+    beforeEach(async () => {
+      setup('gh', 'febg', 'repo-test', 'a23sda3')
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      await hookData.waitFor(() => {
+        const { commit } = hookData.result.current.data
+        return commit.compareWithParent.state === 'processed'
+      })
+    })
+
+    it('returns commit data merged with what polling fetched', () => {
+      expect(hookData.result.current.data).toEqual({
+        ...expectedResponse,
         commit: {
-          totals: {
-            coverage: 38.30846,
-            diff: {
-              coverage: null,
-            },
-          },
-          commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-          pullId: 10,
-          createdAt: '2020-08-25T16:35:32',
-          author: {
-            username: 'febg',
-          },
-          uploads: [
-            {
-              state: 'processed',
-              provider: 'travis',
-              createdAt: '2020-08-25T16:36:19.559474+00:00',
-              updatedAt: '2020-08-25T16:36:19.679868+00:00',
-              flags: [],
-              downloadUrl:
-                '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
-              ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
-              uploadType: 'uploaded',
-            },
-            {
-              state: 'processed',
-              provider: 'travis',
-              createdAt: '2020-08-25T16:36:25.820340+00:00',
-              updatedAt: '2020-08-25T16:36:25.859889+00:00',
-              flags: [],
-              downloadUrl:
-                '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
-              ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
-              uploadType: 'uploaded',
-            },
-          ],
-          message: 'paths test',
-          ciPassed: true,
+          ...expectedResponse.commit,
           compareWithParent: {
-            state: 'pending',
-          },
-          parent: {
-            commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-            totals: {
-              coverage: 38.30846,
-            },
+            state: 'processed',
           },
         },
-      }
-      expect(hookData.result.current.data).toEqual(expectedResponse)
+      })
     })
   })
 })
@@ -205,54 +247,6 @@ describe('useCommitYaml', () => {
 
     it('returns commit info', () => {
       expect(hookData.result.current.data).toEqual(yaml)
-    })
-  })
-})
-
-describe('useImpactedFiles', () => {
-  let hookData
-  const provider = 'bb'
-  const owner = 'doggo'
-  const repo = 'test'
-  const commitid = 1234
-
-  function setup() {
-    server.use(
-      graphql.query(`Commit`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
-      })
-    )
-    hookData = renderHook(
-      () => useCommit({ provider, owner, repo, commitid }),
-      {
-        wrapper,
-      }
-    )
-  }
-
-  describe('when the hook is first called', () => {
-    beforeEach(() => {
-      setup()
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
-    })
-
-    it('returns initial totals data', () => {
-      const expectedData = {
-        state: 'pending',
-      }
-      expect(
-        hookData.result.current.data.commit.compareWithParent
-      ).toStrictEqual(expectedData)
-    })
-
-    it('stops polling once the totals are processed', async () => {
-      const expectedData = {
-        state: 'PROCESSED',
-      }
-
-      await hookData.waitForNextUpdate() // second call
-      await hookData.waitForNextUpdate() // third call
-      expect(hookData.result.current.data).toStrictEqual(expectedData)
     })
   })
 })

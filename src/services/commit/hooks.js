@@ -89,7 +89,13 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
   )
 }
 
-export function useCommit({ provider, owner, repo, commitid }) {
+export function useCommit({
+  provider,
+  owner,
+  repo,
+  commitid,
+  refetchInterval = 2000,
+}) {
   const query = `
     query Commit($owner: String!, $repo: String!, $commitid: String!) {
         owner(username: $owner) {
@@ -102,7 +108,7 @@ export function useCommit({ provider, owner, repo, commitid }) {
               pullId
               createdAt
               author {
-                  username
+                username
               }
               uploads {
                   edges {
@@ -171,7 +177,7 @@ export function useCommit({ provider, owner, repo, commitid }) {
     repo,
     commitid,
     opts: {
-      refetchInterval: 2000,
+      refetchInterval,
       enabled: shouldPoll,
       onSuccess: (data) => {
         const impactedFileData = {
