@@ -1,7 +1,29 @@
-import { useState, useEffect } from 'react'
 import Api from 'shared/api'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
+
+const comparisonFragment = `
+  fragment ComparisonFragment on Commit {
+    compareWithParent {
+      state
+      patchTotals {
+        coverage
+      }
+      impactedFiles {
+        patchCoverage {
+          coverage
+        }
+        headName
+        baseCoverage {
+          coverage
+        }
+        headCoverage {
+          coverage
+        }
+      }
+    }
+  }
+`
 
 export function useCommitYaml({ provider, owner, repo, commitid }) {
   const query = `
@@ -38,28 +60,12 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
       owner(username: $owner) {
         repository(name: $repo) {
           commit(id: $commitid) {
-            compareWithParent {
-              state
-              impactedFiles {
-                patch {
-                  coverage
-                }
-                headName
-                baseCoverage {
-                  coverage
-                }
-                headCoverage {
-                  coverage
-                }
-                patchCoverage {
-                  coverage
-                }
-              }
-            }
+            ...ComparisonFragment
           }
         }
       }
     }
+    ${comparisonFragment}
   `
 
   return useQuery(
@@ -81,30 +87,6 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
       ...opts,
     }
   )
-}
-
-export function useImpactedFiles({ provider, owner, repo, commitid, opts }) {
-  const defaultOpts = {
-    pollingMs: 2000,
-  }
-  const { pollingMs } = Object.assign({}, defaultOpts, opts)
-  const [polling, setPolling] = useState(pollingMs)
-  const { data, isLoading, ...all } = useCompareTotals({
-    provider,
-    owner,
-    repo,
-    commitid,
-    opts: { refetchInterval: polling, ...opts },
-  })
-  useEffect(() => {
-    const newPolling =
-      !isLoading && data && data?.state.toUpperCase() !== 'PENDING'
-        ? false
-        : polling
-    setPolling(newPolling)
-  }, [polling, isLoading, data])
-
-  return { data, isLoading, ...all }
 }
 
 export function useCommit({ provider, owner, repo, commitid }) {
@@ -146,13 +128,17 @@ export function useCommit({ provider, owner, repo, commitid }) {
                   coverage # coverage of the parent
                 }
               }
+              ...ComparisonFragment
             }
           }
         }
       }
+      ${comparisonFragment}
     `
 
-  return useQuery(['commit', provider, owner, repo, commitid], () => {
+  const cacheKey = ['commit', provider, owner, repo, commitid]
+
+  const commitQuery = useQuery(cacheKey, () => {
     return Api.graphql({
       provider,
       query,
@@ -173,4 +159,32 @@ export function useCommit({ provider, owner, repo, commitid }) {
       }
     })
   })
+
+  const queryClient = useQueryClient()
+
+  const state = commitQuery?.data?.commit?.compareWithParent?.state
+  const shouldPoll = state === 'pending'
+
+  useCompareTotals({
+    provider,
+    owner,
+    repo,
+    commitid,
+    opts: {
+      refetchInterval: 2000,
+      enabled: shouldPoll,
+      onSuccess: (data) => {
+        const impactedFileData = {
+          ...commitQuery?.data,
+          commit: {
+            ...commitQuery?.data.commit,
+            compareWithParent: data,
+          },
+        }
+        queryClient.setQueryData(cacheKey, impactedFileData)
+      },
+    },
+  })
+
+  return commitQuery
 }

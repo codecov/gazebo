@@ -2,7 +2,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useCommit, useCommitYaml, useImpactedFiles } from './hooks'
+import { useCommit, useCommitYaml } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 const queryClient = new QueryClient()
@@ -62,6 +62,9 @@ const dataReturned = {
         },
         message: 'paths test',
         ciPassed: true,
+        compareWithParent: {
+          state: 'pending',
+        },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
           totals: {
@@ -146,6 +149,9 @@ describe('useCommit', () => {
           ],
           message: 'paths test',
           ciPassed: true,
+          compareWithParent: {
+            state: 'pending',
+          },
           parent: {
             commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
             totals: {
@@ -205,75 +211,38 @@ describe('useCommitYaml', () => {
 
 describe('useImpactedFiles', () => {
   let hookData
-  let count = 0
   const provider = 'bb'
   const owner = 'doggo'
   const repo = 'test'
   const commitid = 1234
 
-  function setup({ firstRes, finalRes, pollingAttempts = 2 }) {
-    count = 0 // count number of times api was called. Can return different stuff
+  function setup() {
     server.use(
-      graphql.query(`CompareTotals`, (req, res, ctx) => {
-        count++
-        if (count === pollingAttempts) {
-          return res(ctx.status(200), ctx.data(finalRes))
-        }
-        return res(ctx.status(200), ctx.data(firstRes))
+      graphql.query(`Commit`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
     hookData = renderHook(
-      () =>
-        useImpactedFiles({
-          provider,
-          owner,
-          repo,
-          commitid,
-          opts: { pollingMs: 5 },
-        }),
-      { wrapper }
+      () => useCommit({ provider, owner, repo, commitid }),
+      {
+        wrapper,
+      }
     )
   }
 
   describe('when the hook is first called', () => {
     beforeEach(() => {
-      const firstRes = {
-        owner: {
-          repository: {
-            commit: {
-              compareWithParent: {
-                state: 'PENDING',
-              },
-            },
-          },
-        },
-      }
-
-      const finalRes = {
-        owner: {
-          repository: {
-            commit: {
-              compareWithParent: {
-                state: 'PROCESSED',
-              },
-            },
-          },
-        },
-      }
-
-      setup({
-        firstRes,
-        finalRes,
-      })
+      setup()
       return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
     it('returns initial totals data', () => {
       const expectedData = {
-        state: 'PENDING',
+        state: 'pending',
       }
-
-      expect(hookData.result.current.data).toStrictEqual(expectedData)
+      expect(
+        hookData.result.current.data.commit.compareWithParent
+      ).toStrictEqual(expectedData)
     })
 
     it('stops polling once the totals are processed', async () => {

@@ -28,8 +28,8 @@ describe('CoverageReportCard', () => {
     },
   }
 
-  function setup(data, patch) {
-    render(<CoverageReportCard patch={patch} provider="gh" data={data} />, {
+  function setup(data) {
+    render(<CoverageReportCard provider="gh" data={data} />, {
       wrapper: MemoryRouter,
     })
   }
@@ -78,11 +78,13 @@ describe('CoverageReportCard', () => {
 
   describe('renders with patch', () => {
     beforeEach(() => {
-      setup(mockData, { coverage: 11.1 })
+      setup({
+        ...mockData,
+        compareWithParent: { patchTotals: { coverage: 0.111 } },
+      })
     })
 
     it('renders PACTH after polling', () => {
-      screen.debug()
       expect(screen.getByText(/Patch/)).toBeInTheDocument()
       expect(screen.getByText(/11.1/)).toBeInTheDocument()
     })
