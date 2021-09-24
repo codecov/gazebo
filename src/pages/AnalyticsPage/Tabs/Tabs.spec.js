@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
 import Tabs from './Tabs'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
@@ -34,7 +35,7 @@ describe('Tabs', () => {
         screen.getByRole('link', {
           name: /analytics/i,
         })
-      ).toHaveAttribute('href', '/analytics/gh/codecov')
+      ).toHaveAttribute('href', `${config.BASE_URL}/analytics/gh/codecov`)
     })
 
     it('renders links to the settings page', () => {
@@ -42,7 +43,7 @@ describe('Tabs', () => {
         screen.getByRole('link', {
           name: /settings/i,
         })
-      ).toHaveAttribute('href', '/account/gh/codecov')
+      ).toHaveAttribute('href', `/account/gh/codecov`)
     })
   })
 })
