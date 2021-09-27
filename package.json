@@ -97,7 +97,7 @@
     "@testing-library/react": "^12.1.0",
     "@testing-library/react-hooks": "^7.0.1",
     "@testing-library/user-event": "^13.2.1",
-    "autoprefixer": "^9.8.6",
+    "autoprefixer": "^9.8.7",
     "eslint-config-prettier": "^8.3.0",
     "faker": "^5.5.3",
     "http-proxy-middleware": "^2.0.1",
