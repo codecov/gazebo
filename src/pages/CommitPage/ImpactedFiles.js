@@ -1,10 +1,19 @@
-import CommitsTable from './CommitsTable'
-import CommitFileView from './CommitFileView'
+import { Suspense } from 'react'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
+import Spinner from 'ui/Spinner'
+
+import CommitsTable from './CommitsTable'
+import CommitFileView from './CommitFileView'
+
 function ImpactedFiles({ data }) {
   const { commit, path } = useParams()
+  const loadingStateFile = (
+    <div className="w-full flex h-44 mt-8 justify-center">
+      <Spinner size={60} />
+    </div>
+  )
 
   return !path ? (
     <>
@@ -16,9 +25,11 @@ function ImpactedFiles({ data }) {
       />
     </>
   ) : (
-    <CommitFileView
-      diff={data?.impactedFiles?.find((file) => file.path === path)}
-    />
+    <Suspense fallback={loadingStateFile}>
+      <CommitFileView
+        diff={data?.impactedFiles?.find((file) => file.path === path)}
+      />
+    </Suspense>
   )
 }
 
