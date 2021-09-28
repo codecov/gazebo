@@ -122,6 +122,7 @@ export function useCommit({
                           downloadUrl
                           ciUrl
                           uploadType
+                          buildCode
                       }
                   }
               }

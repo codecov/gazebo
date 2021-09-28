@@ -21,7 +21,7 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
           >
             <div className="flex justify-between">
               <A href={d?.ciUrl} hook="ci job" isExternal={true}>
-                {d?.jobCode}
+                {d?.buildCode}
               </A>
               <span className="text-xs text-ds-gray-quinary">
                 {d.createdAt
