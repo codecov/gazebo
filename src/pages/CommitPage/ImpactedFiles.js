@@ -27,7 +27,7 @@ function ImpactedFiles({ data }) {
   ) : (
     <Suspense fallback={loadingStateFile}>
       <CommitFileView
-        diff={data?.impactedFiles?.find((file) => file.path === path)}
+        diff={data?.impactedFiles?.find((file) => file.headName === path)}
       />
     </Suspense>
   )
