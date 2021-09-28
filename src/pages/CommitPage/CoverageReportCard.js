@@ -49,7 +49,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
               provider,
               owner,
               repo,
-              pullid: data?.pullId,
+              pullId: data?.pullId,
             })}
             hook="provider url"
             isExternal={true}
