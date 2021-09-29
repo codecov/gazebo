@@ -24,6 +24,9 @@ const account = {
   data: {
     planAutoActivate: true,
     activatedUserCount: 1,
+    plan: {
+      value: 'users-free',
+    },
   },
 }
 
@@ -434,6 +437,9 @@ describe('UserManagerment', () => {
         data: {
           planAutoActivate: true,
           activatedUserCount: 6,
+          plan: {
+            value: 'users-free',
+          },
         },
       }
 
@@ -485,6 +491,93 @@ describe('UserManagerment', () => {
           name: 'Upgrade to Pro',
         })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Activate user with more than 5 activated users and non-free tier', () => {
+    let mutateMock = jest.fn()
+
+    beforeEach(() => {
+      const mockUseUpdateUserValue = {
+        mutate: mutateMock,
+      }
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          totalPages: 1,
+          results: [
+            {
+              ownerid: 10,
+              activated: true,
+              username: 'test',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 11,
+              activated: true,
+              username: 'test-11',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 12,
+              activated: true,
+              username: 'test-12',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 13,
+              activated: true,
+              username: 'test-13',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 14,
+              activated: true,
+              username: 'test-14',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 15,
+              activated: true,
+              username: 'test-15',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 16,
+              activated: false,
+              username: 'test-16',
+              avatarUrl: '',
+            },
+          ],
+        },
+      }
+      const mockUseAccountDetails = {
+        data: {
+          planAutoActivate: true,
+          activatedUserCount: 6,
+          plan: {
+            value: 'users-inappy',
+          },
+        },
+      }
+
+      setup({
+        mockUseUsersValue,
+        mockUseUpdateUserValue,
+        mockUseAccountDetails,
+      })
+    })
+
+    it('Clicking "Activate" still activates a new user', async () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Activate',
+      })
+      user.click(ActivateBtn)
+      await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
+      expect(mutateMock).toHaveBeenLastCalledWith({
+        targetUserOwnerid: 16,
+        activated: true,
+      })
     })
   })
 

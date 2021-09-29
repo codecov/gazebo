@@ -83,8 +83,9 @@ function UserManagement({ provider, owner }) {
 
   const handleActivate = (user) => {
     if (
-      accountDetails.activatedUserCount >= maxActivatedUsers &&
-      !user.activated
+      accountDetails?.activatedUserCount >= maxActivatedUsers &&
+      !user.activated &&
+      accountDetails?.plan?.value === 'users-free'
     ) {
       setIsOpen(true)
     } else {
