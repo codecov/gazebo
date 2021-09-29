@@ -17,7 +17,7 @@ function CommitFileView({ diff }) {
   })
 
   function getChange() {
-    const change = diff?.compareTotals?.coverage - diff?.baseTotals?.coverage
+    const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
     if (isNaN(change)) {
       return 0
     } else {
@@ -51,11 +51,10 @@ function CommitFileView({ diff }) {
 
 CommitFileView.propTypes = {
   diff: PropTypes.shape({
-    path: PropTypes.string,
-    baseTotals: PropTypes.shape({
+    baseCoverage: PropTypes.shape({
       coverage: PropTypes.number,
     }),
-    compareTotals: PropTypes.shape({
+    headCoverage: PropTypes.shape({
       coverage: PropTypes.number,
     }),
   }),

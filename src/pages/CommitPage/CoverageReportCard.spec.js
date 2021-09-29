@@ -44,7 +44,7 @@ describe('CoverageReportCard', () => {
     })
     it('renders PACTH placeholder while polling', () => {
       expect(screen.getByText(/Patch/)).toBeInTheDocument()
-      expect(screen.getByText(/-/)).toBeInTheDocument()
+      expect(screen.queryAllByText(/-/)).toHaveLength(2)
     })
     it('renders the Change', () => {
       expect(screen.getByText('Change')).toBeInTheDocument()
@@ -86,7 +86,7 @@ describe('CoverageReportCard', () => {
 
     it('renders PACTH after polling', () => {
       expect(screen.getByText(/Patch/)).toBeInTheDocument()
-      expect(screen.getByText(/11.1/)).toBeInTheDocument()
+      expect(screen.queryAllByText(/11.10/)).toHaveLength(2)
     })
   })
 })
