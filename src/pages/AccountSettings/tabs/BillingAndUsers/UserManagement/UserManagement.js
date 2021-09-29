@@ -103,10 +103,6 @@ function UserManagement({ provider, owner }) {
               Your org has activated the maximum number of free users. You’ll
               need to upgrade to Pro to add new seats.
             </p>
-            <p>
-              <span className="font-semibold">Need help upgrading? </span>
-              Contact our sales team today!
-            </p>
           </div>
         }
         footer={
