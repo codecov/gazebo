@@ -21,7 +21,10 @@ const users = {
 }
 
 const account = {
-  data: { planAutoActivate: true },
+  data: {
+    planAutoActivate: true,
+    activatedUserCount: 1,
+  },
 }
 
 const updateUserMutate = jest.fn()
@@ -319,7 +322,7 @@ describe('UserManagerment', () => {
     })
   })
 
-  describe('Activate user', () => {
+  describe('Activate user with less than 5 activated users', () => {
     let mutateMock = jest.fn()
 
     beforeEach(() => {
@@ -361,6 +364,127 @@ describe('UserManagerment', () => {
         targetUserOwnerid: 10,
         activated: true,
       })
+    })
+  })
+
+  describe('Activate user with more than 5 activated users', () => {
+    let mutateMock = jest.fn()
+
+    beforeEach(() => {
+      const mockUseUpdateUserValue = {
+        mutate: mutateMock,
+      }
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          totalPages: 1,
+          results: [
+            {
+              ownerid: 10,
+              activated: true,
+              username: 'test',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 11,
+              activated: true,
+              username: 'test-11',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 12,
+              activated: true,
+              username: 'test-12',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 13,
+              activated: true,
+              username: 'test-13',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 14,
+              activated: true,
+              username: 'test-14',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 15,
+              activated: true,
+              username: 'test-15',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 16,
+              activated: true,
+              username: 'test-16',
+              avatarUrl: '',
+            },
+            {
+              ownerid: 17,
+              activated: false,
+              username: 'test-17',
+              avatarUrl: '',
+            },
+          ],
+        },
+      }
+      const mockUseAccountDetails = {
+        data: {
+          planAutoActivate: true,
+          activatedUserCount: 6,
+        },
+      }
+
+      setup({
+        mockUseUsersValue,
+        mockUseUpdateUserValue,
+        mockUseAccountDetails,
+      })
+    })
+
+    it('Clicking "Activate" opens up the modal', async () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Activate',
+      })
+      user.click(ActivateBtn)
+      const modalTitle = screen.getByRole('heading', {
+        name: 'Upgrade to Pro',
+      })
+      expect(modalTitle).toBeInTheDocument()
+    })
+
+    it('Clicking "x" svg will close up the modal', () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Activate',
+      })
+      user.click(ActivateBtn)
+      const xModalButton = screen.getByText('x.svg')
+      expect(xModalButton).toBeInTheDocument()
+      user.click(xModalButton)
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Upgrade to Pro',
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('Clicking "close" button will close up the modal', () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Activate',
+      })
+      user.click(ActivateBtn)
+      const cancelButton = screen.getByRole('button', {
+        name: 'Cancel',
+      })
+      expect(cancelButton).toBeInTheDocument()
+      user.click(cancelButton)
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Upgrade to Pro',
+        })
+      ).not.toBeInTheDocument()
     })
   })
 

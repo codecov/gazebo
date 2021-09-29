@@ -1,4 +1,7 @@
 import PropTypes from 'prop-types'
+import Modal from 'ui/Modal'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { FormControls } from './FormControls'
 import { FormPaginate } from './FormPaginate'
@@ -8,7 +11,11 @@ import Toggle from 'old_ui/Toggle'
 import User from 'old_ui/User'
 import Button from 'old_ui/Button'
 
-import { useLocationParams, ApiFilterEnum } from 'services/navigation'
+import {
+  useLocationParams,
+  ApiFilterEnum,
+  useNavLinks,
+} from 'services/navigation'
 import { useAutoActivate, useAccountDetails } from 'services/account'
 import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
@@ -68,12 +75,60 @@ function UserManagement({ provider, owner }) {
   // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider })
   const { mutate: autoActivate } = useAutoActivate({ owner, provider })
-  const {
-    data: { planAutoActivate },
-  } = useAccountDetails({ owner, provider })
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const { upgradePlan } = useNavLinks()
+  const [isOpen, setIsOpen] = useState(false)
+  const maxActivatedUsers = 5
+
+  const handleActivate = (user) => {
+    if (
+      accountDetails.activatedUserCount >= maxActivatedUsers &&
+      !user.activated
+    ) {
+      setIsOpen(true)
+    } else {
+      activate(user.ownerid, !user.activated)
+    }
+  }
 
   return (
     <article className={UserManagementClasses.root}>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Upgrade to Pro"
+        body={
+          <div className="flex flex-col gap-6">
+            <p>
+              Your org has activated the maximum number of free users. You’ll
+              need to upgrade to Pro to add new seats.
+            </p>
+            <p>
+              <span className="font-semibold">Need help upgrading? </span>
+              Contact our sales team today!
+            </p>
+          </div>
+        }
+        footer={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              color="gray"
+              className="rounded-none"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              Component={Link}
+              to={upgradePlan.path()}
+              useRouter={!upgradePlan.isExternalLink}
+            >
+              Upgrade now
+            </Button>
+          </div>
+        }
+      />
       <FormControls
         current={params}
         onChange={updateParams}
@@ -90,8 +145,8 @@ function UserManagement({ provider, owner }) {
           <span className={UserManagementClasses.activateUsers}>
             <Toggle
               showLabel={true}
-              onClick={() => autoActivate(!planAutoActivate)}
-              value={planAutoActivate}
+              onClick={() => autoActivate(!accountDetails.planAutoActivate)}
+              value={accountDetails.planAutoActivate}
               label="Auto activate users"
               labelClass={UserManagementClasses.activateUsersText}
             />
@@ -117,7 +172,7 @@ function UserManagement({ provider, owner }) {
                     className={UserManagementClasses.cta}
                     color={user.activated ? 'red' : 'blue'}
                     variant={user.activated ? 'outline' : 'normal'}
-                    onClick={() => activate(user.ownerid, !user.activated)}
+                    onClick={() => handleActivate(user)}
                   >
                     {user.activated ? 'Deactivate' : 'Activate'}
                   </Button>
