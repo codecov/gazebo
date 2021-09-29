@@ -1,8 +1,11 @@
 import { Suspense, lazy } from 'react'
 import { useParams, Switch, Route, Redirect } from 'react-router-dom'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import SidebarLayout from 'layouts/SidebarLayout'
+import config from 'config'
 
 import SideMenuAccount from './SideMenuAccount'
 import Header from './shared/Header'
@@ -17,6 +20,8 @@ const YAMLTab = lazy(() => import('./tabs/YAML'))
 const AccessTab = lazy(() => import('./tabs/Access'))
 const NotFound = lazy(() => import('../NotFound'))
 
+const stripePromise = loadStripe(config.STRIPE_KEY)
+
 function AccountSettings() {
   const { provider, owner } = useParams()
 
@@ -27,7 +32,7 @@ function AccountSettings() {
   )
 
   return (
-    <>
+    <Elements stripe={stripePromise}>
       <Header />
       <SidebarLayout sidebar={<SideMenuAccount />}>
         <Suspense fallback={tabLoading}>
@@ -65,7 +70,7 @@ function AccountSettings() {
           </Switch>
         </Suspense>
       </SidebarLayout>
-    </>
+    </Elements>
   )
 }
 

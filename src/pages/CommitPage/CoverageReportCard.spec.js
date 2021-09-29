@@ -42,11 +42,13 @@ describe('CoverageReportCard', () => {
     it('renders the title', () => {
       expect(screen.getByText(/Coverage report/)).toBeInTheDocument()
     })
-    it('renders the PATH', () => {
+    it('renders PACTH placeholder while polling', () => {
       expect(screen.getByText(/Patch/)).toBeInTheDocument()
+      expect(screen.queryAllByText(/-/)).toHaveLength(2)
     })
     it('renders the Change', () => {
       expect(screen.getByText('Change')).toBeInTheDocument()
+      expect(screen.getByText('0.00 %')).toBeInTheDocument()
     })
     it('renders the Head', () => {
       expect(screen.getByText('HEAD')).toBeInTheDocument()
@@ -59,6 +61,9 @@ describe('CoverageReportCard', () => {
     it('renders CI Failed Status', () => {
       expect(screen.getByText('CI Passed')).toBeInTheDocument()
     })
+    it('renders', () => {
+      expect(screen.getByText('CI Passed')).toBeInTheDocument()
+    })
   })
 
   describe('renders with incomplete info', () => {
@@ -68,6 +73,20 @@ describe('CoverageReportCard', () => {
 
     it('renders the title', () => {
       expect(screen.getByText(/Coverage report/)).toBeInTheDocument()
+    })
+  })
+
+  describe('renders with patch', () => {
+    beforeEach(() => {
+      setup({
+        ...mockData,
+        compareWithParent: { patchTotals: { coverage: 0.111 } },
+      })
+    })
+
+    it('renders PACTH after polling', () => {
+      expect(screen.getByText(/Patch/)).toBeInTheDocument()
+      expect(screen.queryAllByText(/11.10/)).toHaveLength(2)
     })
   })
 })

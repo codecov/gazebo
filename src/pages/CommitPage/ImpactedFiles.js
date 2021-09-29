@@ -1,19 +1,19 @@
-import CommitsTable from './CommitsTable'
-import CommitFileView from './CommitFileView'
+import { Suspense } from 'react'
 import PropTypes from 'prop-types'
-import { useImpactedFiles } from 'services/commit'
 import { useParams } from 'react-router-dom'
 
-function ImpactedFiles() {
-  const { provider, owner, repo, commit, path } = useParams()
+import Spinner from 'ui/Spinner'
 
-  const { data } = useImpactedFiles({
-    provider: provider,
-    owner,
-    repo,
-    commitid: commit,
-    opts: { pollingMs: 2000 },
-  })
+import CommitsTable from './CommitsTable'
+import CommitFileView from './CommitFileView'
+
+function ImpactedFiles({ data }) {
+  const { commit, path } = useParams()
+  const loadingStateFile = (
+    <div className="w-full flex h-44 mt-8 justify-center">
+      <Spinner size={60} />
+    </div>
+  )
 
   return !path ? (
     <>
@@ -25,25 +25,30 @@ function ImpactedFiles() {
       />
     </>
   ) : (
-    <CommitFileView
-      diff={data?.impactedFiles?.find((file) => file.path === path)}
-    />
+    <Suspense fallback={loadingStateFile}>
+      <CommitFileView
+        diff={data?.impactedFiles?.find((file) => file.headName === path)}
+      />
+    </Suspense>
   )
 }
 
 ImpactedFiles.propTypes = {
   path: PropTypes.string,
-  impactedFiles: PropTypes.arrayOf(
-    PropTypes.shape({
-      path: PropTypes.string,
-      baseTotals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-      compareTotals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    })
-  ),
+  data: PropTypes.shape({
+    state: PropTypes.string,
+    impactedFiles: PropTypes.arrayOf(
+      PropTypes.shape({
+        path: PropTypes.string,
+        baseTotals: PropTypes.shape({
+          coverage: PropTypes.number,
+        }),
+        compareTotals: PropTypes.shape({
+          coverage: PropTypes.number,
+        }),
+      })
+    ),
+  }),
   commit: PropTypes.string,
 }
 

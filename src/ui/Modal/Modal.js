@@ -25,7 +25,7 @@ function Modal({ isOpen, onClose, body, footer, title, ...rest }) {
           </span>
         </header>
         {body && (
-          <div className="w-full p-4 text-ds-gray-octonary border-t text-sm">
+          <div className="w-full p-4 text-ds-gray-octonary border-t text-sm max-h-96 overflow-y-auto">
             {body}
           </div>
         )}

@@ -82,6 +82,19 @@ describe('useNavLinks', () => {
         `${config.BASE_URL}/login/gl?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov`
       )
     })
+
+    it('forwards the utm tags', () => {
+      setup([
+        '/gh?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e&not=f',
+      ])
+      expect(
+        hookData.result.current.signIn.path({
+          to: 'htts://app.codecov.io/gh/codecov',
+        })
+      ).toBe(
+        `${config.BASE_URL}/login/gh?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov&utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e`
+      )
+    })
   })
 
   describe('owner link', () => {
@@ -127,15 +140,15 @@ describe('useNavLinks', () => {
 
     it('Returns the correct link with nothing passed', () => {
       expect(hookData.result.current.analytics.path()).toBe(
-        '/analytics/gl/doggo'
+        `${config.BASE_URL}/analytics/gl/doggo`
       )
     })
     it('can override the params', () => {
       expect(hookData.result.current.analytics.path({ provider: 'bb' })).toBe(
-        '/analytics/bb/doggo'
+        `${config.BASE_URL}/analytics/bb/doggo`
       )
       expect(hookData.result.current.analytics.path({ owner: 'cat' })).toBe(
-        '/analytics/gl/cat'
+        `${config.BASE_URL}/analytics/gl/cat`
       )
     })
   })
@@ -444,6 +457,23 @@ describe('useNavLinks', () => {
       ).toBe('/gl/doggo/watch/tree/ref/src/view')
     })
   })
+
+  describe('signup forward the marketing link', () => {
+    beforeEach(() => {
+      setup([
+        '/gh?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e&not=f',
+      ])
+    })
+
+    it('returns the correct url', () => {
+      expect(
+        hookData.result.current.signUp.path({ pathname: 'random/path/name' })
+      ).toBe(
+        config.MARKETING_BASE_URL +
+          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+      )
+    })
+  })
 })
 
 describe('useStaticNavLinks', () => {
@@ -481,32 +511,6 @@ describe('useStaticNavLinks', () => {
     it('returns the correct url', () => {
       expect(links.legacyUI.path({ pathname: 'random/path/name' })).toBe(
         config.BASE_URL + 'random/path/name'
-      )
-    })
-  })
-
-  describe('signup forward the marketing link', () => {
-    let signupLink
-    beforeEach(() => {
-      const hookData = renderHook(() => useStaticNavLinks(), {
-        wrapper: (props) => (
-          <MemoryRouter
-            initialEntries={[
-              '/gh?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e&not=f',
-            ]}
-            initialIndex={0}
-          >
-            <Route path="/:provider">{props.children}</Route>
-          </MemoryRouter>
-        ),
-      })
-      signupLink = hookData.result.current.signUp
-    })
-
-    it('returns the correct url', () => {
-      expect(signupLink.path({ pathname: 'random/path/name' })).toBe(
-        config.MARKETING_BASE_URL +
-          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
       )
     })
   })
