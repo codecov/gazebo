@@ -7,7 +7,7 @@ function extractCoverageFromResponse(res) {
   const commit = res?.data?.owner?.repository?.commit
   const branch = res?.data?.owner?.repository?.branch?.head
   const coverageSource = commit || branch
-  const coverageFile = coverageSource.coverageFile
+  const coverageFile = coverageSource?.coverageFile
   if (!coverageFile) return null
   const lineWithCoverage = keyBy(coverageFile.coverage, 'line')
   const fileCoverage = mapValues(lineWithCoverage, 'coverage')

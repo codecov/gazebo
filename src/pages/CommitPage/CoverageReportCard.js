@@ -8,14 +8,33 @@ import { isNumber } from 'lodash'
 import { providerToName } from 'shared/utils'
 import { getProviderPullURL } from './helpers'
 
-function CoverageReportCard({ data, provider, repo, owner }) {
+function extractCommitData(data) {
+  const rawPatch = data?.compareWithParent?.patchTotals?.coverage
+  const patch = isNumber(rawPatch) ? `${(rawPatch * 100).toFixed(2)} %` : '-'
   const coverage = data?.totals?.coverage.toFixed(2)
-  const commitid = data?.commitid?.substr(0, 7)
-  const parentCommitid = data?.parent?.commitid
-  const ciPassed = data?.ciPassed
-  const parentCoverage = data?.parent?.totals?.coverage
-  const change = (coverage - parentCoverage).toFixed(2)
-  let patch = data?.compareWithParent?.patchTotals?.coverage
+  const parentCoverage = data?.parent?.totals?.coverage.toFixed(2)
+
+  return {
+    coverage,
+    parentCoverage,
+    patch,
+    commitid: data?.commitid?.substr(0, 7),
+    parentCommitid: data?.parent?.commitid,
+    ciPassed: data?.ciPassed,
+    change: (coverage - parentCoverage).toFixed(2),
+  }
+}
+
+function CoverageReportCard({ data, provider, repo, owner }) {
+  const {
+    coverage,
+    commitid,
+    parentCommitid,
+    ciPassed,
+    parentCoverage,
+    change,
+    patch,
+  } = extractCommitData(data)
 
   function getCIStatusLabel() {
     return (
@@ -49,7 +68,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
               provider,
               owner,
               repo,
-              pullid: data?.pullId,
+              pullId: data?.pullId,
             })}
             hook="provider url"
             isExternal={true}
@@ -80,9 +99,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           <span className="text-ds-gray-quinary text-xs font-semibold">
             Patch
           </span>
-          <span className="text-xl text-center mt-1 font-light">
-            {isNumber(patch) ? `${patch * 100} %` : '-'}
-          </span>
+          <span className="text-xl text-center mt-1 font-light">{patch}</span>
         </div>
         <div className="flex flex-col items-center justify-center">
           <span className="text-ds-gray-quinary text-xs font-semibold">
@@ -99,7 +116,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
         </div>
       </div>
       <div className="w-full text-ds-gray-quinary text-xs mt-4">
-        The average coverage of changes for this commit is TODO (patch). Data
+        The average coverage of changes for this commit is {patch} (patch). Data
         source from comparing between{' '}
         <A to={{ pageName: 'commit', options: { commit: parentCommitid } }}>
           {parentCommitid?.substr(0, 7)}
