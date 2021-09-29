@@ -1,27 +1,29 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
 import { useLegacyRedirects } from 'services/redirects'
 import userEvent from '@testing-library/user-event'
 import Header from './Header'
 
 jest.mock('services/redirects/hooks')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(),
-}))
 
 describe('Header', () => {
-  function setup({ provider }) {
-    useLocation.mockReturnValue({ pathname: 'gh/codecov/test-repo/commit/123' })
-    render(<Header provider={provider} />, {
-      wrapper: MemoryRouter,
-    })
+  function setup({ provider, owner, commit, repo }) {
+    render(
+      <Header provider={provider} owner={owner} commit={commit} repo={repo} />,
+      {
+        wrapper: MemoryRouter,
+      }
+    )
   }
 
   describe('when provider is gh, bb or gl', () => {
     it('Ask for feedback banner is rendered', () => {
-      setup({ provider: 'gh' })
+      setup({
+        provider: 'gh',
+        owner: 'little-z',
+        repo: 'twist',
+        commit: '123',
+      })
       expect(
         screen.getByText(
           /Also, we would love to hear your feedback! Let us know what you think in/
@@ -30,7 +32,12 @@ describe('Header', () => {
     })
 
     it('Anchors show based on provider', () => {
-      setup({ provider: 'gh' })
+      setup({
+        provider: 'gh',
+        owner: 'little-z',
+        repo: 'twist',
+        commit: '123',
+      })
       const issueLink = screen.getByRole('link', { name: /this issue/i })
       expect(issueLink).toBeInTheDocument()
       expect(issueLink.href).toBe(
@@ -42,17 +49,22 @@ describe('Header', () => {
       })
       expect(previousUILink).toBeInTheDocument()
       expect(previousUILink.href).toBe(
-        'https://stage-web.codecov.devgh/codecov/test-repo/commit/123'
+        'https://stage-web.codecov.dev/gh/little-z/twist/commit/123'
       )
     })
 
     it('Calls the onclick when previous design is chosen', () => {
-      setup({ provider: 'gh' })
+      setup({
+        provider: 'gh',
+        owner: 'little-z',
+        repo: 'twist',
+        commit: '123',
+      })
       const switchBackLink = screen.getByRole('link', { name: /switch back/i })
       userEvent.click(switchBackLink)
       expect(useLegacyRedirects).toHaveBeenCalledWith({
         cookieName: 'commit_detail_page',
-        location: { pathname: 'gh/codecov/test-repo/commit/123' },
+        pathname: '/gh/little-z/twist/commit/123',
         selectedOldUI: true,
       })
     })

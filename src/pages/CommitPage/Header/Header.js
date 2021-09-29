@@ -1,5 +1,4 @@
 import { providerFeedback } from 'shared/utils'
-import { useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { useLegacyRedirects } from 'services/redirects'
 
@@ -8,13 +7,15 @@ import Banner from 'ui/Banner'
 import Icon from 'ui/Icon'
 import A from 'ui/A'
 
-function Header({ provider }) {
-  const location = useLocation()
+function Header({ provider, owner, repo, commit }) {
   const [selectedOldUI, setSelectedOldUI] = useState(false)
+  const pathname =
+    '/' + provider + '/' + owner + '/' + repo + '/commit/' + commit
+
   useLegacyRedirects({
     cookieName: 'commit_detail_page',
     selectedOldUI,
-    location,
+    pathname,
   })
 
   return (
@@ -32,7 +33,7 @@ function Header({ provider }) {
           look. If you prefer, you can{' '}
           <A
             to={{ pageName: 'legacyUI' }}
-            options={{ pathname: location.pathname }}
+            options={{ pathname: pathname }}
             onClick={() => setSelectedOldUI(true)}
           >
             switch back to the previous user interface
@@ -55,6 +56,9 @@ function Header({ provider }) {
 
 Header.propTypes = {
   provider: PropTypes.string.isRequired,
+  owner: PropTypes.string.isRequired,
+  repo: PropTypes.string.isRequired,
+  commit: PropTypes.string.isRequired,
 }
 
 export default Header
