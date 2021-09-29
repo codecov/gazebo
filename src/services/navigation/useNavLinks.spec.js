@@ -502,6 +502,7 @@ describe('useStaticNavLinks', () => {
     ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
     ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
+    ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

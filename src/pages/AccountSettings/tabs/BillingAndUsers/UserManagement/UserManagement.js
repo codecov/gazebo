@@ -10,6 +10,7 @@ import Card from 'old_ui/Card'
 import Toggle from 'old_ui/Toggle'
 import User from 'old_ui/User'
 import Button from 'old_ui/Button'
+import A from 'ui/A'
 
 import {
   useLocationParams,
@@ -102,6 +103,10 @@ function UserManagement({ provider, owner }) {
             <p>
               Your org has activated the maximum number of free users. You’ll
               need to upgrade to Pro to add new seats.
+            </p>
+            <p>
+              <span className="font-semibold">Need help upgrading? </span>
+              <A to={{ pageName: 'sales' }}>Contact</A> our sales team today!
             </p>
           </div>
         }
