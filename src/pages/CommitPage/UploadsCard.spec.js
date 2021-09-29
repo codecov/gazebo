@@ -14,6 +14,7 @@ describe('UploadsCard', () => {
       ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
       uploadType: 'uploaded',
       jobCode: '721065746',
+      buildCode: '721065746',
     },
     {
       state: 'processed',
@@ -26,6 +27,7 @@ describe('UploadsCard', () => {
       ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
       uploadType: 'uploaded',
       jobCode: '721065763',
+      buildCode: '721065763',
     },
     {
       state: 'processed',
@@ -38,6 +40,7 @@ describe('UploadsCard', () => {
       ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/111111',
       uploadType: 'uploaded',
       jobCode: '111111',
+      buildCode: '111111',
     },
   ]
 
