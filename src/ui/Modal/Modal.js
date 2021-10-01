@@ -15,7 +15,7 @@ function Modal({ isOpen, onClose, body, footer, title, ...rest }) {
     >
       <div className="w-1/2 bg-white rounded">
         <header className="flex justify-between items-center p-4">
-          <h2 className="font-semibold">{title}</h2>
+          <h2 className="font-semibold text-base">{title}</h2>
           <span
             className="cursor-pointer fill-current text-ds-gray-septenary"
             onClick={onClose}
