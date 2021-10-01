@@ -14,7 +14,7 @@ function CodeRenderer({
   language = 'html',
 }) {
   return (
-    <table className="border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border">
+    <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border">
       <colgroup>
         <col width="40" />
         <col />
