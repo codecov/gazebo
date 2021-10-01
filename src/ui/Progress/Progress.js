@@ -6,7 +6,7 @@ function Progress({ amount, label }) {
     <>
       <div
         data-testid="org-progress-bar"
-        className="bg-ds-primary-green sm:max-w-xs"
+        className="bg-ds-primary-green h-2.5"
         style={{ width: `${amountInNumber}%` }}
       />
       {label && (
