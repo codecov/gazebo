@@ -61,8 +61,8 @@ function FileViewer({
   const coverageData = useCoverageData({ coverage, totals, selectedFlags })
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap px-3 md:p-0">
+    <>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap px-3 md:p-0 mb-4">
         <span className="text-ds-gray-senary font-semibold text-base">
           {title}
         </span>
@@ -103,16 +103,16 @@ function FileViewer({
       <div>
         <div
           className={`
-            flex flex-col sm:flex-row flex-wrap items-start justify-between gap-2 sm:items-center
+            flex flex-row flex-wrap items-start justify-between gap-2 sm:items-center
             bg-ds-gray-primary
             border-t p-3 border-r border-l border-solid border-ds-gray-tertiary 
           `}
         >
-          <Breadcrumb paths={[...treePaths]} />
-          <div className="flex w-full sm:w-auto gap-2">
-            <div className="w-full sm:w-56">
-              <Progress amount={coverageData.totals} label={true} />
-            </div>
+          <div className="flex-1">
+            <Breadcrumb paths={[...treePaths]} />
+          </div>
+          <div className="sm:flex-1 flex gap-2 justify-end">
+            <Progress amount={coverageData.totals} label />
             {change && (
               <span
                 className={cs('font-semibold text-sm', {
@@ -131,9 +131,10 @@ function FileViewer({
           coverage={coverageData.coverage}
           showPartial={partial}
           code={content}
+          language="python"
         />
       </div>
-    </div>
+    </>
   )
 }
 

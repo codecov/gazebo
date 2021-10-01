@@ -13,7 +13,7 @@ function BaseLayout({ children }) {
   useTracking()
 
   const fullPageLoader = (
-    <div className="h-screen w-screen flex items-center justify-center mt-16">
+    <div className="flex-1 flex items-center justify-center mt-16">
       <LogoSpinner />
     </div>
   )
