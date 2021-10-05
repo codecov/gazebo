@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
@@ -6,19 +7,43 @@ import Modal from 'ui/Modal'
 import FormInformation from './FormInformation'
 import FormEmails from './FormEmails'
 
-function UserOnboardingModal() {
+function usePerStepProp(form) {
   const [step, setStep] = useState(0)
+
+  const typeProjects = form.watch('typeProjects')
+  const goals = form.watch('goals')
+
   const propsPerStep = {
     0: {
-      body: <FormInformation />,
-      footer: <Button onClick={() => setStep(1)}>Next step</Button>,
+      body: <FormInformation form={form} />,
+      footer: (
+        <Button
+          onClick={() => setStep(1)}
+          disabled={goals.length === 0 || typeProjects.length === 0}
+        >
+          Next step
+        </Button>
+      ),
     },
     1: {
       body: <FormEmails />,
       footer: <Button onClick={() => setStep(1)}>Submit</Button>,
     },
   }
-  const stepProps = propsPerStep[step]
+  return propsPerStep[step]
+}
+
+function UserOnboardingModal() {
+  const form = useForm({
+    defaultValues: {
+      email: '',
+      businessEmail: '',
+      typeProjects: [],
+      goals: [],
+      otherGoal: '',
+    },
+  })
+  const stepProps = usePerStepProp(form)
 
   return (
     <Modal
