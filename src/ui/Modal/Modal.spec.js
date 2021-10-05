@@ -1,6 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 import Modal from './Modal'
+import BaseModal from './BaseModal'
 
 describe('Modal', () => {
   let wrapper, props
@@ -84,6 +85,17 @@ describe('Modal', () => {
 
     it('doesnt render close button', () => {
       expect(wrapper.queryByLabelText('Close')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('When rendered BaseModal', () => {
+    beforeEach(() => {
+      render(<BaseModal title="title" body="body" onClose={() => null} />)
+    })
+
+    it('renders it', () => {
+      expect(screen.queryByText(/title/)).toBeInTheDocument()
+      expect(screen.queryByText(/body/)).toBeInTheDocument()
     })
   })
 })
