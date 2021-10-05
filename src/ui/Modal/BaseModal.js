@@ -2,18 +2,27 @@ import PropTypes from 'prop-types'
 
 import Icon from 'ui/Icon'
 
-function BaseModal({ onClose, body, footer, title, subtitle }) {
+function BaseModal({
+  onClose,
+  body,
+  footer,
+  title,
+  subtitle,
+  hasCloseButton = true,
+}) {
   return (
     <div className="bg-white rounded">
       <header className="flex justify-between items-center px-4 pt-4">
         <h2 className="font-semibold text-base">{title}</h2>
-        <span
-          className="cursor-pointer fill-current text-ds-gray-septenary"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          <Icon name="x" />
-        </span>
+        {hasCloseButton && (
+          <span
+            className="cursor-pointer fill-current text-ds-gray-septenary"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <Icon name="x" />
+          </span>
+        )}
       </header>
       {subtitle && <p className="px-4 mt-1 text-sm">{subtitle}</p>}
       {body && (
@@ -31,6 +40,7 @@ function BaseModal({ onClose, body, footer, title, subtitle }) {
 }
 
 BaseModal.propTypes = {
+  hasCloseButton: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string,

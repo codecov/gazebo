@@ -14,30 +14,41 @@ const Template = (args) => {
       <Button hook="open" onClick={() => setIsOpen(true)}>
         Open
       </Button>
-      <Modal
-        {...args}
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title="Test Title"
-        body={
-          <div className="flex flex-col">
-            <span>
-              These are the children of the new ui system Modal. Lorem Ipsum
-              blah bleh bluh
-            </span>
-            <span>Good children</span>
-          </div>
-        }
-      />
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} {...args} />
     </>
   )
 }
 
 export const SimpleModal = Template.bind({})
 
+SimpleModal.args = {
+  title: 'Simple modal',
+  body: 'You can use the body to render any JSX',
+}
+
 export const ModalWithFooter = Template.bind({})
 
+ModalWithFooter.args = {
+  title: 'Modal with a footer',
+  body: 'The footer will appear under a line, good place for buttons',
+  footer: <Button>Footer here</Button>,
+}
+
 export const ModalWithSubtitle = Template.bind({})
+
+ModalWithSubtitle.args = {
+  title: 'Modal with a subtitle',
+  subtitle: 'You can add some extra content under the title with this prop',
+  body: 'And it should render well with a body',
+}
+
+export const ModalWithNoCloseButton = Template.bind({})
+
+ModalWithNoCloseButton.args = {
+  title: 'Modal with no close button',
+  body: "You pass the prop hasCloseButton={false} so the close button doesn't appear next to the title",
+  hasCloseButton: false,
+}
 
 export const BaseModalOnly = () => (
   <div className="bg-gray-900 p-20">
@@ -58,14 +69,6 @@ export const BaseModalOnly = () => (
     </div>
   </div>
 )
-
-ModalWithFooter.args = {
-  footer: <Button>Footer here</Button>,
-}
-
-ModalWithSubtitle.args = {
-  subtitle: 'You can add some extra content under the title with this prop',
-}
 
 export default {
   title: 'Components/Modal',
