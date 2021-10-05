@@ -37,6 +37,8 @@ export const SimpleModal = Template.bind({})
 
 export const ModalWithFooter = Template.bind({})
 
+export const ModalWithSubtitle = Template.bind({})
+
 export const BaseModalOnly = () => (
   <div className="bg-gray-900 p-20">
     <div className="w-1/3">
@@ -59,6 +61,10 @@ export const BaseModalOnly = () => (
 
 ModalWithFooter.args = {
   footer: <Button>Footer here</Button>,
+}
+
+ModalWithSubtitle.args = {
+  subtitle: 'You can add some extra content under the title with this prop',
 }
 
 export default {

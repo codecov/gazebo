@@ -3,7 +3,7 @@ import ReactModal from 'react-modal'
 
 import BaseModal from './BaseModal'
 
-function Modal({ isOpen, onClose, body, footer, title, ...rest }) {
+function Modal({ isOpen, onClose, body, footer, title, subtitle, ...rest }) {
   if (!isOpen) return null
   return (
     <ReactModal
@@ -16,6 +16,7 @@ function Modal({ isOpen, onClose, body, footer, title, ...rest }) {
       <div className="w-1/2">
         <BaseModal
           title={title}
+          subtitle={subtitle}
           body={body}
           footer={footer}
           onClose={onClose}
@@ -29,6 +30,7 @@ Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
   body: PropTypes.oneOfType([
     PropTypes.element.isRequired,
     PropTypes.string.isRequired,
