@@ -83,7 +83,6 @@ function FormInformation({ form }) {
         />
         <TextInput placeholder="Other" {...form.register('otherGoal')} />
       </div>
-      <pre>{JSON.stringify(form.watch(), null, 2)}</pre>
     </div>
   )
 }

@@ -19,15 +19,20 @@ function usePerStepProp(form) {
       footer: (
         <Button
           onClick={() => setStep(1)}
+          variant="primary"
           disabled={goals.length === 0 || typeProjects.length === 0}
         >
-          Next step
+          Next
         </Button>
       ),
     },
     1: {
-      body: <FormEmails />,
-      footer: <Button onClick={() => setStep(1)}>Submit</Button>,
+      body: <FormEmails form={form} />,
+      footer: (
+        <Button variant="primary" onClick={() => setStep(1)}>
+          Submit
+        </Button>
+      ),
     },
   }
   return propsPerStep[step]
