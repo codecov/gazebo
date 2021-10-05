@@ -1,6 +1,8 @@
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
 
+import UserOnboardingModal from './UserOnboardingModal'
+
 function UserOnboarding() {
   const { data: currentUser } = useUser({
     suspense: false,
@@ -13,7 +15,7 @@ function UserOnboarding() {
     return null
   }
 
-  return 'UserOnboarding'
+  return <UserOnboardingModal />
 }
 
 export default UserOnboarding
