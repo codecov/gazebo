@@ -8,6 +8,7 @@ import { useRepos } from 'services/repos/hooks'
 import AppLink from 'shared/AppLink'
 
 import RepoTitleLink from './RepoTitleLink'
+import NoReposBlock from './NoReposBlock'
 
 const tableActive = [
   {
@@ -46,9 +47,7 @@ function transformRepoToTable(repos, owner, searchValue) {
     return [
       {
         title: (
-          <span className="text-sm">
-            {searchValue ? 'no results found' : 'no repos detected'}
-          </span>
+          <span className="text-sm">{searchValue ?? 'no results found'}</span>
         ),
       },
     ]
@@ -114,7 +113,7 @@ function ReposTable({
   return (
     <>
       <Table data={dataTable} columns={active ? tableActive : tableInactive} />
-      {hasNextPage && (
+      {data?.repos?.length ?? hasNextPage ? (
         <div className="w-full mt-4 flex justify-center">
           <Button
             hook="load-more"
@@ -124,6 +123,8 @@ function ReposTable({
             Load More
           </Button>
         </div>
+      ) : (
+        <NoReposBlock />
       )}
     </>
   )
