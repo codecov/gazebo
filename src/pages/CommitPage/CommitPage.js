@@ -48,7 +48,7 @@ function CommitPage() {
         />
       </div>
       <div className="flex flex-col px-3 sm:px-0">
-        <Header provider={provider} />
+        <Header provider={provider} owner={owner} repo={repo} commit={commit} />
         <div className="flex gap-2 flex-col">
           <h1 className="text-lg font-semibold text-ds-gray-octonary">
             {data?.commit?.message}
