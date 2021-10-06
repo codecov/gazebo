@@ -181,10 +181,26 @@ describe('ReposTable', () => {
       )
     })
     it('renders no repos detected', () => {
-      const buttons = screen.getAllByText(/no repos detected/)
+      const buttons = screen.getAllByText(/No repos setup yet/)
       expect(buttons.length).toBe(1)
     })
+
+    it('renders the select the repo link', () => {
+      const link = screen.getByRole('link', { name: 'Select the repo' })
+      expect(link).toBeInTheDocument()
+    })
+
+    it('renders the quick start guide link', () => {
+      const link = screen.getByRole('link', { name: 'quick start guide.' })
+      expect(link).toBeInTheDocument()
+    })
+
+    it('renders the view repos for setup button', () => {
+      const btn = screen.getByRole('link', { name: 'View repos for setup' })
+      expect(btn).toBeInTheDocument()
+    })
   })
+
   describe('when rendered empty search', () => {
     beforeEach(() => {
       setup(
@@ -200,14 +216,25 @@ describe('ReposTable', () => {
       expect(buttons.length).toBe(1)
     })
   })
+
   describe('render next page button', () => {
     beforeEach(() => {
       setup(
         {
           active: true,
-          searchValue: 'something',
         },
-        [],
+        [
+          {
+            private: false,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 1',
+            latestCommitAt: subDays(new Date(), 3),
+            coverage: 43,
+            active: false,
+          },
+        ],
         true
       )
     })
