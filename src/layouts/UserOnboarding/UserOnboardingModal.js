@@ -6,12 +6,11 @@ import Modal from 'ui/Modal'
 
 import FormInformation from './FormInformation'
 import FormEmails from './FormEmails'
+import { getInitialDataForm } from './config'
 
 function usePerStepProp(form) {
   const [step, setStep] = useState(0)
-
-  const typeProjects = form.watch('typeProjects')
-  const goals = form.watch('goals')
+  const { typeProjects, goals } = form.watch()
 
   const propsPerStep = {
     0: {
@@ -45,13 +44,7 @@ function usePerStepProp(form) {
 
 function UserOnboardingModal() {
   const form = useForm({
-    defaultValues: {
-      email: '',
-      businessEmail: '',
-      typeProjects: [],
-      goals: [],
-      otherGoal: '',
-    },
+    defaultValues: getInitialDataForm(),
   })
   const stepProps = usePerStepProp(form)
 

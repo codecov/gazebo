@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 
 import TextInput from 'ui/TextInput'
 
+import { TYPE_PROJECTS } from './config'
+
 function FormEmails({ form }) {
   const { typeProjects } = form.watch()
 
@@ -12,7 +14,7 @@ function FormEmails({ form }) {
         placeholder="example@email.com"
         {...form.register('email')}
       />
-      {typeProjects.includes('YOUR_ORG') && (
+      {typeProjects.includes(TYPE_PROJECTS.YOUR_ORG) && (
         <TextInput
           label="Work email"
           placeholder="example@email.com"

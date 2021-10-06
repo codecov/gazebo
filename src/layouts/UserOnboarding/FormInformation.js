@@ -3,41 +3,43 @@ import PropTypes from 'prop-types'
 import Checkbox from 'ui/Checkbox'
 import TextInput from 'ui/TextInput'
 
-const TYPE_PROJECTS = [
+import { TYPE_PROJECTS, GOALS } from './config'
+
+const TYPE_PROJECTS_CHECKBOXES = [
   {
     label: 'Personal',
-    value: 'PERSONAL',
+    value: TYPE_PROJECTS.PERSONAL,
   },
   {
     label: 'Your organization',
-    value: 'YOUR_ORG',
+    value: TYPE_PROJECTS.YOUR_ORG,
   },
   {
     label: 'Open source',
-    value: 'OPEN_SOURCE',
+    value: TYPE_PROJECTS.OPEN_SOURCE,
   },
   {
     label: 'Educational',
-    value: 'EDUCATIONAL',
+    value: TYPE_PROJECTS.EDUCATIONAL,
   },
 ]
 
-const GOALS = [
+const GOALS_CHECKOXES = [
   {
     label: 'Just starting to write tests',
-    value: 'STARTING_WITH_TESTS',
+    value: GOALS.STARTING_WITH_TESTS,
   },
   {
     label: 'Improving my code coverage',
-    value: 'IMPROVE_COVERAGE',
+    value: GOALS.IMPROVE_COVERAGE,
   },
   {
     label: 'Maintaining my code coverage',
-    value: 'MAINTAIN_COVERAGE',
+    value: GOALS.MAINTAIN_COVERAGE,
   },
   {
     label: 'Team / regulatory requirement',
-    value: 'TEAM_REQUIREMENTS',
+    value: GOALS.TEAM_REQUIREMENTS,
   },
 ]
 
@@ -57,7 +59,7 @@ function FormInformation({ form }) {
   return (
     <div>
       <h3 className="font-semibold">What type of projects brings you here?</h3>
-      {TYPE_PROJECTS.map(({ label, value }) => (
+      {TYPE_PROJECTS_CHECKBOXES.map(({ label, value }) => (
         <Checkbox
           label={label}
           key={value}
@@ -66,7 +68,7 @@ function FormInformation({ form }) {
         />
       ))}
       <h3 className="font-semibold">What is your goal we can help with?</h3>
-      {GOALS.map(({ label, value }) => (
+      {GOALS_CHECKOXES.map(({ label, value }) => (
         <Checkbox
           label={label}
           key={label}
@@ -78,8 +80,8 @@ function FormInformation({ form }) {
         <Checkbox
           label="Other"
           showLabel={false}
-          onChange={updateState('goals', goals, 'OTHER')}
-          checked={goals.includes('OTHER') || otherGoal.length > 0}
+          onChange={updateState('goals', goals, GOALS.OTHER)}
+          checked={goals.includes(GOALS.OTHER) || otherGoal.length > 0}
         />
         <TextInput placeholder="Other" {...form.register('otherGoal')} />
       </div>
