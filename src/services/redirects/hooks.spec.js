@@ -3,27 +3,35 @@ import { useLegacyRedirects } from './hooks'
 import Cookie from 'js-cookie'
 
 describe('useLegacyRedirects', () => {
-  function setup({ cookieName, selectedOldUI, location }) {
+  let getSpy
+  function setup({ cookieName, selectedOldUI, pathname }) {
     renderHook(() =>
-      useLegacyRedirects({ cookieName, selectedOldUI, location })
+      useLegacyRedirects({ cookieName, selectedOldUI, pathname })
     )
   }
 
   describe('when the old UI is selected', () => {
     let props
     beforeEach(() => {
+      getSpy = jest.spyOn(Cookie, 'set')
       props = {
         cookieName: 'cookie-monster',
         selectedOldUI: true,
-        location: {
-          pathname: 'gh/codecov/',
-        },
+        pathname: '/gh/codecov/',
       }
       setup(props)
     })
 
+    afterEach(() => {
+      getSpy.mockRestore()
+    })
+
     it('sets the cookie with old name, expiration of 90 days and path of pathname', () => {
-      expect(Cookie.get(props.cookieName)).toBe('old')
+      expect(getSpy).toHaveBeenCalledWith('cookie-monster', 'old', {
+        domain: '.codecov.io',
+        expires: 90,
+        path: '/gh/codecov/',
+      })
     })
   })
 
@@ -32,9 +40,7 @@ describe('useLegacyRedirects', () => {
       const props = {
         cookieName: 'cookie-monster',
         selectedOldUI: false,
-        location: {
-          pathname: 'gh/codecov/123',
-        },
+        pathname: '/gh/codecov/123',
       }
       delete global.window.location
       global.window = Object.create(window)
