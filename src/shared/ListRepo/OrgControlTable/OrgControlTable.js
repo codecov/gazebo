@@ -56,7 +56,7 @@ function OrgControlTable({
           />
         </div>
       </div>
-      <span className="flex flex-auto gap-4 mt-2 md:gap-0 md:m-0">
+      <span className="flex flex-auto gap-4 mt-2 md:m-0">
         {canRefetch && <ResyncButton />}
         <div className="ml-auto flex items-center">
           <GithubPrivateScopeLogin />
