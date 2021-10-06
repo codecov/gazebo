@@ -218,12 +218,10 @@ describe('ReposTable', () => {
   })
 
   describe('render next page button', () => {
-    //repos hasnextpage and active
     beforeEach(() => {
       setup(
         {
           active: true,
-          hasNextPage: true,
         },
         [
           {
@@ -234,26 +232,6 @@ describe('ReposTable', () => {
             name: 'Repo name 1',
             latestCommitAt: subDays(new Date(), 3),
             coverage: 43,
-            active: false,
-          },
-          {
-            private: true,
-            author: {
-              username: 'owner1',
-            },
-            name: 'Repo name 2',
-            latestCommitAt: subDays(new Date(), 2),
-            coverage: 100,
-            active: false,
-          },
-          {
-            private: true,
-            author: {
-              username: 'owner1',
-            },
-            name: 'Repo name 3',
-            latestCommitAt: subDays(new Date(), 5),
-            coverage: 0,
             active: false,
           },
         ],
