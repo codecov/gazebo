@@ -113,21 +113,19 @@ function ReposTable({
   return (
     <>
       <Table data={dataTable} columns={active ? tableActive : tableInactive} />
-      {data?.repos?.length ? (
-        hasNextPage && (
-          <div className="w-full mt-4 flex justify-center">
-            <Button
-              hook="load-more"
-              isLoading={isFetchingNextPage}
-              onClick={fetchNextPage}
-            >
-              Load More
-            </Button>
-          </div>
-        )
-      ) : (
-        <NoReposBlock />
-      )}
+      {data?.repos?.length
+        ? hasNextPage && (
+            <div className="w-full mt-4 flex justify-center">
+              <Button
+                hook="load-more"
+                isLoading={isFetchingNextPage}
+                onClick={fetchNextPage}
+              >
+                Load More
+              </Button>
+            </div>
+          )
+        : !searchValue && <NoReposBlock />}
     </>
   )
 }
