@@ -21,6 +21,7 @@ function usePerStepProp(form) {
           onClick={() => setStep(1)}
           variant="primary"
           disabled={goals.length === 0 || typeProjects.length === 0}
+          hook="user-onboarding-next-page"
         >
           Next
         </Button>
@@ -29,7 +30,11 @@ function usePerStepProp(form) {
     1: {
       body: <FormEmails form={form} />,
       footer: (
-        <Button variant="primary" onClick={() => setStep(1)}>
+        <Button
+          variant="primary"
+          onClick={() => setStep(1)}
+          hook="user-onboarding-submit"
+        >
           Submit
         </Button>
       ),

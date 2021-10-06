@@ -8,7 +8,7 @@ function UserOnboarding() {
     suspense: false,
   })
   const { userSignupOnboardingQuestions } = useFlags({
-    userSignupOnboardingQuestions: 'test',
+    userSignupOnboardingQuestions: false,
   })
 
   if (!userSignupOnboardingQuestions || currentUser?.onboardingCompleted) {
