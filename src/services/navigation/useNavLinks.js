@@ -295,6 +295,11 @@ function useStaticNavLinks() {
       isExternalLink: true,
       text: 'Legacy User Interface',
     },
+    sales: {
+      path: () => `${config.MARKETING_BASE_URL}/sales`,
+      isExternalLink: true,
+      text: 'Sales Contact',
+    },
   }
 }
 
