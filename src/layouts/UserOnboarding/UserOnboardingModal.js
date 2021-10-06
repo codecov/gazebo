@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import noop from 'lodash/noop'
 
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
@@ -32,7 +33,7 @@ function usePerStepProp(form) {
       footer: (
         <Button
           variant="primary"
-          onClick={() => setStep(1)}
+          onClick={console.log}
           hook="user-onboarding-submit"
         >
           Submit
@@ -53,7 +54,7 @@ function UserOnboardingModal({ currentUser }) {
     <Modal
       isOpen
       hasCloseButton={false}
-      onClose={() => null}
+      onClose={noop}
       title="Welcome to Codecov"
       subtitle="Let us know what best describes you and your workflow and we’ll get started"
       {...stepProps}
