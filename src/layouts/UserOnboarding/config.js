@@ -13,9 +13,9 @@ export const GOALS = Object.freeze({
   OTHER: 'OTHER',
 })
 
-export function getInitialDataForm() {
+export function getInitialDataForm(currentUser) {
   return {
-    email: '',
+    email: currentUser.email,
     businessEmail: '',
     typeProjects: [],
     goals: [],

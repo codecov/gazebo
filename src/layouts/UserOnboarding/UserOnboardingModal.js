@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -42,9 +43,9 @@ function usePerStepProp(form) {
   return propsPerStep[step]
 }
 
-function UserOnboardingModal() {
+function UserOnboardingModal({ currentUser }) {
   const form = useForm({
-    defaultValues: getInitialDataForm(),
+    defaultValues: getInitialDataForm(currentUser),
   })
   const stepProps = usePerStepProp(form)
 
@@ -58,6 +59,12 @@ function UserOnboardingModal() {
       {...stepProps}
     />
   )
+}
+
+UserOnboardingModal.propTypes = {
+  currentUser: PropTypes.shape({
+    email: PropTypes.string,
+  }).isRequired,
 }
 
 export default UserOnboardingModal
