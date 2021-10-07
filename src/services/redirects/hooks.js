@@ -12,6 +12,7 @@ export function useLegacyRedirects({ cookieName, selectedOldUI, pathname }) {
       Cookie.set(cookieName, 'old', {
         expires: 90,
         path: pathname,
+        domain: '.codecov.io',
       })
     }
   }, [cookieName, selectedOldUI, pathname])
