@@ -59,31 +59,35 @@ function FormInformation({ form }) {
   return (
     <div>
       <h3 className="font-semibold">What type of projects brings you here?</h3>
-      {TYPE_PROJECTS_CHECKBOXES.map(({ label, value }) => (
-        <Checkbox
-          label={label}
-          key={value}
-          onChange={updateState('typeProjects', typeProjects, value)}
-          checked={typeProjects.includes(value)}
-        />
-      ))}
+      <div className="space-y-0.5 p-4 pb-6">
+        {TYPE_PROJECTS_CHECKBOXES.map(({ label, value }) => (
+          <Checkbox
+            label={label}
+            key={value}
+            onChange={updateState('typeProjects', typeProjects, value)}
+            checked={typeProjects.includes(value)}
+          />
+        ))}
+      </div>
       <h3 className="font-semibold">What is your goal we can help with?</h3>
-      {GOALS_CHECKOXES.map(({ label, value }) => (
-        <Checkbox
-          label={label}
-          key={label}
-          onChange={updateState('goals', goals, value)}
-          checked={goals.includes(value)}
-        />
-      ))}
-      <div className="flex items-start">
-        <Checkbox
-          label="Other"
-          showLabel={false}
-          onChange={updateState('goals', goals, GOALS.OTHER)}
-          checked={goals.includes(GOALS.OTHER) || otherGoal.length > 0}
-        />
-        <TextInput placeholder="Other" {...form.register('otherGoal')} />
+      <div className="space-y-0.5 p-4 pb-6">
+        {GOALS_CHECKOXES.map(({ label, value }) => (
+          <Checkbox
+            label={label}
+            key={label}
+            onChange={updateState('goals', goals, value)}
+            checked={goals.includes(value)}
+          />
+        ))}
+        <div className="flex items-start">
+          <Checkbox
+            label="Other"
+            showLabel={false}
+            onChange={updateState('goals', goals, GOALS.OTHER)}
+            checked={goals.includes(GOALS.OTHER) || otherGoal.length > 0}
+          />
+          <TextInput placeholder="Other" {...form.register('otherGoal')} />
+        </div>
       </div>
     </div>
   )

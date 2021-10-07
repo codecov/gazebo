@@ -8,7 +8,7 @@ function FormEmails({ form }) {
   const { typeProjects } = form.watch()
 
   return (
-    <div>
+    <div className="space-y-4">
       <TextInput
         label="Personal email"
         placeholder="example@email.com"
@@ -18,7 +18,7 @@ function FormEmails({ form }) {
         <TextInput
           label="Work email"
           placeholder="example@email.com"
-          {...form.register('email')}
+          {...form.register('businessEmail')}
         />
       )}
     </div>
