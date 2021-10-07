@@ -39,7 +39,7 @@ function OrgControlTable({
 
   return (
     <div className="flex items-center h-auto my-4 flex-col md:flex-row">
-      <div className="flex">
+      <div className="flex flex-wrap justify-center sm:flex-nowrap">
         <div className="w-52 mr-2">
           <Select
             value={sortItem}
