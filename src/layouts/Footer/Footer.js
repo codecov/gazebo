@@ -1,6 +1,7 @@
 import { useStaticNavLinks } from 'services/navigation'
 import { FooterItem } from './FooterItem'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import A from 'ui/A'
 
 function Footer() {
   const { terms, privacy, security, gdpr, pricing, support, docs, enterprise } =
@@ -16,7 +17,9 @@ function Footer() {
             <FooterItem key={`footer-left-${i}`} {...data} />
           ))}
         </ul>
-        <CodecovIcon className="text-ds-gray-quinary mr-2 cursor-pointer" />
+        <A to={{ pageName: 'provider' }}>
+          <CodecovIcon className="text-ds-gray-quinary mr-2 cursor-pointer" />
+        </A>
         <ul className="flex-1 flex justify-center lg:justify-end items-center">
           {rightMenu.map((data, i) => (
             <FooterItem key={`footer-right-${i}`} {...data} />
