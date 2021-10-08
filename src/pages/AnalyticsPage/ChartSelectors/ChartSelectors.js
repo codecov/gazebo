@@ -37,7 +37,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
   }
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 flex-wrap justify-center sm:flex-nowrap sm:justify-start">
       <div className="flex flex-col gap-3">
         <span className="font-semibold">Dates</span>
         <Datepicker params={params} updateParams={updateParams} />
