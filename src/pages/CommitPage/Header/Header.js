@@ -9,7 +9,7 @@ import A from 'ui/A'
 
 function Header({ provider, owner, repo, commit }) {
   const [selectedOldUI, setSelectedOldUI] = useState(false)
-  const cookiePath = `/${provider}/${owner}`
+  const cookiePath = `/${provider}/${owner}/`
   const uri = `${cookiePath}${repo}/commit/${commit}`
 
   useLegacyRedirects({
