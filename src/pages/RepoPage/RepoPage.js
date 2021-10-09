@@ -19,14 +19,7 @@ function RepoPage() {
       </div>
       <div className="mt-4 mb-8">
         <TabNavigation
-          tabs={[
-            { pageName: 'overview' },
-            { pageName: 'commits' },
-            { pageName: 'branches' },
-            { pageName: 'pulls' },
-            { pageName: 'compare' },
-            { pageName: 'settings' },
-          ]}
+          tabs={[{ pageName: 'overview' }, { pageName: 'settings' }]}
         />
       </div>
       <Switch>
