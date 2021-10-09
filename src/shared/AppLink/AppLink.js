@@ -14,8 +14,7 @@ function useLinkConfig(pageName) {
   return null
 }
 
-function getComponentToRender(pageConfig, activeClassName, disabled) {
-  if (disabled) return 'span'
+function getComponentToRender(pageConfig, activeClassName) {
   if (pageConfig.isExternalLink) return 'a'
   if (activeClassName) return NavLink
   return Link
@@ -29,11 +28,7 @@ const AppLink = forwardRef(
 
     const path = pageConfig.path(options)
 
-    const Component = getComponentToRender(
-      pageConfig,
-      activeClassName,
-      props.disabled
-    )
+    const Component = getComponentToRender(pageConfig, activeClassName)
     const propsLink = pageConfig.isExternalLink ? { href: path } : { to: path }
     const propsActive =
       Component === NavLink

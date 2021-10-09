@@ -20,7 +20,7 @@ function RepoPage() {
       <div className="mt-4 mb-8">
         <TabNavigation
           tabs={[
-            { pageName: 'overview', options: { disabled: true } },
+            { pageName: 'overview' },
             { pageName: 'commits' },
             { pageName: 'branches' },
             { pageName: 'pulls' },
@@ -28,9 +28,6 @@ function RepoPage() {
             { pageName: 'settings' },
           ]}
         />
-        {/* <A to={{ pageName: 'overview' }}>Overview</A>
-            <A to={{ pageName: 'commits' }}>Commits
-            </A> */}
       </div>
       <Switch>
         <Route exact path={path}>
