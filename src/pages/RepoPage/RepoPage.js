@@ -9,7 +9,7 @@ function RepoPage() {
 
   return (
     <div className="flex flex-col p-0">
-      <div className="text-lg h-24">
+      <div className="text-xl mb-6 font-semibold">
         <Breadcrumb
           paths={[
             { pageName: 'owner', text: owner },
@@ -17,7 +17,7 @@ function RepoPage() {
           ]}
         />
       </div>
-      <div className="mt-4 mb-8">
+      <div className="mt-0 mb-8">
         <TabNavigation
           tabs={[{ pageName: 'overview' }, { pageName: 'settings' }]}
         />

@@ -35,7 +35,6 @@ describe('RepoPage', () => {
     })
 
     it('renders the title with the repo name', () => {
-      screen.debug()
       const repo = screen.getByText(/test/)
       expect(repo).toBeInTheDocument()
     })
