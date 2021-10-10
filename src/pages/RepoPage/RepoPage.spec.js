@@ -40,12 +40,12 @@ describe('RepoPage', () => {
       expect(repo).toBeInTheDocument()
     })
 
-    it('renders with overview tap', () => {
+    it('renders with overview tab', () => {
       const tab = screen.getByText(/Overview/)
       expect(tab).toBeInTheDocument()
     })
 
-    it('renders with settings tap', () => {
+    it('renders with settings tab', () => {
       const tab = screen.getByText(/Settings/)
       expect(tab).toBeInTheDocument()
     })
