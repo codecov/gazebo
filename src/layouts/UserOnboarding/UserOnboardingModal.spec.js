@@ -169,6 +169,28 @@ describe('UserOnboardingModal', () => {
         })
       ).toBeInTheDocument()
     })
+
+    describe('when the user puts a wrong email and submits', () => {
+      beforeEach(() => {
+        userEvent.type(
+          screen.getByRole('textbox', {
+            name: /personal email/i,
+          }),
+          'blablabla'
+        )
+        screen
+          .getByRole('button', {
+            name: /submit/i,
+          })
+          .click()
+        // make sure the form updates properly
+        return act(() => Promise.resolve())
+      })
+
+      it('puts an error message', () => {
+        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
+      })
+    })
   })
 
   describe('when the user picked "Your organization" type of project', () => {
@@ -185,6 +207,28 @@ describe('UserOnboardingModal', () => {
           name: /work email/i,
         })
       ).toBeInTheDocument()
+    })
+
+    describe('when the user puts a wrong email and submits', () => {
+      beforeEach(() => {
+        userEvent.type(
+          screen.getByRole('textbox', {
+            name: /work email/i,
+          }),
+          'blablabla'
+        )
+        screen
+          .getByRole('button', {
+            name: /submit/i,
+          })
+          .click()
+        // make sure the form updates properly
+        return act(() => Promise.resolve())
+      })
+
+      it('puts an error message', () => {
+        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
+      })
     })
   })
 
