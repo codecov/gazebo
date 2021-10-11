@@ -201,7 +201,6 @@ export function useOnboardUser() {
     },
     {
       onSuccess: (user) => {
-        console.log(user)
         queryClient.setQueryData(['currentUser', provider], () => user)
       },
     }

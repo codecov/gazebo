@@ -10,6 +10,7 @@ import {
   useMyContexts,
   useResyncUser,
   useOwner,
+  useOnboardUser,
 } from './hooks'
 
 const user = {
@@ -17,6 +18,7 @@ const user = {
   email: 'terry@terry.com',
   name: 'terry',
   avatarUrl: 'photo',
+  onboardingCompleted: false,
 }
 
 const queryClient = new QueryClient()
@@ -127,6 +129,63 @@ describe('useUpdateProfile', () => {
         expect(queryClient.getQueryData(['currentUser', 'gh'])).toMatchObject({
           ...user,
           ...newData,
+        })
+      })
+    })
+  })
+})
+
+describe('useOnboardUser', () => {
+  let hookData
+
+  function setup() {
+    server.use(
+      graphql.mutation('OnboardUser', (req, res, ctx) => {
+        const newUser = {
+          ...user,
+          onboardingCompleted: true,
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({
+            onboardUser: {
+              me: newUser,
+            },
+          })
+        )
+      })
+    )
+    hookData = renderHook(() => useOnboardUser(), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('is not loading yet', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation', () => {
+      beforeEach(() => {
+        return act(async () => {
+          hookData.result.current.mutate({})
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
+        })
+      })
+
+      it('returns success', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
+      })
+
+      it('updates the local cache', () => {
+        expect(queryClient.getQueryData(['currentUser', 'gh'])).toMatchObject({
+          ...user,
+          onboardingCompleted: true,
         })
       })
     })
