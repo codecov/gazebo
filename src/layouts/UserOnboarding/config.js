@@ -1,3 +1,5 @@
+import * as yup from 'yup'
+
 export const TYPE_PROJECTS = Object.freeze({
   PERSONAL: 'PERSONAL',
   YOUR_ORG: 'YOUR_ORG',
@@ -21,4 +23,23 @@ export function getInitialDataForm(currentUser) {
     goals: [],
     otherGoal: '',
   }
+}
+
+export function shouldGoToEmailStep({ email, typeProjects }) {
+  // no personal email, we need to collect
+  if (email.length === 0) {
+    return true
+  }
+  // if the user picked "YOUR ORG" we can collect business email
+  if (typeProjects.includes(TYPE_PROJECTS.YOUR_ORG)) return true
+
+  // no need to go to email steps, we can
+  return false
+}
+
+export function getSchema() {
+  return yup.object().shape({
+    email: yup.string().email('Not a valid email'),
+    businessEmail: yup.string().email('Not a valid email'),
+  })
 }

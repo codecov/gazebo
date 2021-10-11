@@ -1,14 +1,20 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, act, waitFor } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 
 import UserOnboardingModal from './UserOnboardingModal'
+import { useOnboardUser } from 'services/user'
+
+jest.mock('services/user')
 
 describe('UserOnboardingModal', () => {
-  const currentUser = {
+  const defaultCurrentUser = {
     email: 'user@gmail.com',
   }
+  let mutate
 
-  function setup() {
+  function setup(currentUser = defaultCurrentUser) {
+    mutate = jest.fn()
+    useOnboardUser.mockReturnValue({ isLoading: false, mutate })
     render(<UserOnboardingModal currentUser={currentUser} />)
   }
 
@@ -108,33 +114,67 @@ describe('UserOnboardingModal', () => {
 
     describe('when the user clicks next', () => {
       beforeEach(() => {
+        act(() => {
+          screen
+            .getByRole('button', {
+              name: /next/i,
+            })
+            .click()
+        })
+      })
+
+      it('calls submit with the form information', () => {
+        expect(mutate).toHaveBeenCalledWith({
+          typeProjects: ['EDUCATIONAL'],
+          businessEmail: '',
+          email: defaultCurrentUser.email,
+          goals: ['STARTING_WITH_TESTS'],
+          otherGoal: '',
+        })
+      })
+    })
+  })
+
+  describe('when the user doesnt have an email and fill the form', () => {
+    beforeEach(() => {
+      setup({
+        email: '',
+      })
+      getCheckbox(/educational/i).click()
+      getCheckbox(/just starting to write tests/i).click()
+      act(() => {
         screen
           .getByRole('button', {
             name: /next/i,
           })
           .click()
       })
+      return waitFor(() =>
+        screen.queryByRole('textbox', {
+          name: /email/i,
+        })
+      )
+    })
 
-      it('doesnt render the basic questions anymore', () => {
-        expect(
-          screen.queryByRole('heading', {
-            name: /what type of projects brings you here\?/i,
-          })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByRole('heading', {
-            name: /What is your goal we can help with\?/i,
-          })
-        ).not.toBeInTheDocument()
-      })
+    it('doesnt render the basic questions anymore', () => {
+      expect(
+        screen.queryByRole('heading', {
+          name: /what type of projects brings you here\?/i,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: /What is your goal we can help with\?/i,
+        })
+      ).not.toBeInTheDocument()
+    })
 
-      it('renders an input for the email', () => {
-        expect(
-          screen.getByRole('textbox', {
-            name: /personal email/i,
-          })
-        ).toBeInTheDocument()
-      })
+    it('renders an input for the email', () => {
+      expect(
+        screen.getByRole('textbox', {
+          name: /personal email/i,
+        })
+      ).toBeInTheDocument()
     })
   })
 
@@ -143,11 +183,18 @@ describe('UserOnboardingModal', () => {
       setup()
       getCheckbox(/your organization/i).click()
       getCheckbox(/just starting to write tests/i).click()
-      screen
-        .getByRole('button', {
-          name: /next/i,
+      act(() => {
+        screen
+          .getByRole('button', {
+            name: /next/i,
+          })
+          .click()
+      })
+      return waitFor(() =>
+        screen.queryByRole('textbox', {
+          name: /work email/i,
         })
-        .click()
+      )
     })
 
     it('renders a field to enter business email', () => {
