@@ -8,6 +8,7 @@ import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
 import Footer from '../Footer'
 import Header from '../Header'
 import ToastNotifications from '../ToastNotifications'
+import UserOnboarding from '../UserOnboarding'
 
 function BaseLayout({ children }) {
   useTracking()
@@ -29,6 +30,7 @@ function BaseLayout({ children }) {
         </main>
       </Suspense>
       <Footer />
+      <UserOnboarding />
       <ToastNotifications />
     </>
   )
