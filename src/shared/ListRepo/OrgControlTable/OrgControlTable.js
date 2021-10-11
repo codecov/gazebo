@@ -38,8 +38,8 @@ function OrgControlTable({
   )
 
   return (
-    <div className="flex items-center h-8 my-4">
-      <div className="flex">
+    <div className="flex items-center h-auto my-4 flex-col md:flex-row">
+      <div className="flex flex-wrap justify-center sm:flex-nowrap">
         <div className="w-52 mr-2">
           <Select
             value={sortItem}
@@ -56,17 +56,19 @@ function OrgControlTable({
           />
         </div>
       </div>
-      {canRefetch && <ResyncButton />}
-      <div className="ml-auto flex items-center">
-        <GithubPrivateScopeLogin />
-        <OptionButton
-          active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
-          onChange={(option) =>
-            setActive(option.text === optionButtonOptions[0].text)
-          }
-          options={optionButtonOptions}
-        />
-      </div>
+      <span className="flex flex-auto gap-4 mt-2 md:m-0">
+        {canRefetch && <ResyncButton />}
+        <div className="ml-auto flex items-center">
+          <GithubPrivateScopeLogin />
+          <OptionButton
+            active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
+            onChange={(option) =>
+              setActive(option.text === optionButtonOptions[0].text)
+            }
+            options={optionButtonOptions}
+          />
+        </div>
+      </span>
     </div>
   )
 }
