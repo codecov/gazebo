@@ -68,7 +68,6 @@ AppLink.propTypes = {
   text: PropTypes.string,
   options: PropTypes.object,
   activeClassName: PropTypes.string,
-  disabled: PropTypes.bool,
 }
 
 export default AppLink
