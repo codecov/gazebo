@@ -24,7 +24,7 @@ describe('RepoPage', () => {
     )
   }
 
-  describe('when rendered with a repo and an owner', () => {
+  describe('when rendered', () => {
     beforeEach(() => {
       setup()
     })

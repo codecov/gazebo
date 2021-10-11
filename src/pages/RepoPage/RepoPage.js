@@ -45,19 +45,19 @@ function RepoPage() {
           <h3>Overview</h3>
         </Route>
         <Route path={`${url}/commits`} exact>
-          <h1>Commmits here </h1>
+          <h1>Commmits</h1>
         </Route>
         <Route path={`${url}/branches`} exact>
-          <h1>Branches here</h1>
+          <h1>Branches</h1>
         </Route>
         <Route path={`${url}/pulls`} exact>
-          <h1>Pulls here</h1>
+          <h1>Pulls</h1>
         </Route>
         <Route path={`${url}/compare`} exact>
-          <h1>Compare here</h1>
+          <h1>Compare</h1>
         </Route>
         <Route path={`${url}/settings`} exact>
-          <h1>Settings here</h1>
+          <h1>Settings</h1>
         </Route>
       </Switch>
     </div>

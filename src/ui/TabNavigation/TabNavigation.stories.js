@@ -12,14 +12,6 @@ const Template = (args) => (
         <TabNavigation {...args} />
         Admin page :)
       </Route>
-      <Route path="/:provider/:owner/:repo" exact>
-        <TabNavigation {...args} />
-        Overview
-      </Route>
-      <Route path="/:provider/:owner/:repo/commits">
-        <TabNavigation {...args} />
-        Commits
-      </Route>
     </Switch>
   </MemoryRouter>
 )
@@ -29,16 +21,6 @@ SimpleTabNavigation.args = {
   tabs: [
     { pageName: 'owner', children: 'Repos' },
     { pageName: 'accountAdmin', children: 'Settings' },
-  ],
-}
-
-export const disabledTabNavigation = Template.bind({})
-disabledTabNavigation.args = {
-  tabs: [
-    { pageName: 'owner', children: 'Repos', disabled: true },
-    { pageName: 'accountAdmin', children: 'Settings', disabled: false },
-    { pageName: 'overview', children: 'Overview', disabled: true },
-    { pageName: 'commits', children: 'Commits' },
   ],
 }
 
