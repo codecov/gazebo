@@ -14,7 +14,7 @@ const CommitPage = lazy(() => import('./pages/CommitPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
-const RepoPage = lazy(() => import('./pages/RepoPage'))
+const FullLayout = lazy(() => import('./layouts/FullLayout'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,9 +73,9 @@ function App() {
                 <OwnerPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/">
+            <Route path="/:provider/:owner/:repo/" exact>
               <BaseLayout>
-                <RepoPage />
+                <FullLayout>Repo page</FullLayout>
               </BaseLayout>
             </Route>
             <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>

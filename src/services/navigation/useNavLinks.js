@@ -206,61 +206,6 @@ function useNavLinks() {
       isExternalLink: true,
       text: 'Tree View',
     },
-    overview: {
-      path: (
-        { provider = p, owner = o, repo = r } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: true,
-      text: 'Overview',
-    },
-    branches: {
-      path: (
-        { provider = p, owner = o, repo = r } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}/branches`,
-      isExternalLink: true,
-      text: 'Branches',
-    },
-    pulls: {
-      path: (
-        { provider = p, owner = o, repo = r } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}/pulls`,
-      isExternalLink: true,
-      text: 'Pulls',
-    },
-    compare: {
-      path: (
-        { provider = p, owner = o, repo = r } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}/compare`,
-      isExternalLink: true,
-      text: 'Compare',
-    },
-    settings: {
-      path: (
-        { provider = p, owner = o, repo = r } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}/settings`,
-      isExternalLink: true,
-      text: 'Settings',
-    },
   }
 }
 
