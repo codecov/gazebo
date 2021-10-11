@@ -34,6 +34,9 @@ function usePerStepProp({ currentUser }) {
   const propsPerStep = {
     0: {
       onSubmit,
+      title: 'Welcome to Codecov',
+      subtitle:
+        'Let us know what best describes you and your workflow and we’ll get started',
       body: <FormInformation form={form} />,
       footer: (
         <Button
@@ -50,6 +53,8 @@ function usePerStepProp({ currentUser }) {
       ),
     },
     1: {
+      title: 'Your profile details',
+      subtitle: 'Help us keep you contact information up to date',
       onSubmit,
       body: <FormEmails form={form} currentUser={currentUser} />,
       footer: (
@@ -78,13 +83,7 @@ function UserOnboardingModal({ currentUser }) {
       overlayClassName="fixed top-0 bottom-0 left-0 right-0 bg-ds-gray-octonary z-10"
     >
       <form className="w-1/3" onSubmit={onSubmit}>
-        <BaseModal
-          title="Welcome to Codecov"
-          subtitle="Let us know what best describes you and your workflow and we’ll get started"
-          hasCloseButton={false}
-          onClose={noop}
-          {...stepProps}
-        />
+        <BaseModal hasCloseButton={false} onClose={noop} {...stepProps} />
       </form>
     </ReactModal>
   )

@@ -1,4 +1,4 @@
-import { render, screen, act, waitFor } from 'custom-testing-library'
+import { render, screen, act } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 
 import UserOnboardingModal from './UserOnboardingModal'
@@ -20,6 +20,16 @@ describe('UserOnboardingModal', () => {
 
   function getCheckbox(name) {
     return screen.getByRole('checkbox', { name })
+  }
+
+  function clickNext() {
+    screen
+      .getByRole('button', {
+        name: /next/i,
+      })
+      .click()
+    // make sure the form updates properly
+    return act(() => Promise.resolve())
   }
 
   describe('when rendered', () => {
@@ -114,13 +124,7 @@ describe('UserOnboardingModal', () => {
 
     describe('when the user clicks next', () => {
       beforeEach(() => {
-        act(() => {
-          screen
-            .getByRole('button', {
-              name: /next/i,
-            })
-            .click()
-        })
+        return clickNext()
       })
 
       it('calls submit with the form information', () => {
@@ -142,18 +146,7 @@ describe('UserOnboardingModal', () => {
       })
       getCheckbox(/educational/i).click()
       getCheckbox(/just starting to write tests/i).click()
-      act(() => {
-        screen
-          .getByRole('button', {
-            name: /next/i,
-          })
-          .click()
-      })
-      return waitFor(() =>
-        screen.queryByRole('textbox', {
-          name: /email/i,
-        })
-      )
+      return clickNext()
     })
 
     it('doesnt render the basic questions anymore', () => {
@@ -183,18 +176,7 @@ describe('UserOnboardingModal', () => {
       setup()
       getCheckbox(/your organization/i).click()
       getCheckbox(/just starting to write tests/i).click()
-      act(() => {
-        screen
-          .getByRole('button', {
-            name: /next/i,
-          })
-          .click()
-      })
-      return waitFor(() =>
-        screen.queryByRole('textbox', {
-          name: /work email/i,
-        })
-      )
+      return clickNext()
     })
 
     it('renders a field to enter business email', () => {
