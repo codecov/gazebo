@@ -18,7 +18,7 @@ function RepoPage() {
       keepPreviousData: false,
     },
   })
-  console.log(isLoading ? 'still loading' : data.results[0].private)
+  console.log(isLoading ? 'still loading' : data)
 
   return (
     <div className="flex flex-col">
@@ -29,11 +29,11 @@ function RepoPage() {
             { pageName: 'repo', text: repo },
           ]}
         />
-        {data?.results[0]?.private && (
+        {/* {data?.results[0]?.private && (
           <span className="ml-2 px-1 py-0.5 h-5 mt-1 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary font-light">
             Private
           </span>
-        )}
+        )} */}
       </div>
       <div className="mt-0 mb-8">
         <TabNavigation

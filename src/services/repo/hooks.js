@@ -4,7 +4,7 @@ import Api from 'shared/api'
 import { providerToName } from 'shared/utils'
 
 function getRepoRes({ provider, owner, repo }) {
-  return `/${providerToName(provider).toLowerCase()}/${owner}/repos`
+  return `/${providerToName(provider).toLowerCase()}/${owner}/repos/${repo}`
 }
 
 function fetchRepoDetails({ provider, owner, repo, query }) {
