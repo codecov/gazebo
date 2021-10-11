@@ -73,11 +73,6 @@ function App() {
                 <OwnerPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/">
-              <BaseLayout>
-                <RepoPage />
-              </BaseLayout>
-            </Route>
             <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
               <BaseLayout>
                 <CommitPage />
@@ -96,6 +91,11 @@ function App() {
             <Route path="/:provider/:owner/:repo/blob/:ref/*" exact>
               <BaseLayout>
                 <FileViewPage />
+              </BaseLayout>
+            </Route>
+            <Route path="/:provider/:owner/:repo/">
+              <BaseLayout>
+                <RepoPage />
               </BaseLayout>
             </Route>
             <Route path="/">
