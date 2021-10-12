@@ -4,9 +4,9 @@ import Cookie from 'js-cookie'
 
 describe('useLegacyRedirects', () => {
   let getSpy
-  function setup({ cookieName, selectedOldUI, pathname }) {
+  function setup({ cookieName, selectedOldUI, uri, cookiePath }) {
     renderHook(() =>
-      useLegacyRedirects({ cookieName, selectedOldUI, pathname })
+      useLegacyRedirects({ cookieName, selectedOldUI, uri, cookiePath })
     )
   }
 
@@ -17,7 +17,8 @@ describe('useLegacyRedirects', () => {
       props = {
         cookieName: 'cookie-monster',
         selectedOldUI: true,
-        pathname: '/gh/codecov/',
+        uri: '/gh/codecov/test-repo/commit/123',
+        cookiePath: '/gh/codecov/',
       }
       setup(props)
     })
@@ -40,7 +41,8 @@ describe('useLegacyRedirects', () => {
       const props = {
         cookieName: 'cookie-monster',
         selectedOldUI: false,
-        pathname: '/gh/codecov/123',
+        uri: '/gh/codecov/test-repo/commit/123',
+        cookiePath: '/gh/codecov/',
       }
       delete global.window.location
       global.window = Object.create(window)
