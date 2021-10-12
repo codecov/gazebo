@@ -38,15 +38,5 @@ describe('RepoPage', () => {
       const repo = screen.getByText(/test/)
       expect(repo).toBeInTheDocument()
     })
-
-    it('renders with overview tab', () => {
-      const tab = screen.getByText(/Overview/)
-      expect(tab).toBeInTheDocument()
-    })
-
-    it('renders with settings tab', () => {
-      const tab = screen.getByText(/Settings/)
-      expect(tab).toBeInTheDocument()
-    })
   })
 })
