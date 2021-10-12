@@ -3,6 +3,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 // import TabNavigation from 'ui/TabNavigation'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
+import Overview from './overview/Overview'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -37,26 +38,28 @@ function RepoPage() {
           </span>
         )}
       </div>
-      <Switch>
-        <Route exact path={path}>
-          <h3>Overview1</h3>
-        </Route>
-        <Route path={`${url}/commits`} exact>
-          <h1>Commmits</h1>
-        </Route>
-        <Route path={`${url}/branches`} exact>
-          <h1>Branches</h1>
-        </Route>
-        <Route path={`${url}/pulls`} exact>
-          <h1>Pulls</h1>
-        </Route>
-        <Route path={`${url}/compare`} exact>
-          <h1>Compare</h1>
-        </Route>
-        <Route path={`${url}/settings`} exact>
-          <h1>Settings</h1>
-        </Route>
-      </Switch>
+      <div className="flex justify-center">
+        <Switch>
+          <Route exact path={path}>
+            <Overview />
+          </Route>
+          <Route path={`${url}/commits`} exact>
+            <h1>Commmits</h1>
+          </Route>
+          <Route path={`${url}/branches`} exact>
+            <h1>Branches</h1>
+          </Route>
+          <Route path={`${url}/pulls`} exact>
+            <h1>Pulls</h1>
+          </Route>
+          <Route path={`${url}/compare`} exact>
+            <h1>Compare</h1>
+          </Route>
+          <Route path={`${url}/settings`} exact>
+            <h1>Settings</h1>
+          </Route>
+        </Switch>
+      </div>
     </div>
   )
 }
