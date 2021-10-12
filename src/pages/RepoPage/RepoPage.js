@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
-import TabNavigation from 'ui/TabNavigation'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 
 function RepoPage() {
@@ -15,11 +14,6 @@ function RepoPage() {
             { pageName: 'owner', text: owner },
             { pageName: 'repo', text: repo },
           ]}
-        />
-      </div>
-      <div className="mt-0 mb-8">
-        <TabNavigation
-          tabs={[{ pageName: 'overview' }, { pageName: 'settings' }]}
         />
       </div>
       <Switch>
