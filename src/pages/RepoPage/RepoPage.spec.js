@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { useLocation, Route, MemoryRouter } from 'react-router-dom'
 import RepoPage from '.'
+import { QueryClientProvider, QueryClient } from 'react-query'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -14,11 +15,14 @@ jest.mock('react-router-dom', () => ({
 
 describe('RepoPage', () => {
   function setup() {
+    const queryClient = new QueryClient()
     useLocation.mockReturnValue({ pathname: 'gh/codecov/test' })
     render(
       <MemoryRouter initialEntries={['/gh']}>
         <Route>
-          <RepoPage />
+          <QueryClientProvider client={queryClient}>
+            <RepoPage />
+          </QueryClientProvider>
         </Route>
       </MemoryRouter>
     )
@@ -37,16 +41,6 @@ describe('RepoPage', () => {
     it('renders the title with the repo name', () => {
       const repo = screen.getByText(/test/)
       expect(repo).toBeInTheDocument()
-    })
-
-    it('renders with overview tab', () => {
-      const tab = screen.getByText(/Overview/)
-      expect(tab).toBeInTheDocument()
-    })
-
-    it('renders with settings tab', () => {
-      const tab = screen.getByText(/Settings/)
-      expect(tab).toBeInTheDocument()
     })
   })
 })

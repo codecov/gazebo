@@ -3,12 +3,12 @@ import { useQuery } from 'react-query'
 import Api from 'shared/api'
 import { providerToName } from 'shared/utils'
 
-function getRepoRes({ provider, owner, repo }) {
+function getRepoPath({ provider, owner, repo }) {
   return `/${providerToName(provider).toLowerCase()}/${owner}/repos/${repo}`
 }
 
 function fetchRepoDetails({ provider, owner, repo, query }) {
-  const path = getRepoRes({ provider, owner, repo })
+  const path = getRepoPath({ provider, owner, repo })
   return Api.get({ path, provider, repo, query })
 }
 

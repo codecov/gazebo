@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
-import TabNavigation from 'ui/TabNavigation'
+// import TabNavigation from 'ui/TabNavigation'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 
@@ -18,31 +18,28 @@ function RepoPage() {
       keepPreviousData: false,
     },
   })
-  console.log(isLoading ? 'still loading' : data)
+
+  const { private: privateRepo, uploadToken: token } = data || isLoading
+  console.log(privateRepo, token)
 
   return (
     <div className="flex flex-col">
-      <div className="text-xl mb-6 font-semibold flex flex-row">
+      <div className="text-xl mb-6 font-semibold flex flex-row  pb-8 border-b border-ds-gray-tertiary">
         <Breadcrumb
           paths={[
             { pageName: 'owner', text: owner },
             { pageName: 'repo', text: repo },
           ]}
         />
-        {/* {data?.results[0]?.private && (
+        {privateRepo && (
           <span className="ml-2 px-1 py-0.5 h-5 mt-1 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary font-light">
             Private
           </span>
-        )} */}
-      </div>
-      <div className="mt-0 mb-8">
-        <TabNavigation
-          tabs={[{ pageName: 'overview' }, { pageName: 'settings' }]}
-        />
+        )}
       </div>
       <Switch>
         <Route exact path={path}>
-          <h3>Overview</h3>
+          <h3>Overview1</h3>
         </Route>
         <Route path={`${url}/commits`} exact>
           <h1>Commmits</h1>
