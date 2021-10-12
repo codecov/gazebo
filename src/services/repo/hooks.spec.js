@@ -24,7 +24,7 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-const res = {
+const result = {
   activated: false,
   active: false,
   author: {
@@ -68,12 +68,9 @@ describe('getRepo', () => {
 
   function setup() {
     server.use(
-      rest.get(
-        `/internal/${provider}/${owner}/repos/${repo}/`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(res))
-        }
-      )
+      rest.get(`/internal/:provider/:owner/repos/:repo/`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(result))
+      })
     )
 
     hookData = renderHook(
@@ -99,7 +96,7 @@ describe('getRepo', () => {
       })
 
       it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(res)
+        expect(hookData.result.current.data).toEqual(result)
       })
     })
   })
