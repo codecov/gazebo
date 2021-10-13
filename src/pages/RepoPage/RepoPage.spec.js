@@ -1,23 +1,12 @@
 import { render, screen } from '@testing-library/react'
-import { useLocation, Route, MemoryRouter } from 'react-router-dom'
+import { Route, MemoryRouter } from 'react-router-dom'
 import RepoPage from '.'
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ provider: 'gh', owner: 'codecov', repo: 'test' }),
-  useRouteMatch: () => ({
-    path: '/:provider/:owner/:repo',
-    url: '/gh/codecov/test',
-  }),
-  useLocation: jest.fn(),
-}))
 
 describe('RepoPage', () => {
   function setup() {
-    useLocation.mockReturnValue({ pathname: 'gh/codecov/test' })
     render(
-      <MemoryRouter initialEntries={['/gh']}>
-        <Route>
+      <MemoryRouter initialEntries={['/gh/codecov/test']}>
+        <Route path="/:provider/:owner/:repo">
           <RepoPage />
         </Route>
       </MemoryRouter>
