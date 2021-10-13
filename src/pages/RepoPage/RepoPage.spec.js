@@ -1,30 +1,18 @@
 import { render, screen } from '@testing-library/react'
-import { useLocation, Route, MemoryRouter } from 'react-router-dom'
+import { Route, MemoryRouter } from 'react-router-dom'
 import RepoPage from '.'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { useRepo } from 'services/repo/hooks'
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ provider: 'gh', owner: 'codecov', repo: 'test' }),
-  useRouteMatch: () => ({
-    path: '/:provider/:owner/:repo',
-    url: '/gh/codecov/test',
-  }),
-  useLocation: jest.fn(),
-}))
 
 jest.mock('services/repo/hooks')
 
 describe('RepoPage', () => {
   function setup(repo) {
     useRepo.mockReturnValue({ data: repo })
-
     const queryClient = new QueryClient()
-    useLocation.mockReturnValue({ pathname: 'gh/codecov/test' })
     render(
-      <MemoryRouter initialEntries={['/gh']}>
-        <Route>
+      <MemoryRouter initialEntries={['/gh/codecov/test']}>
+        <Route path="/:provider/:owner/:repo">
           <QueryClientProvider client={queryClient}>
             <RepoPage />
           </QueryClientProvider>
