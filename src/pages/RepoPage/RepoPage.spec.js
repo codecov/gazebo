@@ -16,38 +16,10 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('services/repo/hooks')
 
-// const result = {
-//   activated: false,
-//   active: false,
-//   author: {
-//     avatarUrl: 'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
-//     service: 'github',
-//     username: 'codecov',
-//     name: 'codecov',
-//     stats: {},
-//   },
-//   bot: null,
-//   branch: 'master',
-//   canEdit: true,
-//   canView: true,
-//   fork: null,
-//   hookid: null,
-//   imageToken: 'XQV51VID4C',
-//   language: 'python',
-//   latestCommit: null,
-//   name: 'codecov-circleci-orb',
-//   private: false,
-//   repoid: 17,
-//   serviceId: '157147600',
-//   updatestamp: '2021-10-11T15:56:18.422715Z',
-//   uploadToken: 'token',
-//   usingIntegration: false,
-//   yaml: null,
-// }
-
 describe('RepoPage', () => {
   function setup(repo) {
     useRepo.mockReturnValue({ data: repo })
+
     const queryClient = new QueryClient()
     useLocation.mockReturnValue({ pathname: 'gh/codecov/test' })
     render(
