@@ -355,6 +355,11 @@ function useStaticNavLinks() {
       isExternalLink: true,
       text: 'Sales Contact',
     },
+    uploader: {
+      path: () => 'https://docs.codecov.com/docs/codecov-uploader',
+      isExternalLink: true,
+      text: 'Codecov Uploader',
+    },
   }
 }
 
