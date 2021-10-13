@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
-// import TabNavigation from 'ui/TabNavigation'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import Overview from './overview/Overview'
@@ -20,8 +19,7 @@ function RepoPage() {
     },
   })
 
-  const { private: privateRepo, uploadToken: token } = data || isLoading
-  console.log(privateRepo, token)
+  const { private: privateRepo } = data || isLoading
 
   return (
     <div className="flex flex-col">

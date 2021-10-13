@@ -5,6 +5,7 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import BaseLayout from 'layouts/BaseLayout'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import RepoPage from 'pages/RepoPage/RepoPage'
 // Not lazy loading because the page is very small and is accessed often
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -14,7 +15,6 @@ const CommitPage = lazy(() => import('./pages/CommitPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
-const RepoPage = lazy(() => import('./pages/RepoPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {

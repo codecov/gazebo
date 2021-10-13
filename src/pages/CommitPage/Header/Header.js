@@ -9,13 +9,14 @@ import A from 'ui/A'
 
 function Header({ provider, owner, repo, commit }) {
   const [selectedOldUI, setSelectedOldUI] = useState(false)
-  const pathname =
-    '/' + provider + '/' + owner + '/' + repo + '/commit/' + commit
+  const cookiePath = `/${provider}/${owner}/`
+  const uri = `${cookiePath}${repo}/commit/${commit}`
 
   useLegacyRedirects({
     cookieName: 'commit_detail_page',
     selectedOldUI,
-    pathname,
+    uri,
+    cookiePath,
   })
 
   return (
@@ -33,7 +34,7 @@ function Header({ provider, owner, repo, commit }) {
           look. If you prefer, you can{' '}
           <A
             to={{ pageName: 'legacyUI' }}
-            options={{ pathname: pathname }}
+            options={{ pathname: uri }}
             onClick={() => setSelectedOldUI(true)}
           >
             switch back to the previous user interface

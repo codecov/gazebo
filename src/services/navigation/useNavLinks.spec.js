@@ -334,106 +334,6 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('repo overview link', () => {
-    beforeAll(() => {
-      setup(['/gh/RulaKhaled/test'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.overview.path()).toBe(
-        '/gh/RulaKhaled/test'
-      )
-    })
-    it('can override the params', () => {
-      expect(hookData.result.current.overview.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test'
-      )
-      expect(hookData.result.current.overview.path({ owner: 'cat' })).toBe(
-        '/gh/cat/test'
-      )
-    })
-  })
-
-  describe('repo branches link', () => {
-    beforeAll(() => {
-      setup(['/gh/RulaKhaled/test/branches'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.branches.path()).toBe(
-        '/gh/RulaKhaled/test/branches'
-      )
-    })
-    it('can override the params', () => {
-      expect(hookData.result.current.branches.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/branches'
-      )
-      expect(hookData.result.current.branches.path({ owner: 'cat' })).toBe(
-        '/gh/cat/test/branches'
-      )
-    })
-  })
-
-  describe('repo pulls link', () => {
-    beforeAll(() => {
-      setup(['/gh/RulaKhaled/test/pulls'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.pulls.path()).toBe(
-        '/gh/RulaKhaled/test/pulls'
-      )
-    })
-    it('can override the params', () => {
-      expect(hookData.result.current.pulls.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/pulls'
-      )
-      expect(hookData.result.current.pulls.path({ repo: 'cat' })).toBe(
-        '/gh/RulaKhaled/cat/pulls'
-      )
-    })
-  })
-
-  describe('repo compare link', () => {
-    beforeAll(() => {
-      setup(['/gh/RulaKhaled/test/compare'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.compare.path()).toBe(
-        '/gh/RulaKhaled/test/compare'
-      )
-    })
-    it('can override the params', () => {
-      expect(hookData.result.current.compare.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/compare'
-      )
-      expect(hookData.result.current.compare.path({ repo: 'cat' })).toBe(
-        '/gh/RulaKhaled/cat/compare'
-      )
-    })
-  })
-
-  describe('repo settings link', () => {
-    beforeAll(() => {
-      setup(['/gh/RulaKhaled/test/settings'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.settings.path()).toBe(
-        '/gh/RulaKhaled/test/settings'
-      )
-    })
-    it('can override the params', () => {
-      expect(hookData.result.current.settings.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/settings'
-      )
-      expect(hookData.result.current.settings.path({ repo: 'cat' })).toBe(
-        '/gh/RulaKhaled/cat/settings'
-      )
-    })
-  })
-
   describe('invoiceDetail link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator/42'])
@@ -555,6 +455,106 @@ describe('useNavLinks', () => {
           ref: 'ref',
         })
       ).toBe('/gl/doggo/watch/tree/ref/src/view')
+    })
+  })
+
+  describe('repo overview link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.overview.path()).toBe(
+        '/gh/RulaKhaled/test'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.overview.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test'
+      )
+      expect(hookData.result.current.overview.path({ owner: 'cat' })).toBe(
+        '/gh/cat/test'
+      )
+    })
+  })
+
+  describe('repo branches link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/branches'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.branches.path()).toBe(
+        '/gh/RulaKhaled/test/branches'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.branches.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/branches'
+      )
+      expect(hookData.result.current.branches.path({ owner: 'cat' })).toBe(
+        '/gh/cat/test/branches'
+      )
+    })
+  })
+
+  describe('repo pulls link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/pulls'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.pulls.path()).toBe(
+        '/gh/RulaKhaled/test/pulls'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.pulls.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/pulls'
+      )
+      expect(hookData.result.current.pulls.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/pulls'
+      )
+    })
+  })
+
+  describe('repo compare link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/compare'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.compare.path()).toBe(
+        '/gh/RulaKhaled/test/compare'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.compare.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/compare'
+      )
+      expect(hookData.result.current.compare.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/compare'
+      )
+    })
+  })
+
+  describe('repo settings link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/settings'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.settings.path()).toBe(
+        '/gh/RulaKhaled/test/settings'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.settings.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/settings'
+      )
+      expect(hookData.result.current.settings.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/settings'
+      )
     })
   })
 
