@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
-import Overview from './overview/Overview'
+import Overview from './overview'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -19,7 +19,7 @@ function RepoPage() {
     },
   })
 
-  const { private: privateRepo } = data || isLoading
+  const { private: privateRepo, uploadToken: token } = data || isLoading
 
   return (
     <div className="flex flex-col">
@@ -39,7 +39,7 @@ function RepoPage() {
       <div className="flex justify-center">
         <Switch>
           <Route exact path={path}>
-            <Overview />
+            <Overview token={token} />
           </Route>
           <Route path={`${url}/commits`} exact>
             <h1>Commmits</h1>
