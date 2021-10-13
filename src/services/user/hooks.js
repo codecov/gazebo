@@ -10,6 +10,7 @@ const currentUserFragment = `
 fragment CurrentUserFragment on Me {
   email
   privateAccess
+  onboardingCompleted
   user {
     name
     username
