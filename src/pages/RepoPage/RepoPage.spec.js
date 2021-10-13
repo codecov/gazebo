@@ -1,18 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { useLocation, Route, MemoryRouter } from 'react-router-dom'
+import { Route, MemoryRouter } from 'react-router-dom'
 import RepoPage from '.'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { useRepo } from 'services/repo/hooks'
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ provider: 'gh', owner: 'codecov', repo: 'test' }),
-  useRouteMatch: () => ({
-    path: '/:provider/:owner/:repo',
-    url: '/gh/codecov/test',
-  }),
-  useLocation: jest.fn(),
-}))
 
 jest.mock('services/repo/hooks')
 
@@ -21,10 +11,9 @@ describe('RepoPage', () => {
     useRepo.mockReturnValue({ data: repo })
 
     const queryClient = new QueryClient()
-    useLocation.mockReturnValue({ pathname: 'gh/codecov/test' })
     render(
-      <MemoryRouter initialEntries={['/gh']}>
-        <Route>
+      <MemoryRouter initialEntries={['/gh/codecov/Test']}>
+        <Route path="/:provider/:owner/:repo">
           <QueryClientProvider client={queryClient}>
             <RepoPage />
           </QueryClientProvider>
@@ -46,7 +35,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/test/)
+      const repo = screen.getByText(/Test/)
       expect(repo).toBeInTheDocument()
     })
 
@@ -69,7 +58,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/test/)
+      const repo = screen.getByText(/Test/)
       expect(repo).toBeInTheDocument()
     })
 

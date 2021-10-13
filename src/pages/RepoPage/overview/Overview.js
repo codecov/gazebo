@@ -32,7 +32,7 @@ function Overview({ token }) {
           <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
             {token}
           </span>
-          <CopyClipboard string={token} />{' '}
+          {token && <CopyClipboard string={token} />}
         </div>
       </div>
     </div>
