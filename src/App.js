@@ -5,6 +5,7 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import BaseLayout from 'layouts/BaseLayout'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import RepoPage from 'pages/RepoPage/RepoPage'
 // Not lazy loading because the page is very small and is accessed often
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -14,7 +15,6 @@ const CommitPage = lazy(() => import('./pages/CommitPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
-const FullLayout = lazy(() => import('./layouts/FullLayout'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,11 +73,6 @@ function App() {
                 <OwnerPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/" exact>
-              <BaseLayout>
-                <FullLayout>Repo page</FullLayout>
-              </BaseLayout>
-            </Route>
             <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
               <BaseLayout>
                 <CommitPage />
@@ -96,6 +91,11 @@ function App() {
             <Route path="/:provider/:owner/:repo/blob/:ref/*" exact>
               <BaseLayout>
                 <FileViewPage />
+              </BaseLayout>
+            </Route>
+            <Route path="/:provider/:owner/:repo/">
+              <BaseLayout>
+                <RepoPage />
               </BaseLayout>
             </Route>
             <Route path="/">
