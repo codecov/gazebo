@@ -23,7 +23,7 @@ describe('RepoPage', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ private: false })
+      setup({ repo: { private: false } })
     })
 
     it('renders the title with the owner name', () => {
@@ -45,7 +45,9 @@ describe('RepoPage', () => {
   describe('when rendered with private repo', () => {
     beforeEach(() => {
       setup({
-        private: true,
+        repo: {
+          private: true,
+        },
       })
     })
 
@@ -69,7 +71,9 @@ describe('RepoPage', () => {
     beforeEach(() => {
       setup(
         {
-          private: true,
+          repo: {
+            private: true,
+          },
         },
         true
       )

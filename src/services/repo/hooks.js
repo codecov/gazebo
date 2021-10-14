@@ -5,6 +5,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
   const query = `
     query GetRepo($name: String!, $repo: String!){
       owner(username:$name){
+        isCurrentUserPartOfOrg
         repository(name:$repo){
           private
           uploadToken
@@ -21,9 +22,13 @@ function fetchRepoDetails({ provider, owner, repo }) {
       repo,
     },
   }).then((res) => {
-    const repo = res?.data?.owner?.repository
+    const { repository: repo, isCurrentUserPartOfOrg: isPartOfOrg } =
+      res?.data?.owner
     if (!repo) return null
-    return repo
+    return {
+      repo,
+      isPartOfOrg,
+    }
   })
 }
 

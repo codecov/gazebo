@@ -17,7 +17,7 @@ function RepoPage() {
     return <Spinner />
   }
 
-  const { private: privateRepo } = data
+  const { private: privateRepo } = data.repo
 
   return (
     <div className="flex flex-col">

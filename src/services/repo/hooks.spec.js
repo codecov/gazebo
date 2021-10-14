@@ -24,6 +24,7 @@ afterAll(() => server.close())
 
 const dataReturned = {
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
       private: true,
       uploadToken: 'token',
@@ -52,8 +53,11 @@ describe('getRepo', () => {
 
   describe('when called', () => {
     const expectedResponse = {
-      private: true,
-      uploadToken: 'token',
+      isPartOfOrg: true,
+      repo: {
+        private: true,
+        uploadToken: 'token',
+      },
     }
     beforeEach(() => {
       setup()
