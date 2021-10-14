@@ -1,15 +1,56 @@
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 import PropTypes from 'prop-types'
-import Spinner from 'ui/Spinner'
 
-function Overview({ token }) {
-  if (!token) {
-    return <Spinner />
+function Overview({ data }) {
+  if (!data || !data?.repo?.uploadToken) {
+    return null
   }
 
+  const { uploadToken: token, private: privateRepo } = data?.repo
+  const { isPartOfOrg } = data
+
+  const privateRepoScope = (
+    <div>
+      <div>
+        Copy the below token and set it in your CI environment variables.
+      </div>
+      <div className="flex flex-row justify-center text-xs mt-4">
+        Codecov Token={' '}
+        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
+          {token}
+        </span>
+        <CopyClipboard string={token} />
+      </div>
+    </div>
+  )
+
+  const PublicRepoScope = isPartOfOrg ? (
+    <div>
+      <div>
+        If the public project is on TravisCI, CircleCI, AppVeyor, Azure
+        Pipelines, or GitHub Actions an upload token is not required. Otherwise,
+        you’ll need to set the token below and set it in your CI environment
+        variables.
+      </div>
+      <div className="flex flex-row justify-center text-xs mt-4">
+        Codecov Token={' '}
+        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
+          {token}
+        </span>
+        <CopyClipboard string={token} />
+      </div>
+    </div>
+  ) : (
+    <div>
+      If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or
+      GitHub Actions an upload token is not required. Otherwise, you’ll need a
+      token to from the authorized member or admin.
+    </div>
+  )
+
   return (
-    <div className="flex w-2/5 flex-col">
+    <div className="flex w-3/5 flex-col">
       <div className="font-semibold text-3xl my-4">
         Let&apos;s get your repo covered
       </div>
@@ -26,19 +67,7 @@ function Overview({ token }) {
           supported format (often an .xml format).
         </div>
         <div className="font-semibold mt-8">Step 2</div>
-        <div>
-          If you are uploading reports for a private repository, copy the below
-          token and set it in your CI environment variables. You don’t need a
-          token if the project is public and the CI you use is one that supports
-          tokenless uploads.
-        </div>
-        <div className="flex flex-row justify-center text-xs mt-4">
-          Codecov Token={' '}
-          <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
-            {token}
-          </span>
-          {token && <CopyClipboard string={token} />}
-        </div>
+        <div>{privateRepo ? privateRepoScope : PublicRepoScope}</div>
         <div className="font-semibold mt-4">Step 3</div>
         <div>
           Download the <A to={{ pageName: 'uploader' }}>uploader </A> and share
@@ -58,7 +87,7 @@ function Overview({ token }) {
 }
 
 Overview.propTypes = {
-  token: PropTypes.string,
+  data: PropTypes.object,
 }
 
 export default Overview

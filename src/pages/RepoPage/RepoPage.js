@@ -18,7 +18,7 @@ function RepoPage() {
     return <Spinner />
   }
 
-  const { private: privateRepo, uploadToken: token } = data.repo
+  const { private: privateRepo } = data.repo
 
   return (
     <div className="flex flex-col">
@@ -38,7 +38,7 @@ function RepoPage() {
       <div className="flex justify-center">
         <Switch>
           <Route exact path={path}>
-            <Overview token={token} />
+            <Overview data={data} />
           </Route>
           <Route path={`${url}/commits`} exact>
             <h1>Commmits</h1>
