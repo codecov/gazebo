@@ -7,8 +7,8 @@ import { useRepo } from 'services/repo/hooks'
 jest.mock('services/repo/hooks')
 
 describe('RepoPage', () => {
-  function setup(repo) {
-    useRepo.mockReturnValue({ data: repo })
+  function setup(repo, isLoading = false) {
+    useRepo.mockReturnValue({ data: repo, isLoading })
     const queryClient = new QueryClient()
     render(
       <MemoryRouter initialEntries={['/gh/codecov/test']}>
@@ -23,9 +23,7 @@ describe('RepoPage', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({
-        private: false,
-      })
+      setup({ private: false })
     })
 
     it('renders the title with the owner name', () => {
@@ -64,6 +62,26 @@ describe('RepoPage', () => {
     it('renders the block private', () => {
       const owner = screen.getByText(/Private/)
       expect(owner).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with is loading set to true', () => {
+    beforeEach(() => {
+      setup(
+        {
+          private: true,
+        },
+        true
+      )
+    })
+
+    it('renders the spinner', () => {
+      expect(screen.getByTestId('spinner')).toBeInTheDocument()
+    })
+
+    it('does not render the repo name', () => {
+      const repo = screen.queryByText(/test/)
+      expect(repo).not.toBeInTheDocument()
     })
   })
 })
