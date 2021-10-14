@@ -60,8 +60,8 @@ describe('RepoPage', () => {
     })
 
     it('renders the block private', () => {
-      const owner = screen.getByText(/Private/)
-      expect(owner).toBeInTheDocument()
+      const privateSpan = screen.getByText(/Private/)
+      expect(privateSpan).toBeInTheDocument()
     })
   })
 
