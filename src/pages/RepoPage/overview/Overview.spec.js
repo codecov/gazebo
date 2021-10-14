@@ -30,11 +30,6 @@ describe('Overview Page', () => {
       expect(step).toBeInTheDocument()
     })
 
-    it('renders Step3', () => {
-      const step = screen.getByText(/Step 3/)
-      expect(step).toBeInTheDocument()
-    })
-
     it('renders the passed token', () => {
       const token = screen.getByText(/randomToken/)
       expect(token).toBeInTheDocument()
@@ -61,11 +56,6 @@ describe('Overview Page', () => {
       expect(step).toBeInTheDocument()
     })
 
-    it('renders Step3', () => {
-      const step = screen.getByText(/Step 3/)
-      expect(step).toBeInTheDocument()
-    })
-
     it('renders the passed token', () => {
       const token = screen.getByText(/randomToken/)
       expect(token).toBeInTheDocument()
@@ -89,11 +79,6 @@ describe('Overview Page', () => {
 
     it('renders Step2', () => {
       const step = screen.getByText(/Step 2/)
-      expect(step).toBeInTheDocument()
-    })
-
-    it('renders Step3', () => {
-      const step = screen.getByText(/Step 3/)
       expect(step).toBeInTheDocument()
     })
 

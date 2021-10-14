@@ -12,10 +12,10 @@ function Overview({ data }) {
 
   const privateRepoScope = (
     <div>
-      <div>
+      <div className="text-base">
         Copy the below token and set it in your CI environment variables.
       </div>
-      <div className="flex flex-row justify-center text-xs mt-4">
+      <div className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
         <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
           {token}
@@ -27,13 +27,13 @@ function Overview({ data }) {
 
   const PublicRepoScope = isPartOfOrg ? (
     <div>
-      <div>
+      <div className="text-base">
         If the public project is on TravisCI, CircleCI, AppVeyor, Azure
         Pipelines, or GitHub Actions an upload token is not required. Otherwise,
         you’ll need to set the token below and set it in your CI environment
         variables.
       </div>
-      <div className="flex flex-row justify-center text-xs mt-4">
+      <div className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
         <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
           {token}
@@ -42,7 +42,7 @@ function Overview({ data }) {
       </div>
     </div>
   ) : (
-    <div>
+    <div className="text-base">
       If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or
       GitHub Actions an upload token is not required. Otherwise, you’ll need a
       token to from the authorized member or admin.
@@ -50,11 +50,11 @@ function Overview({ data }) {
   )
 
   return (
-    <div className="flex w-3/5 flex-col">
+    <div className="flex w-4/5 md:w-3/5 lg:w-2/5 flex-col">
       <div className="font-semibold text-3xl my-4">
         Let&apos;s get your repo covered
       </div>
-      <div className="border-b border-ds-gray-tertiary pb-8">
+      <div className="border-b border-ds-gray-tertiary pb-8 text-base">
         Codecov requires an upload in your test suite to get started. Using the{' '}
         <A to={{ pageName: 'uploader' }}>Codecov Uploader</A> and the repository
         upload token, upload your coverage reports to Codecov. See our{' '}
@@ -62,25 +62,12 @@ function Overview({ data }) {
       </div>
       <div>
         <div className="font-semibold mt-8">Step 1</div>
-        <div>
+        <div className="text-base">
           Run your normal test suite to generate code coverage reports in a
           supported format (often an .xml format).
         </div>
         <div className="font-semibold mt-8">Step 2</div>
         <div>{privateRepo ? privateRepoScope : PublicRepoScope}</div>
-        <div className="font-semibold mt-4">Step 3</div>
-        <div>
-          Download the <A to={{ pageName: 'uploader' }}>uploader </A> and share
-          your coverage reports with Codecov, by adding the the following
-          commands to your CI pipeline:
-        </div>
-        <div>
-          It is highly recommended to{' '}
-          <A to={{ pageName: 'integrityCheck' }}>
-            integrity check the uploader{' '}
-          </A>{' '}
-          .
-        </div>
       </div>
     </div>
   )
