@@ -9,7 +9,7 @@ function Overview({ token }) {
   }
 
   return (
-    <div className="flex w-3/5 flex-col">
+    <div className="flex w-2/5 flex-col">
       <div className="font-semibold text-3xl my-4">
         Let&apos;s get your repo covered
       </div>
