@@ -15,7 +15,7 @@ describe('Overview Page', () => {
     )
   }
 
-  describe('when rendered', () => {
+  describe('when rendered with token', () => {
     beforeEach(() => {
       setup('randomToken')
     })
@@ -30,9 +30,29 @@ describe('Overview Page', () => {
       expect(step).toBeInTheDocument()
     })
 
+    it('renders Step3', () => {
+      const step = screen.getByText(/Step 3/)
+      expect(step).toBeInTheDocument()
+    })
+
     it('renders the passed token', () => {
       const token = screen.getByText(/randomToken/)
       expect(token).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with no token', () => {
+    beforeEach(() => {
+      setup(undefined)
+    })
+
+    it('renders Step1', () => {
+      const step = screen.queryByText(/Step 1/)
+      expect(step).not.toBeInTheDocument()
+    })
+
+    it('renders spinner', () => {
+      expect(screen.getByTestId('spinner')).toBeInTheDocument()
     })
   })
 })

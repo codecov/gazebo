@@ -1,8 +1,13 @@
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 import PropTypes from 'prop-types'
+import Spinner from 'ui/Spinner'
 
 function Overview({ token }) {
+  if (!token) {
+    return <Spinner />
+  }
+
   return (
     <div className="flex w-3/5 flex-col">
       <div className="font-semibold text-3xl my-4">
@@ -33,6 +38,19 @@ function Overview({ token }) {
             {token}
           </span>
           {token && <CopyClipboard string={token} />}
+        </div>
+        <div className="font-semibold mt-6">Step 3</div>
+        <div>
+          Download the <A to={{ pageName: 'uploader' }}>uploader </A> and share
+          your coverage reports with Codecov, by adding the the following
+          commands to your CI pipeline:
+        </div>
+        <div>
+          It is highly recommended to{' '}
+          <A to={{ pageName: 'integrityCheck' }}>
+            integrity check the uploader{' '}
+          </A>{' '}
+          .
         </div>
       </div>
     </div>

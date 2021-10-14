@@ -360,6 +360,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       text: 'Codecov Uploader',
     },
+    integrityCheck: {
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader',
+      isExternalLink: true,
+      text: 'Uploader Integrity Check',
+    },
   }
 }
 

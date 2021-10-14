@@ -604,6 +604,7 @@ describe('useStaticNavLinks', () => {
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}
     ${links.uploader}          | ${'https://docs.codecov.com/docs/codecov-uploader'}
+    ${links.integrityCheck}    | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)
