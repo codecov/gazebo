@@ -12,6 +12,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'))
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
+const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
@@ -71,6 +72,11 @@ function App() {
             <Route path="/:provider/:owner/+" exact>
               <BaseLayout>
                 <OwnerPage />
+              </BaseLayout>
+            </Route>
+            <Route path="/:provider/:owner/:repo/pull/:pullid" exact>
+              <BaseLayout>
+                <PullRequestPage />
               </BaseLayout>
             </Route>
             <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
