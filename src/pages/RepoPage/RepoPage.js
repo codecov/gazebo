@@ -3,6 +3,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import Overview from './overview'
+import Spinner from 'ui/Spinner'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -11,19 +12,17 @@ function RepoPage() {
     provider,
     owner,
     repo,
-    query: '',
-    opts: {
-      suspense: false,
-      staleTime: 0,
-      keepPreviousData: false,
-    },
   })
 
-  const { private: privateRepo, uploadToken: token } = data || isLoading
+  if (isLoading) {
+    return <Spinner />
+  }
+
+  const { private: privateRepo, uploadToken: token } = data.repo
 
   return (
     <div className="flex flex-col">
-      <div className="text-xl mb-6 font-semibold flex flex-row  pb-8 border-b border-ds-gray-tertiary">
+      <div className="text-xl mb-6 font-semibold flex flex-row pb-8 border-b border-ds-gray-tertiary">
         <Breadcrumb
           paths={[
             { pageName: 'owner', text: owner },
