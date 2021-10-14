@@ -1,19 +1,35 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, act } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 
 import UserOnboardingModal from './UserOnboardingModal'
+import { useOnboardUser } from 'services/user'
+
+jest.mock('services/user')
 
 describe('UserOnboardingModal', () => {
-  const currentUser = {
+  const defaultCurrentUser = {
     email: 'user@gmail.com',
   }
+  let mutate
 
-  function setup() {
+  function setup(currentUser = defaultCurrentUser) {
+    mutate = jest.fn()
+    useOnboardUser.mockReturnValue({ isLoading: false, mutate })
     render(<UserOnboardingModal currentUser={currentUser} />)
   }
 
   function getCheckbox(name) {
     return screen.getByRole('checkbox', { name })
+  }
+
+  function clickNext() {
+    screen
+      .getByRole('button', {
+        name: /next/i,
+      })
+      .click()
+    // make sure the form updates properly
+    return act(() => Promise.resolve())
   }
 
   describe('when rendered', () => {
@@ -108,32 +124,71 @@ describe('UserOnboardingModal', () => {
 
     describe('when the user clicks next', () => {
       beforeEach(() => {
-        screen
-          .getByRole('button', {
-            name: /next/i,
-          })
-          .click()
+        return clickNext()
       })
 
-      it('doesnt render the basic questions anymore', () => {
-        expect(
-          screen.queryByRole('heading', {
-            name: /what type of projects brings you here\?/i,
-          })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByRole('heading', {
-            name: /What is your goal we can help with\?/i,
-          })
-        ).not.toBeInTheDocument()
+      it('calls submit with the form information', () => {
+        expect(mutate).toHaveBeenCalledWith({
+          typeProjects: ['EDUCATIONAL'],
+          businessEmail: '',
+          email: defaultCurrentUser.email,
+          goals: ['STARTING_WITH_TESTS'],
+          otherGoal: '',
+        })
       })
+    })
+  })
 
-      it('renders an input for the email', () => {
-        expect(
+  describe('when the user doesnt have an email and fill the form', () => {
+    beforeEach(() => {
+      setup({
+        email: '',
+      })
+      getCheckbox(/educational/i).click()
+      getCheckbox(/just starting to write tests/i).click()
+      return clickNext()
+    })
+
+    it('doesnt render the basic questions anymore', () => {
+      expect(
+        screen.queryByRole('heading', {
+          name: /what type of projects brings you here\?/i,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: /What is your goal we can help with\?/i,
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders an input for the email', () => {
+      expect(
+        screen.getByRole('textbox', {
+          name: /personal email/i,
+        })
+      ).toBeInTheDocument()
+    })
+
+    describe('when the user puts a wrong email and submits', () => {
+      beforeEach(() => {
+        userEvent.type(
           screen.getByRole('textbox', {
             name: /personal email/i,
+          }),
+          'blablabla'
+        )
+        screen
+          .getByRole('button', {
+            name: /submit/i,
           })
-        ).toBeInTheDocument()
+          .click()
+        // make sure the form updates properly
+        return act(() => Promise.resolve())
+      })
+
+      it('puts an error message', () => {
+        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
       })
     })
   })
@@ -143,11 +198,7 @@ describe('UserOnboardingModal', () => {
       setup()
       getCheckbox(/your organization/i).click()
       getCheckbox(/just starting to write tests/i).click()
-      screen
-        .getByRole('button', {
-          name: /next/i,
-        })
-        .click()
+      return clickNext()
     })
 
     it('renders a field to enter business email', () => {
@@ -156,6 +207,28 @@ describe('UserOnboardingModal', () => {
           name: /work email/i,
         })
       ).toBeInTheDocument()
+    })
+
+    describe('when the user puts a wrong email and submits', () => {
+      beforeEach(() => {
+        userEvent.type(
+          screen.getByRole('textbox', {
+            name: /work email/i,
+          }),
+          'blablabla'
+        )
+        screen
+          .getByRole('button', {
+            name: /submit/i,
+          })
+          .click()
+        // make sure the form updates properly
+        return act(() => Promise.resolve())
+      })
+
+      it('puts an error message', () => {
+        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
+      })
     })
   })
 
