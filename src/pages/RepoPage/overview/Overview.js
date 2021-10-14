@@ -27,19 +27,19 @@ function Overview({ token }) {
         </div>
         <div className="font-semibold mt-8">Step 2</div>
         <div>
-          RIf you are uploading reports for a private repository, copy the below
+          If you are uploading reports for a private repository, copy the below
           token and set it in your CI environment variables. You don’t need a
           token if the project is public and the CI you use is one that supports
           tokenless uploads.
         </div>
         <div className="flex flex-row justify-center text-xs mt-4">
-          Codecov Token=
+          Codecov Token={' '}
           <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
             {token}
           </span>
           {token && <CopyClipboard string={token} />}
         </div>
-        <div className="font-semibold mt-6">Step 3</div>
+        <div className="font-semibold mt-4">Step 3</div>
         <div>
           Download the <A to={{ pageName: 'uploader' }}>uploader </A> and share
           your coverage reports with Codecov, by adding the the following
