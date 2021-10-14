@@ -11,12 +11,6 @@ function RepoPage() {
     provider,
     owner,
     repo,
-    query: '',
-    opts: {
-      suspense: false,
-      staleTime: 0,
-      keepPreviousData: false,
-    },
   })
 
   if (isLoading) {

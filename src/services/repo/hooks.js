@@ -1,23 +1,34 @@
 import { useQuery } from 'react-query'
-
 import Api from 'shared/api'
-import { providerToName } from 'shared/utils'
 
-function getRepoPath({ provider, owner, repo }) {
-  return `/${providerToName(provider).toLowerCase()}/${owner}/repos/${repo}`
-}
-
-function fetchRepoDetails({ provider, owner, repo, query }) {
-  const path = getRepoPath({ provider, owner, repo })
-  return Api.get({ path, provider, repo, query })
-}
-
-export function useRepo({ provider, owner, repo, query, opts = {} }) {
-  return useQuery(
-    [provider, owner, repo, query],
-    () => {
-      return fetchRepoDetails({ provider, owner, repo, query })
+function fetchRepoDetails({ provider, owner, repo }) {
+  const query = `
+    query GetRepo($name: String!, $repo: String!){
+      owner(username:$name){
+        repository(name:$repo){
+          private
+          uploadToken
+        }
+      }
+    }
+`
+  return Api.graphql({
+    provider,
+    repo,
+    query,
+    variables: {
+      name: owner,
+      repo,
     },
-    opts
-  )
+  }).then((res) => {
+    const repo = res?.data?.owner?.repository
+    if (!repo) return null
+    return repo
+  })
+}
+
+export function useRepo({ provider, owner, repo }) {
+  return useQuery([provider, owner, repo], () => {
+    return fetchRepoDetails({ provider, owner, repo })
+  })
 }
