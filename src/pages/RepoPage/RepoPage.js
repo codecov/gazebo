@@ -17,7 +17,7 @@ function RepoPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="text-xl mb-6 font-semibold flex flex-row pb-8 border-b border-ds-gray-tertiary">
+      <div className="text-xl ml-6 md:ml-0 mb-6 font-semibold flex flex-row pb-8 border-b border-ds-gray-tertiary">
         <Breadcrumb
           paths={[
             { pageName: 'owner', text: owner },
