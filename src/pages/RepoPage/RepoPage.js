@@ -32,7 +32,7 @@ function RepoPage() {
       </div>
       <div className="flex justify-center">
         <Switch>
-          <Route exact path={path}>
+          <Route path={path} exact>
             <Overview data={data} />
           </Route>
           <Route path={`${url}/commits`} exact>
