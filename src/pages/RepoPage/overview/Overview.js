@@ -18,7 +18,7 @@ function Overview({ data }) {
       </div>
       <div className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
-        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
+        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-4">
           {token}
         </span>
         <CopyClipboard string={token} />
@@ -36,7 +36,7 @@ function Overview({ data }) {
       </div>
       <div className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
-        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-4">
+        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-4">
           {token}
         </span>
         <CopyClipboard string={token} />
@@ -90,7 +90,7 @@ function Overview({ data }) {
           following commands to your CI pipeline:
         </div>
 
-        <div className="h-36 w-5/5 bg-ds-gray-primary my-4">
+        <div className="h-36 w-5/5 bg-ds-gray-primary my-4 overflow-scroll">
           <div className="flex flex-row bg-ds-gray-secondary h-8">
             <div className="bg-ds-gray-primary flex justify-center items-center w-1/6">
               Linux
