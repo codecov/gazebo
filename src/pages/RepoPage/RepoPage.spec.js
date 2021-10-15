@@ -11,8 +11,8 @@ describe('RepoPage', () => {
     useRepo.mockReturnValue({ data: repo })
     const queryClient = new QueryClient()
     render(
-      <MemoryRouter initialEntries={['/gh/codecov/Test']}>
-        <Route path="/:provider/:owner/:repo">
+      <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
+        <Route path="/:provider/:owner/:repo/new">
           <QueryClientProvider client={queryClient}>
             <RepoPage />
           </QueryClientProvider>
