@@ -7,8 +7,8 @@ jest.mock('services/repo/hooks')
 describe('Overview Page', () => {
   function setup(data) {
     render(
-      <MemoryRouter initialEntries={['/gh/codecov/Test']}>
-        <Route path="/:provider/:owner/:repo">
+      <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
+        <Route path="/:provider/:owner/:repo/new">
           <Overview {...data} />
         </Route>
       </MemoryRouter>
