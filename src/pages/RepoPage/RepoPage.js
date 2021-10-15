@@ -3,20 +3,15 @@ import Breadcrumb from 'ui/Breadcrumb'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import Overview from './overview'
-import Spinner from 'ui/Spinner'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
   const { path, url } = useRouteMatch()
-  const { data, isLoading } = useRepo({
+  const { data } = useRepo({
     provider,
     owner,
     repo,
   })
-
-  if (isLoading) {
-    return <Spinner />
-  }
 
   const { private: privateRepo } = data.repo
 
