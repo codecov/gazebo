@@ -93,7 +93,7 @@ function App() {
                 <FileViewPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/">
+            <Route path="/:provider/:owner/:repo/new">
               <BaseLayout>
                 <RepoPage />
               </BaseLayout>
