@@ -44,6 +44,7 @@ function PullHeader({ pull }) {
         authored{' '}
         <A
           variant="code"
+          hook="pr link"
           href={getProviderPullURL({
             provider,
             owner,
