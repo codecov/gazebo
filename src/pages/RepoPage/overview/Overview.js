@@ -135,6 +135,15 @@ function Overview({ data }) {
           Codecov.
         </div>
       </div>
+      <div>
+        <div className="font-semibold mt-8 text-base">
+          Interested in a setup demo?{' '}
+          <span className="font-normal text-base">
+            Check out this walkthrough:
+          </span>
+        </div>
+        <div className="mt-4">Video here</div>
+      </div>
     </div>
   )
 }
