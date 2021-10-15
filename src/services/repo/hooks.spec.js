@@ -69,7 +69,6 @@ describe('getRepo', () => {
 
     describe('when data is loaded', () => {
       beforeEach(() => {
-        console.log('anything')
         return hookData.waitFor(() => hookData.result.current.isSuccess)
       })
 
