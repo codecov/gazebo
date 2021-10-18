@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 import { Fragment } from 'react'
 
-function Overview({ data }) {
+function New({ data }) {
   if (!data || !data?.repo?.uploadToken) {
     return null
   }
@@ -150,8 +150,8 @@ function Overview({ data }) {
   )
 }
 
-Overview.propTypes = {
+New.propTypes = {
   data: PropTypes.object,
 }
 
-export default Overview
+export default New

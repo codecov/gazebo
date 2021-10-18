@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
-import Overview from './overview'
+import New from './new'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -32,8 +32,11 @@ function RepoPage() {
       </div>
       <div className="flex justify-center">
         <Switch>
+          <Route path={url} exact>
+            overview page
+          </Route>
           <Route path={`${url}/new`} exact>
-            <Overview data={data} />
+            <New data={data} />
           </Route>
           <Route path={`${url}/commits`} exact>
             <h1>Commmits</h1>

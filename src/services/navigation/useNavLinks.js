@@ -206,6 +206,17 @@ function useNavLinks() {
       isExternalLink: true,
       text: 'Tree View',
     },
+    new: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/new`,
+      isExternalLink: true,
+      text: 'New',
+    },
     overview: {
       path: (
         { provider = p, owner = o, repo = r } = {

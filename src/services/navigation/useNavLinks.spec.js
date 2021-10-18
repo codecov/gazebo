@@ -558,6 +558,24 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('repo new link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/new'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.new.path()).toBe('/gh/RulaKhaled/test/new')
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.new.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/new'
+      )
+      expect(hookData.result.current.new.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/new'
+      )
+    })
+  })
+
   describe('signup forward the marketing link', () => {
     beforeEach(() => {
       setup([

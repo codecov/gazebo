@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import { Route, MemoryRouter } from 'react-router-dom'
-import Overview from '.'
+import New from '.'
 
 jest.mock('services/repo/hooks')
 
-describe('Overview Page', () => {
+describe('New Page', () => {
   function setup(data) {
     render(
       <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
         <Route path="/:provider/:owner/:repo/new">
-          <Overview {...data} />
+          <New {...data} />
         </Route>
       </MemoryRouter>
     )
