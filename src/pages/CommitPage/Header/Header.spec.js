@@ -64,7 +64,8 @@ describe('Header', () => {
       userEvent.click(switchBackLink)
       expect(useLegacyRedirects).toHaveBeenCalledWith({
         cookieName: 'commit_detail_page',
-        pathname: '/gh/little-z/twist/commit/123',
+        uri: '/gh/little-z/twist/commit/123',
+        cookiePath: '/gh/little-z/',
         selectedOldUI: true,
       })
     })
