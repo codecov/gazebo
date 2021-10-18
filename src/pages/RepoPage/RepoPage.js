@@ -6,7 +6,7 @@ import Overview from './overview'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
-  const { path, url } = useRouteMatch()
+  const { url } = useRouteMatch()
   const { data } = useRepo({
     provider,
     owner,
@@ -32,7 +32,7 @@ function RepoPage() {
       </div>
       <div className="flex justify-center">
         <Switch>
-          <Route path={path} exact>
+          <Route path={`${url}/new`} exact>
             <Overview data={data} />
           </Route>
           <Route path={`${url}/commits`} exact>
