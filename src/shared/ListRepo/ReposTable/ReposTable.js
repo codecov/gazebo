@@ -10,6 +10,8 @@ import AppLink from 'shared/AppLink'
 import RepoTitleLink from './RepoTitleLink'
 import NoReposBlock from './NoReposBlock'
 
+import { useFlags } from 'shared/featureFlags'
+
 const tableActive = [
   {
     Header: 'Name',
@@ -41,7 +43,7 @@ const tableInactive = [
   },
 ]
 
-function transformRepoToTable(repos, owner, searchValue) {
+function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
   // if there are no repos show empty message
   if (repos.length <= 0) {
     return [
@@ -80,7 +82,7 @@ function transformRepoToTable(repos, owner, searchValue) {
         Not yet enabled{' '}
         <AppLink
           className="text-ds-blue font-semibold"
-          pageName="repo"
+          pageName={newRepoSetupLink ? 'new' : 'repo'}
           options={{
             owner: repo.author.username,
             repo: repo.name,
@@ -108,7 +110,13 @@ function ReposTable({
     owner,
   })
 
-  const dataTable = transformRepoToTable(data.repos, owner, searchValue)
+  const { newRepoSetupLink } = useFlags({ newRepoSetupLink: true })
+  const dataTable = transformRepoToTable(
+    data.repos,
+    owner,
+    searchValue,
+    newRepoSetupLink
+  )
 
   return (
     <>
