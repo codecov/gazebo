@@ -6,7 +6,7 @@ import Icon from 'ui/Icon'
 import A from 'ui/A'
 import { isNumber } from 'lodash'
 import { providerToName } from 'shared/utils'
-import { getProviderPullURL } from './helpers'
+import { getProviderPullURL } from 'shared/utils/provider'
 
 function extractCommitData(data) {
   const rawPatch = data?.compareWithParent?.patchTotals?.coverage
