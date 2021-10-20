@@ -214,7 +214,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/new`,
-      isExternalLink: true,
+      isExternalLink: false,
       text: 'New',
     },
     overview: {
