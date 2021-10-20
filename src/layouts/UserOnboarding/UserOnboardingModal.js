@@ -82,9 +82,11 @@ function UserOnboardingModal({ currentUser }) {
       className="h-screen w-screen flex items-center justify-center"
       overlayClassName="fixed top-0 bottom-0 left-0 right-0 bg-ds-gray-octonary z-10"
     >
-      <form className="w-1/3" onSubmit={onSubmit}>
-        <BaseModal hasCloseButton={false} onClose={noop} {...stepProps} />
-      </form>
+      <div className="w-full h-full overflow-y-auto p-4 flex items-center justify-center">
+        <form className="sm:w-full md:w-2/3 lg:w-1/3 mt-8" onSubmit={onSubmit}>
+          <BaseModal hasCloseButton={false} onClose={noop} {...stepProps} />
+        </form>
+      </div>
     </ReactModal>
   )
 }

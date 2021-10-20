@@ -3,6 +3,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullRequestPage from './PullRequestPage'
 
+jest.mock('./PullDetail', () => () => 'PullDetail')
+
 describe('PullRequestPage', () => {
   function setup() {
     render(
@@ -35,6 +37,10 @@ describe('PullRequestPage', () => {
           name: /pulls/i,
         })
       ).toBeInTheDocument()
+    })
+
+    it('renders the PullDetail', () => {
+      expect(screen.getByText(/PullDetail/i)).toBeInTheDocument()
     })
   })
 })

@@ -32,7 +32,7 @@ function Access({ provider }) {
             data-testid="tokens-docs-link"
             rel="noreferrer"
             target="_blank"
-            href="https://docs.codecov.io/reference#authorization"
+            href="https://docs.codecov.io/reference/authorization"
             className="text-ds-blue"
           >
             learn more
