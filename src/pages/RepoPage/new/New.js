@@ -104,14 +104,23 @@ function New({ data }) {
               Windows
             </div>
           </div>
-          <p className="mt-4 pl-4">
-            curl -Os https://uploader.codecov.io/latest/linux/codecov
-            <br />
-            <br />
-            chmod +x codecov
-            <br />
-            ./codecov -t
-          </p>
+          <div className="flex flex-row">
+            <p className="mt-4 pl-4">
+              curl -Os https://uploader.codecov.io/latest/linux/codecov
+              <br />
+              <br />
+              chmod +x codecov
+              <br />
+              ./codecov -t
+            </p>
+            <span className="ml-24">
+              <CopyClipboard
+                string={
+                  ' curl -Os https://uploader.codecov.io/latest/linux/codecov  chmod +x codecov  ./codecov -t'
+                }
+              />
+            </span>
+          </div>
         </div>
 
         <p className="text-base">
