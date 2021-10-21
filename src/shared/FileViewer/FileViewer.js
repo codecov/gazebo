@@ -52,6 +52,7 @@ function FileViewer({
   title,
   change,
   flagNames = [],
+  fileName = '',
 }) {
   const [selectedFlags, setSelectedFlags] = useState([])
   const [covered, setCovered] = useState(true)
@@ -131,6 +132,7 @@ function FileViewer({
           coverage={coverageData.coverage}
           showPartial={partial}
           code={content}
+          fileName={fileName}
         />
       </div>
     </div>
@@ -145,6 +147,7 @@ FileViewer.propTypes = {
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,
   flagNames: PropTypes.arrayOf(PropTypes.string),
+  fileName: PropTypes.string,
 }
 
 export default FileViewer

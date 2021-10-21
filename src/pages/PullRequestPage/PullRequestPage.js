@@ -1,6 +1,10 @@
+import { Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Breadcrumb from 'ui/Breadcrumb'
+import Spinner from 'ui/Spinner'
+
+import PullDetail from './PullDetail'
 
 function PullRequestPage() {
   const { owner, repo, pullid } = useParams()
@@ -20,7 +24,17 @@ function PullRequestPage() {
           },
         ]}
       />
-      <div className="pt-4">todo</div>
+      <div className="pt-4">
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center py-16">
+              <Spinner />
+            </div>
+          }
+        >
+          <PullDetail />
+        </Suspense>
+      </div>
     </div>
   )
 }
