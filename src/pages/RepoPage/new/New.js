@@ -91,7 +91,7 @@ function New({ data }) {
           following commands to your CI pipeline:
         </p>
 
-        <div className="h-36 w-5/5 bg-ds-gray-primary my-4 overflow-scroll">
+        <div className="h-36 w-5/5 bg-ds-gray-primary my-4 overflow-scroll rounded">
           <div className="flex flex-row bg-ds-gray-secondary h-8">
             <div className="bg-ds-gray-primary flex justify-center items-center w-1/6">
               Linux
