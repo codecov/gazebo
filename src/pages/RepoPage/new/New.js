@@ -113,7 +113,7 @@ function New({ data }) {
               <br />
               ./codecov -t
             </p>
-            <span className="ml-24">
+            <span className="ml-24 mt-4">
               <CopyClipboard
                 string={
                   ' curl -Os https://uploader.codecov.io/latest/linux/codecov  chmod +x codecov  ./codecov -t'
