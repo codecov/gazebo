@@ -55,6 +55,7 @@ function FileView() {
           totals={data.totals}
           treePaths={treePaths}
           title={treePaths[treePaths.length - 1].text}
+          fileName={paths.slice(-1)[0]}
         />
       </div>
     </div>
