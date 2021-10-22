@@ -13,7 +13,7 @@ function BaseModal({
   return (
     <div className="bg-white rounded">
       <header className="flex justify-between items-center px-4 pt-4">
-        <h2 className="font-semibold text-base">{title}</h2>
+        <h2 className="font-semibold text-3xl">{title}</h2>
         {hasCloseButton && (
           <span
             className="cursor-pointer fill-current text-ds-gray-septenary"
@@ -24,9 +24,9 @@ function BaseModal({
           </span>
         )}
       </header>
-      {subtitle && <p className="px-4 mt-1 text-sm">{subtitle}</p>}
+      {subtitle && <p className="px-4 text-lg">{subtitle}</p>}
       {body && (
-        <div className="w-full p-4 mt-4 text-ds-gray-octonary border-t text-sm max-h-96 overflow-y-auto">
+        <div className="w-full p-6 mt-4 text-ds-gray-octonary border-t text-sm max-h-96 overflow-y-auto">
           {body}
         </div>
       )}
