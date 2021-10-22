@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 
-function CodeBlock() {
+function InstructionBox() {
   const [system, setSystemt] = useState('linux')
   const [windows, setWindows] = useState(false)
   const active = 'bg-gray-100'
@@ -97,4 +97,4 @@ function CodeBlock() {
   )
 }
 
-export default CodeBlock
+export default InstructionBox

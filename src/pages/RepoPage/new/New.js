@@ -3,7 +3,7 @@ import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 import { Fragment } from 'react'
-import CodeBlock from './CodeBlock'
+import InstructionBox from './instructionBox/InstructionBox'
 
 function New({ data }) {
   if (!data || !data?.repo?.uploadToken) {
@@ -92,7 +92,7 @@ function New({ data }) {
           following commands to your CI pipeline:
         </p>
 
-        <CodeBlock />
+        <InstructionBox />
 
         <p className="text-base">
           It is highly recommended to{' '}
