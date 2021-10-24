@@ -41,7 +41,8 @@ describe('ResyncButton', () => {
 
     it('renders text related to gh provider', () => {
       expect(screen.getByText(/or org?/)).toBeInTheDocument()
-      expect(screen.getByText(/admin approval/)).toBeInTheDocument()
+      expect(screen.getByText(/check org access/)).toBeInTheDocument()
+      expect(screen.getByText(/Learn more in/)).toBeInTheDocument()
     })
 
     describe('when the user clicks on the button', () => {
@@ -74,7 +75,7 @@ describe('ResyncButton', () => {
 
     it('shouldnt render text related to gh provider', () => {
       expect(screen.queryByText(/or org?/)).toBeNull()
-      expect(screen.queryByText(/admin approval/)).toBeNull()
+      expect(screen.queryByText(/check org access/)).toBeNull()
     })
   })
 

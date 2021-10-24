@@ -264,6 +264,12 @@ function useStaticNavLinks() {
         'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting',
       isExternalLink: true,
     },
+    userAppManagePage: {
+      text: 'User App Manage/Access Page',
+      path: () =>
+        'https://github.com/settings/connections/applications/c68c81cbfd179a50784a',
+      isExternalLink: true,
+    },
     enterprise: {
       text: 'Self Hosted',
       path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
