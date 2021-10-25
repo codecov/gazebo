@@ -2,7 +2,7 @@ import { useState } from 'react'
 import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 
 function InstructionBox() {
-  const [system, setSystemt] = useState('linux')
+  const [system, setSystem] = useState('linux')
   const [windows, setWindows] = useState(false)
   const active = 'bg-gray-100'
   const [activeStyles, setActiveStyles] = useState([active, '', '', ''])
@@ -24,7 +24,7 @@ function InstructionBox() {
   const handleInstructionClick = (e) => {
     e.preventDefault()
     const { name } = e.target
-    setSystemt(name)
+    setSystem(name)
     setWindows(name === 'windows')
     passStyle(name)
   }
