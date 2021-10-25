@@ -87,5 +87,11 @@ describe('ContextSwitcher', () => {
     it('renders all orgs and repos', () => {
       expect(screen.getByText(/all my orgs and repos/i)).toBeInTheDocument()
     })
+
+    it('renders manage access restrictions', () => {
+      expect(
+        screen.getByText(/Manage access restrictions/i)
+      ).toBeInTheDocument()
+    })
   })
 })

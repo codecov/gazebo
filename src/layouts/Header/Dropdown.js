@@ -17,6 +17,9 @@ function Dropdown({ currentUser }) {
           </div>
         </MenuButton>
         <MenuList>
+          <MenuLink as={AppLink} pageName="userAppManagePage">
+            Manage GitHub org access
+          </MenuLink>
           <MenuLink
             as={AppLink}
             pageName="account"

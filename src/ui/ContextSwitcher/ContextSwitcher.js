@@ -7,6 +7,7 @@ import AppLink from 'shared/AppLink'
 import Avatar from 'ui/Avatar'
 
 import './ContextSwitcher.css'
+import A from 'ui/A'
 
 const styles = {
   button: 'flex items-center text-xl font-semibold',
@@ -69,6 +70,14 @@ function ContextSwitcher({ activeContext, contexts }) {
             </div>
           </MenuLink>
           {contexts.map(renderContext)}
+        </div>
+        <div className="max-h-64 overflow-y-auto text-ds-gray-quinary text-xsm px-4 py-2 border-t border-ds-gray-secondary">
+          <span className="font-semibold">Don&apos;t see your org?</span>
+          <br />
+          <A to={{ pageName: 'userAppManagePage' }}>
+            {' '}
+            Manage access restrictions
+          </A>
         </div>
       </MenuList>
     </Menu>
