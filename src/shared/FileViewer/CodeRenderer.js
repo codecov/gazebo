@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import cs from 'classnames'
 import Highlight, { defaultProps } from 'prism-react-renderer'
 import 'shared/utils/prisimTheme.css'
+import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 import './CodeRenderer.css'
 import Line from './Line'
 
@@ -11,12 +12,13 @@ function CodeRenderer({
   showCovered = false,
   showUncovered = false,
   showPartial = false,
+  fileName = '',
 }) {
   return (
     <Highlight
       {...defaultProps}
       code={code}
-      language="python"
+      language={prismLanguageMapper(fileName)}
       theme={undefined}
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
@@ -52,6 +54,7 @@ CodeRenderer.propTypes = {
   showCovered: PropTypes.bool,
   showUncovered: PropTypes.bool,
   showPartial: PropTypes.bool,
+  fileName: PropTypes.string,
 }
 
 export default CodeRenderer
