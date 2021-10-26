@@ -9,7 +9,7 @@ function FormEmails({ form, currentUser }) {
   const { errors } = form.formState
 
   return (
-    <div className="space-y-4 12rem">
+    <div className="space-y-4">
       <div>
         {!currentUser.email && (
           <TextInput
