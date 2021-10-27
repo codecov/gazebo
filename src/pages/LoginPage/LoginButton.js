@@ -26,6 +26,7 @@ function LoginButton({ provider }) {
       <a
         className={styles.link}
         href={signIn.path({ to, provider, privateScope: true })}
+        data-cy={'login-button'}
       >
         <img
           alt={`Logo of ${providerToName(provider)}`}
