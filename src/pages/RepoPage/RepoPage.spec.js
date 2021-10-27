@@ -11,8 +11,8 @@ describe('RepoPage', () => {
     useRepo.mockReturnValue({ data: repo })
     const queryClient = new QueryClient()
     render(
-      <MemoryRouter initialEntries={['/gh/codecov/test']}>
-        <Route path="/:provider/:owner/:repo">
+      <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
+        <Route path="/:provider/:owner/:repo/new">
           <QueryClientProvider client={queryClient}>
             <RepoPage />
           </QueryClientProvider>
@@ -32,7 +32,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/test/)
+      const repo = screen.getByText(/Test/)
       expect(repo).toBeInTheDocument()
     })
 
@@ -57,7 +57,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/test/)
+      const repo = screen.getByText(/Test/)
       expect(repo).toBeInTheDocument()
     })
 
