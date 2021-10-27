@@ -558,6 +558,24 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('repo new link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/new'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.new.path()).toBe('/gh/RulaKhaled/test/new')
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.new.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/new'
+      )
+      expect(hookData.result.current.new.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/new'
+      )
+    })
+  })
+
   describe('signup forward the marketing link', () => {
     beforeEach(() => {
       setup([
@@ -603,6 +621,8 @@ describe('useStaticNavLinks', () => {
     ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}
+    ${links.uploader}          | ${'https://docs.codecov.com/docs/codecov-uploader'}
+    ${links.integrityCheck}    | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)
