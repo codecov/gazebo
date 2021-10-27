@@ -23,11 +23,11 @@ function fetchRepoPulls({ provider, owner, repo }) {
                                         coverage
                                     }
                                 }
-                                base{
-                                    totals{
-                                        coverage
-                                    }
-                                }            
+                                compareWithBase{
+                                  patchTotals{
+                                    coverage
+                                  }
+                                }         
                             }
                         }
                    }
@@ -45,9 +45,9 @@ function fetchRepoPulls({ provider, owner, repo }) {
       repo,
     },
   }).then((res) => {
-    const { edges: pulls } = res?.data?.owner?.repository?.pulls
-    if (!pulls) return null
-    return pulls
+    const { edges } = res?.data?.owner?.repository?.pulls
+    if (!edges) return null
+    return edges
   })
 }
 

@@ -38,12 +38,12 @@ const dataReturned = {
               },
               head: {
                 totals: {
-                  coverage: '90%',
+                  coverage: '90',
                 },
               },
-              base: {
-                totals: {
-                  coverage: '87%',
+              compareWithBase: {
+                patchTotals: {
+                  coverage: '87',
                 },
               },
             },
@@ -86,12 +86,12 @@ describe('GetPulls', () => {
           },
           head: {
             totals: {
-              coverage: '90%',
+              coverage: '90',
             },
           },
-          base: {
-            totals: {
-              coverage: '87%',
+          compareWithBase: {
+            patchTotals: {
+              coverage: '87',
             },
           },
         },
