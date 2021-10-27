@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import ListRepo from 'shared/ListRepo'
 import { useOwner } from 'services/user'
 import NotFound from 'pages/NotFound'
-import { usePulls } from 'services/pulls'
 
 import Header from './Header'
 import Tabs from './Tabs'
@@ -11,8 +10,6 @@ import Tabs from './Tabs'
 function OwnerPage({ active = false }) {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  const { data: pulls } = usePulls({ provider, owner, repo: 'gazebo' })
-  console.log(pulls)
 
   if (!ownerData) {
     return <NotFound />
