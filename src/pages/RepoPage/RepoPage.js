@@ -2,7 +2,8 @@ import { useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
-import New from './new'
+import New from './NewPage'
+import PullsPage from './PullsPage'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -45,7 +46,7 @@ function RepoPage() {
             <h1>Branches</h1>
           </Route>
           <Route path={`${url}/pulls`} exact>
-            <h1>Pulls</h1>
+            <PullsPage />
           </Route>
           <Route path={`${url}/compare`} exact>
             <h1>Compare</h1>
