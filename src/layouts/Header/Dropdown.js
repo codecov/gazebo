@@ -8,7 +8,7 @@ import Icon from 'ui/Icon'
 
 function Dropdown({ currentUser }) {
   return (
-    <div data-testid="dropdown">
+    <div data-testid="dropdown" data-cy="auth-user-dropdown">
       <Menu id="main-dropdown">
         <MenuButton className="flex items-center justify-between">
           <Avatar user={currentUser.user} bordered />
