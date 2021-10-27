@@ -54,7 +54,7 @@ function usePerStepProp({ currentUser }) {
     },
     1: {
       title: 'Your profile details',
-      subtitle: 'Help us keep you contact information up to date',
+      subtitle: 'Help us keep your contact information up to date',
       onSubmit,
       body: <FormEmails form={form} currentUser={currentUser} />,
       footer: (
