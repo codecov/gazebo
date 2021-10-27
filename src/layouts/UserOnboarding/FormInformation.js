@@ -58,8 +58,10 @@ function FormInformation({ form }) {
 
   return (
     <div>
-      <h3 className="font-semibold">What type of projects brings you here?</h3>
-      <div className="space-y-0.5 p-4 pb-6">
+      <h3 className="font-semibold text-lg">
+        What type of projects brings you here?
+      </h3>
+      <div className="space-y-0.5 p-4 pb-6 text-base">
         {TYPE_PROJECTS_CHECKBOXES.map(({ label, value }) => (
           <Checkbox
             label={label}
@@ -69,17 +71,20 @@ function FormInformation({ form }) {
           />
         ))}
       </div>
-      <h3 className="font-semibold">What is your goal we can help with?</h3>
-      <div className="space-y-0.5 p-4 pb-6">
+      <h3 className="font-semibold text-lg">
+        What is your goal we can help with?
+      </h3>
+      <div className="p-4 pb-6 text-base">
         {GOALS_CHECKOXES.map(({ label, value }) => (
-          <Checkbox
-            label={label}
-            key={label}
-            onChange={updateState('goals', goals, value)}
-            checked={goals.includes(value)}
-          />
+          <div key={label} className="mt-0.5">
+            <Checkbox
+              label={label}
+              onChange={updateState('goals', goals, value)}
+              checked={goals.includes(value)}
+            />
+          </div>
         ))}
-        <div className="flex items-start">
+        <div className="flex items-start mt-2">
           <Checkbox
             label="Other"
             showLabel={false}
