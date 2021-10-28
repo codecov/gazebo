@@ -55,12 +55,12 @@ describe('FileView', () => {
     it('renders the navigation breadcrumb', () => {
       expect(screen.getByText(/codecov/)).toBeInTheDocument()
       expect(screen.getByText(/repo-test/)).toBeInTheDocument()
-      expect(screen.queryByText(/file viewer/)).toBeInTheDocument()
+      expect(screen.queryByText(/master/)).toBeInTheDocument()
     })
 
     it('renders the title and path breadcrumb', () => {
       expect(screen.getByText(/src/)).toBeInTheDocument()
-      expect(screen.getAllByText(/index2.py/).length).toBe(2)
+      expect(screen.getAllByText(/index2.py/).length).toBe(1)
     })
   })
 

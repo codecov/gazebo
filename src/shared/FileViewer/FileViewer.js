@@ -5,13 +5,12 @@ import PropTypes from 'prop-types'
 
 import Breadcrumb from 'ui/Breadcrumb'
 import Progress from 'ui/Progress'
-import Spinner from 'ui/Spinner'
 import AppLink from 'shared/AppLink'
-import MultiSelect from 'ui/MultiSelect'
 import { useCoverageWithFlags } from 'services/file/hooks'
 
 import CodeRenderer from './CodeRenderer'
-import CoverageSelect from './CoverageSelect'
+import Title, { TitleFlags, TitleCoverage } from './Title'
+import { LINE_STATE } from './lineStates'
 
 function useCoverageData({ coverage, totals, selectedFlags }) {
   const coverageForAllFlags = selectedFlags.length === 0
@@ -63,43 +62,33 @@ function FileViewer({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap px-3 md:p-0">
-        <span className="text-ds-gray-senary font-semibold text-base">
-          {title}
-        </span>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-7">
-          <span className="mb-2 sm:mb-0 text-xs font-semibold">
-            View coverage by:
-          </span>
-          <CoverageSelect
-            onChange={() => setCovered((c) => !c)}
-            checked={covered}
-            coverage={1}
+      <Title
+        title={title}
+        flags={() => (
+          <TitleFlags
+            list={flagNames}
+            current={selectedFlags}
+            onChange={setSelectedFlags}
+            flagsIsLoading={coverageData.isLoading}
           />
-          <CoverageSelect
-            onChange={() => setPartial((p) => !p)}
-            checked={partial}
-            coverage={2}
-          />
-          <CoverageSelect
-            onChange={() => setUncovered((u) => !u)}
-            checked={uncovered}
-            coverage={0}
-          />
-          {flagNames.length > 1 && (
-            <div>
-              {coverageData.isLoading && <Spinner />}
-              <MultiSelect
-                ariaName="Filter by flags"
-                selectedItems={selectedFlags}
-                items={flagNames}
-                onChange={setSelectedFlags}
-                resourceName="flag"
-              />
-            </div>
-          )}
-        </div>
-      </div>
+        )}
+      >
+        <TitleCoverage
+          onChange={() => setCovered((covered) => !covered)}
+          checked={covered}
+          coverage={LINE_STATE.COVERED}
+        />
+        <TitleCoverage
+          onChange={() => setPartial((partial) => !partial)}
+          checked={partial}
+          coverage={LINE_STATE.PARTIAL}
+        />
+        <TitleCoverage
+          onChange={() => setUncovered((uncovered) => !uncovered)}
+          checked={uncovered}
+          coverage={LINE_STATE.UNCOVERED}
+        />
+      </Title>
 
       <div>
         <div
@@ -126,23 +115,33 @@ function FileViewer({
             )}
           </div>
         </div>
-        <CodeRenderer
-          showCovered={covered}
-          showUncovered={uncovered}
-          coverage={coverageData.coverage}
-          showPartial={partial}
-          code={content}
-          fileName={fileName}
-        />
+        {!content && (
+          <div className="border-solid border-ds-gray-tertiary border p-4">
+            <p>
+              There was a problem getting the source code from your provider.
+              Unable to show line by line coverage.
+            </p>
+          </div>
+        )}
+        {content && (
+          <CodeRenderer
+            showCovered={covered}
+            showUncovered={uncovered}
+            coverage={coverageData.coverage}
+            showPartial={partial}
+            code={content}
+            fileName={fileName}
+          />
+        )}
       </div>
     </div>
   )
 }
 
 FileViewer.propTypes = {
-  content: PropTypes.string.isRequired,
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
-  coverage: PropTypes.shape().isRequired,
+  content: PropTypes.string,
+  title: PropTypes.string,
+  coverage: PropTypes.object.isRequired,
   totals: PropTypes.number,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,
