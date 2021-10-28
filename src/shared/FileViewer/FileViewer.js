@@ -58,7 +58,11 @@ function FileViewer({
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
 
-  const coverageData = useCoverageData({ coverage, totals, selectedFlags })
+  const {
+    isLoading: coverageIsLoading,
+    totals: coverageTotals,
+    coverage: coverageData,
+  } = useCoverageData({ coverage, totals, selectedFlags })
 
   return (
     <div className="flex flex-col gap-4">
@@ -69,7 +73,7 @@ function FileViewer({
             list={flagNames}
             current={selectedFlags}
             onChange={setSelectedFlags}
-            flagsIsLoading={coverageData.isLoading}
+            flagsIsLoading={coverageIsLoading}
           />
         )}
       >
@@ -101,7 +105,7 @@ function FileViewer({
           <Breadcrumb paths={[...treePaths]} />
           <div className="flex w-full sm:w-auto gap-2">
             <div className="w-full sm:w-56">
-              <Progress amount={coverageData.totals} label={true} />
+              <Progress amount={coverageTotals} label={true} />
             </div>
             {change && (
               <span
@@ -115,23 +119,22 @@ function FileViewer({
             )}
           </div>
         </div>
-        {!content && (
+        {content ? (
+          <CodeRenderer
+            showCovered={covered}
+            showUncovered={uncovered}
+            coverage={coverageData}
+            showPartial={partial}
+            code={content}
+            fileName={fileName}
+          />
+        ) : (
           <div className="border-solid border-ds-gray-tertiary border p-4">
             <p>
               There was a problem getting the source code from your provider.
               Unable to show line by line coverage.
             </p>
           </div>
-        )}
-        {content && (
-          <CodeRenderer
-            showCovered={covered}
-            showUncovered={uncovered}
-            coverage={coverageData.coverage}
-            showPartial={partial}
-            code={content}
-            fileName={fileName}
-          />
         )}
       </div>
     </div>
@@ -141,7 +144,7 @@ function FileViewer({
 FileViewer.propTypes = {
   content: PropTypes.string,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  coverage: PropTypes.object.isRequired,
+  coverage: PropTypes.object,
   totals: PropTypes.number,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,
