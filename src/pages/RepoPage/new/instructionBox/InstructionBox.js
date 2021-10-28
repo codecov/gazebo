@@ -3,19 +3,19 @@ import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 import cs from 'classnames'
 
 function InstructionBox() {
+  const systemsMapper = {
+    Linux: 'linux',
+    'Alpine Linux': 'alpine',
+    macOS: 'macos',
+    Windows: 'Windows',
+  }
   const systems = ['Linux', 'Alpine Linux', 'macOS', 'Windows']
   const [curSystem, setCurSystem] = useState('Linux')
-  const [systemInstruction, setSystemInstruction] = useState('linux')
-  const [isWindows, setIsWindows] = useState(false)
 
   const handleInstructionClick = (e) => {
     e.preventDefault()
     const { name } = e.target
     setCurSystem(name)
-    setSystemInstruction(
-      name === 'Alpine Linux' ? 'alpine' : name.toLowerCase()
-    )
-    setIsWindows(name === 'Windows')
   }
 
   return (
@@ -36,7 +36,7 @@ function InstructionBox() {
         ))}
       </div>
       <div className="p-4 flex flex-row overflow-scroll">
-        {isWindows ? (
+        {curSystem === 'Windows' ? (
           <span>
             $ProgressPreference = &apos;SilentlyContinue&apos;
             <br />
@@ -48,7 +48,8 @@ function InstructionBox() {
           </span>
         ) : (
           <span>
-            curl -Os https://uploader.codecov.io/latest/{systemInstruction}
+            curl -Os https://uploader.codecov.io/latest/
+            {systemsMapper[curSystem]}
             /codecov
             <br />
             <br />
@@ -60,9 +61,9 @@ function InstructionBox() {
         <span className="md:ml-auto">
           <CopyClipboard
             string={
-              isWindows
+              curSystem === 'Windows'
                 ? "$ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\\codecov.exe "
-                : `curl -Os https://uploader.codecov.io/latest/${systemInstruction}/codecov chmod +x codecov ./codecov`
+                : `curl -Os https://uploader.codecov.io/latest/${systemsMapper[curSystem]}/codecov chmod +x codecov ./codecov`
             }
           />
         </span>
