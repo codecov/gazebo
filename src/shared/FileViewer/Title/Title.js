@@ -23,7 +23,7 @@ export default function Title({ title, flags, children }) {
 }
 
 Title.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
   flags: PropTypes.func,
 }
 

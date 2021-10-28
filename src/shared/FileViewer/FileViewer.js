@@ -140,7 +140,7 @@ function FileViewer({
 
 FileViewer.propTypes = {
   content: PropTypes.string,
-  title: PropTypes.string,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
   coverage: PropTypes.object.isRequired,
   totals: PropTypes.number,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
