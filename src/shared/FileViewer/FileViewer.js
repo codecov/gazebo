@@ -68,7 +68,7 @@ function FileViewer({
     <div className="flex flex-col gap-4">
       <Title
         title={title}
-        flags={() => (
+        Flags={() => (
           <TitleFlags
             list={flagNames}
             current={selectedFlags}
@@ -144,7 +144,7 @@ function FileViewer({
 FileViewer.propTypes = {
   content: PropTypes.string,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  coverage: PropTypes.object,
+  coverage: PropTypes.object.isRequired,
   totals: PropTypes.number,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,

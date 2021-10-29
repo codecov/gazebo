@@ -5,7 +5,7 @@ import Spinner from 'ui/Spinner'
 
 import CoverageSelect from '../CoverageSelect'
 
-export default function Title({ title, flags, children }) {
+export default function Title({ title, Flags, children }) {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap px-3 md:p-0">
       <span className="text-ds-gray-senary font-semibold text-base">
@@ -16,7 +16,7 @@ export default function Title({ title, flags, children }) {
           View coverage by:
         </span>
         {children}
-        {flags()}
+        {Flags()}
       </div>
     </div>
   )
@@ -24,7 +24,7 @@ export default function Title({ title, flags, children }) {
 
 Title.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  flags: PropTypes.func,
+  Flags: PropTypes.element,
 }
 
 export const TitleCoverage = CoverageSelect
