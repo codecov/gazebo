@@ -3,14 +3,25 @@ import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 import cs from 'classnames'
 
 function InstructionBox() {
+  const systemsEnum = {
+    LINUX: 'Linux',
+    ALPINE: 'Alpine Linux',
+    MACOS: 'macOS',
+    WINDOWS: 'Windows',
+  }
   const systemsMapper = {
     Linux: 'linux',
     'Alpine Linux': 'alpine',
     macOS: 'macos',
     Windows: 'Windows',
   }
-  const systems = ['Linux', 'Alpine Linux', 'macOS', 'Windows']
-  const [curSystem, setCurSystem] = useState('Linux')
+  const systems = [
+    systemsEnum.LINUX,
+    systemsEnum.ALPINE,
+    systemsEnum.MACOS,
+    systemsEnum.WINDOWS,
+  ]
+  const [curSystem, setCurSystem] = useState(systemsEnum.LINUX)
 
   const handleInstructionClick = (e) => {
     e.preventDefault()
