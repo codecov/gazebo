@@ -5,8 +5,12 @@ import '@reach/menu-button/styles.css'
 import AppLink from 'shared/AppLink'
 import Avatar from 'ui/Avatar'
 import Icon from 'ui/Icon'
+import { useParams } from 'react-router'
 
 function Dropdown({ currentUser }) {
+  const { provider } = useParams()
+  const isGithubUser = provider === 'gh' || provider === 'github'
+
   return (
     <div data-testid="dropdown">
       <Menu id="main-dropdown">
@@ -17,9 +21,11 @@ function Dropdown({ currentUser }) {
           </div>
         </MenuButton>
         <MenuList>
-          <MenuLink as={AppLink} pageName="userAppManagePage">
-            Manage GitHub org access
-          </MenuLink>
+          {isGithubUser && (
+            <MenuLink as={AppLink} pageName="userAppManagePage">
+              Manage GitHub org access
+            </MenuLink>
+          )}
           <MenuLink
             as={AppLink}
             pageName="account"
