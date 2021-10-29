@@ -8,6 +8,8 @@ import Avatar from 'ui/Avatar'
 
 import './ContextSwitcher.css'
 import A from 'ui/A'
+import { useParams } from 'react-router'
+import { providerToName } from 'shared/utils/provider'
 
 const styles = {
   button: 'flex items-center text-xl font-semibold',
@@ -23,6 +25,8 @@ function getCurrentContext({ activeContext, contexts }) {
 
 function ContextSwitcher({ activeContext, contexts }) {
   const currentContext = getCurrentContext({ activeContext, contexts })
+  const { provider } = useParams()
+  const isGh = providerToName(provider) === 'Github'
 
   function renderContext(context) {
     const { owner, pageName } = context
@@ -71,14 +75,16 @@ function ContextSwitcher({ activeContext, contexts }) {
           </MenuLink>
           {contexts.map(renderContext)}
         </div>
-        <div className="max-h-64 overflow-y-auto text-ds-gray-quinary text-xsm px-4 py-2 border-t border-ds-gray-secondary">
-          <span className="font-semibold">Don&apos;t see your org?</span>
-          <br />
-          <A to={{ pageName: 'userAppManagePage' }}>
-            {' '}
-            Manage access restrictions
-          </A>
-        </div>
+        {isGh && (
+          <div className="max-h-64 overflow-y-auto text-ds-gray-quinary text-xsm px-4 py-2 border-t border-ds-gray-secondary">
+            <span className="font-semibold">Don&apos;t see your org?</span>
+            <br />
+            <A to={{ pageName: 'userAppManagePage' }}>
+              {' '}
+              Manage access restrictions
+            </A>
+          </div>
+        )}
       </MenuList>
     </Menu>
   )

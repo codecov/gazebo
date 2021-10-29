@@ -6,10 +6,11 @@ import AppLink from 'shared/AppLink'
 import Avatar from 'ui/Avatar'
 import Icon from 'ui/Icon'
 import { useParams } from 'react-router'
+import { providerToName } from 'shared/utils/provider'
 
 function Dropdown({ currentUser }) {
   const { provider } = useParams()
-  const isGithubUser = provider === 'gh' || provider === 'github'
+  const isGh = providerToName(provider) === 'Github'
 
   return (
     <div data-testid="dropdown">
@@ -21,7 +22,7 @@ function Dropdown({ currentUser }) {
           </div>
         </MenuButton>
         <MenuList>
-          {isGithubUser && (
+          {isGh && (
             <MenuLink as={AppLink} pageName="userAppManagePage">
               Manage GitHub org access
             </MenuLink>
