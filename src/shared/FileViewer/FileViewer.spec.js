@@ -9,7 +9,6 @@ jest.mock('services/file/hooks')
 jest.mock('ui/Spinner', () => () => 'Spinner')
 
 describe('FileViewer', () => {
-  let props
   const defaultProps = {
     treePaths: [],
     coverage: {
@@ -31,15 +30,15 @@ describe('FileViewer', () => {
     change: null,
   }
 
-  function setup(over = {}, dataCoverageWithFlag = {}) {
-    props = { ...defaultProps, ...over }
+  function setup(props = {}, dataCoverageWithFlag = {}) {
+    const combindedProps = Object.assign({}, defaultProps, props)
     useCoverageWithFlags.mockReturnValue(dataCoverageWithFlag)
     render(
       <MemoryRouter
         initialEntries={['/gh/codecov/repo-test/blob/master/src/index2.py']}
       >
         <Route path="/:provider/:owner/:repo/blob/:ref/*">
-          <FileViewer {...props} />
+          <FileViewer {...combindedProps} />
         </Route>
       </MemoryRouter>
     )
@@ -186,6 +185,25 @@ describe('FileViewer', () => {
 
     it('renders coverage information of the flag', () => {
       expect(screen.getByText(/65\.00%/i)).toBeInTheDocument()
+    })
+  })
+  describe('Handles files with no content provided', () => {
+    beforeEach(() => {
+      setup(
+        { content: null },
+        {
+          data: {},
+          isLoading: false,
+        }
+      )
+    })
+
+    it('renders error message', () => {
+      expect(
+        screen.getByText(
+          /There was a problem getting the source code from your provider. Unable to show line by line coverage./i
+        )
+      ).toBeInTheDocument()
     })
   })
 })
