@@ -10,7 +10,7 @@ import { providerToName } from 'shared/utils/provider'
 
 function Dropdown({ currentUser }) {
   const { provider } = useParams()
-  const isGh = providerToName(provider) === 'Github'
+  const isGh = provider ? providerToName(provider) === 'Github' : false
 
   return (
     <div data-testid="dropdown">
