@@ -24,7 +24,7 @@ export default function Title({ title, Flags, children }) {
 
 Title.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  Flags: PropTypes.element,
+  Flags: PropTypes.func,
 }
 
 export const TitleCoverage = CoverageSelect

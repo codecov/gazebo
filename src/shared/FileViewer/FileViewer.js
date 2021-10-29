@@ -144,7 +144,7 @@ function FileViewer({
 FileViewer.propTypes = {
   content: PropTypes.string,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  coverage: PropTypes.object.isRequired,
+  coverage: PropTypes.objectOf(PropTypes.oneOf(['H', 'M', 'P'])).isRequired,
   totals: PropTypes.number,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,

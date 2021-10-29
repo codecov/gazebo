@@ -50,7 +50,7 @@ function CodeRenderer({
 
 CodeRenderer.propTypes = {
   code: PropTypes.string.isRequired,
-  coverage: PropTypes.shape(),
+  coverage: PropTypes.objectOf(PropTypes.oneOf(['H', 'M', 'P'])).isRequired,
   showCovered: PropTypes.bool,
   showUncovered: PropTypes.bool,
   showPartial: PropTypes.bool,
