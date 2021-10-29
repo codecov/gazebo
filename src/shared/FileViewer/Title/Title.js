@@ -36,6 +36,7 @@ export const TitleFlags = ({
   flagsIsLoading = false,
 }) => {
   return (
+    // Anyone know why this is 1 not 0? I think this means if there's one flag there's no UI to know what flag is on the file?
     list.length > 1 && (
       <>
         {flagsIsLoading && <Spinner />}
