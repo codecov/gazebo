@@ -10,7 +10,7 @@ import { useCoverageWithFlags } from 'services/file/hooks'
 
 import CodeRenderer from './CodeRenderer'
 import Title, { TitleFlags, TitleCoverage } from './Title'
-import { LINE_STATE } from './lineStates'
+import { LINE_STATE, LINE_TYPE } from './lineStates'
 
 function useCoverageData({ coverage, totals, selectedFlags }) {
   const coverageForAllFlags = selectedFlags.length === 0
@@ -144,7 +144,9 @@ function FileViewer({
 FileViewer.propTypes = {
   content: PropTypes.string,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  coverage: PropTypes.objectOf(PropTypes.oneOf(['H', 'M', 'P'])).isRequired,
+  coverage: PropTypes.objectOf(
+    PropTypes.oneOf([LINE_TYPE.HIT, LINE_TYPE.MISS, LINE_TYPE.PARTIAL])
+  ).isRequired,
   totals: PropTypes.number,
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,

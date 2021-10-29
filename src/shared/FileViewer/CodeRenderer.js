@@ -5,6 +5,7 @@ import 'shared/utils/prisimTheme.css'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 import './CodeRenderer.css'
 import Line from './Line'
+import { LINE_TYPE } from './lineStates'
 
 function CodeRenderer({
   code,
@@ -50,7 +51,9 @@ function CodeRenderer({
 
 CodeRenderer.propTypes = {
   code: PropTypes.string.isRequired,
-  coverage: PropTypes.objectOf(PropTypes.oneOf(['H', 'M', 'P'])).isRequired,
+  coverage: PropTypes.objectOf(
+    PropTypes.oneOf([LINE_TYPE.HIT, LINE_TYPE.MISS, LINE_TYPE.PARTIAL])
+  ).isRequired,
   showCovered: PropTypes.bool,
   showUncovered: PropTypes.bool,
   showPartial: PropTypes.bool,
