@@ -69,7 +69,7 @@ function transformRepoToTable(repos, owner, searchValue) {
     ),
     coverage:
       typeof repo.coverage === 'number' ? (
-        <div className="w-80 max-w-xs text-right">
+        <div className="w-full flex gap-2 justify-end items-center">
           <Progress amount={repo.coverage} label={true} />
         </div>
       ) : (
