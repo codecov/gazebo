@@ -173,8 +173,8 @@ function UpgradePlanForm({
           {accountDetails.inactiveUserCount} seats needed to activate all users.
         </p>
         <p className="mb-4 text-xs">
-          *You have {accountDetails.activatedStudentCount} activate students
-          that do not count towards the number of seats.
+          *You have {accountDetails.activatedStudentCount} active students that
+          do not count towards the number of active users.
         </p>
         <div className="flex items-center">
           <label htmlFor="nb-seats" className="flex-none cursor-pointer pr-2">
