@@ -138,4 +138,141 @@ describe('Pulls Table', () => {
       expect(msg).toBeInTheDocument()
     })
   })
+
+  describe('when pull rendered with null coverage', () => {
+    beforeEach(() => {
+      setup({
+        pulls: [
+          {
+            node: {
+              author: { username: 'RulaKhaled' },
+              compareWithBase: {
+                patchTotals: {
+                  coverage: null,
+                },
+              },
+              head: {
+                totals: {
+                  coverage: null,
+                },
+              },
+              pullId: 746,
+              state: 'MERGED',
+              title: 'Test1',
+              updatestamp: '2021-08-30T19:33:49.819672',
+            },
+          },
+        ],
+      })
+    })
+
+    it('renders text of null covergae', () => {
+      const msg = screen.getByText(/No report uploaded yet/)
+      expect(msg).toBeInTheDocument()
+    })
+
+    it('renders id of the pull', () => {
+      const id = screen.getByText(/#746/)
+      expect(id).toBeInTheDocument()
+    })
+  })
+
+  describe('when pull rendered with closed state', () => {
+    beforeEach(() => {
+      setup({
+        pulls: [
+          {
+            node: {
+              author: { username: 'RulaKhaled' },
+              compareWithBase: {
+                patchTotals: {
+                  coverage: 90,
+                },
+              },
+              head: {
+                totals: {
+                  coverage: 45,
+                },
+              },
+              pullId: 746,
+              state: 'CLOSED',
+              title: 'Test1',
+              updatestamp: '2021-08-30T19:33:49.819672',
+            },
+          },
+        ],
+      })
+    })
+
+    it('renders the icon of closed', () => {
+      const icon = screen.getByText('x.svg')
+      expect(icon).toBeInTheDocument()
+    })
+  })
+
+  describe('when pull rendered with merged state', () => {
+    beforeEach(() => {
+      setup({
+        pulls: [
+          {
+            node: {
+              author: { username: 'RulaKhaled' },
+              compareWithBase: {
+                patchTotals: {
+                  coverage: 90,
+                },
+              },
+              head: {
+                totals: {
+                  coverage: 45,
+                },
+              },
+              pullId: 746,
+              state: 'MERGED',
+              title: 'Test1',
+              updatestamp: '2021-08-30T19:33:49.819672',
+            },
+          },
+        ],
+      })
+    })
+
+    it('renders the icon of merge', () => {
+      const icon = screen.getByText(/check.svg/)
+      expect(icon).toBeInTheDocument()
+    })
+  })
+
+  describe('when pull rendered with opened state', () => {
+    beforeEach(() => {
+      setup({
+        pulls: [
+          {
+            node: {
+              author: { username: 'RulaKhaled' },
+              compareWithBase: {
+                patchTotals: {
+                  coverage: 90,
+                },
+              },
+              head: {
+                totals: {
+                  coverage: 45,
+                },
+              },
+              pullId: 746,
+              state: 'OPENED',
+              title: 'Test1',
+              updatestamp: '2021-08-30T19:33:49.819672',
+            },
+          },
+        ],
+      })
+    })
+
+    it('renders the icon of opened', () => {
+      const icon = screen.getByText(/lock-closed.svg/)
+      expect(icon).toBeInTheDocument()
+    })
+  })
 })

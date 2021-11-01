@@ -45,7 +45,7 @@ const Coverage = ({ pull }) =>
           <Icon name="x" variant="solid" />
         </span>
       )}
-      {pull.state === 'OPEN' && (
+      {pull.state === 'OPENED' && (
         <span>
           <Icon name="lockClosed" variant="solid" />
         </span>
@@ -70,14 +70,12 @@ Coverage.propTypes = {
 }
 
 const Change = ({ change }) =>
-  !isNaN(change) ? (
+  !isNaN(change) && (
     <div className="flex justify-end w-full font-semibold">
       <span className={change <= 0 ? 'nf bg-red-100' : 'bg-green-100'}>
         {change}%
       </span>
     </div>
-  ) : (
-    <span className="flex w-full justify-end">-</span>
   )
 
 Change.propTypes = {
@@ -93,15 +91,13 @@ const Title = ({ ownerData, pull }) => (
       <h2 className="font-medium text-sm md:text-base">{pull.title}</h2>
       <p className="text-xs">
         {pull?.author?.username}
-        {pull?.updatestamp ? (
+        {pull?.updatestamp && (
           <span className="text-ds-gray-quinary">
             {' opened ' +
               formatDistanceToNow(new Date(pull.updatestamp), {
                 addSuffix: true,
               })}
           </span>
-        ) : (
-          ''
         )}
       </p>
     </div>
