@@ -9,21 +9,7 @@ const classNamePerLineState = {
 }
 
 function CoverageSelect({ coverage, checked, onChange }) {
-  const lineState = getLineState()
-
-  function getLineState() {
-    if (coverage === 0) {
-      return LINE_STATE.UNCOVERED
-    } else if (coverage === 1) {
-      return LINE_STATE.COVERED
-    } else if (coverage === 2) {
-      return LINE_STATE.PARTIAL
-    }
-  }
-
-  const id = `show-${
-    coverage === 1 ? 'covered' : coverage === 2 ? 'partial' : 'uncovered'
-  }-lines`
+  const id = `show-${coverage.toLowerCase()}-lines`
 
   return (
     <div className="flex text-xs font-mono items-center gap-2">
@@ -38,18 +24,22 @@ function CoverageSelect({ coverage, checked, onChange }) {
       <label
         htmlFor={id}
         className={cs(
-          'cursor-pointer px-2 border-r-2 flex-1',
-          classNamePerLineState[lineState]
+          'cursor-pointer px-2 border-r-2 capitalize',
+          classNamePerLineState[coverage]
         )}
       >
-        {coverage === 1 ? 'Covered' : coverage === 2 ? 'Partial' : 'Uncovered'}
+        {coverage.toLowerCase()}
       </label>
     </div>
   )
 }
 
 CoverageSelect.propTypes = {
-  coverage: PropTypes.number.isRequired,
+  coverage: PropTypes.oneOf([
+    LINE_STATE.COVERED,
+    LINE_STATE.UNCOVERED,
+    LINE_STATE.PARTIAL,
+  ]).isRequired,
   checked: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
 }

@@ -3,6 +3,7 @@ import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 import { Fragment } from 'react'
+import InstructionBox from './instructionBox/InstructionBox'
 
 function New({ data }) {
   if (!data || !data?.repo?.uploadToken) {
@@ -91,37 +92,7 @@ function New({ data }) {
           following commands to your CI pipeline:
         </p>
 
-        <div className="h-36 w-5/5 bg-ds-gray-primary my-4 overflow-scroll rounded">
-          <div className="flex flex-row bg-ds-gray-secondary h-8">
-            <div className="bg-ds-gray-primary flex justify-center items-center w-1/6">
-              Linux
-            </div>
-            <div className="flex items-center justify-center w-1/5">
-              Alpine Linux
-            </div>
-            <div className="flex items-center justify-center w-1/6">mac OS</div>
-            <div className="flex items-center justify-center w-1/6">
-              Windows
-            </div>
-          </div>
-          <div className="flex flex-row">
-            <p className="mt-4 pl-4">
-              curl -Os https://uploader.codecov.io/latest/linux/codecov
-              <br />
-              <br />
-              chmod +x codecov
-              <br />
-              ./codecov -t
-            </p>
-            <span className="ml-24 mt-4">
-              <CopyClipboard
-                string={
-                  ' curl -Os https://uploader.codecov.io/latest/linux/codecov  chmod +x codecov  ./codecov -t'
-                }
-              />
-            </span>
-          </div>
-        </div>
+        <InstructionBox />
 
         <p className="text-base">
           It is highly recommended to{' '}
