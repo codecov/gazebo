@@ -206,6 +206,17 @@ function useNavLinks() {
       isExternalLink: true,
       text: 'Tree View',
     },
+    new: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/new`,
+      isExternalLink: false,
+      text: 'New',
+    },
     overview: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -354,6 +365,17 @@ function useStaticNavLinks() {
       path: () => `${config.MARKETING_BASE_URL}/sales`,
       isExternalLink: true,
       text: 'Sales Contact',
+    },
+    uploader: {
+      path: () => 'https://docs.codecov.com/docs/codecov-uploader',
+      isExternalLink: true,
+      text: 'Codecov Uploader',
+    },
+    integrityCheck: {
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader',
+      isExternalLink: true,
+      text: 'Uploader Integrity Check',
     },
   }
 }

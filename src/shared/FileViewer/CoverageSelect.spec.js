@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import CoverageSelect from './CoverageSelect'
+import { LINE_STATE } from './lineStates'
 
 const onChange = jest.fn(() => {})
 
@@ -12,31 +13,31 @@ describe('CoverageSelect', () => {
 
   describe('renders covered', () => {
     beforeEach(() => {
-      setup(1)
+      setup(LINE_STATE.COVERED)
     })
 
     it('covered', () => {
-      expect(screen.getByText('Covered')).toBeInTheDocument()
+      expect(screen.getByText('covered')).toBeInTheDocument()
     })
   })
 
   describe('renders uncovered', () => {
     beforeEach(() => {
-      setup(0)
+      setup(LINE_STATE.UNCOVERED)
     })
 
     it('uncovered', () => {
-      expect(screen.getByText('Uncovered')).toBeInTheDocument()
+      expect(screen.getByText('uncovered')).toBeInTheDocument()
     })
   })
 
   describe('renders partial', () => {
     beforeEach(() => {
-      setup(2)
+      setup(LINE_STATE.PARTIAL)
     })
 
     it('partial', () => {
-      expect(screen.getByText('Partial')).toBeInTheDocument()
+      expect(screen.getByText('partial')).toBeInTheDocument()
     })
   })
 })
