@@ -177,7 +177,7 @@ describe('Pulls Table', () => {
     })
   })
 
-  describe('when pull rendered with closed state', () => {
+  describe('when pull rendered with CLOSE state', () => {
     beforeEach(() => {
       setup({
         pulls: [
@@ -195,7 +195,7 @@ describe('Pulls Table', () => {
                 },
               },
               pullId: 746,
-              state: 'CLOSED',
+              state: 'CLOSE',
               title: 'Test1',
               updatestamp: '2021-08-30T19:33:49.819672',
             },
@@ -204,13 +204,13 @@ describe('Pulls Table', () => {
       })
     })
 
-    it('renders the icon of closed', () => {
-      const icon = screen.getByText('x.svg')
+    it('renders the icon of CLOSE', () => {
+      const icon = screen.getByText(/x.svg/)
       expect(icon).toBeInTheDocument()
     })
   })
 
-  describe('when pull rendered with merged state', () => {
+  describe('when pull rendered with MERGED state', () => {
     beforeEach(() => {
       setup({
         pulls: [
@@ -237,13 +237,13 @@ describe('Pulls Table', () => {
       })
     })
 
-    it('renders the icon of merge', () => {
+    it('renders the icon of MERGED', () => {
       const icon = screen.getByText(/check.svg/)
       expect(icon).toBeInTheDocument()
     })
   })
 
-  describe('when pull rendered with opened state', () => {
+  describe('when pull rendered with OPEN state', () => {
     beforeEach(() => {
       setup({
         pulls: [
@@ -261,7 +261,7 @@ describe('Pulls Table', () => {
                 },
               },
               pullId: 746,
-              state: 'OPENED',
+              state: 'OPEN',
               title: 'Test1',
               updatestamp: '2021-08-30T19:33:49.819672',
             },
@@ -270,7 +270,7 @@ describe('Pulls Table', () => {
       })
     })
 
-    it('renders the icon of opened', () => {
+    it('renders the icon of OPEN', () => {
       const icon = screen.getByText(/lock-closed.svg/)
       expect(icon).toBeInTheDocument()
     })

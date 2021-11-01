@@ -40,12 +40,12 @@ const Coverage = ({ pull }) =>
           <Icon name="check" variant="solid" />
         </span>
       )}
-      {pull.state === 'CLOSED' && (
+      {pull.state === 'CLOSE' && (
         <span className="text-ds-primary-red">
           <Icon name="x" variant="solid" />
         </span>
       )}
-      {pull.state === 'OPENED' && (
+      {pull.state === 'OPEN' && (
         <span>
           <Icon name="lockClosed" variant="solid" />
         </span>
