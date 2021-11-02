@@ -1,7 +1,13 @@
-pre > div:first-child > .line-number {
-  @apply pt-2; /* padding because table-cell's don't use margins */
+tbody,
+tr,
+td {
+  tab-size: 8;
 }
 
-pre > div:last-child > .line-number {
-  @apply pb-2; /* padding because table-cell's don't use margins */
+tbody tr:first-child td {
+  @apply pt-2;
+}
+
+tbody tr:last-child td {
+  @apply pb-2;
 }
