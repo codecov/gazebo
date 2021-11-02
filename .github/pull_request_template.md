@@ -5,3 +5,5 @@
 # Notable Changes
 
 # Screenshots
+
+# Link to Sample Entry
