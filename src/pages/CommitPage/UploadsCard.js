@@ -58,7 +58,7 @@ function UploadsCard({ setShowYAMLModal, data = [] }) {
     <div className="flex w-full flex-col border border-ds-gray-secondary text-ds-gray-octonary">
       <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
         <div className="flex justify-between text-base">
-          <span className="font-semibold">Uploads</span>
+          <h2 className="font-semibold">Uploads</h2>
           <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
             <span className="text-xs">view yml file</span>
           </A>
