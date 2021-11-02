@@ -69,15 +69,21 @@ describe('UpgradePlanForm', () => {
     },
   }
 
-  function setup(selectedPlan = null, invoice = null) {
+  function setup(
+    selectedPlan = null,
+    invoice = null,
+    accountDetails = defaultProps.accountDetails
+  ) {
+    console.log(accountDetails)
     props = {
       ...defaultProps,
       accountDetails: {
-        ...defaultProps.accountDetails,
+        ...accountDetails,
         plan: selectedPlan,
         latestInvoice: invoice,
       },
     }
+    console.log(props.accountDetails)
     useAddNotification.mockReturnValue(addNotification)
     useUpgradePlan.mockReturnValue({ mutate, isLoading: false })
     render(
@@ -166,6 +172,40 @@ describe('UpgradePlanForm', () => {
         const price = screen.getByText(/\$204/)
         expect(price).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('if there is are students', () => {
+    it('renders text for 1 student not taking active seats', () => {
+      const accountDetails = {
+        activatedUserCount: 9,
+        inactiveUserCount: 0,
+        plan: null,
+        latestInvoice: null,
+        activatedStudentCount: 1,
+      }
+      setup(freePlan, null, accountDetails)
+
+      const studentText = screen.getByText(
+        /\*You have 1 active student that does not count towards the number of active users./
+      )
+      expect(studentText).toBeInTheDocument()
+    })
+
+    it('renders text for 2 or more student not taking active seats', () => {
+      const accountDetails = {
+        activatedUserCount: 9,
+        inactiveUserCount: 0,
+        plan: null,
+        latestInvoice: null,
+        activatedStudentCount: 3,
+      }
+      setup(freePlan, null, accountDetails)
+
+      const studentText = screen.getByText(
+        /\*You have 3 active students that do not count towards the number of active users./
+      )
+      expect(studentText).toBeInTheDocument()
     })
   })
 
