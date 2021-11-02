@@ -36,6 +36,7 @@ describe('CodeRenderer', () => {
         showUncovered={showUncovered}
         code={code}
         coverage={coverage}
+        fileName={'sample.py'}
       />
     )
   }
