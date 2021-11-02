@@ -6,10 +6,10 @@ import Spinner from 'ui/Spinner'
 import Breadcrumb from 'ui/Breadcrumb'
 import A from 'ui/A'
 import { useCommit } from 'services/commit'
+import { getProviderCommitURL } from 'shared/utils/provider'
 
 import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
-import { getProviderCommitURL } from './helpers'
 import Header from './Header'
 import ImpactedFiles from './ImpactedFiles'
 import YamlModal from './YamlModal'
@@ -48,7 +48,7 @@ function CommitPage() {
         />
       </div>
       <div className="flex flex-col px-3 sm:px-0">
-        <Header provider={provider} />
+        <Header provider={provider} owner={owner} repo={repo} commit={commit} />
         <div className="flex gap-2 flex-col">
           <span className="text-lg font-semibold text-ds-gray-octonary">
             {data?.commit?.message}
