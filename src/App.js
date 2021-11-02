@@ -5,7 +5,7 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import BaseLayout from 'layouts/BaseLayout'
 import { ReactQueryDevtools } from 'react-query/devtools'
-import RepoPage from 'pages/RepoPage/RepoPage'
+import { useFlags } from 'shared/featureFlags'
 // Not lazy loading because the page is very small and is accessed often
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -16,6 +16,7 @@ const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
+const RepoPage = lazy(() => import('pages/RepoPage/RepoPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,6 +29,8 @@ const queryClient = new QueryClient({
 })
 
 function App() {
+  const { newRepoSetupLink } = useFlags({ newRepoSetupLink: true })
+
   return (
     <ToastNotificationProvider>
       <QueryClientProvider client={queryClient}>
@@ -99,11 +102,13 @@ function App() {
                 <FileViewPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/">
-              <BaseLayout>
-                <RepoPage />
-              </BaseLayout>
-            </Route>
+            {newRepoSetupLink && (
+              <Route path="/:provider/:owner/:repo/">
+                <BaseLayout>
+                  <RepoPage />
+                </BaseLayout>
+              </Route>
+            )}
             <Route path="/">
               <Redirect to="/gh" />
             </Route>

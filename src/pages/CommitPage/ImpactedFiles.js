@@ -7,6 +7,7 @@ import Spinner from 'ui/Spinner'
 import CommitsTable from './CommitsTable'
 import CommitFileView from './CommitFileView'
 
+// TODO: This !path logic can be simplified by using the router.
 function ImpactedFiles({ data }) {
   const { commit, path } = useParams()
   const loadingStateFile = (
@@ -17,7 +18,7 @@ function ImpactedFiles({ data }) {
 
   return !path ? (
     <>
-      <span className="text-base mb-4 font-semibold">Impacted files</span>
+      <h2 className="text-base mb-4 font-semibold">Impacted files</h2>
       <CommitsTable
         commit={commit}
         loading={data?.state}
