@@ -104,11 +104,9 @@ describe('Pulls Table', () => {
     })
 
     it('renders pulls change from base', () => {
-      const res1 = 45 - 90
-      const change1 = screen.getByText(res1 + '%')
+      const change1 = screen.getByText(/90%/)
       expect(change1).toBeInTheDocument()
-      const res2 = 100 - 87
-      const change2 = screen.getByText(res2 + '%')
+      const change2 = screen.getByText(/87%/)
       expect(change2).toBeInTheDocument()
     })
   })
@@ -204,8 +202,8 @@ describe('Pulls Table', () => {
       })
     })
 
-    it('renders the icon of CLOSE', () => {
-      const icon = screen.getByText(/x.svg/)
+    it('renders the icon pullRequestClosed', () => {
+      const icon = screen.getByText(/pull-request-closed.svg/)
       expect(icon).toBeInTheDocument()
     })
   })
@@ -237,8 +235,8 @@ describe('Pulls Table', () => {
       })
     })
 
-    it('renders the icon of MERGED', () => {
-      const icon = screen.getByText(/check.svg/)
+    it('renders the icon merge', () => {
+      const icon = screen.getByText(/merge.svg/)
       expect(icon).toBeInTheDocument()
     })
   })
@@ -270,8 +268,8 @@ describe('Pulls Table', () => {
       })
     })
 
-    it('renders the icon of OPEN', () => {
-      const icon = screen.getByText(/lock-closed.svg/)
+    it('renders the icon pullRequestOpen', () => {
+      const icon = screen.getByText(/pull-request-open.svg/)
       expect(icon).toBeInTheDocument()
     })
   })

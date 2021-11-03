@@ -5,6 +5,7 @@ import Avatar from 'ui/Avatar'
 import PropTypes from 'prop-types'
 import { useOwner } from 'services/user'
 import Icon from 'ui/Icon'
+import A from 'ui/A'
 
 const headers = [
   {
@@ -32,33 +33,41 @@ const headers = [
   },
 ]
 
+const PullState = ({ state }) => (
+  <span className="text-ds-gray-quinary">
+    {state === 'MERGED' && <Icon name="merge" variant="developer" size="sm" />}
+    {state === 'CLOSE' && (
+      <Icon name="pullRequestClosed" variant="developer" size="sm" />
+    )}
+    {state === 'OPEN' && (
+      <Icon name="pullRequestOpen" variant="developer" size="sm" />
+    )}
+  </span>
+)
+
+PullState.propTypes = {
+  state: PropTypes.string,
+}
+
 const Coverage = ({ pull }) =>
   typeof pull.head?.totals?.coverage === 'number' ? (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
-      {pull.state === 'MERGED' && (
-        <span className="text-ds-primary-green">
-          <Icon name="check" variant="solid" />
+      <PullState state={pull.state} />
+      <A to={{ pageName: 'pull', options: { pullid: pull.pullId } }}>
+        <span className="mx-6 text-ds-gray-quinary font-mono">
+          #{pull.pullId}
         </span>
-      )}
-      {pull.state === 'CLOSE' && (
-        <span className="text-ds-primary-red">
-          <Icon name="x" variant="solid" />
-        </span>
-      )}
-      {pull.state === 'OPEN' && (
-        <span>
-          <Icon name="lockClosed" variant="solid" />
-        </span>
-      )}
-      <span className="mx-6 text-ds-gray-quinary">#{pull.pullId}</span>
+      </A>
       <Progress amount={pull.head?.totals?.coverage} label={true} />
     </div>
   ) : (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
-      <span className="text-ds-primary-red">
-        <Icon name="x" variant="solid" />
-      </span>
-      <span className="mx-6 text-ds-gray-quinary">#{pull.pullId}</span>
+      <PullState state={pull.state} />
+      <A to={{ pageName: 'pull', options: { pullid: pull.pullId } }}>
+        <span className="mx-6 text-ds-gray-quinary font-mono">
+          #{pull.pullId}
+        </span>
+      </A>
       <span className="text-ds-gray-quinary text-sm">
         No report uploaded yet
       </span>
@@ -88,9 +97,15 @@ const Title = ({ ownerData, pull }) => (
       {ownerData && <Avatar user={ownerData} bordered />}
     </span>
     <div className="flex flex-col">
-      <h2 className="font-medium text-sm md:text-base">{pull.title}</h2>
+      <A to={{ pageName: 'pull', options: { pullid: pull.pullId } }}>
+        <h2 className="font-medium text-sm md:text-base text-black">
+          {pull.title}
+        </h2>
+      </A>
       <p className="text-xs">
-        {pull?.author?.username}
+        <A to={{ pageName: 'owner' }}>
+          <span className="text-black">{pull?.author?.username}</span>
+        </A>
         {pull?.updatestamp && (
           <span className="text-ds-gray-quinary">
             {' opened ' +
@@ -129,9 +144,7 @@ function transformPullToTable(pulls) {
     if (!pullNode) return handleOnNull() //does the production api return null vals?
     const pull = pullNode.node
     const { data: ownerData } = useOwner({ username: pull?.author?.username })
-    const change =
-      pull?.head?.totals?.coverage -
-      pull?.compareWithBase?.patchTotals?.coverage
+    const change = pull?.compareWithBase?.patchTotals?.coverage
 
     return {
       title: <Title ownerData={ownerData} pull={pull} />,
