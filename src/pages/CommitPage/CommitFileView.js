@@ -33,6 +33,7 @@ function CommitFileView({ diff }) {
       treePaths={[]}
       change={getChange()}
       flagNames={data?.flagNames}
+      fileName={path}
       title={
         <Breadcrumb
           paths={[

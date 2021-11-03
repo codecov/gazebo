@@ -13,7 +13,7 @@ function CodeRenderer({
   showCovered = false,
   showUncovered = false,
   showPartial = false,
-  fileName = '',
+  fileName,
 }) {
   return (
     <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border">
@@ -57,7 +57,7 @@ CodeRenderer.propTypes = {
   showCovered: PropTypes.bool,
   showUncovered: PropTypes.bool,
   showPartial: PropTypes.bool,
-  fileName: PropTypes.string,
+  fileName: PropTypes.string.isRequired,
 }
 
 export default CodeRenderer
