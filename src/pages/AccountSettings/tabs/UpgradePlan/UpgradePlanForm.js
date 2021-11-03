@@ -117,6 +117,18 @@ function useSubmit({ owner, provider }) {
   return { upgradePlan, ...rest }
 }
 
+function renderStudentText(activatedStudents) {
+  return (
+    <p className="mb-4 text-xs">
+      {activatedStudents === 1
+        ? `*You have ${activatedStudents} active student that
+        does not count towards the number of active users.`
+        : `*You have ${activatedStudents} active students that
+        do not count towards the number of active users.`}
+    </p>
+  )
+}
+
 function UpgradePlanForm({
   proPlanYear,
   proPlanMonth,
@@ -168,10 +180,11 @@ function UpgradePlanForm({
         )}
       />
       <div className="mt-8 pt-8 border-gray-200 border-t">
-        <p className="mb-4">
+        <p className="mb-2">
           {accountDetails.activatedUserCount} active users.{' '}
           {accountDetails.inactiveUserCount} seats needed to activate all users.
         </p>
+        {renderStudentText(accountDetails.activatedStudentCount)}
         <div className="flex items-center">
           <label htmlFor="nb-seats" className="flex-none cursor-pointer pr-2">
             User Seats:

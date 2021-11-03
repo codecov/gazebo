@@ -458,6 +458,124 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('repo overview link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.overview.path()).toBe(
+        '/gh/RulaKhaled/test'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.overview.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test'
+      )
+      expect(hookData.result.current.overview.path({ owner: 'cat' })).toBe(
+        '/gh/cat/test'
+      )
+    })
+  })
+
+  describe('repo branches link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/branches'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.branches.path()).toBe(
+        '/gh/RulaKhaled/test/branches'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.branches.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/branches'
+      )
+      expect(hookData.result.current.branches.path({ owner: 'cat' })).toBe(
+        '/gh/cat/test/branches'
+      )
+    })
+  })
+
+  describe('repo pulls link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/pulls'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.pulls.path()).toBe(
+        '/gh/RulaKhaled/test/pulls'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.pulls.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/pulls'
+      )
+      expect(hookData.result.current.pulls.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/pulls'
+      )
+    })
+  })
+
+  describe('repo compare link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/compare'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.compare.path()).toBe(
+        '/gh/RulaKhaled/test/compare'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.compare.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/compare'
+      )
+      expect(hookData.result.current.compare.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/compare'
+      )
+    })
+  })
+
+  describe('repo settings link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/settings'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.settings.path()).toBe(
+        '/gh/RulaKhaled/test/settings'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.settings.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/settings'
+      )
+      expect(hookData.result.current.settings.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/settings'
+      )
+    })
+  })
+
+  describe('repo new link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/new'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.new.path()).toBe('/gh/RulaKhaled/test/new')
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.new.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/new'
+      )
+      expect(hookData.result.current.new.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/new'
+      )
+    })
+  })
+
   describe('signup forward the marketing link', () => {
     beforeEach(() => {
       setup([
@@ -501,8 +619,11 @@ describe('useStaticNavLinks', () => {
     ${links.freeTrial}         | ${`${config.MARKETING_BASE_URL}/trial`}
     ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
     ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
+    ${links.userAppManagePage} | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}
+    ${links.uploader}          | ${'https://docs.codecov.com/docs/codecov-uploader'}
+    ${links.integrityCheck}    | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

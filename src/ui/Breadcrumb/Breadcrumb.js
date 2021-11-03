@@ -6,7 +6,7 @@ import AppLink from 'shared/AppLink'
 
 function Breadcrumb({ paths = [] }) {
   return (
-    <div className="flex items-center gap-1">
+    <nav className="flex items-center gap-1">
       {paths.map((to, i) => {
         return (
           <Fragment key={i}>
@@ -22,7 +22,7 @@ function Breadcrumb({ paths = [] }) {
           </Fragment>
         )
       })}
-    </div>
+    </nav>
   )
 }
 

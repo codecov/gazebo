@@ -5,16 +5,18 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import BaseLayout from 'layouts/BaseLayout'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import { useFlags } from 'shared/featureFlags'
 // Not lazy loading because the page is very small and is accessed often
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
+const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
-const FullLayout = lazy(() => import('./layouts/FullLayout'))
+const RepoPage = lazy(() => import('pages/RepoPage/RepoPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,6 +29,8 @@ const queryClient = new QueryClient({
 })
 
 function App() {
+  const { newRepoSetupLink } = useFlags({ newRepoSetupLink: true })
+
   return (
     <ToastNotificationProvider>
       <QueryClientProvider client={queryClient}>
@@ -73,9 +77,9 @@ function App() {
                 <OwnerPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/" exact>
+            <Route path="/:provider/:owner/:repo/pull/:pullid" exact>
               <BaseLayout>
-                <FullLayout>Repo page</FullLayout>
+                <PullRequestPage />
               </BaseLayout>
             </Route>
             <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
@@ -98,6 +102,13 @@ function App() {
                 <FileViewPage />
               </BaseLayout>
             </Route>
+            {newRepoSetupLink && (
+              <Route path="/:provider/:owner/:repo/">
+                <BaseLayout>
+                  <RepoPage />
+                </BaseLayout>
+              </Route>
+            )}
             <Route path="/">
               <Redirect to="/gh" />
             </Route>

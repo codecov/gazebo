@@ -1,8 +1,7 @@
-import { render, fireEvent } from '@testing-library/react'
-import { MemoryRouter, Route, Switch } from 'react-router-dom'
+import { render, fireEvent, screen } from '@testing-library/react'
+import { MemoryRouter, Switch, Route } from 'react-router-dom'
 import Dropdown from './Dropdown'
-
-const provider = 'gh'
+import { useParams } from 'react-router-dom'
 
 const currentUser = {
   user: {
@@ -11,54 +10,92 @@ const currentUser = {
   },
 }
 
-const links = [
-  {
-    label: 'Settings',
-    to: `/account/${provider}/${currentUser.user.username}`,
-  },
-  { label: 'Organizations', to: `/${provider}` },
-  { label: 'Sign Out', to: `https://stage-web.codecov.dev/logout/${provider}` },
-]
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
+  useParams: jest.fn(() => {}),
+}))
 
 describe('Dropdown', () => {
-  let wrapper
+  let links
+  const userAppManagePage = 'Manage GitHub org access'
+  function setup({ provider }) {
+    links = [
+      {
+        label: 'Settings',
+        to: `/account/${provider}/${currentUser.user.username}`,
+      },
+      { label: 'Organizations', to: `/${provider}` },
+      {
+        label: 'Sign Out',
+        to: `https://stage-web.codecov.dev/logout/${provider}`,
+      },
+    ]
 
-  beforeEach(() => {
-    wrapper = render(<Dropdown currentUser={currentUser} />, {
-      wrapper: (props) => (
-        <MemoryRouter initialEntries={[`/${provider}`]}>
-          <Switch>
-            <Route path="/:provider" exact>
-              {props.children}
-            </Route>
-          </Switch>
-        </MemoryRouter>
-      ),
-    })
-  })
+    useParams.mockReturnValue({ provider })
+    render(
+      <MemoryRouter initialEntries={[`/${provider}`]}>
+        <Switch>
+          <Route path="/:provider" exact>
+            <Dropdown currentUser={currentUser} />
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    )
+  }
 
   describe('when rendered', () => {
     it('renders the users avatar', () => {
-      const img = wrapper.getByRole('img')
+      setup({ provider: 'gh' })
+
+      const img = screen.getByRole('img')
       expect(img).toHaveAttribute('alt', 'avatar')
     })
 
     it('the links arent visible', () => {
+      setup({ provider: 'gh' })
+
       links.forEach((link) => {
-        const a = wrapper.getByText(link.label).closest('a')
+        const a = screen.getByText(link.label)
         expect(a).not.toBeVisible()
       })
+      const a = screen.getByText(userAppManagePage).closest('a')
+      expect(a).not.toBeVisible()
     })
   })
 
   describe('when the avatar is clicked', () => {
     it('the links become visible', () => {
-      fireEvent.mouseDown(wrapper.getByRole('button'))
+      setup({ provider: 'gh' })
+
+      fireEvent.mouseDown(screen.getByRole('button'))
       links.forEach((link) => {
-        const a = wrapper.getByText(link.label).closest('a')
+        const a = screen.getByText(link.label).closest('a')
         expect(a).toBeVisible()
         expect(a).toHaveAttribute('href', link.to)
       })
+      const a = screen.getByText(userAppManagePage).closest('a')
+      expect(a).toBeVisible()
+    })
+  })
+
+  describe('when rendered with a provider that is not github', () => {
+    it('renders the users avatar', () => {
+      setup({ provider: 'gl' })
+
+      const img = screen.getByRole('img')
+      expect(img).toHaveAttribute('alt', 'avatar')
+    })
+
+    it('does not render manage giithub org access', () => {
+      setup({ provider: 'gl' })
+
+      fireEvent.mouseDown(screen.getByRole('button'))
+      links.forEach((link) => {
+        const a = screen.getByText(link.label).closest('a')
+        expect(a).toBeVisible()
+      })
+      const a = screen.queryByText(userAppManagePage)
+      expect(a).not.toBeInTheDocument()
     })
   })
 })

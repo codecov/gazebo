@@ -1,6 +1,5 @@
-import { render } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Switch, Route } from 'react-router-dom'
 import Header from './Header'
 import { useUser } from 'services/user'
 
@@ -14,12 +13,23 @@ const loggedInUser = {
 }
 
 describe('Header', () => {
-  it('renders the DesktopMenu', () => {
+  function setup({ provider }) {
     useUser.mockReturnValue({ data: loggedInUser })
-    const wrapper = render(<Header />, {
-      wrapper: MemoryRouter,
-    })
-    const menu = wrapper.getByTestId('desktop-menu')
+
+    render(
+      <MemoryRouter initialEntries={[`/${provider}`]}>
+        <Switch>
+          <Route path="/:provider" exact>
+            <Header />
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    )
+  }
+
+  it('renders the DesktopMenu', () => {
+    setup({ provider: 'gh' })
+    const menu = screen.getByTestId('desktop-menu')
     expect(menu).toBeInTheDocument()
   })
 })

@@ -8,6 +8,9 @@ import { useRepos } from 'services/repos/hooks'
 import AppLink from 'shared/AppLink'
 
 import RepoTitleLink from './RepoTitleLink'
+import NoReposBlock from './NoReposBlock'
+
+import { useFlags } from 'shared/featureFlags'
 
 const tableActive = [
   {
@@ -40,15 +43,13 @@ const tableInactive = [
   },
 ]
 
-function transformRepoToTable(repos, owner, searchValue) {
+function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
   // if there are no repos show empty message
   if (repos.length <= 0) {
     return [
       {
         title: (
-          <span className="text-sm">
-            {searchValue ? 'no results found' : 'no repos detected'}
-          </span>
+          <span className="text-sm">{searchValue && 'no results found'}</span>
         ),
       },
     ]
@@ -70,7 +71,7 @@ function transformRepoToTable(repos, owner, searchValue) {
     ),
     coverage:
       typeof repo.coverage === 'number' ? (
-        <div className="w-80 max-w-xs text-right">
+        <div className="w-full flex gap-2 justify-end items-center">
           <Progress amount={repo.coverage} label={true} />
         </div>
       ) : (
@@ -81,7 +82,7 @@ function transformRepoToTable(repos, owner, searchValue) {
         Not yet enabled{' '}
         <AppLink
           className="text-ds-blue font-semibold"
-          pageName="repo"
+          pageName={newRepoSetupLink ? 'new' : 'repo'}
           options={{
             owner: repo.author.username,
             repo: repo.name,
@@ -109,22 +110,30 @@ function ReposTable({
     owner,
   })
 
-  const dataTable = transformRepoToTable(data.repos, owner, searchValue)
+  const { newRepoSetupLink } = useFlags({ newRepoSetupLink: true })
+  const dataTable = transformRepoToTable(
+    data.repos,
+    owner,
+    searchValue,
+    newRepoSetupLink
+  )
 
   return (
     <>
       <Table data={dataTable} columns={active ? tableActive : tableInactive} />
-      {hasNextPage && (
-        <div className="w-full mt-4 flex justify-center">
-          <Button
-            hook="load-more"
-            isLoading={isFetchingNextPage}
-            onClick={fetchNextPage}
-          >
-            Load More
-          </Button>
-        </div>
-      )}
+      {data?.repos?.length
+        ? hasNextPage && (
+            <div className="w-full mt-4 flex justify-center">
+              <Button
+                hook="load-more"
+                isLoading={isFetchingNextPage}
+                onClick={fetchNextPage}
+              >
+                Load More
+              </Button>
+            </div>
+          )
+        : !searchValue && <NoReposBlock />}
     </>
   )
 }

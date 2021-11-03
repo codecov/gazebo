@@ -18,7 +18,7 @@ function HomePage({ active = false }) {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center mt-16">
+      <div className="flex items-center justify-center mt-16">
         <LogoSpinner />
       </div>
     )

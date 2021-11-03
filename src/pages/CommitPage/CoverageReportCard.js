@@ -6,7 +6,7 @@ import Icon from 'ui/Icon'
 import A from 'ui/A'
 import { isNumber } from 'lodash'
 import { providerToName } from 'shared/utils'
-import { getProviderPullURL } from './helpers'
+import { getProviderPullURL } from 'shared/utils/provider'
 
 function extractCommitData(data) {
   const rawPatch = data?.compareWithParent?.patchTotals?.coverage
@@ -84,7 +84,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
 
   return (
     <div className="flex w-full p-4 flex-col border text-ds-gray-octonary">
-      <span className="font-semibold text-base">Coverage report</span>
+      <h2 className="font-semibold text-base">Coverage report</h2>
       <div className="flex mt-4 justify-between w-full">
         <div className="flex flex-col justify-center">
           <div className="flex mb-1 text-xs font-semibold">

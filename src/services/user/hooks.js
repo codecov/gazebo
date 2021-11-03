@@ -10,6 +10,7 @@ const currentUserFragment = `
 fragment CurrentUserFragment on Me {
   email
   privateAccess
+  onboardingCompleted
   user {
     name
     username
@@ -161,6 +162,42 @@ export function useUpdateProfile({ provider }) {
           },
         },
       }).then((res) => res?.data?.updateProfile?.me)
+    },
+    {
+      onSuccess: (user) => {
+        queryClient.setQueryData(['currentUser', provider], () => user)
+      },
+    }
+  )
+}
+
+export function useOnboardUser() {
+  const { provider } = useParams()
+  const queryClient = useQueryClient()
+  const mutation = `
+    mutation OnboardUser($input: OnboardUserInput!) {
+      onboardUser(input: $input) {
+        error {
+          __typename
+        }
+        me {
+          ...CurrentUserFragment
+        }
+      }
+    }
+    ${currentUserFragment}
+  `
+
+  return useMutation(
+    (input) => {
+      return Api.graphqlMutation({
+        provider,
+        query: mutation,
+        mutationPath: 'onboardUser',
+        variables: {
+          input,
+        },
+      }).then((res) => res?.data?.onboardUser?.me)
     },
     {
       onSuccess: (user) => {
