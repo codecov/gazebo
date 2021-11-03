@@ -193,7 +193,7 @@ describe('Pulls Table', () => {
                 },
               },
               pullId: 746,
-              state: 'CLOSE',
+              state: 'CLOSED',
               title: 'Test1',
               updatestamp: '2021-08-30T19:33:49.819672',
             },
@@ -271,6 +271,37 @@ describe('Pulls Table', () => {
     it('renders the icon pullRequestOpen', () => {
       const icon = screen.getByText(/pull-request-open.svg/)
       expect(icon).toBeInTheDocument()
+    })
+  })
+
+  describe('when pull rendered with no head covarge', () => {
+    beforeEach(() => {
+      setup({
+        pulls: [
+          {
+            node: {
+              author: { username: 'RulaKhaled' },
+              compareWithBase: {
+                patchTotals: {
+                  coverage: 90,
+                },
+              },
+              head: {
+                totals: null,
+              },
+              pullId: 746,
+              state: 'OPEN',
+              title: 'Test1',
+              updatestamp: '2021-08-30T19:33:49.819672',
+            },
+          },
+        ],
+      })
+    })
+
+    it('does not render the change', () => {
+      const change = screen.queryByText(/90/)
+      expect(change).not.toBeInTheDocument()
     })
   })
 })

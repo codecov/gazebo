@@ -36,7 +36,7 @@ const headers = [
 const PullState = ({ state }) => (
   <span className="text-ds-gray-quinary">
     {state === 'MERGED' && <Icon name="merge" variant="developer" size="sm" />}
-    {state === 'CLOSE' && (
+    {state === 'CLOSED' && (
       <Icon name="pullRequestClosed" variant="developer" size="sm" />
     )}
     {state === 'OPEN' && (
@@ -78,17 +78,23 @@ Coverage.propTypes = {
   pull: PropTypes.object,
 }
 
-const Change = ({ change }) =>
-  typeof change === 'number' && (
-    <div className="flex justify-end w-full font-semibold">
-      <span className={change <= 0 ? 'nf bg-red-100' : 'bg-green-100'}>
-        {change}%
-      </span>
-    </div>
+const Change = ({ pull }) => {
+  if (!pull.head?.totals?.coverage) return ''
+  const change = pull?.compareWithBase?.patchTotals?.coverage
+
+  return (
+    typeof change === 'number' && (
+      <div className="flex justify-end w-full font-semibold">
+        <span className={change <= 0 ? 'nf bg-red-100' : 'bg-green-100'}>
+          {change}%
+        </span>
+      </div>
+    )
   )
+}
 
 Change.propTypes = {
-  change: PropTypes.number,
+  pull: PropTypes.object,
 }
 
 const Title = ({ ownerData, pull }) => (
@@ -144,12 +150,11 @@ function transformPullToTable(pulls) {
     if (!pullNode) return handleOnNull() //does the production api return null vals?
     const pull = pullNode.node
     const { data: ownerData } = useOwner({ username: pull?.author?.username })
-    const change = pull?.compareWithBase?.patchTotals?.coverage
 
     return {
       title: <Title ownerData={ownerData} pull={pull} />,
       coverage: <Coverage pull={pull} />,
-      change: <Change change={change} />,
+      change: <Change pull={pull} />,
     }
   })
 }
