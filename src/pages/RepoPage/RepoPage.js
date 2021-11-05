@@ -3,6 +3,8 @@ import Breadcrumb from 'ui/Breadcrumb'
 import { useRouteMatch, Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import New from './new'
+import RepoErrorHandler from './RepoErrorHandler'
+import { Redirect } from 'react-router'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -12,6 +14,10 @@ function RepoPage() {
     owner,
     repo,
   })
+
+  if (!data) {
+    return <RepoErrorHandler />
+  }
 
   const { private: privateRepo } = data.repo
 
@@ -52,6 +58,9 @@ function RepoPage() {
           </Route>
           <Route path={`${url}/settings`} exact>
             <h1>Settings</h1>
+          </Route>
+          <Route path={`${url}/*`}>
+            <Redirect to={url} />
           </Route>
         </Switch>
       </div>

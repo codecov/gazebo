@@ -17,6 +17,9 @@ const FileViewPage = lazy(() => import('./pages/FileView'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const RepoPage = lazy(() => import('pages/RepoPage/RepoPage'))
+const LoginErrorHandler = lazy(() =>
+  import('pages/LoginErrorHandler/LoginErrorHandler')
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +40,11 @@ function App() {
         <ReactQueryDevtools initialIsOpen={false} />
         <BrowserRouter>
           <Switch>
+            <Route path="/login/:provider/*">
+              <BaseLayout>
+                <LoginErrorHandler />
+              </BaseLayout>
+            </Route>
             <Route path="/login/:provider">
               <BaseLayout>
                 <LoginPage />
