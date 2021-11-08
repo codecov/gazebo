@@ -43,13 +43,7 @@ const tableInactive = [
   },
 ]
 
-function transformRepoToTable(
-  repos,
-  owner,
-  searchValue,
-  newRepoSetupLink,
-  active
-) {
+function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
   // if there are no repos show empty message
   if (repos.length <= 0) {
     return [
@@ -121,8 +115,7 @@ function ReposTable({
     data.repos,
     owner,
     searchValue,
-    newRepoSetupLink,
-    active
+    newRepoSetupLink
   )
 
   return (
