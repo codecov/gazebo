@@ -1,5 +1,5 @@
 import { usePulls } from 'services/pulls'
-import PullsTabel from './PullsTable'
+import PullsTable from './PullsTable'
 import { useParams } from 'react-router'
 
 function PullsPage() {
@@ -8,7 +8,7 @@ function PullsPage() {
 
   return (
     <div className="w-full h-screen overflow-scroll">
-      <PullsTabel pulls={pulls} />
+      <PullsTable pulls={pulls} />
     </div>
   )
 }
