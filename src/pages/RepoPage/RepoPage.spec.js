@@ -66,4 +66,20 @@ describe('RepoPage', () => {
       expect(privateSpan).toBeInTheDocument()
     })
   })
+
+  describe('when rendered with null data', () => {
+    beforeEach(() => {
+      setup(null)
+    })
+
+    it('renders the 404 error', () => {
+      const err = screen.getByText(/404 error/)
+      expect(err).toBeInTheDocument()
+    })
+
+    it('renders the erorr text', () => {
+      const err = screen.getByText(/We can't find what you're looking for/)
+      expect(err).toBeInTheDocument()
+    })
+  })
 })
