@@ -45,26 +45,26 @@ function Line({
   }
 
   return (
-    <div {...getLineProps({ line, key: number })} className={'table-row'}>
-      <div
+    <tr {...getLineProps({ line, key: number })}>
+      <td
         aria-label={lineStateToLabel[lineState]}
         className={cs(
-          'line-number text-ds-gray-quaternary font-mono table-cell pl-4 pr-2 text-right border-solid',
+          'line-number text-ds-gray-quaternary font-mono text-right border-solid break-all pr-2',
           classNamePerLineState[lineState]
         )}
       >
         {number}
-      </div>
-      <div
-        className={cs('table-cell pl-2', {
+      </td>
+      <td
+        className={cs('pl-2 break-all', {
           'opacity-50': lineState === LINE_STATE.BLANK,
         })}
       >
         {line.map((token, key) => (
           <span key={key} {...getTokenProps({ token, key })} />
         ))}
-      </div>
-    </div>
+      </td>
+    </tr>
   )
 }
 

@@ -51,7 +51,7 @@ function FileViewer({
   title,
   change,
   flagNames = [],
-  fileName = '',
+  fileName,
 }) {
   const [selectedFlags, setSelectedFlags] = useState([])
   const [covered, setCovered] = useState(true)
@@ -97,16 +97,16 @@ function FileViewer({
       <div>
         <div
           className={`
-            flex flex-col sm:flex-row flex-wrap items-start justify-between gap-2 sm:items-center
+            flex flex-row flex-wrap items-start justify-between gap-2 sm:items-center
             bg-ds-gray-primary
             border-t p-3 border-r border-l border-solid border-ds-gray-tertiary 
           `}
         >
-          <Breadcrumb paths={[...treePaths]} />
-          <div className="flex w-full sm:w-auto gap-2">
-            <div className="w-full sm:w-56">
-              <Progress amount={coverageTotals} label={true} />
-            </div>
+          <div className="flex-1">
+            <Breadcrumb paths={[...treePaths]} />
+          </div>
+          <div className="w-full max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
+            <Progress amount={coverageTotals} label />
             {change && (
               <span
                 className={cs('font-semibold text-sm', {
@@ -151,7 +151,7 @@ FileViewer.propTypes = {
   treePaths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)).isRequired,
   change: PropTypes.number,
   flagNames: PropTypes.arrayOf(PropTypes.string),
-  fileName: PropTypes.string,
+  fileName: PropTypes.string.isRequired,
 }
 
 export default FileViewer
