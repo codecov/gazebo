@@ -20,9 +20,7 @@ describe('LoginErrorHandler', () => {
     })
 
     it('renders 404 error pic', () => {
-      expect(
-        screen.getByRole('img', { src: 'error-404.svg' })
-      ).toBeInTheDocument()
+      expect(screen.getByText('error-404.svg')).toBeInTheDocument()
     })
 
     it('renders sign up button', () => {
