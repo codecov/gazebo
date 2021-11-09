@@ -2,7 +2,7 @@ import { useResyncUser } from 'services/user'
 import Spinner from 'ui/Spinner'
 import { useNavLinks } from 'services/navigation'
 import { Fragment } from 'react'
-import img404 from 'assets/svg/error-404.svg'
+import { ReactComponent as CodecovIcon } from 'assets/svg/error-404.svg'
 import { useUser } from 'services/user'
 
 function RepoErrorHandler() {
@@ -13,22 +13,14 @@ function RepoErrorHandler() {
   const isPrivateAccess = currentUser?.privateAccess
   const { triggerResync, isSyncing } = useResyncUser()
   const { signIn } = useNavLinks()
-  const { illustration } = {
-    illustration: img404,
-  }
 
   return (
     <div className="flex items-center flex-col mt-40">
-      <img
-        alt="illustration error"
-        width="154px"
-        height="192px"
-        src={illustration}
-      />
+      <CodecovIcon width="154px" height="192px" />
       {!isSyncing ? (
         <Fragment>
           <h1 className="font-semibold text-3xl my-4">404 error</h1>
-          <p>We can&apos;t find what you&apos;re looking for</p>
+          <p>We can&apos;t find what you&apos;re looking for.</p>
           <p>
             {' '}
             If it&apos;s a private repo you may need to{' '}
