@@ -27,7 +27,7 @@
     "react-image": "^4.0.3",
     "react-modal": "^3.14.3",
     "react-query": "^3.24.5",
-    "react-router-dom": "^5.2.1",
+    "react-router-dom": "^6.0.1",
     "react-scripts": "^4.0.3",
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
