@@ -30,11 +30,12 @@ function ResyncButton() {
         {isGh && (
           <div>
             {' '}
-            or{' '}
+            or <A to={{ pageName: 'userAppManagePage' }}>check org access</A>.
+            Learn more in{' '}
             <A hook="oauth-troubleshoot" to={{ pageName: 'oauthTroubleshoot' }}>
-              admin approval
-            </A>{' '}
-            may be required.
+              our docs
+            </A>
+            .
           </div>
         )}
       </div>

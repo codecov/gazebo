@@ -1,8 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useParams, Route, Switch } from 'react-router-dom'
 import { useUser } from 'services/user'
 import { useAccountDetails } from 'services/account'
-import { useParams } from 'react-router-dom'
 
 import DesktopMenu from './DesktopMenu'
 import { LoginPrompt } from './DesktopMenu'
@@ -29,15 +28,25 @@ const accountDetails = {
 }
 
 describe('DesktopMenu', () => {
-  function setup() {
-    render(<DesktopMenu />, { wrapper: MemoryRouter })
+  function setup({ provider }) {
+    render(
+      <MemoryRouter initialEntries={[`/${provider}`]}>
+        <Switch>
+          <Route path="/:provider" exact>
+            <DesktopMenu />
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    )
   }
 
   it('renders static links', () => {
+    const provider = 'gh'
+
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: 'gh' })
+    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup()
+    setup({ provider })
 
     const expectedStaticLinks = [
       { label: 'Docs', to: 'https://docs.codecov.io/' },
@@ -52,37 +61,41 @@ describe('DesktopMenu', () => {
   })
 
   it('renders the dropdown when user is logged in', () => {
+    const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: 'gh' })
+    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup()
+    setup({ provider })
 
     const dropdown = screen.getByTestId('dropdown')
     expect(dropdown).toBeInTheDocument()
   })
 
   it('renders request demo button when there is owner with free plan is logged in', () => {
+    const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: 'gh' })
+    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup()
+    setup({ provider })
 
     const requestDemoButton = screen.getByText('Request Button')
     expect(requestDemoButton).toBeInTheDocument()
   })
 
   it('does not render request demo button when owner is undefined', () => {
+    const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: undefined, provider: 'gh' })
+    useParams.mockReturnValue({ owner: undefined, provider: provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup()
+    setup({ provider })
     expect(screen.queryByText(/Request demo/)).toBeNull()
   })
 
   it('renders the login prompt when user not logged in', () => {
+    const provider = 'gh'
     useUser.mockReturnValue({ data: null })
-    useParams.mockReturnValue({ owner: undefined, provider: 'gh' })
-    setup()
+    useParams.mockReturnValue({ owner: undefined, provider: provider })
+    setup({ provider })
     const login = screen.getByTestId('login-prompt')
     expect(login).toBeInTheDocument()
   })

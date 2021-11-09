@@ -2,38 +2,42 @@ import Api from 'shared/api'
 import { useQuery } from 'react-query'
 
 function fetchRepoPulls({ provider, owner, repo }) {
-  //some don't have base or head (?)
+  const PullFragment = `
+   fragment PullFragment on Pull {
+        pullId
+        title
+        state
+        updatestamp
+        author{
+            username
+        }
+        head{
+            totals{
+                coverage
+            }
+        }
+        compareWithBase{
+          patchTotals{
+            coverage
+          }
+        }         
+    }
+  `
   const query = `
-        query GetPulls($owner: String!, $repo: String!){
+      query GetPulls($owner: String!, $repo: String!){
             owner(username:$owner){
-                username
                 repository(name:$repo){
                     pulls{
                         edges{
                             node{
-                                pullId
-                                title
-                                state
-                                updatestamp
-                                author{
-                                    username
-                                }
-                                head{
-                                    totals{
-                                        coverage
-                                    }
-                                }
-                                compareWithBase{
-                                  patchTotals{
-                                    coverage
-                                  }
-                                }         
+                             ...PullFragment       
                             }
                         }
                    }
                 }
             }
-       }   
+        }  
+      ${PullFragment} 
    `
 
   return Api.graphql({

@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import { useOwner } from 'services/user'
 import Icon from 'ui/Icon'
 import A from 'ui/A'
+import { PullStateEnums } from '.'
 
 const headers = [
   {
@@ -35,11 +36,13 @@ const headers = [
 
 const PullState = ({ state }) => (
   <span className="text-ds-gray-quinary">
-    {state === 'MERGED' && <Icon name="merge" variant="developer" size="sm" />}
-    {state === 'CLOSED' && (
+    {state === PullStateEnums.MERGED && (
+      <Icon name="merge" variant="developer" size="sm" />
+    )}
+    {state === PullStateEnums.CLOSED && (
       <Icon name="pullRequestClosed" variant="developer" size="sm" />
     )}
-    {state === 'OPEN' && (
+    {state === PullStateEnums.OPEN && (
       <Icon name="pullRequestOpen" variant="developer" size="sm" />
     )}
   </span>
@@ -50,22 +53,22 @@ PullState.propTypes = {
 }
 
 const Coverage = ({ pull }) =>
-  typeof pull.head?.totals?.coverage === 'number' ? (
+  typeof pull?.head?.totals?.coverage === 'number' ? (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
-      <PullState state={pull.state} />
-      <A to={{ pageName: 'pull', options: { pullid: pull.pullId } }}>
+      <PullState state={pull?.state} />
+      <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">
-          #{pull.pullId}
+          #{pull?.pullId}
         </span>
       </A>
-      <Progress amount={pull.head?.totals?.coverage} label={true} />
+      <Progress amount={pull?.head?.totals?.coverage} label={true} />
     </div>
   ) : (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
-      <PullState state={pull.state} />
-      <A to={{ pageName: 'pull', options: { pullid: pull.pullId } }}>
+      <PullState state={pull?.state} />
+      <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">
-          #{pull.pullId}
+          #{pull?.pullId}
         </span>
       </A>
       <span className="text-ds-gray-quinary text-sm">
@@ -79,7 +82,7 @@ Coverage.propTypes = {
 }
 
 const Change = ({ pull }) => {
-  if (!pull.head?.totals?.coverage) return ''
+  if (!pull?.head?.totals?.coverage) return ''
   const change = pull?.compareWithBase?.patchTotals?.coverage
 
   return (
@@ -103,9 +106,9 @@ const Title = ({ ownerData, pull }) => (
       {ownerData && <Avatar user={ownerData} bordered />}
     </span>
     <div className="flex flex-col">
-      <A to={{ pageName: 'pull', options: { pullid: pull.pullId } }}>
+      <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
         <h2 className="font-medium text-sm md:text-base text-black">
-          {pull.title}
+          {pull?.title}
         </h2>
       </A>
       <p className="text-xs">
@@ -115,7 +118,7 @@ const Title = ({ ownerData, pull }) => (
         {pull?.updatestamp && (
           <span className="text-ds-gray-quinary">
             {' opened ' +
-              formatDistanceToNow(new Date(pull.updatestamp), {
+              formatDistanceToNow(new Date(pull?.updatestamp), {
                 addSuffix: true,
               })}
           </span>
@@ -147,7 +150,7 @@ function transformPullToTable(pulls) {
   }
 
   return pulls.map((pullNode) => {
-    if (!pullNode) return handleOnNull() //does the production api return null vals?
+    if (!pullNode) return handleOnNull()
     const pull = pullNode.node
     const { data: ownerData } = useOwner({ username: pull?.author?.username })
 

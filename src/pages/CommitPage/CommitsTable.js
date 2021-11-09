@@ -58,7 +58,9 @@ function CommitsTable({ data = [], commit, loading }) {
           </div>
         ),
         coverage: (
-          <Progress amount={d?.headCoverage?.coverage || 0} label={true} />
+          <div className="w-full flex gap-2 items-center">
+            <Progress amount={d?.headCoverage?.coverage || 0} label={true} />
+          </div>
         ),
         patch: (
           <span className="text-sm text-right w-full text-ds-gray-octonary">

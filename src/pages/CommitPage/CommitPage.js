@@ -50,10 +50,10 @@ function CommitPage() {
       <div className="flex flex-col px-3 sm:px-0">
         <Header provider={provider} owner={owner} repo={repo} commit={commit} />
         <div className="flex gap-2 flex-col">
-          <span className="text-lg font-semibold text-ds-gray-octonary">
+          <h1 className="text-lg font-semibold text-ds-gray-octonary">
             {data?.commit?.message}
-          </span>
-          <div className="flex items-center text-ds-gray-quinary gap-1">
+          </h1>
+          <p className="flex items-center text-ds-gray-quinary gap-1">
             {data?.commit?.createdAt
               ? formatDistanceToNow(new Date(data?.commit?.createdAt), {
                   addSuffix: true,
@@ -81,11 +81,11 @@ function CommitPage() {
             >
               {commitid}
             </A>
-          </div>
+          </p>
         </div>
       </div>
       <div className="flex pt-8 flex-col gap-8 md:flex-row">
-        <div className="flex gap-6 md:max-w-sm flex-col">
+        <aside className="flex gap-6 md:max-w-sm flex-col">
           <CoverageReportCard
             provider={provider}
             repo={repo}
@@ -103,14 +103,14 @@ function CommitPage() {
               setShowYAMLModal={setShowYAMLModal}
             />
           </div>
-        </div>
-        <div className="flex flex-col flex-1">
+        </aside>
+        <article className="flex flex-col flex-1">
           <ImpactedFiles
             data={data?.commit?.compareWithParent}
             commit={commit}
             path={path}
           />
-        </div>
+        </article>
       </div>
     </div>
   ) : (

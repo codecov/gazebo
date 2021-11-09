@@ -43,7 +43,7 @@ describe('Pulls Page', () => {
               },
             },
             pullId: 745,
-            state: 'OPENED',
+            state: 'OPEN',
             title: 'Test2',
             updatestamp: '2021-07-30T19:33:49.819672',
           },

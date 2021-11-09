@@ -28,6 +28,7 @@ describe('FileViewer', () => {
     totals: 23,
     title: 'Title',
     change: null,
+    fileName: 'sample.py',
   }
 
   function setup(props = {}, dataCoverageWithFlag = {}) {
