@@ -1,12 +1,9 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import Progress from 'ui/Progress'
 import Table from 'ui/Table'
-import Avatar from 'ui/Avatar'
 import PropTypes from 'prop-types'
 import { useOwner } from 'services/user'
-import Icon from 'ui/Icon'
-import A from 'ui/A'
-import { PullStateEnums } from '.'
+import Coverage from './Coverage'
+import Change from './Change'
+import Title from './Title'
 
 const headers = [
   {
@@ -33,105 +30,6 @@ const headers = [
     width: 'w-3/12',
   },
 ]
-
-const PullState = ({ state }) => (
-  <span className="text-ds-gray-quinary">
-    {state === PullStateEnums.MERGED && (
-      <Icon name="merge" variant="developer" size="sm" />
-    )}
-    {state === PullStateEnums.CLOSED && (
-      <Icon name="pullRequestClosed" variant="developer" size="sm" />
-    )}
-    {state === PullStateEnums.OPEN && (
-      <Icon name="pullRequestOpen" variant="developer" size="sm" />
-    )}
-  </span>
-)
-
-PullState.propTypes = {
-  state: PropTypes.string,
-}
-
-const Coverage = ({ pull }) =>
-  typeof pull?.head?.totals?.coverage === 'number' ? (
-    <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
-      <PullState state={pull?.state} />
-      <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
-        <span className="mx-6 text-ds-gray-quinary font-mono">
-          #{pull?.pullId}
-        </span>
-      </A>
-      <Progress amount={pull?.head?.totals?.coverage} label={true} />
-    </div>
-  ) : (
-    <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
-      <PullState state={pull?.state} />
-      <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
-        <span className="mx-6 text-ds-gray-quinary font-mono">
-          #{pull?.pullId}
-        </span>
-      </A>
-      <span className="text-ds-gray-quinary text-sm">
-        No report uploaded yet
-      </span>
-    </div>
-  )
-
-Coverage.propTypes = {
-  pull: PropTypes.object,
-}
-
-const Change = ({ pull }) => {
-  if (!pull?.head?.totals?.coverage) return ''
-  const change = pull?.compareWithBase?.patchTotals?.coverage
-
-  return (
-    typeof change === 'number' && (
-      <div className="flex justify-end w-full font-semibold">
-        <span className={change <= 0 ? 'nf bg-red-100' : 'bg-green-100'}>
-          {change}%
-        </span>
-      </div>
-    )
-  )
-}
-
-Change.propTypes = {
-  pull: PropTypes.object,
-}
-
-const Title = ({ ownerData, pull }) => (
-  <div className="flex flex-row">
-    <span className="flex items-center mr-6">
-      {ownerData && <Avatar user={ownerData} bordered />}
-    </span>
-    <div className="flex flex-col">
-      <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
-        <h2 className="font-medium text-sm md:text-base text-black">
-          {pull?.title}
-        </h2>
-      </A>
-      <p className="text-xs">
-        <A to={{ pageName: 'owner' }}>
-          <span className="text-black">{pull?.author?.username}</span>
-        </A>
-        {pull?.updatestamp && (
-          <span className="text-ds-gray-quinary">
-            {' opened ' +
-              formatDistanceToNow(new Date(pull?.updatestamp), {
-                addSuffix: true,
-              })}
-          </span>
-        )}
-      </p>
-    </div>
-  </div>
-)
-
-Title.propTypes = {
-  ownerData: PropTypes.object,
-  pull: PropTypes.object,
-}
 
 const handleOnNull = () => {
   return {
@@ -172,7 +70,29 @@ function PullsPage({ pulls }) {
 }
 
 PullsPage.propTypes = {
-  pulls: PropTypes.array,
+  pulls: PropTypes.arrayOf(
+    PropTypes.shape({
+      node: PropTypes.shape({
+        author: PropTypes.shape({
+          username: PropTypes.string,
+        }),
+        compareWithBase: PropTypes.shape({
+          patchTotals: PropTypes.shape({
+            coverage: PropTypes.number,
+          }),
+        }),
+        head: PropTypes.shape({
+          totals: PropTypes.shape({
+            coverage: PropTypes.number,
+          }),
+        }),
+        pullId: PropTypes.number,
+        state: PropTypes.string,
+        title: PropTypes.string,
+        updatestamp: PropTypes.string,
+      }),
+    })
+  ),
 }
 
 export default PullsPage
