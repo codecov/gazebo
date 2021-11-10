@@ -1,6 +1,5 @@
 import Table from 'ui/Table'
 import PropTypes from 'prop-types'
-import { useOwner } from 'services/user'
 import Coverage from './Coverage'
 import Change from './Change'
 import Title from './Title'
@@ -50,10 +49,9 @@ function transformPullToTable(pulls) {
   return pulls.map((pullNode) => {
     if (!pullNode) return handleOnNull()
     const pull = pullNode.node
-    const { data: ownerData } = useOwner({ username: pull?.author?.username })
 
     return {
-      title: <Title ownerData={ownerData} pull={pull} />,
+      title: <Title pull={pull} />,
       coverage: <Coverage pull={pull} />,
       change: <Change pull={pull} />,
     }

@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Title from '.'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import { QueryClientProvider, QueryClient } from 'react-query'
 
 jest.mock('services/repo/hooks')
 
@@ -24,16 +25,14 @@ describe('Title', () => {
     updatestamp: '2021-08-30T19:33:49.819672',
   }
 
-  const ownerData = {
-    avatarUrl: 'rula/hh',
-    isCurrentUserPartOfOrg: true,
-    username: 'rula',
-  }
-
   function setup() {
+    const queryClient = new QueryClient()
+
     render(
       <MemoryRouter>
-        <Title pull={pull} ownerData={ownerData} />
+        <QueryClientProvider client={queryClient}>
+          <Title pull={pull} />
+        </QueryClientProvider>
       </MemoryRouter>
     )
   }
