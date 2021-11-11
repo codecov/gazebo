@@ -6,10 +6,10 @@ function DefaultUI() {
   return (
     <p>
       There&apos;s been an error. Please try refreshing your browser, if this
-      error persists please
+      error persists please{' '}
       <A to={{ pageName: 'support' }} variant="link">
         contact support
-      </A>{' '}
+      </A>
       .
     </p>
   )
