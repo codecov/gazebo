@@ -52,6 +52,12 @@ describe('Error Boundary', () => {
 
       expect(defaultErrorUI).toBeInTheDocument()
     })
+
+    it('links to the freshdesk support page', () => {
+      const issueLink = screen.getByRole('link', { name: /contact support/i })
+      expect(issueLink).toBeInTheDocument()
+      expect(issueLink.href).toBe('https://codecov.freshdesk.com/support/home')
+    })
   })
   describe('when given a custom error component', () => {
     const customMessage = 'Whoopsie'
