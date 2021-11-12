@@ -22,10 +22,10 @@ function fetchRepoCommits({ provider, owner, repo, filter }) {
     }
   `
   const query = `
-    query GetCommits($owner: String!, $repo: String!, $filter:CommitsSetFilters){
+    query GetCommits($owner: String!, $repo: String!, $filters:CommitsSetFilters){
         owner(username:$owner){
             repository(name: $repo){
-                commits(filters: $filter){
+                commits(filters: $filters){
                   edges{
                     node{
                        ...CommitFragment
@@ -45,7 +45,7 @@ function fetchRepoCommits({ provider, owner, repo, filter }) {
     variables: {
       owner,
       repo,
-      filter: {
+      filters: {
         hasUploadedCoverage: filter,
       },
     },

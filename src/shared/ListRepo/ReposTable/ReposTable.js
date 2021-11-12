@@ -133,7 +133,7 @@ function ReposTable({
               </Button>
             </div>
           )
-        : !searchValue && <NoReposBlock />}
+        : !searchValue && <NoReposBlock owner={owner} active={active} />}
     </>
   )
 }
