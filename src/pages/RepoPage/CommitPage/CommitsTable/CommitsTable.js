@@ -1,31 +1,34 @@
 import PropTypes from 'prop-types'
 import Table from 'ui/Table'
-import { useOwner } from 'services/user'
+import Title from './Title'
+import Coverage from './Coverage'
+import Change from './Change'
+import Patch from './Patch'
 
 const headers = [
   {
     Header: 'Name',
     accessor: 'title',
-    width: 'w-5/12',
+    width: 'w-6/12',
   },
   {
     Header: (
       <span className="w-full text-right">
-        Coverage <span className="ml-36">%</span>
+        Coverage <span className="ml-36 hidden lg:inline-block">%</span>
       </span>
     ),
     accessor: 'coverage',
-    width: 'w-5/12',
+    width: 'w-2/12 lg:w-4/12',
   },
   {
     Header: <span className="w-full text-right">Patch</span>,
     accessor: 'patch',
-    width: 'w-1/12',
+    width: 'w-2/12 lg:w-1/12',
   },
   {
     Header: <span className="w-full text-right">Change</span>,
     accessor: 'change',
-    width: 'w-1/12',
+    width: 'w-2/12 lg:w-1/12',
   },
 ]
 
@@ -47,14 +50,12 @@ function transformPullToTable(commits) {
 
   return commits.map((commit) => {
     if (!commit) return handleOnNull()
-    const { data: ownerData } = useOwner({ username: commit?.author?.username })
-    console.log(ownerData)
 
     return {
-      title: <span className="flex">something</span>,
-      coverage: <span>something to say</span>,
-      patch: <span>64</span>,
-      change: <span>46</span>,
+      title: <Title commit={commit} />,
+      coverage: <Coverage commit={commit} />,
+      patch: <Patch commit={commit} />,
+      change: <Change commit={commit} />,
     }
   })
 }
@@ -69,7 +70,25 @@ function CommitsTable({ commits }) {
 }
 
 CommitsTable.propTypes = {
-  commits: PropTypes.array,
+  commits: PropTypes.arrayOf(
+    PropTypes.shape({
+      node: PropTypes.shape({
+        author: PropTypes.shape({
+          username: PropTypes.string,
+        }),
+        compareWithParent: PropTypes.shape({
+          patchTotals: PropTypes.shape({
+            coverage: PropTypes.number,
+          }),
+        }),
+        totals: PropTypes.shape({
+          coverage: PropTypes.number,
+        }),
+        commitid: PropTypes.string,
+        message: PropTypes.string,
+      }),
+    })
+  ),
 }
 
 export default CommitsTable
