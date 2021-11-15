@@ -32,6 +32,11 @@ describe('CommitsTable', () => {
             totals: {
               coverage: 45,
             },
+            parent: {
+              totals: {
+                coverage: 98,
+              },
+            },
             commitid: 'id',
             message: 'Test1',
             createdAt: '2021-08-30T19:33:49.819672',
@@ -45,6 +50,11 @@ describe('CommitsTable', () => {
             },
             totals: {
               coverage: 59,
+            },
+            parent: {
+              totals: {
+                coverage: 98,
+              },
             },
             commitid: 'id',
             message: 'Test2',

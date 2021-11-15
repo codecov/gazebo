@@ -84,6 +84,11 @@ CommitsTable.propTypes = {
         totals: PropTypes.shape({
           coverage: PropTypes.number,
         }),
+        parent: PropTypes.shape({
+          totals: PropTypes.shape({
+            coverage: PropTypes.number,
+          }),
+        }),
         commitid: PropTypes.string,
         message: PropTypes.string,
       }),
