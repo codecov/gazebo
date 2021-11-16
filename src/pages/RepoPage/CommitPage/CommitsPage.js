@@ -19,7 +19,7 @@ function CommitsPage() {
       <div className="mb-6">
         <Checkbox
           label="Hide commits without uploaded coverage (3)"
-          name="test"
+          name="filter commits"
           onChange={function noRefCheck(e) {
             setIsCommitHidden(e.target.checked)
           }}
