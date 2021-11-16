@@ -97,4 +97,17 @@ describe('CommitsTable', () => {
       expect(text).toBeInTheDocument()
     })
   })
+
+  describe('when rendered with null commit', () => {
+    beforeEach(() => {
+      setup({
+        commits: [null],
+      })
+    })
+
+    it('renders on null message', () => {
+      const text = screen.getByText(/we can't find this commit/)
+      expect(text).toBeInTheDocument()
+    })
+  })
 })
