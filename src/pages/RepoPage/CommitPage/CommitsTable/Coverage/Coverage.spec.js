@@ -55,6 +55,11 @@ describe('Coverage', () => {
           totals: {
             coverage: null,
           },
+          parent: {
+            totals: {
+              coverage: 98,
+            },
+          },
           commitid: '123456789',
           message: 'Test1',
           createdAt: '2021-08-30T19:33:49.819672',

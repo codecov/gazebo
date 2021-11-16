@@ -32,6 +32,11 @@ describe('CommitsTable', () => {
             totals: {
               coverage: 45,
             },
+            parent: {
+              totals: {
+                coverage: 98,
+              },
+            },
             commitid: 'id',
             message: 'Test1',
             createdAt: '2021-08-30T19:33:49.819672',
@@ -45,6 +50,11 @@ describe('CommitsTable', () => {
             },
             totals: {
               coverage: 59,
+            },
+            parent: {
+              totals: {
+                coverage: 98,
+              },
             },
             commitid: 'id',
             message: 'Test2',
@@ -84,6 +94,19 @@ describe('CommitsTable', () => {
 
     it('renders no result found message', () => {
       const text = screen.getByText('no results found')
+      expect(text).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with null commit', () => {
+    beforeEach(() => {
+      setup({
+        commits: [null],
+      })
+    })
+
+    it('renders on null message', () => {
+      const text = screen.getByText(/we can't find this commit/)
       expect(text).toBeInTheDocument()
     })
   })

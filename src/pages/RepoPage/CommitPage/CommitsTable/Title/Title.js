@@ -6,19 +6,39 @@ import { useOwner } from 'services/user'
 
 const Title = ({ commit }) => {
   const { data: ownerData } = useOwner({ username: commit?.author?.username })
-  if (!ownerData) return '' //we don't have an author or a message how to handle this?
+
+  const handleCommitMessage = () => {
+    if (!commit.message) return 'commit message unavailable'
+    const msg =
+      commit?.message?.length < 50
+        ? commit?.message?.slice(0, 50)
+        : commit?.message?.slice(0, 50) + '...'
+    return msg
+  }
+
+  const handleOwnerData = () => {
+    return (
+      <span>
+        <Avatar
+          user={
+            ownerData || {
+              avatarUrl: 'https://avatars0.githubusercontent.com/u/?v=3&s=55',
+              username: null,
+            }
+          }
+          bordered
+        />
+      </span>
+    )
+  }
 
   return (
     <div className="flex flex-row">
-      <span className="flex items-center mr-6">
-        {ownerData && <Avatar user={ownerData} bordered />}
-      </span>
+      <span className="flex items-center mr-6">{handleOwnerData()}</span>
       <div className="flex flex-col">
         <A to={{ pageName: 'commit', options: { commit: commit?.commitid } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
-            {commit?.message?.length < 50
-              ? commit?.message?.slice(0, 50)
-              : commit?.message?.slice(0, 50) + '...'}
+            {handleCommitMessage()}
           </h2>
         </A>
         <p className="text-xs">
@@ -51,6 +71,11 @@ Title.propTypes = {
     }),
     totals: PropTypes.shape({
       coverage: PropTypes.number,
+    }),
+    parent: PropTypes.shape({
+      totals: PropTypes.shape({
+        coverage: PropTypes.number,
+      }),
     }),
     commitid: PropTypes.string,
     message: PropTypes.string,
