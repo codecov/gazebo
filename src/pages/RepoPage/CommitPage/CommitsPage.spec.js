@@ -3,6 +3,7 @@ import { Route, MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { useCommits } from 'services/commits/hooks'
 import CommitsPage from './CommitsPage'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('services/commits/hooks')
 
@@ -78,6 +79,23 @@ describe('Commits Page', () => {
         'Hide commits without uploaded coverage (3)'
       )
       expect(label).toBeInTheDocument()
+    })
+
+    it('has false as initial value to the checkbox', () => {
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox.value).toEqual('false')
+    })
+  })
+
+  describe('when click on the checkbox', () => {
+    beforeEach(() => {
+      setup()
+      userEvent.click(screen.getByRole('checkbox'))
+    })
+
+    it('changes the value to true', () => {
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox.value).toEqual('true')
     })
   })
 })
