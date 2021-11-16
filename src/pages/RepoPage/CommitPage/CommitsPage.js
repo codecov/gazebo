@@ -11,22 +11,15 @@ function CommitsPage() {
     provider,
     owner,
     repo,
-    filter: !isCommitHidden,
+    filter: isCommitHidden,
   })
-  console.log(commits)
 
   return (
     <div className="w-full h-screen overflow-scroll">
       <div className="mb-6">
         <Checkbox
-          ref={function noRefCheck() {}}
-          label={
-            <span className="text-ds-gray-quinary">
-              Hide commits without uploaded coverage (3)
-            </span>
-          }
+          label="Hide commits without uploaded coverage (3)"
           name="test"
-          onBlur={function noRefCheck() {}}
           onChange={function noRefCheck(e) {
             setIsCommitHidden(e.target.checked)
           }}

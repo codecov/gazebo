@@ -72,5 +72,12 @@ describe('Commits Page', () => {
       const head = screen.getByText(/Change/)
       expect(head).toBeInTheDocument()
     })
+
+    it('render the checkbox', () => {
+      const label = screen.getByText(
+        'Hide commits without uploaded coverage (3)'
+      )
+      expect(label).toBeInTheDocument()
+    })
   })
 })
