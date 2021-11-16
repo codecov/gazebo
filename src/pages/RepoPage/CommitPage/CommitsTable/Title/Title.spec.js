@@ -79,7 +79,7 @@ describe('Title', () => {
       })
       setup({
         commit: {
-          author: { username: 'RulaKhaled' },
+          author: null,
           compareWithParent: {
             patchTotals: {
               coverage: 90,
@@ -102,12 +102,7 @@ describe('Title', () => {
 
     it('renders commit title', () => {
       const text = screen.queryByText(/Test1/)
-      expect(text).not.toBeInTheDocument()
-    })
-
-    it('renders commit author', () => {
-      const author1 = screen.queryByText(/RulaKhaled/)
-      expect(author1).not.toBeInTheDocument()
+      expect(text).toBeInTheDocument()
     })
 
     it('renders commit updatestamp', () => {
@@ -115,7 +110,12 @@ describe('Title', () => {
         addSuffix: true,
       })
       const dt1 = screen.queryByText('opened ' + dt)
-      expect(dt1).not.toBeInTheDocument()
+      expect(dt1).toBeInTheDocument()
+    })
+
+    it('renders default avatar', () => {
+      const avatar = screen.getByRole('img', { alt: 'avatar' })
+      expect(avatar).toBeInTheDocument()
     })
   })
 
@@ -156,6 +156,44 @@ describe('Title', () => {
       const text = screen.queryByText(
         /Test1Test1Test1Test1Test1Test1Test1Test1.../
       )
+      expect(text).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with no commit message', () => {
+    beforeEach(() => {
+      useOwner.mockReturnValue({
+        data: {
+          username: 'RulaKhaled',
+          avatarUrl: 'randompic',
+          isCurrentUserPartOfOrg: true,
+        },
+      })
+      setup({
+        commit: {
+          author: { username: 'RulaKhaled' },
+          compareWithParent: {
+            patchTotals: {
+              coverage: 90,
+            },
+          },
+          totals: {
+            coverage: 45,
+          },
+          parent: {
+            totals: {
+              coverage: 98,
+            },
+          },
+          commitid: 'id',
+          message: null,
+          createdAt: '2021-08-30T19:33:49.819672',
+        },
+      })
+    })
+
+    it('renders commit default message', () => {
+      const text = screen.queryByText('commit message unavailable')
       expect(text).toBeInTheDocument()
     })
   })
