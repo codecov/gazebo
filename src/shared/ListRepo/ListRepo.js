@@ -95,7 +95,6 @@ function ListRepo({ owner, canRefetch }) {
 
 ListRepo.propTypes = {
   owner: PropTypes.string,
-  active: PropTypes.bool,
   canRefetch: PropTypes.bool.isRequired,
 }
 

@@ -34,7 +34,6 @@ const NoReposBlock = ({ owner }) => {
 
 NoReposBlock.propTypes = {
   owner: PropTypes.string,
-  active: PropTypes.bool,
 }
 
 export default NoReposBlock

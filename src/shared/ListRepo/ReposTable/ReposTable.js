@@ -137,7 +137,6 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
 
 ReposTable.propTypes = {
   owner: PropTypes.string,
-  active: PropTypes.bool.isRequired,
   searchValue: PropTypes.string.isRequired,
   sortItem: PropTypes.object.isRequired,
   filterValues: PropTypes.array,
