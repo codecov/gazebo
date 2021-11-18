@@ -25,7 +25,6 @@ function OwnerPage({ active = false }) {
         )}
         <ActiveContext.Provider value={active}>
           <ListRepo
-            active={active}
             canRefetch={ownerData.isCurrentUserPartOfOrg}
             owner={ownerData.username}
           />
