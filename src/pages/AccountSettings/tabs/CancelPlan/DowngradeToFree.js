@@ -7,6 +7,7 @@ import Button from 'old_ui/Button'
 import Modal from 'old_ui/Modal'
 import { useCancelPlan, accountDetailsPropType } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import { isFreePlan } from 'shared/utils/billing'
 import useBarecancel from './barecancel'
 
 function getEndPeriod(accountDetails) {
@@ -41,7 +42,7 @@ function useCancelSubmit({ provider, owner }) {
 function DowngradeToFree({ accountDetails, provider, owner }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { cancelPlan, isLoading } = useCancelSubmit({ provider, owner })
-  const isAlreadyFreeUser = accountDetails.plan?.value === 'users-free'
+  const isAlreadyFreeUser = isFreePlan(accountDetails.plan?.value)
   const isDisabled = [
     // disable button if
     isLoading, // request in fly
