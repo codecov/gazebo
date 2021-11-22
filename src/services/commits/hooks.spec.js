@@ -38,6 +38,11 @@ const dataReturned = {
               totals: {
                 coverage: 22,
               },
+              parent: {
+                totals: {
+                  coverage: 22,
+                },
+              },
               compareWithParent: {
                 patchTotals: {
                   coverage: 33,
@@ -55,6 +60,11 @@ const dataReturned = {
               },
               totals: {
                 coverage: 19,
+              },
+              parent: {
+                totals: {
+                  coverage: 22,
+                },
               },
               compareWithParent: {
                 patchTotals: {
@@ -100,6 +110,11 @@ describe('GetCommits', () => {
         totals: {
           coverage: 22,
         },
+        parent: {
+          totals: {
+            coverage: 22,
+          },
+        },
         compareWithParent: {
           patchTotals: {
             coverage: 33,
@@ -115,6 +130,11 @@ describe('GetCommits', () => {
         },
         totals: {
           coverage: 19,
+        },
+        parent: {
+          totals: {
+            coverage: 22,
+          },
         },
         compareWithParent: {
           patchTotals: {

@@ -14,6 +14,11 @@ function fetchRepoCommits({ provider, owner, repo, filter }) {
         totals{
              coverage
         }
+        parent{
+          totals{
+            coverage
+          }
+        }
         compareWithParent{
             patchTotals{
                 coverage
