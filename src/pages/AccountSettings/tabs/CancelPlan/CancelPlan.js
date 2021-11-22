@@ -4,6 +4,7 @@ import difference from 'lodash/difference'
 import Card from 'old_ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
+import { isFreePlan } from 'shared/utils/billing'
 
 import umbrellaImg from './umbrella.svg'
 import DowngradeToFree from './DowngradeToFree'
@@ -15,7 +16,7 @@ function CancelPlan({ provider, owner }) {
   const { data: plans } = usePlans(provider)
   const { billingAndUsers } = useNavLinks()
 
-  const freePlan = plans.find((plan) => plan.value === 'users-free')
+  const freePlan = plans.find((plan) => isFreePlan(plan.value))
   const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')
   const unavailableBenefits = difference(
     proPlanMonth.benefits,

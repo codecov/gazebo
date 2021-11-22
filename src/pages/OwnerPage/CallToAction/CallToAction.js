@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { useAccountDetails } from 'services/account'
 import A from 'ui/A'
 import { trackSegmentEvent } from 'services/tracking/segment'
+import { isFreePlan } from 'shared/utils/billing'
 
 function CallToAction({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({
@@ -12,7 +13,7 @@ function CallToAction({ provider, owner }) {
     },
   })
 
-  return accountDetails?.plan?.value === 'users-free' ? (
+  return isFreePlan(accountDetails?.plan?.value) ? (
     <div className="mx-4 self-center">
       {accountDetails.activatedUserCount === 5 ? (
         <span>
