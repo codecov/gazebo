@@ -3,16 +3,20 @@ import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
 
-function RepoTitleLink({ repo, showRepoOwner }) {
+function RepoTitleLink({ repo, showRepoOwner, active, newRepoSetupLink }) {
   const options = {
     owner: repo.author.username,
     repo: repo.name,
   }
 
+  const handlePageName = () => {
+    return active ? 'repo' : newRepoSetupLink ? 'new' : 'repo'
+  }
+
   return (
     <div className="flex items-center">
       <AppLink
-        pageName="repo"
+        pageName={handlePageName()}
         options={options}
         className="flex text-ds-gray-quinary items-center hover:underline"
       >
@@ -54,6 +58,8 @@ RepoTitleLink.propTypes = {
     name: PropTypes.string,
   }),
   showRepoOwner: PropTypes.bool.isRequired,
+  active: PropTypes.bool.isRequired,
+  newRepoSetupLink: PropTypes.bool.isRequired,
 }
 
 export default RepoTitleLink
