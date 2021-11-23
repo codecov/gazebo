@@ -3,6 +3,7 @@ import Avatar from 'ui/Avatar'
 import A from 'ui/A'
 import PropTypes from 'prop-types'
 import { useOwner } from 'services/user'
+import { PullRequestType } from '../../types'
 
 const Title = ({ pull }) => {
   const { data: ownerData } = useOwner({ username: pull?.author?.username })
@@ -37,25 +38,7 @@ const Title = ({ pull }) => {
 }
 
 Title.propTypes = {
-  pull: PropTypes.shape({
-    author: PropTypes.shape({
-      username: PropTypes.string,
-    }),
-    compareWithBase: PropTypes.shape({
-      patchTotals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    head: PropTypes.shape({
-      totals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    pullId: PropTypes.number,
-    state: PropTypes.string,
-    title: PropTypes.string,
-    updatestamp: PropTypes.string,
-  }),
+  pull: PropTypes.shape(PullRequestType),
 }
 
 export default Title

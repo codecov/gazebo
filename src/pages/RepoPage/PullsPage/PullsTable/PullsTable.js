@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Coverage from './Coverage'
 import Change from './Change'
 import Title from './Title'
+import { PullRequestType } from '../types'
 
 const headers = [
   {
@@ -70,25 +71,7 @@ function PullsPage({ pulls }) {
 PullsPage.propTypes = {
   pulls: PropTypes.arrayOf(
     PropTypes.shape({
-      node: PropTypes.shape({
-        author: PropTypes.shape({
-          username: PropTypes.string,
-        }),
-        compareWithBase: PropTypes.shape({
-          patchTotals: PropTypes.shape({
-            coverage: PropTypes.number,
-          }),
-        }),
-        head: PropTypes.shape({
-          totals: PropTypes.shape({
-            coverage: PropTypes.number,
-          }),
-        }),
-        pullId: PropTypes.number,
-        state: PropTypes.string,
-        title: PropTypes.string,
-        updatestamp: PropTypes.string,
-      }),
+      node: PropTypes.shape(PullRequestType),
     })
   ),
 }

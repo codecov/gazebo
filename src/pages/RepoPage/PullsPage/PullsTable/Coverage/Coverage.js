@@ -1,22 +1,19 @@
 import Icon from 'ui/Icon'
-import { PullStateEnums } from '.'
+import { IconEnum } from './enums'
 import Progress from 'ui/Progress'
 import A from 'ui/A'
 import PropTypes from 'prop-types'
+import { PullRequestType } from '../../types'
 
-const PullState = ({ state }) => (
-  <span className="text-ds-gray-quinary">
-    {state === PullStateEnums.MERGED && (
-      <Icon name="merge" variant="developer" size="sm" />
-    )}
-    {state === PullStateEnums.CLOSED && (
-      <Icon name="pullRequestClosed" variant="developer" size="sm" />
-    )}
-    {state === PullStateEnums.OPEN && (
-      <Icon name="pullRequestOpen" variant="developer" size="sm" />
-    )}
-  </span>
-)
+const PullState = ({ state }) => {
+  const icon = IconEnum.find((item) => state === item.state)
+
+  return (
+    <span className="text-ds-gray-quinary">
+      <Icon name={icon?.name} variant="developer" size="sm" />
+    </span>
+  )
+}
 
 PullState.propTypes = {
   state: PropTypes.string,
@@ -48,25 +45,7 @@ const Coverage = ({ pull }) =>
   )
 
 Coverage.propTypes = {
-  pull: PropTypes.shape({
-    author: PropTypes.shape({
-      username: PropTypes.string,
-    }),
-    compareWithBase: PropTypes.shape({
-      patchTotals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    head: PropTypes.shape({
-      totals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    pullId: PropTypes.number,
-    state: PropTypes.string,
-    title: PropTypes.string,
-    updatestamp: PropTypes.string,
-  }),
+  pull: PropTypes.shape(PullRequestType),
 }
 
 export default Coverage
