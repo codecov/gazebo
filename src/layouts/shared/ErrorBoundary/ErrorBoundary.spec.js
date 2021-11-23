@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
 import ErrorBoundary from './ErrorBoundary'
 import * as Sentry from '@sentry/browser'
 
@@ -20,9 +21,13 @@ describe('Error Boundary', () => {
 
   function setup(props) {
     render(
-      <ErrorBoundary {...props}>
-        <BadComponent />
-      </ErrorBoundary>
+      <MemoryRouter initialEntries={['/gh/test/']}>
+        <Route path="/:provider/:owner/">
+          <ErrorBoundary {...props}>
+            <BadComponent />
+          </ErrorBoundary>
+        </Route>
+      </MemoryRouter>
     )
   }
 
@@ -42,10 +47,16 @@ describe('Error Boundary', () => {
       setup()
       // Get first error message
       const [defaultErrorUI] = screen.getAllByText(
-        /Well this is embarassing, looks like we had an error./
+        /There's been an error. Please try refreshing your browser, if this error persists please/
       )
 
       expect(defaultErrorUI).toBeInTheDocument()
+    })
+
+    it('links to the freshdesk support page', () => {
+      const issueLink = screen.getByRole('link', { name: /contact support/i })
+      expect(issueLink).toBeInTheDocument()
+      expect(issueLink.href).toBe('https://codecov.freshdesk.com/support/home')
     })
   })
   describe('when given a custom error component', () => {
