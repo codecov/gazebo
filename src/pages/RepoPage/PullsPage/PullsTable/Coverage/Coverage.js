@@ -9,7 +9,7 @@ const PullState = ({ state }) => {
   const icon = IconEnum.find((item) => state === item.state)
 
   return (
-    <span className="text-ds-gray-quinary">
+    <span className="text-ds-gray-quinary flex items-center">
       <Icon name={icon?.name} variant="developer" size="sm" />
     </span>
   )
