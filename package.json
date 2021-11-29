@@ -82,7 +82,7 @@
     }
   ],
   "devDependencies": {
-    "@babel/core": "^7.15.8",
+    "@babel/core": "^7.16.0",
     "@craco/craco": "^6.4.1",
     "@sentry/cli": "^1.71.0",
     "@storybook/addon-a11y": "^6.3.12",
