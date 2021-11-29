@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^2.8.2",
-    "@reach/menu-button": "^0.16.1",
+    "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
     "@stripe/react-stripe-js": "^1.5.0",
     "@stripe/stripe-js": "^1.21.1",
