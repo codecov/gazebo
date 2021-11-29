@@ -23,7 +23,7 @@
     "react-ace": "^9.4.4",
     "react-dates": "^21.8.0",
     "react-dom": "^17.0.2",
-    "react-hook-form": "^7.17.0",
+    "react-hook-form": "^7.20.4",
     "react-image": "^4.0.3",
     "react-modal": "^3.14.3",
     "react-query": "^3.24.5",
@@ -82,7 +82,7 @@
     }
   ],
   "devDependencies": {
-    "@babel/core": "^7.15.8",
+    "@babel/core": "^7.16.0",
     "@craco/craco": "^6.4.1",
     "@sentry/cli": "^1.71.0",
     "@storybook/addon-a11y": "^6.3.12",
