@@ -7,14 +7,44 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 jest.mock('services/repo/hooks')
 
 describe('Pulls Table', () => {
-  function setup({ pulls }) {
+  function setup({ modifiedProps = {}, overridePulls = {} }) {
+    const defaultPull = {
+      author: { username: 'RulaKhaled' },
+      compareWithBase: {
+        patchTotals: {
+          coverage: 90,
+        },
+      },
+      head: {
+        totals: {
+          coverage: 45,
+        },
+      },
+      pullId: 746,
+      state: 'MERGED',
+      title: 'Test1',
+      updatestamp: '2021-08-30T19:33:49.819672',
+    }
+
+    const props = {
+      pulls: [
+        {
+          node: {
+            ...defaultPull,
+            ...modifiedProps,
+          },
+        },
+      ],
+      ...overridePulls,
+    }
+
     const queryClient = new QueryClient()
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov/Test/pulls']}>
         <Route path="/:provider/:owner/:repo/pulls">
           <QueryClientProvider client={queryClient}>
-            <PullsTable pulls={pulls} />
+            <PullsTable {...props} />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>
@@ -23,62 +53,17 @@ describe('Pulls Table', () => {
 
   describe('when rendered with the full/correct available pulls data', () => {
     beforeEach(() => {
-      setup({
-        pulls: [
-          {
-            node: {
-              author: { username: 'RulaKhaled' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: 90,
-                },
-              },
-              head: {
-                totals: {
-                  coverage: 45,
-                },
-              },
-              pullId: 746,
-              state: 'MERGED',
-              title: 'Test1',
-              updatestamp: '2021-08-30T19:33:49.819672',
-            },
-          },
-          {
-            node: {
-              author: { username: 'ThiagoCodecov' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: 87,
-                },
-              },
-              head: {
-                totals: {
-                  coverage: 100,
-                },
-              },
-              pullId: 745,
-              state: 'OPENED',
-              title: 'Test2',
-              updatestamp: '2021-07-30T19:33:49.819672',
-            },
-          },
-        ],
-      })
+      setup({})
     })
 
     it('renders pulls titles', () => {
       const title1 = screen.getByText(/Test1/)
       expect(title1).toBeInTheDocument()
-      const title2 = screen.getByText(/Test2/)
-      expect(title2).toBeInTheDocument()
     })
 
     it('renders pulls authors', () => {
       const author1 = screen.getByText(/RulaKhaled/)
       expect(author1).toBeInTheDocument()
-      const author2 = screen.getByText(/ThiagoCodecov/)
-      expect(author2).toBeInTheDocument()
     })
 
     it('renders pulls updatestamp', () => {
@@ -92,29 +77,23 @@ describe('Pulls Table', () => {
     it('renders pulls ids', () => {
       const id1 = screen.getByText(/#746/)
       expect(id1).toBeInTheDocument()
-      const id2 = screen.getByText(/#745/)
-      expect(id2).toBeInTheDocument()
     })
 
     it('renders pulls covarage', () => {
       const cov1 = screen.getByText(/45.00%/)
       expect(cov1).toBeInTheDocument()
-      const cov2 = screen.getByText(/100.00%/)
-      expect(cov2).toBeInTheDocument()
     })
 
     it('renders pulls change from base', () => {
       const change1 = screen.getByText(/90%/)
       expect(change1).toBeInTheDocument()
-      const change2 = screen.getByText(/87%/)
-      expect(change2).toBeInTheDocument()
     })
   })
 
   describe('when rendered with a no pulls data', () => {
     beforeEach(() => {
       setup({
-        pulls: [],
+        overridePulls: { pulls: [] },
       })
     })
 
@@ -127,7 +106,7 @@ describe('Pulls Table', () => {
   describe('when rendered with missing pulls data', () => {
     beforeEach(() => {
       setup({
-        pulls: [null],
+        overridePulls: { pulls: [null] },
       })
     })
 
@@ -140,27 +119,18 @@ describe('Pulls Table', () => {
   describe('when pull rendered with null coverage', () => {
     beforeEach(() => {
       setup({
-        pulls: [
-          {
-            node: {
-              author: { username: 'RulaKhaled' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: null,
-                },
-              },
-              head: {
-                totals: {
-                  coverage: null,
-                },
-              },
-              pullId: 746,
-              state: 'MERGED',
-              title: 'Test1',
-              updatestamp: '2021-08-30T19:33:49.819672',
+        modifiedProps: {
+          compareWithBase: {
+            patchTotals: {
+              coverage: null,
             },
           },
-        ],
+          head: {
+            totals: {
+              coverage: null,
+            },
+          },
+        },
       })
     })
 
@@ -178,27 +148,7 @@ describe('Pulls Table', () => {
   describe('when pull rendered with CLOSE state', () => {
     beforeEach(() => {
       setup({
-        pulls: [
-          {
-            node: {
-              author: { username: 'RulaKhaled' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: 90,
-                },
-              },
-              head: {
-                totals: {
-                  coverage: 45,
-                },
-              },
-              pullId: 746,
-              state: 'CLOSED',
-              title: 'Test1',
-              updatestamp: '2021-08-30T19:33:49.819672',
-            },
-          },
-        ],
+        modifiedProps: { state: 'CLOSED' },
       })
     })
 
@@ -210,29 +160,7 @@ describe('Pulls Table', () => {
 
   describe('when pull rendered with MERGED state', () => {
     beforeEach(() => {
-      setup({
-        pulls: [
-          {
-            node: {
-              author: { username: 'RulaKhaled' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: 90,
-                },
-              },
-              head: {
-                totals: {
-                  coverage: 45,
-                },
-              },
-              pullId: 746,
-              state: 'MERGED',
-              title: 'Test1',
-              updatestamp: '2021-08-30T19:33:49.819672',
-            },
-          },
-        ],
-      })
+      setup({})
     })
 
     it('renders the icon merge', () => {
@@ -244,27 +172,7 @@ describe('Pulls Table', () => {
   describe('when pull rendered with OPEN state', () => {
     beforeEach(() => {
       setup({
-        pulls: [
-          {
-            node: {
-              author: { username: 'RulaKhaled' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: 90,
-                },
-              },
-              head: {
-                totals: {
-                  coverage: 45,
-                },
-              },
-              pullId: 746,
-              state: 'OPEN',
-              title: 'Test1',
-              updatestamp: '2021-08-30T19:33:49.819672',
-            },
-          },
-        ],
+        modifiedProps: { state: 'OPEN' },
       })
     })
 
@@ -277,25 +185,11 @@ describe('Pulls Table', () => {
   describe('when pull rendered with no head covarge', () => {
     beforeEach(() => {
       setup({
-        pulls: [
-          {
-            node: {
-              author: { username: 'RulaKhaled' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: 90,
-                },
-              },
-              head: {
-                totals: null,
-              },
-              pullId: 746,
-              state: 'OPEN',
-              title: 'Test1',
-              updatestamp: '2021-08-30T19:33:49.819672',
-            },
+        modifiedProps: {
+          head: {
+            totals: null,
           },
-        ],
+        },
       })
     })
 
