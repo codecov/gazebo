@@ -1,6 +1,7 @@
 import Progress from 'ui/Progress'
 import A from 'ui/A'
 import PropTypes from 'prop-types'
+import { CommitRequestType } from '../../types'
 
 const Coverage = ({ commit }) => {
   return (
@@ -24,22 +25,7 @@ const Coverage = ({ commit }) => {
 }
 
 Coverage.propTypes = {
-  commit: PropTypes.shape({
-    author: PropTypes.shape({
-      username: PropTypes.string,
-    }),
-    compareWithParent: PropTypes.shape({
-      patchTotals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    totals: PropTypes.shape({
-      coverage: PropTypes.number,
-    }),
-    commitid: PropTypes.string,
-    message: PropTypes.string,
-    createdAt: PropTypes.string,
-  }),
+  commit: PropTypes.shape(CommitRequestType),
 }
 
 export default Coverage

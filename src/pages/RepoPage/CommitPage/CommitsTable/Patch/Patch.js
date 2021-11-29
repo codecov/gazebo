@@ -1,5 +1,6 @@
 import { isNumber } from 'lodash'
 import PropTypes from 'prop-types'
+import { CommitRequestType } from '../../types'
 
 function Patch({ commit }) {
   const rawPatch = commit?.compareWithParent?.patchTotals?.coverage
@@ -13,27 +14,7 @@ function Patch({ commit }) {
 }
 
 Patch.propTypes = {
-  commit: PropTypes.shape({
-    author: PropTypes.shape({
-      username: PropTypes.string,
-    }),
-    compareWithParent: PropTypes.shape({
-      patchTotals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    totals: PropTypes.shape({
-      coverage: PropTypes.number,
-    }),
-    parent: PropTypes.shape({
-      totals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    commitid: PropTypes.string,
-    message: PropTypes.string,
-    createdAt: PropTypes.string,
-  }),
+  commit: PropTypes.shape(CommitRequestType),
 }
 
 export default Patch

@@ -4,6 +4,7 @@ import Title from './Title'
 import Coverage from './Coverage'
 import Change from './Change'
 import Patch from './Patch'
+import { CommitRequestType } from '../types'
 
 const headers = [
   {
@@ -70,30 +71,7 @@ function CommitsTable({ commits }) {
 }
 
 CommitsTable.propTypes = {
-  commits: PropTypes.arrayOf(
-    PropTypes.shape({
-      node: PropTypes.shape({
-        author: PropTypes.shape({
-          username: PropTypes.string,
-        }),
-        compareWithParent: PropTypes.shape({
-          patchTotals: PropTypes.shape({
-            coverage: PropTypes.number,
-          }),
-        }),
-        totals: PropTypes.shape({
-          coverage: PropTypes.number,
-        }),
-        parent: PropTypes.shape({
-          totals: PropTypes.shape({
-            coverage: PropTypes.number,
-          }),
-        }),
-        commitid: PropTypes.string,
-        message: PropTypes.string,
-      }),
-    })
-  ),
+  commits: PropTypes.arrayOf(CommitRequestType),
 }
 
 export default CommitsTable

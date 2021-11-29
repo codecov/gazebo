@@ -3,6 +3,7 @@ import Avatar from 'ui/Avatar'
 import A from 'ui/A'
 import PropTypes from 'prop-types'
 import { useOwner } from 'services/user'
+import { CommitRequestType } from '../../types'
 
 const Title = ({ commit }) => {
   const { data: ownerData } = useOwner({ username: commit?.author?.username })
@@ -60,27 +61,7 @@ const Title = ({ commit }) => {
 }
 
 Title.propTypes = {
-  commit: PropTypes.shape({
-    author: PropTypes.shape({
-      username: PropTypes.string,
-    }),
-    compareWithParent: PropTypes.shape({
-      patchTotals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    totals: PropTypes.shape({
-      coverage: PropTypes.number,
-    }),
-    parent: PropTypes.shape({
-      totals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    commitid: PropTypes.string,
-    message: PropTypes.string,
-    createdAt: PropTypes.string,
-  }),
+  commit: PropTypes.shape(CommitRequestType),
 }
 
 export default Title
