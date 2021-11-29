@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^2.8.2",
-    "@reach/menu-button": "^0.16.1",
+    "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
     "@stripe/react-stripe-js": "^1.5.0",
     "@stripe/stripe-js": "^1.21.1",
@@ -82,7 +82,7 @@
     }
   ],
   "devDependencies": {
-    "@babel/core": "^7.15.8",
+    "@babel/core": "^7.16.0",
     "@craco/craco": "^6.4.1",
     "@sentry/cli": "^1.71.0",
     "@storybook/addon-a11y": "^6.3.12",
