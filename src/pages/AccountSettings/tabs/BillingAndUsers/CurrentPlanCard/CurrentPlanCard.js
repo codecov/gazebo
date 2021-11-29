@@ -4,6 +4,7 @@ import { isFreePlan } from 'shared/utils/billing'
 
 import ActionsBilling from './ActionsBilling'
 import BenefitList from '../../../shared/BenefitList'
+import Usage from './Usage'
 
 function CurrentPlanCard({ accountDetails }) {
   const plan = accountDetails.rootOrganization?.plan ?? accountDetails.plan
@@ -22,12 +23,14 @@ function CurrentPlanCard({ accountDetails }) {
         />
       </div>
       <hr className="my-6" />
-      <p className="mt-4">
-        {accountDetails.activatedUserCount ?? 0} /{' '}
-        {accountDetails.plan.quantity ?? 0} Active users
-      </p>
+      <div className="flex flex-col mt-6">
+        <Usage
+          accountDetails={accountDetails}
+          isFreePlan={isFreePlan(plan.value)}
+        />
+      </div>
 
-      <div className="flex flex-col items-center mt-6">
+      <div className="flex flex-col items-center mt-1">
         <ActionsBilling
           accountDetails={accountDetails}
           isFreePlan={isFreePlan(plan.value)}
