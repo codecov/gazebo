@@ -4,7 +4,7 @@ import { CommitRequestType } from '../../types'
 
 function Patch({ commit }) {
   const rawPatch = commit?.compareWithParent?.patchTotals?.coverage
-  const patch = isNumber(rawPatch) && `${(rawPatch * 100).toFixed(2)}%` //are we sure?
+  const patch = isNumber(rawPatch) && `${rawPatch}%`
 
   return (
     patch && (

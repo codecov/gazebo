@@ -1,13 +1,13 @@
 import { useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
-import { useRouteMatch, Switch, Route } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import New from './new'
 import CommitsPage from './CommitPage'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
-  const { path } = useRouteMatch()
+  const path = '/:provider/:owner/:repo'
   const { data } = useRepo({
     provider,
     owner,
@@ -36,22 +36,22 @@ function RepoPage() {
           <Route path={path} exact>
             <h1>Overview</h1>
           </Route>
-          <Route path={`${path}new`} exact>
+          <Route path={`${path}/new`} exact>
             <New data={data} />
           </Route>
-          <Route path={`${path}commits`} exact>
+          <Route path={`${path}/commits`} exact>
             <CommitsPage />
           </Route>
-          <Route path={`${path}branches`} exact>
+          <Route path={`${path}/branches`} exact>
             <h1>Branches</h1>
           </Route>
-          <Route path={`${path}pulls`} exact>
+          <Route path={`${path}/pulls`} exact>
             <h1>Pulls</h1>
           </Route>
-          <Route path={`${path}compare`} exact>
+          <Route path={`${path}/compare`} exact>
             <h1>Compare</h1>
           </Route>
-          <Route path={`${path}settings`} exact>
+          <Route path={`${path}/settings`} exact>
             <h1>Settings</h1>
           </Route>
         </Switch>

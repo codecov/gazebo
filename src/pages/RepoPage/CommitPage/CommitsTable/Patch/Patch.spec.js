@@ -32,7 +32,7 @@ describe('Patch', () => {
     })
 
     it('renders commit patch', () => {
-      const change = screen.getByText(/9000.00%/)
+      const change = screen.getByText(/90%/)
       expect(change).toBeInTheDocument()
     })
   })

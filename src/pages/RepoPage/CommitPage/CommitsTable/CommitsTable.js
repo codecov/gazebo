@@ -63,11 +63,7 @@ function transformPullToTable(commits) {
 
 function CommitsTable({ commits }) {
   const dataTable = transformPullToTable(commits)
-  return (
-    <>
-      <Table data={dataTable} columns={headers} />
-    </>
-  )
+  return <Table data={dataTable} columns={headers} />
 }
 
 CommitsTable.propTypes = {
