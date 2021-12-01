@@ -2,28 +2,28 @@ import { accountDetailsPropType } from 'services/account'
 import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 import Progress from 'ui/Progress'
-import { useOwner } from 'services/user'
+
+const RollingTimeWindow = () => {
+  const today = new Date().getTime()
+  console.log(today)
+  return 13 //tbd
+}
 
 function Usage({ accountDetails, isFreePlan }) {
-  const { data: info } = useOwner({ username: 'codecov' })
-  console.log(info)
   return (
     <div className="flex flex-col">
       <h2 className="font-semibold">Usage</h2>
       <p className="mt-4">
-        {accountDetails.activatedUserCount ?? 0} /{' '}
-        {accountDetails.plan.quantity ?? 0} Active users
+        {accountDetails.activatedUserCount ?? 0} of{' '}
+        {accountDetails.plan.quantity ?? 0} users
       </p>
-      {/* change this here please  */}
-      {!isFreePlan && (
+      {isFreePlan && (
         <Fragment>
-          <p className="mt-4">224 of 250 uploads month 9.13 - 10. 03</p>
+          <p className="mt-4">
+            224 of 250 uploads month <RollingTimeWindow />
+          </p>
           <div className="mt-4">
-            <Progress
-              amount={(224 * 100) / 250}
-              label={false}
-              bgColor={'bg-ds-gray-senary'}
-            />
+            <Progress amount={(20 * 100) / 250} label={false} useUsage={true} />
           </div>
         </Fragment>
       )}

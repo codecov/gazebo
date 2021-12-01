@@ -29,7 +29,6 @@ function CurrentPlanCard({ accountDetails }) {
           isFreePlan={isFreePlan(plan.value)}
         />
       </div>
-
       <div className="flex flex-col items-center mt-1">
         <ActionsBilling
           accountDetails={accountDetails}
