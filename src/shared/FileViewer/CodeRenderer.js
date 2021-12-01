@@ -16,7 +16,7 @@ function CodeRenderer({
   fileName,
 }) {
   return (
-    <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border">
+    <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border font-mono">
       <colgroup>
         <col width="40" />
         <col />
