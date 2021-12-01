@@ -11,6 +11,8 @@ import RepoTitleLink from './RepoTitleLink'
 import NoReposBlock from './NoReposBlock'
 
 import { useFlags } from 'shared/featureFlags'
+import { useContext } from 'react'
+import { ActiveContext } from 'shared/Contexts'
 
 const tableActive = [
   {
@@ -43,7 +45,13 @@ const tableInactive = [
   },
 ]
 
-function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
+function transformRepoToTable(
+  repos,
+  owner,
+  searchValue,
+  newRepoSetupLink,
+  active
+) {
   // if there are no repos show empty message
   if (repos.length <= 0) {
     return [
@@ -59,7 +67,14 @@ function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
   const showRepoOwner = !owner
 
   return repos.map((repo) => ({
-    title: <RepoTitleLink repo={repo} showRepoOwner={showRepoOwner} />,
+    title: (
+      <RepoTitleLink
+        repo={repo}
+        showRepoOwner={showRepoOwner}
+        active={active}
+        newRepoSetupLink={newRepoSetupLink}
+      />
+    ),
     lastUpdated: (
       <span className="w-full text-right text-ds-gray-quinary">
         {repo.latestCommitAt
@@ -95,13 +110,8 @@ function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
   }))
 }
 
-function ReposTable({
-  active,
-  searchValue,
-  owner,
-  sortItem,
-  filterValues = [],
-}) {
+function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
+  const active = useContext(ActiveContext)
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
     active,
     sortItem,
@@ -115,7 +125,8 @@ function ReposTable({
     data.repos,
     owner,
     searchValue,
-    newRepoSetupLink
+    newRepoSetupLink,
+    active
   )
 
   return (
@@ -133,14 +144,13 @@ function ReposTable({
               </Button>
             </div>
           )
-        : !searchValue && <NoReposBlock owner={owner} active={active} />}
+        : !searchValue && <NoReposBlock owner={owner} />}
     </>
   )
 }
 
 ReposTable.propTypes = {
   owner: PropTypes.string,
-  active: PropTypes.bool.isRequired,
   searchValue: PropTypes.string.isRequired,
   sortItem: PropTypes.object.isRequired,
   filterValues: PropTypes.array,
