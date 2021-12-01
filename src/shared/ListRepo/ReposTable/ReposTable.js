@@ -11,6 +11,8 @@ import RepoTitleLink from './RepoTitleLink'
 import NoReposBlock from './NoReposBlock'
 
 import { useFlags } from 'shared/featureFlags'
+import { useContext } from 'react'
+import { ActiveContext } from 'shared/Contexts'
 
 const tableActive = [
   {
@@ -108,13 +110,8 @@ function transformRepoToTable(
   }))
 }
 
-function ReposTable({
-  active,
-  searchValue,
-  owner,
-  sortItem,
-  filterValues = [],
-}) {
+function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
+  const active = useContext(ActiveContext)
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
     active,
     sortItem,
@@ -147,14 +144,13 @@ function ReposTable({
               </Button>
             </div>
           )
-        : !searchValue && <NoReposBlock owner={owner} active={active} />}
+        : !searchValue && <NoReposBlock owner={owner} />}
     </>
   )
 }
 
 ReposTable.propTypes = {
   owner: PropTypes.string,
-  active: PropTypes.bool.isRequired,
   searchValue: PropTypes.string.isRequired,
   sortItem: PropTypes.object.isRequired,
   filterValues: PropTypes.array,
