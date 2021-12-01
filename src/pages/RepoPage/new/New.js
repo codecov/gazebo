@@ -11,10 +11,7 @@ function RedirectUsers() {
   const { provider, owner, repo } = useParams()
   const { data: commits } = useCommits({ provider, owner, repo })
 
-  if (!commits?.length) {
-    window.location = `/${provider}/${owner}/${repo}`
-    return null
-  }
+  if (!commits?.length) window.location = `/${provider}/${owner}/${repo}`
 }
 
 function New({ data }) {
