@@ -1,17 +1,21 @@
 import { render, screen } from '@testing-library/react'
 import { Route, MemoryRouter } from 'react-router-dom'
 import New from '.'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 jest.mock('services/repo/hooks')
+const queryClient = new QueryClient()
 
 describe('New Page', () => {
   function setup(data) {
     render(
-      <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
-        <Route path="/:provider/:owner/:repo/new">
-          <New {...data} />
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
+          <Route path="/:provider/:owner/:repo/new">
+            <New {...data} />
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
   }
 
