@@ -103,7 +103,7 @@ function App() {
               </BaseLayout>
             </Route>
             {newRepoSetupLink && (
-              <Route path="/:provider/:owner/:repo/">
+              <Route path="/:provider/:owner/:repo">
                 <BaseLayout>
                   <RepoPage />
                 </BaseLayout>
