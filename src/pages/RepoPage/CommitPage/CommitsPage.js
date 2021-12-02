@@ -7,7 +7,7 @@ function CommitsPage() {
   const { data: commits } = useCommits({ provider, owner, repo })
 
   return (
-    <div className="w-full h-screen overflow-scroll">
+    <div className="flex-1 overflow-y-auto">
       <CommitsTable commits={commits} />
     </div>
   )
