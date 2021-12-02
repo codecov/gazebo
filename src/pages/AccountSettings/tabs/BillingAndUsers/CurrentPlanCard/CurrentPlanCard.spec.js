@@ -55,6 +55,10 @@ describe('CurrentPlanCard', () => {
         screen.getByRole('link', { name: /Cancel Plan/ })
       ).toBeInTheDocument()
     })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
+    })
   })
 
   describe('when rendering with a free plan', () => {
@@ -66,6 +70,10 @@ describe('CurrentPlanCard', () => {
       expect(
         screen.queryByRole('link', { name: /Cancel Plan/ })
       ).not.toBeInTheDocument()
+    })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
     })
   })
 
@@ -84,6 +92,10 @@ describe('CurrentPlanCard', () => {
         screen.queryByRole('link', { name: /Cancel Plan/ })
       ).not.toBeInTheDocument()
     })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
+    })
   })
 
   describe('when the user is using github marketplace', () => {
@@ -98,6 +110,10 @@ describe('CurrentPlanCard', () => {
       expect(
         screen.getByRole('link', { name: /Manage billing in GitHub/ })
       ).toBeInTheDocument()
+    })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
     })
   })
 
@@ -131,6 +147,10 @@ describe('CurrentPlanCard', () => {
         'href',
         `/account/gl/${parentUsername}/billing`
       )
+    })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
     })
   })
 })

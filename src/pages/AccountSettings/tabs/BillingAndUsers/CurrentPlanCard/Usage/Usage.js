@@ -16,8 +16,8 @@ const getRollingTimeWindow = () => {
   return `${today} - ${inMonth}`
 }
 
-function Usage({ accountDetails, isFreePlan }) {
-  const uploadsNumber = 25 //to do - get the uploads per owner
+function Usage({ accountDetails, isFreePlan, show = false }) {
+  const uploadsNumber = 23 //to do - get the uploads per owner
   const progressAmount = (uploadsNumber * 100) / 250
   const isUsageExceeded = uploadsNumber >= 250
   const curDates = getRollingTimeWindow()
@@ -29,7 +29,7 @@ function Usage({ accountDetails, isFreePlan }) {
         {accountDetails.activatedUserCount ?? 0} of{' '}
         {accountDetails.plan.quantity ?? 0} users
       </p>
-      {isFreePlan && (
+      {show && ( //we would change this condition to check if the plan is free.
         <Fragment>
           <p className="mt-4">
             {uploadsNumber} of 250 uploads month {curDates}
@@ -64,6 +64,7 @@ function Usage({ accountDetails, isFreePlan }) {
 Usage.propTypes = {
   accountDetails: accountDetailsPropType.isRequired,
   isFreePlan: PropTypes.bool.isRequired,
+  show: PropTypes.bool,
 }
 
 export default Usage
