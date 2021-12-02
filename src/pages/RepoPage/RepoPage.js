@@ -3,6 +3,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 import { Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import New from './new'
+import CommitsPage from './CommitPage'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -39,7 +40,7 @@ function RepoPage() {
             <New data={data} />
           </Route>
           <Route path={`${path}/commits`} exact>
-            <h1>Commmits</h1>
+            <CommitsPage />
           </Route>
           <Route path={`${path}/branches`} exact>
             <h1>Branches</h1>

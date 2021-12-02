@@ -6,13 +6,14 @@ import { useRepos } from 'services/repos/hooks'
 import { orderingOptions } from 'services/repos'
 
 import ReposTable from './ReposTable'
+import { ActiveContext } from 'shared/Contexts'
 
 jest.mock('services/repos/hooks')
 
 describe('ReposTable', () => {
   let props
   let fetchNextPage = jest.fn(() => {})
-  function setup(over = {}, repos, hasNextPage) {
+  function setup(active, repos, hasNextPage, propObj = {}) {
     useRepos.mockReturnValue({
       data: {
         repos,
@@ -21,15 +22,16 @@ describe('ReposTable', () => {
       fetchNextPage,
     })
     props = {
-      active: true,
       searchValue: '',
       sortItem: orderingOptions[0],
-      ...over,
+      ...propObj,
     }
     render(
       <MemoryRouter initialEntries={['/gh']}>
         <Route path="/:provider">
-          <ReposTable {...props} />
+          <ActiveContext.Provider value={active}>
+            <ReposTable {...props} />
+          </ActiveContext.Provider>
         </Route>
       </MemoryRouter>
     )
@@ -37,50 +39,50 @@ describe('ReposTable', () => {
 
   describe('when rendered with active true', () => {
     beforeEach(() => {
-      setup(
+      setup(true, [
         {
+          private: false,
+          author: {
+            username: 'owner1',
+          },
+          name: 'Repo name 1',
+          latestCommitAt: subDays(new Date(), 3),
+          coverage: 43,
           active: true,
         },
-        [
-          {
-            private: false,
-            author: {
-              username: 'owner1',
-            },
-            name: 'Repo name 1',
-            latestCommitAt: subDays(new Date(), 3),
-            coverage: 43,
-            active: true,
+        {
+          private: true,
+          author: {
+            username: 'owner1',
           },
-          {
-            private: true,
-            author: {
-              username: 'owner1',
-            },
-            name: 'Repo name 2',
-            latestCommitAt: subDays(new Date(), 2),
-            coverage: 100,
-            active: true,
+          name: 'Repo name 2',
+          latestCommitAt: subDays(new Date(), 2),
+          coverage: 100,
+          active: true,
+        },
+        {
+          private: true,
+          author: {
+            username: 'owner1',
           },
-          {
-            private: true,
-            author: {
-              username: 'owner1',
-            },
-            name: 'Repo name 3',
-            latestCommitAt: null,
-            active: true,
-          },
-        ]
-      )
+          name: 'Repo name 3',
+          latestCommitAt: null,
+          active: true,
+        },
+      ])
     })
 
     it('calls useRepos with the right data', () => {
       expect(useRepos).toHaveBeenCalledWith({
         active: true,
-        term: '',
-        sortItem: props.sortItem,
+        owner: undefined,
         repoNames: [],
+        sortItem: {
+          direction: 'DESC',
+          ordering: 'COMMIT_DATE',
+          text: 'Most recent commit',
+        },
+        term: '',
       })
     })
 
@@ -109,51 +111,51 @@ describe('ReposTable', () => {
 
   describe('when rendered with active false', () => {
     beforeEach(() => {
-      setup(
+      setup(false, [
         {
+          private: false,
+          author: {
+            username: 'owner1',
+          },
+          name: 'Repo name 1',
+          latestCommitAt: subDays(new Date(), 3),
+          coverage: 43,
           active: false,
         },
-        [
-          {
-            private: false,
-            author: {
-              username: 'owner1',
-            },
-            name: 'Repo name 1',
-            latestCommitAt: subDays(new Date(), 3),
-            coverage: 43,
-            active: false,
+        {
+          private: true,
+          author: {
+            username: 'owner1',
           },
-          {
-            private: true,
-            author: {
-              username: 'owner1',
-            },
-            name: 'Repo name 2',
-            latestCommitAt: subDays(new Date(), 2),
-            coverage: 100,
-            active: false,
+          name: 'Repo name 2',
+          latestCommitAt: subDays(new Date(), 2),
+          coverage: 100,
+          active: false,
+        },
+        {
+          private: true,
+          author: {
+            username: 'owner1',
           },
-          {
-            private: true,
-            author: {
-              username: 'owner1',
-            },
-            name: 'Repo name 3',
-            latestCommitAt: subDays(new Date(), 5),
-            coverage: 0,
-            active: false,
-          },
-        ]
-      )
+          name: 'Repo name 3',
+          latestCommitAt: subDays(new Date(), 5),
+          coverage: 0,
+          active: false,
+        },
+      ])
     })
 
     it('calls useRepos with the right data', () => {
       expect(useRepos).toHaveBeenCalledWith({
         active: false,
-        term: '',
-        sortItem: props.sortItem,
+        owner: undefined,
         repoNames: [],
+        sortItem: {
+          direction: 'DESC',
+          ordering: 'COMMIT_DATE',
+          text: 'Most recent commit',
+        },
+        term: '',
       })
     })
 
@@ -171,14 +173,10 @@ describe('ReposTable', () => {
       expect(button).not.toBeInTheDocument()
     })
   })
+
   describe('when rendered empty repos', () => {
     beforeEach(() => {
-      setup(
-        {
-          active: true,
-        },
-        []
-      )
+      setup(true, [])
     })
     it('renders no repos detected', () => {
       const buttons = screen.getAllByText(/No repos setup yet/)
@@ -210,13 +208,7 @@ describe('ReposTable', () => {
 
   describe('when rendered empty search', () => {
     beforeEach(() => {
-      setup(
-        {
-          active: true,
-          searchValue: 'something',
-        },
-        []
-      )
+      setup(true, [], false, { searchValue: 'something' })
     })
     it('renders no results found', () => {
       const buttons = screen.getAllByText(/no results found/)
@@ -227,9 +219,7 @@ describe('ReposTable', () => {
   describe('render next page button', () => {
     beforeEach(() => {
       setup(
-        {
-          active: true,
-        },
+        true,
         [
           {
             private: false,
