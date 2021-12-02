@@ -57,11 +57,27 @@ describe('Usage', () => {
     })
 
     it('renders number of uploads', () => {
-      expect(screen.getByText(/23 of 250 uploads month/)).toBeInTheDocument()
+      expect(screen.getByText(/250 of 250 uploads month/)).toBeInTheDocument()
     })
 
     it('renders progress bar', () => {
       expect(screen.getByTestId(/org-progress-bar/)).toBeInTheDocument()
+    })
+
+    it('renders the warning exceed warning', () => {
+      expect(
+        screen.getByText(/usage exceeded upload limit/)
+      ).toBeInTheDocument()
+    })
+
+    it('renders warning icon', () => {
+      expect(screen.getByText(/exclamation.svg/)).toBeInTheDocument()
+    })
+
+    it('renders the upgrade tip', () => {
+      expect(
+        screen.getByText(/upgrade to 6 users for unlimited uploads/)
+      ).toBeInTheDocument()
     })
   })
 
@@ -76,9 +92,9 @@ describe('Usage', () => {
 
     it('does not render number of uploads', () => {
       expect(
-        screen.queryByText(/23 of 250 uploads month/)
+        screen.queryByText(/250 of 250 uploads month/)
       ).not.toBeInTheDocument()
     })
   })
-  //check for exceeded vals
 })
+//need to add more tests when the hook is ready.

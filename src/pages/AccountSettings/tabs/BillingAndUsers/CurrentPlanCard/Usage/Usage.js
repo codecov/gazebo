@@ -17,7 +17,7 @@ const getRollingTimeWindow = () => {
 }
 
 function Usage({ accountDetails, isFreePlan, show = false }) {
-  const uploadsNumber = 23 //to do - get the uploads per owner
+  const uploadsNumber = 250 //to do - get the uploads per owner
   const progressAmount = (uploadsNumber * 100) / 250
   const isUsageExceeded = uploadsNumber >= 250
   const curDates = getRollingTimeWindow()
