@@ -10,10 +10,10 @@ const getRollingTimeWindow = () => {
   const day = new Date().getDate()
   const today = `${month}/${day}`
 
-  const nextMonth = month === 12 ? 1 : month + 1
-  const inMonth = `${nextMonth}/${day}`
+  const prevMonth = month === 1 ? 12 : month - 1
+  const monthAgo = `${prevMonth}/${day}`
 
-  return `${today} - ${inMonth}`
+  return `${monthAgo} - ${today}`
 }
 
 function Usage({ accountDetails, isFreePlan, show = false }) {
