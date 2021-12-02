@@ -5,6 +5,7 @@ import { isFreePlan } from 'shared/utils/billing'
 import ActionsBilling from './ActionsBilling'
 import BenefitList from '../../../shared/BenefitList'
 import Usage from './Usage'
+import A from 'ui/A'
 
 function CurrentPlanCard({ accountDetails }) {
   const plan = accountDetails.rootOrganization?.plan ?? accountDetails.plan
@@ -34,6 +35,11 @@ function CurrentPlanCard({ accountDetails }) {
           accountDetails={accountDetails}
           isFreePlan={isFreePlan(plan.value)}
         />
+      </div>
+      <hr className="my-6" />
+      <div className="mt-6 text-ds-gray-quinary">
+        <span className="font-semibold">Need help?</span> Connect with our sales
+        team today at <A to={{ pageName: 'sales' }}>sales@codecov.io</A>
       </div>
     </Card>
   )
