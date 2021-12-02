@@ -17,6 +17,7 @@ describe('CoverageReportCard', () => {
     totals: {
       coverage: 38.30846,
     },
+    state: 'success',
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
     createdAt: '2020-08-25T16:35:32',
     ciPassed: true,
@@ -26,6 +27,7 @@ describe('CoverageReportCard', () => {
         coverage: 38.30846,
       },
     },
+    pullId: 123,
   }
 
   function setup(data) {
@@ -34,17 +36,22 @@ describe('CoverageReportCard', () => {
     })
   }
 
-  describe('renders', () => {
+  describe('successful commit renders', () => {
     beforeEach(() => {
       setup(mockData)
     })
 
     it('renders the title', () => {
       expect(screen.getByText(/Coverage report/)).toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: 'exclamation.svg Coverage report',
+        })
+      ).not.toBeInTheDocument()
     })
     it('renders PACTH placeholder while polling', () => {
       expect(screen.getByText(/Patch/)).toBeInTheDocument()
-      expect(screen.queryAllByText(/-/)).toHaveLength(2)
+      expect(screen.queryAllByText('-')).toHaveLength(1)
     })
     it('renders the Change', () => {
       expect(screen.getByText('Change')).toBeInTheDocument()
@@ -58,11 +65,11 @@ describe('CoverageReportCard', () => {
         screen.getByText(/The average coverage of changes for this commit is/)
       ).toBeInTheDocument()
     })
-    it('renders CI Failed Status', () => {
+    it('renders CI Passed', () => {
       expect(screen.getByText('CI Passed')).toBeInTheDocument()
     })
-    it('renders', () => {
-      expect(screen.getByText('CI Passed')).toBeInTheDocument()
+    it('renders the pull lable', () => {
+      expect(screen.getByText(/pull-request-open.svg/)).toBeInTheDocument()
     })
   })
 
@@ -80,6 +87,7 @@ describe('CoverageReportCard', () => {
     beforeEach(() => {
       setup({
         ...mockData,
+        state: 'pending',
         compareWithParent: { patchTotals: { coverage: 0.111 } },
       })
     })
@@ -87,6 +95,36 @@ describe('CoverageReportCard', () => {
     it('renders PACTH after polling', () => {
       expect(screen.getByText(/Patch/)).toBeInTheDocument()
       expect(screen.queryAllByText(/11.10/)).toHaveLength(2)
+    })
+
+    it('does not render the pull lable', () => {
+      expect(
+        screen.queryByRole('img', { name: 'pull-request-open' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('with error', () => {
+    beforeEach(() => {
+      setup({
+        ...mockData,
+        state: 'error',
+      })
+    })
+
+    it('Suggests support links', () => {
+      expect(
+        screen.getByRole('link', { name: 'files paths external-link.svg' })
+      ).toHaveAttribute('href', 'https://docs.codecov.com/docs/fixing-paths')
+      expect(
+        screen.getByRole('link', { name: 'reference external-link.svg' })
+      ).toHaveAttribute('href', 'https://docs.codecov.com/docs/error-reference')
+    })
+
+    it('The commit coverage card title has an error indicator', () => {
+      expect(
+        screen.getByRole('heading', { name: 'exclamation.svg Coverage report' })
+      ).toBeInTheDocument()
     })
   })
 })
