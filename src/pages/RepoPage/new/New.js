@@ -7,7 +7,7 @@ import InstructionBox from './instructionBox/InstructionBox'
 import { useCommits } from 'services/commits'
 import { useParams } from 'react-router'
 
-function RedirectUsers() {
+function useRedirectUsers() {
   const { provider, owner, repo } = useParams()
   const { data: commits } = useCommits({ provider, owner, repo })
 
@@ -15,7 +15,7 @@ function RedirectUsers() {
 }
 
 function New({ data }) {
-  RedirectUsers()
+  useRedirectUsers()
 
   if (!data || !data?.repo?.uploadToken) {
     return null
