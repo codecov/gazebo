@@ -8,10 +8,10 @@ import A from 'ui/A'
 const getRollingTimeWindow = () => {
   const month = new Date().getMonth() + 1
   const day = new Date().getDate()
-  const today = `${month}.${day}`
+  const today = `${month}/${day}`
 
   const nextMonth = month === 12 ? 1 : month + 1
-  const inMonth = `${nextMonth}.${day}`
+  const inMonth = `${nextMonth}/${day}`
 
   return `${today} - ${inMonth}`
 }
@@ -48,7 +48,7 @@ function Usage({ accountDetails, isFreePlan, show = false }) {
                 </p>
               </div>
               <p className="mt-4">
-                <span className="font-semibold">Tip:</span> upgrade to 5 users
+                <span className="font-semibold">Tip:</span> upgrade to 6 users
                 for unlimited uploads{' '}
                 <A to={{ pageName: 'upgradePlan' }}> upgrade today </A>
               </p>
