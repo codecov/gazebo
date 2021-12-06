@@ -20,6 +20,7 @@ import {
 import { useAutoActivate, useAccountDetails } from 'services/account'
 import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
+import { isFreePlan } from 'shared/utils/billing'
 
 const UserManagementClasses = {
   root: 'space-y-4 col-span-2 mb-20 flex-grow', // Select pushes page length out. For now padding
@@ -85,7 +86,7 @@ function UserManagement({ provider, owner }) {
     if (
       accountDetails?.activatedUserCount >= maxActivatedUsers &&
       !user.activated &&
-      accountDetails?.plan?.value === 'users-free'
+      isFreePlan(accountDetails?.plan?.value)
     ) {
       setIsOpen(true)
     } else {

@@ -109,23 +109,13 @@ function New({ data }) {
           {' '}
           🎉 Confirming completion
         </h2>
-        <p className="text-base border-b border-ds-gray-tertiary pb-8">
+        <p className="text-base">
           These steps should be added to the CI configuration. Codecov jobs
           occur after the test runner ran and output coverage report. Once
           uploader runs it will return a link where you can view your reports on
           Codecov.
         </p>
       </Fragment>
-
-      <div>
-        <p className="font-semibold mt-8 text-base">
-          Interested in a setup demo?{' '}
-          <span className="font-normal text-base">
-            Check out this walkthrough:
-          </span>
-        </p>
-        <div className="mt-4">Video here</div>
-      </div>
     </div>
   )
 }

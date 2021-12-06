@@ -4,6 +4,7 @@ import Cookie from 'js-cookie'
 
 import Api from 'shared/api'
 import { ProviderCookieKeyMapping } from 'shared/api/helpers'
+import { Plans } from 'shared/utils/billing'
 
 function getPathAccountDetails({ provider, owner }) {
   return `/${provider}/${owner}/account-details/`
@@ -23,7 +24,7 @@ function cancelPlan({ provider, owner }) {
   const path = getPathAccountDetails({ provider, owner })
   const body = {
     plan: {
-      value: 'users-free',
+      value: Plans.USERS_BASIC,
     },
   }
   return Api.patch({ path, provider, body })

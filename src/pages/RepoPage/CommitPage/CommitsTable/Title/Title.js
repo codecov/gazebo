@@ -3,11 +3,32 @@ import Avatar from 'ui/Avatar'
 import A from 'ui/A'
 import PropTypes from 'prop-types'
 import { useOwner } from 'services/user'
+import { CommitRequestType } from '../../types'
 
-const Title = ({ commit }) => {
+const OwnerData = ({ commit }) => {
   const { data: ownerData } = useOwner({ username: commit?.author?.username })
 
-  const handleCommitMessage = () => {
+  return (
+    <span className="flex items-center mr-6">
+      <Avatar
+        user={
+          ownerData || {
+            avatarUrl: 'https://avatars0.githubusercontent.com/u/?v=3&s=55',
+            username: 'default',
+          }
+        }
+        bordered
+      />
+    </span>
+  )
+}
+
+OwnerData.propTypes = {
+  commit: PropTypes.shape(CommitRequestType),
+}
+
+const Title = ({ commit }) => {
+  const commitMessage = () => {
     if (!commit.message) return 'commit message unavailable'
     const msg =
       commit?.message?.length < 50
@@ -16,29 +37,13 @@ const Title = ({ commit }) => {
     return msg
   }
 
-  const handleOwnerData = () => {
-    return (
-      <span>
-        <Avatar
-          user={
-            ownerData || {
-              avatarUrl: 'https://avatars0.githubusercontent.com/u/?v=3&s=55',
-              username: null,
-            }
-          }
-          bordered
-        />
-      </span>
-    )
-  }
-
   return (
     <div className="flex flex-row">
-      <span className="flex items-center mr-6">{handleOwnerData()}</span>
+      <OwnerData commit={commit} />
       <div className="flex flex-col">
         <A to={{ pageName: 'commit', options: { commit: commit?.commitid } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
-            {handleCommitMessage()}
+            {commitMessage()}
           </h2>
         </A>
         <p className="text-xs">
@@ -60,27 +65,7 @@ const Title = ({ commit }) => {
 }
 
 Title.propTypes = {
-  commit: PropTypes.shape({
-    author: PropTypes.shape({
-      username: PropTypes.string,
-    }),
-    compareWithParent: PropTypes.shape({
-      patchTotals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    totals: PropTypes.shape({
-      coverage: PropTypes.number,
-    }),
-    parent: PropTypes.shape({
-      totals: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    }),
-    commitid: PropTypes.string,
-    message: PropTypes.string,
-    createdAt: PropTypes.string,
-  }),
+  commit: PropTypes.shape(CommitRequestType),
 }
 
 export default Title
