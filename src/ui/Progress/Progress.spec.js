@@ -33,7 +33,7 @@ describe('Progress', () => {
       setup({
         amount: 80,
         label: true,
-        useUsage: false,
+        variant: 'default',
       })
     })
 
@@ -43,12 +43,12 @@ describe('Progress', () => {
     })
   })
 
-  describe('using usage', () => {
+  describe('using the progressNeutral variant', () => {
     beforeEach(() => {
       setup({
         amount: 80,
         label: false,
-        useUsage: true,
+        variant: 'progressNeutral',
       })
     })
 
@@ -63,12 +63,12 @@ describe('Progress', () => {
     })
   })
 
-  describe('using usage with exceeded amount', () => {
+  describe('using the progressDanger variant', () => {
     beforeEach(() => {
       setup({
         amount: 250,
         label: false,
-        useUsage: true,
+        variant: 'progressDanger',
       })
     })
 

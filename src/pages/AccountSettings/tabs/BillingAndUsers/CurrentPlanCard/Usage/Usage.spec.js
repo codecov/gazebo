@@ -23,7 +23,7 @@ const defaultAccountDetails = {
     billingRate: null,
     marketingName: 'Basic',
     quantity: 5,
-    value: 'users-free',
+    value: 'users-basic',
   },
 }
 

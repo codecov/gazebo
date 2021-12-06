@@ -24,12 +24,10 @@ function CurrentPlanCard({ accountDetails }) {
         />
       </div>
       <hr className="my-6" />
-      <div className="flex flex-col mt-6">
-        <Usage
-          accountDetails={accountDetails}
-          isFreePlan={isFreePlan(plan.value)}
-        />
-      </div>
+      <Usage
+        accountDetails={accountDetails}
+        isFreePlan={isFreePlan(plan.value)}
+      />
       <div className="flex flex-col items-center mt-1">
         <ActionsBilling
           accountDetails={accountDetails}
