@@ -6,12 +6,15 @@ import { Fragment } from 'react'
 import InstructionBox from './instructionBox/InstructionBox'
 import { useCommits } from 'services/commits'
 import { useParams } from 'react-router'
+import { useEffect } from 'react'
 
 function useRedirectUsers() {
   const { provider, owner, repo } = useParams()
   const { data: commits } = useCommits({ provider, owner, repo })
 
-  if (commits?.length) window.location = `/${provider}/${owner}/${repo}`
+  useEffect(() => {
+    if (commits?.length) window.location = `/${provider}/${owner}/${repo}`
+  }, [provider, owner, repo, commits])
 }
 
 function New({ data }) {
