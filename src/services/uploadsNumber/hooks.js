@@ -23,7 +23,7 @@ function fetchOwnerUploadsNumber({ provider, owner }) {
 }
 
 export function useUploadsNumber({ provider, owner }) {
-  return useQuery([provider, owner], () => {
+  return useQuery([provider, owner, 'ownerUploads'], () => {
     return fetchOwnerUploadsNumber({ provider, owner })
   })
 }

@@ -40,9 +40,10 @@ ActiveUsers.propTypes = {
 function Usage({ accountDetails, isBasicPlan }) {
   const { provider, owner } = useParams()
   const { data: uploadsNumber } = useUploadsNumber({ provider, owner })
+  const maxUploadNumber = 250
 
-  const progressAmount = (uploadsNumber * 100) / 250 || 0 //sometimes we get null
-  const isUsageExceeded = uploadsNumber >= 250
+  const progressAmount = (uploadsNumber * 100) / maxUploadNumber || 0 //sometimes we get null
+  const isUsageExceeded = uploadsNumber >= maxUploadNumber
   const { currentDate, monthAgo } = getRollingTimeWindow()
 
   const variant = isUsageExceeded ? 'progressDanger' : 'progressNeutral'
