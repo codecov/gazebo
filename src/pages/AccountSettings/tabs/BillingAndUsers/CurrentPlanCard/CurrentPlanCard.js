@@ -26,7 +26,7 @@ function CurrentPlanCard({ accountDetails }) {
       <hr className="my-6" />
       <Usage
         accountDetails={accountDetails}
-        isFreePlan={isFreePlan(plan.value)}
+        isFreePlan={plan.value === 'users-basic'}
       />
       <div className="flex flex-col items-center mt-1">
         <ActionsBilling

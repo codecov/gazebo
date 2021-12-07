@@ -3,22 +3,24 @@ import PropTypes from 'prop-types'
 import Progress from 'ui/Progress'
 import Icon from 'ui/Icon'
 import A from 'ui/A'
+import { subDays } from 'date-fns'
 
 const getRollingTimeWindow = () => {
   const today = new Date()
-  const month = today.getMonth() + 1
-  const day = today.getDate()
-  const year = today.getFullYear()
+  const monthAgoDate = subDays(today, 30)
 
-  const currentDate = `${month}/${day}`
-  const prevMonth = month === 1 ? 12 : month - 1
+  const thisMonth = today.getMonth() + 1
+  const thisDay = today.getDate()
 
-  const isLeapYear = (year) => new Date(year, 1, 29).getMonth() === 1
-  const isDayExist = !(!isLeapYear(year) && month === 3 && day >= 29) //only if we the day does exist
+  const lastMonth = monthAgoDate.getMonth() + 1
+  const monthAgoDay = monthAgoDate.getDate()
+
+  const currentDate = `${thisMonth}/${thisDay}`
+  const monthAgo = `${lastMonth}/${monthAgoDay}`
 
   return {
     currentDate,
-    monthAgo: isDayExist ? `${prevMonth}/${day}` : `${prevMonth}/28`,
+    monthAgo,
   }
 }
 
@@ -34,7 +36,7 @@ ActiveUsers.propTypes = {
 }
 
 function Usage({ accountDetails, isFreePlan, show = false }) {
-  const uploadsNumber = 250 //to do - get the uploads per owner
+  const uploadsNumber = 250 //TODO
   const progressAmount = (uploadsNumber * 100) / 250
   const isUsageExceeded = uploadsNumber >= 250
   const { currentDate, monthAgo } = getRollingTimeWindow()
@@ -44,7 +46,7 @@ function Usage({ accountDetails, isFreePlan, show = false }) {
     <div className="flex flex-col">
       <h2 className="font-semibold">Usage</h2>
       <ActiveUsers accountDetails={accountDetails} />
-      {show && ( //we would change this condition to check if the plan is free.
+      {show && ( //TODO
         <div className="grid gap-4">
           <p>
             {uploadsNumber} of 250 uploads month{' '}
