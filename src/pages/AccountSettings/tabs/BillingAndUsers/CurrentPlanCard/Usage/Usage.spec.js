@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
+import { QueryClientProvider, QueryClient } from 'react-query'
 import Usage from '.'
+import { useUploadsNumber } from 'services/uploadsNumber'
 
-jest.mock('services/repo/hooks')
+jest.mock('services/uploadsNumber/hooks')
 
 const defaultAccountDetails = {
   activatedStudentCount: 0,
@@ -27,22 +29,25 @@ const defaultAccountDetails = {
   },
 }
 
+const queryClient = new QueryClient()
+
 describe('Usage', () => {
-  function setup(overrideAccDetails = {}, isFreePlan = true) {
+  function setup(overrideAccDetails = {}, isBasicPlan = true) {
+    useUploadsNumber.mockReturnValue({ data: 250 })
+
     const props = {
       accountDetails: {
         ...defaultAccountDetails,
         ...overrideAccDetails,
       },
-      isFreePlan,
-      show: isFreePlan, //to be removed
+      isBasicPlan,
     }
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov/billing']}>
-        <Route path="/:provider/:owner/billing">
+        <QueryClientProvider client={queryClient}>
           <Usage {...props} />
-        </Route>
+        </QueryClientProvider>
       </MemoryRouter>
     )
   }
@@ -97,4 +102,3 @@ describe('Usage', () => {
     })
   })
 })
-//need to add more tests when the hook is ready.

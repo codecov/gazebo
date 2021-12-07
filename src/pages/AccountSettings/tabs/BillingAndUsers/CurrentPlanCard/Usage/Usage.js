@@ -4,6 +4,8 @@ import Progress from 'ui/Progress'
 import Icon from 'ui/Icon'
 import A from 'ui/A'
 import { subDays } from 'date-fns'
+import { useUploadsNumber } from 'services/uploadsNumber/hooks'
+import { useParams } from 'react-router'
 
 const getRollingTimeWindow = () => {
   const today = new Date()
@@ -35,18 +37,21 @@ ActiveUsers.propTypes = {
   accountDetails: accountDetailsPropType.isRequired,
 }
 
-function Usage({ accountDetails, isFreePlan, show = false }) {
-  const uploadsNumber = 250 //TODO
-  const progressAmount = (uploadsNumber * 100) / 250
+function Usage({ accountDetails, isBasicPlan }) {
+  const { provider, owner } = useParams()
+  const { data: uploadsNumber } = useUploadsNumber({ provider, owner })
+
+  const progressAmount = (uploadsNumber * 100) / 250 || 0 //sometimes we get null
   const isUsageExceeded = uploadsNumber >= 250
   const { currentDate, monthAgo } = getRollingTimeWindow()
+
   const variant = isUsageExceeded ? 'progressDanger' : 'progressNeutral'
 
   return (
     <div className="flex flex-col">
       <h2 className="font-semibold">Usage</h2>
       <ActiveUsers accountDetails={accountDetails} />
-      {show && ( //TODO
+      {isBasicPlan && (
         <div className="grid gap-4">
           <p>
             {uploadsNumber} of 250 uploads month{' '}
@@ -81,8 +86,7 @@ function Usage({ accountDetails, isFreePlan, show = false }) {
 
 Usage.propTypes = {
   accountDetails: accountDetailsPropType.isRequired,
-  isFreePlan: PropTypes.bool.isRequired,
-  show: PropTypes.bool,
+  isBasicPlan: PropTypes.bool.isRequired,
 }
 
 export default Usage

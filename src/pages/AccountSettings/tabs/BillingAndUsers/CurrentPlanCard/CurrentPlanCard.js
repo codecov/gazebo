@@ -9,6 +9,7 @@ import A from 'ui/A'
 
 function CurrentPlanCard({ accountDetails }) {
   const plan = accountDetails.rootOrganization?.plan ?? accountDetails.plan
+  const isBasicPlan = plan.value === 'users-basic'
 
   return (
     <Card className="px-12 py-10 pb-4 mb-4">
@@ -24,10 +25,7 @@ function CurrentPlanCard({ accountDetails }) {
         />
       </div>
       <hr className="my-6" />
-      <Usage
-        accountDetails={accountDetails}
-        isFreePlan={plan.value === 'users-basic'}
-      />
+      <Usage accountDetails={accountDetails} isBasicPlan={isBasicPlan} />
       <div className="flex flex-col items-center mt-1">
         <ActionsBilling
           accountDetails={accountDetails}

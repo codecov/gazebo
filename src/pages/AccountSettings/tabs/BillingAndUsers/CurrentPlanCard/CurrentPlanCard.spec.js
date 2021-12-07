@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import CurrentPlanCard from './CurrentPlanCard'
+import { QueryClientProvider, QueryClient } from 'react-query'
 
 const proAccountDetails = {
   plan: {
@@ -29,6 +30,8 @@ const freeAccountDetails = {
   activatedUserCount: 2,
 }
 
+const queryClient = new QueryClient()
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({ provider: 'gl' }),
@@ -36,9 +39,14 @@ jest.mock('react-router-dom', () => ({
 
 describe('CurrentPlanCard', () => {
   function setup(accountDetails) {
-    render(<CurrentPlanCard accountDetails={accountDetails} />, {
-      wrapper: MemoryRouter,
-    })
+    render(
+      <QueryClientProvider client={queryClient}>
+        <CurrentPlanCard accountDetails={accountDetails} />
+      </QueryClientProvider>,
+      {
+        wrapper: MemoryRouter,
+      }
+    )
   }
 
   describe('when rendering with a pro plan', () => {
