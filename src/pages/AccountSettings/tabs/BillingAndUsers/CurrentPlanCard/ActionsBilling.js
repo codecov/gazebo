@@ -74,7 +74,7 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
         to={upgradePlan.path()}
         useRouter={!upgradePlan.isExternalLink}
       >
-        {isFreePlan ? 'Upgrade plan to pro' : 'Change plan'}
+        {isFreePlan ? 'Upgrade plan' : 'Change plan'}
       </Button>
       {shouldRenderCancelLink(accountDetails, isFreePlan) && (
         <Button
