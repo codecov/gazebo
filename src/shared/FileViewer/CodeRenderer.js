@@ -9,7 +9,7 @@ import { LINE_TYPE } from './lineStates'
 
 function CodeRenderer({
   code,
-  coverage = [],
+  coverage = {},
   showCovered = false,
   showUncovered = false,
   showPartial = false,

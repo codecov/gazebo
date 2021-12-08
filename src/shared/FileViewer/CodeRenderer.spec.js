@@ -18,8 +18,8 @@ describe('CodeRenderer', () => {
   const coverage = {
     1: LINE_TYPE.HIT,
     2: LINE_TYPE.MISS,
-    3: LINE_TYPE.HIT,
-    4: LINE_TYPE.HIT,
+    3: LINE_TYPE.PARTIAL,
+    4: LINE_TYPE.PARTIAL,
     5: LINE_TYPE.MISS,
     6: LINE_TYPE.HIT,
     7: LINE_TYPE.MISS,
@@ -33,33 +33,66 @@ describe('CodeRenderer', () => {
     render(<CodeRenderer {...props} fileName="sample.py" />)
   }
 
-  describe('renders without toggles', () => {
+  describe('partial coverage', () => {
     beforeEach(() => {
-      setup({ code, coverage, showCovered: false, showUncovered: false })
+      setup({
+        code,
+        coverage,
+        showCovered: false,
+        showUncovered: false,
+        showPartial: true,
+      })
     })
 
-    it('render', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(11)
+    it('renders', () => {
+      expect(screen.getAllByLabelText('partial line of code').length).toBe(2)
     })
   })
 
-  describe('renders with toggles', () => {
+  describe('coverage', () => {
     beforeEach(() => {
-      setup({ code, coverage, showCovered: true, showUncovered: true })
+      setup({
+        code,
+        coverage,
+        showCovered: true,
+        showUncovered: false,
+        showPartial: false,
+      })
     })
 
-    it('render', () => {
+    it('renders', () => {
+      expect(screen.getAllByLabelText('covered line of code').length).toBe(5)
+    })
+  })
+
+  describe('uncovered coverage', () => {
+    beforeEach(() => {
+      setup({
+        code,
+        coverage,
+        showCovered: false,
+        showUncovered: true,
+        showPartial: false,
+      })
+    })
+
+    it('renders', () => {
       expect(screen.getAllByLabelText('uncovered line of code').length).toBe(4)
-      expect(screen.getAllByLabelText('covered line of code').length).toBe(7)
     })
   })
 
-  describe('renders with default props', () => {
+  describe('with default props', () => {
     beforeEach(() => {
-      setup({ code, coverage, showCovered: false, showUncovered: false })
+      setup({
+        code,
+        coverage,
+        showCovered: false,
+        showUncovered: false,
+        showPartial: false,
+      })
     })
 
-    it('render', () => {
+    it('renders', () => {
       expect(screen.getAllByLabelText('line of code').length).toBe(11)
     })
   })
