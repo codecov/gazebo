@@ -96,4 +96,20 @@ describe('CodeRenderer', () => {
       expect(screen.getAllByLabelText('line of code').length).toBe(11)
     })
   })
+
+  describe('No coverage availble', () => {
+    beforeEach(() => {
+      setup({
+        code,
+        coverage: null,
+        showCovered: false,
+        showUncovered: false,
+        showPartial: false,
+      })
+    })
+
+    it('renders', () => {
+      expect(screen.getAllByLabelText('line of code').length).toBe(11)
+    })
+  })
 })
