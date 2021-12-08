@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Switch, Route } from 'react-router-dom'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 import Spinner from 'ui/Spinner'
@@ -11,15 +11,20 @@ import { getProviderCommitURL } from 'shared/utils/provider'
 import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
 import Header from './Header'
-import ImpactedFiles from './ImpactedFiles'
 import YamlModal from './YamlModal'
 
-const NotFound = lazy(() => import('../NotFound'))
+const CommitFileView = lazy(() => import('./subroute/CommitFileView.js'))
+const CommitsTable = lazy(() => import('./subroute/CommitsTable.js'))
+const NotFound = lazy(() => import('pages/NotFound'))
 
 function CommitPage() {
   const { provider, owner, repo, commit, path } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
-  const loadingState = <Spinner size={40} />
+  const loadingState = (
+    <div className="flex-1 flex justify-center m-4">
+      <Spinner size={60} />
+    </div>
+  )
 
   const { data, isSuccess } = useCommit({
     provider: provider,
@@ -101,11 +106,27 @@ function CommitPage() {
           </div>
         </aside>
         <article className="flex flex-col flex-1 gap-4">
-          <ImpactedFiles
-            data={data?.commit?.compareWithParent}
-            commit={commit}
-            path={path}
-          />
+          <Switch>
+            <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
+              <Suspense fallback={loadingState}>
+                <CommitFileView
+                  diff={data?.impactedFiles?.find(
+                    (file) => file.headName === path
+                  )}
+                />
+              </Suspense>
+            </Route>
+            <Route path="/:provider/:owner/:repo/commit/:commit">
+              <h2 className="text-base font-semibold">Impacted files</h2>
+              <Suspense fallback={loadingState}>
+                <CommitsTable
+                  commit={commit}
+                  loading={data?.state}
+                  data={data?.impactedFiles}
+                />
+              </Suspense>
+            </Route>
+          </Switch>
         </article>
       </div>
     </div>

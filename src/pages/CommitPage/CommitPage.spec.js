@@ -72,6 +72,13 @@ const dataReturned = {
   },
 }
 
+const fileData = {
+  coverage: {},
+  content: '',
+  totals: 25,
+  flagNames: [],
+}
+
 describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
@@ -79,8 +86,8 @@ describe('CommitPage', () => {
 
     render(
       <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-        <Route path="/:provider/:owner/:repo/commit/:commit/">
-          <CommitPage />{' '}
+        <Route path="/:provider/:owner/:repo/commit/:commit">
+          <CommitPage />
         </Route>
       </MemoryRouter>
     )
@@ -91,19 +98,19 @@ describe('CommitPage', () => {
       setup({ data: dataReturned, isSuccess: true })
     })
 
-    it('renders the Uploads', () => {
+    it('the Uploads', () => {
       expect(screen.getByText(/Uploads/)).toBeInTheDocument()
     })
 
-    it('renders the Coverage report', () => {
+    it('the Coverage report', () => {
       expect(screen.getByText(/Coverage report/)).toBeInTheDocument()
     })
 
-    it('renders the Header', () => {
+    it('the Header', () => {
       expect(screen.getByText(/The Header/)).toBeInTheDocument()
     })
 
-    it('renders the Impacted files', () => {
+    it('the impacted files', () => {
       expect(screen.getByText(/Impacted files/)).toBeInTheDocument()
     })
 
@@ -116,72 +123,85 @@ describe('CommitPage', () => {
       fireEvent.click(screen.getByLabelText('Close'))
     })
   })
-})
 
-describe('CommitPage Not Found', () => {
-  function setup(data) {
-    useCommit.mockReturnValue(data)
+  describe('Not Found', () => {
+    function setup(data) {
+      useCommit.mockReturnValue(data)
 
-    render(
-      <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-        <Route path="/:provider/:owner/:repo/commit/:commit/">
-          <CommitPage />{' '}
-        </Route>
-      </MemoryRouter>
-    )
-  }
-
-  describe('renders 404', () => {
-    beforeEach(() => {
-      setup({ data: { commit: { uploads: [{}] } }, isSuccess: false })
-    })
-    it('renders the Uploads', async () => {
-      await waitFor(() =>
-        expect(screen.getByText(/Not found/)).toBeInTheDocument()
+      render(
+        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            <CommitPage />
+          </Route>
+        </MemoryRouter>
       )
+    }
+
+    describe('renders 404', () => {
+      beforeEach(() => {
+        setup({ data: { commit: { uploads: [{}] } }, isSuccess: false })
+      })
+      it('renders the Uploads', async () => {
+        await waitFor(() =>
+          expect(screen.getByText(/Not found/)).toBeInTheDocument()
+        )
+      })
+    })
+
+    describe('renders empty data', () => {
+      beforeEach(() => {
+        setup({ data: { commit: {} }, isSuccess: true })
+      })
+      it('renders the Uploads', () => {
+        expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+      })
     })
   })
 
-  describe('renders empty data', () => {
-    beforeEach(() => {
-      setup({ data: { commit: {} }, isSuccess: true })
-    })
-    it('renders the Uploads', () => {
-      expect(screen.getByText(/Uploads/)).toBeInTheDocument()
-    })
-  })
-})
+  describe('FileViewer', () => {
+    function setup(data) {
+      useCommit.mockReturnValue(data)
+      useFileWithMainCoverage.mockReturnValue({
+        data: fileData,
+        isSuccess: true,
+      })
 
-const fileData = {
-  coverage: {},
-  content: '',
-  totals: 25,
-  flagNames: [],
-}
+      render(
+        <MemoryRouter
+          initialEntries={['/gh/test/test-repo/commit/abcd/file/index.js']}
+        >
+          <Route path="/:provider/:owner/:repo/commit/:commit/file/:path+">
+            <CommitPage />
+          </Route>
+        </MemoryRouter>
+      )
+    }
 
-describe('CommitPageFileView', () => {
-  function setup(data) {
-    useCommit.mockReturnValue(data)
+    describe('renders with correct data', () => {
+      beforeEach(() => {
+        setup({ data: dataReturned, isSuccess: true })
+      })
 
-    useFileWithMainCoverage.mockReturnValue({ data: fileData, isSuccess: true })
-    render(
-      <MemoryRouter
-        initialEntries={['/gh/test/test-repo/commit/abcd/file/index.js']}
-      >
-        <Route path="/:provider/:owner/:repo/commit/:commit/file/:path+">
-          <CommitPage />{' '}
-        </Route>
-      </MemoryRouter>
-    )
-  }
-
-  describe('renders', () => {
-    beforeEach(() => {
-      setup({ data: dataReturned, isSuccess: true })
+      it('the impacted file', () => {
+        expect(screen.getByTestId('spinner')).toBeInTheDocument()
+        waitFor(() => {
+          expect(screen.getByText(/index.js/)).toBeInTheDocument()
+        })
+      })
     })
 
-    it('renders the Impacted files', () => {
-      expect(screen.getByText(/index.js/)).toBeInTheDocument()
+    describe('renders without availble commit data', () => {
+      beforeEach(() => {
+        setup({ data: {}, isSuccess: true })
+      })
+
+      it('without change values', () => {
+        expect(
+          screen.getByText(
+            /There was a problem getting the source code from your provider. Unable to show line by line coverage./
+          )
+        ).toBeInTheDocument()
+      })
     })
   })
 })
