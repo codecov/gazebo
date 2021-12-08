@@ -101,7 +101,7 @@ describe('CodeRenderer', () => {
     beforeEach(() => {
       setup({
         code,
-        coverage: null,
+        coverage: {},
         showCovered: false,
         showUncovered: false,
         showPartial: false,
