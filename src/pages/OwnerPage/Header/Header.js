@@ -49,7 +49,8 @@ function Header({ owner, provider }) {
     owner: username,
   })
   const isBasicPlan = accountDetails.plan.value === 'users-basic'
-  const isUploadsExceeded = uploadsNumber >= 250 && isBasicPlan
+  const maxUploadsNumber = 250
+  const isUploadsExceeded = uploadsNumber >= maxUploadsNumber && isBasicPlan
 
   return owner.isCurrentUserPartOfOrg ? (
     <>
