@@ -30,13 +30,12 @@ describe('CodeRenderer', () => {
   }
 
   function setup(props) {
-    render(<CodeRenderer {...props} fileName="sample.py" />)
+    render(<CodeRenderer {...props} code={code} fileName="sample.py" />)
   }
 
   describe('partial coverage', () => {
     beforeEach(() => {
       setup({
-        code,
         coverage,
         showCovered: false,
         showUncovered: false,
@@ -52,7 +51,6 @@ describe('CodeRenderer', () => {
   describe('coverage', () => {
     beforeEach(() => {
       setup({
-        code,
         coverage,
         showCovered: true,
         showUncovered: false,
@@ -68,7 +66,6 @@ describe('CodeRenderer', () => {
   describe('uncovered coverage', () => {
     beforeEach(() => {
       setup({
-        code,
         coverage,
         showCovered: false,
         showUncovered: true,
@@ -84,7 +81,6 @@ describe('CodeRenderer', () => {
   describe('with default props', () => {
     beforeEach(() => {
       setup({
-        code,
         coverage,
         showCovered: false,
         showUncovered: false,
@@ -100,12 +96,21 @@ describe('CodeRenderer', () => {
   describe('No coverage availble', () => {
     beforeEach(() => {
       setup({
-        code,
         coverage: {},
         showCovered: false,
         showUncovered: false,
         showPartial: false,
       })
+    })
+
+    it('renders', () => {
+      expect(screen.getAllByLabelText('line of code').length).toBe(11)
+    })
+  })
+
+  describe('Using  defaults', () => {
+    beforeEach(() => {
+      setup({})
     })
 
     it('renders', () => {
