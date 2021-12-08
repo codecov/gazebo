@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
+import { commitRequestType } from 'shared/propTypes'
 import Table from 'ui/Table'
+
 import Title from './Title'
 import Coverage from './Coverage'
 import Change from './Change'
 import Patch from './Patch'
-import { CommitRequestType } from '../types'
 
 const headers = [
   {
@@ -67,7 +68,7 @@ function CommitsTable({ commits }) {
 }
 
 CommitsTable.propTypes = {
-  commits: PropTypes.arrayOf(CommitRequestType),
+  commits: PropTypes.arrayOf(commitRequestType),
 }
 
 export default CommitsTable

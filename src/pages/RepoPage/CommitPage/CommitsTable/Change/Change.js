@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types'
-import { CommitRequestType } from '../../types'
+import { commitRequestType } from 'shared/propTypes'
 
 const Change = ({ commit }) => {
   if (!commit?.totals?.coverage) return ''
@@ -20,7 +19,7 @@ const Change = ({ commit }) => {
 }
 
 Change.propTypes = {
-  commit: PropTypes.shape(CommitRequestType),
+  commit: commitRequestType,
 }
 
 export default Change

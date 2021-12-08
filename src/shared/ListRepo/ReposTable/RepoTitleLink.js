@@ -1,6 +1,6 @@
-import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 
+import Icon from 'ui/Icon'
 import AppLink from 'shared/AppLink'
 
 function RepoTitleLink({ repo, showRepoOwner, active, newRepoSetupLink }) {
@@ -10,7 +10,13 @@ function RepoTitleLink({ repo, showRepoOwner, active, newRepoSetupLink }) {
   }
 
   const handlePageName = () => {
-    return active ? 'repo' : newRepoSetupLink ? 'new' : 'repo'
+    if (active) {
+      return 'repo'
+    }
+    if (newRepoSetupLink) {
+      return 'new'
+    }
+    return 'repo'
   }
 
   return (
