@@ -31,58 +31,54 @@ function CommitPage() {
   const commitid = commit?.substr(0, 7)
 
   return isSuccess && data ? (
-    <div className="flex divide-y gap-4 flex-col">
-      <div className="px-3 sm:px-0">
-        <Breadcrumb
-          paths={[
-            { pageName: 'owner', text: owner },
-            { pageName: 'repo', text: repo },
-            { pageName: 'commits', text: 'commits' },
-            {
-              pageName: 'commit',
-              options: { commit },
-              readOnly: true,
-              text: commitid,
-            },
-          ]}
-        />
-      </div>
-      <div className="flex flex-col px-3 sm:px-0">
+    <div className="flex divide-y gap-4 flex-col px-3 sm:px-0">
+      <Breadcrumb
+        paths={[
+          { pageName: 'owner', text: owner },
+          { pageName: 'repo', text: repo },
+          { pageName: 'commits', text: 'commits' },
+          {
+            pageName: 'commit',
+            options: { commit },
+            readOnly: true,
+            text: commitid,
+          },
+        ]}
+      />
+      <div className="flex flex-col py-4">
         <Header provider={provider} owner={owner} repo={repo} commit={commit} />
-        <div className="flex gap-2 flex-col">
-          <h1 className="text-lg font-semibold text-ds-gray-octonary">
-            {data?.commit?.message}
-          </h1>
-          <p className="flex items-center text-ds-gray-quinary gap-1">
-            {data?.commit?.createdAt
-              ? formatDistanceToNow(new Date(data?.commit?.createdAt), {
-                  addSuffix: true,
-                })
-              : ''}
-            <A
-              to={{
-                pageName: 'owner',
-                options: { owner: data?.commit?.author?.username },
-              }}
-            >
-              {data?.commit?.author?.username}
-            </A>
-            authored commit
-            <A
-              variant="code"
-              href={getProviderCommitURL({
-                provider,
-                owner,
-                repo,
-                commit,
-              })}
-              hook="provider commit url"
-              isExternal={true}
-            >
-              {commitid}
-            </A>
-          </p>
-        </div>
+        <h1 className="text-lg font-semibold text-ds-gray-octonary mb-1 bt-4">
+          {data?.commit?.message}
+        </h1>
+        <p className="flex items-center text-ds-gray-quinary gap-1">
+          {data?.commit?.createdAt
+            ? formatDistanceToNow(new Date(data?.commit?.createdAt), {
+                addSuffix: true,
+              })
+            : ''}
+          <A
+            to={{
+              pageName: 'owner',
+              options: { owner: data?.commit?.author?.username },
+            }}
+          >
+            {data?.commit?.author?.username}
+          </A>
+          authored commit
+          <A
+            variant="code"
+            href={getProviderCommitURL({
+              provider,
+              owner,
+              repo,
+              commit,
+            })}
+            hook="provider commit url"
+            isExternal={true}
+          >
+            {commitid}
+          </A>
+        </p>
       </div>
       <div className="flex pt-8 flex-col gap-8 md:flex-row">
         <aside className="flex gap-6 md:max-w-sm flex-col">
@@ -104,7 +100,7 @@ function CommitPage() {
             />
           </div>
         </aside>
-        <article className="flex flex-col flex-1">
+        <article className="flex flex-col flex-1 gap-4">
           <ImpactedFiles
             data={data?.commit?.compareWithParent}
             commit={commit}

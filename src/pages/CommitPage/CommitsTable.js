@@ -34,73 +34,76 @@ const table = [
   },
 ]
 
-function CommitsTable({ data = [], commit, loading }) {
-  function getDataRow() {
-    return data?.map((d) => {
-      let change = d?.headCoverage?.coverage - d?.baseCoverage?.coverage
-      if (isNaN(change)) {
-        change = null
-      }
-      return {
-        name: (
-          <div className="flex flex-col">
-            <A
-              to={{
-                pageName: 'commitFile',
-                options: { commit, path: d.headName },
-              }}
-            >
-              <span>{d.headName?.split('/').pop()}</span>
-            </A>
-            <span className="text-xs mt-0.5 text-ds-gray-quinary">
-              {d.headName}
-            </span>
-          </div>
-        ),
-        coverage: (
-          <div className="w-full flex gap-2 items-center">
-            <Progress amount={d?.headCoverage?.coverage || 0} label={true} />
-          </div>
-        ),
-        patch: (
-          <span className="text-sm text-right w-full text-ds-gray-octonary">
-            {isNumber(d?.patchCoverage?.coverage)
-              ? `${d?.patchCoverage?.coverage?.toFixed(2)}%`
-              : '-'}
-          </span>
-        ),
-        change: (
-          <span
-            className={cs(
-              'text-sm text-right w-full font-semibold text-ds-gray-octonary',
-              {
-                'bg-transparent': !change,
-                'bg-ds-coverage-uncovered': change < 0,
-                'bg-ds-coverage-covered': change >= 0,
-              }
-            )}
+function useFormatTableData({ tableData = [], commit }) {
+  return tableData.map((row) => {
+    let change = row?.headCoverage?.coverage - row?.baseCoverage?.coverage
+    if (isNaN(change)) {
+      change = null
+    }
+    return {
+      name: (
+        <div className="flex flex-col">
+          <A
+            to={{
+              pageName: 'commitFile',
+              options: { commit, path: row.headName },
+            }}
           >
-            {isNumber(change) ? `${change.toFixed(2)}%` : '-'}
+            <span>{row.headName?.split('/').pop()}</span>
+          </A>
+          <span className="text-xs mt-0.5 text-ds-gray-quinary">
+            {row.headName}
           </span>
-        ),
-      }
-    })
+        </div>
+      ),
+      coverage: (
+        <div className="w-full flex gap-2 items-center">
+          <Progress amount={row?.headCoverage?.coverage || 0} label={true} />
+        </div>
+      ),
+      patch: (
+        <span className="text-sm text-right w-full text-ds-gray-octonary">
+          {isNumber(row?.patchCoverage?.coverage)
+            ? `${row?.patchCoverage?.coverage?.toFixed(2)}%`
+            : '-'}
+        </span>
+      ),
+      change: (
+        <span
+          className={cs(
+            'text-sm text-right w-full font-semibold text-ds-gray-octonary',
+            {
+              'bg-transparent': !change,
+              'bg-ds-coverage-uncovered': change < 0,
+              'bg-ds-coverage-covered': change >= 0,
+            }
+          )}
+        >
+          {isNumber(change) ? `${change.toFixed(2)}%` : '-'}
+        </span>
+      ),
+    }
+  })
+}
+
+function CommitsTable({ data = [], commit, loading }) {
+  const formatedData = useFormatTableData({ tableData: data, commit })
+
+  if (loading === 'pending') {
+    return (
+      <div className="flex-1 flex justify-center">
+        <Spinner size={60} />
+      </div>
+    )
   }
 
-  const tableData =
-    data?.length > 0
-      ? getDataRow()
-      : [
-          {
-            name: 'No Files covered by tests were changed',
-          },
-        ]
-  return loading === 'pending' ? (
-    <div className="w-full flex h-44 justify-center">
-      <Spinner size={60} />
-    </div>
-  ) : (
-    <Table data={tableData} columns={table} />
+  return (
+    <>
+      <Table data={formatedData} columns={table} />
+      {data?.length === 0 && (
+        <p className="mx-4">No Files covered by tests were changed</p>
+      )}
+    </>
   )
 }
 
