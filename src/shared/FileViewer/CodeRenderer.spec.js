@@ -29,21 +29,13 @@ describe('CodeRenderer', () => {
     11: LINE_TYPE.MISS,
   }
 
-  function setup(code, coverage, showCovered, showUncovered) {
-    render(
-      <CodeRenderer
-        showCovered={showCovered}
-        showUncovered={showUncovered}
-        code={code}
-        coverage={coverage}
-        fileName={'sample.py'}
-      />
-    )
+  function setup(props) {
+    render(<CodeRenderer {...props} fileName="sample.py" />)
   }
 
   describe('renders without toggles', () => {
     beforeEach(() => {
-      setup(code, coverage, false, false)
+      setup({ code, coverage, showCovered: false, showUncovered: false })
     })
 
     it('render', () => {
@@ -53,7 +45,7 @@ describe('CodeRenderer', () => {
 
   describe('renders with toggles', () => {
     beforeEach(() => {
-      setup(code, coverage, true, true)
+      setup({ code, coverage, showCovered: true, showUncovered: true })
     })
 
     it('render', () => {
@@ -64,7 +56,7 @@ describe('CodeRenderer', () => {
 
   describe('renders with default props', () => {
     beforeEach(() => {
-      setup(code)
+      setup({ code, coverage, showCovered: false, showUncovered: false })
     })
 
     it('render', () => {

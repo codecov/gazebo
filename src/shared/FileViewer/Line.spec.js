@@ -13,16 +13,20 @@ describe('Line', () => {
 
   function setup(number, coverage, showCovered, showUncovered) {
     render(
-      <Line
-        showCovered={showCovered}
-        line={line}
-        showUncovered={showUncovered}
-        number={number}
-        coverage={coverage}
-        showPartial={true}
-        getTokenProps={() => {}}
-        getLineProps={() => {}}
-      />
+      <table>
+        <tbody>
+          <Line
+            showCovered={showCovered}
+            line={line}
+            showUncovered={showUncovered}
+            number={number}
+            coverage={coverage}
+            showPartial={true}
+            getTokenProps={() => {}}
+            getLineProps={() => {}}
+          />
+        </tbody>
+      </table>
     )
   }
 
