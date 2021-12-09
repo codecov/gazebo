@@ -18,24 +18,25 @@ const CommitsTable = lazy(() => import('./subroute/CommitsTable.js'))
 const NotFound = lazy(() => import('pages/NotFound'))
 
 function CommitPage() {
-  const { provider, owner, repo, commit, path } = useParams()
   const [showYAMLModal, setShowYAMLModal] = useState(false)
-  const loadingState = (
-    <div className="flex-1 flex justify-center m-4">
-      <Spinner size={60} />
-    </div>
-  )
-
-  const { data, isSuccess } = useCommit({
+  const { provider, owner, repo, commit, path } = useParams()
+  const { data, isLoading } = useCommit({
     provider: provider,
     owner,
     repo,
     commitid: commit,
   })
 
-  const commitid = commit?.substr(0, 7)
+  const loadingState = (
+    <div className="flex-1 flex justify-center m-4">
+      <Spinner size={60} />
+    </div>
+  )
 
-  return isSuccess && data ? (
+  const commitid = commit?.substr(0, 7)
+  const diff = data?.impactedFiles?.find((file) => file.headName === path)
+
+  return !isLoading && data ? (
     <div className="flex divide-y gap-4 flex-col px-3 sm:px-0">
       <Breadcrumb
         paths={[
@@ -109,11 +110,7 @@ function CommitPage() {
           <Switch>
             <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
               <Suspense fallback={loadingState}>
-                <CommitFileView
-                  diff={data?.impactedFiles?.find(
-                    (file) => file.headName === path
-                  )}
-                />
+                <CommitFileView diff={diff} />
               </Suspense>
             </Route>
             <Route path="/:provider/:owner/:repo/commit/:commit">
