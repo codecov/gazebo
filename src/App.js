@@ -99,7 +99,7 @@ function App() {
                 <FileViewPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/">
+            <Route path="/:provider/:owner/:repo">
               <BaseLayout>
                 <RepoPage />
               </BaseLayout>
