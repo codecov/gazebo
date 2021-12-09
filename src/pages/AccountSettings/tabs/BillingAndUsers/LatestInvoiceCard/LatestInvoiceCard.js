@@ -21,17 +21,19 @@ function LatestInvoiceCard({ invoice }) {
           <div className="text-gray-500 mr-1">
             {format(fromUnixTime(invoice.created), 'MMMM yyyy')}
           </div>
-          <div className="italic text-gray-400">
-            Due date {format(fromUnixTime(invoice.dueDate), 'do MMM')} - $
-            {(invoice.total / 100).toFixed(2)}
-            <AppLink
-              className="inline-block not-italic underline hover:underline text-blue-200 ml-2"
-              to={invoiceDetail.path({ id: invoice.id })}
-              useRouter={!invoiceDetail.isExternalLink}
-            >
-              View
-            </AppLink>
-          </div>
+          {invoice?.dueDate && (
+            <div className="italic text-gray-400">
+              Due date {format(fromUnixTime(invoice.dueDate), 'do MMM')} - $
+              {(invoice.total / 100).toFixed(2)}
+              <AppLink
+                className="inline-block not-italic underline hover:underline text-blue-200 ml-2"
+                to={invoiceDetail.path({ id: invoice.id })}
+                useRouter={!invoiceDetail.isExternalLink}
+              >
+                View
+              </AppLink>
+            </div>
+          )}
         </div>
       </div>
       <Button
