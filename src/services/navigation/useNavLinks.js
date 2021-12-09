@@ -74,8 +74,8 @@ function useNavLinks() {
     },
     analytics: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `${config.BASE_URL}/analytics/${provider}/${owner}`,
-      isExternalLink: true,
+        `/analytics/${provider}/${owner}`,
+      isExternalLink: false,
     },
     repo: {
       path: (

@@ -4,8 +4,22 @@ import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 import { Fragment } from 'react'
 import InstructionBox from './instructionBox/InstructionBox'
+import { useCommits } from 'services/commits'
+import { useParams } from 'react-router'
+import { useEffect } from 'react'
+
+function useRedirectUsers() {
+  const { provider, owner, repo } = useParams()
+  const { data: commits } = useCommits({ provider, owner, repo })
+
+  useEffect(() => {
+    if (commits?.length) window.location = `/${provider}/${owner}/${repo}`
+  }, [provider, owner, repo, commits])
+}
 
 function New({ data }) {
+  useRedirectUsers()
+
   if (!data || !data?.repo?.uploadToken) {
     return null
   }
