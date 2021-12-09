@@ -5,7 +5,6 @@ import UserOnboardingModal from './UserOnboardingModal'
 import { useOnboardUser } from 'services/user'
 
 jest.mock('services/user')
-jest.mock('./tracking')
 
 describe('UserOnboardingModal', () => {
   const defaultCurrentUser = {
