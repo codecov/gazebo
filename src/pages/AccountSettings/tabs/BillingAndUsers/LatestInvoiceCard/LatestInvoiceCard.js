@@ -9,6 +9,7 @@ import { useNavLinks } from 'services/navigation'
 
 import invoiceImg from './invoice.svg'
 
+console.log('test test')
 function LatestInvoiceCard({ invoice }) {
   const { invoiceDetail, invoiceTab } = useNavLinks()
   if (!invoice || !invoice.dueDate || !invoice.created) return null
