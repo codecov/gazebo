@@ -78,13 +78,7 @@ export function useSegmentPage() {
   }, [location.pathname])
 }
 
-const SegmentTrackEvents = Object.freeze({
-  click: 'clicked button',
-})
-
-export function trackSegmentEvent(action, label, category) {
-  const event = SegmentTrackEvents[action]
-
+export function trackSegmentEvent({ event, label = null, category }) {
   return (
     event &&
     window?.analytics?.track(event, {
@@ -93,4 +87,19 @@ export function trackSegmentEvent(action, label, category) {
       value: 1,
     })
   )
+}
+
+export function pageSegmentEvent({ event, path, url }) {
+  return window?.analytics?.page(event, {
+    path,
+    url,
+  })
+}
+
+export function identifySegmentEvent({ id, data }) {
+  return window?.analytics?.identify(id, {
+    traits: {
+      ...data,
+    },
+  })
 }

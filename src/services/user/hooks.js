@@ -171,7 +171,7 @@ export function useUpdateProfile({ provider }) {
   )
 }
 
-export function useOnboardUser() {
+export function useOnboardUser(opts) {
   const { provider } = useParams()
   const queryClient = useQueryClient()
   const mutation = `
@@ -202,6 +202,11 @@ export function useOnboardUser() {
     {
       onSuccess: (user) => {
         queryClient.setQueryData(['currentUser', provider], () => user)
+
+        if (user && typeof (opts?.onSuccess === 'function')) {
+          const id = user?.trackingMetadata?.ownerid
+          opts?.onSuccess(id, opts?.data)
+        }
       },
     }
   )

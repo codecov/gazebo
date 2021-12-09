@@ -12,8 +12,8 @@ export function getUserData(userData, defaultData) {
   // fields we need are in different place in userData
   // so we need to build a flat object
   const flatObject = {
-    ...pick(userData.trackingMetadata, keysWeNeed),
-    ...pick(userData.user, keysWeNeed),
+    ...pick(userData?.trackingMetadata, keysWeNeed),
+    ...pick(userData?.user, keysWeNeed),
     ...pick(userData, keysWeNeed),
     guest: false,
   }
