@@ -18,13 +18,15 @@ function RepoPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="text-xl ml-6 md:ml-0 mb-6 font-semibold flex flex-row pb-8 border-b border-ds-gray-tertiary">
-        <Breadcrumb
-          paths={[
-            { pageName: 'owner', text: owner },
-            { pageName: 'repo', text: repo },
-          ]}
-        />
+      <div className="text-xl mb-6 font-semibold flex flex-row pb-8 border-b border-ds-gray-tertiary w-6/7">
+        <span className="ml-6 md:ml-0">
+          <Breadcrumb
+            paths={[
+              { pageName: 'owner', text: owner },
+              { pageName: 'repo', text: repo },
+            ]}
+          />
+        </span>
         {privateRepo && (
           <span className="ml-2 px-1 py-0.5 h-5 mt-1 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary font-light">
             Private
