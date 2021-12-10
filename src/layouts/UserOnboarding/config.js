@@ -26,12 +26,13 @@ export function getInitialDataForm(currentUser) {
 }
 
 export function shouldGoToEmailStep({ email, typeProjects }) {
+  // if the user picked "YOUR ORG" we can collect business email
+  if (typeProjects.includes(TYPE_PROJECTS.YOUR_ORG)) return true
+
   // no personal email, we need to collect
   if (email.length === 0) {
     return true
   }
-  // if the user picked "YOUR ORG" we can collect business email
-  if (typeProjects.includes(TYPE_PROJECTS.YOUR_ORG)) return true
 
   // no need to go to email steps, we can
   return false

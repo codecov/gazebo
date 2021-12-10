@@ -4,8 +4,9 @@ import {
   identifySegmentEvent,
 } from 'services/tracking/segment'
 import { useCustomLocation } from 'services/location/hooks'
+import isArray from 'lodash/isArray'
 
-export function useHandleTracking() {
+export function useTracking() {
   const { path, url } = useCustomLocation()
 
   return {
@@ -34,6 +35,13 @@ export function useHandleTracking() {
         event: 'User Completed Onboarding',
         category: 'Onboarding',
       })
+
+      // Changing arrays to semicolon delimiting strings for analytics purposes
+      for (let [key, value] of Object.entries(data)) {
+        if (isArray(value)) {
+          data[key] = value.join(';')
+        }
+      }
       identifySegmentEvent({ id, data })
     },
   }
