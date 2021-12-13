@@ -74,7 +74,6 @@ describe('UpgradePlanForm', () => {
     invoice = null,
     accountDetails = defaultProps.accountDetails
   ) {
-    console.log(accountDetails)
     props = {
       ...defaultProps,
       accountDetails: {
@@ -83,7 +82,6 @@ describe('UpgradePlanForm', () => {
         latestInvoice: invoice,
       },
     }
-    console.log(props.accountDetails)
     useAddNotification.mockReturnValue(addNotification)
     useUpgradePlan.mockReturnValue({ mutate, isLoading: false })
     render(
