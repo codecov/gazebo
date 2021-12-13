@@ -13,13 +13,13 @@ describe('UserOnboardingModal', () => {
     email: 'user@gmail.com',
   }
   let mutate
-  let completedUserOnboardingg = jest.fn()
+  let completedUserOnboarding = jest.fn()
 
   function setup(currentUser = defaultCurrentUser) {
     mutate = jest.fn()
     useTracking.mockReturnValue({
       startedOnboarding: jest.fn(),
-      completedOnboarding: completedUserOnboardingg,
+      completedOnboarding: completedUserOnboarding,
       secondPage: jest.fn(),
     })
     useOnboardUser.mockReturnValue({ isLoading: false, mutate })
@@ -132,7 +132,6 @@ describe('UserOnboardingModal', () => {
 
     describe('when the user clicks next', () => {
       beforeEach(() => {
-        mutate.mockImplementation(() => completedUserOnboardingg())
         return clickNext()
       })
 
@@ -144,7 +143,9 @@ describe('UserOnboardingModal', () => {
           goals: ['STARTING_WITH_TESTS'],
           otherGoal: '',
         })
-        expect(completedUserOnboardingg).toBeCalled()
+        useOnboardUser.mockImplementation(() => completedUserOnboarding())
+        useOnboardUser()
+        expect(completedUserOnboarding).toBeCalled()
       })
     })
   })
