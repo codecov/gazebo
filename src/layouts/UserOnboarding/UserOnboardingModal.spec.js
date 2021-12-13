@@ -22,7 +22,11 @@ describe('UserOnboardingModal', () => {
       completedOnboarding: completedUserOnboarding,
       secondPage: jest.fn(),
     })
-    useOnboardUser.mockReturnValue({ isLoading: false, mutate })
+    useOnboardUser.mockReturnValue({
+      isLoading: false,
+      mutate,
+      onSuccess: jest.fn(),
+    })
     render(<UserOnboardingModal currentUser={currentUser} />)
   }
 
@@ -143,9 +147,19 @@ describe('UserOnboardingModal', () => {
           goals: ['STARTING_WITH_TESTS'],
           otherGoal: '',
         })
-        useOnboardUser.mockImplementation(() => completedUserOnboarding())
-        useOnboardUser()
-        expect(completedUserOnboarding).toBeCalled()
+      })
+
+      describe('when mutation is successful', () => {
+        beforeEach(() => {
+          return act(() => {
+            useOnboardUser.mock.calls[0][0].onSuccess()
+            return Promise.resolve()
+          })
+        })
+
+        it('calls completedUserOnboarding', () => {
+          expect(completedUserOnboarding).toHaveBeenCalled()
+        })
       })
     })
   })
