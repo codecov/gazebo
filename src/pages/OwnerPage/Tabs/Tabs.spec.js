@@ -19,7 +19,7 @@ describe('Tabs', () => {
 
   describe('when user is part of the org', () => {
     beforeEach(() => {
-      setup({ owner: 'kelly', provider: 'gh' })
+      setup({ owner: { username: 'kelly' }, provider: 'gh' })
     })
 
     it('renders links to the owner settings', () => {
