@@ -7,34 +7,7 @@ import InstructionBox from './instructionBox/InstructionBox'
 import { useCommits } from 'services/commits'
 import { useParams } from 'react-router'
 import { useEffect } from 'react'
-import Banner from 'ui/Banner'
-
-const GithubConfigBanner = ({ privateRepo }) =>
-  privateRepo && (
-    <div className="mt-8">
-      <Banner
-        title={
-          <div className="flex justify-center gap-2">
-            <h2>Install Codecov GitHub app</h2>
-          </div>
-        }
-      >
-        <p>
-          The best way to integrate with Codecov.io is to{' '}
-          <A to={{ pageName: 'codecovGithuhApp' }}>
-            Install Codecov&apos;s GitHub App
-          </A>
-          . Once installed, you are done! You do not need to set a{' '}
-          <A to={{ pageName: 'teamBot' }}>Team Bot</A> because Codecov will use
-          the integration to post statuses and comments.
-        </p>
-      </Banner>
-    </div>
-  )
-
-GithubConfigBanner.propTypes = {
-  privateRepo: PropTypes.bool.isRequired,
-}
+import GithubConfigBanner from './githubConfigBanner'
 
 function useRedirectUsers() {
   const { provider, owner, repo } = useParams()
