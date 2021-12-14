@@ -9,7 +9,7 @@ import { LINE_TYPE } from './lineStates'
 
 function CodeRenderer({
   code,
-  coverage = [],
+  coverage = {},
   showCovered = false,
   showUncovered = false,
   showPartial = false,
@@ -34,7 +34,7 @@ function CodeRenderer({
                 key={i}
                 line={line}
                 number={i + 1}
-                coverage={coverage[i + 1]}
+                coverage={coverage && coverage[i + 1]}
                 showCovered={showCovered}
                 showPartial={showPartial}
                 showUncovered={showUncovered}
@@ -53,7 +53,7 @@ CodeRenderer.propTypes = {
   code: PropTypes.string.isRequired,
   coverage: PropTypes.objectOf(
     PropTypes.oneOf([LINE_TYPE.HIT, LINE_TYPE.MISS, LINE_TYPE.PARTIAL])
-  ).isRequired,
+  ),
   showCovered: PropTypes.bool,
   showUncovered: PropTypes.bool,
   showPartial: PropTypes.bool,

@@ -24,7 +24,7 @@ function cancelPlan({ provider, owner }) {
   const path = getPathAccountDetails({ provider, owner })
   const body = {
     plan: {
-      value: Plans.USERS_BASIC,
+      value: Plans.USERS_FREE,
     },
   }
   return Api.patch({ path, provider, body })
