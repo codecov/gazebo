@@ -1,12 +1,13 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import PropTypes from 'prop-types'
+
 import Avatar from 'ui/Avatar'
 import A from 'ui/A'
-import PropTypes from 'prop-types'
 import { useOwner } from 'services/user'
-import { CommitRequestType } from '../../types'
+import { commitRequestType } from 'shared/propTypes'
 
-const OwnerData = ({ commit }) => {
-  const { data: ownerData } = useOwner({ username: commit?.author?.username })
+const OwnerData = ({ username }) => {
+  const { data: ownerData } = useOwner({ username })
 
   return (
     <span className="flex items-center mr-6">
@@ -24,7 +25,7 @@ const OwnerData = ({ commit }) => {
 }
 
 OwnerData.propTypes = {
-  commit: PropTypes.shape(CommitRequestType),
+  username: PropTypes.string,
 }
 
 const Title = ({ commit }) => {
@@ -39,7 +40,7 @@ const Title = ({ commit }) => {
 
   return (
     <div className="flex flex-row">
-      <OwnerData commit={commit} />
+      <OwnerData username={commit?.author?.username} />
       <div className="flex flex-col">
         <A to={{ pageName: 'commit', options: { commit: commit?.commitid } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
@@ -65,7 +66,7 @@ const Title = ({ commit }) => {
 }
 
 Title.propTypes = {
-  commit: PropTypes.shape(CommitRequestType),
+  commit: commitRequestType,
 }
 
 export default Title
