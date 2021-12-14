@@ -6,7 +6,7 @@ import NotFound from 'pages/NotFound'
 
 import Header from './Header'
 import Tabs from './Tabs'
-import { ActiveContext } from 'shared/Contexts'
+import { ActiveContext } from 'shared/context'
 
 function OwnerPage({ active = false }) {
   const { owner, provider } = useParams()

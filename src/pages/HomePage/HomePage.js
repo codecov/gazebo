@@ -7,7 +7,7 @@ import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
 import Tabs from './Tabs'
-import { ActiveContext } from 'shared/Contexts'
+import { ActiveContext } from 'shared/context'
 
 function HomePage({ active = false }) {
   const { push } = useHistory()
