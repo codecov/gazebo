@@ -51,7 +51,7 @@ function fetchRepoCommits({ provider, owner, repo, filter }) {
       owner,
       repo,
       filters: {
-        hasUploadedCoverage: filter,
+        hideFailedCI: filter,
       },
     },
   }).then((res) => {
