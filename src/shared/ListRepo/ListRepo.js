@@ -7,7 +7,7 @@ import ReposTable from './ReposTable'
 import { useLocationParams } from 'services/navigation'
 import { useHistory } from 'react-router-dom'
 import { useNavLinks } from 'services/navigation'
-import { ActiveContext } from 'shared/Contexts'
+import { ActiveContext } from 'shared/contexts'
 import { useContext } from 'react'
 
 const defaultQueryParams = {
