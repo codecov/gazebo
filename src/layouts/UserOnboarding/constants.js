@@ -1,4 +1,4 @@
-export const invalidDomains = [
+export const invalidBusinessEmailDomains = [
   '@hotmail.com',
   '@yahoo.com',
   '@ymail.com',

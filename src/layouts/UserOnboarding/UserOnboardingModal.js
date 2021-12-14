@@ -12,7 +12,7 @@ import { useOnboardUser } from 'services/user'
 import FormInformation from './FormInformation'
 import FormEmails from './FormEmails'
 import { getInitialDataForm, shouldGoToEmailStep, getSchema } from './config'
-import { useTracking } from './UseTracking'
+import { useOnboardingTracking } from './useOnboardingTracking'
 
 function usePerStepProp({ currentUser }) {
   const form = useForm({
@@ -22,7 +22,7 @@ function usePerStepProp({ currentUser }) {
   })
   const [step, setStep] = useState(0)
   const formData = form.watch()
-  const { secondPage, completedOnboarding } = useTracking()
+  const { secondPage, completedOnboarding } = useOnboardingTracking()
   const { mutate, isLoading } = useOnboardUser({
     onSuccess: (user, data) => completedOnboarding(user, data),
     data: formData,
@@ -80,7 +80,7 @@ function usePerStepProp({ currentUser }) {
 
 function UserOnboardingModal({ currentUser }) {
   const { onSubmit, ...stepProps } = usePerStepProp({ currentUser })
-  const { startOnboarding } = useTracking()
+  const { startOnboarding } = useOnboardingTracking()
 
   return (
     <ReactModal

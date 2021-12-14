@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks'
-import { useTracking } from './UseTracking'
-import { useCustomLocation } from 'services/location/hooks'
+import { useOnboardingTracking } from './useOnboardingTracking'
+import { useOnboardingLocation } from 'services/location/hooks'
 import {
   trackSegmentEvent,
   pageSegmentEvent,
@@ -10,15 +10,15 @@ import {
 jest.mock('services/tracking/segment')
 jest.mock('services/location/hooks')
 
-describe('useTracking', () => {
+describe('useOnboardingTracking', () => {
   let hookData
 
   function setup() {
-    hookData = renderHook(() => useTracking())
+    hookData = renderHook(() => useOnboardingTracking())
   }
 
   beforeEach(() => {
-    useCustomLocation.mockReturnValue({
+    useOnboardingLocation.mockReturnValue({
       path: '/campaign/three/rocks',
       url: 'www.criticalrole.com/campaign/three/rocks',
     })
@@ -62,7 +62,11 @@ describe('useTracking', () => {
   })
 
   describe('completedOnboarding', () => {
-    const id = 4
+    const user = {
+      trackingMetadata: {
+        ownerid: 4,
+      },
+    }
     const data = {
       businessEmail: '',
       email: 'adrian@codecov.io',
@@ -72,7 +76,7 @@ describe('useTracking', () => {
     }
     beforeEach(() => {
       act(() => {
-        hookData.result.current.completedOnboarding(id, data)
+        hookData.result.current.completedOnboarding(user, data)
       })
     })
 

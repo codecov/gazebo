@@ -3,11 +3,11 @@ import {
   pageSegmentEvent,
   identifySegmentEvent,
 } from 'services/tracking/segment'
-import { useCustomLocation } from 'services/location/hooks'
+import { useOnboardingLocation } from 'services/location/hooks'
 import isArray from 'lodash/isArray'
 
-export function useTracking() {
-  const { path, url } = useCustomLocation()
+export function useOnboardingTracking() {
+  const { path, url } = useOnboardingLocation()
 
   return {
     startOnboarding: () => {
@@ -30,7 +30,8 @@ export function useTracking() {
         url: url + customPath,
       })
     },
-    completedOnboarding: (id, data) => {
+    completedOnboarding: (user, data) => {
+      const id = user?.trackingMetadata?.ownerid
       trackSegmentEvent({
         event: 'User Completed Onboarding',
         category: 'Onboarding',

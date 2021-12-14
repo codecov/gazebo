@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export function useCustomLocation() {
+export function useOnboardingLocation() {
   const [url, setUrl] = useState('')
   const [path, setPath] = useState('')
 

@@ -1,12 +1,12 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { useCustomLocation } from './hooks'
+import { useOnboardingLocation } from './hooks'
 
-describe('useCustomLocation', () => {
+describe('useOnboardingLocation', () => {
   let hookData
   let originalLocation
 
   function setup() {
-    hookData = renderHook(() => useCustomLocation())
+    hookData = renderHook(() => useOnboardingLocation())
   }
 
   beforeEach(() => {

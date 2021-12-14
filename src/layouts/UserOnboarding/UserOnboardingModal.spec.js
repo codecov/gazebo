@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event'
 
 import UserOnboardingModal from './UserOnboardingModal'
 import { useOnboardUser } from 'services/user'
-import { useTracking } from './UseTracking'
+import { useOnboardingTracking } from './useOnboardingTracking'
 
 jest.mock('services/user')
-jest.mock('./UseTracking.js')
+jest.mock('./useOnboardingTracking.js')
 
 describe('UserOnboardingModal', () => {
   const defaultCurrentUser = {
@@ -17,7 +17,7 @@ describe('UserOnboardingModal', () => {
 
   function setup(currentUser = defaultCurrentUser) {
     mutate = jest.fn()
-    useTracking.mockReturnValue({
+    useOnboardingTracking.mockReturnValue({
       startedOnboarding: jest.fn(),
       completedOnboarding: completedUserOnboarding,
       secondPage: jest.fn(),

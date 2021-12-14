@@ -1,5 +1,5 @@
 import * as yup from 'yup'
-import { invalidDomains } from './constants'
+import { invalidBusinessEmailDomains } from './constants'
 
 export const TYPE_PROJECTS = Object.freeze({
   PERSONAL: 'PERSONAL',
@@ -42,7 +42,7 @@ export function shouldGoToEmailStep({ email, typeProjects }) {
 yup.addMethod(yup.string, 'customBusinessEmailValidator', function (message) {
   return this.transform(function (value) {
     const domain = value?.substring(value.lastIndexOf('@'))
-    const isInvalidDomain = invalidDomains.includes(domain)
+    const isInvalidDomain = invalidBusinessEmailDomains.includes(domain)
 
     return isInvalidDomain ? 'invalid' : value
   })

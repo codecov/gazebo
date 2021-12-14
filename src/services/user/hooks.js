@@ -203,9 +203,8 @@ export function useOnboardUser(opts) {
       onSuccess: (user) => {
         queryClient.setQueryData(['currentUser', provider], () => user)
 
-        if (user && typeof (opts?.onSuccess === 'function')) {
-          const id = user?.trackingMetadata?.ownerid
-          opts?.onSuccess(id, opts?.data)
+        if (user && typeof opts?.onSuccess === 'function') {
+          opts.onSuccess(user, opts?.data)
         }
       },
     }
