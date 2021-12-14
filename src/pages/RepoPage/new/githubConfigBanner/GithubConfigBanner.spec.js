@@ -1,12 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import GithubConfigBanner from './GithubConfigBanner'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Switch, Route } from 'react-router-dom'
 
 describe('GithubConfigBanner', () => {
   function setup({ privateRepo }) {
     render(
       <MemoryRouter initialEntries={['/gh/codecov/analytics/new']}>
-        <GithubConfigBanner privateRepo={privateRepo} />
+        <Switch>
+          <Route path="/:provider/:owner/:repo/new">
+            <GithubConfigBanner privateRepo={privateRepo} />
+          </Route>
+        </Switch>
       </MemoryRouter>
     )
   }
