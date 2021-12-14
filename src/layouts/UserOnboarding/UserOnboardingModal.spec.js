@@ -255,6 +255,28 @@ describe('UserOnboardingModal', () => {
         expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
       })
     })
+
+    describe('when users submit an invalid email', () => {
+      beforeEach(() => {
+        userEvent.type(
+          screen.getByRole('textbox', {
+            name: /work email/i,
+          }),
+          'abc@ama-trade.de'
+        )
+        screen
+          .getByRole('button', {
+            name: /submit/i,
+          })
+          .click()
+        // make sure the form updates properly
+        return act(() => Promise.resolve())
+      })
+
+      it('puts an error message', () => {
+        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
+      })
+    })
   })
 
   describe('when the user types in the other field', () => {

@@ -1,4 +1,5 @@
 import * as yup from 'yup'
+import { invalidDomains } from './constants'
 
 export const TYPE_PROJECTS = Object.freeze({
   PERSONAL: 'PERSONAL',
@@ -38,9 +39,22 @@ export function shouldGoToEmailStep({ email, typeProjects }) {
   return false
 }
 
+yup.addMethod(yup.string, 'customBusinessEmailValidator', function (message) {
+  return this.transform(function (value) {
+    const domain = value?.substring(value.lastIndexOf('@'))
+    const isInvalidDomain = invalidDomains.includes(domain)
+
+    return isInvalidDomain ? 'invalid' : value
+  })
+})
+
 export function getSchema() {
   return yup.object().shape({
     email: yup.string().email('Not a valid email'),
-    businessEmail: yup.string().email('Not a valid email'),
+    businessEmail: yup
+      .string()
+      .email('Not a valid email')
+      .customBusinessEmailValidator(),
+    // make a validate fucntion that sees if the businessemail domain exists in the array jon provided
   })
 }
