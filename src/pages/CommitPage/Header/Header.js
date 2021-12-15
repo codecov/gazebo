@@ -20,7 +20,7 @@ function Header({ provider, owner, repo, commit }) {
   })
 
   return (
-    <div className="my-4">
+    <div className="mb-4">
       <Banner
         title={
           <div className="flex justify-center gap-2">
