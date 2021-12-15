@@ -68,7 +68,7 @@ function New({ data }) {
   )
 
   return (
-    <div className="flex w-4/5 md:w-3/5 lg:w-2/5 flex-col">
+    <div className="flex w-4/5 md:w-3/5 lg:w-2/5 flex-col mt-6">
       <h1 className="font-semibold text-3xl my-4">
         Let&apos;s get your repo covered
       </h1>
