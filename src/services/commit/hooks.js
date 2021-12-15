@@ -104,6 +104,7 @@ export function useCommit({
               totals {
                 coverage # Absolute coverage of the commit
               }
+              state
               commitid
               pullId
               createdAt

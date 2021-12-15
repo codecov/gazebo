@@ -2,6 +2,7 @@ import pick from 'lodash/pick'
 import qs from 'qs'
 import { useParams, useLocation } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
 import config from 'config'
 
 function forwardMarketingTag(search) {
@@ -21,6 +22,9 @@ function forwardMarketingTag(search) {
 function useNavLinks() {
   const { search } = useLocation()
   const { provider: p, owner: o, repo: r, id: i } = useParams()
+  const { gazeboRepoTabs } = useFlags({
+    gazeboRepoTabs: false,
+  })
 
   return {
     signOut: {
@@ -85,7 +89,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
     },
     account: {
       text: 'Personal Settings',
@@ -153,7 +157,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commits`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Commits',
     },
     commit: {
@@ -214,7 +218,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/new`,
-      isExternalLink: false,
+      isExternalLink: gazeboRepoTabs,
       text: 'New',
     },
     overview: {
@@ -225,7 +229,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Overview',
     },
     branches: {
@@ -236,7 +240,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/branches`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Branches',
     },
     pulls: {
@@ -247,7 +251,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/pulls`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Pulls',
     },
     compare: {
@@ -258,7 +262,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/compare`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Compare',
     },
     settings: {
@@ -269,7 +273,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Settings',
     },
   }

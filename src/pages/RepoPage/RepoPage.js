@@ -1,7 +1,10 @@
 import { useParams } from 'react-router-dom'
-import Breadcrumb from 'ui/Breadcrumb'
 import { Switch, Route } from 'react-router-dom'
+
 import { useRepo } from 'services/repo/hooks'
+import Breadcrumb from 'ui/Breadcrumb'
+import TabNavigation from 'ui/TabNavigation'
+
 import New from './new'
 import CommitsPage from './CommitPage'
 
@@ -17,8 +20,8 @@ function RepoPage() {
   const { private: privateRepo } = data.repo
 
   return (
-    <div className="flex flex-col">
-      <div className="text-xl ml-6 md:ml-0 mb-6 font-semibold flex flex-row pb-8 border-b border-ds-gray-tertiary">
+    <div className="flex flex-col gap-4">
+      <div className="text-xl ml-6 md:ml-0 font-semibold flex flex-row">
         <Breadcrumb
           paths={[
             { pageName: 'owner', text: owner },
@@ -31,6 +34,27 @@ function RepoPage() {
           </span>
         )}
       </div>
+      <TabNavigation
+        tabs={[
+          {
+            pageName: 'overview',
+            children: 'Coverage',
+            exact: true,
+          },
+          {
+            pageName: 'commits',
+          },
+          {
+            pageName: 'pulls',
+          },
+          {
+            pageName: 'compare',
+          },
+          {
+            pageName: 'settings',
+          },
+        ]}
+      />
       <div className="flex justify-center">
         <Switch>
           <Route path={path} exact>
