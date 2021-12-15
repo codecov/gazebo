@@ -33,6 +33,7 @@ const commitData = {
   author: {
     username: 'febg',
   },
+  state: 'complete',
   uploads: {
     edges: [
       {

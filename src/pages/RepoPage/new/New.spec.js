@@ -102,4 +102,34 @@ describe('New Page', () => {
       expect(step).not.toBeInTheDocument()
     })
   })
+
+  describe('when repo is private', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          repo: { uploadToken: 'randomToken', private: true },
+        },
+      })
+    })
+
+    it('renders github config banner', () => {
+      const bannerTitle = screen.queryByText(/Install Codecov GitHub app/)
+      expect(bannerTitle).toBeInTheDocument()
+    })
+  })
+
+  describe('when repo is public', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          repo: { uploadToken: 'randomToken', private: false },
+        },
+      })
+    })
+
+    it('does not render github config banner', () => {
+      const bannerTitle = screen.queryByText(/Install Codecov GitHub app/)
+      expect(bannerTitle).not.toBeInTheDocument()
+    })
+  })
 })
