@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
 import { Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
-import New from './NewPage'
+import New from './new'
 import PullsPage from './PullsPage'
 
 function RepoPage() {
