@@ -6,7 +6,7 @@ import { useRepos } from 'services/repos/hooks'
 import { orderingOptions } from 'services/repos'
 
 import ReposTable from './ReposTable'
-import { ActiveContext } from 'shared/Contexts'
+import { ActiveContext } from 'shared/context'
 
 jest.mock('services/repos/hooks')
 

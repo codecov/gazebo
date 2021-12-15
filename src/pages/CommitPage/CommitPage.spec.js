@@ -10,6 +10,7 @@ jest.mock('./Header/Header.js', () => () => 'The Header')
 
 const dataReturned = {
   commit: {
+    state: 'complete',
     totals: {
       coverage: 38.30846,
     },
