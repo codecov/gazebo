@@ -387,6 +387,16 @@ function useStaticNavLinks() {
       isExternalLink: true,
       text: 'Uploader Integrity Check',
     },
+    codecovGithuhApp: {
+      path: () => 'https://github.com/apps/codecov',
+      isExternalLink: true,
+      text: 'Codecov Github App',
+    },
+    teamBot: {
+      path: () => 'https://docs.codecov.com/docs/team-bot',
+      isExternalLink: true,
+      text: 'Team Bot',
+    },
   }
 }
 

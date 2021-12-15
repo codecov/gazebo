@@ -7,6 +7,7 @@ import InstructionBox from './instructionBox/InstructionBox'
 import { useCommits } from 'services/commits'
 import { useParams } from 'react-router'
 import { useEffect } from 'react'
+import GithubConfigBanner from './githubConfigBanner'
 
 function useRedirectUsers() {
   const { provider, owner, repo } = useParams()
@@ -85,6 +86,8 @@ function New({ data }) {
         </span>{' '}
         to learn more.
       </p>
+
+      <GithubConfigBanner privateRepo={privateRepo} />
 
       <Fragment>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>
