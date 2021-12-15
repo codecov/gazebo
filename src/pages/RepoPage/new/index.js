@@ -1,1 +1,1 @@
-export { default } from './NewPage'
+export { default } from './New'

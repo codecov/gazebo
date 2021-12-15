@@ -4,8 +4,23 @@ import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 import { Fragment } from 'react'
 import InstructionBox from './instructionBox/InstructionBox'
+import { useCommits } from 'services/commits'
+import { useParams } from 'react-router'
+import { useEffect } from 'react'
+import GithubConfigBanner from './githubConfigBanner'
+
+function useRedirectUsers() {
+  const { provider, owner, repo } = useParams()
+  const { data: commits } = useCommits({ provider, owner, repo })
+
+  useEffect(() => {
+    if (commits?.length) window.location = `/${provider}/${owner}/${repo}`
+  }, [provider, owner, repo, commits])
+}
 
 function New({ data }) {
+  useRedirectUsers()
+
   if (!data || !data?.repo?.uploadToken) {
     return null
   }
@@ -53,7 +68,7 @@ function New({ data }) {
   )
 
   return (
-    <div className="flex w-4/5 md:w-3/5 lg:w-2/5 flex-col">
+    <div className="flex w-4/5 md:w-3/5 lg:w-2/5 flex-col mt-6">
       <h1 className="font-semibold text-3xl my-4">
         Let&apos;s get your repo covered
       </h1>
@@ -71,6 +86,8 @@ function New({ data }) {
         </span>{' '}
         to learn more.
       </p>
+
+      <GithubConfigBanner privateRepo={privateRepo} />
 
       <Fragment>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>

@@ -7,6 +7,8 @@ import ReposTable from './ReposTable'
 import { useLocationParams } from 'services/navigation'
 import { useHistory } from 'react-router-dom'
 import { useNavLinks } from 'services/navigation'
+import { ActiveContext } from 'shared/context'
+import { useContext } from 'react'
 
 const defaultQueryParams = {
   search: '',
@@ -14,7 +16,7 @@ const defaultQueryParams = {
   direction: orderingOptions[0]['direction'],
 }
 
-function ListRepo({ owner, active, canRefetch }) {
+function ListRepo({ owner, canRefetch }) {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { push } = useHistory()
   const {
@@ -24,6 +26,7 @@ function ListRepo({ owner, active, canRefetch }) {
     providerAddRepo,
   } = useNavLinks()
 
+  const active = useContext(ActiveContext)
   const orderOptions = active ? orderingOptions : nonActiveOrderingOptions
 
   const sortItem =
@@ -83,7 +86,6 @@ function ListRepo({ owner, active, canRefetch }) {
         <ReposTable
           sortItem={sortItem}
           owner={owner}
-          active={active}
           searchValue={params.search}
         />
       </Suspense>
@@ -93,7 +95,6 @@ function ListRepo({ owner, active, canRefetch }) {
 
 ListRepo.propTypes = {
   owner: PropTypes.string,
-  active: PropTypes.bool,
   canRefetch: PropTypes.bool.isRequired,
 }
 

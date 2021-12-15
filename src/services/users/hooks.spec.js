@@ -1,7 +1,6 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { renderHook, act } from '@testing-library/react-hooks'
-
 import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useUsers, useUpdateUser } from './hooks'
@@ -56,7 +55,7 @@ describe('useUsers', () => {
 
   function setup() {
     server.use(
-      rest.get(`/internal/${provider}/${owner}/users/?`, (req, res, ctx) => {
+      rest.get(`/internal/:provider/:owner/users`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(users))
       })
     )
@@ -120,7 +119,7 @@ describe('useUpdateUser', () => {
   function setup({ ownerid, body, opts = {} }) {
     server.use(
       rest.patch(
-        `/internal/${provider}/${owner}/users/${ownerid}`,
+        `/internal/:provider/:owner/users/:ownerid`,
         (req, res, ctx) => {
           return res(ctx.status(200), ctx.json(body))
         }
