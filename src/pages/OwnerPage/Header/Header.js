@@ -7,8 +7,7 @@ import Banner from 'ui/Banner'
 import Icon from 'ui/Icon'
 import A from 'ui/A'
 import Button from 'ui/Button'
-import { useUploadsNumber } from 'services/uploadsNumber'
-import { useAccountDetails } from 'services/account'
+import { useIsUploadsNumberExceeded } from 'services/uploadsNumber'
 
 const ExceededUploadsAlert = () => (
   <Banner
@@ -40,17 +39,10 @@ const ExceededUploadsAlert = () => (
 
 function Header({ owner, provider }) {
   const { username } = owner
-  const { data: uploadsNumber } = useUploadsNumber({
+  const { data: isUploadsExceeded } = useIsUploadsNumberExceeded({
     provider,
     owner: username,
   })
-  const { data: accountDetails } = useAccountDetails({
-    provider,
-    owner: username,
-  })
-  const isBasicPlan = accountDetails.plan.value === 'users-basic'
-  const maxUploadsNumber = 250
-  const isUploadsExceeded = uploadsNumber >= maxUploadsNumber && isBasicPlan
 
   return owner.isCurrentUserPartOfOrg ? (
     <>

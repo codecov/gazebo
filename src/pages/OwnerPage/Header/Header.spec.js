@@ -1,32 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
-import { useUploadsNumber } from 'services/uploadsNumber'
-import { useAccountDetails } from 'services/account'
+import { useIsUploadsNumberExceeded } from 'services/uploadsNumber'
 
 import Header from './Header'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('services/uploadsNumber')
-jest.mock('services/account')
 
 const queryClient = new QueryClient()
 
 describe('Header', () => {
-  function setup(props = {}, plan = '', uploadsNumber = 0) {
-    const accountDetails = {
-      plan: {
-        marketingName: 'Pro Team',
-        baseUnitPrice: 12,
-        benefits: ['Configureable # of users', 'Unlimited repos'],
-        quantity: 5,
-        value: plan,
-      },
-      activatedUserCount: 2,
-      inactiveUserCount: 1,
-    }
-    useUploadsNumber.mockReturnValue({ data: uploadsNumber })
-    useAccountDetails.mockReturnValue({ data: accountDetails })
+  function setup(props = {}, isUploadsExceeded = false) {
+    useIsUploadsNumberExceeded.mockReturnValue({ data: isUploadsExceeded })
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -97,8 +83,7 @@ describe('Header', () => {
             isCurrentUserPartOfOrg: true,
           },
         },
-        'users-basic',
-        250
+        true
       )
     })
 
