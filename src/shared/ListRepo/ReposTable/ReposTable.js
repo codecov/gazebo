@@ -12,7 +12,7 @@ import NoReposBlock from './NoReposBlock'
 
 import { useFlags } from 'shared/featureFlags'
 import { useContext } from 'react'
-import { ActiveContext } from 'shared/Contexts'
+import { ActiveContext } from 'shared/context'
 
 const tableActive = [
   {
