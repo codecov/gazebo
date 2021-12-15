@@ -86,10 +86,10 @@ function useFormatTableData({ tableData = [], commit }) {
   })
 }
 
-function CommitsTable({ data = [], commit, loading }) {
+function CommitsTable({ data = [], commit, state }) {
   const formatedData = useFormatTableData({ tableData: data, commit })
 
-  if (loading === 'pending') {
+  if (state === 'pending') {
     return (
       <div className="flex-1 flex justify-center">
         <Spinner size={60} />
@@ -108,7 +108,7 @@ function CommitsTable({ data = [], commit, loading }) {
 }
 
 CommitsTable.propTypes = {
-  loading: PropTypes.string,
+  state: PropTypes.string,
   data: PropTypes.arrayOf(
     PropTypes.shape({
       headName: PropTypes.string,

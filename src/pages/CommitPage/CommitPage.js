@@ -118,7 +118,7 @@ function CommitPage() {
               <Suspense fallback={loadingState}>
                 <CommitsTable
                   commit={commit}
-                  loading={data?.state}
+                  state={data?.state}
                   data={data?.impactedFiles}
                 />
               </Suspense>
