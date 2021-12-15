@@ -10,6 +10,7 @@ jest.mock('./Header/Header.js', () => () => 'The Header')
 
 const dataReturned = {
   commit: {
+    state: 'complete',
     totals: {
       coverage: 38.30846,
     },
@@ -80,7 +81,7 @@ describe('CommitPage', () => {
     render(
       <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
         <Route path="/:provider/:owner/:repo/commit/:commit/">
-          <CommitPage />{' '}
+          <CommitPage />
         </Route>
       </MemoryRouter>
     )
