@@ -2,6 +2,8 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 import isNumber from 'lodash/isNumber'
 
+import { CommitStateEnum } from 'shared/utils/commit'
+
 import Table from 'ui/Table'
 import A from 'ui/A'
 import Progress from 'ui/Progress'
@@ -89,7 +91,7 @@ function useFormatTableData({ tableData = [], commit }) {
 function CommitsTable({ data = [], commit, state }) {
   const formatedData = useFormatTableData({ tableData: data, commit })
 
-  if (state === 'pending') {
+  if (state === CommitStateEnum.pending) {
     return (
       <div className="flex-1 flex justify-center">
         <Spinner size={60} />
