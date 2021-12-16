@@ -6,10 +6,10 @@ jest.mock('services/repos/hooks')
 
 describe('CommitsTable', () => {
   let props
-  function setup(data = [], loading = 'processed') {
+  function setup(data = [], state = 'processed') {
     props = {
       data,
-      loading,
+      state,
     }
     render(
       <MemoryRouter initialEntries={['/gh']}>
@@ -92,7 +92,7 @@ describe('CommitsTable', () => {
       expect(coverage).toBeInTheDocument()
     })
   })
-  describe('when impacted files are loading', () => {
+  describe('when impacted files are in pending state', () => {
     beforeEach(() => {
       setup([], 'pending')
     })
