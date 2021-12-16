@@ -9,11 +9,11 @@ const Title = ({ pull }) => {
   const { data: ownerData } = useOwner({ username: pull?.author?.username })
 
   return (
-    <div className="flex flex-row">
-      <span className="flex items-center mr-6">
+    <div className="flex flex-row w-96 lg:w-auto">
+      <span className="flex items-center mr-5">
         {ownerData && <Avatar user={ownerData} bordered />}
       </span>
-      <div className="flex flex-col">
+      <div className="flex flex-col w-5/6 lg:w-auto">
         <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
             {pull?.title}

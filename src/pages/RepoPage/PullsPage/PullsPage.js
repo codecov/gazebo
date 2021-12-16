@@ -7,7 +7,7 @@ function PullsPage() {
   const { data: pulls } = usePulls({ provider, owner, repo })
 
   return (
-    <div className="w-full h-screen overflow-scroll">
+    <div className="flex-1 overflow-y-auto">
       <PullsTable pulls={pulls} />
     </div>
   )

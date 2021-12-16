@@ -61,11 +61,7 @@ function transformPullToTable(pulls) {
 
 function PullsPage({ pulls }) {
   const dataTable = transformPullToTable(pulls)
-  return (
-    <>
-      <Table data={dataTable} columns={headers} />
-    </>
-  )
+  return <Table data={dataTable} columns={headers} />
 }
 
 PullsPage.propTypes = {
