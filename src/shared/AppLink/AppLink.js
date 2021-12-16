@@ -29,6 +29,8 @@ const AppLink = forwardRef(
     const path = pageConfig.path(options)
 
     const Component = getComponentToRender(pageConfig, activeClassName)
+    const { openNewPage } = pageConfig
+
     const propsLink = pageConfig.isExternalLink ? { href: path } : { to: path }
     const propsActive =
       Component === NavLink
@@ -54,6 +56,7 @@ const AppLink = forwardRef(
         data-marketing={pageName}
         {...completeProps}
         ref={ref}
+        target={openNewPage && '_blank'}
       >
         {defaultTo(children, pageConfig.text)}
       </Component>
