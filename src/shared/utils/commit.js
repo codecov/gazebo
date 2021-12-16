@@ -1,4 +1,4 @@
-export const CommitStateEnum = Object.freeze({
+export const UploadStateEnum = Object.freeze({
   error: 'ERROR',
   uploaded: 'UPLOADED',
   processed: 'PROCESSED',

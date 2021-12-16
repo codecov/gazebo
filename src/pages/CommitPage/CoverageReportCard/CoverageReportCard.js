@@ -2,7 +2,6 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { isNumber } from 'lodash'
 
-import { CommitStateEnum } from 'shared/utils/commit'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
 
@@ -83,7 +82,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           </span>
         </TotalsLabel>
       </div>
-      {state === CommitStateEnum.error ? (
+      {state === 'error' ? (
         <p className="flex-1 text-ds-gray-quinary text-sm leading-5">
           There is an error processing the coverage reports; some of the data
           may be inacurrate. Common issues are{' '}
