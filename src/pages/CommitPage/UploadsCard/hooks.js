@@ -4,12 +4,13 @@ import groupBy from 'lodash/groupBy'
 import countBy from 'lodash/countBy'
 
 import { useCommit } from 'services/commit'
+import { CommitStateEnum } from 'shared/utils/commit'
 
 function humanReadableOverview(state, count) {
   const plural = (count) => (count > 1 ? 'are' : 'is')
-  if (state === 'ERROR') return 'errored'
-  if (state === 'UPLOADED') return `${plural(count)} pending`
-  if (state === 'PROCESSED') return 'successful'
+  if (state === CommitStateEnum.error) return 'errored'
+  if (state === CommitStateEnum.uploaded) return `${plural(count)} pending`
+  if (state === CommitStateEnum.processed) return 'successful'
 }
 
 export function useUploads() {

@@ -2,14 +2,16 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
 import config from 'config'
+import { ErrorCodeEnum } from 'shared/utils/commit'
 
 import Icon from 'ui/Icon'
 import A from 'ui/A'
 
 function humanReadableError(errorCode) {
-  if (errorCode === 'FILE_NOT_IN_STORAGE') return 'processing failed'
-  if (errorCode === 'REPORT_EXPIRED') return 'upload expired'
-  if (errorCode === 'REPORT_EMPTY') return 'upload is empty'
+  if (errorCode === ErrorCodeEnum.fileNotFoundInStorage)
+    return 'processing failed'
+  if (errorCode === ErrorCodeEnum.reportExpired) return 'upload expired'
+  if (errorCode === ErrorCodeEnum.reportEmpty) return 'upload is empty'
 }
 
 const Upload = ({
