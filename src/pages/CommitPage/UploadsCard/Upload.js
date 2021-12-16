@@ -2,7 +2,7 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
 import config from 'config'
-import { ErrorCodeEnum, CommitStateEnum } from 'shared/utils/commit'
+import { ErrorCodeEnum } from 'shared/utils/commit'
 
 import Icon from 'ui/Icon'
 import A from 'ui/A'
@@ -74,11 +74,6 @@ const Upload = ({
 )
 
 Upload.propTypes = {
-  state: PropTypes.oneOf([
-    CommitStateEnum.error,
-    CommitStateEnum.processed,
-    CommitStateEnum.uploaded,
-  ]),
   ciUrl: PropTypes.string,
   createdAt: PropTypes.string,
   downloadUrl: PropTypes.string,

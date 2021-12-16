@@ -15,27 +15,24 @@ function humanReadableOverview(state, count) {
 
 export function useUploads() {
   const { provider, owner, repo, commit } = useParams()
-  const {
-    data: {
-      commit: { uploads },
-    },
-  } = useCommit({
+  const [sortedUploads, setSortedUploads] = useState({})
+  const [uploadsProviderList, setUploadsProviderList] = useState([])
+  const [uploadsOverview, setUploadsOverview] = useState('')
+  const { data } = useCommit({
     provider,
     owner,
     repo,
     commitid: commit,
   })
 
-  const [sortedUploads, setSortedUploads] = useState([])
-  const [uploadProviderList, setUploadProviderList] = useState([])
-  const [uploadOverview, setUploadOverview] = useState('')
+  const uploads = data?.commit?.uploads
 
   useEffect(() => {
     setSortedUploads(groupBy(uploads, 'provider'))
   }, [uploads])
 
   useEffect(() => {
-    setUploadProviderList(Object.keys(sortedUploads))
+    setUploadsProviderList(Object.keys(sortedUploads))
   }, [uploads, sortedUploads])
 
   useEffect(() => {
@@ -45,13 +42,13 @@ export function useUploads() {
         ([state, count]) => `${count} ${humanReadableOverview(state, count)}`
       )
       .join(', ')
-    setUploadOverview(string)
-  }, [uploads, uploadProviderList])
+    setUploadsOverview(string)
+  }, [uploads, uploadsProviderList])
 
   return {
-    uploadOverview,
+    uploadsOverview,
     sortedUploads,
-    uploadProviderList,
+    uploadsProviderList,
     hasNoUploads: !uploads || uploads.length === 0,
   }
 }

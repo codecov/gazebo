@@ -8,7 +8,7 @@ import Upload from './Upload'
 
 function UploadsCard() {
   const [showYAMLModal, setShowYAMLModal] = useState(false)
-  const { uploadProviderList, uploadOverview, sortedUploads, hasNoUploads } =
+  const { uploadsProviderList, uploadsOverview, sortedUploads, hasNoUploads } =
     useUploads()
 
   return (
@@ -21,24 +21,17 @@ function UploadsCard() {
               <span className="text-xs">view yml file</span>
             </A>
           </div>
-          <span className="text-ds-gray-quinary">{uploadOverview}</span>
+          <span className="text-ds-gray-quinary">{uploadsOverview}</span>
         </div>
         <div className="bg-ds-gray-primary h-64 max-h-64 overflow-auto flex flex-col flex-1 divide-y divide-solid divide-ds-gray-secondary">
-          {uploadProviderList.map((title) => (
+          {uploadsProviderList.map((title) => (
             <Fragment key={title}>
               <span className="text-sm font-semibold flex-1 py-1 px-4">
                 {title}
               </span>
               {sortedUploads[title].map(
                 (
-                  {
-                    ciUrl,
-                    buildCode,
-                    createdAt,
-                    flags = [],
-                    downloadUrl,
-                    errors = [],
-                  },
+                  { ciUrl, buildCode, createdAt, flags, downloadUrl, errors },
                   i
                 ) => (
                   <Upload

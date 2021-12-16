@@ -1,9 +1,70 @@
-/* eslint-disable no-unused-vars */
 import { graphql } from 'msw'
 
-export const commitErrored = graphql.query(`Commit`, (req, res, ctx) => {
-  return res(ctx.status(200), ctx.data(dataReturned))
+export const commitErrored = graphql.query('Commit', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          commit: commitDataError,
+        },
+      },
+    })
+  )
 })
+
+export const commitOnePending = graphql.query('Commit', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          commit: {
+            ...commitDataError,
+            uploads: {
+              edges: [
+                {
+                  node: {
+                    state: 'PENDING',
+                    provider: 'travis',
+                    createdAt: '2020-08-25T16:36:19.559474+00:00',
+                    updatedAt: '2020-08-25T16:36:19.679868+00:00',
+                    downloadUrl: '/test.txt',
+                    ciUrl: 'https://example.com',
+                    uploadType: 'UPLOADED',
+                    jobCode: '1234',
+                    buildCode: '1234',
+                    flags: ['unit'],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    })
+  )
+})
+
+export const commitEmptyUploads = graphql.query('Commit', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          commit: commitDataEmpty,
+        },
+      },
+    })
+  )
+})
+
+export const compareTotalsEmpty = graphql.query(
+  'CompareTotals',
+  (req, res, ctx) => {
+    return res(ctx.status(200), ctx.data({}))
+  }
+)
 
 const commitDataError = {
   totals: {
@@ -167,14 +228,6 @@ const commitDataEmpty = {
     commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
     totals: {
       coverage: 38.30846,
-    },
-  },
-}
-
-const dataReturned = {
-  owner: {
-    repository: {
-      commit: commitDataError,
     },
   },
 }
