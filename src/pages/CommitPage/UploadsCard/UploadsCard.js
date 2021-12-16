@@ -8,7 +8,7 @@ import Upload from './Upload'
 
 function UploadsCard() {
   const [showYAMLModal, setShowYAMLModal] = useState(false)
-  const { uploadProviderList, uploadOverview, sortedUploads, hasUploads } =
+  const { uploadProviderList, uploadOverview, sortedUploads, hasNoUploads } =
     useUploads()
 
   return (
@@ -54,7 +54,7 @@ function UploadsCard() {
               )}
             </Fragment>
           ))}
-          {hasUploads && (
+          {hasNoUploads && (
             <span className="py-2.5 px-4 text-xs text-ds-gray-quinary">
               Currently no uploads
             </span>

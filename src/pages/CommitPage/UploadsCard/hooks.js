@@ -52,6 +52,6 @@ export function useUploads() {
     uploadOverview,
     sortedUploads,
     uploadProviderList,
-    hasUploads: !uploads || uploads.length === 0,
+    hasNoUploads: !uploads || uploads.length === 0,
   }
 }
