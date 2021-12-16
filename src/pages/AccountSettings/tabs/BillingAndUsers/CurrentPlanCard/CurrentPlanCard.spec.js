@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import CurrentPlanCard from './CurrentPlanCard'
+import { QueryClientProvider, QueryClient } from 'react-query'
 
 const proAccountDetails = {
   plan: {
@@ -29,6 +30,8 @@ const freeAccountDetails = {
   activatedUserCount: 2,
 }
 
+const queryClient = new QueryClient()
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({ provider: 'gl' }),
@@ -36,9 +39,14 @@ jest.mock('react-router-dom', () => ({
 
 describe('CurrentPlanCard', () => {
   function setup(accountDetails) {
-    render(<CurrentPlanCard accountDetails={accountDetails} />, {
-      wrapper: MemoryRouter,
-    })
+    render(
+      <QueryClientProvider client={queryClient}>
+        <CurrentPlanCard accountDetails={accountDetails} />
+      </QueryClientProvider>,
+      {
+        wrapper: MemoryRouter,
+      }
+    )
   }
 
   describe('when rendering with a pro plan', () => {
@@ -55,6 +63,10 @@ describe('CurrentPlanCard', () => {
         screen.getByRole('link', { name: /Cancel Plan/ })
       ).toBeInTheDocument()
     })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
+    })
   })
 
   describe('when rendering with a free plan', () => {
@@ -66,6 +78,10 @@ describe('CurrentPlanCard', () => {
       expect(
         screen.queryByRole('link', { name: /Cancel Plan/ })
       ).not.toBeInTheDocument()
+    })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
     })
   })
 
@@ -84,6 +100,10 @@ describe('CurrentPlanCard', () => {
         screen.queryByRole('link', { name: /Cancel Plan/ })
       ).not.toBeInTheDocument()
     })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
+    })
   })
 
   describe('when the user is using github marketplace', () => {
@@ -98,6 +118,10 @@ describe('CurrentPlanCard', () => {
       expect(
         screen.getByRole('link', { name: /Manage billing in GitHub/ })
       ).toBeInTheDocument()
+    })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
     })
   })
 
@@ -131,6 +155,10 @@ describe('CurrentPlanCard', () => {
         'href',
         `/account/gl/${parentUsername}/billing`
       )
+    })
+
+    it('shows the help message', () => {
+      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
     })
   })
 })

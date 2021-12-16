@@ -2,7 +2,12 @@ import PropTypes from 'prop-types'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
-const NoReposBlock = ({ owner, active }) => {
+import { useContext } from 'react'
+import { ActiveContext } from 'shared/context'
+
+const NoReposBlock = ({ owner }) => {
+  const active = useContext(ActiveContext)
+
   return active ? (
     <div className="text-center m-auto mt-8">
       <h1 className="font-semibold text-3xl">No repos setup yet</h1>
@@ -29,7 +34,6 @@ const NoReposBlock = ({ owner, active }) => {
 
 NoReposBlock.propTypes = {
   owner: PropTypes.string,
-  active: PropTypes.bool,
 }
 
 export default NoReposBlock
