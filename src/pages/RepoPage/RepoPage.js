@@ -6,7 +6,7 @@ import TabNavigation from 'ui/TabNavigation'
 
 import New from './new'
 import PullsPage from './PullsPage'
-import CommitPage from './CommitPage'
+import CommitsPage from './CommitPage'
 import { useCommits } from 'services/commits'
 import cs from 'classnames'
 
@@ -77,7 +77,7 @@ function RepoPage() {
             <New data={data} />
           </Route>
           <Route path={`${path}/commits`} exact>
-            <CommitPage />
+            <CommitsPage />
           </Route>
           <Route path={`${path}/branches`} exact>
             <h1>Branches</h1>
