@@ -84,14 +84,9 @@ function App() {
                 <CommitPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/commit/:commit/" exact>
+            <Route path="/:provider/:owner/:repo/commit/:commit" exact>
               <BaseLayout>
                 <CommitPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo/tree/*" exact>
-              <BaseLayout>
-                <p>Tree</p>
               </BaseLayout>
             </Route>
             <Route path="/:provider/:owner/:repo/blob/:ref/*" exact>
