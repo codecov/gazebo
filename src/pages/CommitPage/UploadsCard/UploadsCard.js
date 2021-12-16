@@ -10,9 +10,10 @@ import A from 'ui/A'
 import YamlModal from '../YamlModal'
 import UploadGroup from './UploadGroup'
 
-function humanReadableOverview(state) {
+function humanReadableOverview(state, count) {
+  const plural = (count) => (count > 1 ? 'are' : 'is')
   if (state === 'ERROR') return 'errored'
-  if (state === 'UPLOADED') return 'is pending'
+  if (state === 'UPLOADED') return `${plural(count)} pending`
   if (state === 'PROCESSED') return 'successful'
 }
 
@@ -44,7 +45,9 @@ function useUploads() {
   useEffect(() => {
     const countedStates = countBy(uploads, (upload) => upload.state)
     const string = Object.entries(countedStates)
-      .map(([state, count]) => `${count} ${humanReadableOverview(state)}`)
+      .map(
+        ([state, count]) => `${count} ${humanReadableOverview(state, count)}`
+      )
       .join(', ')
     setUploadOverview(string)
   }, [uploads, uploadProviderList])
