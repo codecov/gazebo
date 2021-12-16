@@ -1,4 +1,3 @@
-import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
@@ -35,7 +34,7 @@ function New({ data }) {
       </p>
       <p className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
-        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-4">
+        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
           {token}
         </span>
         <CopyClipboard string={token} />
@@ -53,7 +52,7 @@ function New({ data }) {
       </p>
       <p className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
-        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-4">
+        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
           {token}
         </span>
         <CopyClipboard string={token} />
@@ -75,13 +74,30 @@ function New({ data }) {
 
       <p className="border-b border-ds-gray-tertiary pb-8 text-base">
         Codecov requires an upload in your test suite to get started. Using the{' '}
-        <A to={{ pageName: 'uploader' }}>Codecov Uploader</A>
-        <span className="inline-block">
+        <a
+          data-testid="upload-docs-link"
+          rel="noreferrer"
+          target="_blank"
+          href="https://docs.codecov.com/docs/codecov-uploader"
+          className="text-ds-blue"
+        >
+          Codecov Uploader
+        </a>
+        <span className="inline-block text-gray-500">
           <Icon name="external-link" size="sm" />
         </span>{' '}
         and the repository upload token, upload your coverage reports to
-        Codecov. See our <A to={{ pageName: 'docs' }}> quick start guide </A>
-        <span className="inline-block">
+        Codecov. See our{' '}
+        <a
+          data-testid="quickStart-link"
+          rel="noreferrer"
+          target="_blank"
+          href="https://docs.codecov.io/"
+          className="text-ds-blue"
+        >
+          quick start guide
+        </a>
+        <span className="inline-block text-gray-500">
           <Icon name="external-link" size="sm" />
         </span>{' '}
         to learn more.
@@ -101,8 +117,17 @@ function New({ data }) {
 
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
-          Download the <A to={{ pageName: 'uploader' }}>uploader </A>
-          <span className="inline-block">
+          Download the{' '}
+          <a
+            data-testid="upload-docs-link"
+            rel="noreferrer"
+            target="_blank"
+            href="https://docs.codecov.com/docs/codecov-uploader"
+            className="text-ds-blue"
+          >
+            uploader
+          </a>
+          <span className="inline-block text-gray-500">
             <Icon name="external-link" size="sm" />
           </span>{' '}
           and share your coverage reports with Codecov, by adding the the
@@ -113,18 +138,22 @@ function New({ data }) {
 
         <p className="text-base">
           It is highly recommended to{' '}
-          <A to={{ pageName: 'integrityCheck' }}>
+          <a
+            data-testid="integrityCheck-link"
+            rel="noreferrer"
+            target="_blank"
+            href="https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader"
+            className="text-ds-blue"
+          >
             integrity check the uploader
-          </A>
-          <span className="inline-block">
+          </a>
+          <span className="inline-block text-gray-500">
             <Icon name="external-link" size="sm" />
           </span>
           .
         </p>
-
         <h2 className="font-semibold mt-8 text-base">
-          {' '}
-          🎉 Confirming completion
+          🎉 &nbsp;Confirming completion
         </h2>
         <p className="text-base">
           These steps should be added to the CI configuration. Codecov jobs
