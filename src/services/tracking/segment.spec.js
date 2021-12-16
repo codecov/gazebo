@@ -6,6 +6,8 @@ import {
   useSegmentPage,
   identifySegmentUser,
   trackSegmentEvent,
+  pageSegmentEvent,
+  identifySegmentEvent,
 } from './segment'
 
 window.analytics = {
@@ -212,34 +214,25 @@ describe('useSegmentPage', () => {
 })
 
 describe('trackSegmentEvent', () => {
-  function setup(action, label, category) {
-    trackSegmentEvent(action, label, category)
+  function setup(event, label, category) {
+    trackSegmentEvent({ event, label, category })
   }
 
   describe('when event is defined', () => {
     it('returns an track event if part of event enums', () => {
       const label = 'request demo'
-      const action = 'click'
+      const event = 'click'
       const category = 'category A'
-      setup(action, label, category)
+      setup(event, label, category)
 
       expect(window.analytics.track.mock.instances[0].track).toHaveBeenCalled()
       expect(
         window.analytics.track.mock.instances[0].track
-      ).toHaveBeenCalledWith('clicked button', {
+      ).toHaveBeenCalledWith('click', {
         category,
         label,
         value: 1,
       })
-    })
-
-    it('returns an undefined track event', () => {
-      const label = 'any label'
-      const action = 'random action'
-      const category = 'random category'
-      setup(action, label, category)
-
-      expect(window.analytics.track.mock.instances[0]).toBeUndefined()
     })
   })
 
@@ -254,6 +247,54 @@ describe('trackSegmentEvent', () => {
 
     it('returns an undefined track event', () => {
       expect(window.analytics.track.mock.instances[0]).toBeUndefined()
+    })
+  })
+})
+
+describe('pageSegmentEvent', () => {
+  function setup({ event, path, url }) {
+    pageSegmentEvent({ event, path, url })
+  }
+
+  describe('when hook is called', () => {
+    it('returns a page segment event with a specified path and url', () => {
+      const event = 'random event'
+      const path = '/random/path'
+      const url = 'http://www.aRandomPage.com/random/path'
+      setup({ event, path, url })
+
+      expect(window.analytics.page).toHaveBeenCalled()
+      expect(window.analytics.page).toHaveBeenCalledWith('random event', {
+        path: '/random/path',
+        url: 'http://www.aRandomPage.com/random/path',
+      })
+    })
+  })
+})
+
+describe('identifySegmentEvent', () => {
+  function setup({ id, data }) {
+    identifySegmentEvent({ id, data })
+  }
+
+  describe('when the hook is called', () => {
+    it('returns an identify segment event with an id and custom data', () => {
+      const id = 1
+      const data = {
+        name: 'Zagreus',
+        numberOfEscapes: '99',
+        parent: 'Hades',
+        mother: 'Persephone',
+        bestFriend: 'Cerberus',
+      }
+      setup({ id, data })
+
+      expect(window.analytics.identify).toHaveBeenCalled()
+      expect(window.analytics.identify).toHaveBeenCalledWith(id, {
+        traits: {
+          ...data,
+        },
+      })
     })
   })
 })
