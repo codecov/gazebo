@@ -1,8 +1,18 @@
 import PropTypes from 'prop-types'
 import * as Sentry from '@sentry/react'
+import A from 'ui/A'
 
 function DefaultUI() {
-  return <p>Well this is embarassing, looks like we had an error.</p>
+  return (
+    <p>
+      There&apos;s been an error. Please try refreshing your browser, if this
+      error persists please{' '}
+      <A to={{ pageName: 'support' }} variant="link">
+        contact support
+      </A>
+      .
+    </p>
+  )
 }
 
 export default function ErrorBoundary({

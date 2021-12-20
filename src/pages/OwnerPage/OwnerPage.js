@@ -6,6 +6,7 @@ import NotFound from 'pages/NotFound'
 
 import Header from './Header'
 import Tabs from './Tabs'
+import { ActiveContext } from 'shared/context'
 
 function OwnerPage({ active = false }) {
   const { owner, provider } = useParams()
@@ -22,11 +23,12 @@ function OwnerPage({ active = false }) {
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />
         )}
-        <ListRepo
-          active={active}
-          canRefetch={ownerData.isCurrentUserPartOfOrg}
-          owner={ownerData.username}
-        />
+        <ActiveContext.Provider value={active}>
+          <ListRepo
+            canRefetch={ownerData.isCurrentUserPartOfOrg}
+            owner={ownerData.username}
+          />
+        </ActiveContext.Provider>
       </div>
     </div>
   )

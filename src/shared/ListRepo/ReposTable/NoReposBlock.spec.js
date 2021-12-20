@@ -1,17 +1,19 @@
 import { render, screen } from 'custom-testing-library'
 import NoReposBlock from './NoReposBlock.js'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { ActiveContext } from 'shared/context'
 
 describe('NoReposBlock', () => {
   function setup({ owner, active }) {
     const props = {
       owner,
-      active,
     }
     render(
       <MemoryRouter>
         <Route>
-          <NoReposBlock {...props} />
+          <ActiveContext.Provider value={active}>
+            <NoReposBlock {...props} />
+          </ActiveContext.Provider>
         </Route>
       </MemoryRouter>
     )

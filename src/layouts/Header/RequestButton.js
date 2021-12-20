@@ -2,6 +2,7 @@ import Button from 'ui/Button'
 import PropTypes from 'prop-types'
 import { useAccountDetails } from 'services/account'
 import { trackSegmentEvent } from 'services/tracking/segment'
+import { isFreePlan } from 'shared/utils/billing'
 
 function RequestButton({ owner, provider }) {
   const { data: accountDetails } = useAccountDetails({
@@ -12,13 +13,19 @@ function RequestButton({ owner, provider }) {
     },
   })
 
-  return accountDetails?.plan?.value === 'users-free' ? (
+  return isFreePlan(accountDetails?.plan?.value) ? (
     <div className="mr-5">
       <Button
         to={{ pageName: 'demo' }}
         variant="secondary"
         data-testid="request-demo"
-        onClick={() => trackSegmentEvent('click', 'request demo', 'header cta')}
+        onClick={() =>
+          trackSegmentEvent({
+            event: 'clicked button',
+            label: 'request demo',
+            category: 'header cta',
+          })
+        }
       >
         Request demo
       </Button>

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
-import CommitsTable from '.'
+import CommitsTable from './CommitsTable'
 
 jest.mock('services/commits/hooks')
 

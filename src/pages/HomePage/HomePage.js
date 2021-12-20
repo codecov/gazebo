@@ -7,6 +7,7 @@ import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
 import Tabs from './Tabs'
+import { ActiveContext } from 'shared/context'
 
 function HomePage({ active = false }) {
   const { push } = useHistory()
@@ -29,7 +30,9 @@ function HomePage({ active = false }) {
       <Header />
       <div>
         <Tabs currentUsername={currentUser.user.username} />
-        <ListRepo active={active} canRefetch />
+        <ActiveContext.Provider value={active}>
+          <ListRepo canRefetch />
+        </ActiveContext.Provider>
       </div>
     </div>
   )

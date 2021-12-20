@@ -1,7 +1,6 @@
 import Progress from 'ui/Progress'
 import A from 'ui/A'
-import PropTypes from 'prop-types'
-import { CommitRequestType } from '../../types'
+import { commitRequestType } from 'shared/propTypes'
 
 const Coverage = ({ commit }) => {
   return (
@@ -25,7 +24,7 @@ const Coverage = ({ commit }) => {
 }
 
 Coverage.propTypes = {
-  commit: PropTypes.shape(CommitRequestType),
+  commit: commitRequestType,
 }
 
 export default Coverage

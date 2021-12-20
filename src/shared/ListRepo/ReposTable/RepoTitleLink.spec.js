@@ -3,8 +3,6 @@ import RepoTitleLink from './RepoTitleLink'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 describe('RepoTitleLink', () => {
-  let props
-
   const repo = {
     name: 'repo1',
     author: {
@@ -13,12 +11,7 @@ describe('RepoTitleLink', () => {
     private: true,
   }
 
-  function setup(over = {}) {
-    props = {
-      showRepoOwner: true,
-      repo,
-      ...over,
-    }
+  function setup(props) {
     render(
       <MemoryRouter initialEntries={['/gh']}>
         <Route path="/:provider">
@@ -35,6 +28,9 @@ describe('RepoTitleLink', () => {
           ...repo,
           private: true,
         },
+        showRepoOwner: false,
+        active: false,
+        newRepoSetupLink: false,
       })
     })
 
@@ -54,6 +50,9 @@ describe('RepoTitleLink', () => {
           ...repo,
           private: false,
         },
+        showRepoOwner: false,
+        active: false,
+        newRepoSetupLink: false,
       })
     })
 
@@ -69,7 +68,10 @@ describe('RepoTitleLink', () => {
   describe('when showRepoOwner is true', () => {
     beforeEach(() => {
       setup({
+        repo,
         showRepoOwner: true,
+        active: false,
+        newRepoSetupLink: false,
       })
     })
 
@@ -81,7 +83,10 @@ describe('RepoTitleLink', () => {
   describe('when showRepoOwner is false', () => {
     beforeEach(() => {
       setup({
+        repo,
         showRepoOwner: false,
+        active: false,
+        newRepoSetupLink: false,
       })
     })
 
