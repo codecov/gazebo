@@ -3,18 +3,30 @@ import userEvent from '@testing-library/user-event'
 
 import UserOnboardingModal from './UserOnboardingModal'
 import { useOnboardUser } from 'services/user'
+import { useOnboardingTracking } from './useOnboardingTracking'
 
 jest.mock('services/user')
+jest.mock('./useOnboardingTracking.js')
 
 describe('UserOnboardingModal', () => {
   const defaultCurrentUser = {
     email: 'user@gmail.com',
   }
   let mutate
+  let completedUserOnboarding = jest.fn()
 
   function setup(currentUser = defaultCurrentUser) {
     mutate = jest.fn()
-    useOnboardUser.mockReturnValue({ isLoading: false, mutate })
+    useOnboardingTracking.mockReturnValue({
+      startedOnboarding: jest.fn(),
+      completedOnboarding: completedUserOnboarding,
+      secondPage: jest.fn(),
+    })
+    useOnboardUser.mockReturnValue({
+      isLoading: false,
+      mutate,
+      onSuccess: jest.fn(),
+    })
     render(<UserOnboardingModal currentUser={currentUser} />)
   }
 
@@ -136,6 +148,19 @@ describe('UserOnboardingModal', () => {
           otherGoal: '',
         })
       })
+
+      describe('when mutation is successful', () => {
+        beforeEach(() => {
+          return act(() => {
+            useOnboardUser.mock.calls[0][0].onSuccess()
+            return Promise.resolve()
+          })
+        })
+
+        it('calls completedUserOnboarding', () => {
+          expect(completedUserOnboarding).toHaveBeenCalled()
+        })
+      })
     })
   })
 
@@ -216,6 +241,28 @@ describe('UserOnboardingModal', () => {
             name: /work email/i,
           }),
           'blablabla'
+        )
+        screen
+          .getByRole('button', {
+            name: /submit/i,
+          })
+          .click()
+        // make sure the form updates properly
+        return act(() => Promise.resolve())
+      })
+
+      it('puts an error message', () => {
+        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
+      })
+    })
+
+    describe('when users submit an invalid email', () => {
+      beforeEach(() => {
+        userEvent.type(
+          screen.getByRole('textbox', {
+            name: /work email/i,
+          }),
+          'abc@ama-trade.de'
         )
         screen
           .getByRole('button', {
