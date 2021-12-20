@@ -14,45 +14,50 @@ export const segmentUser = {
 }
 
 function identifyUser(user) {
-  return window?.analytics?.identify(user.ownerid, {
-    userId: user.ownerid,
-    traits: {
+  return window?.analytics?.identify(
+    user.ownerid,
+    {
       ...user,
     },
-    integrations: {
-      Salesforce: true,
-      Marketo: false,
-    },
-    context: {
-      externalIds: [
-        {
-          id: user.service_id,
-          type: user.service + '_id',
-          collections: 'users',
-          encoding: 'none',
-        },
-      ],
-    },
-  })
+    {
+      integrations: {
+        Salesforce: true,
+        Marketo: false,
+      },
+      context: {
+        externalIds: [
+          {
+            id: user.service_id,
+            type: user.service + '_id',
+            collections: 'users',
+            encoding: 'none',
+          },
+        ],
+      },
+    }
+  )
 }
 
 function identifyFromAnalytics(id, type) {
-  return window?.analytics?.identify({
-    integrations: {
-      Salesforce: false,
-      Marketo: false,
-    },
-    context: {
-      externalIds: [
-        {
-          id,
-          type,
-          collection: 'users',
-          encoding: 'none',
-        },
-      ],
-    },
-  })
+  return window?.analytics?.identify(
+    {},
+    {
+      integrations: {
+        Salesforce: false,
+        Marketo: false,
+      },
+      context: {
+        externalIds: [
+          {
+            id,
+            type,
+            collection: 'users',
+            encoding: 'none',
+          },
+        ],
+      },
+    }
+  )
 }
 
 export function identifySegmentUser(user) {
@@ -98,8 +103,6 @@ export function pageSegmentEvent({ event, path, url }) {
 
 export function identifySegmentEvent({ id, data }) {
   return window?.analytics?.identify(id, {
-    traits: {
-      ...data,
-    },
+    ...data,
   })
 }
