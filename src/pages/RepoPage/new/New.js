@@ -1,3 +1,4 @@
+import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
 import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
@@ -74,29 +75,18 @@ function New({ data }) {
 
       <p className="border-b border-ds-gray-tertiary pb-8 text-base">
         Codecov requires an upload in your test suite to get started. Using the{' '}
-        <a
-          data-testid="upload-docs-link"
-          rel="noreferrer"
-          target="_blank"
-          href="https://docs.codecov.com/docs/codecov-uploader"
-          className="text-ds-blue"
-        >
+        <A to={{ pageName: 'uploader' }} target="_blank">
           Codecov Uploader
-        </a>
+        </A>
         <span className="inline-block text-gray-500">
           <Icon name="external-link" size="sm" />
         </span>{' '}
         and the repository upload token, upload your coverage reports to
         Codecov. See our{' '}
-        <a
-          data-testid="quickStart-link"
-          rel="noreferrer"
-          target="_blank"
-          href="https://docs.codecov.io/"
-          className="text-ds-blue"
-        >
-          quick start guide
-        </a>
+        <A to={{ pageName: 'docs' }} target="_blank">
+          {' '}
+          quick start guide{' '}
+        </A>
         <span className="inline-block text-gray-500">
           <Icon name="external-link" size="sm" />
         </span>{' '}
@@ -118,15 +108,9 @@ function New({ data }) {
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
           Download the{' '}
-          <a
-            data-testid="upload-docs-link"
-            rel="noreferrer"
-            target="_blank"
-            href="https://docs.codecov.com/docs/codecov-uploader"
-            className="text-ds-blue"
-          >
-            uploader
-          </a>
+          <A to={{ pageName: 'uploader' }} target="_blank">
+            uploader{' '}
+          </A>
           <span className="inline-block text-gray-500">
             <Icon name="external-link" size="sm" />
           </span>{' '}
@@ -138,15 +122,9 @@ function New({ data }) {
 
         <p className="text-base">
           It is highly recommended to{' '}
-          <a
-            data-testid="integrityCheck-link"
-            rel="noreferrer"
-            target="_blank"
-            href="https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader"
-            className="text-ds-blue"
-          >
+          <A to={{ pageName: 'integrityCheck' }} target="_blank">
             integrity check the uploader
-          </a>
+          </A>
           <span className="inline-block text-gray-500">
             <Icon name="external-link" size="sm" />
           </span>
