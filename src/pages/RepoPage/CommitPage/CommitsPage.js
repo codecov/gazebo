@@ -6,12 +6,12 @@ import { useState } from 'react'
 
 function CommitsPage() {
   const { provider, owner, repo } = useParams()
-  const [isCommitHidden, setIsCommitHidden] = useState(false)
+  const [hideFailedCI, setHideFailedCI] = useState(false)
   const { data: commits } = useCommits({
     provider,
     owner,
     repo,
-    filter: isCommitHidden,
+    hideFailedCI,
   })
 
   return (
@@ -20,10 +20,8 @@ function CommitsPage() {
         <Checkbox
           label="Hide commits with failed CI (3)"
           name="filter commits"
-          onChange={function noRefCheck(e) {
-            setIsCommitHidden(e.target.checked)
-          }}
-          value={isCommitHidden}
+          onChange={(e) => setHideFailedCI(e.target.checked)}
+          value={hideFailedCI}
         />
       </div>
       <CommitsTable commits={commits} />
