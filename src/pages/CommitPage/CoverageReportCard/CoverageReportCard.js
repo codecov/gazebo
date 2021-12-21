@@ -2,8 +2,8 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { isNumber } from 'lodash'
 
-import A from 'ui/A'
 import { getProviderPullURL } from 'shared/utils/provider'
+import A from 'ui/A'
 
 import CIStatusLabel from './CIStatusLabel'
 import Header from './Header'

@@ -8,11 +8,12 @@ import A from 'ui/A'
 export default function PullLabel({ pullId, provider, providerPullUrl }) {
   if (pullId) {
     return (
-      <div className="flex items-center">
+      <div className="flex items-center gap-1">
         <span className="text-ds-gray-senary">
           <Icon size="sm" variant="developer" name="pull-request-open" />
         </span>
-        <A to={{ pageName: 'pull', options: { pullid: pullId } }}>#{pullId}</A>(
+        <A to={{ pageName: 'pull', options: { pullid: pullId } }}>#{pullId}</A>{' '}
+        (
         <A href={providerPullUrl} hook="provider url" isExternal={true}>
           {providerToName(provider)}
         </A>
