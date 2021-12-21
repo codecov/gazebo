@@ -287,105 +287,137 @@ function useStaticNavLinks() {
       text: 'Demo',
       path: () => `${config.MARKETING_BASE_URL}/demo`,
       isExternalLink: true,
+      openNewTab: true,
     },
     freeTrial: {
       text: 'Trial',
       path: () => `${config.MARKETING_BASE_URL}/trial`,
       isExternalLink: true,
+      openNewTab: true,
     },
     terms: {
       text: 'Terms',
       path: () => `${config.MARKETING_BASE_URL}/terms`,
       isExternalLink: true,
+      openNewTab: true,
     },
     privacy: {
       text: 'Privacy',
       path: () => `${config.MARKETING_BASE_URL}/privacy`,
       isExternalLink: true,
+      openNewTab: true,
     },
     security: {
       text: 'Security',
       path: () => `${config.MARKETING_BASE_URL}/security`,
       isExternalLink: true,
+      openNewTab: true,
     },
     gdpr: {
       text: 'GDPR',
       path: () => `${config.MARKETING_BASE_URL}/gdpr`,
       isExternalLink: true,
+      openNewTab: true,
     },
     pricing: {
       text: 'Pricing',
       path: () => `${config.MARKETING_BASE_URL}/pricing`,
       isExternalLink: true,
+      openNewTab: true,
     },
     support: {
       text: 'Support',
       path: () => `https://codecov.freshdesk.com/support/home`,
       isExternalLink: true,
+      openNewTab: true,
     },
     docs: {
       text: 'Docs',
       path: () => 'https://docs.codecov.io/',
       isExternalLink: true,
+      openNewTab: true,
     },
     oauthTroubleshoot: {
       text: 'OAuth Troubleshoot',
       path: () =>
         'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting',
       isExternalLink: true,
+      openNewTab: true,
     },
     userAppManagePage: {
       text: 'User App Manage/Access Page',
       path: () =>
         'https://github.com/settings/connections/applications/c68c81cbfd179a50784a',
       isExternalLink: true,
+      openNewTab: true,
     },
     enterprise: {
       text: 'Self Hosted',
       path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
       isExternalLink: true,
+      openNewTab: true,
     },
     github: {
       path: () => 'https://github.com/marketplace/codecov',
       isExternalLink: true,
+      openNewTab: true,
       text: 'Continue to GitHub to manage repository integration',
     },
     githubMarketplace: {
       path: () => 'https://github.com/marketplace/codecov',
       isExternalLink: true,
       text: 'View in GitHub Marketplace',
+      openNewTab: true,
     },
     freshdesk: {
       path: () => 'https://codecov.freshdesk.com/support/home',
       isExternalLink: true,
       text: 'Contact Support',
+      openNewTab: true,
     },
     blog: {
       // TODO add blog to footer
       path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
       text: 'Blog',
+      openNewTab: true,
     },
     legacyUI: {
       path: ({ pathname }) => config.BASE_URL + pathname,
       isExternalLink: true,
       text: 'Legacy User Interface',
+      openNewTab: true,
     },
     sales: {
       path: () => `${config.MARKETING_BASE_URL}/sales`,
       isExternalLink: true,
       text: 'Sales Contact',
+      openNewTab: true,
     },
     uploader: {
       path: () => 'https://docs.codecov.com/docs/codecov-uploader',
       isExternalLink: true,
       text: 'Codecov Uploader',
+      openNewTab: true,
     },
     integrityCheck: {
       path: () =>
         'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader',
       isExternalLink: true,
       text: 'Uploader Integrity Check',
+      openNewTab: true,
+    },
+    codecovGithuhApp: {
+      path: () => 'https://github.com/apps/codecov',
+      isExternalLink: true,
+      text: 'Codecov Github App',
+      openNewTab: true,
+    },
+    teamBot: {
+      path: () => 'https://docs.codecov.com/docs/team-bot',
+      isExternalLink: true,
+      text: 'Team Bot',
+      openNewTab: true,
     },
   }
 }

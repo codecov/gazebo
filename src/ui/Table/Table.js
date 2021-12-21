@@ -14,13 +14,8 @@ const TableClasses = {
 function Table({ data = [], columns = [] }) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])
-  const tableInstance = useTable(
-    { columns: _columns, data: _data },
-    useFlexLayout
-  )
-
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance
+    useTable({ columns: _columns, data: _data }, useFlexLayout)
 
   const columnsWidth = columns.reduce(
     (acc, current) => ({ ...acc, [current.accessor]: current.width }),
@@ -29,7 +24,7 @@ function Table({ data = [], columns = [] }) {
 
   return (
     <div className="text-ds-gray-quaternary overflow-x-auto">
-      <table className={'w-full'} {...getTableProps()}>
+      <table className="w-full" {...getTableProps()}>
         <thead data-testid="header-row">
           {
             // Loop over the header rows
