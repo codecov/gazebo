@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-export const CommitRequestType = {
+export const commitRequestType = PropTypes.shape({
   author: PropTypes.shape({
     username: PropTypes.string,
   }),
@@ -20,4 +20,4 @@ export const CommitRequestType = {
   commitid: PropTypes.string,
   message: PropTypes.string,
   createdAt: PropTypes.string,
-}
+})

@@ -3,7 +3,7 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 
 import { useContext } from 'react'
-import { ActiveContext } from 'shared/Contexts'
+import { ActiveContext } from 'shared/context'
 
 const NoReposBlock = ({ owner }) => {
   const active = useContext(ActiveContext)

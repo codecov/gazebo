@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useFileWithMainCoverage } from 'services/file/hooks'
-import Breadcrumb from 'ui/Breadcrumb'
 
 import FileViewer from 'shared/FileViewer'
+import Breadcrumb from 'ui/Breadcrumb'
 
 function CommitFileView({ diff }) {
   const { owner, repo, provider, commit, path } = useParams()

@@ -3,7 +3,7 @@ version: 2.1 # using 2.1 provides access to orbs and other features
 jobs:
   install:
     docker:
-      - image: circleci/node:14.5.0
+      - image: circleci/node:14.13.1
     steps:
       - checkout
       - run:
@@ -15,7 +15,7 @@ jobs:
             - node_modules
   eslint:
     docker:
-      - image: circleci/node:14.5.0
+      - image: circleci/node:14.13.1
     steps:
       - checkout
       - restore_cache:
@@ -26,7 +26,7 @@ jobs:
           command: npm run lint
   test:
     docker:
-      - image: circleci/node:14.5.0
+      - image: circleci/node:14.13.1
     parallelism: 3
     steps:
       - checkout
@@ -58,7 +58,7 @@ jobs:
 
   sentry:
     docker:
-      - image: circleci/node:14.5.0
+      - image: circleci/node:14.13.1
     steps:
       - checkout
       - restore_cache:
@@ -70,7 +70,7 @@ jobs:
 
   build:
     docker:
-      - image: circleci/node:14.5.0
+      - image: circleci/node:14.13.1
     steps:
       - checkout
       - restore_cache:
@@ -82,7 +82,7 @@ jobs:
 
   storybook:
     docker:
-      - image: circleci/node:14.5.0
+      - image: circleci/node:14.13.1
     steps:
       - checkout
       - restore_cache:

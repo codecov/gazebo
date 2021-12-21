@@ -6,6 +6,8 @@ import {
   useSegmentPage,
   identifySegmentUser,
   trackSegmentEvent,
+  pageSegmentEvent,
+  identifySegmentEvent,
 } from './segment'
 
 window.analytics = {
@@ -46,22 +48,9 @@ describe('identifySegmentUser', () => {
       expect(
         window.analytics.identify.mock.instances[0].identify
       ).toHaveBeenCalled()
-      expect(window.analytics.identify).toBeCalledWith(1, {
-        context: {
-          externalIds: [
-            {
-              collections: 'users',
-              encoding: 'none',
-              id: '123',
-              type: 'github_id',
-            },
-          ],
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: true,
-        },
-        traits: {
+      expect(window.analytics.identify).toBeCalledWith(
+        1,
+        {
           email: 'tedlasso@test.com',
           guest: false,
           name: 'Test User',
@@ -72,8 +61,23 @@ describe('identifySegmentUser', () => {
           staff: true,
           username: 'test_user',
         },
-        userId: 1,
-      })
+        {
+          context: {
+            externalIds: [
+              {
+                collections: 'users',
+                encoding: 'none',
+                id: '123',
+                type: 'github_id',
+              },
+            ],
+          },
+          integrations: {
+            Marketo: false,
+            Salesforce: true,
+          },
+        }
+      )
     })
   })
 
@@ -103,24 +107,12 @@ describe('identifySegmentUser', () => {
 
     it('hook should make 3 different identify calls', () => {
       expect(window.analytics.identify.mock.instances).toHaveLength(3)
+      // console.log(expect(window.analytics.identify.mock.instances[2].identify).toBeCalledWith(1))
       expect(
         window.analytics.identify.mock.instances[0].identify
-      ).toBeCalledWith(1, {
-        context: {
-          externalIds: [
-            {
-              collections: 'users',
-              encoding: 'none',
-              id: '123',
-              type: 'github_id',
-            },
-          ],
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: true,
-        },
-        traits: {
+      ).toBeCalledWith(
+        1,
+        {
           email: 'tedlasso@test.com',
           guest: false,
           name: 'Test User',
@@ -131,44 +123,65 @@ describe('identifySegmentUser', () => {
           staff: true,
           username: 'test_user',
         },
-        userId: 1,
-      })
+        {
+          context: {
+            externalIds: [
+              {
+                collections: 'users',
+                encoding: 'none',
+                id: '123',
+                type: 'github_id',
+              },
+            ],
+          },
+          integrations: {
+            Marketo: false,
+            Salesforce: true,
+          },
+        }
+      )
       expect(
         window.analytics.identify.mock.instances[1].identify
-      ).toBeCalledWith({
-        context: {
-          externalIds: [
-            {
-              collection: 'users',
-              encoding: 'none',
-              id: '123',
-              type: 'ga_client_id',
-            },
-          ],
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: false,
-        },
-      })
+      ).toBeCalledWith(
+        {},
+        {
+          context: {
+            externalIds: [
+              {
+                collection: 'users',
+                encoding: 'none',
+                id: '123',
+                type: 'ga_client_id',
+              },
+            ],
+          },
+          integrations: {
+            Marketo: false,
+            Salesforce: false,
+          },
+        }
+      )
       expect(
         window.analytics.identify.mock.instances[2].identify
-      ).toBeCalledWith({
-        context: {
-          externalIds: [
-            {
-              collection: 'users',
-              encoding: 'none',
-              id: '456',
-              type: 'marketo_cookie',
-            },
-          ],
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: false,
-        },
-      })
+      ).toBeCalledWith(
+        {},
+        {
+          context: {
+            externalIds: [
+              {
+                collection: 'users',
+                encoding: 'none',
+                id: '456',
+                type: 'marketo_cookie',
+              },
+            ],
+          },
+          integrations: {
+            Marketo: false,
+            Salesforce: false,
+          },
+        }
+      )
     })
   })
 
@@ -212,34 +225,25 @@ describe('useSegmentPage', () => {
 })
 
 describe('trackSegmentEvent', () => {
-  function setup(action, label, category) {
-    trackSegmentEvent(action, label, category)
+  function setup(event, label, category) {
+    trackSegmentEvent({ event, label, category })
   }
 
   describe('when event is defined', () => {
     it('returns an track event if part of event enums', () => {
       const label = 'request demo'
-      const action = 'click'
+      const event = 'click'
       const category = 'category A'
-      setup(action, label, category)
+      setup(event, label, category)
 
       expect(window.analytics.track.mock.instances[0].track).toHaveBeenCalled()
       expect(
         window.analytics.track.mock.instances[0].track
-      ).toHaveBeenCalledWith('clicked button', {
+      ).toHaveBeenCalledWith('click', {
         category,
         label,
         value: 1,
       })
-    })
-
-    it('returns an undefined track event', () => {
-      const label = 'any label'
-      const action = 'random action'
-      const category = 'random category'
-      setup(action, label, category)
-
-      expect(window.analytics.track.mock.instances[0]).toBeUndefined()
     })
   })
 
@@ -254,6 +258,52 @@ describe('trackSegmentEvent', () => {
 
     it('returns an undefined track event', () => {
       expect(window.analytics.track.mock.instances[0]).toBeUndefined()
+    })
+  })
+})
+
+describe('pageSegmentEvent', () => {
+  function setup({ event, path, url }) {
+    pageSegmentEvent({ event, path, url })
+  }
+
+  describe('when hook is called', () => {
+    it('returns a page segment event with a specified path and url', () => {
+      const event = 'random event'
+      const path = '/random/path'
+      const url = 'http://www.aRandomPage.com/random/path'
+      setup({ event, path, url })
+
+      expect(window.analytics.page).toHaveBeenCalled()
+      expect(window.analytics.page).toHaveBeenCalledWith('random event', {
+        path: '/random/path',
+        url: 'http://www.aRandomPage.com/random/path',
+      })
+    })
+  })
+})
+
+describe('identifySegmentEvent', () => {
+  function setup({ id, data }) {
+    identifySegmentEvent({ id, data })
+  }
+
+  describe('when the hook is called', () => {
+    it('returns an identify segment event with an id and custom data', () => {
+      const id = 1
+      const data = {
+        name: 'Zagreus',
+        numberOfEscapes: '99',
+        parent: 'Hades',
+        mother: 'Persephone',
+        bestFriend: 'Cerberus',
+      }
+      setup({ id, data })
+
+      expect(window.analytics.identify).toHaveBeenCalled()
+      expect(window.analytics.identify).toHaveBeenCalledWith(id, {
+        ...data,
+      })
     })
   })
 })

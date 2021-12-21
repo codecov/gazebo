@@ -11,7 +11,7 @@ import invoiceImg from './invoice.svg'
 
 function LatestInvoiceCard({ invoice }) {
   const { invoiceDetail, invoiceTab } = useNavLinks()
-  if (!invoice) return null
+  if (!invoice || !invoice.dueDate || !invoice.created) return null
   return (
     <Card className="p-6 mb-4">
       <h2 className="text-lg mb-4">Invoices</h2>
@@ -19,7 +19,7 @@ function LatestInvoiceCard({ invoice }) {
         <img src={invoiceImg} alt="invoice icon" />
         <div className="ml-4">
           <div className="text-gray-500 mr-1">
-            {format(fromUnixTime(invoice.created), 'MMMM yyyy')}
+            {format(fromUnixTime(invoice?.created), 'MMMM yyyy')}
           </div>
           <div className="italic text-gray-400">
             Due date {format(fromUnixTime(invoice.dueDate), 'do MMM')} - $

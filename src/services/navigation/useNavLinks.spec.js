@@ -140,15 +140,15 @@ describe('useNavLinks', () => {
 
     it('Returns the correct link with nothing passed', () => {
       expect(hookData.result.current.analytics.path()).toBe(
-        `${config.BASE_URL}/analytics/gl/doggo`
+        `/analytics/gl/doggo`
       )
     })
     it('can override the params', () => {
       expect(hookData.result.current.analytics.path({ provider: 'bb' })).toBe(
-        `${config.BASE_URL}/analytics/bb/doggo`
+        `/analytics/bb/doggo`
       )
       expect(hookData.result.current.analytics.path({ owner: 'cat' })).toBe(
-        `${config.BASE_URL}/analytics/gl/cat`
+        `/analytics/gl/cat`
       )
     })
   })
@@ -624,6 +624,8 @@ describe('useStaticNavLinks', () => {
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}
     ${links.uploader}          | ${'https://docs.codecov.com/docs/codecov-uploader'}
     ${links.integrityCheck}    | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
+    ${links.codecovGithuhApp}  | ${'https://github.com/apps/codecov'}
+    ${links.teamBot}           | ${'https://docs.codecov.com/docs/team-bot'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)
