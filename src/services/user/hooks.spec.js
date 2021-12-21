@@ -138,7 +138,7 @@ describe('useUpdateProfile', () => {
 describe('useOnboardUser', () => {
   let hookData
 
-  function setup() {
+  function setup(opts = null) {
     server.use(
       graphql.mutation('OnboardUser', (req, res, ctx) => {
         const newUser = {
@@ -155,7 +155,7 @@ describe('useOnboardUser', () => {
         )
       })
     )
-    hookData = renderHook(() => useOnboardUser(), {
+    hookData = renderHook(() => useOnboardUser(opts), {
       wrapper,
     })
   }
@@ -188,6 +188,26 @@ describe('useOnboardUser', () => {
           onboardingCompleted: true,
         })
       })
+    })
+  })
+
+  describe('when called with opts', () => {
+    const onSuccessFn = jest.fn()
+    beforeEach(() => {
+      const opts = {
+        onSuccess: onSuccessFn,
+      }
+      setup(opts)
+      return act(async () => {
+        hookData.result.current.mutate({})
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
+      })
+    })
+
+    it('returns onSuccess from opts', () => {
+      expect(hookData.result.current.isSuccess).toBeTruthy()
+      expect(onSuccessFn).toHaveBeenCalled()
     })
   })
 })

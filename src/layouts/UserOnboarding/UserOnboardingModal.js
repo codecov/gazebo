@@ -12,6 +12,7 @@ import { useOnboardUser } from 'services/user'
 import FormInformation from './FormInformation'
 import FormEmails from './FormEmails'
 import { getInitialDataForm, shouldGoToEmailStep, getSchema } from './config'
+import { useOnboardingTracking } from './useOnboardingTracking'
 
 function usePerStepProp({ currentUser }) {
   const form = useForm({
@@ -21,10 +22,15 @@ function usePerStepProp({ currentUser }) {
   })
   const [step, setStep] = useState(0)
   const formData = form.watch()
-  const { mutate, isLoading } = useOnboardUser()
+  const { secondPage, completedOnboarding } = useOnboardingTracking()
+  const { mutate, isLoading } = useOnboardUser({
+    onSuccess: (user, data) => completedOnboarding(user, data),
+    data: formData,
+  })
 
   const onSubmit = form.handleSubmit(() => {
     if (step === 0 && shouldGoToEmailStep(formData)) {
+      secondPage()
       setStep(1)
       return
     }
@@ -74,11 +80,13 @@ function usePerStepProp({ currentUser }) {
 
 function UserOnboardingModal({ currentUser }) {
   const { onSubmit, ...stepProps } = usePerStepProp({ currentUser })
+  const { startOnboarding } = useOnboardingTracking()
 
   return (
     <ReactModal
       isOpen
       onRequestClose={noop}
+      onAfterOpen={startOnboarding}
       className="h-screen w-screen flex items-center justify-center"
       overlayClassName="fixed top-0 bottom-0 left-0 right-0 bg-ds-gray-octonary z-10"
     >

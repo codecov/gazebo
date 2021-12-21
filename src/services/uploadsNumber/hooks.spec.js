@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { useUploadsNumber } from './hooks'
 import { graphql } from 'msw'
+import { useIsUploadsNumberExceeded } from './hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +25,7 @@ afterAll(() => server.close())
 
 const dataReturned = {
   owner: {
-    numberOfUploads: 90,
+    numberOfUploads: 252,
   },
 }
 
@@ -47,7 +48,7 @@ describe('GetUploadsNumber', () => {
   }
 
   describe('when called', () => {
-    const expectedResponse = 90
+    const expectedResponse = 252
 
     beforeEach(() => {
       setup()
@@ -64,6 +65,28 @@ describe('GetUploadsNumber', () => {
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual(expectedResponse)
+      })
+    })
+  })
+
+  describe('when calling useIsUploadsNumberExceeded', () => {
+    beforeEach(() => {
+      setup()
+      hookData = renderHook(
+        () => useIsUploadsNumberExceeded({ provider, owner }),
+        {
+          wrapper,
+        }
+      )
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns true value', () => {
+        expect(hookData.result.current.data).toEqual(true)
       })
     })
   })

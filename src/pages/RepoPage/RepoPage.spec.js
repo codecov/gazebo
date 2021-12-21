@@ -3,12 +3,15 @@ import { Route, MemoryRouter } from 'react-router-dom'
 import RepoPage from '.'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { useRepo } from 'services/repo/hooks'
+import { useCommits } from 'services/commits'
 
 jest.mock('services/repo/hooks')
+jest.mock('services/commits')
 
 describe('RepoPage', () => {
-  function setup(repo) {
-    useRepo.mockReturnValue({ data: repo })
+  function setup({ repo, commits = [] }) {
+    useRepo.mockReturnValue({ data: { repo } })
+    useCommits.mockReturnValue({ data: commits })
     const queryClient = new QueryClient()
     render(
       <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
@@ -64,6 +67,67 @@ describe('RepoPage', () => {
     it('renders the block private', () => {
       const privateSpan = screen.getByText(/Private/)
       expect(privateSpan).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with a repo that has commits', () => {
+    beforeEach(() => {
+      setup({
+        repo: {
+          private: true,
+        },
+        commits: [
+          {
+            message: 'test',
+            commitid: '1',
+            createdAt: '2020',
+            author: {
+              username: 'rula',
+            },
+            totals: {
+              coverage: 22,
+            },
+            parent: {
+              totals: {
+                coverage: 22,
+              },
+            },
+            compareWithParent: {
+              patchTotals: {
+                coverage: 33,
+              },
+            },
+          },
+        ],
+      })
+    })
+
+    it('renders the covergae tab', () => {
+      const tab = screen.getByText(/Coverage/)
+      expect(tab).toBeInTheDocument()
+    })
+    it('renders the commits tab', () => {
+      const tab = screen.getByText(/Commits/)
+      expect(tab).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with a repo that has no commits', () => {
+    beforeEach(() => {
+      setup({
+        repo: {
+          private: true,
+        },
+      })
+    })
+
+    it('renders the covergae tab', () => {
+      const tab = screen.queryByText(/Coverage/)
+      expect(tab).not.toBeInTheDocument()
+    })
+    it('renders the commits tab', () => {
+      const tab = screen.queryByText(/Commits/)
+      expect(tab).not.toBeInTheDocument()
     })
   })
 })

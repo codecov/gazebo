@@ -7,9 +7,15 @@ import TabNavigation from 'ui/TabNavigation'
 
 import New from './new'
 import CommitsPage from './CommitPage'
+import { useCommits } from 'services/commits'
+import cs from 'classnames'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
+
+  const { data: commits } = useCommits({ provider, owner, repo })
+  const repoHasCommits = commits?.length > 0
+
   const path = '/:provider/:owner/:repo'
   const { data } = useRepo({
     provider,
@@ -21,7 +27,12 @@ function RepoPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-xl ml-6 md:ml-0 font-semibold flex flex-row">
+      <div
+        className={cs('text-xl ml-6 md:ml-0 font-semibold flex flex-row my-4', {
+          'border-b pb-8': !repoHasCommits,
+          'border-none': repoHasCommits,
+        })}
+      >
         <Breadcrumb
           paths={[
             { pageName: 'owner', text: owner },
@@ -34,27 +45,29 @@ function RepoPage() {
           </span>
         )}
       </div>
-      <TabNavigation
-        tabs={[
-          {
-            pageName: 'overview',
-            children: 'Coverage',
-            exact: true,
-          },
-          {
-            pageName: 'commits',
-          },
-          {
-            pageName: 'pulls',
-          },
-          {
-            pageName: 'compare',
-          },
-          {
-            pageName: 'settings',
-          },
-        ]}
-      />
+      {repoHasCommits && (
+        <TabNavigation
+          tabs={[
+            {
+              pageName: 'overview',
+              children: 'Coverage',
+              exact: true,
+            },
+            {
+              pageName: 'commits',
+            },
+            {
+              pageName: 'pulls',
+            },
+            {
+              pageName: 'compare',
+            },
+            {
+              pageName: 'settings',
+            },
+          ]}
+        />
+      )}
       <div className="flex justify-center">
         <Switch>
           <Route path={path} exact>
