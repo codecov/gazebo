@@ -8,13 +8,9 @@ import Spinner from 'ui/Spinner'
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
 function YamlModal({ showYAMLModal, setShowYAMLModal }) {
-  if (!showYAMLModal) {
-    return null
-  }
-
   return (
     <Modal
-      isOpen={true}
+      isOpen={showYAMLModal}
       onClose={() => setShowYAMLModal(false)}
       title="Yaml"
       body={
