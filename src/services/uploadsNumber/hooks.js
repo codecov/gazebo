@@ -22,8 +22,22 @@ function fetchOwnerUploadsNumber({ provider, owner }) {
   })
 }
 
+function fetchIsUploadsNumberExceeded({ numberOfUploads = 0 }) {
+  const maxUploadsNumber = 250
+  const isUploadsNumberExceeded = numberOfUploads >= maxUploadsNumber
+  return isUploadsNumberExceeded
+}
+
 export function useUploadsNumber({ provider, owner }) {
   return useQuery([provider, owner, 'ownerUploads'], () => {
     return fetchOwnerUploadsNumber({ provider, owner })
+  })
+}
+
+export function useIsUploadsNumberExceeded({ provider, owner }) {
+  const { data: numberOfUploads } = useUploadsNumber({ provider, owner })
+
+  return useQuery([provider, owner, 'uploadsExceeded'], () => {
+    return fetchIsUploadsNumberExceeded({ numberOfUploads })
   })
 }

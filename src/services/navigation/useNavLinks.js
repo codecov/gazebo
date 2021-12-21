@@ -2,6 +2,7 @@ import pick from 'lodash/pick'
 import qs from 'qs'
 import { useParams, useLocation } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
 import config from 'config'
 
 function forwardMarketingTag(search) {
@@ -21,6 +22,9 @@ function forwardMarketingTag(search) {
 function useNavLinks() {
   const { search } = useLocation()
   const { provider: p, owner: o, repo: r, id: i } = useParams()
+  const { gazeboRepoTabs } = useFlags({
+    gazeboRepoTabs: false,
+  })
 
   return {
     signOut: {
@@ -85,7 +89,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
     },
     account: {
       text: 'Personal Settings',
@@ -153,7 +157,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commits`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Commits',
     },
     commit: {
@@ -214,7 +218,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/new`,
-      isExternalLink: false,
+      isExternalLink: gazeboRepoTabs,
       text: 'New',
     },
     overview: {
@@ -225,7 +229,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Overview',
     },
     branches: {
@@ -236,7 +240,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/branches`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Branches',
     },
     pulls: {
@@ -247,7 +251,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/pulls`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Pulls',
     },
     compare: {
@@ -258,7 +262,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/compare`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Compare',
     },
     settings: {
@@ -269,7 +273,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings`,
-      isExternalLink: true,
+      isExternalLink: gazeboRepoTabs,
       text: 'Settings',
     },
   }
@@ -283,105 +287,137 @@ function useStaticNavLinks() {
       text: 'Demo',
       path: () => `${config.MARKETING_BASE_URL}/demo`,
       isExternalLink: true,
+      openNewTab: true,
     },
     freeTrial: {
       text: 'Trial',
       path: () => `${config.MARKETING_BASE_URL}/trial`,
       isExternalLink: true,
+      openNewTab: true,
     },
     terms: {
       text: 'Terms',
       path: () => `${config.MARKETING_BASE_URL}/terms`,
       isExternalLink: true,
+      openNewTab: true,
     },
     privacy: {
       text: 'Privacy',
       path: () => `${config.MARKETING_BASE_URL}/privacy`,
       isExternalLink: true,
+      openNewTab: true,
     },
     security: {
       text: 'Security',
       path: () => `${config.MARKETING_BASE_URL}/security`,
       isExternalLink: true,
+      openNewTab: true,
     },
     gdpr: {
       text: 'GDPR',
       path: () => `${config.MARKETING_BASE_URL}/gdpr`,
       isExternalLink: true,
+      openNewTab: true,
     },
     pricing: {
       text: 'Pricing',
       path: () => `${config.MARKETING_BASE_URL}/pricing`,
       isExternalLink: true,
+      openNewTab: true,
     },
     support: {
       text: 'Support',
       path: () => `https://codecov.freshdesk.com/support/home`,
       isExternalLink: true,
+      openNewTab: true,
     },
     docs: {
       text: 'Docs',
       path: () => 'https://docs.codecov.io/',
       isExternalLink: true,
+      openNewTab: true,
     },
     oauthTroubleshoot: {
       text: 'OAuth Troubleshoot',
       path: () =>
         'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting',
       isExternalLink: true,
+      openNewTab: true,
     },
     userAppManagePage: {
       text: 'User App Manage/Access Page',
       path: () =>
         'https://github.com/settings/connections/applications/c68c81cbfd179a50784a',
       isExternalLink: true,
+      openNewTab: true,
     },
     enterprise: {
       text: 'Self Hosted',
       path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
       isExternalLink: true,
+      openNewTab: true,
     },
     github: {
       path: () => 'https://github.com/marketplace/codecov',
       isExternalLink: true,
+      openNewTab: true,
       text: 'Continue to GitHub to manage repository integration',
     },
     githubMarketplace: {
       path: () => 'https://github.com/marketplace/codecov',
       isExternalLink: true,
       text: 'View in GitHub Marketplace',
+      openNewTab: true,
     },
     freshdesk: {
       path: () => 'https://codecov.freshdesk.com/support/home',
       isExternalLink: true,
       text: 'Contact Support',
+      openNewTab: true,
     },
     blog: {
       // TODO add blog to footer
       path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
       text: 'Blog',
+      openNewTab: true,
     },
     legacyUI: {
       path: ({ pathname }) => config.BASE_URL + pathname,
       isExternalLink: true,
       text: 'Legacy User Interface',
+      openNewTab: true,
     },
     sales: {
       path: () => `${config.MARKETING_BASE_URL}/sales`,
       isExternalLink: true,
       text: 'Sales Contact',
+      openNewTab: true,
     },
     uploader: {
       path: () => 'https://docs.codecov.com/docs/codecov-uploader',
       isExternalLink: true,
       text: 'Codecov Uploader',
+      openNewTab: true,
     },
     integrityCheck: {
       path: () =>
         'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader',
       isExternalLink: true,
       text: 'Uploader Integrity Check',
+      openNewTab: true,
+    },
+    codecovGithuhApp: {
+      path: () => 'https://github.com/apps/codecov',
+      isExternalLink: true,
+      text: 'Codecov Github App',
+      openNewTab: true,
+    },
+    teamBot: {
+      path: () => 'https://docs.codecov.com/docs/team-bot',
+      isExternalLink: true,
+      text: 'Team Bot',
+      openNewTab: true,
     },
   }
 }

@@ -33,6 +33,7 @@ const commitData = {
   author: {
     username: 'febg',
   },
+  state: 'complete',
   uploads: {
     edges: [
       {
@@ -46,6 +47,7 @@ const commitData = {
             '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
           ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
           uploadType: 'uploaded',
+          errors: [],
         },
       },
       {
@@ -59,6 +61,7 @@ const commitData = {
             '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
           ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
           uploadType: 'uploaded',
+          errors: [],
         },
       },
     ],
