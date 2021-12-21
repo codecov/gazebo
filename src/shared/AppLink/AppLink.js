@@ -5,6 +5,12 @@ import { Link, NavLink } from 'react-router-dom'
 
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 
+function getTarget(pageConfig) {
+  const openNewTab = pageConfig?.openNewTab || false
+  const target = openNewTab ? { target: '_blank' } : {}
+  return target
+}
+
 function useLinkConfig(pageName) {
   const navLinks = useNavLinks()
   const staticLinks = useStaticNavLinks()
@@ -27,8 +33,8 @@ const AppLink = forwardRef(
     if (!pageConfig) return null
 
     const path = pageConfig.path(options)
-    const { openNewTab } = pageConfig
-    const target = `${openNewTab && '_blank'}`
+
+    const target = getTarget(pageConfig)
 
     const Component = getComponentToRender(pageConfig, activeClassName)
     const propsLink = pageConfig.isExternalLink ? { href: path } : { to: path }
@@ -40,7 +46,7 @@ const AppLink = forwardRef(
         : {}
 
     const completeProps = {
-      target,
+      ...target,
       ...propsLink,
       ...props,
       ...propsActive,
