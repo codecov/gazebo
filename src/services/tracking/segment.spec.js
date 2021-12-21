@@ -48,22 +48,9 @@ describe('identifySegmentUser', () => {
       expect(
         window.analytics.identify.mock.instances[0].identify
       ).toHaveBeenCalled()
-      expect(window.analytics.identify).toBeCalledWith(1, {
-        context: {
-          externalIds: [
-            {
-              collections: 'users',
-              encoding: 'none',
-              id: '123',
-              type: 'github_id',
-            },
-          ],
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: true,
-        },
-        traits: {
+      expect(window.analytics.identify).toBeCalledWith(
+        1,
+        {
           email: 'tedlasso@test.com',
           guest: false,
           name: 'Test User',
@@ -74,8 +61,23 @@ describe('identifySegmentUser', () => {
           staff: true,
           username: 'test_user',
         },
-        userId: 1,
-      })
+        {
+          context: {
+            externalIds: [
+              {
+                collections: 'users',
+                encoding: 'none',
+                id: '123',
+                type: 'github_id',
+              },
+            ],
+          },
+          integrations: {
+            Marketo: false,
+            Salesforce: true,
+          },
+        }
+      )
     })
   })
 
@@ -105,24 +107,12 @@ describe('identifySegmentUser', () => {
 
     it('hook should make 3 different identify calls', () => {
       expect(window.analytics.identify.mock.instances).toHaveLength(3)
+      // console.log(expect(window.analytics.identify.mock.instances[2].identify).toBeCalledWith(1))
       expect(
         window.analytics.identify.mock.instances[0].identify
-      ).toBeCalledWith(1, {
-        context: {
-          externalIds: [
-            {
-              collections: 'users',
-              encoding: 'none',
-              id: '123',
-              type: 'github_id',
-            },
-          ],
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: true,
-        },
-        traits: {
+      ).toBeCalledWith(
+        1,
+        {
           email: 'tedlasso@test.com',
           guest: false,
           name: 'Test User',
@@ -133,44 +123,65 @@ describe('identifySegmentUser', () => {
           staff: true,
           username: 'test_user',
         },
-        userId: 1,
-      })
+        {
+          context: {
+            externalIds: [
+              {
+                collections: 'users',
+                encoding: 'none',
+                id: '123',
+                type: 'github_id',
+              },
+            ],
+          },
+          integrations: {
+            Marketo: false,
+            Salesforce: true,
+          },
+        }
+      )
       expect(
         window.analytics.identify.mock.instances[1].identify
-      ).toBeCalledWith({
-        context: {
-          externalIds: [
-            {
-              collection: 'users',
-              encoding: 'none',
-              id: '123',
-              type: 'ga_client_id',
-            },
-          ],
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: false,
-        },
-      })
+      ).toBeCalledWith(
+        {},
+        {
+          context: {
+            externalIds: [
+              {
+                collection: 'users',
+                encoding: 'none',
+                id: '123',
+                type: 'ga_client_id',
+              },
+            ],
+          },
+          integrations: {
+            Marketo: false,
+            Salesforce: false,
+          },
+        }
+      )
       expect(
         window.analytics.identify.mock.instances[2].identify
-      ).toBeCalledWith({
-        context: {
-          externalIds: [
-            {
-              collection: 'users',
-              encoding: 'none',
-              id: '456',
-              type: 'marketo_cookie',
-            },
-          ],
-        },
-        integrations: {
-          Marketo: false,
-          Salesforce: false,
-        },
-      })
+      ).toBeCalledWith(
+        {},
+        {
+          context: {
+            externalIds: [
+              {
+                collection: 'users',
+                encoding: 'none',
+                id: '456',
+                type: 'marketo_cookie',
+              },
+            ],
+          },
+          integrations: {
+            Marketo: false,
+            Salesforce: false,
+          },
+        }
+      )
     })
   })
 
@@ -291,9 +302,7 @@ describe('identifySegmentEvent', () => {
 
       expect(window.analytics.identify).toHaveBeenCalled()
       expect(window.analytics.identify).toHaveBeenCalledWith(id, {
-        traits: {
-          ...data,
-        },
+        ...data,
       })
     })
   })
