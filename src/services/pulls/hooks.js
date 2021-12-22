@@ -1,7 +1,7 @@
 import Api from 'shared/api'
 import { useQuery } from 'react-query'
 
-function fetchRepoPulls({ provider, owner, repo, filters, orderingDirection }) {
+function fetchRepoPulls({ provider, owner, repo, orderingDirection, filters }) {
   const PullFragment = `
    fragment PullFragment on Pull {
         pullId
@@ -24,10 +24,10 @@ function fetchRepoPulls({ provider, owner, repo, filters, orderingDirection }) {
     }
   `
   const query = `
-      query GetPulls($owner: String!, $repo: String!){
+      query GetPulls($owner: String!, $repo: String!, $orderingDirection: OrderingDirection, $filters: PullsSetFilters){
             owner(username:$owner){
                 repository(name:$repo){
-                    pulls{
+                    pulls(orderingDirection: $orderingDirection, filters: $filters){
                         edges{
                             node{
                              ...PullFragment       
@@ -47,9 +47,7 @@ function fetchRepoPulls({ provider, owner, repo, filters, orderingDirection }) {
     variables: {
       owner,
       repo,
-      filters: {
-        ...filters,
-      },
+      filters,
       orderingDirection,
     },
   }).then((res) => {
@@ -73,8 +71,8 @@ export function usePulls({
         provider,
         owner,
         repo,
-        filters,
         orderingDirection,
+        filters,
       })
     }
   )
