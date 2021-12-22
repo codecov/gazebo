@@ -2,7 +2,7 @@ import Api from 'shared/api'
 import { useQuery } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
 
-function fetchRepoCommits({ provider, owner, repo, hideFailedCI }) {
+function fetchRepoCommits({ provider, owner, repo, filters }) {
   const CommitFragment = `
    fragment CommitFragment on Commit {
         message
@@ -51,7 +51,7 @@ function fetchRepoCommits({ provider, owner, repo, hideFailedCI }) {
       owner,
       repo,
       filters: {
-        hideFailedCI,
+        ...filters,
       },
     },
   }).then((res) => {
@@ -60,8 +60,8 @@ function fetchRepoCommits({ provider, owner, repo, hideFailedCI }) {
   })
 }
 
-export function useCommits({ provider, owner, repo, hideFailedCI = false }) {
-  return useQuery([provider, owner, repo, hideFailedCI, 'commits'], () => {
-    return fetchRepoCommits({ provider, owner, repo, hideFailedCI })
+export function useCommits({ provider, owner, repo, filters }) {
+  return useQuery([provider, owner, repo, filters, 'commits'], () => {
+    return fetchRepoCommits({ provider, owner, repo, filters })
   })
 }

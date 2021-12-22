@@ -11,7 +11,9 @@ function CommitsPage() {
     provider,
     owner,
     repo,
-    hideFailedCI,
+    filters: {
+      hideFailedCI,
+    },
   })
 
   return (
