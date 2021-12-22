@@ -3,7 +3,6 @@ import { IconEnum } from './enums'
 import Progress from 'ui/Progress'
 import A from 'ui/A'
 import PropTypes from 'prop-types'
-import { PullRequestType } from '../../types'
 
 const PullState = ({ state }) => {
   const icon = IconEnum.find((item) => state === item.state)
@@ -19,24 +18,20 @@ PullState.propTypes = {
   state: PropTypes.string,
 }
 
-const Coverage = ({ pull }) =>
-  typeof pull?.head?.totals?.coverage === 'number' ? (
+const Coverage = ({ head, state, pullId }) =>
+  typeof head?.totals?.coverage === 'number' ? (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
-      <PullState state={pull?.state} />
-      <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
-        <span className="mx-6 text-ds-gray-quinary font-mono">
-          #{pull?.pullId}
-        </span>
+      <PullState state={state} />
+      <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
+        <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
       </A>
-      <Progress amount={pull?.head?.totals?.coverage} label={true} />
+      <Progress amount={head?.totals?.coverage} label={true} />
     </div>
   ) : (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
-      <PullState state={pull?.state} />
-      <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
-        <span className="mx-6 text-ds-gray-quinary font-mono">
-          #{pull?.pullId}
-        </span>
+      <PullState state={state} />
+      <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
+        <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
       </A>
       <span className="text-ds-gray-quinary text-sm">
         No report uploaded yet
@@ -45,7 +40,13 @@ const Coverage = ({ pull }) =>
   )
 
 Coverage.propTypes = {
-  pull: PropTypes.shape(PullRequestType),
+  head: PropTypes.shape({
+    totals: PropTypes.shape({
+      coverage: PropTypes.number,
+    }),
+  }),
+  pullId: PropTypes.number,
+  state: PropTypes.string,
 }
 
 export default Coverage

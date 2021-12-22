@@ -50,11 +50,20 @@ function transformPullToTable(pulls) {
   return pulls.map((pullNode) => {
     if (!pullNode) return handleOnNull()
     const pull = pullNode.node
+    const { author, compareWithBase, head, pullId, state, title, updatestamp } =
+      pull
 
     return {
-      title: <Title pull={pull} />,
-      coverage: <Coverage pull={pull} />,
-      change: <Change pull={pull} />,
+      title: (
+        <Title
+          author={author}
+          pullId={pullId}
+          title={title}
+          updatestamp={updatestamp}
+        />
+      ),
+      coverage: <Coverage head={head} state={state} pullId={pullId} />,
+      change: <Change head={head} compareWithBase={compareWithBase} />,
     }
   })
 }
@@ -67,7 +76,7 @@ function PullsPage({ pulls }) {
 PullsPage.propTypes = {
   pulls: PropTypes.arrayOf(
     PropTypes.shape({
-      node: PropTypes.shape(PullRequestType),
+      node: PullRequestType,
     })
   ),
 }

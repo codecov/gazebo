@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
-import { PullRequestType } from '../../types'
 
-const Change = ({ pull }) => {
-  if (!pull?.head?.totals?.coverage) return ''
-  const change = pull?.compareWithBase?.patchTotals?.coverage
+const Change = ({ head, compareWithBase }) => {
+  if (!head?.totals?.coverage) return ''
+  const change = compareWithBase?.patchTotals?.coverage
 
   return (
     typeof change === 'number' && (
@@ -17,7 +16,16 @@ const Change = ({ pull }) => {
 }
 
 Change.propTypes = {
-  pull: PropTypes.shape(PullRequestType),
+  head: PropTypes.shape({
+    totals: PropTypes.shape({
+      coverage: PropTypes.number,
+    }),
+  }),
+  compareWithBase: PropTypes.shape({
+    patchTotals: PropTypes.shape({
+      coverage: PropTypes.number,
+    }),
+  }),
 }
 
 export default Change

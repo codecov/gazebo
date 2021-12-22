@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-export const PullRequestType = {
+export const PullRequestType = PropTypes.shape({
   author: PropTypes.shape({
     username: PropTypes.string,
   }),
@@ -18,4 +18,4 @@ export const PullRequestType = {
   state: PropTypes.string,
   title: PropTypes.string,
   updatestamp: PropTypes.string,
-}
+})

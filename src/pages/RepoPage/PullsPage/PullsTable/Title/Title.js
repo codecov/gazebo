@@ -3,30 +3,47 @@ import Avatar from 'ui/Avatar'
 import A from 'ui/A'
 import PropTypes from 'prop-types'
 import { useOwner } from 'services/user'
-import { PullRequestType } from '../../types'
 
-const Title = ({ pull }) => {
-  const { data: ownerData } = useOwner({ username: pull?.author?.username })
+const OwnerData = ({ username }) => {
+  const { data: ownerData } = useOwner({ username })
 
+  return (
+    <Avatar
+      user={
+        ownerData || {
+          avatarUrl: 'https://avatars0.githubusercontent.com/u/?v=3&s=55',
+          username: 'default',
+        }
+      }
+      bordered
+    />
+  )
+}
+
+OwnerData.propTypes = {
+  username: PropTypes.string,
+}
+
+const Title = ({ author, pullId, title, updatestamp }) => {
   return (
     <div className="flex flex-row w-96 lg:w-auto">
       <span className="flex items-center mr-5">
-        {ownerData && <Avatar user={ownerData} bordered />}
+        <OwnerData username={author?.username} />
       </span>
       <div className="flex flex-col w-5/6 lg:w-auto">
-        <A to={{ pageName: 'pull', options: { pullid: pull?.pullId } }}>
+        <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
-            {pull?.title}
+            {title}
           </h2>
         </A>
         <p className="text-xs">
           <A to={{ pageName: 'owner' }}>
-            <span className="text-black">{pull?.author?.username}</span>
+            <span className="text-black">{author?.username}</span>
           </A>
-          {pull?.updatestamp && (
+          {updatestamp && (
             <span className="text-ds-gray-quinary">
               {' opened ' +
-                formatDistanceToNow(new Date(pull?.updatestamp), {
+                formatDistanceToNow(new Date(updatestamp), {
                   addSuffix: true,
                 })}
             </span>
@@ -38,7 +55,12 @@ const Title = ({ pull }) => {
 }
 
 Title.propTypes = {
-  pull: PropTypes.shape(PullRequestType),
+  author: PropTypes.shape({
+    username: PropTypes.string,
+  }),
+  pullId: PropTypes.number,
+  title: PropTypes.string,
+  updatestamp: PropTypes.string,
 }
 
 export default Title
