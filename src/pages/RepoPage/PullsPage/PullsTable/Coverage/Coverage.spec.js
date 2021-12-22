@@ -5,10 +5,10 @@ import Coverage from '.'
 jest.mock('services/repo/hooks')
 
 describe('Coverage', () => {
-  function setup({ pull }) {
+  function setup({ head, pullId, state }) {
     render(
       <MemoryRouter>
-        <Coverage pull={pull} />
+        <Coverage head={head} state={state} pullId={pullId} />
       </MemoryRouter>
     )
   }
@@ -16,23 +16,13 @@ describe('Coverage', () => {
   describe('when rendered with a pull coverage', () => {
     beforeEach(() => {
       setup({
-        pull: {
-          author: { username: 'RulaKhaled' },
-          compareWithBase: {
-            patchTotals: {
-              coverage: 90,
-            },
+        head: {
+          totals: {
+            coverage: 45,
           },
-          head: {
-            totals: {
-              coverage: 45,
-            },
-          },
-          pullId: 746,
-          state: 'MERGED',
-          title: 'Test1',
-          updatestamp: '2021-08-30T19:33:49.819672',
         },
+        pullId: 746,
+        state: 'MERGED',
       })
     })
 
@@ -55,23 +45,13 @@ describe('Coverage', () => {
   describe('when rendered with no coverage in pull', () => {
     beforeEach(() => {
       setup({
-        pull: {
-          author: { username: 'RulaKhaled' },
-          compareWithBase: {
-            patchTotals: {
-              coverage: null,
-            },
+        head: {
+          totals: {
+            coverage: null,
           },
-          head: {
-            totals: {
-              coverage: null,
-            },
-          },
-          pullId: 746,
-          state: 'MERGED',
-          title: 'Test1',
-          updatestamp: '2021-08-30T19:33:49.819672',
         },
+        pullId: 746,
+        state: 'MERGED',
       })
     })
 

@@ -7,23 +7,10 @@ import { QueryClientProvider, QueryClient } from 'react-query'
 jest.mock('services/repo/hooks')
 
 describe('Title', () => {
-  const pull = {
-    author: { username: 'RulaKhaled' },
-    compareWithBase: {
-      patchTotals: {
-        coverage: 90,
-      },
-    },
-    head: {
-      totals: {
-        coverage: 45,
-      },
-    },
-    pullId: 746,
-    state: 'MERGED',
-    title: 'Test1',
-    updatestamp: '2021-08-30T19:33:49.819672',
-  }
+  const author = { username: 'RulaKhaled' }
+  const pullId = 746
+  const title = 'Test1'
+  const updatestamp = '2021-08-30T19:33:49.819672'
 
   function setup() {
     const queryClient = new QueryClient()
@@ -31,7 +18,12 @@ describe('Title', () => {
     render(
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
-          <Title pull={pull} />
+          <Title
+            author={author}
+            pullId={pullId}
+            title={title}
+            updatestamp={updatestamp}
+          />
         </QueryClientProvider>
       </MemoryRouter>
     )

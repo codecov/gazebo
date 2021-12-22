@@ -5,32 +5,25 @@ import Change from '.'
 jest.mock('services/repo/hooks')
 
 describe('Change', () => {
-  function setup({ pull }) {
+  function setup({ head, compareWithBase }) {
     render(
       <MemoryRouter>
-        <Change pull={pull} />
+        <Change head={head} compareWithBase={compareWithBase} />
       </MemoryRouter>
     )
   }
 
   describe('when rendered with a pull with coverage', () => {
     setup({
-      pull: {
-        author: { username: 'RulaKhaled' },
-        compareWithBase: {
-          patchTotals: {
-            coverage: 90,
-          },
+      compareWithBase: {
+        patchTotals: {
+          coverage: 90,
         },
-        head: {
-          totals: {
-            coverage: 45,
-          },
+      },
+      head: {
+        totals: {
+          coverage: 45,
         },
-        pullId: 746,
-        state: 'MERGED',
-        title: 'Test1',
-        updatestamp: '2021-08-30T19:33:49.819672',
       },
     })
 
