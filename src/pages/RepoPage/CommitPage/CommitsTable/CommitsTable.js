@@ -16,7 +16,7 @@ const headers = [
   {
     Header: (
       <span className="w-full text-right">
-        Coverage <span className="ml-36 hidden lg:inline-block">%</span>
+        Coverage <span className="ml-44 hidden lg:inline-block">%</span>
       </span>
     ),
     accessor: 'coverage',
