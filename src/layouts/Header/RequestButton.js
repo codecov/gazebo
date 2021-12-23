@@ -19,7 +19,13 @@ function RequestButton({ owner, provider }) {
         to={{ pageName: 'demo' }}
         variant="secondary"
         data-testid="request-demo"
-        onClick={() => trackSegmentEvent('click', 'request demo', 'header cta')}
+        onClick={() =>
+          trackSegmentEvent({
+            event: 'clicked button',
+            label: 'request demo',
+            category: 'header cta',
+          })
+        }
       >
         Request demo
       </Button>
