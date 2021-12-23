@@ -20,7 +20,7 @@ function CommitsPage() {
     <div className="w-full h-screen overflow-scroll">
       <div className="mb-4">
         <Checkbox
-          label="Hide commits with failed CI (3)"
+          label="Hide commits with failed CI"
           name="filter commits"
           onChange={(e) => setHideFailedCI(e.target.checked)}
           value={hideFailedCI}
