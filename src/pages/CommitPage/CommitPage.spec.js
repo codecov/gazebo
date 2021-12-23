@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 import CommitPage from './CommitPage'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { useCommit } from 'services/commit'
@@ -113,15 +113,6 @@ describe('CommitPage', () => {
 
     it('the impacted files', () => {
       expect(screen.getByText(/Impacted files/)).toBeInTheDocument()
-    })
-
-    it('opens & close YAMl modal', () => {
-      fireEvent.click(screen.getByText('view yml file'))
-      expect(
-        screen.getByText('Includes default yaml, global yaml, and repo')
-      ).toBeInTheDocument()
-      fireEvent.click(screen.getByText('view yml file'))
-      fireEvent.click(screen.getByLabelText('Close'))
     })
   })
 

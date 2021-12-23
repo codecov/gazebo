@@ -1,7 +1,7 @@
 import Api from 'shared/api'
 import { useQuery, useQueryClient } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
-
+import map from 'lodash/map'
 const comparisonFragment = `
   fragment ComparisonFragment on Commit {
     compareWithParent {
@@ -146,6 +146,14 @@ export function useCommit({
 
   const cacheKey = ['commit', provider, owner, repo, commitid]
 
+  function processUploads(uploads) {
+    const edgelessUploads = mapEdges(uploads)
+    return map(edgelessUploads, (upload) => ({
+      ...upload,
+      errors: mapEdges(upload?.errors),
+    }))
+  }
+
   const commitQuery = useQuery(cacheKey, () => {
     return Api.graphql({
       provider,
@@ -162,7 +170,7 @@ export function useCommit({
       return {
         commit: {
           ...commit,
-          uploads: mapEdges(commit?.uploads),
+          uploads: processUploads(commit?.uploads),
         },
       }
     })
