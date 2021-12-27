@@ -8,14 +8,38 @@ import { useCommits } from 'services/commits'
 jest.mock('services/repo/hooks')
 jest.mock('services/commits')
 
+const commits = [
+  {
+    message: 'test',
+    commitid: '1',
+    createdAt: '2020',
+    author: {
+      username: 'rula',
+    },
+    totals: {
+      coverage: 22,
+    },
+    parent: {
+      totals: {
+        coverage: 22,
+      },
+    },
+    compareWithParent: {
+      patchTotals: {
+        coverage: 33,
+      },
+    },
+  },
+]
+
 describe('RepoPage', () => {
-  function setup({ repo, commits = [] }) {
+  function setup({ repo, commits = [], path = '/' }) {
     useRepo.mockReturnValue({ data: { repo } })
     useCommits.mockReturnValue({ data: commits })
     const queryClient = new QueryClient()
     render(
-      <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
-        <Route path="/:provider/:owner/:repo/new">
+      <MemoryRouter initialEntries={[`/gh/codecov/Test/${path}`]}>
+        <Route path={`/:provider/:owner/:repo/${path}`}>
           <QueryClientProvider client={queryClient}>
             <RepoPage />
           </QueryClientProvider>
@@ -42,6 +66,11 @@ describe('RepoPage', () => {
     it('does not render Private span', () => {
       const privateSpan = screen.queryByText(/Private/)
       expect(privateSpan).not.toBeInTheDocument()
+    })
+
+    it('does not render the branch in the breadcrumb', () => {
+      const branch = screen.queryByText(/main/)
+      expect(branch).not.toBeInTheDocument()
     })
   })
 
@@ -76,29 +105,7 @@ describe('RepoPage', () => {
         repo: {
           private: true,
         },
-        commits: [
-          {
-            message: 'test',
-            commitid: '1',
-            createdAt: '2020',
-            author: {
-              username: 'rula',
-            },
-            totals: {
-              coverage: 22,
-            },
-            parent: {
-              totals: {
-                coverage: 22,
-              },
-            },
-            compareWithParent: {
-              patchTotals: {
-                coverage: 33,
-              },
-            },
-          },
-        ],
+        commits,
       })
     })
 
@@ -128,6 +135,23 @@ describe('RepoPage', () => {
     it('renders the commits tab', () => {
       const tab = screen.queryByText(/Commits/)
       expect(tab).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when renders the commits page', () => {
+    beforeEach(() => {
+      setup({
+        repo: {
+          private: true,
+        },
+        path: 'commits',
+        commits,
+      })
+    })
+
+    it('renders the branch in the breadcrumb', () => {
+      const branch = screen.queryByText(/main/)
+      expect(branch).toBeInTheDocument()
     })
   })
 })
