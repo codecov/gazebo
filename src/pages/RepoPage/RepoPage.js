@@ -136,7 +136,7 @@ function RepoPage() {
             <New data={data} />
           </Route>
           <Route path={`${path}/commits`} exact>
-            <CommitsPage />
+            <CommitsPage branchName={branch} />
           </Route>
           <Route path={`${path}/branches`} exact>
             <h1>Branches</h1>

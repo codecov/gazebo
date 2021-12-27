@@ -3,8 +3,9 @@ import { useParams } from 'react-router'
 import CommitsTable from './CommitsTable'
 import Checkbox from 'ui/Checkbox'
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
-function CommitsPage() {
+function CommitsPage({ branchName }) {
   const { provider, owner, repo } = useParams()
   const [hideFailedCI, setHideFailedCI] = useState(false)
   const { data: commits } = useCommits({
@@ -13,6 +14,7 @@ function CommitsPage() {
     repo,
     filters: {
       hideFailedCI,
+      branchName,
     },
   })
 
@@ -29,6 +31,9 @@ function CommitsPage() {
       <CommitsTable commits={commits} />
     </div>
   )
+}
+CommitsPage.propTypes = {
+  branchName: PropTypes.string,
 }
 
 export default CommitsPage
