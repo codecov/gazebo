@@ -150,7 +150,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the branch in the breadcrumb', () => {
-      const branch = screen.queryByText(/main/)
+      const branch = screen.getAllByText(/main/)[0]
       expect(branch).toBeInTheDocument()
     })
   })

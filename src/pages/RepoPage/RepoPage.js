@@ -10,22 +10,41 @@ import CommitsPage from './CommitPage'
 import { useCommits } from 'services/commits'
 import cs from 'classnames'
 import { useEffect, useState } from 'react'
+import { useBranches } from 'services/branches'
+import Select from 'ui/Select'
 
-function RepoPage() {
-  const { provider, owner, repo } = useParams()
+const path = '/:provider/:owner/:repo'
 
+const useIsRepoHasCommits = (provider, owner, repo) => {
   const { data: commits } = useCommits({ provider, owner, repo })
   const repoHasCommits = commits?.length > 0
 
-  const path = '/:provider/:owner/:repo'
+  return repoHasCommits
+}
+
+const useIsPrivateRepo = (provider, owner, repo) => {
   const { data } = useRepo({
     provider,
     owner,
     repo,
   })
+  const { private: privateRepo } = data.repo
 
+  return { privateRepo, data }
+}
+
+function RepoPage() {
+  const { provider, owner, repo } = useParams()
   const { pathname } = useLocation()
+
+  const { data: branches } = useBranches({ provider, owner, repo })
+
+  const branchesNames = branches?.map((branch) => branch.name)
+  const [branch, setBranch] = useState('main')
   const [paths, setPaths] = useState([])
+
+  const repoHasCommits = useIsRepoHasCommits(provider, owner, repo)
+  const { privateRepo, data } = useIsPrivateRepo(provider, owner, repo)
 
   useEffect(() => {
     const isCommitsPage = pathname.split('/')[4] === 'commits'
@@ -33,16 +52,14 @@ function RepoPage() {
       ? [
           { pageName: 'owner', text: owner },
           { pageName: 'repo', text: repo },
-          { pageName: '', readOnly: true, text: 'main' }, //TODO
+          { pageName: '', readOnly: true, text: branch },
         ]
       : [
           { pageName: 'owner', text: owner },
           { pageName: 'repo', text: repo },
         ]
     setPaths(paths)
-  }, [pathname, owner, repo])
-
-  const { private: privateRepo } = data.repo
+  }, [pathname, owner, repo, branch])
 
   return (
     <div className="flex flex-col gap-4">
@@ -91,7 +108,16 @@ function RepoPage() {
             <New data={data} />
           </Route>
           <Route path={`${path}/commits`} exact>
-            <CommitsPage />
+            <>
+              <span className="h-8 w-6/7">
+                <Select
+                  items={branchesNames || []}
+                  onChange={(branch) => setBranch(branch)}
+                  value={branch}
+                />
+              </span>
+              <CommitsPage />
+            </>
           </Route>
           <Route path={`${path}/branches`} exact>
             <h1>Branches</h1>
