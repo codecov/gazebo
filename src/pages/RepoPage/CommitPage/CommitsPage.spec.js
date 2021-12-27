@@ -75,7 +75,7 @@ describe('Commits Page', () => {
     })
 
     it('render the checkbox', () => {
-      const label = screen.getByText('Hide commits with failed CI (3)')
+      const label = screen.getByText('Hide commits with failed CI')
       expect(label).toBeInTheDocument()
     })
 

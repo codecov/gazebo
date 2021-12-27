@@ -1,27 +1,26 @@
-import { useState, lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 import { useParams, Switch, Route } from 'react-router-dom'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+
+import { useCommit } from 'services/commit'
+import { getProviderCommitURL } from 'shared/utils/provider'
 
 import Spinner from 'ui/Spinner'
 import Breadcrumb from 'ui/Breadcrumb'
 import A from 'ui/A'
-import { useCommit } from 'services/commit'
-import { getProviderCommitURL } from 'shared/utils/provider'
 
 import CoverageReportCard from './CoverageReportCard'
 import UploadsCard from './UploadsCard'
 import Header from './Header'
-import YamlModal from './YamlModal'
 
 const CommitFileView = lazy(() => import('./subroute/CommitFileView.js'))
 const CommitsTable = lazy(() => import('./subroute/CommitsTable.js'))
 const NotFound = lazy(() => import('pages/NotFound'))
 
 function CommitPage() {
-  const [showYAMLModal, setShowYAMLModal] = useState(false)
   const { provider, owner, repo, commit, path } = useParams()
   const { data, isLoading } = useCommit({
-    provider: provider,
+    provider,
     owner,
     repo,
     commitid: commit,
@@ -94,17 +93,7 @@ function CommitPage() {
             owner={owner}
             data={data?.commit}
           />
-          <div>
-            <UploadsCard
-              data={data?.commit?.uploads}
-              showYAMLModal={showYAMLModal}
-              setShowYAMLModal={setShowYAMLModal}
-            />
-            <YamlModal
-              showYAMLModal={showYAMLModal}
-              setShowYAMLModal={setShowYAMLModal}
-            />
-          </div>
+          <UploadsCard />
         </aside>
         <article className="flex flex-col flex-1 gap-4">
           <Switch>
@@ -118,7 +107,7 @@ function CommitPage() {
               <Suspense fallback={loadingState}>
                 <CommitsTable
                   commit={commit}
-                  state={data?.state}
+                  state={data?.commit?.state}
                   data={data?.impactedFiles}
                 />
               </Suspense>
