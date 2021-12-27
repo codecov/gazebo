@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { render, fireEvent, screen } from '@testing-library/react'
 import { Route, MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { usePulls } from 'services/pulls/hooks'
 import PullsPage from './PullsPage'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('services/pulls/hooks')
 
@@ -101,6 +102,62 @@ describe('Pulls Page', () => {
     it('renders default of select by state', () => {
       const label = screen.getByText(/Newest/)
       expect(label).toBeInTheDocument()
+    })
+  })
+
+  describe('view by state', () => {
+    beforeEach(() => {
+      setup()
+      const select = screen.getByText('All')
+      userEvent.click(select)
+    })
+
+    it('renders all options', () => {
+      expect(screen.getByText('Open')).toBeInTheDocument()
+      expect(screen.getByText('Merged')).toBeInTheDocument()
+      expect(screen.getByText('Closed')).toBeInTheDocument()
+    })
+  })
+
+  describe('order by updatestamp', () => {
+    beforeEach(() => {
+      setup()
+      const select = screen.getByText('Newest')
+      userEvent.click(select)
+    })
+
+    it('renders all options', () => {
+      expect(screen.getByText('Oldest')).toBeInTheDocument()
+    })
+  })
+
+  describe('order by Oldest', () => {
+    beforeEach(() => {
+      setup()
+      const select = screen.getByText('Newest')
+      userEvent.click(select)
+      const state = screen.getAllByRole('option')[1]
+      fireEvent.click(state)
+    })
+
+    it('renders the selected option', () => {
+      expect(screen.getByText('Oldest')).toBeInTheDocument()
+      expect(screen.queryByText('Newest')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('view by Merged', () => {
+    beforeEach(() => {
+      setup()
+      const select = screen.getByText('All')
+      userEvent.click(select)
+      const state = screen.getAllByRole('option')[2]
+      fireEvent.click(state)
+    })
+
+    it('renders the number of selected options', () => {
+      expect(screen.getByText(/1 selected/)).toBeInTheDocument()
+      expect(screen.queryByText('All')).not.toBeInTheDocument()
     })
   })
 })
