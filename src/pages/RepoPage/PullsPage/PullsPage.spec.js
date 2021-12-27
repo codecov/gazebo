@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { Route, MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { usePulls } from 'services/pulls/hooks'
-import PullsPage from '.'
+import PullsPage from './PullsPage'
 
 jest.mock('services/pulls/hooks')
 
@@ -81,6 +81,26 @@ describe('Pulls Page', () => {
     it('renders with table change heading', () => {
       const head = screen.getByText(/Change from/)
       expect(head).toBeInTheDocument()
+    })
+
+    it('renders select by updatestamp label', () => {
+      const label = screen.getByText(/Sort by:/)
+      expect(label).toBeInTheDocument()
+    })
+
+    it('renders view by state label', () => {
+      const label = screen.getByText(/View:/)
+      expect(label).toBeInTheDocument()
+    })
+
+    it('renders default of select by updatestamp', () => {
+      const label = screen.getByText(/All/)
+      expect(label).toBeInTheDocument()
+    })
+
+    it('renders default of select by state', () => {
+      const label = screen.getByText(/Newest/)
+      expect(label).toBeInTheDocument()
     })
   })
 })
