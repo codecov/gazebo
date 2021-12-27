@@ -12,6 +12,7 @@ import cs from 'classnames'
 import { useEffect, useState } from 'react'
 import { useBranches } from 'services/branches'
 import Select from 'ui/Select'
+import Icon from 'ui/Icon'
 
 const path = '/:provider/:owner/:repo'
 
@@ -33,18 +34,24 @@ const useIsPrivateRepo = (provider, owner, repo) => {
   return { privateRepo, data }
 }
 
+const useBranchesNames = (provider, owner, repo) => {
+  const { data: branches } = useBranches({ provider, owner, repo })
+  const branchesNames = branches?.map((branch) => branch.name)
+
+  return branchesNames
+}
+
 function RepoPage() {
   const { provider, owner, repo } = useParams()
   const { pathname } = useLocation()
 
-  const { data: branches } = useBranches({ provider, owner, repo })
-
-  const branchesNames = branches?.map((branch) => branch.name)
   const [branch, setBranch] = useState('main')
   const [paths, setPaths] = useState([])
+  const [isCommitsPage, setIsCommitsPage] = useState()
 
   const repoHasCommits = useIsRepoHasCommits(provider, owner, repo)
   const { privateRepo, data } = useIsPrivateRepo(provider, owner, repo)
+  const branchesNames = useBranchesNames(provider, owner, repo)
 
   useEffect(() => {
     const isCommitsPage = pathname.split('/')[4] === 'commits'
@@ -59,6 +66,7 @@ function RepoPage() {
           { pageName: 'repo', text: repo },
         ]
     setPaths(paths)
+    setIsCommitsPage(isCommitsPage)
   }, [pathname, owner, repo, branch])
 
   return (
@@ -76,6 +84,7 @@ function RepoPage() {
           </span>
         )}
       </div>
+
       {repoHasCommits && (
         <TabNavigation
           tabs={[
@@ -99,6 +108,25 @@ function RepoPage() {
           ]}
         />
       )}
+
+      {isCommitsPage && (
+        <div className="h-8 w-1/5">
+          <h1 className="font-semibold mb-2">
+            <span className="inline-block mr-1">
+              <Icon name="branch" variant="developer" size="sm" />
+            </span>
+            Branch Context
+          </h1>
+          <div>
+            <Select
+              items={branchesNames || []}
+              onChange={(branch) => setBranch(branch)}
+              value={branch}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-center">
         <Switch>
           <Route path={path} exact>
@@ -108,16 +136,7 @@ function RepoPage() {
             <New data={data} />
           </Route>
           <Route path={`${path}/commits`} exact>
-            <>
-              <span className="h-8 w-6/7">
-                <Select
-                  items={branchesNames || []}
-                  onChange={(branch) => setBranch(branch)}
-                  value={branch}
-                />
-              </span>
-              <CommitsPage />
-            </>
+            <CommitsPage />
           </Route>
           <Route path={`${path}/branches`} exact>
             <h1>Branches</h1>
