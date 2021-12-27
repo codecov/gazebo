@@ -3,7 +3,6 @@ import { Route, MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { usePulls } from 'services/pulls/hooks'
 import PullsPage from './PullsPage'
-import userEvent from '@testing-library/user-event'
 
 jest.mock('services/pulls/hooks')
 
@@ -109,7 +108,7 @@ describe('Pulls Page', () => {
     beforeEach(() => {
       setup()
       const select = screen.getByText('All')
-      userEvent.click(select)
+      fireEvent.click(select)
     })
 
     it('renders all options', () => {
@@ -123,7 +122,7 @@ describe('Pulls Page', () => {
     beforeEach(() => {
       setup()
       const select = screen.getByText('Newest')
-      userEvent.click(select)
+      fireEvent.click(select)
     })
 
     it('renders all options', () => {
@@ -135,7 +134,7 @@ describe('Pulls Page', () => {
     beforeEach(() => {
       setup()
       const select = screen.getByText('Newest')
-      userEvent.click(select)
+      fireEvent.click(select)
       const state = screen.getAllByRole('option')[1]
       fireEvent.click(state)
     })
@@ -150,7 +149,7 @@ describe('Pulls Page', () => {
     beforeEach(() => {
       setup()
       const select = screen.getByText('All')
-      userEvent.click(select)
+      fireEvent.click(select)
       const state = screen.getAllByRole('option')[2]
       fireEvent.click(state)
     })
