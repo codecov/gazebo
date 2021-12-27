@@ -1,14 +1,15 @@
 import { useParams } from 'react-router-dom'
-import { Switch, Route } from 'react-router-dom'
-
+import { Switch, Route, useLocation } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import Breadcrumb from 'ui/Breadcrumb'
 import TabNavigation from 'ui/TabNavigation'
 
 import New from './new'
+import PullsPage from './PullsPage'
 import CommitsPage from './CommitPage'
 import { useCommits } from 'services/commits'
 import cs from 'classnames'
+import { useEffect, useState } from 'react'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -23,6 +24,24 @@ function RepoPage() {
     repo,
   })
 
+  const { pathname } = useLocation()
+  const [paths, setPaths] = useState([])
+
+  useEffect(() => {
+    const isCommitsPage = pathname.split('/')[4] === 'commits'
+    const paths = isCommitsPage
+      ? [
+          { pageName: 'owner', text: owner },
+          { pageName: 'repo', text: repo },
+          { pageName: '', readOnly: true, text: 'main' }, //TODO
+        ]
+      : [
+          { pageName: 'owner', text: owner },
+          { pageName: 'repo', text: repo },
+        ]
+    setPaths(paths)
+  }, [pathname, owner, repo])
+
   const { private: privateRepo } = data.repo
 
   return (
@@ -33,12 +52,7 @@ function RepoPage() {
           'border-none': repoHasCommits,
         })}
       >
-        <Breadcrumb
-          paths={[
-            { pageName: 'owner', text: owner },
-            { pageName: 'repo', text: repo },
-          ]}
-        />
+        <Breadcrumb paths={paths} />
         {privateRepo && (
           <span className="ml-2 px-1 py-0.5 h-5 mt-1 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary font-light">
             Private
@@ -83,7 +97,7 @@ function RepoPage() {
             <h1>Branches</h1>
           </Route>
           <Route path={`${path}/pulls`} exact>
-            <h1>Pulls</h1>
+            <PullsPage />
           </Route>
           <Route path={`${path}/compare`} exact>
             <h1>Compare</h1>
