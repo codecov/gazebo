@@ -110,7 +110,7 @@ function RepoPage() {
       )}
 
       {isCommitsPage && (
-        <div className="h-6">
+        <div className="h-14 sm:h-8">
           <h1 className="font-semibold mb-2">
             <span className="inline-block mr-1">
               <Icon name="branch" variant="developer" size="sm" />
@@ -119,6 +119,7 @@ function RepoPage() {
           </h1>
           <div className="w-72">
             <Select
+              className="bg-ds-gray-primary h-10 overflow-scroll"
               items={branchesNames || []}
               onChange={(branch) => setBranch(branch)}
               value={branch}
