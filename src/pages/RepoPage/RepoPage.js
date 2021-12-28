@@ -110,14 +110,14 @@ function RepoPage() {
       )}
 
       {isCommitsPage && (
-        <div className="h-8 w-1/5">
+        <div className="h-6">
           <h1 className="font-semibold mb-2">
             <span className="inline-block mr-1">
               <Icon name="branch" variant="developer" size="sm" />
             </span>
             Branch Context
           </h1>
-          <div>
+          <div className="w-72">
             <Select
               items={branchesNames || []}
               onChange={(branch) => setBranch(branch)}
