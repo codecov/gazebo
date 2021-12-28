@@ -83,7 +83,7 @@ function Select({
         aria-label={ariaName}
         className={cs(SelectClasses.ul, {
           border: isOpen,
-          'border-gray-ds-tertiary h-72 overflow-scroll': isOpen,
+          'border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
         })}
         {...getMenuProps()}
       >
