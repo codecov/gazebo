@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom'
 import { Switch, Route } from 'react-router-dom'
-
 import { useRepo } from 'services/repo/hooks'
 import Breadcrumb from 'ui/Breadcrumb'
 import TabNavigation from 'ui/TabNavigation'
 
 import New from './new'
+import PullsPage from './PullsPage'
 import CommitsPage from './CommitPage'
 import { useCommits } from 'services/commits'
 import cs from 'classnames'
@@ -83,7 +83,7 @@ function RepoPage() {
             <h1>Branches</h1>
           </Route>
           <Route path={`${path}/pulls`} exact>
-            <h1>Pulls</h1>
+            <PullsPage />
           </Route>
           <Route path={`${path}/compare`} exact>
             <h1>Compare</h1>
