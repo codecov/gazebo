@@ -46,29 +46,27 @@ function RepoPage() {
         )}
       </div>
       {repoHasCommits && (
-        <div className="overflow-auto border-b border-gray-400">
-          <TabNavigation
-            tabs={[
-              {
-                pageName: 'overview',
-                children: 'Coverage',
-                exact: true,
-              },
-              {
-                pageName: 'commits',
-              },
-              {
-                pageName: 'pulls',
-              },
-              {
-                pageName: 'compare',
-              },
-              {
-                pageName: 'settings',
-              },
-            ]}
-          />
-        </div>
+        <TabNavigation
+          tabs={[
+            {
+              pageName: 'overview',
+              children: 'Coverage',
+              exact: true,
+            },
+            {
+              pageName: 'commits',
+            },
+            {
+              pageName: 'pulls',
+            },
+            {
+              pageName: 'compare',
+            },
+            {
+              pageName: 'settings',
+            },
+          ]}
+        />
       )}
       <div className="flex justify-center">
         <Switch>
