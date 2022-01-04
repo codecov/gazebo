@@ -4,7 +4,7 @@ import { commitRequestType } from 'shared/propTypes'
 
 const Coverage = ({ commit }) => {
   return (
-    <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
+    <div className="w-full justify-center flex flex-wrap lg:flex-row lg:flex-nowrap lg:justify-end">
       <A to={{ pageName: 'commit', options: { commit: commit?.commitid } }}>
         <span className="mx-9 text-ds-gray-quinary font-mono">
           {commit?.commitid?.slice(0, 8)}
