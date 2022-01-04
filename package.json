@@ -10,7 +10,7 @@
     "@stripe/stripe-js": "^1.21.2",
     "classnames": "^2.3.1",
     "date-fns": "^2.27.0",
-    "dompurify": "^2.3.3",
+    "dompurify": "^2.3.4",
     "downshift": "^6.1.7",
     "js-cookie": "^3.0.1",
     "launchdarkly-react-client-sdk": "^2.23.2",
