@@ -3,10 +3,10 @@ import Coverage from '.'
 import { MemoryRouter } from 'react-router-dom'
 
 describe('Coverage', () => {
-  function setup({ commit }) {
+  function setup({ commitid, totals }) {
     render(
       <MemoryRouter>
-        <Coverage commit={commit} />
+        <Coverage commitid={commitid} totals={totals} />
       </MemoryRouter>
     )
   }
@@ -14,20 +14,10 @@ describe('Coverage', () => {
   describe('when rendered', () => {
     beforeEach(() => {
       setup({
-        commit: {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
-            },
-          },
-          totals: {
-            coverage: 45,
-          },
-          commitid: '123456789',
-          message: 'Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
+        totals: {
+          coverage: 45,
         },
+        commitid: '123456789',
       })
     })
 
@@ -45,25 +35,15 @@ describe('Coverage', () => {
   describe('when rendered with no coverage', () => {
     beforeEach(() => {
       setup({
-        commit: {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
-            },
-          },
-          totals: {
-            coverage: null,
-          },
-          parent: {
-            totals: {
-              coverage: 98,
-            },
-          },
-          commitid: '123456789',
-          message: 'Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
+        totals: {
+          coverage: null,
         },
+        parent: {
+          totals: {
+            coverage: 98,
+          },
+        },
+        commitid: '123456789',
       })
     })
 
