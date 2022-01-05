@@ -1,12 +1,12 @@
 import Progress from 'ui/Progress'
-import { commitRequestType } from 'shared/propTypes'
+import PropTypes from 'prop-types'
 
-const Coverage = ({ commit }) => {
+const Coverage = ({ totals }) => {
   return (
     <div className="w-full justify-end flex">
-      {typeof commit?.totals?.coverage === 'number' ? (
+      {typeof totals?.coverage === 'number' ? (
         <span className="w-64">
-          <Progress amount={commit?.totals?.coverage} label={true} />
+          <Progress amount={totals?.coverage} label={true} />
         </span>
       ) : (
         <span className="text-ds-gray-quinary text-sm">
@@ -18,7 +18,10 @@ const Coverage = ({ commit }) => {
 }
 
 Coverage.propTypes = {
-  commit: commitRequestType,
+  totals: PropTypes.shape({
+    coverage: PropTypes.number,
+  }),
+  commitid: PropTypes.string,
 }
 
 export default Coverage

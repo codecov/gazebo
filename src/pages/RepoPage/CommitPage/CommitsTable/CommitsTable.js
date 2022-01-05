@@ -58,19 +58,36 @@ function transformPullToTable(commits) {
 
   return commits.map((commit) => {
     if (!commit) return handleOnNull()
+    const {
+      message,
+      author,
+      commitid,
+      createdAt,
+      totals,
+      compareWithParent,
+      parent,
+      ciPassed,
+    } = commit
 
     return {
-      title: <Title commit={commit} />,
-      ciStatus: (
-        <CIStatus
-          commitid={commit?.commitid}
-          coverage={commit?.totals?.coverage}
-          ciPassed={commit?.ciPassed}
+      title: (
+        <Title
+          message={message}
+          author={author}
+          commitid={commitid}
+          createdAt={createdAt}
         />
       ),
-      coverage: <Coverage commit={commit} />,
-      patch: <Patch commit={commit} />,
-      change: <Change commit={commit} />,
+      ciStatus: (
+        <CIStatus
+          commitid={commitid}
+          coverage={totals?.coverage}
+          ciPassed={ciPassed}
+        />
+      ),
+      coverage: <Coverage totals={totals} />,
+      patch: <Patch compareWithParent={compareWithParent} />,
+      change: <Change totals={totals} parent={parent} />,
     }
   })
 }
