@@ -1,15 +1,9 @@
 import Progress from 'ui/Progress'
-import A from 'ui/A'
 import PropTypes from 'prop-types'
 
-const Coverage = ({ commitid, totals }) => {
+const Coverage = ({ totals }) => {
   return (
-    <div className="w-full justify-center flex flex-wrap lg:flex-row lg:flex-nowrap lg:justify-end">
-      <A to={{ pageName: 'commit', options: { commit: commitid } }}>
-        <span className="mx-9 text-ds-gray-quinary font-mono">
-          {commitid?.slice(0, 8)}
-        </span>
-      </A>
+    <div className="w-full justify-end flex">
       {typeof totals?.coverage === 'number' ? (
         <span className="w-64">
           <Progress amount={totals?.coverage} label={true} />

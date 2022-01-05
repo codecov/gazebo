@@ -21,11 +21,6 @@ describe('Coverage', () => {
       })
     })
 
-    it('renders commit id', () => {
-      const id = screen.getByText(/12345678/)
-      expect(id).toBeInTheDocument()
-    })
-
     it('renders commit coverage', () => {
       const coverage = screen.getByText(/45.00%/)
       expect(coverage).toBeInTheDocument()
@@ -45,11 +40,6 @@ describe('Coverage', () => {
         },
         commitid: '123456789',
       })
-    })
-
-    it('renders commit id', () => {
-      const id = screen.getByText(/12345678/)
-      expect(id).toBeInTheDocument()
     })
 
     it('renders no report text', () => {
