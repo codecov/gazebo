@@ -17,7 +17,7 @@ function RepoPage() {
   const { data: commits } = useCommits({ provider, owner, repo })
   const repoHasCommits = commits?.length > 0
 
-  const paths = useBreadcrumbPaths({ owner, repo })
+  const paths = useBreadcrumbPaths()
   const path = '/:provider/:owner/:repo'
   const { data } = useRepo({
     provider,
