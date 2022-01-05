@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { Switch, Route, useLocation } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import Breadcrumb from 'ui/Breadcrumb'
 import TabNavigation from 'ui/TabNavigation'
@@ -9,7 +9,7 @@ import PullsPage from './PullsPage'
 import CommitsPage from './CommitPage'
 import { useCommits } from 'services/commits'
 import cs from 'classnames'
-import { useEffect, useState } from 'react'
+import { useBreadcrumbPaths } from 'pages/RepoPage/breadcrumbPaths'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -17,30 +17,13 @@ function RepoPage() {
   const { data: commits } = useCommits({ provider, owner, repo })
   const repoHasCommits = commits?.length > 0
 
+  const paths = useBreadcrumbPaths({ owner, repo })
   const path = '/:provider/:owner/:repo'
   const { data } = useRepo({
     provider,
     owner,
     repo,
   })
-
-  const { pathname } = useLocation()
-  const [paths, setPaths] = useState([])
-
-  useEffect(() => {
-    const isCommitsPage = pathname.split('/')[4] === 'commits'
-    const paths = isCommitsPage
-      ? [
-          { pageName: 'owner', text: owner },
-          { pageName: 'repo', text: repo },
-          { pageName: '', readOnly: true, text: 'main' }, //TODO
-        ]
-      : [
-          { pageName: 'owner', text: owner },
-          { pageName: 'repo', text: repo },
-        ]
-    setPaths(paths)
-  }, [pathname, owner, repo])
 
   const { private: privateRepo } = data.repo
 
