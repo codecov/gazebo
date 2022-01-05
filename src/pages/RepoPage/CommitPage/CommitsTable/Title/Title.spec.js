@@ -9,13 +9,18 @@ jest.mock('services/repo/hooks')
 jest.mock('services/user/hooks')
 
 describe('Title', () => {
-  function setup({ commit }) {
+  function setup({ author, commitid, message, createdAt }) {
     const queryClient = new QueryClient()
 
     render(
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
-          <Title commit={commit} />
+          <Title
+            message={message}
+            author={author}
+            commitid={commitid}
+            createdAt={createdAt}
+          />
         </QueryClientProvider>
       </MemoryRouter>
     )
@@ -31,25 +36,10 @@ describe('Title', () => {
         },
       })
       setup({
-        commit: {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
-            },
-          },
-          totals: {
-            coverage: 45,
-          },
-          parent: {
-            totals: {
-              coverage: 98,
-            },
-          },
-          commitid: 'id',
-          message: 'Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
-        },
+        author: { username: 'RulaKhaled' },
+        commitid: 'id',
+        message: 'Test1',
+        createdAt: '2021-08-30T19:33:49.819672',
       })
     })
 
@@ -78,25 +68,10 @@ describe('Title', () => {
         data: null,
       })
       setup({
-        commit: {
-          author: null,
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
-            },
-          },
-          totals: {
-            coverage: 45,
-          },
-          parent: {
-            totals: {
-              coverage: 98,
-            },
-          },
-          commitid: 'id',
-          message: 'Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
-        },
+        author: null,
+        commitid: 'id',
+        message: 'Test1',
+        createdAt: '2021-08-30T19:33:49.819672',
       })
     })
 
@@ -129,26 +104,10 @@ describe('Title', () => {
         },
       })
       setup({
-        commit: {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
-            },
-          },
-          totals: {
-            coverage: 45,
-          },
-          parent: {
-            totals: {
-              coverage: 98,
-            },
-          },
-          commitid: 'id',
-          message:
-            'Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
-        },
+        author: { username: 'RulaKhaled' },
+        commitid: 'id',
+        message: 'Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1',
+        createdAt: '2021-08-30T19:33:49.819672',
       })
     })
 
@@ -170,25 +129,10 @@ describe('Title', () => {
         },
       })
       setup({
-        commit: {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
-            },
-          },
-          totals: {
-            coverage: 45,
-          },
-          parent: {
-            totals: {
-              coverage: 98,
-            },
-          },
-          commitid: 'id',
-          message: null,
-          createdAt: '2021-08-30T19:33:49.819672',
-        },
+        author: { username: 'RulaKhaled' },
+        commitid: 'id',
+        message: null,
+        createdAt: '2021-08-30T19:33:49.819672',
       })
     })
 

@@ -52,12 +52,28 @@ function transformPullToTable(commits) {
 
   return commits.map((commit) => {
     if (!commit) return handleOnNull()
+    const {
+      message,
+      author,
+      commitid,
+      createdAt,
+      totals,
+      compareWithParent,
+      parent,
+    } = commit
 
     return {
-      title: <Title commit={commit} />,
-      coverage: <Coverage commit={commit} />,
-      patch: <Patch commit={commit} />,
-      change: <Change commit={commit} />,
+      title: (
+        <Title
+          message={message}
+          author={author}
+          commitid={commitid}
+          createdAt={createdAt}
+        />
+      ),
+      coverage: <Coverage commitid={commitid} totals={totals} />,
+      patch: <Patch compareWithParent={compareWithParent} />,
+      change: <Change totals={totals} parent={parent} />,
     }
   })
 }
