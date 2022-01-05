@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 const Coverage = ({ commitid, totals }) => {
   return (
-    <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
+    <div className="w-full justify-center flex flex-wrap lg:flex-row lg:flex-nowrap lg:justify-end">
       <A to={{ pageName: 'commit', options: { commit: commitid } }}>
         <span className="mx-9 text-ds-gray-quinary font-mono">
           {commitid?.slice(0, 8)}

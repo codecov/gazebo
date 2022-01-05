@@ -38,9 +38,9 @@ const Title = ({ message, author, commitid, createdAt }) => {
   }
 
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row w-96 lg:w-auto">
       <OwnerData username={author?.username} />
-      <div className="flex flex-col">
+      <div className="flex flex-col w-5/6 lg:w-auto">
         <A to={{ pageName: 'commit', options: { commit: commitid } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
             {commitMessage()}
