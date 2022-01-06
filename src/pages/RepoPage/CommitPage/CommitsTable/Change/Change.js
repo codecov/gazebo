@@ -1,10 +1,10 @@
-import { commitRequestType } from 'shared/propTypes'
+import PropTypes from 'prop-types'
 
-const Change = ({ commit }) => {
-  if (!commit?.totals?.coverage) return ''
+const Change = ({ totals, parent }) => {
+  if (!totals?.coverage) return ''
 
-  const coverage = commit?.totals?.coverage.toFixed(2)
-  const parentCoverage = commit?.parent?.totals?.coverage.toFixed(2)
+  const coverage = totals?.coverage.toFixed(2)
+  const parentCoverage = parent?.totals?.coverage.toFixed(2)
   const change = (coverage - parentCoverage).toFixed(2)
 
   return (
@@ -19,7 +19,14 @@ const Change = ({ commit }) => {
 }
 
 Change.propTypes = {
-  commit: commitRequestType,
+  totals: PropTypes.shape({
+    coverage: PropTypes.number,
+  }),
+  parent: PropTypes.shape({
+    totals: PropTypes.shape({
+      coverage: PropTypes.number,
+    }),
+  }),
 }
 
 export default Change

@@ -2,31 +2,20 @@ import { render, screen } from '@testing-library/react'
 import Change from '.'
 
 describe('Change', () => {
-  function setup({ commit }) {
-    render(<Change commit={commit} />)
+  function setup({ totals, parent }) {
+    render(<Change totals={totals} parent={parent} />)
   }
 
   describe('when rendered', () => {
     beforeEach(() => {
       setup({
-        commit: {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
-            },
-          },
+        totals: {
+          coverage: 45,
+        },
+        parent: {
           totals: {
-            coverage: 45,
+            coverage: 98,
           },
-          parent: {
-            totals: {
-              coverage: 98,
-            },
-          },
-          commitid: '123456789',
-          message: 'Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
         },
       })
     })
