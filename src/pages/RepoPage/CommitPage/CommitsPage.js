@@ -17,7 +17,7 @@ function CommitsPage() {
   })
 
   return (
-    <div className="w-full h-screen overflow-scroll">
+    <div className="flex-1 overflow-y-auto">
       <div className="mb-4">
         <Checkbox
           label="Hide commits with failed CI"

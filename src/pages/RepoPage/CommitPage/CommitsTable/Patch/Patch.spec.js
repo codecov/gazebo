@@ -2,31 +2,17 @@ import { render, screen } from '@testing-library/react'
 import Patch from '.'
 
 describe('Patch', () => {
-  function setup({ commit }) {
-    render(<Patch commit={commit} />)
+  function setup({ compareWithParent }) {
+    render(<Patch compareWithParent={compareWithParent} />)
   }
 
   describe('when rendered', () => {
     beforeEach(() => {
       setup({
-        commit: {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
-            },
+        compareWithParent: {
+          patchTotals: {
+            coverage: 90,
           },
-          totals: {
-            coverage: 45,
-          },
-          parent: {
-            totals: {
-              coverage: 98,
-            },
-          },
-          commitid: '123456789',
-          message: 'Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
         },
       })
     })
