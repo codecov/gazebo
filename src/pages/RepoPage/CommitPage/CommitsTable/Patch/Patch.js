@@ -1,9 +1,8 @@
 import { isNumber } from 'lodash'
+import PropTypes from 'prop-types'
 
-import { commitRequestType } from 'shared/propTypes'
-
-function Patch({ commit }) {
-  const rawPatch = commit?.compareWithParent?.patchTotals?.coverage
+function Patch({ compareWithParent }) {
+  const rawPatch = compareWithParent?.patchTotals?.coverage
   const patch = isNumber(rawPatch) && `${rawPatch}%`
 
   return (
@@ -14,7 +13,11 @@ function Patch({ commit }) {
 }
 
 Patch.propTypes = {
-  commit: commitRequestType,
+  compareWithParent: PropTypes.shape({
+    patchTotals: PropTypes.shape({
+      coverage: PropTypes.number,
+    }),
+  }),
 }
 
 export default Patch
