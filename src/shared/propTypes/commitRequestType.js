@@ -20,4 +20,5 @@ export const commitRequestType = PropTypes.shape({
   commitid: PropTypes.string,
   message: PropTypes.string,
   createdAt: PropTypes.string,
+  ciPassed: PropTypes.bool,
 })

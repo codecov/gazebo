@@ -5,6 +5,7 @@ import { mapEdges } from 'shared/utils/graphql'
 function fetchRepoCommits({ provider, owner, repo, filters }) {
   const CommitFragment = `
    fragment CommitFragment on Commit {
+        ciPassed
         message
         commitid
         createdAt

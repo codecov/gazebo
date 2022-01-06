@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { Switch, Route, useLocation } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import { useRepo } from 'services/repo/hooks'
 import Breadcrumb from 'ui/Breadcrumb'
 import TabNavigation from 'ui/TabNavigation'
@@ -9,10 +9,11 @@ import PullsPage from './PullsPage'
 import CommitsPage from './CommitPage'
 import { useCommits } from 'services/commits'
 import cs from 'classnames'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useBranches } from 'services/branches'
 import Select from 'ui/Select'
 import Icon from 'ui/Icon'
+import { useBreadcrumbPaths } from 'pages/RepoPage/breadcrumbPaths'
 
 const path = '/:provider/:owner/:repo'
 
@@ -43,31 +44,13 @@ const useBranchesNames = (provider, owner, repo) => {
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
-  const { pathname } = useLocation()
-
-  const [branch, setBranch] = useState('main')
-  const [paths, setPaths] = useState([])
-  const [isCommitsPage, setIsCommitsPage] = useState()
 
   const repoHasCommits = useIsRepoHasCommits(provider, owner, repo)
   const { privateRepo, data } = useIsPrivateRepo(provider, owner, repo)
   const branchesNames = useBranchesNames(provider, owner, repo)
 
-  useEffect(() => {
-    const isCommitsPage = pathname.split('/')[4] === 'commits'
-    const paths = isCommitsPage
-      ? [
-          { pageName: 'owner', text: owner },
-          { pageName: 'repo', text: repo },
-          { pageName: '', readOnly: true, text: branch },
-        ]
-      : [
-          { pageName: 'owner', text: owner },
-          { pageName: 'repo', text: repo },
-        ]
-    setPaths(paths)
-    setIsCommitsPage(isCommitsPage)
-  }, [pathname, owner, repo, branch])
+  const [branch, setBranch] = useState('main')
+  const { paths, isCommitsPage } = useBreadcrumbPaths(branch)
 
   return (
     <div className="flex flex-col gap-4">
