@@ -37,18 +37,18 @@ function PullsPage() {
   const handleFilterChange = (filters) => {
     setPullsFilter(filters)
 
-    const temp = filters.map((filter) => {
+    const states = filters.map((filter) => {
       const { state } = stateEnum[filter]
       return state
     })
-    setPullsStates(temp)
+    setPullsStates(states)
   }
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="flex flex-row center mb-4">
-        <label className="font-semibold text-sm mr-4 mt-1">View:</label>
-        <span className="w-32">
+      <div className="flex flex-row center mb-4 w-1/4">
+        <label className="font-semibold text-sm mt-1 mr-3">View:</label>
+        <div className="w-2/3 mt-0.5">
           <MultiSelect
             ariaName="Filter by state"
             selectedItems={pullsFilter}
@@ -56,15 +56,17 @@ function PullsPage() {
             onChange={handleFilterChange}
             resourceName=""
           />
-        </span>
-        <label className="font-semibold text-sm mx-4 mt-1">Sort by:</label>
-        <span className="w-32">
+        </div>
+        <label className="font-semibold text-sm ml-4 mr-1 mt-1 w-1/3">
+          Sort by:
+        </label>
+        <div className="w-2/3">
           <Select
             value={pullsOrder}
             items={orderItems}
             onChange={handleOrderChange}
           />
-        </span>
+        </div>
       </div>
       <PullsTable pulls={pulls} />
     </div>
