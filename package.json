@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@hookform/resolvers": "^2.8.3",
+    "@hookform/resolvers": "^2.8.5",
     "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
     "@stripe/react-stripe-js": "^1.5.0",
-    "@stripe/stripe-js": "^1.21.2",
+    "@stripe/stripe-js": "^1.22.0",
     "classnames": "^2.3.1",
     "date-fns": "^2.27.0",
     "dompurify": "^2.3.4",
