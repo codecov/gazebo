@@ -9,6 +9,7 @@ import PullsPage from './PullsPage'
 import CommitsPage from './CommitPage'
 import { useCommits } from 'services/commits'
 import cs from 'classnames'
+import { useBreadcrumbPaths } from 'pages/RepoPage/breadcrumbPaths'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -16,6 +17,7 @@ function RepoPage() {
   const { data: commits } = useCommits({ provider, owner, repo })
   const repoHasCommits = commits?.length > 0
 
+  const paths = useBreadcrumbPaths()
   const path = '/:provider/:owner/:repo'
   const { data } = useRepo({
     provider,
@@ -33,12 +35,7 @@ function RepoPage() {
           'border-none': repoHasCommits,
         })}
       >
-        <Breadcrumb
-          paths={[
-            { pageName: 'owner', text: owner },
-            { pageName: 'repo', text: repo },
-          ]}
-        />
+        <Breadcrumb paths={paths} />
         {privateRepo && (
           <span className="ml-2 px-1 py-0.5 h-5 mt-1 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary font-light">
             Private

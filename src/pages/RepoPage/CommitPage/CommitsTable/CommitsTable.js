@@ -6,6 +6,7 @@ import Title from './Title'
 import Coverage from './Coverage'
 import Change from './Change'
 import Patch from './Patch'
+import CIStatus from './CIStatus'
 
 const headers = [
   {
@@ -14,23 +15,28 @@ const headers = [
     width: 'w-6/12',
   },
   {
+    Header: <span className="w-full text-right">CI status</span>,
+    accessor: 'ciStatus',
+    width: 'w-2/12 lg:w-3/12',
+  },
+  {
     Header: (
       <span className="w-full text-right">
         Coverage <span className="ml-44 hidden lg:inline-block">%</span>
       </span>
     ),
     accessor: 'coverage',
-    width: 'w-2/12 lg:w-4/12',
+    width: 'w-2/12 lg:w-3/12',
   },
   {
     Header: <span className="w-full text-right">Patch</span>,
     accessor: 'patch',
-    width: 'w-2/12 lg:w-1/12',
+    width: 'w-1/12',
   },
   {
     Header: <span className="w-full text-right">Change</span>,
     accessor: 'change',
-    width: 'w-2/12 lg:w-1/12',
+    width: 'w-1/12',
   },
 ]
 
@@ -52,12 +58,36 @@ function transformPullToTable(commits) {
 
   return commits.map((commit) => {
     if (!commit) return handleOnNull()
+    const {
+      message,
+      author,
+      commitid,
+      createdAt,
+      totals,
+      compareWithParent,
+      parent,
+      ciPassed,
+    } = commit
 
     return {
-      title: <Title commit={commit} />,
-      coverage: <Coverage commit={commit} />,
-      patch: <Patch commit={commit} />,
-      change: <Change commit={commit} />,
+      title: (
+        <Title
+          message={message}
+          author={author}
+          commitid={commitid}
+          createdAt={createdAt}
+        />
+      ),
+      ciStatus: (
+        <CIStatus
+          commitid={commitid}
+          coverage={totals?.coverage}
+          ciPassed={ciPassed}
+        />
+      ),
+      coverage: <Coverage totals={totals} />,
+      patch: <Patch compareWithParent={compareWithParent} />,
+      change: <Change totals={totals} parent={parent} />,
     }
   })
 }
