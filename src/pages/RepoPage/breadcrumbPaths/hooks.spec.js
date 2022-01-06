@@ -37,11 +37,15 @@ describe('useBreadcrumbPaths', () => {
     })
 
     it('returns three paths objects', () => {
-      expect(hookData.current.length).toBe(3)
+      expect(hookData.current.paths.length).toBe(3)
     })
 
     it('returns expected paths objects', () => {
-      expect(hookData.current).toEqual(commitsPaths)
+      expect(hookData.current.paths).toEqual(commitsPaths)
+    })
+
+    it('returns true value for isCommitsPage', () => {
+      expect(hookData.current.isCommitsPage).toBe(true)
     })
   })
 
@@ -55,11 +59,15 @@ describe('useBreadcrumbPaths', () => {
     })
 
     it('returns two paths objects', () => {
-      expect(hookData.current.length).toBe(2)
+      expect(hookData.current.paths.length).toBe(2)
     })
 
     it('returns expected paths objects', () => {
-      expect(hookData.current).toEqual(paths)
+      expect(hookData.current.paths).toEqual(paths)
+    })
+
+    it('returns fasle value for isCommitsPage', () => {
+      expect(hookData.current.isCommitsPage).toBe(false)
     })
   })
 })
