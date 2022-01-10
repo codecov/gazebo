@@ -45,27 +45,29 @@ function PullsPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="flex flex-row center mb-4 w-1/4">
-        <label className="font-semibold text-sm mt-1 mr-3">View:</label>
-        <div className="w-2/3 mt-0.5">
-          <MultiSelect
-            ariaName="Filter by state"
-            selectedItems={pullsFilter}
-            items={fitlerItems}
-            onChange={handleFilterChange}
-            resourceName=""
-          />
+    <div className="flex-1 flex flex-col gap-4">
+      <div className="flex flex-row gap-3">
+        <div className="flex gap-3 justify-center items-center">
+          <label className="font-semibold text-sm">View:</label>
+          <div>
+            <MultiSelect
+              ariaName="Filter by state"
+              selectedItems={pullsFilter}
+              items={fitlerItems}
+              onChange={handleFilterChange}
+              resourceName=""
+            />
+          </div>
         </div>
-        <label className="font-semibold text-sm ml-4 mr-1 mt-1 w-1/3">
-          Sort by:
-        </label>
-        <div className="w-2/3">
-          <Select
-            value={pullsOrder}
-            items={orderItems}
-            onChange={handleOrderChange}
-          />
+        <div className="flex gap-3 justify-center items-center">
+          <label className="font-semibold text-sm ">Sort by:</label>
+          <div>
+            <Select
+              value={pullsOrder}
+              items={orderItems}
+              onChange={handleOrderChange}
+            />
+          </div>
         </div>
       </div>
       <PullsTable pulls={pulls} />
