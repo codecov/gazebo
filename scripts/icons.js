@@ -17,6 +17,7 @@ const enabledIcons = [
   'pull-request-open',
   'speakerphone',
   'exclamation',
+  'branch',
 ]
 
 console.log('Generating Icons import')

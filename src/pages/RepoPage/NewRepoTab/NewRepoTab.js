@@ -1,13 +1,15 @@
-import A from 'ui/A'
-import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
-import PropTypes from 'prop-types'
-import Icon from 'ui/Icon'
-import { Fragment } from 'react'
-import InstructionBox from './instructionBox/InstructionBox'
-import { useCommits } from 'services/commits'
-import { useParams } from 'react-router'
 import { useEffect } from 'react'
+import { useParams } from 'react-router'
+
+import { useCommits } from 'services/commits'
+import { useRepo } from 'services/repo'
+
+import A from 'ui/A'
+import Icon from 'ui/Icon'
+import CopyClipboard from 'ui/CopyClipboard'
+
 import GithubConfigBanner from './githubConfigBanner'
+import InstructionBox from './instructionBox/InstructionBox'
 
 function useRedirectUsers() {
   const { provider, owner, repo } = useParams()
@@ -18,7 +20,10 @@ function useRedirectUsers() {
   }, [provider, owner, repo, commits])
 }
 
-function New({ data }) {
+function NewRepoTab() {
+  const { provider, owner, repo } = useParams()
+  const { data } = useRepo({ provider, owner, repo })
+
   useRedirectUsers()
 
   if (!data || !data?.repo?.uploadToken) {
@@ -29,7 +34,7 @@ function New({ data }) {
   const { isPartOfOrg } = data
 
   const PrivateRepoScope = (
-    <Fragment>
+    <>
       <p className="text-base">
         Copy the below token and set it in your CI environment variables.
       </p>
@@ -40,11 +45,11 @@ function New({ data }) {
         </span>
         <CopyClipboard string={token} />
       </p>
-    </Fragment>
+    </>
   )
 
   const PublicRepoScope = isPartOfOrg ? (
-    <Fragment>
+    <>
       <p className="text-base">
         If the public project is on TravisCI, CircleCI, AppVeyor, Azure
         Pipelines, or GitHub Actions an upload token is not required. Otherwise,
@@ -58,7 +63,7 @@ function New({ data }) {
         </span>
         <CopyClipboard string={token} />
       </p>
-    </Fragment>
+    </>
   ) : (
     <p className="text-base">
       If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or
@@ -68,7 +73,7 @@ function New({ data }) {
   )
 
   return (
-    <div className="flex w-4/5 md:w-3/5 lg:w-2/5 flex-col mt-6">
+    <div className="mx-auto w-4/5 md:w-3/5 lg:w-2/5 mt-6">
       <h1 className="font-semibold text-3xl my-4">
         Let&apos;s get your repo covered
       </h1>
@@ -95,7 +100,7 @@ function New({ data }) {
 
       <GithubConfigBanner privateRepo={privateRepo} />
 
-      <Fragment>
+      <>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>
         <p className="text-base">
           Run your normal test suite to generate code coverage reports in a
@@ -139,13 +144,9 @@ function New({ data }) {
           uploader runs it will return a link where you can view your reports on
           Codecov.
         </p>
-      </Fragment>
+      </>
     </div>
   )
 }
 
-New.propTypes = {
-  data: PropTypes.object,
-}
-
-export default New
+export default NewRepoTab

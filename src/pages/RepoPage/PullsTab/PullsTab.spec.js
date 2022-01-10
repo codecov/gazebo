@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { Route, MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { usePulls } from 'services/pulls/hooks'
-import PullsPage from '.'
+import PullsTab from '.'
 
 jest.mock('services/pulls/hooks')
 
@@ -56,7 +56,7 @@ describe('Pulls Page', () => {
       <MemoryRouter initialEntries={['/gh/codecov/gazebo/pulls']}>
         <Route path="/:provider/:owner/:repo/pulls">
           <QueryClientProvider client={queryClient}>
-            <PullsPage />
+            <PullsTab />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>

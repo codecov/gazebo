@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
+import CopyClipboard from 'ui/CopyClipboard'
 import cs from 'classnames'
 
 function InstructionBox() {
