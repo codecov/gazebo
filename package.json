@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@hookform/resolvers": "^2.8.3",
+    "@hookform/resolvers": "^2.8.5",
     "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
     "@stripe/react-stripe-js": "^1.5.0",
@@ -93,7 +93,7 @@
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.4.1",
     "@tailwindcss/postcss7-compat": "^2.2.17",
-    "@testing-library/jest-dom": "^5.15.1",
+    "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/react-hooks": "^7.0.1",
     "@testing-library/user-event": "^13.5.0",
