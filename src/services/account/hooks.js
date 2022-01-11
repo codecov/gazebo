@@ -5,6 +5,7 @@ import Cookie from 'js-cookie'
 import Api from 'shared/api'
 import { ProviderCookieKeyMapping } from 'shared/api/helpers'
 import { Plans } from 'shared/utils/billing'
+import { useFlags } from 'shared/featureFlags'
 
 function getPathAccountDetails({ provider, owner }) {
   return `/${provider}/${owner}/account-details/`
@@ -20,11 +21,11 @@ function fetchPlan(provider) {
   return Api.get({ path, provider })
 }
 
-function cancelPlan({ provider, owner }) {
+function cancelPlan({ provider, owner, planType }) {
   const path = getPathAccountDetails({ provider, owner })
   const body = {
     plan: {
-      value: Plans.USERS_BASIC,
+      value: planType,
     },
   }
   return Api.patch({ path, provider, body })
@@ -64,8 +65,10 @@ export function usePlans(provider) {
 
 export function useCancelPlan({ provider, owner }) {
   const queryClient = useQueryClient()
+  const { planCancelationFlow } = useFlags({ planCancelationFlow: false })
+  const planType = planCancelationFlow ? Plans.USERS_BASIC : Plans.USERS_FREE
 
-  return useMutation(() => cancelPlan({ provider, owner }), {
+  return useMutation(() => cancelPlan({ provider, owner, planType }), {
     onSuccess: (data) => {
       // update the local cache of account details from what the server returns
       queryClient.setQueryData(['accountDetails', provider, owner], data)
