@@ -38,7 +38,7 @@ const GithubConfigBanner = ({ privateRepo }) => {
               data-testid="teamBot-link"
               rel="noreferrer"
               target="_blank"
-              href="https://docs.codecov.com/docs/team-bot'"
+              href="https://docs.codecov.com/docs/team-bot"
               className="text-ds-blue"
             >
               Team Bot
