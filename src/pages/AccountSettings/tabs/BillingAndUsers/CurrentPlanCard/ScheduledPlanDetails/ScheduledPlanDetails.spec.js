@@ -36,9 +36,7 @@ describe('ScheduledPlanDetails', () => {
     })
 
     it('renders start date in human readable', () => {
-      expect(
-        screen.getByText(/January 13th 2022, 12:33 p.m./)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/January 13th 2022/)).toBeInTheDocument()
     })
   })
 })
