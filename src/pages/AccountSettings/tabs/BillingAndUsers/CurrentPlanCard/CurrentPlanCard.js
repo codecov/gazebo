@@ -5,6 +5,7 @@ import { isFreePlan } from 'shared/utils/billing'
 import ActionsBilling from './ActionsBilling'
 import BenefitList from '../../../shared/BenefitList'
 import Usage from './Usage'
+import ScheduledPlanDetails from './ScheduledPlanDetails'
 import A from 'ui/A'
 
 function CurrentPlanCard({ accountDetails }) {
@@ -26,6 +27,11 @@ function CurrentPlanCard({ accountDetails }) {
       </div>
       <hr className="my-6" />
       <Usage accountDetails={accountDetails} isBasicPlan={isBasicPlan} />
+      {accountDetails?.scheduleDetail?.id && (
+        <ScheduledPlanDetails
+          scheduledPhase={accountDetails?.scheduleDetail?.scheduledPhase}
+        />
+      )}
       <div className="flex flex-col items-center mt-1">
         <ActionsBilling
           accountDetails={accountDetails}

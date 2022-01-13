@@ -106,6 +106,41 @@ describe('CurrentPlanCard', () => {
     })
   })
 
+  describe('when the subscription has scheduled information', () => {
+    beforeEach(() => {
+      setup({
+        ...proAccountDetails,
+        scheduleDetail: {
+          id: 'sub_sched_sch1K77Y5GlVGuVgOrkJrLjRnne',
+          scheduledPhase: {
+            plan: 'Annual',
+            quantity: 14,
+            startDate: 191276319264,
+          },
+        },
+      })
+    })
+
+    it('renders scheduled details', () => {
+      expect(screen.getByText(/\Scheduled Details/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the subscription doesn not have scheduled information', () => {
+    beforeEach(() => {
+      setup({
+        ...proAccountDetails,
+        scheduleDetail: {
+          id: null,
+        },
+      })
+    })
+
+    it('renders doesn not render scheduled details', () => {
+      expect(screen.queryByText(/\Scheduled Details/)).not.toBeInTheDocument()
+    })
+  })
+
   describe('when the user is using github marketplace', () => {
     beforeEach(() => {
       setup({
