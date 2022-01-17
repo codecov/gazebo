@@ -4,17 +4,17 @@ import PropTypes from 'prop-types'
 
 const Status = ({ ciPassed }) => {
   return (
-    <div className="flex">
+    <div className="flex items-center gap-1">
       {ciPassed ? (
         <>
-          <span className="text-green-600 mr-2">
+          <span className="text-green-600">
             <Icon name="check" size="md" />
           </span>
           Passed
         </>
       ) : (
         <>
-          <span className="text-red-600 mr-2">
+          <span className="text-red-600">
             <Icon name="x" size="md" />
           </span>
           Failed
