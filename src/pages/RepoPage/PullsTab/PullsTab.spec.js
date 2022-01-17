@@ -1,6 +1,5 @@
-import { render, fireEvent, screen } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
+import { repoPageRender, fireEvent, screen } from '../repo-jest-setup'
+
 import { usePulls } from 'services/pulls/hooks'
 import PullsTab from '.'
 
@@ -51,16 +50,10 @@ describe('Pulls Page', () => {
       ],
     })
 
-    const queryClient = new QueryClient()
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/pulls']}>
-        <Route path="/:provider/:owner/:repo/pulls">
-          <QueryClientProvider client={queryClient}>
-            <PullsTab />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+    repoPageRender({
+      initialEntries: ['/gh/codecov/gazebo/pulls'],
+      renderPulls: () => <PullsTab />,
+    })
   }
 
   describe('when rendered', () => {

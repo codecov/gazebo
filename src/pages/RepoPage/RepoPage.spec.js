@@ -52,6 +52,7 @@ describe('RepoPage', () => {
     useCommits.mockReturnValue({ data: commits })
     useBranches.mockReturnValue({ data: branches })
 
+    // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.
     if (initialEntries) {
       repoPageRender({
         renderCommits: () => <RepoPage />,

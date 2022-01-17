@@ -1,26 +1,18 @@
-import { render, screen } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { repoPageRender, screen } from '../repo-jest-setup'
 
 import { useRepo } from 'services/repo'
 import NewTab from '.'
 
 jest.mock('services/repo/hooks')
-const queryClient = new QueryClient()
 
 describe('New Page', () => {
   function setup(data) {
     useRepo.mockReturnValue({ data })
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
-          <Route path="/:provider/:owner/:repo/new">
-            <NewTab />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+    repoPageRender({
+      initialEntries: ['/gh/codecov/Test/new'],
+      renderNew: () => <NewTab />,
+    })
   }
 
   describe('when rendered with token and repo is private', () => {
