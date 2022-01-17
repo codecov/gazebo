@@ -1,9 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { Route, MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
-import { useCommits } from 'services/commits/hooks'
-import CommitsTab from './CommitsTab'
 import userEvent from '@testing-library/user-event'
+
+import { useCommits } from 'services/commits/hooks'
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
+import CommitsTab from './CommitsTab'
 
 jest.mock('services/commits/hooks')
 
@@ -47,7 +49,9 @@ describe('Commits Page', () => {
       <MemoryRouter initialEntries={['/gh/codecov/gazebo/commits']}>
         <Route path="/:provider/:owner/:repo/commits">
           <QueryClientProvider client={queryClient}>
-            <CommitsTab />
+            <RepoBreadcrumbProvider>
+              <CommitsTab />
+            </RepoBreadcrumbProvider>
           </QueryClientProvider>
         </Route>
       </MemoryRouter>

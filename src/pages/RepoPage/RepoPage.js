@@ -64,9 +64,6 @@ function RepoPage() {
             <Route path={`${path}/commits`} exact>
               <CommitsTab />
             </Route>
-            <Route path={`${path}/branches`} exact>
-              <h1>Branches</h1>
-            </Route>
             <Route path={`${path}/pulls`} exact>
               <PullsTab />
             </Route>

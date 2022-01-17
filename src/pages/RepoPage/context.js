@@ -29,7 +29,10 @@ export function RepoBreadcrumbProvider({ children }) {
       {
         pageName: 'repo',
         text: (
-          <div className="flex gap-1 items-center">
+          <div
+            className="flex gap-1 items-center"
+            data-testid="breadcrumb-repo"
+          >
             {repo}
             {data?.repo?.private && (
               <span className="flex-initial border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary font-light px-1">

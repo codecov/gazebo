@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import { useParams } from 'react-router'
 
 import { usePulls } from 'services/pulls'
@@ -54,7 +54,9 @@ function PullsTab() {
     pullsOrder,
   } = useFormControls()
 
-  setCrumbs()
+  useLayoutEffect(() => {
+    setCrumbs()
+  }, [setCrumbs])
 
   const handleOrderChange = (ordering) => {
     setPullsOrder(ordering)

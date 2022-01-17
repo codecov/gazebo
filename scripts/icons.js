@@ -15,6 +15,7 @@ const enabledIcons = [
   'home',
   'merge',
   'pull-request-open',
+  'pull-request-closed',
   'speakerphone',
   'exclamation',
   'branch',

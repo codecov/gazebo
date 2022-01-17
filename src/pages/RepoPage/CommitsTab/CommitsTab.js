@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router'
 
@@ -29,18 +29,20 @@ function CommitsTab() {
     },
   })
 
-  setCrumbs([
-    {
-      pageName: '',
-      readOnly: true,
-      text: (
-        <h1 className="flex gap-1 items-center">
-          <Icon name="branch" variant="developer" size="sm" />
-          {branch}
-        </h1>
-      ),
-    },
-  ])
+  useLayoutEffect(() => {
+    setCrumbs([
+      {
+        pageName: '',
+        readOnly: true,
+        text: (
+          <h1 className="flex gap-1 items-center">
+            <Icon name="branch" variant="developer" size="sm" />
+            {branch}
+          </h1>
+        ),
+      },
+    ])
+  }, [branch, setCrumbs])
 
   return (
     <div className="flex-1 flex flex-col gap-4">

@@ -1,10 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import RepoPage from '.'
-import { QueryClientProvider, QueryClient } from 'react-query'
+import { repoPageRender, screen, fireEvent, waitFor } from './repo-jest-setup'
+
 import { useRepo } from 'services/repo/hooks'
 import { useCommits } from 'services/commits'
 import { useBranches } from 'services/branches'
+
+import RepoPage from '.'
 
 jest.mock('services/repo/hooks')
 jest.mock('services/commits')
@@ -47,20 +47,21 @@ const branches = [
 ]
 
 describe('RepoPage', () => {
-  function setup({ repo, commits = [], path = '/' }) {
+  function setup({ repo, commits = [], initialEntries }) {
     useRepo.mockReturnValue({ data: { repo } })
     useCommits.mockReturnValue({ data: commits })
     useBranches.mockReturnValue({ data: branches })
-    const queryClient = new QueryClient()
-    render(
-      <MemoryRouter initialEntries={[`/gh/codecov/Test/${path}`]}>
-        <Route path={`/:provider/:owner/:repo/${path}`}>
-          <QueryClientProvider client={queryClient}>
-            <RepoPage />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+
+    if (initialEntries) {
+      repoPageRender({
+        renderCommits: () => <RepoPage />,
+        initialEntries,
+      })
+    } else {
+      repoPageRender({
+        renderRoot: () => <RepoPage />,
+      })
+    }
   }
 
   describe('when rendered', () => {
@@ -74,23 +75,8 @@ describe('RepoPage', () => {
     })
 
     it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/Test/)
+      const repo = screen.getByText(/test-repo/)
       expect(repo).toBeInTheDocument()
-    })
-
-    it('does not render Private span', () => {
-      const privateSpan = screen.queryByText(/Private/)
-      expect(privateSpan).not.toBeInTheDocument()
-    })
-
-    it('does not render the branch in the breadcrumb', () => {
-      const branch = screen.queryByText(/main/)
-      expect(branch).not.toBeInTheDocument()
-    })
-
-    it('does not render the branch context selector', () => {
-      const select = screen.queryByText('Branch Context')
-      expect(select).not.toBeInTheDocument()
     })
   })
 
@@ -109,7 +95,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/Test/)
+      const repo = screen.getByText(/test-repo/)
       expect(repo).toBeInTheDocument()
     })
 
@@ -166,12 +152,13 @@ describe('RepoPage', () => {
         },
         path: 'commits',
         commits,
+        initialEntries: ['/gh/codecov/test-repo/commits'],
       })
     })
 
-    it('renders the branch in the breadcrumb', () => {
-      const branch = screen.getAllByText(/main/)[0]
-      expect(branch).toBeInTheDocument()
+    it('renders the branch in the breadcrumb', async () => {
+      const branch = screen.queryByTestId('breadcrumb-repo')
+      await waitFor(() => expect(branch).toBeInTheDocument())
     })
 
     it('renders the branch context selector label', () => {
@@ -195,6 +182,7 @@ describe('RepoPage', () => {
         },
         path: 'commits',
         commits,
+        initialEntries: ['/gh/codecov/test/commits'],
       })
       const select = screen.getByRole('button', {
         name: 'main chevron-down.svg',
@@ -218,6 +206,7 @@ describe('RepoPage', () => {
         },
         path: 'commits',
         commits,
+        initialEntries: ['/gh/codecov/test/commits'],
       })
       const select = screen.getByRole('button', {
         name: 'main chevron-down.svg',
