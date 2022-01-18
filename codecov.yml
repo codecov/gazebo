@@ -29,3 +29,4 @@ ignore:
   - ./src/mocks/*.js
   - ./src/**/flags/**/*.js
   - ./src/**/mocks.js
+  - ./src/pages/RepoPage/repo-jest-setup.js

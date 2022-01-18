@@ -5,7 +5,11 @@ import NewTab from '.'
 
 jest.mock('services/repo/hooks')
 
-describe('New Page', () => {
+describe('New Tab', () => {
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
   function setup(data) {
     useRepo.mockReturnValue({ data })
 

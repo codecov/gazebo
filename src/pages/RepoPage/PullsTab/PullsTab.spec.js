@@ -5,7 +5,11 @@ import PullsTab from '.'
 
 jest.mock('services/pulls/hooks')
 
-describe('Pulls Page', () => {
+describe('Pulls Pab', () => {
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
   function setup() {
     usePulls.mockReturnValue({
       data: [

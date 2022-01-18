@@ -6,7 +6,11 @@ import CommitsTab from './CommitsTab'
 
 jest.mock('services/commits/hooks')
 
-describe('Commits Page', () => {
+describe('Commits Tab', () => {
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
   function setup() {
     useCommits.mockReturnValue({
       data: [
