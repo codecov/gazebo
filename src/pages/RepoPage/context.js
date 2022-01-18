@@ -34,7 +34,7 @@ export function RepoBreadcrumbProvider({ children }) {
             data-testid="breadcrumb-repo"
           >
             {repo}
-            {data?.repo?.private && (
+            {data?.repository?.private && (
               <span className="flex-initial border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary font-light px-1">
                 Private
               </span>
@@ -43,7 +43,7 @@ export function RepoBreadcrumbProvider({ children }) {
         ),
       },
     ],
-    [data?.repo?.private, owner, repo]
+    [data?.repository?.private, owner, repo]
   )
 
   const [breadcrumbs, setBreadcrumbs] = useState(base)

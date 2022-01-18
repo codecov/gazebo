@@ -17,7 +17,7 @@ describe('New Page', () => {
 
   describe('when rendered with token and repo is private', () => {
     beforeEach(() => {
-      setup({ repo: { uploadToken: 'randomToken', private: true } })
+      setup({ repository: { uploadToken: 'randomToken', private: true } })
     })
 
     it('renders Step1', () => {
@@ -39,7 +39,7 @@ describe('New Page', () => {
   describe('when rendered with token and repo is public and user is part of org', () => {
     beforeEach(() => {
       setup({
-        repo: { uploadToken: 'randomToken', private: false },
+        repository: { uploadToken: 'randomToken', private: false },
         isPartOfOrg: true,
       })
     })
@@ -63,7 +63,7 @@ describe('New Page', () => {
   describe('when rendered with public repo and user is not a part of the org', () => {
     beforeEach(() => {
       setup({
-        repo: { uploadToken: 'randomToken', private: false },
+        repository: { uploadToken: 'randomToken', private: false },
         isPartOfOrg: false,
       })
     })
@@ -98,7 +98,7 @@ describe('New Page', () => {
   describe('when repo is private', () => {
     beforeEach(() => {
       setup({
-        repo: { uploadToken: 'randomToken', private: true },
+        repository: { uploadToken: 'randomToken', private: true },
       })
     })
 
@@ -111,7 +111,7 @@ describe('New Page', () => {
   describe('when repo is public', () => {
     beforeEach(() => {
       setup({
-        repo: { uploadToken: 'randomToken', private: false },
+        repository: { uploadToken: 'randomToken', private: false },
       })
     })
 

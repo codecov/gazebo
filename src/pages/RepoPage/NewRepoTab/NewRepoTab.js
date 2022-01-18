@@ -77,11 +77,11 @@ function NewRepoTab() {
 
   useRedirectUsers()
 
-  if (!data || !data?.repo?.uploadToken) {
+  if (!data || !data?.repository?.uploadToken) {
     return null
   }
 
-  const { uploadToken: token, private: privateRepo } = data?.repo
+  const { uploadToken, private: privateRepo } = data?.repository
 
   return (
     <div className="mx-auto w-4/5 md:w-3/5 lg:w-2/5 mt-6">
@@ -121,9 +121,12 @@ function NewRepoTab() {
         <h2 className="font-semibold mt-8 text-base">Step 2</h2>
         <div>
           {privateRepo ? (
-            <PrivateRepoScope token={token} />
+            <PrivateRepoScope token={uploadToken} />
           ) : (
-            <PublicRepoScope isPartOfOrg={data?.isPartOfOrg} token={token} />
+            <PublicRepoScope
+              isPartOfOrg={data?.isPartOfOrg}
+              token={uploadToken}
+            />
           )}
         </div>
 

@@ -47,8 +47,8 @@ const branches = [
 ]
 
 describe('RepoPage', () => {
-  function setup({ repo, commits = [], initialEntries }) {
-    useRepo.mockReturnValue({ data: { repo } })
+  function setup({ repository, commits = [], initialEntries }) {
+    useRepo.mockReturnValue({ data: { repository } })
     useCommits.mockReturnValue({ data: commits })
     useBranches.mockReturnValue({ data: branches })
 
@@ -67,7 +67,7 @@ describe('RepoPage', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ repo: { private: false } })
+      setup({ repository: { private: false } })
     })
 
     it('renders the title with the owner name', () => {
@@ -84,7 +84,7 @@ describe('RepoPage', () => {
   describe('when rendered with private repo', () => {
     beforeEach(() => {
       setup({
-        repo: {
+        repository: {
           private: true,
         },
       })
@@ -109,7 +109,7 @@ describe('RepoPage', () => {
   describe('when rendered with a repo that has commits', () => {
     beforeEach(() => {
       setup({
-        repo: {
+        repository: {
           private: true,
         },
         commits,
@@ -129,7 +129,7 @@ describe('RepoPage', () => {
   describe('when rendered with a repo that has no commits', () => {
     beforeEach(() => {
       setup({
-        repo: {
+        repository: {
           private: true,
         },
       })
@@ -148,7 +148,7 @@ describe('RepoPage', () => {
   describe('when renders the commits page', () => {
     beforeEach(() => {
       setup({
-        repo: {
+        repository: {
           private: true,
         },
         path: 'commits',
@@ -178,7 +178,7 @@ describe('RepoPage', () => {
   describe('when click on the selector in the commits page', () => {
     beforeEach(() => {
       setup({
-        repo: {
+        repository: {
           private: true,
         },
         path: 'commits',
@@ -202,7 +202,7 @@ describe('RepoPage', () => {
   describe('when seelct a branch of the selector in the commits page', () => {
     beforeEach(() => {
       setup({
-        repo: {
+        repository: {
           private: true,
         },
         path: 'commits',
