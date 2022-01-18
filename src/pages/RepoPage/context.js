@@ -6,12 +6,13 @@ import {
   useMemo,
 } from 'react'
 import { useParams } from 'react-router-dom'
+import noop from 'lodash/noop'
 
 import { useRepo } from 'services/repo'
 
 const RepoBreadcrumbContext = createContext([])
 const RepoBreadcrumbSettersContext = createContext({
-  addBreadcrumb: (data) => undefined,
+  addBreadcrumb: noop,
 })
 RepoBreadcrumbContext.displayName = 'RepoBreadcrumbContext'
 
