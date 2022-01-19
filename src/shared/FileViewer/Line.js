@@ -49,7 +49,7 @@ function Line({
       <td
         aria-label={lineStateToLabel[lineState]}
         className={cs(
-          'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2',
+          'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
           classNamePerLineState[lineState]
         )}
       >
