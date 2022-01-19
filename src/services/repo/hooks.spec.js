@@ -76,7 +76,10 @@ describe('useRepo', () => {
   })
 
   describe('when called with unsuccessful res', () => {
-    expectedResponse = null
+    expectedResponse = {
+      repository: undefined,
+      isPartOfOrg: undefined,
+    }
     const dataReturned = {
       noOwnerSent: 1,
     }
