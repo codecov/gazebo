@@ -120,7 +120,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
     owner,
   })
 
-  const { newRepoSetupLink } = useFlags({ newRepoSetupLink: true })
+  const { newRepoSetupLink } = useFlags({ newRepoSetupLink: false })
   const dataTable = transformRepoToTable(
     data.repos,
     owner,
