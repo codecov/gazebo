@@ -29,8 +29,7 @@ export function useBranches({ provider, owner, repo }) {
         repo,
       },
     }).then((res) => {
-      const { branches } = res?.data?.owner?.repository
-      return mapEdges(branches)
+      return mapEdges(res?.data?.owner?.repository?.branches)
     })
   })
 }

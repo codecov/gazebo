@@ -271,7 +271,6 @@ describe('useCancelPlan', () => {
       })
 
       it('returns isLoading true', () => {
-        console.log(hookData.result.current)
         expect(hookData.result.current.isLoading).toBeTruthy()
       })
     })

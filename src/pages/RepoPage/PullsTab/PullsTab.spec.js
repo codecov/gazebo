@@ -1,12 +1,15 @@
-import { render, fireEvent, screen } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
+import { repoPageRender, fireEvent, screen } from '../repo-jest-setup'
+
 import { usePulls } from 'services/pulls/hooks'
-import PullsPage from './PullsPage'
+import PullsTab from '.'
 
 jest.mock('services/pulls/hooks')
 
-describe('Pulls Page', () => {
+describe('Pulls Pab', () => {
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
   function setup() {
     usePulls.mockReturnValue({
       data: [
@@ -51,16 +54,10 @@ describe('Pulls Page', () => {
       ],
     })
 
-    const queryClient = new QueryClient()
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/pulls']}>
-        <Route path="/:provider/:owner/:repo/pulls">
-          <QueryClientProvider client={queryClient}>
-            <PullsPage />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+    repoPageRender({
+      initialEntries: ['/gh/codecov/gazebo/pulls'],
+      renderPulls: () => <PullsTab />,
+    })
   }
 
   describe('when rendered', () => {

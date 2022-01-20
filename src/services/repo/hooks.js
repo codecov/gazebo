@@ -22,12 +22,9 @@ function fetchRepoDetails({ provider, owner, repo }) {
       repo,
     },
   }).then((res) => {
-    const { repository: repo, isCurrentUserPartOfOrg: isPartOfOrg } =
-      res?.data?.owner
-    if (!repo) return null
     return {
-      repo,
-      isPartOfOrg,
+      repository: res?.data?.owner?.repository,
+      isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
     }
   })
 }

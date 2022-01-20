@@ -1,13 +1,16 @@
-import { render, screen } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
-import { useCommits } from 'services/commits/hooks'
-import CommitsPage from './CommitsPage'
 import userEvent from '@testing-library/user-event'
+import { repoPageRender, screen } from '../repo-jest-setup'
+
+import { useCommits } from 'services/commits/hooks'
+import CommitsTab from './CommitsTab'
 
 jest.mock('services/commits/hooks')
 
-describe('Commits Page', () => {
+describe('Commits Tab', () => {
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
   function setup() {
     useCommits.mockReturnValue({
       data: [
@@ -42,16 +45,10 @@ describe('Commits Page', () => {
       ],
     })
 
-    const queryClient = new QueryClient()
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/commits']}>
-        <Route path="/:provider/:owner/:repo/commits">
-          <QueryClientProvider client={queryClient}>
-            <CommitsPage />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+    repoPageRender({
+      renderCommits: () => <CommitsTab />,
+      initialEntries: ['/gh/codecov/gazebo/commits'],
+    })
   }
 
   describe('when rendered', () => {

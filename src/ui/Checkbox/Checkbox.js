@@ -9,7 +9,7 @@ const Checkbox = forwardRef(
 
     return (
       <div
-        className={cs('flex items-center', {
+        className={cs('flex items-center flex-wrap', {
           'text-ds-gray-quaternary': disabled,
           'text-ds-gray-octonary': !disabled,
         })}

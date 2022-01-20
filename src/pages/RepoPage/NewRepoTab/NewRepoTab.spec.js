@@ -1,27 +1,27 @@
-import { render, screen } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import New from '.'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { repoPageRender, screen } from '../repo-jest-setup'
+
+import { useRepo } from 'services/repo'
+import NewTab from '.'
 
 jest.mock('services/repo/hooks')
-const queryClient = new QueryClient()
 
-describe('New Page', () => {
+describe('New Tab', () => {
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
   function setup(data) {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh/codecov/Test/new']}>
-          <Route path="/:provider/:owner/:repo/new">
-            <New {...data} />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+    useRepo.mockReturnValue({ data })
+
+    repoPageRender({
+      initialEntries: ['/gh/codecov/Test/new'],
+      renderNew: () => <NewTab />,
+    })
   }
 
   describe('when rendered with token and repo is private', () => {
     beforeEach(() => {
-      setup({ data: { repo: { uploadToken: 'randomToken', private: true } } })
+      setup({ repository: { uploadToken: 'randomToken', private: true } })
     })
 
     it('renders Step1', () => {
@@ -43,10 +43,8 @@ describe('New Page', () => {
   describe('when rendered with token and repo is public and user is part of org', () => {
     beforeEach(() => {
       setup({
-        data: {
-          repo: { uploadToken: 'randomToken', private: false },
-          isPartOfOrg: true,
-        },
+        repository: { uploadToken: 'randomToken', private: false },
+        isCurrentUserPartOfOrg: true,
       })
     })
 
@@ -69,10 +67,8 @@ describe('New Page', () => {
   describe('when rendered with public repo and user is not a part of the org', () => {
     beforeEach(() => {
       setup({
-        data: {
-          repo: { uploadToken: 'randomToken', private: false },
-          isPartOfOrg: false,
-        },
+        repository: { uploadToken: 'randomToken', private: false },
+        isCurrentUserPartOfOrg: false,
       })
     })
 
@@ -106,9 +102,7 @@ describe('New Page', () => {
   describe('when repo is private', () => {
     beforeEach(() => {
       setup({
-        data: {
-          repo: { uploadToken: 'randomToken', private: true },
-        },
+        repository: { uploadToken: 'randomToken', private: true },
       })
     })
 
@@ -121,9 +115,7 @@ describe('New Page', () => {
   describe('when repo is public', () => {
     beforeEach(() => {
       setup({
-        data: {
-          repo: { uploadToken: 'randomToken', private: false },
-        },
+        repository: { uploadToken: 'randomToken', private: false },
       })
     })
 

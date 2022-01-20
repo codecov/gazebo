@@ -1,13 +1,16 @@
-import A from 'ui/A'
-import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
-import PropTypes from 'prop-types'
-import Icon from 'ui/Icon'
-import { Fragment } from 'react'
-import InstructionBox from './instructionBox/InstructionBox'
-import { useCommits } from 'services/commits'
-import { useParams } from 'react-router'
 import { useEffect } from 'react'
+import { useParams } from 'react-router'
+import PropTypes from 'prop-types'
+
+import { useCommits } from 'services/commits'
+import { useRepo } from 'services/repo'
+
+import A from 'ui/A'
+import Icon from 'ui/Icon'
+import CopyClipboard from 'ui/CopyClipboard'
+
 import GithubConfigBanner from './githubConfigBanner'
+import InstructionBox from './instructionBox/InstructionBox'
 
 function useRedirectUsers() {
   const { provider, owner, repo } = useParams()
@@ -18,38 +21,33 @@ function useRedirectUsers() {
   }, [provider, owner, repo, commits])
 }
 
-function New({ data }) {
-  useRedirectUsers()
+const PrivateRepoScope = ({ token }) => (
+  <>
+    <p className="text-base">
+      Copy the below token and set it in your CI environment variables.
+    </p>
+    <p className="flex flex-row justify-center text-s mt-4">
+      Codecov Token={' '}
+      <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
+        {token}
+      </span>
+      <CopyClipboard string={token} />
+    </p>
+  </>
+)
 
-  if (!data || !data?.repo?.uploadToken) {
-    return null
-  }
+PrivateRepoScope.propTypes = {
+  token: PropTypes.string,
+}
 
-  const { uploadToken: token, private: privateRepo } = data?.repo
-  const { isPartOfOrg } = data
-
-  const PrivateRepoScope = (
-    <Fragment>
-      <p className="text-base">
-        Copy the below token and set it in your CI environment variables.
-      </p>
-      <p className="flex flex-row justify-center text-s mt-4">
-        Codecov Token={' '}
-        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
-          {token}
-        </span>
-        <CopyClipboard string={token} />
-      </p>
-    </Fragment>
-  )
-
-  const PublicRepoScope = isPartOfOrg ? (
-    <Fragment>
+const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
+  return isCurrentUserPartOfOrg ? (
+    <>
       <p className="text-base">
         If the public project is on TravisCI, CircleCI, AppVeyor, Azure
         Pipelines, or GitHub Actions an upload token is not required. Otherwise,
-        you’ll need to set the token below and set it in your CI environment
-        variables.
+        you&apos;ll need to set the token below and set it in your CI
+        environment variables.
       </p>
       <p className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
@@ -58,17 +56,35 @@ function New({ data }) {
         </span>
         <CopyClipboard string={token} />
       </p>
-    </Fragment>
+    </>
   ) : (
     <p className="text-base">
       If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or
-      GitHub Actions an upload token is not required. Otherwise, you’ll need a
-      token to from the authorized member or admin.
+      GitHub Actions an upload token is not required. Otherwise, you&apos;ll
+      need a token to from the authorized member or admin.
     </p>
   )
+}
+
+PublicRepoScope.propTypes = {
+  isCurrentUserPartOfOrg: PropTypes.bool,
+  token: PropTypes.string,
+}
+
+function NewRepoTab() {
+  const { provider, owner, repo } = useParams()
+  const { data } = useRepo({ provider, owner, repo })
+
+  useRedirectUsers()
+
+  if (!data || !data?.repository?.uploadToken) {
+    return null
+  }
+
+  const { uploadToken, private: privateRepo } = data?.repository
 
   return (
-    <div className="flex w-4/5 md:w-3/5 lg:w-2/5 flex-col mt-6">
+    <div className="mx-auto w-4/5 md:w-3/5 lg:w-2/5 mt-6">
       <h1 className="font-semibold text-3xl my-4">
         Let&apos;s get your repo covered
       </h1>
@@ -95,7 +111,7 @@ function New({ data }) {
 
       <GithubConfigBanner privateRepo={privateRepo} />
 
-      <Fragment>
+      <>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>
         <p className="text-base">
           Run your normal test suite to generate code coverage reports in a
@@ -103,7 +119,16 @@ function New({ data }) {
         </p>
 
         <h2 className="font-semibold mt-8 text-base">Step 2</h2>
-        <div>{privateRepo ? PrivateRepoScope : PublicRepoScope}</div>
+        <div>
+          {privateRepo ? (
+            <PrivateRepoScope token={uploadToken} />
+          ) : (
+            <PublicRepoScope
+              isCurrentUserPartOfOrg={data?.isCurrentUserPartOfOrg}
+              token={uploadToken}
+            />
+          )}
+        </div>
 
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
@@ -139,13 +164,9 @@ function New({ data }) {
           uploader runs it will return a link where you can view your reports on
           Codecov.
         </p>
-      </Fragment>
+      </>
     </div>
   )
 }
 
-New.propTypes = {
-  data: PropTypes.object,
-}
-
-export default New
+export default NewRepoTab
