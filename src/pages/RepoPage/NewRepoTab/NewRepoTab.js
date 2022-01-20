@@ -1,6 +1,7 @@
 import { useParams } from 'react-router'
 
 import { NotFoundException } from 'shared/utils'
+
 import { useRepo } from 'services/repo'
 
 import A from 'ui/A'
@@ -22,7 +23,7 @@ function NewRepoTab() {
   useRedirectToVueOverview({
     noAccessOpenSource:
       !data?.isCurrentUserPartOfOrg && !data?.repository?.private,
-    missingUploadToken: !!data?.repository?.uploadToken,
+    missingUploadToken: !data?.repository?.uploadToken,
   })
 
   return (
