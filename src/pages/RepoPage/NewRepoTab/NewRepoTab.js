@@ -20,6 +20,7 @@ function useRedirect() {
     hardRedirect: () => {
       console.log('history push')
       history.push(`/${provider}/${owner}/${repo}`)
+      history.go() // Force refresh
     },
   }
 }
