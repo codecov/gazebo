@@ -34,7 +34,7 @@ function CommitsTab() {
       {
         pageName: '',
         readOnly: true,
-        text: (
+        children: (
           <h1 className="flex gap-1 items-center">
             <Icon name="branch" variant="developer" size="sm" />
             {branch}
