@@ -1,14 +1,11 @@
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
 
-import { useStaticNavLinks } from 'services/navigation'
 import Card from 'old_ui/Card'
-import Button from 'old_ui/Button'
+import Button from 'ui/Button'
 
 import ErasePersonalAccountButton from './ErasePersonalAccountButton'
 
 function DeletionCard({ isPersonalSettings, provider, owner }) {
-  const { support } = useStaticNavLinks()
   return (
     <Card className="p-10 text-codecov-red">
       <h2 className="border-b text-2xl pb-4 bold border-codecov-red">
@@ -26,12 +23,7 @@ function DeletionCard({ isPersonalSettings, provider, owner }) {
           <p className="mt-4 mb-6">
             Erase all my organization content and projects.
           </p>
-          <Button
-            Component={Link}
-            to={support.path()}
-            useRouter={!support.isExternalLink}
-            color="red"
-          >
+          <Button to={{ pageName: 'support' }} variant="danger">
             Contact support
           </Button>
         </>

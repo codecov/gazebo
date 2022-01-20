@@ -4,8 +4,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
 import Card from 'old_ui/Card'
-import Button from 'old_ui/Button'
-import TextInput from 'old_ui/TextInput'
+import Button from 'ui/Button'
+import TextInput from 'ui/TextInput'
 import { useAddNotification } from 'services/toastNotification'
 import { useUpdateProfile } from 'services/user'
 
@@ -65,7 +65,6 @@ function NameEmailCard({ currentUser, provider }) {
             </label>
             <TextInput
               id="name-edit"
-              className="mt-2"
               placeholder="Your name"
               disabled={isLoading}
               {...register('name', { required: true })}
@@ -82,7 +81,6 @@ function NameEmailCard({ currentUser, provider }) {
             </label>
             <TextInput
               id="email-edit"
-              className="mt-2"
               placeholder="Your email"
               disabled={isLoading}
               {...register('email', { required: true })}
@@ -96,7 +94,11 @@ function NameEmailCard({ currentUser, provider }) {
         </div>
         <div className="flex justify-between items-center">
           <h1 className="text-2xl bold">Your details</h1>
-          <Button type="submit" disabled={isButtonDisabled}>
+          <Button
+            type="submit"
+            disabled={isButtonDisabled}
+            hook="Update personal information"
+          >
             Save changes
           </Button>
         </div>

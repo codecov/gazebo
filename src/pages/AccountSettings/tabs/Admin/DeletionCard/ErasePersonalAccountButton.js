@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import { useEraseAccount } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
-import Button from 'old_ui/Button'
+import Button from 'ui/Button'
 import Modal from 'old_ui/Modal'
 
 function ErasePersonalAccountButton({ provider, owner }) {
@@ -23,7 +23,11 @@ function ErasePersonalAccountButton({ provider, owner }) {
 
   return (
     <>
-      <Button color="red" onClick={() => setIsModalOpen(true)}>
+      <Button
+        hook="open modal to delete personal data"
+        variant="danger"
+        onClick={() => setIsModalOpen(true)}
+      >
         Erase account
       </Button>
       <Modal
@@ -41,10 +45,18 @@ function ErasePersonalAccountButton({ provider, owner }) {
           <li>This will NOT touch organization information</li>
         </ul>
         <div className="flex justify-between mt-6">
-          <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+          <Button
+            hook="cancel deleting personal data"
+            onClick={() => setIsModalOpen(false)}
+          >
             Cancel
           </Button>
-          <Button color="red" onClick={eraseAccount} disabled={isLoading}>
+          <Button
+            hook="delete personal data"
+            variant="danger"
+            onClick={eraseAccount}
+            disabled={isLoading}
+          >
             Erase my account
           </Button>
         </div>

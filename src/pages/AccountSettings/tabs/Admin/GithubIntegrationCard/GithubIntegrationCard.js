@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
 
 import config from 'config'
 
@@ -7,7 +6,7 @@ import { useAccountDetails } from 'services/account'
 import { useStaticNavLinks } from 'services/navigation'
 
 import Card from 'old_ui/Card'
-import Button from 'old_ui/Button'
+import Button from 'ui/Button'
 
 import githubLogo from 'assets/githublogo.png'
 
@@ -36,12 +35,7 @@ function GithubIntegrationCard({ provider, owner }) {
             This account is configured via the GitHub App. <br />
             You can manage the app on Github.
           </p>
-          <Button
-            Component={Link}
-            to={github.path()}
-            useRouter={!github.isExternalLink}
-            variant="outline"
-          >
+          <Button to={{ pageName: 'github' }} variant="secondary">
             {github.text}
           </Button>
         </div>
@@ -54,12 +48,7 @@ function GithubIntegrationCard({ provider, owner }) {
             This will replace the team bot account and post pull request
             comments on behalf of Codecov.
           </p>
-          <Button
-            Component={Link}
-            to={githubMarketplace.path()}
-            useRouter={!githubMarketplace.isExternalLink}
-            variant="outline"
-          >
+          <Button to={{ pageName: 'githubMarketplace' }}>
             {githubMarketplace.text}
           </Button>
         </div>
