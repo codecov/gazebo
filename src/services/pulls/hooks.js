@@ -1,7 +1,7 @@
 import Api from 'shared/api'
 import { useQuery } from 'react-query'
 
-function fetchRepoPulls({ provider, owner, repo }) {
+function fetchRepoPulls({ provider, owner, repo, variables }) {
   const PullFragment = `
    fragment PullFragment on Pull {
         pullId
@@ -24,10 +24,10 @@ function fetchRepoPulls({ provider, owner, repo }) {
     }
   `
   const query = `
-      query GetPulls($owner: String!, $repo: String!){
+      query GetPulls($owner: String!, $repo: String!, $orderingDirection: OrderingDirection, $filters: PullsSetFilters){
             owner(username:$owner){
                 repository(name:$repo){
-                    pulls{
+                    pulls(orderingDirection: $orderingDirection, filters: $filters){
                         edges{
                             node{
                              ...PullFragment       
@@ -47,6 +47,7 @@ function fetchRepoPulls({ provider, owner, repo }) {
     variables: {
       owner,
       repo,
+      ...variables,
     },
   }).then((res) => {
     const { edges } = res?.data?.owner?.repository?.pulls
@@ -55,8 +56,23 @@ function fetchRepoPulls({ provider, owner, repo }) {
   })
 }
 
-export function usePulls({ provider, owner, repo }) {
-  return useQuery([provider, owner, repo, 'pulls'], () => {
-    return fetchRepoPulls({ provider, owner, repo })
+export function usePulls({
+  provider,
+  owner,
+  repo,
+  filters,
+  orderingDirection,
+}) {
+  const variables = {
+    filters,
+    orderingDirection,
+  }
+  return useQuery([provider, owner, repo, variables, 'pulls'], () => {
+    return fetchRepoPulls({
+      provider,
+      owner,
+      repo,
+      variables,
+    })
   })
 }
