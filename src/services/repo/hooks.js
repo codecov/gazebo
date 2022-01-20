@@ -24,7 +24,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
   }).then((res) => {
     return {
       repository: res?.data?.owner?.repository,
-      isPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
+      isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
     }
   })
 }

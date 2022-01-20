@@ -40,8 +40,8 @@ PrivateRepoScope.propTypes = {
   token: PropTypes.string,
 }
 
-const PublicRepoScope = ({ isPartOfOrg, token }) => {
-  return isPartOfOrg ? (
+const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
+  return isCurrentUserPartOfOrg ? (
     <>
       <p className="text-base">
         If the public project is on TravisCI, CircleCI, AppVeyor, Azure
@@ -67,7 +67,7 @@ const PublicRepoScope = ({ isPartOfOrg, token }) => {
 }
 
 PublicRepoScope.propTypes = {
-  isPartOfOrg: PropTypes.bool,
+  isCurrentUserPartOfOrg: PropTypes.bool,
   token: PropTypes.string,
 }
 
@@ -124,7 +124,7 @@ function NewRepoTab() {
             <PrivateRepoScope token={uploadToken} />
           ) : (
             <PublicRepoScope
-              isPartOfOrg={data?.isPartOfOrg}
+              isCurrentUserPartOfOrg={data?.isCurrentUserPartOfOrg}
               token={uploadToken}
             />
           )}

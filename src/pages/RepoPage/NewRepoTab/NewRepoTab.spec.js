@@ -44,7 +44,7 @@ describe('New Tab', () => {
     beforeEach(() => {
       setup({
         repository: { uploadToken: 'randomToken', private: false },
-        isPartOfOrg: true,
+        isCurrentUserPartOfOrg: true,
       })
     })
 
@@ -68,7 +68,7 @@ describe('New Tab', () => {
     beforeEach(() => {
       setup({
         repository: { uploadToken: 'randomToken', private: false },
-        isPartOfOrg: false,
+        isCurrentUserPartOfOrg: false,
       })
     })
 

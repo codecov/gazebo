@@ -40,7 +40,7 @@ describe('useRepo', () => {
 
   describe('when called with successful res', () => {
     expectedResponse = {
-      isPartOfOrg: true,
+      isCurrentUserPartOfOrg: true,
       repository: {
         private: true,
         uploadToken: 'token',
@@ -78,7 +78,7 @@ describe('useRepo', () => {
   describe('when called with unsuccessful res', () => {
     expectedResponse = {
       repository: undefined,
-      isPartOfOrg: undefined,
+      isCurrentUserPartOfOrg: undefined,
     }
     const dataReturned = {
       noOwnerSent: 1,
