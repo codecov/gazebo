@@ -1,8 +1,6 @@
-import { useEffect } from 'react'
-import { useParams, useHistory } from 'react-router'
+import { useParams } from 'react-router'
 
 import { NotFoundException } from 'shared/utils'
-import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
 
 import A from 'ui/A'
@@ -12,49 +10,7 @@ import GithubConfigBanner from './GithubConfigBanner'
 import InstructionBox from './InstructionBox'
 import Token from './Token'
 
-function useRedirect() {
-  const { provider, owner, repo } = useParams()
-  const history = useHistory()
-
-  return {
-    hardRedirect: () => {
-      console.log('history push')
-      history.push(`/${provider}/${owner}/${repo}`)
-      history.go() // Force refresh
-    },
-  }
-}
-
-function useRedirectToVueOverview({
-  noAccessOpenSource,
-  missingUploadToken,
-  hasCommits,
-}) {
-  const { hardRedirect } = useRedirect()
-
-  useEffect(() => {
-    // Let vue handle deactivated repos
-    if (hasCommits) {
-      console.log('commits')
-
-      hardRedirect()
-    }
-
-    // Open source repo not yet set up cannot be set up by a user not part of the org (dont expose token)
-    if (noAccessOpenSource) {
-      console.log('redirect if not member')
-
-      hardRedirect()
-    }
-
-    // Hopefully not hitting this in prod but just incase
-    if (missingUploadToken) {
-      console.log('no token')
-
-      hardRedirect()
-    }
-  }, [hardRedirect, noAccessOpenSource, missingUploadToken, hasCommits])
-}
+import { useRedirectToVueOverview } from './hooks'
 
 function NewRepoTab() {
   const { provider, owner, repo } = useParams()
@@ -63,13 +19,10 @@ function NewRepoTab() {
   if (!data?.isCurrentUserPartOfOrg && data?.repository?.private)
     throw new NotFoundException()
 
-  const { data: commits } = useCommits({ provider, owner, repo })
-
   useRedirectToVueOverview({
     noAccessOpenSource:
       !data?.isCurrentUserPartOfOrg && !data?.repository?.private,
     missingUploadToken: !!data?.repository?.uploadToken,
-    hasCommits: Array.isArray(commits) && commits?.length > 0,
   })
 
   return (
