@@ -7,10 +7,10 @@ import { providerToName } from 'shared/utils/provider'
 const GithubConfigBanner = ({ privateRepo }) => {
   const { provider } = useParams()
   const isGh = providerToName(provider) === 'Github'
-  const display = isGh && privateRepo
 
   return (
-    display && (
+    isGh &&
+    privateRepo && (
       <div className="mt-8">
         <Banner
           title={

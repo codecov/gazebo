@@ -1,87 +1,75 @@
 import { useEffect } from 'react'
-import { useParams } from 'react-router'
-import PropTypes from 'prop-types'
+import { useParams, useHistory } from 'react-router'
 
+import { NotFoundException } from 'shared/utils'
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
 
 import A from 'ui/A'
 import Icon from 'ui/Icon'
-import CopyClipboard from 'ui/CopyClipboard'
 
-import GithubConfigBanner from './githubConfigBanner'
-import InstructionBox from './instructionBox/InstructionBox'
+import GithubConfigBanner from './GithubConfigBanner'
+import InstructionBox from './InstructionBox'
+import Token from './Token'
 
-function useRedirectUsers() {
+function useRedirect() {
   const { provider, owner, repo } = useParams()
-  const { data: commits } = useCommits({ provider, owner, repo })
+  const history = useHistory()
+
+  return {
+    hardRedirect: () => {
+      console.log('history push')
+      history.push(`/${provider}/${owner}/${repo}`)
+    },
+  }
+}
+
+function useRedirectToVueOverview({
+  noAccessOpenSource,
+  missingUploadToken,
+  hasCommits,
+}) {
+  const { hardRedirect } = useRedirect()
 
   useEffect(() => {
-    if (commits?.length) window.location = `/${provider}/${owner}/${repo}`
-  }, [provider, owner, repo, commits])
-}
+    // Let vue handle deactivated repos
+    if (hasCommits) {
+      console.log('commits')
 
-const PrivateRepoScope = ({ token }) => (
-  <>
-    <p className="text-base">
-      Copy the below token and set it in your CI environment variables.
-    </p>
-    <p className="flex flex-row justify-center text-s mt-4">
-      Codecov Token={' '}
-      <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
-        {token}
-      </span>
-      <CopyClipboard string={token} />
-    </p>
-  </>
-)
+      hardRedirect()
+    }
 
-PrivateRepoScope.propTypes = {
-  token: PropTypes.string,
-}
+    // Open source repo not yet set up cannot be set up by a user not part of the org (dont expose token)
+    if (noAccessOpenSource) {
+      console.log('redirect if not member')
 
-const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
-  return isCurrentUserPartOfOrg ? (
-    <>
-      <p className="text-base">
-        If the public project is on TravisCI, CircleCI, AppVeyor, Azure
-        Pipelines, or GitHub Actions an upload token is not required. Otherwise,
-        you&apos;ll need to set the token below and set it in your CI
-        environment variables.
-      </p>
-      <p className="flex flex-row justify-center text-s mt-4">
-        Codecov Token={' '}
-        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
-          {token}
-        </span>
-        <CopyClipboard string={token} />
-      </p>
-    </>
-  ) : (
-    <p className="text-base">
-      If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or
-      GitHub Actions an upload token is not required. Otherwise, you&apos;ll
-      need a token to from the authorized member or admin.
-    </p>
-  )
-}
+      hardRedirect()
+    }
 
-PublicRepoScope.propTypes = {
-  isCurrentUserPartOfOrg: PropTypes.bool,
-  token: PropTypes.string,
+    // Hopefully not hitting this in prod but just incase
+    if (missingUploadToken) {
+      console.log('no token')
+
+      hardRedirect()
+    }
+  }, [hardRedirect, noAccessOpenSource, missingUploadToken, hasCommits])
 }
 
 function NewRepoTab() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
 
-  useRedirectUsers()
+  if (!data?.isCurrentUserPartOfOrg && data?.repository?.private)
+    throw new NotFoundException()
 
-  if (!data || !data?.repository?.uploadToken) {
-    return null
-  }
+  const { data: commits } = useCommits({ provider, owner, repo })
 
-  const { uploadToken, private: privateRepo } = data?.repository
+  useRedirectToVueOverview({
+    noAccessOpenSource:
+      !data?.isCurrentUserPartOfOrg && !data?.repository?.private,
+    missingUploadToken: !!data?.repository?.uploadToken,
+    hasCommits: Array.isArray(commits) && commits?.length > 0,
+  })
 
   return (
     <div className="mx-auto w-4/5 md:w-3/5 lg:w-2/5 mt-6">
@@ -109,7 +97,7 @@ function NewRepoTab() {
         to learn more.
       </p>
 
-      <GithubConfigBanner privateRepo={privateRepo} />
+      <GithubConfigBanner privateRepo={data?.repository?.private} />
 
       <>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>
@@ -119,16 +107,11 @@ function NewRepoTab() {
         </p>
 
         <h2 className="font-semibold mt-8 text-base">Step 2</h2>
-        <div>
-          {privateRepo ? (
-            <PrivateRepoScope token={uploadToken} />
-          ) : (
-            <PublicRepoScope
-              isCurrentUserPartOfOrg={data?.isCurrentUserPartOfOrg}
-              token={uploadToken}
-            />
-          )}
-        </div>
+        <Token
+          privateRepo={data?.repository?.privateRepo}
+          uploadToken={data?.repository?.uploadToken}
+          isCurrentUserPartOfOrg={data?.isCurrentUserPartOfOrg}
+        />
 
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
