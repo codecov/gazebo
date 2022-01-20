@@ -7,8 +7,8 @@ import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-import GithubConfigBanner from './GithubConfigBanner'
-import InstructionBox from './InstructionBox'
+import GithubConfig from './GithubConfig'
+import TerminalInstructions from './TerminalInstructions'
 import Token from './Token'
 
 import { useRedirectToVueOverview } from './hooks'
@@ -52,7 +52,7 @@ function NewRepoTab() {
         to learn more.
       </p>
 
-      <GithubConfigBanner privateRepo={data?.repository?.private} />
+      <GithubConfig privateRepo={data?.repository?.private} />
 
       <>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>
@@ -81,7 +81,7 @@ function NewRepoTab() {
           following commands to your CI pipeline:
         </p>
 
-        <InstructionBox />
+        <TerminalInstructions />
 
         <p className="text-base">
           It is highly recommended to{' '}
