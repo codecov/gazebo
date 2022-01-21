@@ -1,12 +1,16 @@
-import { usePulls } from 'services/pulls'
-import PullsTable from './PullsTable'
+import { useState, useLayoutEffect } from 'react'
 import { useParams } from 'react-router'
+
+import { usePulls } from 'services/pulls'
 import MultiSelect from 'ui/MultiSelect'
-import { useState } from 'react'
 import Select from 'ui/Select'
+
+import { useSetCrumbs } from '../context'
+import PullsTable from './PullsTable'
 import { orderItems, fitlerItems, orderingEnum, stateEnum } from './enums'
 
-function PullsPage() {
+// Moved during merge I'll likely consolodate this
+function useFormControls() {
   const { provider, owner, repo } = useParams()
 
   const [pullsFilter, setPullsFilter] = useState([])
@@ -27,6 +31,33 @@ function PullsPage() {
     orderingDirection,
   })
 
+  return {
+    setPullsStates,
+    setPullsOrder,
+    setPullsFilter,
+    pulls,
+    setOrderingDirection,
+    pullsFilter,
+    pullsOrder,
+  }
+}
+
+function PullsTab() {
+  const setCrumbs = useSetCrumbs()
+  const {
+    setPullsStates,
+    setPullsOrder,
+    setPullsFilter,
+    pulls,
+    setOrderingDirection,
+    pullsFilter,
+    pullsOrder,
+  } = useFormControls()
+
+  useLayoutEffect(() => {
+    setCrumbs()
+  }, [setCrumbs])
+
   const handleOrderChange = (ordering) => {
     setPullsOrder(ordering)
 
@@ -43,7 +74,6 @@ function PullsPage() {
     })
     setPullsStates(states)
   }
-
   return (
     <div className="flex-1 flex flex-col gap-4">
       <div className="flex flex-row gap-3">
@@ -75,4 +105,4 @@ function PullsPage() {
   )
 }
 
-export default PullsPage
+export default PullsTab

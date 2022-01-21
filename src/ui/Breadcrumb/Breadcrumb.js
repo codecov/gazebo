@@ -3,6 +3,7 @@ import { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import A from 'ui/A'
 import AppLink from 'shared/AppLink'
+import defaultTo from 'lodash/defaultTo'
 
 function Breadcrumb({ paths = [] }) {
   return (
@@ -12,10 +13,10 @@ function Breadcrumb({ paths = [] }) {
           <Fragment key={i}>
             {i === paths.length - 1 ? (
               <span className="text-ds-gray-octonary font-semibold">
-                {to.text}
+                {defaultTo(to.children, to.text)}
               </span>
             ) : (
-              <A to={to}>{to.text}</A>
+              <A to={to}>{defaultTo(to.children, to.text)}</A>
             )}
 
             {i !== paths.length - 1 && <span>/</span>}

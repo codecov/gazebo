@@ -56,8 +56,7 @@ function fetchRepoCommits({ provider, owner, repo, filters }) {
       },
     },
   }).then((res) => {
-    const { commits } = res?.data?.owner?.repository
-    return mapEdges(commits)
+    return mapEdges(res?.data?.owner?.repository?.commits)
   })
 }
 

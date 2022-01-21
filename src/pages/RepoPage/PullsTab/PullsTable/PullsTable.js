@@ -1,9 +1,11 @@
-import Table from 'ui/Table'
 import PropTypes from 'prop-types'
+
+import Table from 'ui/Table'
+
+import { PullRequestType } from '../types'
 import Coverage from './Coverage'
 import Change from './Change'
 import Title from './Title'
-import { PullRequestType } from '../types'
 
 const headers = [
   {
@@ -68,12 +70,12 @@ function transformPullToTable(pulls) {
   })
 }
 
-function PullsPage({ pulls }) {
+function PullsTab({ pulls }) {
   const dataTable = transformPullToTable(pulls)
   return <Table data={dataTable} columns={headers} />
 }
 
-PullsPage.propTypes = {
+PullsTab.propTypes = {
   pulls: PropTypes.arrayOf(
     PropTypes.shape({
       node: PullRequestType,
@@ -81,4 +83,4 @@ PullsPage.propTypes = {
   ),
 }
 
-export default PullsPage
+export default PullsTab

@@ -4,13 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { useRepo } from './hooks'
 import { graphql } from 'msw'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
+const queryClient = new QueryClient()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -22,27 +16,20 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-const dataReturned = {
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    repository: {
-      private: true,
-      uploadToken: 'token',
-    },
-  },
-}
-
 const provider = 'gh'
 const owner = 'RulaKhaled'
 const repo = 'test'
 
-describe('getRepo', () => {
+describe('useRepo', () => {
+  afterEach(() => server.resetHandlers())
+
   let hookData
+  let expectedResponse
 
   function setup() {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return res(ctx.status(200), ctx.data(expectedResponse))
       })
     )
 
@@ -51,20 +38,54 @@ describe('getRepo', () => {
     })
   }
 
-  describe('when called', () => {
-    const expectedResponse = {
-      isPartOfOrg: true,
-      repo: {
+  describe('when called with successful res', () => {
+    expectedResponse = {
+      isCurrentUserPartOfOrg: true,
+      repository: {
         private: true,
         uploadToken: 'token',
       },
     }
+    const dataReturned = {
+      owner: {
+        isCurrentUserPartOfOrg: true,
+        repository: {
+          private: true,
+          uploadToken: 'token',
+        },
+      },
+    }
+
     beforeEach(() => {
-      setup()
+      setup(dataReturned)
     })
 
     it('renders isLoading true', () => {
       expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual(expectedResponse)
+      })
+    })
+  })
+
+  describe('when called with unsuccessful res', () => {
+    expectedResponse = {
+      repository: undefined,
+      isCurrentUserPartOfOrg: undefined,
+    }
+    const dataReturned = {
+      noOwnerSent: 1,
+    }
+
+    beforeEach(() => {
+      setup(dataReturned)
     })
 
     describe('when data is loaded', () => {

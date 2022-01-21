@@ -24,7 +24,7 @@ function Table({ data = [], columns = [] }) {
 
   return (
     <div className="text-ds-gray-quaternary overflow-x-auto">
-      <table className="w-full" {...getTableProps()}>
+      <table className="w-full mx-4 sm:mx-0" {...getTableProps()}>
         <thead data-testid="header-row">
           {
             // Loop over the header rows
