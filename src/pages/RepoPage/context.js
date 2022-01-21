@@ -29,7 +29,7 @@ export function RepoBreadcrumbProvider({ children }) {
       { pageName: 'owner', text: owner },
       {
         pageName: 'repo',
-        text: (
+        children: (
           <div
             className="flex gap-1 items-center"
             data-testid="breadcrumb-repo"
