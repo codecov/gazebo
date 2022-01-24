@@ -9,8 +9,8 @@ const TestComponent = () => {
   return (
     <div>
       <ul>
-        {crumbs.map(({ text }, i) => (
-          <li key={i}>{text}</li>
+        {crumbs.map(({ text, children }, i) => (
+          <li key={i}>{text || children}</li>
         ))}
       </ul>
       <button onClick={() => setCrumb([{ pageName: 'added' }])}>
