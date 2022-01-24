@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
 import Card from 'old_ui/Card'
-import Button from 'ui/Button'
+import A from 'ui/A'
 
 import ErasePersonalAccountButton from './ErasePersonalAccountButton'
 
@@ -9,7 +9,7 @@ function DeletionCard({ isPersonalSettings, provider, owner }) {
   return (
     <Card className="p-10 text-codecov-red">
       <h2 className="border-b text-2xl pb-4 bold border-codecov-red">
-        Danger!
+        Delete account
       </h2>
       {isPersonalSettings ? (
         <>
@@ -23,9 +23,7 @@ function DeletionCard({ isPersonalSettings, provider, owner }) {
           <p className="mt-4 mb-6">
             Erase all my organization content and projects.
           </p>
-          <Button to={{ pageName: 'support' }} variant="danger">
-            Contact support
-          </Button>
+          <A to={{ pageName: 'support' }}>Contact support</A>
         </>
       )}
     </Card>

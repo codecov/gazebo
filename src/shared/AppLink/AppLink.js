@@ -4,6 +4,7 @@ import defaultTo from 'lodash/defaultTo'
 import { Link, NavLink } from 'react-router-dom'
 
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
+import Icon from 'ui/Icon'
 
 function getTarget(pageConfig) {
   const openNewTab = pageConfig?.openNewTab || false
@@ -65,6 +66,11 @@ const AppLink = forwardRef(
         ref={ref}
       >
         {defaultTo(children, pageConfig.text)}
+        {pageConfig.isExternalLink && (
+          <span className="text-ds-gray-quinary">
+            <Icon size="sm" name="external-link"></Icon>
+          </span>
+        )}
       </Component>
     )
   }
