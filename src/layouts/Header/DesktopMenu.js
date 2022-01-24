@@ -17,7 +17,7 @@ export function LoginPrompt() {
     return (
       <div className="text-ds-gray-tertiary">
         New to Codecov?{' '}
-        <A to={{ pageName: 'root' }} variant="header">
+        <A to={{ pageName: 'root' }} variant="header" hideExternalIcon>
           Learn more
         </A>
       </div>
@@ -28,10 +28,14 @@ export function LoginPrompt() {
       data-testid="login-prompt"
       className="flex items-center justify-between mx-2 md:mx-0 gap-4"
     >
-      <A to={{ pageName: 'signIn', options: { to } }} variant="header">
+      <A
+        to={{ pageName: 'signIn', options: { to } }}
+        variant="header"
+        hideExternalIcon
+      >
         Log in
       </A>
-      <Button to={{ pageName: 'signUp' }} variant="primary">
+      <Button to={{ pageName: 'signUp' }} variant="primary" hideExternalIcon>
         Sign up
       </Button>
     </div>
@@ -47,22 +51,22 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
-        <A to={{ pageName: 'provider' }} variant="header">
+        <A to={{ pageName: 'provider' }} variant="header" hideExternalIcon>
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </A>
-        <A to={{ pageName: 'docs' }} variant="header">
+        <A to={{ pageName: 'docs' }} variant="header" hideExternalIcon>
           Docs
         </A>
-        <A to={{ pageName: 'support' }} variant="header">
+        <A to={{ pageName: 'support' }} variant="header" hideExternalIcon>
           Support
         </A>
-        <A to={{ pageName: 'blog' }} variant="header">
+        <A to={{ pageName: 'blog' }} variant="header" hideExternalIcon>
           Blog
         </A>
       </div>
       {currentUser ? (
-        <div className="flex items-center space-between mx-2 md:mx-4">
+        <div className="flex items-center space-between mx-2 md:mx-4 gap-2">
           {!!owner && <RequestButton owner={owner} provider={provider} />}
           <Dropdown currentUser={currentUser} />
         </div>
