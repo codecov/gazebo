@@ -67,7 +67,7 @@ describe('RepoPage', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ repository: { private: false } })
+      setup({ repository: { private: false, defaulBranch: 'main' } })
     })
 
     it('renders the title with the owner name', () => {
@@ -150,6 +150,7 @@ describe('RepoPage', () => {
       setup({
         repository: {
           private: true,
+          defaultBranch: 'main',
         },
         path: 'commits',
         commits,
@@ -171,7 +172,7 @@ describe('RepoPage', () => {
       const select = screen.getByRole('button', {
         name: 'main chevron-down.svg',
       })
-      expect(select).toBeInTheDocument()
+      waitFor(() => expect(select).toBeInTheDocument())
     })
   })
 
@@ -185,10 +186,12 @@ describe('RepoPage', () => {
         commits,
         initialEntries: ['/gh/codecov/test/commits'],
       })
-      const select = screen.getByRole('button', {
-        name: 'main chevron-down.svg',
+      waitFor(() => {
+        const select = screen.getByRole('button', {
+          name: 'main chevron-down.svg',
+        })
+        fireEvent.click(select)
       })
-      fireEvent.click(select)
     })
 
     it('renders the options of select branch', () => {
@@ -204,15 +207,18 @@ describe('RepoPage', () => {
       setup({
         repository: {
           private: true,
+          defaulBranch: 'main',
         },
         path: 'commits',
         commits,
         initialEntries: ['/gh/codecov/test/commits'],
       })
-      const select = screen.getByRole('button', {
-        name: 'main chevron-down.svg',
+      waitFor(() => {
+        const select = screen.getByRole('button', {
+          name: 'main chevron-down.svg',
+        })
+        fireEvent.click(select)
       })
-      fireEvent.click(select)
       const branch = screen.getByText(/test1/)
       fireEvent.click(branch)
     })

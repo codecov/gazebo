@@ -4,6 +4,8 @@ import { useParams } from 'react-router'
 
 import { useCommits } from 'services/commits'
 import { useBranches } from 'services/branches'
+import { useRepo } from 'services/repo'
+
 import Checkbox from 'ui/Checkbox'
 import Select from 'ui/Select'
 import Icon from 'ui/Icon'
@@ -15,9 +17,10 @@ function CommitsTab() {
   const setCrumbs = useSetCrumbs()
   const { provider, owner, repo } = useParams()
   const { data: branches } = useBranches({ provider, owner, repo })
+  const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames = branches?.map((branch) => branch.name) || []
 
-  const [branch, setBranch] = useState('main')
+  const [branchName, setBranch] = useState(repoData?.repository?.defaultBranch)
   const [hideFailedCI, setHideFailedCI] = useState(false)
   const { data: commits } = useCommits({
     provider,
@@ -25,7 +28,7 @@ function CommitsTab() {
     repo,
     filters: {
       hideFailedCI,
-      branchName: branch,
+      branchName,
     },
   })
 
@@ -37,12 +40,12 @@ function CommitsTab() {
         children: (
           <h1 className="flex gap-1 items-center">
             <Icon name="branch" variant="developer" size="sm" />
-            {branch}
+            {branchName}
           </h1>
         ),
       },
     ])
-  }, [branch, setCrumbs])
+  }, [branchName, setCrumbs])
 
   return (
     <div className="flex-1 flex flex-col gap-4">
@@ -59,7 +62,7 @@ function CommitsTab() {
               className="bg-ds-gray-primary"
               items={branchesNames}
               onChange={(branch) => setBranch(branch)}
-              value={branch}
+              value={branchName}
             />
           </div>
         </div>
