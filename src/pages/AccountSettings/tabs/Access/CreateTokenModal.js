@@ -5,7 +5,7 @@ import TextInput from 'ui/TextInput/TextInput'
 import { useForm } from 'react-hook-form'
 import { useGenerateToken } from 'services/access'
 import { useState } from 'react'
-import CopyClipboard from 'ui/CopyClipboard/CopyClipboard'
+import CopyClipboard from 'ui/CopyClipboard'
 
 function CreateTokenModal({ closeModal, provider }) {
   const { register, handleSubmit, watch } = useForm({

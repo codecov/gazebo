@@ -28,6 +28,7 @@ function Select({
    */
   renderSelected,
   ariaName,
+  className,
 }) {
   const {
     isOpen,
@@ -72,7 +73,7 @@ function Select({
       <button
         aria-label={ariaName}
         type="button"
-        className={SelectClasses.button}
+        className={`${SelectClasses.button} ${className}`}
         {...getToggleButtonProps()}
       >
         {renderButton()}
@@ -82,7 +83,7 @@ function Select({
         aria-label={ariaName}
         className={cs(SelectClasses.ul, {
           border: isOpen,
-          'border-gray-ds-tertiary': isOpen,
+          'border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
         })}
         {...getMenuProps()}
       >
@@ -100,6 +101,7 @@ Select.propTypes = {
   renderItem: PropTypes.func,
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string,
+  className: PropTypes.string,
 }
 
 export default Select

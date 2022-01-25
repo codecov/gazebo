@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { Route, MemoryRouter } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from 'react-query'
-import PullsTable from '.'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+
+import PullsTable from '.'
 
 jest.mock('services/repo/hooks')
 
