@@ -27,7 +27,7 @@ function CurrentPlanCard({ accountDetails }) {
       </div>
       <hr className="my-6" />
       <Usage accountDetails={accountDetails} isBasicPlan={isBasicPlan} />
-      {accountDetails?.scheduleDetail?.id && (
+      {accountDetails?.scheduleDetail?.scheduledPhase && (
         <ScheduledPlanDetails
           scheduledPhase={accountDetails?.scheduleDetail?.scheduledPhase}
         />
