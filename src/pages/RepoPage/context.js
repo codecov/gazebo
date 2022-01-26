@@ -8,6 +8,7 @@ import {
 import { useParams } from 'react-router-dom'
 import noop from 'lodash/noop'
 
+import Icon from 'ui/Icon'
 import { useRepo } from 'services/repo'
 
 const RepoBreadcrumbContext = createContext([])
@@ -34,12 +35,15 @@ export function RepoBreadcrumbProvider({ children }) {
             className="flex gap-1 items-center"
             data-testid="breadcrumb-repo"
           >
-            {repo}
             {data?.repository?.private && (
-              <span className="flex-initial border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary font-light px-1">
-                Private
+              <span
+                className="text-ds-gray-quinary"
+                data-testid="private repo icon"
+              >
+                <Icon name="lock-closed" variant="solid" size="sm" />
               </span>
             )}
+            {repo}
           </div>
         ),
       },

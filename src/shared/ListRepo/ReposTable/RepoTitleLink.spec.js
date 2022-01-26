@@ -39,7 +39,7 @@ describe('RepoTitleLink', () => {
     })
 
     it('renders the private tag', () => {
-      expect(screen.getByText(/Private/)).toBeInTheDocument()
+      expect(screen.getByTestId('private repo icon')).toBeInTheDocument()
     })
   })
 

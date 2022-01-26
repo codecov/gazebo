@@ -35,10 +35,10 @@ function CommitsTab() {
         pageName: '',
         readOnly: true,
         children: (
-          <h1 className="flex gap-1 items-center">
+          <span className="flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
             {branch}
-          </h1>
+          </span>
         ),
       },
     ])

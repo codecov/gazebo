@@ -101,7 +101,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the block private', () => {
-      const privateSpan = screen.getByText(/Private/)
+      const privateSpan = screen.getByTestId('private repo icon')
       expect(privateSpan).toBeInTheDocument()
     })
   })
