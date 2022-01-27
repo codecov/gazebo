@@ -1,37 +1,47 @@
 import { repoPageRender, screen } from '../repo-jest-setup'
 
+import { NotFoundException } from 'shared/utils'
+
 import { useRepo } from 'services/repo'
-import NewTab from '.'
+import { useCommits } from 'services/commits'
+
+import NewRepoTab from '.'
+
+jest.mock('shared/utils/exceptions')
 
 jest.mock('services/repo/hooks')
+jest.mock('services/commits/hooks')
 
-describe('New Tab', () => {
+describe('New Repo Tab', () => {
+  let mockError
+
   afterAll(() => {
     jest.resetAllMocks()
   })
 
-  function setup(data) {
-    useRepo.mockReturnValue({ data })
+  function setup({ repoData, commitsData = [] }) {
+    useRepo.mockReturnValue({ data: repoData })
+    useCommits.mockReturnValue({ data: commitsData })
+
+    mockError = jest.fn()
+    const spy = jest.spyOn(console, 'error')
+    spy.mockImplementation(mockError)
 
     repoPageRender({
       initialEntries: ['/gh/codecov/Test/new'],
-      renderNew: () => <NewTab />,
+      renderNew: () => <NewRepoTab />,
+      renderRoot: () => <p>I redirected!</p>,
     })
   }
 
-  describe('when rendered with token and repo is private', () => {
+  describe('repo is private and user is part of org', () => {
     beforeEach(() => {
-      setup({ repository: { uploadToken: 'randomToken', private: true } })
-    })
-
-    it('renders Step1', () => {
-      const step = screen.getByText(/Step 1/)
-      expect(step).toBeInTheDocument()
-    })
-
-    it('renders Step2', () => {
-      const step = screen.getByText(/Step 2/)
-      expect(step).toBeInTheDocument()
+      setup({
+        repoData: {
+          repository: { uploadToken: 'randomToken', private: true },
+          isCurrentUserPartOfOrg: true,
+        },
+      })
     })
 
     it('renders the passed token', () => {
@@ -40,22 +50,14 @@ describe('New Tab', () => {
     })
   })
 
-  describe('when rendered with token and repo is public and user is part of org', () => {
+  describe('repo is public and user is part of org', () => {
     beforeEach(() => {
       setup({
-        repository: { uploadToken: 'randomToken', private: false },
-        isCurrentUserPartOfOrg: true,
+        repoData: {
+          repository: { uploadToken: 'randomToken', private: false },
+          isCurrentUserPartOfOrg: true,
+        },
       })
-    })
-
-    it('renders Step1', () => {
-      const step = screen.getByText(/Step 1/)
-      expect(step).toBeInTheDocument()
-    })
-
-    it('renders Step2', () => {
-      const step = screen.getByText(/Step 2/)
-      expect(step).toBeInTheDocument()
     })
 
     it('renders the passed token', () => {
@@ -64,64 +66,64 @@ describe('New Tab', () => {
     })
   })
 
-  describe('when rendered with public repo and user is not a part of the org', () => {
+  describe('repo is public and user is not a part of the org', () => {
     beforeEach(() => {
       setup({
-        repository: { uploadToken: 'randomToken', private: false },
-        isCurrentUserPartOfOrg: false,
+        repoData: {
+          repository: { uploadToken: 'randomToken', private: false },
+          isCurrentUserPartOfOrg: false,
+        },
       })
     })
 
-    it('renders Step1', () => {
-      const step = screen.queryByText(/Step 1/)
-      expect(step).toBeInTheDocument()
-    })
-
-    it('renders Step2', () => {
-      const step = screen.getByText(/Step 2/)
-      expect(step).toBeInTheDocument()
-    })
-
-    it('does not render the token', () => {
-      const token = screen.queryByText(/randomToken/)
-      expect(token).not.toBeInTheDocument()
+    it('redirects to vue', () => {
+      const onRoot = screen.queryByText(/I redirected!/)
+      expect(onRoot).toBeInTheDocument()
     })
   })
 
-  describe('when rendered with no data', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('does not render Steps', () => {
-      const step = screen.queryByText(/Step 1/)
-      expect(step).not.toBeInTheDocument()
+  describe('when repo is private and user is not a part of the org', () => {
+    it('throws 404', () => {
+      expect(() => {
+        setup({
+          repoData: {
+            repository: { private: true },
+            isCurrentUserPartOfOrg: false,
+          },
+        })
+      }).toThrow(NotFoundException)
+      expect(mockError).toBeCalled()
     })
   })
 
-  describe('when repo is private', () => {
+  describe('repo has commits', () => {
     beforeEach(() => {
       setup({
-        repository: { uploadToken: 'randomToken', private: true },
+        repoData: {
+          repository: { uploadToken: 'randomToken', private: false },
+        },
+        commitsData: [{}, {}, {}],
       })
     })
 
-    it('renders github config banner', () => {
-      const bannerTitle = screen.queryByText(/Install Codecov GitHub app/)
-      expect(bannerTitle).toBeInTheDocument()
+    it('redirects to vue', () => {
+      const onRoot = screen.queryByText(/I redirected!/)
+      expect(onRoot).toBeInTheDocument()
     })
   })
 
-  describe('when repo is public', () => {
+  describe('repo is missing a token', () => {
     beforeEach(() => {
       setup({
-        repository: { uploadToken: 'randomToken', private: false },
+        repoData: {
+          repository: { private: false },
+        },
       })
     })
 
-    it('does not render github config banner', () => {
-      const bannerTitle = screen.queryByText(/Install Codecov GitHub app/)
-      expect(bannerTitle).not.toBeInTheDocument()
+    it('redirects to vue', () => {
+      const onRoot = screen.queryByText(/I redirected!/)
+      expect(onRoot).toBeInTheDocument()
     })
   })
 })

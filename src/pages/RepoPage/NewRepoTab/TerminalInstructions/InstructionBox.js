@@ -2,7 +2,7 @@ import { useState } from 'react'
 import CopyClipboard from 'ui/CopyClipboard'
 import cs from 'classnames'
 
-function InstructionBox() {
+export default function InstructionBox() {
   const systemsEnum = {
     LINUX: 'Linux',
     ALPINE: 'Alpine Linux',
@@ -73,7 +73,7 @@ function InstructionBox() {
           <CopyClipboard
             string={
               curSystem === 'Windows'
-                ? "$ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\\codecov.exe "
+                ? "$ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\\codecov.exe"
                 : `curl -Os https://uploader.codecov.io/latest/${systemsMapper[curSystem]}/codecov chmod +x codecov ./codecov`
             }
           />
@@ -82,5 +82,3 @@ function InstructionBox() {
     </div>
   )
 }
-
-export default InstructionBox
