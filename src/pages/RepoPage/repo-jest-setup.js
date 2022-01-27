@@ -22,9 +22,6 @@ function repoPageRender({
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={entries}>
-        <Route path="/:provider/:owner/:repo">
-          <RepoBreadcrumbProvider>{renderRoot()}</RepoBreadcrumbProvider>
-        </Route>
         <Route path="/:provider/:owner/:repo/new">
           <RepoBreadcrumbProvider>{renderNew()}</RepoBreadcrumbProvider>
         </Route>
@@ -39,6 +36,9 @@ function repoPageRender({
         </Route>
         <Route path="/:provider/:owner/:repo/settings">
           <RepoBreadcrumbProvider>{renderSettings()}</RepoBreadcrumbProvider>
+        </Route>
+        <Route path="/:provider/:owner/:repo" exact>
+          <RepoBreadcrumbProvider>{renderRoot()}</RepoBreadcrumbProvider>
         </Route>
       </MemoryRouter>
     </QueryClientProvider>,
