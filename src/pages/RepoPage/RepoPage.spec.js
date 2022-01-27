@@ -67,7 +67,7 @@ describe('RepoPage', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ repository: { private: false, defaulBranch: 'main' } })
+      setup({ repository: { private: false, defaultBranch: 'main' } })
     })
 
     it('renders the title with the owner name', () => {
@@ -168,25 +168,26 @@ describe('RepoPage', () => {
       expect(label).toBeInTheDocument()
     })
 
-    it('renders the branch context selector', () => {
+    it('renders the branch context selector', async () => {
       const select = screen.getByRole('button', {
         name: 'main chevron-down.svg',
       })
-      waitFor(() => expect(select).toBeInTheDocument())
+      await waitFor(() => expect(select).toBeInTheDocument())
     })
   })
 
   describe('when click on the selector in the commits page', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup({
         repository: {
           private: true,
+          defaultBranch: 'main',
         },
         path: 'commits',
         commits,
         initialEntries: ['/gh/codecov/test/commits'],
       })
-      waitFor(() => {
+      await waitFor(() => {
         const select = screen.getByRole('button', {
           name: 'main chevron-down.svg',
         })
@@ -203,17 +204,17 @@ describe('RepoPage', () => {
   })
 
   describe('when seelct a branch of the selector in the commits page', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup({
         repository: {
           private: true,
-          defaulBranch: 'main',
+          defaultBranch: 'main',
         },
         path: 'commits',
         commits,
         initialEntries: ['/gh/codecov/test/commits'],
       })
-      waitFor(() => {
+      await waitFor(() => {
         const select = screen.getByRole('button', {
           name: 'main chevron-down.svg',
         })
