@@ -38,8 +38,7 @@ describe('RepoTitleLink', () => {
     })
 
     it('renders the private tag', () => {
-      expect(screen.getAllByText('lock-closed.svg')[0]).toBeInTheDocument()
-      expect(screen.getAllByText('lock-closed.svg')[1]).toBeInTheDocument()
+      expect(screen.getByText(/Private/)).toBeInTheDocument()
     })
   })
 
@@ -60,7 +59,7 @@ describe('RepoTitleLink', () => {
     })
 
     it('doesnt render the private tag', () => {
-      expect(screen.queryByText(/lock-closed.svg/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Private/)).not.toBeInTheDocument()
     })
   })
 

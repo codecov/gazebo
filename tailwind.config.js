@@ -125,7 +125,6 @@ module.exports = {
       borderWidth: ['first'],
       padding: ['responsive', 'last'],
       backgroundColor: ['disabled'],
-      fontWeight: ['last'],
     },
   },
   plugins: [plugin(caretColorPlugin)],

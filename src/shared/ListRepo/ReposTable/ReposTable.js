@@ -45,7 +45,13 @@ const tableInactive = [
   },
 ]
 
-function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
+function transformRepoToTable({
+  repos,
+  owner,
+  searchValue,
+  linkToNew,
+  isSetup,
+}) {
   // if there are no repos show empty message
   if (repos.length <= 0) {
     return [
@@ -57,12 +63,14 @@ function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
     ]
   }
 
+  const titlePageName = !isSetup && linkToNew ? 'new' : 'repo'
+
   return repos.map((repo) => ({
     title: (
       <RepoTitleLink
         repo={repo}
         showRepoOwner={!owner}
-        pageName={newRepoSetupLink ? 'new' : 'repo'}
+        pageName={titlePageName}
       />
     ),
     lastUpdated: (
@@ -87,7 +95,7 @@ function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
         Not yet enabled{' '}
         <AppLink
           className="text-ds-blue font-semibold"
-          pageName={newRepoSetupLink ? 'new' : 'repo'}
+          pageName={linkToNew ? 'new' : 'repo'}
           options={{
             owner: repo.author.username,
             repo: repo.name,
@@ -111,12 +119,13 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   })
 
   const { newRepoSetupLink } = useFlags({ newRepoSetupLink: false })
-  const dataTable = transformRepoToTable(
-    data.repos,
+  const dataTable = transformRepoToTable({
+    repos: data.repos,
     owner,
     searchValue,
-    newRepoSetupLink
-  )
+    linkToNew: newRepoSetupLink,
+    isSetup: active,
+  })
 
   return (
     <>

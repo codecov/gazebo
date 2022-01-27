@@ -26,7 +26,11 @@ function RepoTitleLink({ repo, showRepoOwner, pageName }) {
           <span className="font-semibold">{repo.name}</span>
         </span>
       </AppLink>
-      {repo.private && <Icon name="lock-closed" variant="solid" size="sm" />}
+      {repo.private && (
+        <span className="ml-2 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
+          Private
+        </span>
+      )}{' '}
     </div>
   )
 }
