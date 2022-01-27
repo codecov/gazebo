@@ -36,12 +36,7 @@ export function RepoBreadcrumbProvider({ children }) {
             data-testid="breadcrumb-repo"
           >
             {data?.repository?.private && (
-              <span
-                className="text-ds-gray-quinary"
-                data-testid="private repo icon"
-              >
-                <Icon name="lock-closed" variant="solid" size="sm" />
-              </span>
+              <Icon name="lock-closed" variant="solid" size="sm" />
             )}
             {repo}
           </div>
