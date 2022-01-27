@@ -29,8 +29,7 @@ describe('RepoTitleLink', () => {
           private: true,
         },
         showRepoOwner: false,
-        active: false,
-        newRepoSetupLink: false,
+        pageName: 'repo',
       })
     })
 
@@ -39,7 +38,8 @@ describe('RepoTitleLink', () => {
     })
 
     it('renders the private tag', () => {
-      expect(screen.getByText('lock-closed.svg')).toBeInTheDocument()
+      expect(screen.getAllByText('lock-closed.svg')[0]).toBeInTheDocument()
+      expect(screen.getAllByText('lock-closed.svg')[1]).toBeInTheDocument()
     })
   })
 
@@ -51,8 +51,7 @@ describe('RepoTitleLink', () => {
           private: false,
         },
         showRepoOwner: false,
-        active: false,
-        newRepoSetupLink: false,
+        pageName: 'repo',
       })
     })
 
@@ -61,7 +60,7 @@ describe('RepoTitleLink', () => {
     })
 
     it('doesnt render the private tag', () => {
-      expect(screen.queryByText(/Private/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/lock-closed.svg/)).not.toBeInTheDocument()
     })
   })
 
@@ -70,8 +69,7 @@ describe('RepoTitleLink', () => {
       setup({
         repo,
         showRepoOwner: true,
-        active: false,
-        newRepoSetupLink: false,
+        pageName: 'repo',
       })
     })
 
@@ -85,8 +83,7 @@ describe('RepoTitleLink', () => {
       setup({
         repo,
         showRepoOwner: false,
-        active: false,
-        newRepoSetupLink: false,
+        pageName: 'repo',
       })
     })
 

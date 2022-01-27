@@ -45,13 +45,7 @@ const tableInactive = [
   },
 ]
 
-function transformRepoToTable(
-  repos,
-  owner,
-  searchValue,
-  newRepoSetupLink,
-  active
-) {
+function transformRepoToTable(repos, owner, searchValue, newRepoSetupLink) {
   // if there are no repos show empty message
   if (repos.length <= 0) {
     return [
@@ -63,16 +57,12 @@ function transformRepoToTable(
     ]
   }
 
-  // if we have an owner, then we don't need to show it on the repo title
-  const showRepoOwner = !owner
-
   return repos.map((repo) => ({
     title: (
       <RepoTitleLink
         repo={repo}
-        showRepoOwner={showRepoOwner}
-        active={active}
-        newRepoSetupLink={newRepoSetupLink}
+        showRepoOwner={!owner}
+        pageName={newRepoSetupLink ? 'new' : 'repo'}
       />
     ),
     lastUpdated: (
@@ -125,8 +115,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
     data.repos,
     owner,
     searchValue,
-    newRepoSetupLink,
-    active
+    newRepoSetupLink
   )
 
   return (

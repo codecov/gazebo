@@ -3,54 +3,30 @@ import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 import AppLink from 'shared/AppLink'
 
-function RepoTitleLink({ repo, showRepoOwner, active, newRepoSetupLink }) {
+function RepoTitleLink({ repo, showRepoOwner, pageName }) {
   const options = {
     owner: repo.author.username,
     repo: repo.name,
   }
 
-  const handlePageName = () => {
-    if (active) {
-      return 'repo'
-    }
-    if (newRepoSetupLink) {
-      return 'new'
-    }
-    return 'repo'
-  }
-
   return (
     <div className="flex items-center">
       <AppLink
-        pageName={handlePageName()}
+        pageName={pageName}
         options={options}
         className="flex text-ds-gray-quinary items-center hover:underline"
       >
         {repo.private ? (
-          <Icon
-            size="sm"
-            className="fill-current"
-            variant="solid"
-            name="lock-closed"
-          />
+          <Icon size="sm" variant="solid" name="lock-closed" />
         ) : (
-          <Icon
-            size="sm"
-            className="fill-current"
-            variant="solid"
-            name="globe-alt"
-          />
+          <Icon size="sm" variant="solid" name="globe-alt" />
         )}
         <span className="ml-2.5 text-sm text-black">
-          {showRepoOwner && `${repo.author.username} / `}
+          {showRepoOwner && `${repo?.author?.username} / `}
           <span className="font-semibold">{repo.name}</span>
         </span>
       </AppLink>
-      {repo.private && (
-        <span className="ml-2 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
-          Private
-        </span>
-      )}
+      {repo.private && <Icon name="lock-closed" variant="solid" size="sm" />}
     </div>
   )
 }
@@ -64,8 +40,7 @@ RepoTitleLink.propTypes = {
     name: PropTypes.string,
   }),
   showRepoOwner: PropTypes.bool.isRequired,
-  active: PropTypes.bool.isRequired,
-  newRepoSetupLink: PropTypes.bool.isRequired,
+  pageName: PropTypes.string.isRequired,
 }
 
 export default RepoTitleLink
