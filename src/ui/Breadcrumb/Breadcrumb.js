@@ -7,12 +7,12 @@ import defaultTo from 'lodash/defaultTo'
 
 function Breadcrumb({ paths = [] }) {
   return (
-    <nav className="flex items-center gap-1">
+    <nav className="flex items-center text-ds-gray-octonary gap-1">
       {paths.map((to, i) => {
         return (
           <Fragment key={i}>
             {i === paths.length - 1 ? (
-              <span className="text-ds-gray-octonary font-semibold">
+              <span className="font-semibold">
                 {defaultTo(to.children, to.text)}
               </span>
             ) : (

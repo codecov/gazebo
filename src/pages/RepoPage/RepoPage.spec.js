@@ -101,7 +101,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the block private', () => {
-      const privateSpan = screen.getByText(/Private/)
+      const privateSpan = screen.getByText('lock-closed.svg')
       expect(privateSpan).toBeInTheDocument()
     })
   })

@@ -5,15 +5,24 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useRepos } from 'services/repos/hooks'
 import { orderingOptions } from 'services/repos'
 
-import ReposTable from './ReposTable'
 import { ActiveContext } from 'shared/context'
+import { useFlags } from 'shared/featureFlags'
+
+import ReposTable from './ReposTable'
 
 jest.mock('services/repos/hooks')
+jest.mock('shared/featureFlags')
 
 describe('ReposTable', () => {
   let props
   let fetchNextPage = jest.fn(() => {})
-  function setup(active, repos, hasNextPage, propObj = {}) {
+  function setup({
+    active,
+    repos,
+    hasNextPage,
+    propObj = {},
+    newRepoSetupLink,
+  }) {
     useRepos.mockReturnValue({
       data: {
         repos,
@@ -21,6 +30,7 @@ describe('ReposTable', () => {
       hasNextPage,
       fetchNextPage,
     })
+    useFlags.mockReturnValue({ newRepoSetupLink })
     props = {
       searchValue: '',
       sortItem: orderingOptions[0],
@@ -39,37 +49,40 @@ describe('ReposTable', () => {
 
   describe('when rendered with active true', () => {
     beforeEach(() => {
-      setup(true, [
-        {
-          private: false,
-          author: {
-            username: 'owner1',
+      setup({
+        active: true,
+        repos: [
+          {
+            private: false,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 1',
+            latestCommitAt: subDays(new Date(), 3),
+            coverage: 43,
+            active: true,
           },
-          name: 'Repo name 1',
-          latestCommitAt: subDays(new Date(), 3),
-          coverage: 43,
-          active: true,
-        },
-        {
-          private: true,
-          author: {
-            username: 'owner1',
+          {
+            private: true,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 2',
+            latestCommitAt: subDays(new Date(), 2),
+            coverage: 100,
+            active: true,
           },
-          name: 'Repo name 2',
-          latestCommitAt: subDays(new Date(), 2),
-          coverage: 100,
-          active: true,
-        },
-        {
-          private: true,
-          author: {
-            username: 'owner1',
+          {
+            private: true,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 3',
+            latestCommitAt: null,
+            active: true,
           },
-          name: 'Repo name 3',
-          latestCommitAt: null,
-          active: true,
-        },
-      ])
+        ],
+      })
     })
 
     it('calls useRepos with the right data', () => {
@@ -89,6 +102,22 @@ describe('ReposTable', () => {
     it('renders table repo name', () => {
       const buttons = screen.getAllByText(/Repo name/)
       expect(buttons.length).toBe(3)
+    })
+
+    it('links to /:organization/:owner/:repo', () => {
+      const repo1 = screen.getByRole('link', {
+        name: 'globe-alt.svg owner1 / Repo name 1',
+      })
+      const repo2 = screen.getByRole('link', {
+        name: 'lock-closed.svg owner1 / Repo name 2',
+      })
+      const repo3 = screen.getByRole('link', {
+        name: 'lock-closed.svg owner1 / Repo name 3',
+      })
+
+      expect(repo1).toHaveAttribute('href', '/gh/owner1/Repo name 1')
+      expect(repo2).toHaveAttribute('href', '/gh/owner1/Repo name 2')
+      expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3')
     })
 
     it('renders second column', () => {
@@ -111,38 +140,41 @@ describe('ReposTable', () => {
 
   describe('when rendered with active false', () => {
     beforeEach(() => {
-      setup(false, [
-        {
-          private: false,
-          author: {
-            username: 'owner1',
+      setup({
+        active: false,
+        repos: [
+          {
+            private: false,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 1',
+            latestCommitAt: subDays(new Date(), 3),
+            coverage: 43,
+            active: false,
           },
-          name: 'Repo name 1',
-          latestCommitAt: subDays(new Date(), 3),
-          coverage: 43,
-          active: false,
-        },
-        {
-          private: true,
-          author: {
-            username: 'owner1',
+          {
+            private: true,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 2',
+            latestCommitAt: subDays(new Date(), 2),
+            coverage: 100,
+            active: false,
           },
-          name: 'Repo name 2',
-          latestCommitAt: subDays(new Date(), 2),
-          coverage: 100,
-          active: false,
-        },
-        {
-          private: true,
-          author: {
-            username: 'owner1',
+          {
+            private: true,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 3',
+            latestCommitAt: subDays(new Date(), 5),
+            coverage: 0,
+            active: false,
           },
-          name: 'Repo name 3',
-          latestCommitAt: subDays(new Date(), 5),
-          coverage: 0,
-          active: false,
-        },
-      ])
+        ],
+      })
     })
 
     it('calls useRepos with the right data', () => {
@@ -164,6 +196,22 @@ describe('ReposTable', () => {
       expect(buttons.length).toBe(3)
     })
 
+    it('links to /:organization/:owner/:repo', () => {
+      const repo1 = screen.getByRole('link', {
+        name: 'globe-alt.svg owner1 / Repo name 1',
+      })
+      const repo2 = screen.getByRole('link', {
+        name: 'lock-closed.svg owner1 / Repo name 2',
+      })
+      const repo3 = screen.getByRole('link', {
+        name: 'lock-closed.svg owner1 / Repo name 3',
+      })
+
+      expect(repo1).toHaveAttribute('href', '/gh/owner1/Repo name 1')
+      expect(repo2).toHaveAttribute('href', '/gh/owner1/Repo name 2')
+      expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3')
+    })
+
     it('renders second column', () => {
       const notActiveRepos = screen.getAllByText(/Not yet enabled/)
       expect(notActiveRepos.length).toBe(3)
@@ -174,9 +222,66 @@ describe('ReposTable', () => {
     })
   })
 
+  describe('when rendered with active false and targets for new experience', () => {
+    beforeEach(() => {
+      setup({
+        newRepoSetupLink: true,
+        active: false,
+        repos: [
+          {
+            private: false,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 1',
+            latestCommitAt: subDays(new Date(), 3),
+            coverage: 43,
+            active: false,
+          },
+          {
+            private: true,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 2',
+            latestCommitAt: subDays(new Date(), 2),
+            coverage: 100,
+            active: false,
+          },
+          {
+            private: true,
+            author: {
+              username: 'owner1',
+            },
+            name: 'Repo name 3',
+            latestCommitAt: subDays(new Date(), 5),
+            coverage: 0,
+            active: false,
+          },
+        ],
+      })
+    })
+
+    it('links to /:organization/:owner/:repo/new', () => {
+      const repo1 = screen.getByRole('link', {
+        name: 'globe-alt.svg owner1 / Repo name 1',
+      })
+      const repo2 = screen.getByRole('link', {
+        name: 'lock-closed.svg owner1 / Repo name 2',
+      })
+      const repo3 = screen.getByRole('link', {
+        name: 'lock-closed.svg owner1 / Repo name 3',
+      })
+
+      expect(repo1).toHaveAttribute('href', '/gh/owner1/Repo name 1/new')
+      expect(repo2).toHaveAttribute('href', '/gh/owner1/Repo name 2/new')
+      expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3/new')
+    })
+  })
+
   describe('when rendered empty repos', () => {
     beforeEach(() => {
-      setup(true, [])
+      setup({ active: true, repos: [] })
     })
     it('renders no repos detected', () => {
       const buttons = screen.getAllByText(/No repos setup yet/)
@@ -208,7 +313,12 @@ describe('ReposTable', () => {
 
   describe('when rendered empty search', () => {
     beforeEach(() => {
-      setup(true, [], false, { searchValue: 'something' })
+      setup({
+        active: true,
+        repos: [],
+        hasNextPage: false,
+        propObj: { searchValue: 'something' },
+      })
     })
     it('renders no results found', () => {
       const buttons = screen.getAllByText(/no results found/)
@@ -218,9 +328,9 @@ describe('ReposTable', () => {
 
   describe('render next page button', () => {
     beforeEach(() => {
-      setup(
-        true,
-        [
+      setup({
+        active: true,
+        repos: [
           {
             private: false,
             author: {
@@ -232,8 +342,8 @@ describe('ReposTable', () => {
             active: false,
           },
         ],
-        true
-      )
+        hasNextPage: true,
+      })
     })
     it('renders button', () => {
       const button = screen.getByText(/Load More/)
