@@ -9,6 +9,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
         repository(name:$repo){
           private
           uploadToken
+          defaultBranch
         }
       }
     }

@@ -42,6 +42,7 @@ describe('useRepo', () => {
     expectedResponse = {
       isCurrentUserPartOfOrg: true,
       repository: {
+        defaultBranch: 'master',
         private: true,
         uploadToken: 'token',
       },
@@ -50,6 +51,7 @@ describe('useRepo', () => {
       owner: {
         isCurrentUserPartOfOrg: true,
         repository: {
+          defaultBranch: 'master',
           private: true,
           uploadToken: 'token',
         },

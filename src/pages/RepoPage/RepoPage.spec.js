@@ -67,7 +67,7 @@ describe('RepoPage', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ repository: { private: false } })
+      setup({ repository: { private: false, defaultBranch: 'main' } })
     })
 
     it('renders the title with the owner name', () => {
@@ -150,6 +150,7 @@ describe('RepoPage', () => {
       setup({
         repository: {
           private: true,
+          defaultBranch: 'main',
         },
         path: 'commits',
         commits,
@@ -167,28 +168,31 @@ describe('RepoPage', () => {
       expect(label).toBeInTheDocument()
     })
 
-    it('renders the branch context selector', () => {
+    it('renders the branch context selector', async () => {
       const select = screen.getByRole('button', {
         name: 'main chevron-down.svg',
       })
-      expect(select).toBeInTheDocument()
+      await waitFor(() => expect(select).toBeInTheDocument())
     })
   })
 
   describe('when click on the selector in the commits page', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup({
         repository: {
           private: true,
+          defaultBranch: 'main',
         },
         path: 'commits',
         commits,
         initialEntries: ['/gh/codecov/test/commits'],
       })
-      const select = screen.getByRole('button', {
-        name: 'main chevron-down.svg',
+      await waitFor(() => {
+        const select = screen.getByRole('button', {
+          name: 'main chevron-down.svg',
+        })
+        fireEvent.click(select)
       })
-      fireEvent.click(select)
     })
 
     it('renders the options of select branch', () => {
@@ -200,19 +204,22 @@ describe('RepoPage', () => {
   })
 
   describe('when seelct a branch of the selector in the commits page', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup({
         repository: {
           private: true,
+          defaultBranch: 'main',
         },
         path: 'commits',
         commits,
         initialEntries: ['/gh/codecov/test/commits'],
       })
-      const select = screen.getByRole('button', {
-        name: 'main chevron-down.svg',
+      await waitFor(() => {
+        const select = screen.getByRole('button', {
+          name: 'main chevron-down.svg',
+        })
+        fireEvent.click(select)
       })
-      fireEvent.click(select)
       const branch = screen.getByText(/test1/)
       fireEvent.click(branch)
     })
