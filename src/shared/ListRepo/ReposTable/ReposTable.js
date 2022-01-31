@@ -49,7 +49,7 @@ function transformRepoToTable({
   repos,
   owner,
   searchValue,
-  linkToNew,
+  linkToOnboardingWithGazebo,
   isSetup,
 }) {
   // if there are no repos show empty message
@@ -63,14 +63,14 @@ function transformRepoToTable({
     ]
   }
 
-  const titlePageName = !isSetup && linkToNew ? 'new' : 'repo'
+  const repoPageName = !isSetup && linkToOnboardingWithGazebo ? 'new' : 'repo'
 
   return repos.map((repo) => ({
     title: (
       <RepoTitleLink
         repo={repo}
         showRepoOwner={!owner}
-        pageName={titlePageName}
+        pageName={repoPageName}
       />
     ),
     lastUpdated: (
@@ -95,7 +95,7 @@ function transformRepoToTable({
         Not yet enabled{' '}
         <AppLink
           className="text-ds-blue font-semibold"
-          pageName={linkToNew ? 'new' : 'repo'}
+          pageName={linkToOnboardingWithGazebo ? 'new' : 'repo'}
           options={{
             owner: repo.author.username,
             repo: repo.name,
@@ -123,7 +123,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
     repos: data.repos,
     owner,
     searchValue,
-    linkToNew: newRepoSetupLink,
+    linkToOnboardingWithGazebo: newRepoSetupLink,
     isSetup: active,
   })
 
