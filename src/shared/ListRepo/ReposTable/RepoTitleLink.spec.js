@@ -29,8 +29,7 @@ describe('RepoTitleLink', () => {
           private: true,
         },
         showRepoOwner: false,
-        active: false,
-        newRepoSetupLink: false,
+        pageName: 'repo',
       })
     })
 
@@ -51,8 +50,7 @@ describe('RepoTitleLink', () => {
           private: false,
         },
         showRepoOwner: false,
-        active: false,
-        newRepoSetupLink: false,
+        pageName: 'repo',
       })
     })
 
@@ -70,8 +68,7 @@ describe('RepoTitleLink', () => {
       setup({
         repo,
         showRepoOwner: true,
-        active: false,
-        newRepoSetupLink: false,
+        pageName: 'repo',
       })
     })
 
@@ -85,8 +82,7 @@ describe('RepoTitleLink', () => {
       setup({
         repo,
         showRepoOwner: false,
-        active: false,
-        newRepoSetupLink: false,
+        pageName: 'repo',
       })
     })
 
