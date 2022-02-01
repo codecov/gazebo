@@ -14,6 +14,7 @@ jest.mock('services/commits/hooks')
 
 describe('New Repo Tab', () => {
   let mockError
+  let originalLocation
 
   afterAll(() => {
     jest.resetAllMocks()
@@ -30,7 +31,6 @@ describe('New Repo Tab', () => {
     repoPageRender({
       initialEntries: ['/gh/codecov/Test/new'],
       renderNew: () => <NewRepoTab />,
-      renderRoot: () => <p>I redirected!</p>,
     })
   }
 
@@ -68,6 +68,13 @@ describe('New Repo Tab', () => {
 
   describe('repo is public and user is not a part of the org', () => {
     beforeEach(() => {
+      originalLocation = window.location
+      delete window.location
+      window.location = {
+        href: 'http://CRRocks.com/gh/codecov/Test/new',
+        pathname: '/gh/codecov/Test/new',
+      }
+
       setup({
         repoData: {
           repository: { uploadToken: 'randomToken', private: false },
@@ -76,9 +83,12 @@ describe('New Repo Tab', () => {
       })
     })
 
+    afterEach(() => {
+      window.location = originalLocation
+    })
+
     it('redirects to vue', () => {
-      const onRoot = screen.queryByText(/I redirected!/)
-      expect(onRoot).toBeInTheDocument()
+      expect(window.location.pathname).toBe('/gh/codecov/Test')
     })
   })
 
@@ -98,6 +108,13 @@ describe('New Repo Tab', () => {
 
   describe('repo has commits', () => {
     beforeEach(() => {
+      originalLocation = window.location
+      delete window.location
+      window.location = {
+        href: 'http://CRRocks.com/gh/codecov/Test/new',
+        pathname: '/gh/codecov/Test/new',
+      }
+
       setup({
         repoData: {
           repository: { uploadToken: 'randomToken', private: false },
@@ -106,14 +123,24 @@ describe('New Repo Tab', () => {
       })
     })
 
+    afterEach(() => {
+      window.location = originalLocation
+    })
+
     it('redirects to vue', () => {
-      const onRoot = screen.queryByText(/I redirected!/)
-      expect(onRoot).toBeInTheDocument()
+      expect(window.location.pathname).toBe('/gh/codecov/Test')
     })
   })
 
   describe('repo is missing a token', () => {
     beforeEach(() => {
+      originalLocation = window.location
+      delete window.location
+      window.location = {
+        href: 'http://CRRocks.com/gh/codecov/Test/new',
+        pathname: '/gh/codecov/Test/new',
+      }
+
       setup({
         repoData: {
           repository: { private: false },
@@ -121,9 +148,12 @@ describe('New Repo Tab', () => {
       })
     })
 
+    afterEach(() => {
+      window.location = originalLocation
+    })
+
     it('redirects to vue', () => {
-      const onRoot = screen.queryByText(/I redirected!/)
-      expect(onRoot).toBeInTheDocument()
+      expect(window.location.pathname).toBe('/gh/codecov/Test')
     })
   })
 })
