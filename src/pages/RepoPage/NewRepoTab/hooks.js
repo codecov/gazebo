@@ -24,16 +24,19 @@ export function useRedirectToVueOverview({
     // Let vue handle deactivated repos
     if (Array.isArray(commits) && commits?.length > 0) {
       hardRedirect()
+      return
     }
 
     // Open source repo not yet set up cannot be set up by a user not part of the org (dont expose token)
     if (noAccessOpenSource) {
       hardRedirect()
+      return
     }
 
     // Hopefully not hitting this in prod but just incase
     if (missingUploadToken) {
       hardRedirect()
+      return
     }
   }, [hardRedirect, noAccessOpenSource, missingUploadToken, commits])
 }

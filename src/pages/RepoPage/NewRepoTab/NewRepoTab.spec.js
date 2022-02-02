@@ -19,6 +19,9 @@ describe('New Repo Tab', () => {
   beforeAll(() => {
     originalLocation = global.window.location
     delete global.window.location
+    global.window.location = {
+      replace: jest.fn(),
+    }
   })
 
   afterAll(() => {
@@ -74,10 +77,6 @@ describe('New Repo Tab', () => {
 
   describe('repo is public and user is not a part of the org', () => {
     beforeEach(() => {
-      global.window.location = {
-        replace: jest.fn(),
-      }
-
       setup({
         repoData: {
           repository: { uploadToken: 'randomToken', private: false },
@@ -91,7 +90,7 @@ describe('New Repo Tab', () => {
     })
 
     it('location replace was called (redirected)', () => {
-      expect(window.location.replace).toHaveBeenCalled()
+      expect(window.location.replace).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -111,10 +110,6 @@ describe('New Repo Tab', () => {
 
   describe('repo has commits', () => {
     beforeEach(() => {
-      global.window.location = {
-        replace: jest.fn(),
-      }
-
       setup({
         repoData: {
           repository: { uploadToken: 'randomToken', private: false },
@@ -128,18 +123,15 @@ describe('New Repo Tab', () => {
     })
 
     it('location replace was called (redirected)', () => {
-      expect(window.location.replace).toHaveBeenCalled()
+      expect(window.location.replace).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('repo is missing a token', () => {
     beforeEach(() => {
-      global.window.location = {
-        replace: jest.fn(),
-      }
-
       setup({
         repoData: {
+          isCurrentUserPartOfOrg: true,
           repository: { private: false },
         },
       })
@@ -150,7 +142,7 @@ describe('New Repo Tab', () => {
     })
 
     it('location replace was called (redirected)', () => {
-      expect(window.location.replace).toHaveBeenCalled()
+      expect(window.location.replace).toHaveBeenCalledTimes(1)
     })
   })
 })
