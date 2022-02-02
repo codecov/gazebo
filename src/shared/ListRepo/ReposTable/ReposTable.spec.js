@@ -302,7 +302,7 @@ describe('ReposTable', () => {
 
     it('renders the quick start guide link', () => {
       const link = screen.getByRole('link', {
-        name: 'quick start guide. external-link.svg',
+        name: 'quick start guide.',
       })
       expect(link).toBeInTheDocument()
     })

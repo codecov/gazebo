@@ -4,7 +4,6 @@ import defaultTo from 'lodash/defaultTo'
 import { Link, NavLink } from 'react-router-dom'
 
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
-import Icon from 'ui/Icon'
 
 function useLinkConfig(pageName) {
   const navLinks = useNavLinks()
@@ -25,7 +24,7 @@ function useCompleteProps(
   const path = pageConfig?.path(options)
 
   const propsLink = pageConfig?.isExternalLink ? { href: path } : { to: path }
-  const propsTarget = pageConfig?.isExternalLink ? { target: '_blank' } : {}
+  const propsTarget = pageConfig?.openNewTab ? { target: '_blank' } : {}
   const propsActive =
     Component === NavLink
       ? {
@@ -48,21 +47,10 @@ function getComponentToRender(pageConfig, activeClassName) {
 }
 
 const AppLink = forwardRef(
-  (
-    {
-      pageName,
-      options,
-      activeClassName,
-      hideExternalIcon,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ pageName, options, activeClassName, children, ...props }, ref) => {
     const pageConfig = useLinkConfig(pageName)
 
     const Component = getComponentToRender(pageConfig, activeClassName)
-    const showExternalIcon = pageConfig?.isExternalLink && !hideExternalIcon
     const completeProps = useCompleteProps(
       Component,
       props,
@@ -83,11 +71,6 @@ const AppLink = forwardRef(
         ref={ref}
       >
         {defaultTo(children, pageConfig.text)}
-        {showExternalIcon && (
-          <span className="text-ds-gray-quinary">
-            <Icon size="sm" name="external-link"></Icon>
-          </span>
-        )}
       </Component>
     )
   }
@@ -102,7 +85,6 @@ AppLink.propTypes = {
   text: PropTypes.string,
   options: PropTypes.object,
   activeClassName: PropTypes.string,
-  hideExternalIcon: PropTypes.bool,
 }
 
 export default AppLink

@@ -17,7 +17,7 @@ export function LoginPrompt() {
     return (
       <div className="text-ds-gray-tertiary">
         New to Codecov?{' '}
-        <A to={{ pageName: 'root' }} variant="header" hideExternalIcon>
+        <A to={{ pageName: 'root' }} variant="header">
           Learn more
         </A>
       </div>
@@ -28,14 +28,10 @@ export function LoginPrompt() {
       data-testid="login-prompt"
       className="flex items-center justify-between mx-2 md:mx-0 gap-4"
     >
-      <A
-        to={{ pageName: 'signIn', options: { to } }}
-        variant="header"
-        hideExternalIcon
-      >
+      <A to={{ pageName: 'signIn', options: { to } }} variant="header">
         Log in
       </A>
-      <Button to={{ pageName: 'signUp' }} variant="primary" hideExternalIcon>
+      <Button to={{ pageName: 'signUp' }} variant="primary">
         Sign up
       </Button>
     </div>
@@ -51,17 +47,17 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
-        <A to={{ pageName: 'provider' }} variant="header" hideExternalIcon>
+        <A to={{ pageName: 'provider' }} variant="header">
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </A>
-        <A to={{ pageName: 'docs' }} variant="header" hideExternalIcon>
+        <A to={{ pageName: 'docs' }} variant="header">
           Docs
         </A>
-        <A to={{ pageName: 'support' }} variant="header" hideExternalIcon>
+        <A to={{ pageName: 'support' }} variant="header">
           Support
         </A>
-        <A to={{ pageName: 'blog' }} variant="header" hideExternalIcon>
+        <A to={{ pageName: 'blog' }} variant="header">
           Blog
         </A>
       </div>

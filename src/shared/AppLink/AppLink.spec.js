@@ -111,22 +111,4 @@ describe('AppLink', () => {
       expect(screen.queryByRole('link')).toHaveAttribute('class', 'blue')
     })
   })
-  describe('external links', () => {
-    beforeEach(() => {
-      setup({
-        pageName: 'freshdesk',
-      })
-    })
-
-    it('opens in a new tab', () => {
-      expect(screen.getByRole('link')).toHaveAttribute('target', '_blank')
-    })
-    it('adds an external icon indicator', () => {
-      expect(
-        screen.getByText('external-link', {
-          exact: false,
-        })
-      ).toBeInTheDocument()
-    })
-  })
 })

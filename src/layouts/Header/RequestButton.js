@@ -25,7 +25,6 @@ function RequestButton({ owner, provider }) {
           category: 'header cta',
         })
       }
-      hideExternalIcon
     >
       Request demo
     </Button>

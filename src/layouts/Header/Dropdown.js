@@ -23,11 +23,7 @@ function Dropdown({ currentUser }) {
         </MenuButton>
         <MenuList>
           {isGh && (
-            <MenuLink
-              as={AppLink}
-              pageName="userAppManagePage"
-              hideExternalIcon
-            >
+            <MenuLink as={AppLink} pageName="userAppManagePage">
               Manage GitHub org access
             </MenuLink>
           )}
@@ -41,7 +37,7 @@ function Dropdown({ currentUser }) {
           <MenuLink as={AppLink} pageName="provider">
             Organizations
           </MenuLink>
-          <MenuLink as={AppLink} pageName="signOut" hideExternalIcon>
+          <MenuLink as={AppLink} pageName="signOut">
             Sign Out
           </MenuLink>
         </MenuList>
