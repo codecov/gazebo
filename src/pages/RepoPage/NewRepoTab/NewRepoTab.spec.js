@@ -68,11 +68,10 @@ describe('New Repo Tab', () => {
 
   describe('repo is public and user is not a part of the org', () => {
     beforeEach(() => {
-      originalLocation = window.location
-      delete window.location
-      window.location = {
-        href: 'http://CRRocks.com/gh/codecov/Test/new',
-        pathname: '/gh/codecov/Test/new',
+      originalLocation = global.window.location
+      delete global.window.location
+      global.window.location = {
+        replace: jest.fn(),
       }
 
       setup({
@@ -85,10 +84,11 @@ describe('New Repo Tab', () => {
 
     afterEach(() => {
       window.location = originalLocation
+      jest.resetAllMocks()
     })
 
-    it('redirects to vue', () => {
-      expect(window.location.pathname).toBe('/gh/codecov/Test')
+    it('location replace was called (redirected)', () => {
+      expect(window.location.replace).toHaveBeenCalled()
     })
   })
 
@@ -108,11 +108,10 @@ describe('New Repo Tab', () => {
 
   describe('repo has commits', () => {
     beforeEach(() => {
-      originalLocation = window.location
-      delete window.location
-      window.location = {
-        href: 'http://CRRocks.com/gh/codecov/Test/new',
-        pathname: '/gh/codecov/Test/new',
+      originalLocation = global.window.location
+      delete global.window.location
+      global.window.location = {
+        replace: jest.fn(),
       }
 
       setup({
@@ -125,20 +124,20 @@ describe('New Repo Tab', () => {
 
     afterEach(() => {
       window.location = originalLocation
+      jest.resetAllMocks()
     })
 
-    it('redirects to vue', () => {
-      expect(window.location.pathname).toBe('/gh/codecov/Test')
+    it('location replace was called (redirected)', () => {
+      expect(window.location.replace).toHaveBeenCalled()
     })
   })
 
   describe('repo is missing a token', () => {
     beforeEach(() => {
-      originalLocation = window.location
-      delete window.location
-      window.location = {
-        href: 'http://CRRocks.com/gh/codecov/Test/new',
-        pathname: '/gh/codecov/Test/new',
+      originalLocation = global.window.location
+      delete global.window.location
+      global.window.location = {
+        replace: jest.fn(),
       }
 
       setup({
@@ -150,10 +149,11 @@ describe('New Repo Tab', () => {
 
     afterEach(() => {
       window.location = originalLocation
+      jest.resetAllMocks()
     })
 
-    it('redirects to vue', () => {
-      expect(window.location.pathname).toBe('/gh/codecov/Test')
+    it('location replace was called (redirected)', () => {
+      expect(window.location.replace).toHaveBeenCalled()
     })
   })
 })
