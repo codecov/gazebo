@@ -94,7 +94,7 @@ function PullsTab() {
     updateParams({ order })
   }
 
-  const handleFilterChange = (selectedStates) => {
+  const handleStatesChange = (selectedStates) => {
     setSelectedStates(selectedStates)
 
     const states = selectedStates.map((filter) => {
@@ -114,7 +114,7 @@ function PullsTab() {
               ariaName="Filter by state"
               selectedItems={selectedStates}
               items={fitlerItems}
-              onChange={handleFilterChange}
+              onChange={handleStatesChange}
               resourceName=""
             />
           </div>
