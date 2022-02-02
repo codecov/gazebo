@@ -79,9 +79,9 @@ describe('Commits Tab', () => {
       expect(label).toBeInTheDocument()
     })
 
-    it('has false as initial value to the checkbox', () => {
+    it('has false as initial checked property value to the checkbox', () => {
       const checkbox = screen.getByRole('checkbox')
-      expect(checkbox.value).toEqual('false')
+      expect(checkbox.checked).toEqual(false)
     })
   })
 
@@ -91,9 +91,9 @@ describe('Commits Tab', () => {
       userEvent.click(screen.getByRole('checkbox'))
     })
 
-    it('changes the value to true', () => {
+    it('changes checked property value to true', () => {
       const checkbox = screen.getByRole('checkbox')
-      expect(checkbox.value).toEqual('true')
+      expect(checkbox.checked).toEqual(true)
     })
   })
 })

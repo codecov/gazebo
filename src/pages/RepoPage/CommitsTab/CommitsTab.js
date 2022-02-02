@@ -5,6 +5,7 @@ import { useParams } from 'react-router'
 import { useCommits } from 'services/commits'
 import { useBranches } from 'services/branches'
 import { useRepo } from 'services/repo'
+import { useLocationParams } from 'services/navigation'
 
 import Checkbox from 'ui/Checkbox'
 import Select from 'ui/Select'
@@ -13,15 +14,29 @@ import Icon from 'ui/Icon'
 import CommitsTable from './CommitsTable'
 import { useSetCrumbs } from '../context'
 
+const useCommitsFilters = (repoData) => {
+  const defaultParams = {
+    branch: repoData?.repository?.defaultBranch,
+    hideFailedCI: false,
+  }
+  const { params, updateParams } = useLocationParams(defaultParams)
+
+  const [branchName, setBranch] = useState(params.branch)
+  const [hideFailedCI, setHideFailedCI] = useState(params.hideFailedCI)
+
+  return { branchName, hideFailedCI, setBranch, setHideFailedCI, updateParams }
+}
+
 function CommitsTab() {
   const setCrumbs = useSetCrumbs()
   const { provider, owner, repo } = useParams()
+
   const { data: branches } = useBranches({ provider, owner, repo })
   const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames = branches?.map((branch) => branch.name) || []
+  const { branchName, hideFailedCI, setBranch, setHideFailedCI, updateParams } =
+    useCommitsFilters(repoData)
 
-  const [branchName, setBranch] = useState(repoData?.repository?.defaultBranch)
-  const [hideFailedCI, setHideFailedCI] = useState(false)
   const { data: commits } = useCommits({
     provider,
     owner,
@@ -61,7 +76,10 @@ function CommitsTab() {
             <Select
               className="bg-ds-gray-primary"
               items={branchesNames}
-              onChange={(branch) => setBranch(branch)}
+              onChange={(branch) => {
+                setBranch(branch)
+                updateParams({ branch })
+              }}
               value={branchName}
             />
           </div>
@@ -70,8 +88,12 @@ function CommitsTab() {
         <Checkbox
           label="Hide commits with failed CI"
           name="filter commits"
-          onChange={(e) => setHideFailedCI(e.target.checked)}
-          value={hideFailedCI}
+          onChange={(e) => {
+            const { checked } = e.target
+            setHideFailedCI(checked)
+            updateParams({ hideFailedCI: checked })
+          }}
+          checked={hideFailedCI}
         />
       </div>
       <CommitsTable commits={commits} />
