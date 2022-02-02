@@ -16,8 +16,14 @@ describe('New Repo Tab', () => {
   let mockError
   let originalLocation
 
+  beforeAll(() => {
+    originalLocation = global.window.location
+    delete global.window.location
+  })
+
   afterAll(() => {
     jest.resetAllMocks()
+    window.location = originalLocation
   })
 
   function setup({ repoData, commitsData = [] }) {
@@ -68,8 +74,6 @@ describe('New Repo Tab', () => {
 
   describe('repo is public and user is not a part of the org', () => {
     beforeEach(() => {
-      originalLocation = global.window.location
-      delete global.window.location
       global.window.location = {
         replace: jest.fn(),
       }
@@ -83,7 +87,6 @@ describe('New Repo Tab', () => {
     })
 
     afterEach(() => {
-      window.location = originalLocation
       jest.resetAllMocks()
     })
 
@@ -108,8 +111,6 @@ describe('New Repo Tab', () => {
 
   describe('repo has commits', () => {
     beforeEach(() => {
-      originalLocation = global.window.location
-      delete global.window.location
       global.window.location = {
         replace: jest.fn(),
       }
@@ -123,7 +124,6 @@ describe('New Repo Tab', () => {
     })
 
     afterEach(() => {
-      window.location = originalLocation
       jest.resetAllMocks()
     })
 
@@ -134,8 +134,6 @@ describe('New Repo Tab', () => {
 
   describe('repo is missing a token', () => {
     beforeEach(() => {
-      originalLocation = global.window.location
-      delete global.window.location
       global.window.location = {
         replace: jest.fn(),
       }
@@ -148,7 +146,6 @@ describe('New Repo Tab', () => {
     })
 
     afterEach(() => {
-      window.location = originalLocation
       jest.resetAllMocks()
     })
 
