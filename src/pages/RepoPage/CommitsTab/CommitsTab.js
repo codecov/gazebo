@@ -19,9 +19,10 @@ const useParamsFilters = (repoData) => {
     hideFailedCI: false,
   }
   const { params, updateParams } = useLocationParams(defaultParams)
+  const paramCIStatus = params.hideFailedCI && true
 
   const [branchName, setBranch] = useState(params.branch)
-  const [hideFailedCI, setHideFailedCI] = useState(params.hideFailedCI)
+  const [hideFailedCI, setHideFailedCI] = useState(paramCIStatus)
 
   return { branchName, hideFailedCI, setBranch, setHideFailedCI, updateParams }
 }
