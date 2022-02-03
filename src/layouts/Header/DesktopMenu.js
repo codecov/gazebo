@@ -62,7 +62,7 @@ function DesktopMenu() {
         </A>
       </div>
       {currentUser ? (
-        <div className="flex items-center space-between mx-2 md:mx-4">
+        <div className="flex items-center space-between mx-2 md:mx-4 gap-2">
           {!!owner && <RequestButton owner={owner} provider={provider} />}
           <Dropdown currentUser={currentUser} />
         </div>
