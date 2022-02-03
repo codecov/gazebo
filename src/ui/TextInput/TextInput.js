@@ -13,6 +13,7 @@ const styles = {
     'absolute text-ds-gray-quaternary left-2 h-full flex items-center',
 }
 
+// TODO dont pass className to input
 const TextInput = forwardRef(
   ({ type = 'text', icon, label, placeholder, ...props }, ref) => {
     const id = uniqueId('text-input')

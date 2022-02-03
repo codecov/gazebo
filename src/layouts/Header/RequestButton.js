@@ -14,22 +14,20 @@ function RequestButton({ owner, provider }) {
   })
 
   return isFreePlan(accountDetails?.plan?.value) ? (
-    <div className="mr-5">
-      <Button
-        to={{ pageName: 'demo' }}
-        variant="secondary"
-        data-testid="request-demo"
-        onClick={() =>
-          trackSegmentEvent({
-            event: 'clicked button',
-            label: 'request demo',
-            category: 'header cta',
-          })
-        }
-      >
-        Request demo
-      </Button>
-    </div>
+    <Button
+      to={{ pageName: 'demo' }}
+      variant="secondary"
+      data-testid="request-demo"
+      onClick={() =>
+        trackSegmentEvent({
+          event: 'clicked button',
+          label: 'request demo',
+          category: 'header cta',
+        })
+      }
+    >
+      Request demo
+    </Button>
   ) : null
 }
 

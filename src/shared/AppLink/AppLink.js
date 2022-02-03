@@ -5,12 +5,6 @@ import { Link, NavLink } from 'react-router-dom'
 
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 
-function getTarget(pageConfig) {
-  const openNewTab = pageConfig?.openNewTab || false
-  const target = openNewTab ? { target: '_blank' } : {}
-  return target
-}
-
 function useLinkConfig(pageName) {
   const navLinks = useNavLinks()
   const staticLinks = useStaticNavLinks()
@@ -20,8 +14,34 @@ function useLinkConfig(pageName) {
   return null
 }
 
+function useCompleteProps(
+  Component,
+  props,
+  options,
+  pageConfig,
+  activeClassName
+) {
+  const path = pageConfig?.path(options)
+
+  const propsLink = pageConfig?.isExternalLink ? { href: path } : { to: path }
+  const propsTarget = pageConfig?.openNewTab ? { target: '_blank' } : {}
+  const propsActive =
+    Component === NavLink
+      ? {
+          activeClassName,
+        }
+      : {}
+
+  return {
+    ...propsLink,
+    ...propsTarget,
+    ...props,
+    ...propsActive,
+  }
+}
+
 function getComponentToRender(pageConfig, activeClassName) {
-  if (pageConfig.isExternalLink) return 'a'
+  if (pageConfig?.isExternalLink) return 'a'
   if (activeClassName) return NavLink
   return Link
 }
@@ -30,34 +50,20 @@ const AppLink = forwardRef(
   ({ pageName, options, activeClassName, children, ...props }, ref) => {
     const pageConfig = useLinkConfig(pageName)
 
-    if (!pageConfig) return null
-
-    const path = pageConfig.path(options)
-
-    const target = getTarget(pageConfig)
-
     const Component = getComponentToRender(pageConfig, activeClassName)
-    const propsLink = pageConfig.isExternalLink ? { href: path } : { to: path }
-    const propsActive =
-      Component === NavLink
-        ? {
-            activeClassName,
-          }
-        : {}
+    const completeProps = useCompleteProps(
+      Component,
+      props,
+      options,
+      pageConfig,
+      activeClassName
+    )
 
-    const completeProps = {
-      ...target,
-      ...propsLink,
-      ...props,
-      ...propsActive,
-    }
-
+    if (!pageConfig) return null
     /*
-      data-cy: hook for cypress tests
-      data-marketing: hook for marketing tools
-    */
-
-    return (
+    data-cy: hook for cypress tests
+    data-marketing: hook for marketing tools
+    */ return (
       <Component
         data-cy={pageName}
         data-marketing={pageName}
@@ -69,6 +75,8 @@ const AppLink = forwardRef(
     )
   }
 )
+
+AppLink.displayName = 'AppLink'
 
 AppLink.propTypes = {
   // You can find the page name in this file

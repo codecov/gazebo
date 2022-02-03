@@ -4,7 +4,7 @@ import { useUsers, useUpdateUser } from 'services/users'
 import { ApiFilterEnum } from 'services/navigation'
 import { getOwnerImg } from 'shared/utils'
 import { providerToName } from 'shared/utils/provider'
-import Button from 'old_ui/Button'
+import Button from 'ui/Button'
 import User from 'old_ui/User'
 
 import AddAdmins from './AddAdmins'
@@ -60,7 +60,7 @@ function AdminList() {
         ) : (
           admins.map((admin) => (
             <div
-              className="flex border-t border-gray-200 first:border-0 py-2"
+              className="flex justify-between border-t border-gray-200 first:border-0 py-2"
               key={admin.username}
             >
               <User
@@ -72,10 +72,8 @@ function AdminList() {
               />
               <Button
                 disabled={isLoading}
-                className="ml-auto"
-                variant="outline"
-                color="gray"
                 onClick={() => setAdminStatus(admin, false)}
+                hook="toggle admin status"
               >
                 Revoke
               </Button>
