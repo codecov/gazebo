@@ -1,5 +1,4 @@
 import { useState, useLayoutEffect } from 'react'
-import PropTypes from 'prop-types'
 import { useParams } from 'react-router'
 
 import { useCommits } from 'services/commits'
@@ -14,7 +13,7 @@ import Icon from 'ui/Icon'
 import CommitsTable from './CommitsTable'
 import { useSetCrumbs } from '../context'
 
-const useCommitsFilters = (repoData) => {
+const useParamsFilters = (repoData) => {
   const defaultParams = {
     branch: repoData?.repository?.defaultBranch,
     hideFailedCI: false,
@@ -34,8 +33,9 @@ function CommitsTab() {
   const { data: branches } = useBranches({ provider, owner, repo })
   const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames = branches?.map((branch) => branch.name) || []
+
   const { branchName, hideFailedCI, setBranch, setHideFailedCI, updateParams } =
-    useCommitsFilters(repoData)
+    useParamsFilters(repoData)
 
   const { data: commits } = useCommits({
     provider,
@@ -99,9 +99,6 @@ function CommitsTab() {
       <CommitsTable commits={commits} />
     </div>
   )
-}
-CommitsTab.propTypes = {
-  branchName: PropTypes.string,
 }
 
 export default CommitsTab
