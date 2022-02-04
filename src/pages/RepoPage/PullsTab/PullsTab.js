@@ -19,50 +19,45 @@ import {
 
 const defaultParams = {
   order: orderingEnum.Newest.order,
-  states: [],
+  prStates: [],
 }
 
 const useParamsStatesAndOrder = () => {
   const { params, updateParams } = useLocationParams(defaultParams)
 
-  const { order, states } = params
+  const { order, prStates } = params
   const paramOrderName = orderNames[order]
 
-  const paramStatesNames = states.map((filter) => {
+  const paramStatesNames = prStates.map((filter) => {
     const stateName = stateNames[filter]
     return stateName
   })
-  return { paramOrderName, paramStatesNames, states, order, updateParams }
+  return { paramOrderName, paramStatesNames, prStates, order, updateParams }
 }
 
 // Moved during merge I'll likely consolodate this
 function useFormControls() {
   const { provider, owner, repo } = useParams()
-  const { paramOrderName, paramStatesNames, states, order, updateParams } =
+  const { paramOrderName, paramStatesNames, prStates, order, updateParams } =
     useParamsStatesAndOrder()
 
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
   const [selectedOrder, setSelectedOrder] = useState(paramOrderName)
-
-  const [pullsStates, setPullsStates] = useState(states)
-  const [orderingDirection, setOrderingDirection] = useState(order)
 
   const { data: pulls } = usePulls({
     provider,
     owner,
     repo,
     filters: {
-      state: pullsStates,
+      state: prStates,
     },
-    orderingDirection,
+    orderingDirection: order,
   })
 
   return {
-    setPullsStates,
     setSelectedOrder,
     setSelectedStates,
     pulls,
-    setOrderingDirection,
     selectedStates,
     selectedOrder,
     updateParams,
@@ -72,11 +67,9 @@ function useFormControls() {
 function PullsTab() {
   const setCrumbs = useSetCrumbs()
   const {
-    setPullsStates,
     setSelectedOrder,
     setSelectedStates,
     pulls,
-    setOrderingDirection,
     selectedStates,
     selectedOrder,
     updateParams,
@@ -90,19 +83,17 @@ function PullsTab() {
     setSelectedOrder(selectedOrder)
 
     const { order } = orderingEnum[selectedOrder]
-    setOrderingDirection(order)
     updateParams({ order })
   }
 
   const handleStatesChange = (selectedStates) => {
     setSelectedStates(selectedStates)
 
-    const states = selectedStates.map((filter) => {
+    const prStates = selectedStates.map((filter) => {
       const { state } = stateEnum[filter]
       return state
     })
-    setPullsStates(states)
-    updateParams({ states })
+    updateParams({ prStates })
   }
   return (
     <div className="flex-1 flex flex-col gap-4">
