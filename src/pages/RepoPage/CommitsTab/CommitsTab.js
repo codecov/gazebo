@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router'
 
 import { useCommits } from 'services/commits'
@@ -19,12 +19,11 @@ const useParamsFilters = (repoData) => {
     hideFailedCI: false,
   }
   const { params, updateParams } = useLocationParams(defaultParams)
-  const paramCIStatus = params.hideFailedCI && true
+  const { branch, hideFailedCI } = params
 
-  const [branchName, setBranch] = useState(params.branch)
-  const [hideFailedCI, setHideFailedCI] = useState(paramCIStatus)
+  const paramCIStatus = hideFailedCI && true
 
-  return { branchName, hideFailedCI, setBranch, setHideFailedCI, updateParams }
+  return { branch, paramCIStatus, updateParams }
 }
 
 function CommitsTab() {
@@ -35,16 +34,15 @@ function CommitsTab() {
   const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames = branches?.map((branch) => branch.name) || []
 
-  const { branchName, hideFailedCI, setBranch, setHideFailedCI, updateParams } =
-    useParamsFilters(repoData)
+  const { branch, paramCIStatus, updateParams } = useParamsFilters(repoData)
 
   const { data: commits } = useCommits({
     provider,
     owner,
     repo,
     filters: {
-      hideFailedCI,
-      branchName,
+      hideFailedCI: paramCIStatus,
+      branchName: branch,
     },
   })
 
@@ -56,12 +54,12 @@ function CommitsTab() {
         children: (
           <span className="flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
-            {branchName}
+            {branch}
           </span>
         ),
       },
     ])
-  }, [branchName, setCrumbs])
+  }, [branch, setCrumbs])
 
   return (
     <div className="flex-1 flex flex-col gap-4">
@@ -78,10 +76,9 @@ function CommitsTab() {
               className="bg-ds-gray-primary"
               items={branchesNames}
               onChange={(branch) => {
-                setBranch(branch)
                 updateParams({ branch })
               }}
-              value={branchName}
+              value={branch}
             />
           </div>
         </div>
@@ -90,11 +87,9 @@ function CommitsTab() {
           label="Hide commits with failed CI"
           name="filter commits"
           onChange={(e) => {
-            const { checked } = e.target
-            setHideFailedCI(checked)
-            updateParams({ hideFailedCI: checked })
+            updateParams({ hideFailedCI: e.target.checked })
           }}
-          checked={hideFailedCI}
+          checked={paramCIStatus}
         />
       </div>
       <CommitsTable commits={commits} />
