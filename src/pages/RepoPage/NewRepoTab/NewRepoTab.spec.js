@@ -14,9 +14,19 @@ jest.mock('services/commits/hooks')
 
 describe('New Repo Tab', () => {
   let mockError
+  let originalLocation
+
+  beforeAll(() => {
+    originalLocation = global.window.location
+    delete global.window.location
+    global.window.location = {
+      replace: jest.fn(),
+    }
+  })
 
   afterAll(() => {
     jest.resetAllMocks()
+    window.location = originalLocation
   })
 
   function setup({ repoData, commitsData = [] }) {
@@ -30,7 +40,6 @@ describe('New Repo Tab', () => {
     repoPageRender({
       initialEntries: ['/gh/codecov/Test/new'],
       renderNew: () => <NewRepoTab />,
-      renderRoot: () => <p>I redirected!</p>,
     })
   }
 
@@ -76,9 +85,12 @@ describe('New Repo Tab', () => {
       })
     })
 
-    it('redirects to vue', () => {
-      const onRoot = screen.queryByText(/I redirected!/)
-      expect(onRoot).toBeInTheDocument()
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('location replace was called (redirected)', () => {
+      expect(window.location.replace).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -106,9 +118,12 @@ describe('New Repo Tab', () => {
       })
     })
 
-    it('redirects to vue', () => {
-      const onRoot = screen.queryByText(/I redirected!/)
-      expect(onRoot).toBeInTheDocument()
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('location replace was called (redirected)', () => {
+      expect(window.location.replace).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -116,14 +131,18 @@ describe('New Repo Tab', () => {
     beforeEach(() => {
       setup({
         repoData: {
+          isCurrentUserPartOfOrg: true,
           repository: { private: false },
         },
       })
     })
 
-    it('redirects to vue', () => {
-      const onRoot = screen.queryByText(/I redirected!/)
-      expect(onRoot).toBeInTheDocument()
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('location replace was called (redirected)', () => {
+      expect(window.location.replace).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -108,7 +108,7 @@ function CommitPage() {
                 <CommitsTable
                   commit={commit}
                   state={data?.commit?.state}
-                  data={data?.impactedFiles}
+                  data={data?.commit?.compareWithParent?.impactedFiles}
                 />
               </Suspense>
             </Route>
