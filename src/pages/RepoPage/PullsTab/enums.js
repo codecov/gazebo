@@ -16,3 +16,14 @@ export const fitlerItems = [
 ]
 
 export const orderItems = [orderingEnum.Newest.name, orderingEnum.Oldest.name]
+
+export const orderNames = {
+  ASC: orderingEnum.Oldest.name,
+  DESC: orderingEnum.Newest.name,
+}
+
+export const stateNames = {
+  MERGED: stateEnum.Merged.name,
+  CLOSED: stateEnum.Closed.name,
+  OPEN: stateEnum.Open.name,
+}
