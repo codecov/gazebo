@@ -13,9 +13,9 @@ import Icon from 'ui/Icon'
 import CommitsTable from './CommitsTable'
 import { useSetCrumbs } from '../context'
 
-const useParamsFilters = (repoData) => {
+const useParamsFilters = (defaultBranch) => {
   const defaultParams = {
-    branch: repoData?.repository?.defaultBranch,
+    branch: defaultBranch,
     hideFailedCI: false,
   }
   const { params, updateParams } = useLocationParams(defaultParams)
@@ -34,7 +34,9 @@ function CommitsTab() {
   const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames = branches?.map((branch) => branch.name) || []
 
-  const { branch, paramCIStatus, updateParams } = useParamsFilters(repoData)
+  const { branch, paramCIStatus, updateParams } = useParamsFilters(
+    repoData?.repository?.defaultBranch
+  )
 
   const { data: commits } = useCommits({
     provider,
