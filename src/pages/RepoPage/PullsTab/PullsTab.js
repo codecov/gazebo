@@ -4,6 +4,7 @@ import { useParams } from 'react-router'
 import { usePulls } from 'services/pulls'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
+import Button from 'ui/Button'
 
 import { useSetCrumbs } from '../context'
 import PullsTable from './PullsTable'
@@ -21,7 +22,12 @@ function useFormControls() {
     orderingEnum.Newest.order
   )
 
-  const { data: pulls } = usePulls({
+  const {
+    data: { pulls },
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = usePulls({
     provider,
     owner,
     repo,
@@ -39,6 +45,9 @@ function useFormControls() {
     setOrderingDirection,
     pullsFilter,
     pullsOrder,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   }
 }
 
@@ -52,6 +61,9 @@ function PullsTab() {
     setOrderingDirection,
     pullsFilter,
     pullsOrder,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useFormControls()
 
   useLayoutEffect(() => {
@@ -101,6 +113,17 @@ function PullsTab() {
         </div>
       </div>
       <PullsTable pulls={pulls} />
+      {hasNextPage && (
+        <div className="w-full mt-4 flex justify-center">
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

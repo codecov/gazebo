@@ -1,7 +1,7 @@
 import Api from 'shared/api'
-import { useQuery } from 'react-query'
+import { useInfiniteQuery } from 'react-query'
 
-function fetchRepoPulls({ provider, owner, repo, variables }) {
+function fetchRepoPulls({ provider, owner, repo, variables, after }) {
   const PullFragment = `
    fragment PullFragment on Pull {
         pullId
@@ -24,17 +24,21 @@ function fetchRepoPulls({ provider, owner, repo, variables }) {
     }
   `
   const query = `
-      query GetPulls($owner: String!, $repo: String!, $orderingDirection: OrderingDirection, $filters: PullsSetFilters){
+      query GetPulls($owner: String!, $repo: String!, $orderingDirection: OrderingDirection, $filters: PullsSetFilters, $after: String){
             owner(username:$owner){
                 repository(name:$repo){
-                    pulls(orderingDirection: $orderingDirection, filters: $filters){
+                    pulls(orderingDirection: $orderingDirection, filters: $filters, first: 1, after: $after){
                         edges{
                             node{
                              ...PullFragment       
                             }
+                          }
+                        pageInfo {
+                          hasNextPage
+                          endCursor
                         }
-                   }
-                }
+                    }
+                 }
             }
         }  
       ${PullFragment} 
@@ -48,11 +52,16 @@ function fetchRepoPulls({ provider, owner, repo, variables }) {
       owner,
       repo,
       ...variables,
+      after,
     },
   }).then((res) => {
-    const { edges } = res?.data?.owner?.repository?.pulls
-    if (!edges) return null
-    return edges
+    const { pulls } = res?.data?.owner?.repository
+    if (!pulls) return null
+
+    return {
+      pulls: pulls?.edges,
+      pageInfo: pulls.pageInfo,
+    }
   })
 }
 
@@ -67,12 +76,25 @@ export function usePulls({
     filters,
     orderingDirection,
   }
-  return useQuery([provider, owner, repo, variables, 'pulls'], () => {
-    return fetchRepoPulls({
-      provider,
-      owner,
-      repo,
-      variables,
-    })
-  })
+  const { data, ...rest } = useInfiniteQuery(
+    [provider, owner, repo, variables, 'pulls'],
+    ({ pageParam }) => {
+      return fetchRepoPulls({
+        provider,
+        owner,
+        repo,
+        variables,
+        after: pageParam,
+      })
+    },
+    {
+      getNextPageParam: (data) =>
+        data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+    }
+  )
+
+  return {
+    data: { pulls: data?.pages.map((page) => page.pulls).flat() },
+    ...rest,
+  }
 }
