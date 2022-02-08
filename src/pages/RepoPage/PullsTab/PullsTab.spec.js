@@ -12,46 +12,48 @@ describe('Pulls Pab', () => {
 
   function setup() {
     usePulls.mockReturnValue({
-      data: [
-        {
-          node: {
-            author: { username: 'RulaKhaled' },
-            compareWithBase: {
-              patchTotals: {
-                coverage: 90,
+      data: {
+        pulls: [
+          {
+            node: {
+              author: { username: 'RulaKhaled' },
+              compareWithBase: {
+                patchTotals: {
+                  coverage: 90,
+                },
               },
-            },
-            head: {
-              totals: {
-                coverage: 45,
+              head: {
+                totals: {
+                  coverage: 45,
+                },
               },
+              pullId: 746,
+              state: 'MERGED',
+              title: 'Test1',
+              updatestamp: '2021-08-30T19:33:49.819672',
             },
-            pullId: 746,
-            state: 'MERGED',
-            title: 'Test1',
-            updatestamp: '2021-08-30T19:33:49.819672',
           },
-        },
-        {
-          node: {
-            author: { username: 'ThiagoCodecov' },
-            compareWithBase: {
-              patchTotals: {
-                coverage: 87,
+          {
+            node: {
+              author: { username: 'ThiagoCodecov' },
+              compareWithBase: {
+                patchTotals: {
+                  coverage: 87,
+                },
               },
-            },
-            head: {
-              totals: {
-                coverage: 100,
+              head: {
+                totals: {
+                  coverage: 100,
+                },
               },
+              pullId: 745,
+              state: 'OPEN',
+              title: 'Test2',
+              updatestamp: '2021-07-30T19:33:49.819672',
             },
-            pullId: 745,
-            state: 'OPEN',
-            title: 'Test2',
-            updatestamp: '2021-07-30T19:33:49.819672',
           },
-        },
-      ],
+        ],
+      },
     })
 
     repoPageRender({

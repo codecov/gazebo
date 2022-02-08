@@ -27,7 +27,7 @@ function fetchRepoPulls({ provider, owner, repo, variables, after }) {
       query GetPulls($owner: String!, $repo: String!, $orderingDirection: OrderingDirection, $filters: PullsSetFilters, $after: String){
             owner(username:$owner){
                 repository(name:$repo){
-                    pulls(orderingDirection: $orderingDirection, filters: $filters, first: 1, after: $after){
+                    pulls(orderingDirection: $orderingDirection, filters: $filters, first: 20, after: $after){
                         edges{
                             node{
                              ...PullFragment       

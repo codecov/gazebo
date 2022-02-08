@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { usePulls } from './hooks'
 import { graphql } from 'msw'
@@ -22,32 +22,55 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-const dataReturned = {
+const pullsNodes = [
+  {
+    pullId: 0,
+    title: 'first pull',
+    state: 'Merged',
+    updatestamp: '20-2-2021',
+    author: {
+      username: 'Rula',
+    },
+    head: {
+      totals: {
+        coverage: '90',
+      },
+    },
+    compareWithBase: {
+      patchTotals: {
+        coverage: '87',
+      },
+    },
+  },
+  {
+    pullId: 1,
+    title: 'second pull',
+    state: 'Merged',
+    updatestamp: '20-2-2021',
+    author: {
+      username: 'Rula',
+    },
+    head: {
+      totals: {
+        coverage: '90',
+      },
+    },
+    compareWithBase: {
+      patchTotals: {
+        coverage: '87',
+      },
+    },
+  },
+]
+
+const expectedData = {
   owner: {
     repository: {
       pulls: {
-        edges: {
-          nodes: [
-            {
-              pullId: 0,
-              title: 'first pull',
-              state: 'Merged',
-              updatestamp: '20-2-2021',
-              author: {
-                username: 'Rula',
-              },
-              head: {
-                totals: {
-                  coverage: '90',
-                },
-              },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: '87',
-                },
-              },
-            },
-          ],
+        edges: pullsNodes,
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
         },
       },
     },
@@ -64,7 +87,7 @@ describe('GetPulls', () => {
   function setup() {
     server.use(
       graphql.query('GetPulls', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return res(ctx.status(200), ctx.data(expectedData))
       })
     )
 
@@ -74,30 +97,6 @@ describe('GetPulls', () => {
   }
 
   describe('when called', () => {
-    const expectedResponse = {
-      nodes: [
-        {
-          pullId: 0,
-          title: 'first pull',
-          state: 'Merged',
-          updatestamp: '20-2-2021',
-          author: {
-            username: 'Rula',
-          },
-          head: {
-            totals: {
-              coverage: '90',
-            },
-          },
-          compareWithBase: {
-            patchTotals: {
-              coverage: '87',
-            },
-          },
-        },
-      ],
-    }
-
     beforeEach(() => {
       setup()
     })
@@ -111,9 +110,23 @@ describe('GetPulls', () => {
         return hookData.waitFor(() => hookData.result.current.isSuccess)
       })
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(expectedResponse)
+      it('returns expected pulls nodes', () => {
+        expect(hookData.result.current.data.pulls).toEqual(pullsNodes)
       })
+    })
+  })
+
+  describe('when call next page', () => {
+    beforeEach(async () => {
+      setup()
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      await act(() => {
+        return hookData.result.current.fetchNextPage()
+      })
+    })
+
+    it('returns pulls of the user', () => {
+      expect(hookData.result.current.data.pulls).toEqual(pullsNodes)
     })
   })
 })
