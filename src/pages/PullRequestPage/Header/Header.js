@@ -19,16 +19,6 @@ function PullHeader() {
   const { provider, owner, repo, pullid } = useParams()
   const { data: pull } = usePull({ provider, owner, repo, pullid })
 
-  // const pull = {
-  //   pullId: 5,
-  //   title: 'fix stuff',
-  //   state: 'OPEN',
-  //   updatestamp: '2021-03-03T17:54:07.727453',
-  //   author: {
-  //     username: 'landonorris',
-  //   },
-  // }
-
   return (
     <div className="border-t border-b border-ds-gray-secondary py-4">
       <h1 className="flex items-center text-lg font-semibold leading-10">
