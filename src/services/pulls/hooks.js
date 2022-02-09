@@ -78,18 +78,17 @@ export function usePulls({
   }
   const { data, ...rest } = useInfiniteQuery(
     [provider, owner, repo, variables, 'pulls'],
-    ({ pageParam }) => {
-      return fetchRepoPulls({
+    ({ pageParam }) =>
+      fetchRepoPulls({
         provider,
         owner,
         repo,
         variables,
         after: pageParam,
-      })
-    },
+      }),
     {
       getNextPageParam: (data) =>
-        data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+        data?.pageInfo?.hasNextPage && data.pageInfo.endCursor,
     }
   )
 

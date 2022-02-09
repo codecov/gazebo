@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node'
-import { renderHook, act } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { usePulls } from './hooks'
 import { graphql } from 'msw'
@@ -113,20 +113,6 @@ describe('GetPulls', () => {
       it('returns expected pulls nodes', () => {
         expect(hookData.result.current.data.pulls).toEqual(pullsNodes)
       })
-    })
-  })
-
-  describe('when call next page', () => {
-    beforeEach(async () => {
-      setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-      await act(() => {
-        return hookData.result.current.fetchNextPage()
-      })
-    })
-
-    it('returns pulls of the user', () => {
-      expect(hookData.result.current.data.pulls).toEqual(pullsNodes)
     })
   })
 })
