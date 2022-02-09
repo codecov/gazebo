@@ -81,7 +81,7 @@ describe('Commits Tab', () => {
 
     it('has false as initial checked property value of the checkbox', () => {
       const checkbox = screen.getByRole('checkbox')
-      expect(checkbox.checked).toEqual(false)
+      expect(checkbox).not.toBeChecked()
     })
   })
 
@@ -93,7 +93,7 @@ describe('Commits Tab', () => {
 
     it('changes checked property value to true', () => {
       const checkbox = screen.getByRole('checkbox')
-      expect(checkbox.checked).toEqual(true)
+      expect(checkbox).toBeChecked()
     })
   })
 })
