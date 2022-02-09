@@ -1,5 +1,6 @@
 import { useState, useLayoutEffect } from 'react'
 import { useParams } from 'react-router'
+import { useLocationParams } from 'services/navigation'
 
 import { usePulls } from 'services/pulls'
 import MultiSelect from 'ui/MultiSelect'
@@ -8,19 +9,41 @@ import Button from 'ui/Button'
 
 import { useSetCrumbs } from '../context'
 import PullsTable from './PullsTable'
-import { orderItems, fitlerItems, orderingEnum, stateEnum } from './enums'
+import {
+  orderItems,
+  fitlerItems,
+  orderingEnum,
+  stateEnum,
+  orderNames,
+  stateNames,
+} from './enums'
+
+const defaultParams = {
+  order: orderingEnum.Newest.order,
+  prStates: [],
+}
+
+const useParamsStatesAndOrder = () => {
+  const { params, updateParams } = useLocationParams(defaultParams)
+
+  const { order, prStates } = params
+  const paramOrderName = orderNames[order]
+
+  const paramStatesNames = prStates.map((filter) => {
+    const stateName = stateNames[filter]
+    return stateName
+  })
+  return { paramOrderName, paramStatesNames, prStates, order, updateParams }
+}
 
 // Moved during merge I'll likely consolodate this
 function useFormControls() {
   const { provider, owner, repo } = useParams()
+  const { paramOrderName, paramStatesNames, prStates, order, updateParams } =
+    useParamsStatesAndOrder()
 
-  const [pullsFilter, setPullsFilter] = useState([])
-  const [pullsOrder, setPullsOrder] = useState([orderingEnum.Newest.name])
-
-  const [pullsStates, setPullsStates] = useState([])
-  const [orderingDirection, setOrderingDirection] = useState(
-    orderingEnum.Newest.order
-  )
+  const [selectedStates, setSelectedStates] = useState(paramStatesNames)
+  const [selectedOrder, setSelectedOrder] = useState(paramOrderName)
 
   const {
     data: { pulls },
@@ -32,19 +55,18 @@ function useFormControls() {
     owner,
     repo,
     filters: {
-      state: pullsStates,
+      state: prStates,
     },
-    orderingDirection,
+    orderingDirection: order,
   })
 
   return {
-    setPullsStates,
-    setPullsOrder,
-    setPullsFilter,
+    setSelectedOrder,
+    setSelectedStates,
     pulls,
-    setOrderingDirection,
-    pullsFilter,
-    pullsOrder,
+    selectedStates,
+    selectedOrder,
+    updateParams,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -54,13 +76,12 @@ function useFormControls() {
 function PullsTab() {
   const setCrumbs = useSetCrumbs()
   const {
-    setPullsStates,
-    setPullsOrder,
-    setPullsFilter,
+    setSelectedOrder,
+    setSelectedStates,
     pulls,
-    setOrderingDirection,
-    pullsFilter,
-    pullsOrder,
+    selectedStates,
+    selectedOrder,
+    updateParams,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -70,21 +91,21 @@ function PullsTab() {
     setCrumbs()
   }, [setCrumbs])
 
-  const handleOrderChange = (ordering) => {
-    setPullsOrder(ordering)
+  const handleOrderChange = (selectedOrder) => {
+    setSelectedOrder(selectedOrder)
 
-    const { order } = orderingEnum[ordering]
-    setOrderingDirection(order)
+    const { order } = orderingEnum[selectedOrder]
+    updateParams({ order })
   }
 
-  const handleFilterChange = (filters) => {
-    setPullsFilter(filters)
+  const handleStatesChange = (selectedStates) => {
+    setSelectedStates(selectedStates)
 
-    const states = filters.map((filter) => {
+    const prStates = selectedStates.map((filter) => {
       const { state } = stateEnum[filter]
       return state
     })
-    setPullsStates(states)
+    updateParams({ prStates })
   }
   return (
     <div className="flex-1 flex flex-col gap-4">
@@ -94,9 +115,9 @@ function PullsTab() {
           <div>
             <MultiSelect
               ariaName="Filter by state"
-              selectedItems={pullsFilter}
+              selectedItems={selectedStates}
               items={fitlerItems}
-              onChange={handleFilterChange}
+              onChange={handleStatesChange}
               resourceName=""
             />
           </div>
@@ -105,7 +126,7 @@ function PullsTab() {
           <label className="font-semibold text-sm ">Sort by:</label>
           <div>
             <Select
-              value={pullsOrder}
+              value={selectedOrder}
               items={orderItems}
               onChange={handleOrderChange}
             />
