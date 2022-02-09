@@ -94,7 +94,7 @@ export function usePulls({
   )
 
   return {
-    data: { pulls: data?.pages.map((page) => page.pulls).flat() },
+    data: { pulls: data?.pages.map((page) => page?.pulls).flat() },
     ...rest,
   }
 }
