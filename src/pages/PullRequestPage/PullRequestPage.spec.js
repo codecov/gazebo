@@ -5,6 +5,9 @@ import PullRequestPage from './PullRequestPage'
 
 jest.mock('./Header', () => () => 'Header')
 
+jest.mock('./subroute/Root', () => () => 'Root')
+jest.mock('./subroute/FileDiff', () => () => 'FileDiff')
+
 describe('PullRequestPage', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
     render(
@@ -67,7 +70,7 @@ describe('PullRequestPage', () => {
     })
 
     it('rendered', () => {
-      expect(screen.getByText(/App\/index.js/i)).toBeInTheDocument()
+      expect(screen.getByText(/FileDiff/i)).toBeInTheDocument()
     })
   })
 })

@@ -15,7 +15,7 @@ const pullStateToColor = {
   MERGED: 'bg-ds-primary-purple',
 }
 
-function PullHeader() {
+function Header() {
   const { provider, owner, repo, pullid } = useParams()
   const { data: pull } = usePull({ provider, owner, repo, pullid })
 
@@ -64,4 +64,4 @@ function PullHeader() {
   )
 }
 
-export default PullHeader
+export default Header
