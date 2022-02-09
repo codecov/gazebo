@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 const Status = ({ ciPassed }) => {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 justify-end">
       {ciPassed ? (
         <>
           <span className="text-green-600">
@@ -30,7 +30,7 @@ Status.propTypes = {
 
 function CIStatus({ commitid, coverage, ciPassed }) {
   return (
-    <div className="w-full justify-end lg:flex flex-col items-end">
+    <div className="w-full lg:flex flex-col items-end text-right">
       <A to={{ pageName: 'commit', options: { commit: commitid } }}>
         <span className="text-ds-gray-quinary font-mono">
           {commitid?.slice(0, 8)}

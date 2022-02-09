@@ -4,8 +4,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
 import Card from 'old_ui/Card'
-import Button from 'old_ui/Button'
-import TextInput from 'old_ui/TextInput'
+import Button from 'ui/Button'
+import TextInput from 'ui/TextInput'
 import { useAddNotification } from 'services/toastNotification'
 import { useUpdateProfile } from 'services/user'
 
@@ -57,15 +57,24 @@ function NameEmailCard({ currentUser, provider }) {
   return (
     <Card className="p-10">
       {/* Define the field first and the submit/title after so the TAB order makes sense for accessibility but we reverse the two so it looks like the correct UI */}
-      <form onSubmit={handleSubmit(submit)} className="flex flex-col-reverse">
-        <div className="flex justify-between mt-8 flex-col md:flex-row">
-          <div className="w-full md:w-1/2 mr-2">
+      <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl bold">Your details</h1>
+          <Button
+            type="submit"
+            disabled={isButtonDisabled}
+            hook="Update personal information"
+          >
+            Save changes
+          </Button>
+        </div>
+        <div className="flex justify-between flex-col md:flex-row gap-2 md:gap-4">
+          <div className="w-full md:w-1/2">
             <label htmlFor="name-edit" className="bold">
               Name
             </label>
             <TextInput
               id="name-edit"
-              className="mt-2"
               placeholder="Your name"
               disabled={isLoading}
               {...register('name', { required: true })}
@@ -76,13 +85,12 @@ function NameEmailCard({ currentUser, provider }) {
               </p>
             )}
           </div>
-          <div className="w-full md:w-1/2 ml-2 mt-4 md:mt-0">
+          <div className="w-full md:w-1/2 md:mt-0">
             <label htmlFor="email-edit" className="bold">
               Email
             </label>
             <TextInput
               id="email-edit"
-              className="mt-2"
               placeholder="Your email"
               disabled={isLoading}
               {...register('email', { required: true })}
@@ -93,12 +101,6 @@ function NameEmailCard({ currentUser, provider }) {
               </p>
             )}
           </div>
-        </div>
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl bold">Your details</h1>
-          <Button type="submit" disabled={isButtonDisabled}>
-            Save changes
-          </Button>
         </div>
       </form>
     </Card>

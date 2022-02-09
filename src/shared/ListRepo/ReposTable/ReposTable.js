@@ -45,13 +45,13 @@ const tableInactive = [
   },
 ]
 
-function transformRepoToTable(
+function transformRepoToTable({
   repos,
   owner,
   searchValue,
-  newRepoSetupLink,
-  active
-) {
+  linkToOnboardingWithGazebo,
+  isSetup,
+}) {
   // if there are no repos show empty message
   if (repos.length <= 0) {
     return [
@@ -63,16 +63,14 @@ function transformRepoToTable(
     ]
   }
 
-  // if we have an owner, then we don't need to show it on the repo title
-  const showRepoOwner = !owner
+  const repoPageName = !isSetup && linkToOnboardingWithGazebo ? 'new' : 'repo'
 
   return repos.map((repo) => ({
     title: (
       <RepoTitleLink
         repo={repo}
-        showRepoOwner={showRepoOwner}
-        active={active}
-        newRepoSetupLink={newRepoSetupLink}
+        showRepoOwner={!owner}
+        pageName={repoPageName}
       />
     ),
     lastUpdated: (
@@ -97,7 +95,7 @@ function transformRepoToTable(
         Not yet enabled{' '}
         <AppLink
           className="text-ds-blue font-semibold"
-          pageName={newRepoSetupLink ? 'new' : 'repo'}
+          pageName={linkToOnboardingWithGazebo ? 'new' : 'repo'}
           options={{
             owner: repo.author.username,
             repo: repo.name,
@@ -121,13 +119,13 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   })
 
   const { newRepoSetupLink } = useFlags({ newRepoSetupLink: false })
-  const dataTable = transformRepoToTable(
-    data.repos,
+  const dataTable = transformRepoToTable({
+    repos: data.repos,
     owner,
     searchValue,
-    newRepoSetupLink,
-    active
-  )
+    linkToOnboardingWithGazebo: newRepoSetupLink,
+    isSetup: active,
+  })
 
   return (
     <>

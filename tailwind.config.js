@@ -29,7 +29,7 @@ module.exports = {
             darker: '#0071C2',
             quinary: '#015896',
             senary: '#002D4D',
-            selected: '#e6f1ff'
+            selected: '#e6f1ff',
           },
           gray: {
             DEFAULT: '#0E1B29',
@@ -46,7 +46,7 @@ module.exports = {
             green: '#27B340',
             red: '#CE2019',
             purple: '#AC39CF',
-            yellow: '#CA8E00'
+            yellow: '#CA8E00',
           },
           coverage: {
             covered: '#DEFFE8',

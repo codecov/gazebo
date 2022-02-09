@@ -1,10 +1,12 @@
 import userEvent from '@testing-library/user-event'
 import { repoPageRender, screen } from '../repo-jest-setup'
 
-import { useCommits } from 'services/commits/hooks'
+import { useCommits } from 'services/commits'
+import { useRepo } from 'services/repo'
 import CommitsTab from './CommitsTab'
 
-jest.mock('services/commits/hooks')
+jest.mock('services/commits')
+jest.mock('services/repo')
 
 describe('Commits Tab', () => {
   afterAll(() => {
@@ -12,6 +14,7 @@ describe('Commits Tab', () => {
   })
 
   function setup() {
+    useRepo.mockReturnValue({ repository: { defaultBranch: 'main' } })
     useCommits.mockReturnValue({
       data: [
         {
