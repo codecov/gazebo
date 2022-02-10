@@ -1,10 +1,8 @@
 import { render, screen } from 'custom-testing-library'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import PullDetail from './PullDetail'
 import { usePull } from 'services/pull'
-
-jest.mock('services/pull/hooks')
+import Header from './Header'
 
 const pull = {
   pullId: 5,
@@ -16,13 +14,16 @@ const pull = {
   },
 }
 
-describe('PullDetail', () => {
-  function setup() {
+jest.mock('services/pull/hooks')
+
+describe('Header', () => {
+  function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
     usePull.mockReturnValue({ data: pull })
+
     render(
-      <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
-        <Route path="/:provider/:owner/:repo/pull/:pullid/">
-          <PullDetail />
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/pull/:pullid">
+          <Header />
         </Route>
       </MemoryRouter>
     )
@@ -30,10 +31,9 @@ describe('PullDetail', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
-
-    it('renders the pr info', () => {
+    it('renders the pr overview', () => {
       expect(
         screen.getByRole('heading', {
           name: /fix stuff/i,
@@ -44,13 +44,8 @@ describe('PullDetail', () => {
         name: /landonorris/i,
       })
       expect(userLink).toHaveAttribute('href', '/gh/landonorris')
-      const prLink = screen.getByRole('link', {
-        name: /5/,
-      })
-      expect(prLink).toHaveAttribute(
-        'href',
-        'https://github.com/test-org/test-repo/pull/5'
-      )
+      const prNumber = screen.getByText(/#5/i)
+      expect(prNumber).toBeInTheDocument()
     })
   })
 })

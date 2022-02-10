@@ -1,27 +1,33 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullRequestPage from './PullRequestPage'
 
-jest.mock('./PullDetail', () => () => 'PullDetail')
+jest.mock('./Header', () => () => 'Header')
+
+jest.mock('./subroute/Root', () => () => 'Root')
+jest.mock('./subroute/FileDiff', () => () => 'FileDiff')
 
 describe('PullRequestPage', () => {
-  function setup() {
+  function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
     render(
-      <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
-        <Route path="/:provider/:owner/:repo/pull/:pullid/">
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/pull/:pullid" exact={true}>
+          <PullRequestPage />
+        </Route>
+        <Route path="/:provider/:owner/:repo/pull/:pullid/tree/:path">
           <PullRequestPage />
         </Route>
       </MemoryRouter>
     )
   }
 
-  describe('when rendered', () => {
+  describe('the main breadcrumb', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
-    it('renders the Breadcrumb', () => {
+    it('renders', () => {
       expect(
         screen.getByRole('link', {
           name: /test-org/i,
@@ -38,9 +44,33 @@ describe('PullRequestPage', () => {
         })
       ).toBeInTheDocument()
     })
+  })
 
-    it('renders the PullDetail', () => {
-      expect(screen.getByText(/PullDetail/i)).toBeInTheDocument()
+  describe('root', () => {
+    beforeEach(async () => {
+      setup({})
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+    })
+
+    it('rendered', () => {
+      expect(screen.getByText(/Root/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('file view', () => {
+    beforeEach(async () => {
+      setup({
+        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+      })
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+    })
+
+    it('rendered', () => {
+      expect(screen.getByText(/FileDiff/i)).toBeInTheDocument()
     })
   })
 })

@@ -21,9 +21,10 @@ function forwardMarketingTag(search) {
 
 function useNavLinks() {
   const { search } = useLocation()
-  const { provider: p, owner: o, repo: r, id: i } = useParams()
-  const { gazeboRepoTabs } = useFlags({
+  const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
+  const { gazeboRepoTabs, gazeboPullRequestPage } = useFlags({
     gazeboRepoTabs: false,
+    gazeboPullRequestPage: false,
   })
 
   return {
@@ -254,16 +255,17 @@ function useNavLinks() {
       isExternalLink: gazeboRepoTabs,
       text: 'Pulls',
     },
-    compare: {
+    pullDetail: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, pullId = pi } = {
           provider: p,
           owner: o,
           repo: r,
+          pullId: pi,
         }
-      ) => `/${provider}/${owner}/${repo}/compare`,
-      isExternalLink: gazeboRepoTabs,
-      text: 'Compare',
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}`,
+      isExternalLink: gazeboPullRequestPage,
+      text: 'Pull',
     },
     settings: {
       path: (
