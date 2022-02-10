@@ -16,36 +16,38 @@ describe('Commits Tab', () => {
   function setup() {
     useRepo.mockReturnValue({ repository: { defaultBranch: 'main' } })
     useCommits.mockReturnValue({
-      data: [
-        {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
+      data: {
+        commits: [
+          {
+            author: { username: 'RulaKhaled' },
+            compareWithParent: {
+              patchTotals: {
+                coverage: 90,
+              },
             },
-          },
-          totals: {
-            coverage: 45,
-          },
-          commitid: 'id',
-          message: 'Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
-        },
-        {
-          author: { username: 'Terry' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 55,
+            totals: {
+              coverage: 45,
             },
+            commitid: 'id',
+            message: 'Test1',
+            createdAt: '2021-08-30T19:33:49.819672',
           },
-          totals: {
-            coverage: 59,
+          {
+            author: { username: 'Terry' },
+            compareWithParent: {
+              patchTotals: {
+                coverage: 55,
+              },
+            },
+            totals: {
+              coverage: 59,
+            },
+            commitid: 'id',
+            message: 'Test2',
+            createdAt: '2021-08-30T19:33:49.819672',
           },
-          commitid: 'id',
-          message: 'Test2',
-          createdAt: '2021-08-30T19:33:49.819672',
-        },
-      ],
+        ],
+      },
     })
 
     repoPageRender({

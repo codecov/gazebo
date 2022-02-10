@@ -74,6 +74,10 @@ const dataReturned = {
             },
           },
         ],
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: null,
+        },
       },
     },
   },
@@ -158,7 +162,7 @@ describe('GetCommits', () => {
       })
 
       it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(expectedResponse)
+        expect(hookData.result.current.data.commits).toEqual(expectedResponse)
       })
     })
   })

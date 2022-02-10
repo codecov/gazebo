@@ -1,5 +1,6 @@
 import Api from 'shared/api'
 import { useInfiniteQuery } from 'react-query'
+import { mapEdges } from 'shared/utils/graphql'
 
 function fetchRepoCommits({ provider, owner, repo, variables, after }) {
   const CommitFragment = `
@@ -30,7 +31,7 @@ function fetchRepoCommits({ provider, owner, repo, variables, after }) {
     query GetCommits($owner: String!, $repo: String!, $filters:CommitsSetFilters, $after: String){
         owner(username:$owner){
             repository(name: $repo){
-                commits(filters: $filters, first: 20, after: $after){
+                commits(filters: $filters, first: 2, after: $after){
                   edges{
                     node{
                        ...CommitFragment
@@ -62,7 +63,7 @@ function fetchRepoCommits({ provider, owner, repo, variables, after }) {
     if (!commits) return null
 
     return {
-      commits: commits.edges,
+      commits: mapEdges(commits),
       pageInfo: commits.pageInfo,
     }
   })
@@ -72,7 +73,6 @@ export function useCommits({ provider, owner, repo, filters }) {
   const variables = {
     filters,
   }
-
   const { data, ...rest } = useInfiniteQuery(
     [provider, owner, repo, variables, 'commits'],
     ({ pageParam }) =>

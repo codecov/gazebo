@@ -17,7 +17,9 @@ const path = '/:provider/:owner/:repo'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
-  const { data: commits } = useCommits({ provider, owner, repo })
+  const {
+    data: { commits },
+  } = useCommits({ provider, owner, repo })
   const repoHasCommits = commits?.length > 0
 
   const Loader = (
