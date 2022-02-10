@@ -2,13 +2,21 @@ import { isNumber } from 'lodash'
 import PropTypes from 'prop-types'
 
 function Patch({ compareWithParent }) {
-  const rawPatch = compareWithParent?.patchTotals?.coverage
-  const patch = isNumber(rawPatch) && `${rawPatch}%`
+  // This should come multiplied by 100 from the DB
+  const patch = compareWithParent?.patchTotals?.coverage
 
   return (
-    patch && (
-      <div className="flex justify-end w-full font-semibold">{patch}</div>
-    )
+    <div className="flex justify-end w-full font-semibold">
+      {isNumber(patch) && patch !== 0 ? (
+        <span className='bg-green-100'>
+          {patch.toFixed(2)}%
+        </span>
+      ) : (
+        <span>
+          ø
+        </span>
+      )}
+    </div>
   )
 }
 

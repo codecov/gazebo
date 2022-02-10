@@ -42,6 +42,7 @@ const Title = ({ author, pullId, title, updatestamp }) => {
           </A>
           {updatestamp && (
             <span className="text-ds-gray-quinary">
+              {updatestamp}
               {' opened ' +
                 formatDistanceToNow(new Date(updatestamp), {
                   addSuffix: true,

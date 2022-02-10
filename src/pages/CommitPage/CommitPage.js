@@ -18,12 +18,12 @@ const CommitsTable = lazy(() => import('./subroute/CommitsTable.js'))
 const NotFound = lazy(() => import('pages/NotFound'))
 
 function CommitPage() {
-  const { provider, owner, repo, commit, path } = useParams()
-  const { data, isLoading } = useCommit({
+  const { provider, owner, repo, commit: commitSHA, path } = useParams()
+  const { data: {commit}, isLoading } = useCommit({
     provider,
     owner,
     repo,
-    commitid: commit,
+    commitid: commitSHA,
   })
 
   const loadingState = (
@@ -32,42 +32,43 @@ function CommitPage() {
     </div>
   )
 
-  const commitid = commit?.substr(0, 7)
-  const diff = data?.impactedFiles?.find((file) => file.headName === path)
+  const shortSHA = commitSHA?.substr(0, 7)
+  const diff = commit?.compareWithParent?.impactedFiles?.find((file) => file.headName === path)
 
-  return !isLoading && data ? (
+  return !isLoading && commit ? (
     <div className="flex divide-y gap-4 flex-col px-3 sm:px-0">
       <Breadcrumb
         paths={[
           { pageName: 'owner', text: owner },
           { pageName: 'repo', text: repo },
+
           { pageName: 'commits', text: 'commits' },
           {
             pageName: 'commit',
-            options: { commit },
+            options: { commitSHA },
             readOnly: true,
-            text: commitid,
+            text: shortSHA,
           },
         ]}
       />
       <div className="flex flex-col py-4">
-        <Header provider={provider} owner={owner} repo={repo} commit={commit} />
+        <Header provider={provider} owner={owner} repo={repo} commit={commitSHA} />
         <h1 className="text-lg font-semibold text-ds-gray-octonary mb-1 bt-4">
-          {data?.commit?.message}
+          {commit?.message}
         </h1>
         <p className="flex items-center text-ds-gray-quinary gap-1">
-          {data?.commit?.createdAt
-            ? formatDistanceToNow(new Date(data?.commit?.createdAt), {
+          {commit?.createdAt
+            ? formatDistanceToNow(new Date(commit?.createdAt), {
                 addSuffix: true,
               })
             : ''}
           <A
             to={{
               pageName: 'owner',
-              options: { owner: data?.commit?.author?.username },
+              options: { owner: commit?.author?.username },
             }}
           >
-            {data?.commit?.author?.username}
+            {commit?.author?.username}
           </A>
           authored commit
           <A
@@ -76,12 +77,12 @@ function CommitPage() {
               provider,
               owner,
               repo,
-              commit,
+              commit: commitSHA,
             })}
             hook="provider commit url"
             isExternal={true}
           >
-            {commitid}
+            {shortSHA}
           </A>
         </p>
       </div>
@@ -91,7 +92,7 @@ function CommitPage() {
             provider={provider}
             repo={repo}
             owner={owner}
-            data={data?.commit}
+            data={commit}
           />
           <UploadsCard />
         </aside>
@@ -106,9 +107,9 @@ function CommitPage() {
               <h2 className="text-base font-semibold">Impacted files</h2>
               <Suspense fallback={loadingState}>
                 <CommitsTable
-                  commit={commit}
-                  state={data?.commit?.state}
-                  data={data?.commit?.compareWithParent?.impactedFiles}
+                  commit={commitSHA}
+                  state={commit?.state}
+                  data={commit?.compareWithParent?.impactedFiles}
                 />
               </Suspense>
             </Route>

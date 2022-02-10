@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import { commitRequestType } from 'shared/propTypes'
 import Table from 'ui/Table'
+import Change from 'ui/Change'
 
 import Title from './Title'
 import Coverage from './Coverage'
-import Change from './Change'
+
 import Patch from './Patch'
 import CIStatus from './CIStatus'
 
@@ -68,6 +69,7 @@ function transformPullToTable(commits) {
       parent,
       ciPassed,
     } = commit
+    const change = totals?.coverage - parent?.totals?.coverage
 
     return {
       title: (
@@ -87,7 +89,7 @@ function transformPullToTable(commits) {
       ),
       coverage: <Coverage totals={totals} />,
       patch: <Patch compareWithParent={compareWithParent} />,
-      change: <Change totals={totals} parent={parent} />,
+      change: <Change value={change} variant="table"/>,
     }
   })
 }

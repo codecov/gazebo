@@ -52,6 +52,7 @@ module.exports = {
             covered: '#DEFFE8',
             uncovered: '#FFEDF0',
             partial: '#FFF9D8',
+            transparent: '#ffffff00'
           },
         },
         codecov: {

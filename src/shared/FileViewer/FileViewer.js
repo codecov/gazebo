@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 
 import Breadcrumb from 'ui/Breadcrumb'
 import Progress from 'ui/Progress'
+import Change from 'ui/Change'
 import AppLink from 'shared/AppLink'
 import { useCoverageWithFlags } from 'services/file/hooks'
 
@@ -105,18 +106,9 @@ function FileViewer({
           <div className="flex-1">
             <Breadcrumb paths={[...treePaths]} />
           </div>
-          <div className="w-full max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
-            <Progress amount={coverageTotals} label />
-            {change && (
-              <span
-                className={cs('font-semibold text-sm', {
-                  'bg-ds-coverage-uncovered': change < 0,
-                  'bg-ds-coverage-covered': change >= 0,
-                })}
-              >
-                {change.toFixed(2)}%
-              </span>
-            )}
+          <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
+            <Progress amount={coverageTotals} label={true}/>
+            <Change value={change} variant="fileViewer"/>
           </div>
         </div>
         {content ? (
