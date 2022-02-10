@@ -74,7 +74,19 @@ function App() {
                 <OwnerPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/pull/:pullid" exact>
+            <Redirect
+              from="/:provider/:owner/:repo/compare/*"
+              to="/:provider/:owner/:repo/pull/*"
+            />
+            <Route
+              path="/:provider/:owner/:repo/pull/:pullid/tree/:path+"
+              exact
+            >
+              <BaseLayout>
+                <PullRequestPage />
+              </BaseLayout>
+            </Route>
+            <Route path="/:provider/:owner/:repo/pull/:pullid">
               <BaseLayout>
                 <PullRequestPage />
               </BaseLayout>
