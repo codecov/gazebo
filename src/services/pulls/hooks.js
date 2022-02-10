@@ -2,6 +2,7 @@ import Api from 'shared/api'
 import { useQuery } from 'react-query'
 
 function fetchRepoPulls({ provider, owner, repo, variables }) {
+  // TODO: Verify if we don't need the patchTotals part anymore
   const PullFragment = `
    fragment PullFragment on Pull {
         pullId
@@ -20,6 +21,7 @@ function fetchRepoPulls({ provider, owner, repo, variables }) {
           patchTotals{
             coverage
           }
+          changeWithParent
         }         
     }
   `

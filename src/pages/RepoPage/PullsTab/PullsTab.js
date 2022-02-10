@@ -44,7 +44,6 @@ function useFormControls() {
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
   const [selectedOrder, setSelectedOrder] = useState(paramOrderName)
 
-  // Pulls are coming in a weird order; looking at Vue, I believe these should be coming by commitid descending ($10, #9, #8, etc)
   const { data: pulls } = usePulls({
     provider,
     owner,

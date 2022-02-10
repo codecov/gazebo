@@ -1,4 +1,3 @@
-import cs from 'classnames'
 import PropTypes from 'prop-types'
 import isNumber from 'lodash/isNumber'
 
@@ -45,7 +44,7 @@ function useFormatTableData({ tableData = [], commit }) {
             to={{
               pageName: 'commitFile',
               options: { commit, path: row.headName },
-            }}z
+            }}
           >
             <span>{row.headName?.split('/').pop()}</span>
           </A>

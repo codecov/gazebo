@@ -19,12 +19,14 @@ const NotFound = lazy(() => import('pages/NotFound'))
 
 function CommitPage() {
   const { provider, owner, repo, commit: commitSHA, path } = useParams()
-  const { data: {commit}, isLoading } = useCommit({
+  const { data, isLoading } = useCommit({
     provider,
     owner,
     repo,
     commitid: commitSHA,
   })
+
+  const commit = data?.commit
 
   const loadingState = (
     <div className="flex-1 flex justify-center m-4">

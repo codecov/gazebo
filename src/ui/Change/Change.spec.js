@@ -2,27 +2,21 @@ import { render, screen } from '@testing-library/react'
 import Change from '.'
 
 describe('Change', () => {
-  function setup({ totals, parent }) {
-    render(<Change totals={totals} parent={parent} />)
+  function setup({value, variant="table"}) {
+    render(<Change value={value} variant={variant} />)
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup({
-        totals: {
-          coverage: 45,
-        },
-        parent: {
-          totals: {
-            coverage: 98,
-          },
-        },
-      })
+    it('renders commit change when there is a valid value', () => {
+      setup({value: 23})
+      const changeValue = screen.getByTestId('change-value')
+      expect(changeValue).toHaveTextContent("23.00%")
     })
 
-    it('renders commit change', () => {
-      const change = screen.getByText(/-53.00%/)
-      expect(change).toBeInTheDocument()
+    it('renders ø when there is an invalid value', () => {
+      setup({})
+      const changeValue = screen.getByTestId('change-value')
+      expect(changeValue).toHaveTextContent("ø")
     })
   })
 })

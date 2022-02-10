@@ -75,9 +75,9 @@ describe('CommitsTable', () => {
       expect(coverage).toBeInTheDocument()
     })
 
-    it('renders patch', () => {
-      const elements = screen.getAllByText('-')
-      expect(elements.length).toBe(2)
+    it('render ø for missing change', () => {
+      const changeValue = screen.getByTestId('change-value')
+      expect(changeValue).toHaveTextContent("ø")
     })
   })
   describe('when no changes', () => {

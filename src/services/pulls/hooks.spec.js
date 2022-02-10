@@ -45,6 +45,7 @@ const dataReturned = {
                 patchTotals: {
                   coverage: '87',
                 },
+                changeWithParent: '65'
               },
             },
           ],
@@ -93,6 +94,7 @@ describe('GetPulls', () => {
             patchTotals: {
               coverage: '87',
             },
+            changeWithParent: '65'
           },
         },
       ],
