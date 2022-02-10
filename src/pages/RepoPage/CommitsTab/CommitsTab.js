@@ -9,6 +9,7 @@ import { useRepo } from 'services/repo'
 import Checkbox from 'ui/Checkbox'
 import Select from 'ui/Select'
 import Icon from 'ui/Icon'
+import Button from 'ui/Button'
 
 import CommitsTable from './CommitsTable'
 import { useSetCrumbs } from '../context'
@@ -22,7 +23,12 @@ function CommitsTab() {
 
   const [branchName, setBranch] = useState(repoData?.repository?.defaultBranch)
   const [hideFailedCI, setHideFailedCI] = useState(false)
-  const { data: commits } = useCommits({
+  const {
+    data: { commits },
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useCommits({
     provider,
     owner,
     repo,
@@ -75,6 +81,17 @@ function CommitsTab() {
         />
       </div>
       <CommitsTable commits={commits} />
+      {hasNextPage && (
+        <div className="w-full mt-4 flex justify-center">
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
