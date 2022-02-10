@@ -31,7 +31,7 @@ function fetchRepoCommits({ provider, owner, repo, variables, after }) {
     query GetCommits($owner: String!, $repo: String!, $filters:CommitsSetFilters, $after: String){
         owner(username:$owner){
             repository(name: $repo){
-                commits(filters: $filters, first: 2, after: $after){
+                commits(filters: $filters, first: 20, after: $after){
                   edges{
                     node{
                        ...CommitFragment
