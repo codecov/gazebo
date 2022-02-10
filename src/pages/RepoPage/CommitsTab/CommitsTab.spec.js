@@ -13,9 +13,10 @@ describe('Commits Tab', () => {
     jest.resetAllMocks()
   })
 
-  function setup() {
+  function setup({ hasNextPage = true }) {
     useRepo.mockReturnValue({ repository: { defaultBranch: 'main' } })
     useCommits.mockReturnValue({
+      hasNextPage,
       data: {
         commits: [
           {
@@ -58,7 +59,7 @@ describe('Commits Tab', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('renders with table name heading', () => {
@@ -85,17 +86,33 @@ describe('Commits Tab', () => {
       const checkbox = screen.getByRole('checkbox')
       expect(checkbox.value).toEqual('false')
     })
+
+    it('renders load more pagination button', () => {
+      const btn = screen.getByText(/Load More/)
+      expect(btn).toBeInTheDocument()
+    })
   })
 
   describe('when click on the checkbox', () => {
     beforeEach(() => {
-      setup()
+      setup({})
       userEvent.click(screen.getByRole('checkbox'))
     })
 
     it('changes the value to true', () => {
       const checkbox = screen.getByRole('checkbox')
       expect(checkbox.value).toEqual('true')
+    })
+  })
+
+  describe('when renders with no next page', () => {
+    beforeEach(() => {
+      setup({ hasNextPage: false })
+    })
+
+    it('does not display load more pagination button', () => {
+      const btn = screen.queryByText(/Load More/)
+      expect(btn).not.toBeInTheDocument()
     })
   })
 })
