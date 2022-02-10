@@ -307,7 +307,7 @@ describe('CommitPage', () => {
       it('without change values', () => {
         expect(
           screen.getByText(
-            /There was a problem getting the source code from your provider. Unable to show line by line coverage./
+            /Error 404/
           )
         ).toBeInTheDocument()
       })
