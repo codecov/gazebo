@@ -2,26 +2,32 @@ import Change from './Change'
 
 const Template = (args) => <Change {...args} />
 
-export const ChangeTable = Template.bind({})
-ChangeTable.args = {
+export const ChangeNumber = Template.bind({})
+ChangeNumber.args = {
   value: 34,
-  variant: 'table',
+  variant: 'default',
 }
 
-export const NegativeChangeTable = Template.bind({})
-NegativeChangeTable.args = {
+export const NegativeChangeNumber = Template.bind({})
+NegativeChangeNumber.args = {
   value: -14,
-  variant: 'table',
+  variant: 'default',
 }
 
-export const ChangeCard = Template.bind({})
-ChangeCard.args = {
+export const NoChangeNumber = Template.bind({})
+NoChangeNumber.args = {
+  value: 0,
+  variant: 'default',
+}
+
+export const ChangeCoverageCard = Template.bind({})
+ChangeCoverageCard.args = {
   value: 22,
   variant: 'coverageCard',
 }
 
-export const NegativeChangeCard = Template.bind({})
-NegativeChangeCard.args = {
+export const NegativeChangeCoverageCard = Template.bind({})
+NegativeChangeCoverageCard.args = {
   value: -98,
   variant: 'coverageCard',
 }

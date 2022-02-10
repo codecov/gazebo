@@ -16,6 +16,7 @@ module.exports = {
         mono: ['"Source Code Pro"', ...defaultTheme.fontFamily.mono],
       },
       colors: {
+        transparent: `transparent`,
         ds: {
           pink: {
             DEFAULT: '#F01F7A',
@@ -52,7 +53,6 @@ module.exports = {
             covered: '#DEFFE8',
             uncovered: '#FFEDF0',
             partial: '#FFF9D8',
-            transparent: '#ffffff00'
           },
         },
         codecov: {

@@ -310,6 +310,11 @@ describe('CommitPage', () => {
             /Error 404/
           )
         ).toBeInTheDocument()
+        expect(
+          screen.getByText(
+            /Not found/
+          )
+        ).toBeInTheDocument()
       })
     })
   })

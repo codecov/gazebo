@@ -2,35 +2,50 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 // TODO: This is likely fixed in the future when looking at CSS/styling on tables
+// There should only be 2 classes, default and coverageCard for variantClasses and textVariants for Change component
 const variantClasses = {
-  table: `flex justify-end w-full font-semibold`,
+  default: `flex justify-end w-full font-semibold`,
   fileViewer: `flex justify-end font-semibold text-sm`,
   coverageCard: `text-xl text-center font-light`
 }
 
+const textVariants = {
+  default: {
+       covered:"bg-ds-coverage-covered",
+       uncovered:"bg-ds-coverage-uncovered",
+  },
+  fileViewer: {
+       covered:"bg-ds-coverage-covered",
+       uncovered:"bg-ds-coverage-uncovered",
+  },
+  coverageCard:{
+       covered:"text-ds-primary-green",
+       uncovered:"text-ds-primary-red",
+  }
+}
+
 const validateValue = (value) => (value && !isNaN(value) && value !== 0) ? true : false
 
-const Change = ({value, variant}) => {
-  const className = variantClasses[variant]
+// TODO: Change this component to something like "TotalsNumber" or "Delta" to be reused by Coverage, Patch and Change throughout our codebase
+const Change = ({value, variant='default'}) => {
+  const containerClass = variantClasses[variant]
   const isValid = validateValue(value)
 
   return (
-    <div className={`${className}`} data-testid="change-value">
+    <div className={containerClass} data-testid="change-value">
       { isValid ?
         <span
           className={cs({
-          'bg-ds-coverage-uncovered': value < 0 ,
-          'bg-ds-coverage-covered': value > 0,
-          'text-ds-primary-red bg-ds-coverage-transparent': value < 0 && variant === "coverageCard",
-          'text-ds-primary-green bg-ds-coverage-transparent': value > 0 && variant === "coverageCard",
-        })}
+            [textVariants[variant]['covered']]: value > 0,
+            [textVariants[variant]['uncovered']]: value < 0,
+         })}
         >
           {value.toFixed(2)}%
         </span>
         :
-        <span>
+        <>
           ø
-        </span>
+        </>
       }
     </div>
   )

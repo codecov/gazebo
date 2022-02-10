@@ -10,12 +10,12 @@ describe('Patch', () => {
     it('renders commit patch when there is a valid value', () => {
       setup({compareWithParent: {
         patchTotals: {
-          coverage: 90,
+          coverage: 0.90,
           },
         },
       })
       const patchValue = screen.getByTestId('patch-value')
-      expect(patchValue).toHaveTextContent("90.00%")
+      expect(patchValue).toHaveTextContent("90%")
     })
 
     it('renders ø when there is an invalid value', () => {

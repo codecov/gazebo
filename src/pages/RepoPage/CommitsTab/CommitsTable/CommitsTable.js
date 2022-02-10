@@ -89,7 +89,7 @@ function transformPullToTable(commits) {
       ),
       coverage: <Coverage totals={totals} />,
       patch: <Patch compareWithParent={compareWithParent} />,
-      change: <Change value={change} variant="table"/>,
+      change: <Change value={change} variant="default"/>,
     }
   })
 }
