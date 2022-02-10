@@ -19,6 +19,9 @@ describe('useNavLinks', () => {
           <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
             {props.children}
           </Route>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">
+            {props.children}
+          </Route>
         </MemoryRouter>
       ),
     })
@@ -251,6 +254,25 @@ describe('useNavLinks', () => {
       expect(hookData.result.current.accessTab.path({ owner: 'cat' })).toBe(
         '/account/gl/cat/access'
       )
+    })
+  })
+  describe('internalAccessTab link', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.internalAccessTab.path()).toBe(
+        '/account/gl/doggo/access'
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.internalAccessTab.path({ provider: 'bb' })
+      ).toBe('/account/bb/doggo/access')
+      expect(
+        hookData.result.current.internalAccessTab.path({ owner: 'cat' })
+      ).toBe('/account/gl/cat/access')
     })
   })
 
@@ -518,26 +540,6 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('repo compare link', () => {
-    beforeAll(() => {
-      setup(['/gh/RulaKhaled/test/compare'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.compare.path()).toBe(
-        '/gh/RulaKhaled/test/compare'
-      )
-    })
-    it('can override the params', () => {
-      expect(hookData.result.current.compare.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/compare'
-      )
-      expect(hookData.result.current.compare.path({ repo: 'cat' })).toBe(
-        '/gh/RulaKhaled/cat/compare'
-      )
-    })
-  })
-
   describe('repo settings link', () => {
     beforeAll(() => {
       setup(['/gh/RulaKhaled/test/settings'])
@@ -589,6 +591,31 @@ describe('useNavLinks', () => {
       ).toBe(
         config.MARKETING_BASE_URL +
           '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+      )
+    })
+  })
+  describe('pull detail', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/pull/409'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.pullDetail.path()).toBe(
+        `/gl/doggo/squirrel-locator/pull/409`
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.pullDetail.path({ provider: 'bb' })).toBe(
+        `/bb/doggo/squirrel-locator/pull/409`
+      )
+      expect(hookData.result.current.pullDetail.path({ owner: 'cat' })).toBe(
+        `/gl/cat/squirrel-locator/pull/409`
+      )
+      expect(
+        hookData.result.current.pullDetail.path({ repo: 'tennis-ball' })
+      ).toBe(`/gl/doggo/tennis-ball/pull/409`)
+      expect(hookData.result.current.pullDetail.path({ pullId: 888 })).toBe(
+        `/gl/doggo/squirrel-locator/pull/888`
       )
     })
   })
