@@ -9,7 +9,7 @@
     "@stripe/react-stripe-js": "^1.7.0",
     "@stripe/stripe-js": "^1.22.0",
     "classnames": "^2.3.1",
-    "date-fns": "^2.27.0",
+    "date-fns": "^2.28.0",
     "dompurify": "^2.3.4",
     "downshift": "^6.1.7",
     "js-cookie": "^3.0.1",
