@@ -13,7 +13,7 @@ function Patch({ compareWithParent }) {
         </span>
       ) : (
         <span>
-          ø
+          -
         </span>
       )}
     </div>

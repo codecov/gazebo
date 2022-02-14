@@ -44,7 +44,7 @@ const Change = ({value, variant='default'}) => {
         </span>
         :
         <>
-          ø
+          -
         </>
       }
     </div>

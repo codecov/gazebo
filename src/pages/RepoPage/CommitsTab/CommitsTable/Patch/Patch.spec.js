@@ -18,10 +18,10 @@ describe('Patch', () => {
       expect(patchValue).toHaveTextContent("90%")
     })
 
-    it('renders ø when there is an invalid value', () => {
+    it('renders - when there is an invalid value', () => {
       setup({})
       const patchValue = screen.getByTestId('patch-value')
-      expect(patchValue).toHaveTextContent("ø")
+      expect(patchValue).toHaveTextContent("-")
     })
   })
 })
