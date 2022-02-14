@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { useCommits } from './hooks'
 import { graphql } from 'msw'
@@ -22,63 +22,68 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-const dataReturned = {
-  owner: {
-    repository: {
-      commits: {
-        edges: [
-          {
-            node: {
-              message: 'test',
-              commitid: '1',
-              createdAt: '2020',
-              author: {
-                username: 'rula',
-              },
-              totals: {
-                coverage: 22,
-              },
-              parent: {
-                totals: {
-                  coverage: 22,
-                },
-              },
-              compareWithParent: {
-                patchTotals: {
-                  coverage: 33,
-                },
-              },
-            },
-          },
-          {
-            node: {
-              message: 'test2',
-              commitid: '2',
-              createdAt: '2021',
-              author: {
-                username: 'rula2',
-              },
-              totals: {
-                coverage: 19,
-              },
-              parent: {
-                totals: {
-                  coverage: 22,
-                },
-              },
-              compareWithParent: {
-                patchTotals: {
-                  coverage: 99,
-                },
-              },
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: null,
-        },
-      },
+const node1 = {
+  message: 'test',
+  commitid: '1',
+  createdAt: '2020',
+  author: {
+    username: 'rula',
+  },
+  totals: {
+    coverage: 22,
+  },
+  parent: {
+    totals: {
+      coverage: 22,
+    },
+  },
+  compareWithParent: {
+    patchTotals: {
+      coverage: 33,
+    },
+  },
+}
+
+const node2 = {
+  message: 'test2',
+  commitid: '2',
+  createdAt: '2021',
+  author: {
+    username: 'rula2',
+  },
+  totals: {
+    coverage: 19,
+  },
+  parent: {
+    totals: {
+      coverage: 22,
+    },
+  },
+  compareWithParent: {
+    patchTotals: {
+      coverage: 99,
+    },
+  },
+}
+
+const node3 = {
+  message: 'test3',
+  commitid: '2',
+  createdAt: '2020',
+  author: {
+    username: 'rula',
+  },
+  totals: {
+    coverage: 22,
+  },
+  parent: {
+    totals: {
+      coverage: 22,
+    },
+  },
+  compareWithParent: {
+    patchTotals: {
+      coverage: 33,
     },
   },
 }
@@ -93,6 +98,34 @@ describe('GetCommits', () => {
   function setup() {
     server.use(
       graphql.query('GetCommits', (req, res, ctx) => {
+        const dataReturned = {
+          owner: {
+            repository: {
+              commits: {
+                edges: req.variables.after
+                  ? [
+                      {
+                        node: node3,
+                      },
+                    ]
+                  : [
+                      {
+                        node: node1,
+                      },
+                      {
+                        node: node2,
+                      },
+                    ],
+                pageInfo: {
+                  hasNextPage: req.variables.after ? false : true,
+                  endCursor: req.variables.after
+                    ? 'aa'
+                    : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                },
+              },
+            },
+          },
+        }
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
@@ -103,51 +136,6 @@ describe('GetCommits', () => {
   }
 
   describe('when called', () => {
-    const expectedResponse = [
-      {
-        message: 'test',
-        commitid: '1',
-        createdAt: '2020',
-        author: {
-          username: 'rula',
-        },
-        totals: {
-          coverage: 22,
-        },
-        parent: {
-          totals: {
-            coverage: 22,
-          },
-        },
-        compareWithParent: {
-          patchTotals: {
-            coverage: 33,
-          },
-        },
-      },
-      {
-        message: 'test2',
-        commitid: '2',
-        createdAt: '2021',
-        author: {
-          username: 'rula2',
-        },
-        totals: {
-          coverage: 19,
-        },
-        parent: {
-          totals: {
-            coverage: 22,
-          },
-        },
-        compareWithParent: {
-          patchTotals: {
-            coverage: 99,
-          },
-        },
-      },
-    ]
-
     beforeEach(() => {
       setup()
     })
@@ -162,8 +150,26 @@ describe('GetCommits', () => {
       })
 
       it('returns the data', () => {
-        expect(hookData.result.current.data.commits).toEqual(expectedResponse)
+        expect(hookData.result.current.data.commits).toEqual([node1, node2])
       })
+    })
+  })
+
+  describe('when call next page', () => {
+    beforeEach(async () => {
+      setup()
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      await act(() => {
+        return hookData.result.current.fetchNextPage()
+      })
+    })
+
+    it('returns prev and next page commits of the user', () => {
+      expect(hookData.result.current.data.commits).toEqual([
+        node1,
+        node2,
+        node3,
+      ])
     })
   })
 })
