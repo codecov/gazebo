@@ -120,9 +120,7 @@ describe('Pulls Table', () => {
       setup({
         modifiedProps: {
           compareWithBase: {
-            patchTotals: {
-              coverage: null,
-            },
+            changeWithParent: null
           },
           head: {
             totals: {

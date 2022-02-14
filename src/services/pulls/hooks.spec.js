@@ -42,9 +42,6 @@ const dataReturned = {
                 },
               },
               compareWithBase: {
-                patchTotals: {
-                  coverage: '87',
-                },
                 changeWithParent: '65'
               },
             },
@@ -91,9 +88,6 @@ describe('GetPulls', () => {
             },
           },
           compareWithBase: {
-            patchTotals: {
-              coverage: '87',
-            },
             changeWithParent: '65'
           },
         },
