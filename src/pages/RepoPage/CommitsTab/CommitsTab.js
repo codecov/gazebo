@@ -21,7 +21,7 @@ const useParamsFilters = (defaultBranch) => {
   const { params, updateParams } = useLocationParams(defaultParams)
   const { branch, hideFailedCI } = params
 
-  const paramCIStatus = hideFailedCI && true
+  const paramCIStatus = hideFailedCI === true || hideFailedCI === 'true'
 
   return { branch, paramCIStatus, updateParams }
 }
@@ -47,6 +47,8 @@ function CommitsTab() {
       branchName: branch,
     },
   })
+
+  commits.map((commit) => console.log(commit.ciPassed))
 
   useLayoutEffect(() => {
     setCrumbs([
