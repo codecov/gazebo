@@ -1,10 +1,10 @@
-import { useState, useLayoutEffect } from 'react'
-import PropTypes from 'prop-types'
+import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router'
 
 import { useCommits } from 'services/commits'
 import { useBranches } from 'services/branches'
 import { useRepo } from 'services/repo'
+import { useLocationParams } from 'services/navigation'
 
 import Checkbox from 'ui/Checkbox'
 import Select from 'ui/Select'
@@ -13,24 +13,42 @@ import Icon from 'ui/Icon'
 import CommitsTable from './CommitsTable'
 import { useSetCrumbs } from '../context'
 
+const useParamsFilters = (defaultBranch) => {
+  const defaultParams = {
+    branch: defaultBranch,
+    hideFailedCI: false,
+  }
+  const { params, updateParams } = useLocationParams(defaultParams)
+  const { branch, hideFailedCI } = params
+
+  const paramCIStatus = hideFailedCI === true || hideFailedCI === 'true'
+
+  return { branch, paramCIStatus, updateParams }
+}
+
 function CommitsTab() {
   const setCrumbs = useSetCrumbs()
   const { provider, owner, repo } = useParams()
+
   const { data: branches } = useBranches({ provider, owner, repo })
   const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames = branches?.map((branch) => branch.name) || []
 
-  const [branchName, setBranch] = useState(repoData?.repository?.defaultBranch)
-  const [hideFailedCI, setHideFailedCI] = useState(false)
+  const { branch, paramCIStatus, updateParams } = useParamsFilters(
+    repoData?.repository?.defaultBranch
+  )
+
   const { data: commits } = useCommits({
     provider,
     owner,
     repo,
     filters: {
-      hideFailedCI,
-      branchName,
+      hideFailedCI: paramCIStatus,
+      branchName: branch,
     },
   })
+
+  commits.map((commit) => console.log(commit.ciPassed))
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -40,12 +58,12 @@ function CommitsTab() {
         children: (
           <span className="flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
-            {branchName}
+            {branch}
           </span>
         ),
       },
     ])
-  }, [branchName, setCrumbs])
+  }, [branch, setCrumbs])
 
   return (
     <div className="flex-1 flex flex-col gap-4">
@@ -61,8 +79,10 @@ function CommitsTab() {
             <Select
               className="bg-ds-gray-primary"
               items={branchesNames}
-              onChange={(branch) => setBranch(branch)}
-              value={branchName}
+              onChange={(branch) => {
+                updateParams({ branch })
+              }}
+              value={branch}
             />
           </div>
         </div>
@@ -70,16 +90,15 @@ function CommitsTab() {
         <Checkbox
           label="Hide commits with failed CI"
           name="filter commits"
-          onChange={(e) => setHideFailedCI(e.target.checked)}
-          value={hideFailedCI}
+          onChange={(e) => {
+            updateParams({ hideFailedCI: e.target.checked })
+          }}
+          checked={paramCIStatus}
         />
       </div>
       <CommitsTable commits={commits} />
     </div>
   )
-}
-CommitsTab.propTypes = {
-  branchName: PropTypes.string,
 }
 
 export default CommitsTab
