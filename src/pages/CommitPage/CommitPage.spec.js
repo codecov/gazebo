@@ -168,8 +168,8 @@ describe('CommitPage', () => {
       expect(screen.getByTestId('spinner')).toBeInTheDocument()
     })
 
-    it('renders no files if there data is empty', async () => {
-      setup({ data: [], isLoading: false })
+    it('renders no files if there impacted files is empty', async () => {
+      setup({ data: {commit: {compareWithParent: {}}}, isLoading: false })
       const coverage = screen.getByText(
         'No Files covered by tests were changed'
       )
@@ -307,7 +307,12 @@ describe('CommitPage', () => {
       it('without change values', () => {
         expect(
           screen.getByText(
-            /There was a problem getting the source code from your provider. Unable to show line by line coverage./
+            /Error 404/
+          )
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText(
+            /Not found/
           )
         ).toBeInTheDocument()
       })
