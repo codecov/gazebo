@@ -5,7 +5,7 @@
   "dependencies": {
     "@hookform/resolvers": "^2.8.5",
     "@reach/menu-button": "^0.16.2",
-    "@sentry/react": "^6.13.2",
+    "@sentry/react": "^6.17.8",
     "@stripe/react-stripe-js": "^1.7.0",
     "@stripe/stripe-js": "^1.22.0",
     "classnames": "^2.3.1",
