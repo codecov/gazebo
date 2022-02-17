@@ -82,9 +82,9 @@ describe('Commits Tab', () => {
       expect(label).toBeInTheDocument()
     })
 
-    it('has false as initial value to the checkbox', () => {
+    it('has false as initial checked property value of the checkbox', () => {
       const checkbox = screen.getByRole('checkbox')
-      expect(checkbox.value).toEqual('false')
+      expect(checkbox).not.toBeChecked()
     })
 
     it('renders load more pagination button', () => {
@@ -99,9 +99,9 @@ describe('Commits Tab', () => {
       userEvent.click(screen.getByRole('checkbox'))
     })
 
-    it('changes the value to true', () => {
+    it('changes checked property value to true', () => {
       const checkbox = screen.getByRole('checkbox')
-      expect(checkbox.value).toEqual('true')
+      expect(checkbox).toBeChecked()
     })
   })
 

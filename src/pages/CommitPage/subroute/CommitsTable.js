@@ -1,4 +1,3 @@
-import cs from 'classnames'
 import PropTypes from 'prop-types'
 import isNumber from 'lodash/isNumber'
 
@@ -6,6 +5,7 @@ import Table from 'ui/Table'
 import A from 'ui/A'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
+import Change from 'ui/Change'
 
 const table = [
   {
@@ -36,10 +36,7 @@ const table = [
 
 function useFormatTableData({ tableData = [], commit }) {
   return tableData.map((row) => {
-    let change = row?.headCoverage?.coverage - row?.baseCoverage?.coverage
-    if (isNaN(change)) {
-      change = null
-    }
+    const change = row?.headCoverage?.coverage - row?.baseCoverage?.coverage
     return {
       name: (
         <div className="flex flex-col">
@@ -68,20 +65,7 @@ function useFormatTableData({ tableData = [], commit }) {
             : '-'}
         </span>
       ),
-      change: (
-        <span
-          className={cs(
-            'text-sm text-right w-full font-semibold text-ds-gray-octonary',
-            {
-              'bg-transparent': !change,
-              'bg-ds-coverage-uncovered': change < 0,
-              'bg-ds-coverage-covered': change >= 0,
-            }
-          )}
-        >
-          {isNumber(change) ? `${change.toFixed(2)}%` : '-'}
-        </span>
-      ),
+      change: <Change value={change} variant="default" />,
     }
   })
 }

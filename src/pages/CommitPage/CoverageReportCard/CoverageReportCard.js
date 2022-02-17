@@ -1,9 +1,9 @@
-import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { isNumber } from 'lodash'
 
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
+import Change from 'ui/Change'
 
 import CIStatusLabel from './CIStatusLabel'
 import Header from './Header'
@@ -20,32 +20,23 @@ import TotalsLabel from './TotalsLabel'
 function extractCommitData(data) {
   const rawPatch = data?.compareWithParent?.patchTotals?.coverage
   const patch = isNumber(rawPatch) ? `${(rawPatch * 100).toFixed(2)} %` : '-'
-  const coverage = data?.totals?.coverage.toFixed(2)
-  const parentCoverage = data?.parent?.totals?.coverage.toFixed(2)
+  const coverage = data?.totals?.coverage
+  const parentCoverage = data?.parent?.totals?.coverage
 
   return {
     coverage,
-    parentCoverage,
     patch,
     commitid: data?.commitid?.substr(0, 7),
     parentCommitid: data?.parent?.commitid,
     ciPassed: data?.ciPassed,
     state: data?.state,
-    change: (coverage - parentCoverage).toFixed(2),
+    change: coverage - parentCoverage,
   }
 }
 
 function CoverageReportCard({ data, provider, repo, owner }) {
-  const {
-    coverage,
-    commitid,
-    parentCommitid,
-    ciPassed,
-    parentCoverage,
-    change,
-    patch,
-    state,
-  } = extractCommitData(data)
+  const { coverage, commitid, parentCommitid, ciPassed, change, patch, state } =
+    extractCommitData(data)
 
   const providerPullUrl = getProviderPullURL({
     provider,
@@ -72,14 +63,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           <span className="text-xl text-center font-light">{patch}</span>
         </TotalsLabel>
         <TotalsLabel title="Change">
-          <span
-            className={cs('text-xl text-center font-light', {
-              'text-ds-primary-red': change < 0,
-              'text-ds-primary-green': change >= 0,
-            })}
-          >
-            {coverage && parentCoverage ? `${change} %` : '-'}
-          </span>
+          <Change value={change} variant="coverageCard" />
         </TotalsLabel>
       </div>
       {state === 'error' ? (

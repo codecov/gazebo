@@ -16,6 +16,7 @@ module.exports = {
         mono: ['"Source Code Pro"', ...defaultTheme.fontFamily.mono],
       },
       colors: {
+        transparent: `transparent`,
         ds: {
           pink: {
             DEFAULT: '#F01F7A',
