@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@hookform/resolvers": "^2.8.5",
+    "@hookform/resolvers": "^2.8.8",
     "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
     "@stripe/react-stripe-js": "^1.7.0",
@@ -104,7 +104,7 @@
     "husky": "^7.0.4",
     "jest-junit": "^13.0.0",
     "lint-staged": "^12.1.2",
-    "msw": "^0.36.3",
+    "msw": "^0.36.8",
     "postcss": "^8.4.6",
     "postcss-font-magician": "2.3.1",
     "prettier": "^2.5.1",
