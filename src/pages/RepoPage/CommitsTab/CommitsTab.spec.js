@@ -13,7 +13,7 @@ describe('Commits Tab', () => {
     jest.resetAllMocks()
   })
 
-  function setup({ hasNextPage = true }) {
+  function setup({ hasNextPage }) {
     useRepo.mockReturnValue({ repository: { defaultBranch: 'main' } })
     useCommits.mockReturnValue({
       hasNextPage,
@@ -59,7 +59,7 @@ describe('Commits Tab', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({})
+      setup({ hasNextPage: true })
     })
 
     it('renders with table name heading', () => {
@@ -95,7 +95,7 @@ describe('Commits Tab', () => {
 
   describe('when click on the checkbox', () => {
     beforeEach(() => {
-      setup({})
+      setup({ hasNextPage: true })
       userEvent.click(screen.getByRole('checkbox'))
     })
 

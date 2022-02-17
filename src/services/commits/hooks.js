@@ -84,7 +84,7 @@ export function useCommits({ provider, owner, repo, filters }) {
       }),
     {
       getNextPageParam: (data) =>
-        data?.pageInfo?.hasNextPage && data.pageInfo.endCursor,
+        data?.pageInfo?.hasNextPage ? data?.pageInfo.endCursor : undefined,
     }
   )
   return {
