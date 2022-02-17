@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@hookform/resolvers": "^2.8.5",
+    "@hookform/resolvers": "^2.8.8",
     "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
     "@stripe/react-stripe-js": "^1.7.0",
