@@ -60,7 +60,6 @@ function fetchRepoCommits({ provider, owner, repo, variables, after }) {
     },
   }).then((res) => {
     const { commits } = res?.data?.owner?.repository
-    if (!commits) return null
 
     return {
       commits: mapEdges(commits),
