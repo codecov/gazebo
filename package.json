@@ -30,7 +30,7 @@
     "react-router-dom": "^5.2.1",
     "react-scripts": "^4.0.3",
     "react-table": "^7.7.0",
-    "react-use": "^17.2.4",
+    "react-use": "^17.3.2",
     "victory": "^36.2.0",
     "web-vitals": "^2.1.2",
     "websocket-extensions": "^0.1.4",
