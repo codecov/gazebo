@@ -17,10 +17,9 @@ const path = '/:provider/:owner/:repo'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
-  const {
-    data: { commits },
-  } = useCommits({ provider, owner, repo })
-  const repoHasCommits = commits?.length > 0
+  const { data } = useCommits({ provider, owner, repo })
+
+  const repoHasCommits = data?.commits?.length > 0
 
   const Loader = (
     <div className="flex-1 flex items-center justify-center mt-16">
