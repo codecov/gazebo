@@ -10,8 +10,9 @@ describe('Pulls Pab', () => {
     jest.resetAllMocks()
   })
 
-  function setup() {
+  function setup({ hasNextPage }) {
     usePulls.mockReturnValue({
+      hasNextPage,
       data: {
         pulls: [
           {
@@ -64,7 +65,7 @@ describe('Pulls Pab', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup()
+      setup({ hasNextPage: true })
     })
 
     it('renders with table name heading', () => {
@@ -101,11 +102,16 @@ describe('Pulls Pab', () => {
       const label = screen.getByText(/Newest/)
       expect(label).toBeInTheDocument()
     })
+
+    it('renders load more pagination button', () => {
+      const btn = screen.getByText(/Load More/)
+      expect(btn).toBeInTheDocument()
+    })
   })
 
   describe('view by state', () => {
     beforeEach(() => {
-      setup()
+      setup({ hasNextPage: true })
       const select = screen.getByText('All')
       fireEvent.click(select)
     })
@@ -119,7 +125,7 @@ describe('Pulls Pab', () => {
 
   describe('order by updatestamp', () => {
     beforeEach(() => {
-      setup()
+      setup({ hasNextPage: true })
       const select = screen.getByText('Newest')
       fireEvent.click(select)
     })
@@ -131,7 +137,7 @@ describe('Pulls Pab', () => {
 
   describe('order by Oldest', () => {
     beforeEach(() => {
-      setup()
+      setup({ hasNextPage: true })
       const select = screen.getByText('Newest')
       fireEvent.click(select)
       const state = screen.getAllByRole('option')[1]
@@ -146,7 +152,7 @@ describe('Pulls Pab', () => {
 
   describe('view by Merged', () => {
     beforeEach(() => {
-      setup()
+      setup({ hasNextPage: false })
       const select = screen.getByText('All')
       fireEvent.click(select)
       const state = screen.getAllByRole('option')[2]
@@ -156,6 +162,17 @@ describe('Pulls Pab', () => {
     it('renders the number of selected options', () => {
       expect(screen.getByText(/1 selected/)).toBeInTheDocument()
       expect(screen.queryByText('All')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when renders with no next page', () => {
+    beforeEach(() => {
+      setup({ hasNextPage: false })
+    })
+
+    it('does not display load more pagination button', () => {
+      const btn = screen.queryByText(/Load More/)
+      expect(btn).not.toBeInTheDocument()
     })
   })
 })
