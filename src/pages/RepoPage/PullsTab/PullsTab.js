@@ -45,12 +45,7 @@ function useFormControls() {
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
   const [selectedOrder, setSelectedOrder] = useState(paramOrderName)
 
-  const {
-    data: { pulls },
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = usePulls({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePulls({
     provider,
     owner,
     repo,
@@ -59,6 +54,8 @@ function useFormControls() {
     },
     orderingDirection: order,
   })
+
+  const pulls = data?.pulls
 
   return {
     setSelectedOrder,

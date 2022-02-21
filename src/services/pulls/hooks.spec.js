@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { usePulls } from './hooks'
 import { graphql } from 'msw'
@@ -22,57 +22,62 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-const pullsNodes = [
-  {
-    pullId: 0,
-    title: 'first pull',
-    state: 'Merged',
-    updatestamp: '20-2-2021',
-    author: {
-      username: 'Rula',
-    },
-    head: {
-      totals: {
-        coverage: '90',
-      },
-    },
-    compareWithBase: {
-      patchTotals: {
-        coverage: '87',
-      },
+const node1 = {
+  pullId: 1,
+  title: 'first pull',
+  state: 'Merged',
+  updatestamp: '20-2-2021',
+  author: {
+    username: 'Rula',
+  },
+  head: {
+    totals: {
+      coverage: '90',
     },
   },
-  {
-    pullId: 1,
-    title: 'second pull',
-    state: 'Merged',
-    updatestamp: '20-2-2021',
-    author: {
-      username: 'Rula',
-    },
-    head: {
-      totals: {
-        coverage: '90',
-      },
-    },
-    compareWithBase: {
-      patchTotals: {
-        coverage: '87',
-      },
+  compareWithBase: {
+    patchTotals: {
+      coverage: '87',
     },
   },
-]
+}
 
-const expectedData = {
-  owner: {
-    repository: {
-      pulls: {
-        edges: pullsNodes,
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-        },
-      },
+const node2 = {
+  pullId: 2,
+  title: 'second pull',
+  state: 'Merged',
+  updatestamp: '20-2-2021',
+  author: {
+    username: 'Rula',
+  },
+  head: {
+    totals: {
+      coverage: '90',
+    },
+  },
+  compareWithBase: {
+    patchTotals: {
+      coverage: '87',
+    },
+  },
+}
+
+const node3 = {
+  pullId: 3,
+  title: 'third pull',
+  state: 'Merged',
+  updatestamp: '20-2-2021',
+  author: {
+    username: 'Rula',
+  },
+  head: {
+    totals: {
+      coverage: '90',
+    },
+  },
+  compareWithBase: {
+    patchTotals: {
+      coverage: '87',
     },
   },
 }
@@ -87,7 +92,37 @@ describe('GetPulls', () => {
   function setup() {
     server.use(
       graphql.query('GetPulls', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(expectedData))
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                pulls: {
+                  edges: req.variables.after
+                    ? [
+                        {
+                          node: node3,
+                        },
+                      ]
+                    : [
+                        {
+                          node: node1,
+                        },
+                        {
+                          node: node2,
+                        },
+                      ],
+                  pageInfo: {
+                    hasNextPage: req.variables.after ? false : true,
+                    endCursor: req.variables.after
+                      ? 'aa'
+                      : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                  },
+                },
+              },
+            },
+          })
+        )
       })
     )
 
@@ -111,8 +146,29 @@ describe('GetPulls', () => {
       })
 
       it('returns expected pulls nodes', () => {
-        expect(hookData.result.current.data.pulls).toEqual(pullsNodes)
+        expect(hookData.result.current.data.pulls).toEqual([
+          { node: node1 },
+          { node: node2 },
+        ])
       })
+    })
+  })
+
+  describe('when call next page', () => {
+    beforeEach(async () => {
+      setup()
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      await act(() => {
+        return hookData.result.current.fetchNextPage()
+      })
+    })
+
+    it('returns prev and next page pulls of the user', () => {
+      expect(hookData.result.current.data.pulls).toEqual([
+        { node: node1 },
+        { node: node2 },
+        { node: node3 },
+      ])
     })
   })
 })

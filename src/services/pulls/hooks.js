@@ -56,7 +56,6 @@ function fetchRepoPulls({ provider, owner, repo, variables, after }) {
     },
   }).then((res) => {
     const { pulls } = res?.data?.owner?.repository
-    if (!pulls) return null
 
     return {
       pulls: pulls?.edges,
@@ -88,7 +87,7 @@ export function usePulls({
       }),
     {
       getNextPageParam: (data) =>
-        data?.pageInfo?.hasNextPage && data.pageInfo.endCursor,
+        data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
     }
   )
 
