@@ -35,7 +35,9 @@ function CommitPage() {
   )
 
   const shortSHA = commitSHA?.substr(0, 7)
-  const diff = commit?.compareWithParent?.impactedFiles?.find((file) => file.headName === path)
+  const diff = commit?.compareWithParent?.impactedFiles?.find(
+    (file) => file.headName === path
+  )
 
   return !isLoading && commit ? (
     <div className="flex divide-y gap-4 flex-col px-3 sm:px-0">
@@ -54,7 +56,12 @@ function CommitPage() {
         ]}
       />
       <div className="flex flex-col py-4">
-        <Header provider={provider} owner={owner} repo={repo} commit={commitSHA} />
+        <Header
+          provider={provider}
+          owner={owner}
+          repo={repo}
+          commit={commitSHA}
+        />
         <h1 className="text-lg font-semibold text-ds-gray-octonary mb-1 bt-4">
           {commit?.message}
         </h1>

@@ -6,15 +6,14 @@ function Patch({ compareWithParent }) {
   const patch = compareWithParent?.patchTotals?.coverage
 
   return (
-    <div data-testid="patch-value" className="flex justify-end w-full font-semibold">
+    <div
+      data-testid="patch-value"
+      className="flex justify-end w-full font-semibold"
+    >
       {patch && isNumber(patch) && patch !== 0 ? (
-        <span className='bg-green-100'>
-          {100*patch.toFixed(2)}%
-        </span>
+        <span className="bg-green-100">{100 * patch.toFixed(2)}%</span>
       ) : (
-        <span>
-          -
-        </span>
+        <span>-</span>
       )}
     </div>
   )

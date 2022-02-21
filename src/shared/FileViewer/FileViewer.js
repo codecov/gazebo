@@ -106,8 +106,8 @@ function FileViewer({
             <Breadcrumb paths={[...treePaths]} />
           </div>
           <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
-            <Progress amount={coverageTotals} label={true}/>
-            <Change value={change} variant="fileViewer"/>
+            <Progress amount={coverageTotals} label={true} />
+            <Change value={change} variant="fileViewer" />
           </div>
         </div>
         {content ? (

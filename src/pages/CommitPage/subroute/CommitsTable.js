@@ -65,9 +65,7 @@ function useFormatTableData({ tableData = [], commit }) {
             : '-'}
         </span>
       ),
-      change: (
-        <Change value={change} variant="default"/>
-      ),
+      change: <Change value={change} variant="default" />,
     }
   })
 }
