@@ -7,19 +7,22 @@ describe('Patch', () => {
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
+    it('renders commit patch when there is a valid value', () => {
       setup({
         compareWithParent: {
           patchTotals: {
-            coverage: 90,
+            coverage: 0.9,
           },
         },
       })
+      const patchValue = screen.getByTestId('patch-value')
+      expect(patchValue).toHaveTextContent('90%')
     })
 
-    it('renders commit patch', () => {
-      const change = screen.getByText(/90%/)
-      expect(change).toBeInTheDocument()
+    it('renders - when there is an invalid value', () => {
+      setup({})
+      const patchValue = screen.getByTestId('patch-value')
+      expect(patchValue).toHaveTextContent('-')
     })
   })
 })

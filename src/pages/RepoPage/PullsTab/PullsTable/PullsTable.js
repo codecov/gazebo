@@ -4,7 +4,7 @@ import Table from 'ui/Table'
 
 import { PullRequestType } from '../types'
 import Coverage from './Coverage'
-import Change from './Change'
+import Change from 'ui/Change'
 import Title from './Title'
 
 const headers = [
@@ -55,6 +55,8 @@ function transformPullToTable(pulls) {
     const { author, compareWithBase, head, pullId, state, title, updatestamp } =
       pull
 
+    const change = compareWithBase?.changeWithParent
+
     return {
       title: (
         <Title
@@ -65,7 +67,7 @@ function transformPullToTable(pulls) {
         />
       ),
       coverage: <Coverage head={head} state={state} pullId={pullId} />,
-      change: <Change head={head} compareWithBase={compareWithBase} />,
+      change: <Change value={change} variant="default" />,
     }
   })
 }

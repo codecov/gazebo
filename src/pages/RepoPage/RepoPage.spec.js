@@ -49,7 +49,7 @@ const branches = [
 describe('RepoPage', () => {
   function setup({ repository, commits = [], initialEntries }) {
     useRepo.mockReturnValue({ data: { repository } })
-    useCommits.mockReturnValue({ data: commits })
+    useCommits.mockReturnValue({ data: { commits } })
     useBranches.mockReturnValue({ data: branches })
 
     // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.

@@ -13,39 +13,42 @@ describe('Commits Tab', () => {
     jest.resetAllMocks()
   })
 
-  function setup() {
+  function setup({ hasNextPage }) {
     useRepo.mockReturnValue({ repository: { defaultBranch: 'main' } })
     useCommits.mockReturnValue({
-      data: [
-        {
-          author: { username: 'RulaKhaled' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 90,
+      hasNextPage,
+      data: {
+        commits: [
+          {
+            author: { username: 'RulaKhaled' },
+            compareWithParent: {
+              patchTotals: {
+                coverage: 90,
+              },
             },
-          },
-          totals: {
-            coverage: 45,
-          },
-          commitid: 'id',
-          message: 'Test1',
-          createdAt: '2021-08-30T19:33:49.819672',
-        },
-        {
-          author: { username: 'Terry' },
-          compareWithParent: {
-            patchTotals: {
-              coverage: 55,
+            totals: {
+              coverage: 45,
             },
+            commitid: 'id',
+            message: 'Test1',
+            createdAt: '2021-08-30T19:33:49.819672',
           },
-          totals: {
-            coverage: 59,
+          {
+            author: { username: 'Terry' },
+            compareWithParent: {
+              patchTotals: {
+                coverage: 55,
+              },
+            },
+            totals: {
+              coverage: 59,
+            },
+            commitid: 'id',
+            message: 'Test2',
+            createdAt: '2021-08-30T19:33:49.819672',
           },
-          commitid: 'id',
-          message: 'Test2',
-          createdAt: '2021-08-30T19:33:49.819672',
-        },
-      ],
+        ],
+      },
     })
 
     repoPageRender({
@@ -56,7 +59,7 @@ describe('Commits Tab', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup()
+      setup({ hasNextPage: true })
     })
 
     it('renders with table name heading', () => {
@@ -79,21 +82,37 @@ describe('Commits Tab', () => {
       expect(label).toBeInTheDocument()
     })
 
-    it('has false as initial value to the checkbox', () => {
+    it('has false as initial checked property value of the checkbox', () => {
       const checkbox = screen.getByRole('checkbox')
-      expect(checkbox.value).toEqual('false')
+      expect(checkbox).not.toBeChecked()
+    })
+
+    it('renders load more pagination button', () => {
+      const btn = screen.getByText(/Load More/)
+      expect(btn).toBeInTheDocument()
     })
   })
 
   describe('when click on the checkbox', () => {
     beforeEach(() => {
-      setup()
+      setup({ hasNextPage: true })
       userEvent.click(screen.getByRole('checkbox'))
     })
 
-    it('changes the value to true', () => {
+    it('changes checked property value to true', () => {
       const checkbox = screen.getByRole('checkbox')
-      expect(checkbox.value).toEqual('true')
+      expect(checkbox).toBeChecked()
+    })
+  })
+
+  describe('when renders with no next page', () => {
+    beforeEach(() => {
+      setup({ hasNextPage: false })
+    })
+
+    it('does not display load more pagination button', () => {
+      const btn = screen.queryByText(/Load More/)
+      expect(btn).not.toBeInTheDocument()
     })
   })
 })

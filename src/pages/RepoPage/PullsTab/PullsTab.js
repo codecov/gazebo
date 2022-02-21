@@ -132,7 +132,7 @@ function PullsTab() {
       </div>
       <PullsTable pulls={pulls} />
       {hasNextPage && (
-        <div className="w-full mt-4 flex justify-center">
+        <div className="flex-1 mt-4 flex justify-center">
           <Button
             hook="load-more"
             isLoading={isFetchingNextPage}

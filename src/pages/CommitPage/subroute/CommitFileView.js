@@ -16,14 +16,7 @@ function CommitFileView({ diff }) {
     path: path,
   })
 
-  function getChange() {
-    const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
-    if (isNaN(change)) {
-      return 0
-    } else {
-      return change
-    }
-  }
+  const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
 
   return (
     <FileViewer
@@ -31,7 +24,7 @@ function CommitFileView({ diff }) {
       content={data?.content}
       totals={data?.totals}
       treePaths={[]}
-      change={getChange()}
+      change={change}
       flagNames={data?.flagNames}
       fileName={path}
       title={

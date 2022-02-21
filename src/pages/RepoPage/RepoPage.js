@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { useParams, Switch, Route } from 'react-router-dom'
+import { useParams, Switch, Route, Redirect } from 'react-router-dom'
 
 import { useCommits } from 'services/commits'
 
@@ -17,8 +17,9 @@ const path = '/:provider/:owner/:repo'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
-  const { data: commits } = useCommits({ provider, owner, repo })
-  const repoHasCommits = commits?.length > 0
+  const { data } = useCommits({ provider, owner, repo })
+
+  const repoHasCommits = data?.commits?.length > 0
 
   const Loader = (
     <div className="flex-1 flex items-center justify-center mt-16">
@@ -45,9 +46,6 @@ function RepoPage() {
                 pageName: 'pulls',
               },
               {
-                pageName: 'compare',
-              },
-              {
                 pageName: 'settings',
               },
             ]}
@@ -67,12 +65,14 @@ function RepoPage() {
             <Route path={`${path}/pulls`} exact>
               <PullsTab />
             </Route>
-            <Route path={`${path}/compare`} exact>
-              <h1>Compare</h1>
-            </Route>
+            <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
             <Route path={`${path}/settings`} exact>
               <h1>Settings</h1>
             </Route>
+            <Redirect
+              from="/:provider/:owner/:repo/*"
+              to="/:provider/:owner/:repo"
+            />
           </Switch>
         </Suspense>
       </div>

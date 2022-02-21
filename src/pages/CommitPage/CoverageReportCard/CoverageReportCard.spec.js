@@ -24,7 +24,7 @@ describe('CoverageReportCard', () => {
     parent: {
       commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
       totals: {
-        coverage: 38.30846,
+        coverage: 33.30846,
       },
     },
     pullId: 123,
@@ -54,8 +54,8 @@ describe('CoverageReportCard', () => {
       expect(screen.queryAllByText('-')).toHaveLength(1)
     })
     it('renders the Change', () => {
-      expect(screen.getByText('Change')).toBeInTheDocument()
-      expect(screen.getByText('0.00 %')).toBeInTheDocument()
+      const changeValue = screen.getByTestId('change-value')
+      expect(changeValue).toHaveTextContent('5.00%')
     })
     it('renders the Head', () => {
       expect(screen.getByText('HEAD')).toBeInTheDocument()

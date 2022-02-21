@@ -20,6 +20,7 @@ function fetchRepoPulls({ provider, owner, repo, variables, after }) {
           patchTotals{
             coverage
           }
+          changeWithParent
         }         
     }
   `
