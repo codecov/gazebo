@@ -91,7 +91,7 @@
     "@storybook/addon-links": "^6.4.13",
     "@storybook/node-logger": "^6.4.19",
     "@storybook/preset-create-react-app": "^3.2.0",
-    "@storybook/react": "^6.4.1",
+    "@storybook/react": "^6.4.19",
     "@tailwindcss/postcss7-compat": "^2.2.17",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
