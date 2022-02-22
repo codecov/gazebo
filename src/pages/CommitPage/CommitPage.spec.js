@@ -155,7 +155,11 @@ describe('CommitPage', () => {
       useCommit.mockReturnValue(data)
 
       render(
-        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/fc3d5cbddd90689344dc77f49b6ae6ef9ebdf7ec']}>
+        <MemoryRouter
+          initialEntries={[
+            '/gh/test/test-repo/commit/fc3d5cbddd90689344dc77f49b6ae6ef9ebdf7ec',
+          ]}
+        >
           <Route path="/:provider/:owner/:repo/commit/:commit">
             <CommitPage />
           </Route>
@@ -164,12 +168,12 @@ describe('CommitPage', () => {
     }
 
     it('renders spinner if state is pending', async () => {
-      setup({ data: {commit: {state: "pending"}}, isLoading: false })
+      setup({ data: { commit: { state: 'pending' } }, isLoading: false })
       expect(screen.getByTestId('spinner')).toBeInTheDocument()
     })
 
     it('renders no files if there impacted files is empty', async () => {
-      setup({ data: {commit: {compareWithParent: {}}}, isLoading: false })
+      setup({ data: { commit: { compareWithParent: {} } }, isLoading: false })
       const coverage = screen.getByText(
         'No Files covered by tests were changed'
       )
@@ -178,15 +182,21 @@ describe('CommitPage', () => {
 
     it('renders table data if data is populated', async () => {
       setup({ data: dataReturned, isLoading: false })
-      const impactedFile = dataReturned.commit.compareWithParent.impactedFiles[0]
+      const impactedFile =
+        dataReturned.commit.compareWithParent.impactedFiles[0]
       expect(screen.getByText('index2.py')).toBeInTheDocument()
       expect(screen.getByText(impactedFile.headName)).toBeInTheDocument()
-      const change = impactedFile.headCoverage.coverage - impactedFile.baseCoverage.coverage
+      const change =
+        impactedFile.headCoverage.coverage - impactedFile.baseCoverage.coverage
       const formattedChange = `${change.toFixed(2)}%`
       expect(screen.getByText(formattedChange)).toBeInTheDocument()
-      const formattedPatch = `${impactedFile.patchCoverage.coverage.toFixed(2)}%`
+      const formattedPatch = `${impactedFile.patchCoverage.coverage.toFixed(
+        2
+      )}%`
       expect(screen.getByText(formattedPatch)).toBeInTheDocument()
-      const formattedHeadCoverage = `${impactedFile.headCoverage.coverage.toFixed(2)}%`
+      const formattedHeadCoverage = `${impactedFile.headCoverage.coverage.toFixed(
+        2
+      )}%`
       expect(screen.getByText(formattedHeadCoverage)).toBeInTheDocument()
     })
   })
@@ -305,16 +315,8 @@ describe('CommitPage', () => {
       })
 
       it('without change values', () => {
-        expect(
-          screen.getByText(
-            /Error 404/
-          )
-        ).toBeInTheDocument()
-        expect(
-          screen.getByText(
-            /Not found/
-          )
-        ).toBeInTheDocument()
+        expect(screen.getByText(/Error 404/)).toBeInTheDocument()
+        expect(screen.getByText(/Not found/)).toBeInTheDocument()
       })
     })
   })

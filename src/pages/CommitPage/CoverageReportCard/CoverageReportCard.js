@@ -30,20 +30,13 @@ function extractCommitData(data) {
     parentCommitid: data?.parent?.commitid,
     ciPassed: data?.ciPassed,
     state: data?.state,
-    change: (coverage - parentCoverage)
+    change: coverage - parentCoverage,
   }
 }
 
 function CoverageReportCard({ data, provider, repo, owner }) {
-  const {
-    coverage,
-    commitid,
-    parentCommitid,
-    ciPassed,
-    change,
-    patch,
-    state,
-  } = extractCommitData(data)
+  const { coverage, commitid, parentCommitid, ciPassed, change, patch, state } =
+    extractCommitData(data)
 
   const providerPullUrl = getProviderPullURL({
     provider,

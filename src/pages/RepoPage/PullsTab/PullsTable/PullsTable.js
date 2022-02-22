@@ -67,7 +67,7 @@ function transformPullToTable(pulls) {
         />
       ),
       coverage: <Coverage head={head} state={state} pullId={pullId} />,
-      change: <Change value={change} variant="default"/>,
+      change: <Change value={change} variant="default" />,
     }
   })
 }

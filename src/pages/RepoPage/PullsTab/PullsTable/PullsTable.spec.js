@@ -12,7 +12,7 @@ describe('Pulls Table', () => {
     const defaultPull = {
       author: { username: 'RulaKhaled' },
       compareWithBase: {
-        changeWithParent: 14
+        changeWithParent: 14,
       },
       head: {
         totals: {
@@ -85,7 +85,7 @@ describe('Pulls Table', () => {
 
     it('renders pulls change from base', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent("14.00%")
+      expect(changeValue).toHaveTextContent('14.00%')
     })
   })
 
@@ -120,7 +120,7 @@ describe('Pulls Table', () => {
       setup({
         modifiedProps: {
           compareWithBase: {
-            changeWithParent: null
+            changeWithParent: null,
           },
           head: {
             totals: {
