@@ -302,6 +302,7 @@ describe('useOwner', () => {
       username: 'codecov',
       avatarUrl: '',
       isCurrentUserPartOfOrg: true,
+      isAdmin: false,
     }
 
     beforeEach(() => {

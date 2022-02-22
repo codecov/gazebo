@@ -1,6 +1,11 @@
 import TabNavigation from 'ui/TabNavigation'
+import { useIsCurrentUserAnAdmin } from 'services/user'
+import { useParams } from 'react-router-dom'
 
 function Tabs() {
+  const { owner } = useParams()
+  const isAdmin = useIsCurrentUserAnAdmin({ owner })
+
   return (
     <TabNavigation
       tabs={[
@@ -13,7 +18,7 @@ function Tabs() {
           children: 'Analytics',
         },
         {
-          pageName: 'accountAdmin',
+          pageName: isAdmin && 'accountAdmin',
           children: 'Settings',
         },
       ]}

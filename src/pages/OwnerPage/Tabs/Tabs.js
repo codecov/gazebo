@@ -2,8 +2,11 @@ import PropTypes from 'prop-types'
 import TabNavigation from 'ui/TabNavigation'
 
 import CallToAction from '../CallToAction'
+import { useIsCurrentUserAnAdmin } from 'services/user'
 
 function Tabs({ provider, owner }) {
+  const isAdmin = useIsCurrentUserAnAdmin({ owner: owner?.username })
+
   return (
     <TabNavigation
       tabs={[
@@ -16,7 +19,7 @@ function Tabs({ provider, owner }) {
           children: 'Analytics',
         },
         {
-          pageName: 'accountAdmin',
+          pageName: isAdmin && 'accountAdmin',
           children: 'Settings',
         },
       ]}
