@@ -9,6 +9,7 @@ import { useLocationParams } from 'services/navigation'
 import Checkbox from 'ui/Checkbox'
 import Select from 'ui/Select'
 import Icon from 'ui/Icon'
+import Button from 'ui/Button'
 
 import CommitsTable from './CommitsTable'
 import { useSetCrumbs } from '../context'
@@ -38,7 +39,7 @@ function CommitsTab() {
     repoData?.repository?.defaultBranch
   )
 
-  const { data: commits } = useCommits({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useCommits({
     provider,
     owner,
     repo,
@@ -48,7 +49,7 @@ function CommitsTab() {
     },
   })
 
-  commits.map((commit) => console.log(commit.ciPassed))
+  const commits = data?.commits
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -97,6 +98,17 @@ function CommitsTab() {
         />
       </div>
       <CommitsTable commits={commits} />
+      {hasNextPage && (
+        <div className="flex-1 mt-4 flex justify-center">
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

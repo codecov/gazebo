@@ -77,7 +77,7 @@ describe('CommitsTable', () => {
 
     it('render - for missing change', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent("-")
+      expect(changeValue).toHaveTextContent('-')
     })
   })
   describe('when no changes', () => {
