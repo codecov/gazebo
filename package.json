@@ -103,7 +103,7 @@
     "http-proxy-middleware": "^2.0.3",
     "husky": "^7.0.4",
     "jest-junit": "^13.0.0",
-    "lint-staged": "^12.1.2",
+    "lint-staged": "^12.3.4",
     "msw": "^0.36.8",
     "postcss": "^8.4.6",
     "postcss-font-magician": "2.3.1",
