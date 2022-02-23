@@ -96,7 +96,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
         </p>
       ) : (
         <p className="flex-1 text-ds-gray-quinary">
-          The average coverage of changes for this commit is {patch} (patch).
+          The coverage of changes for this commit is {patch} (patch).
           Data source from comparing between{' '}
           <A to={{ pageName: 'commit', options: { commit: parentCommitid } }}>
             {parentCommitid?.substr(0, 7)}
