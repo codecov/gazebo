@@ -1,8 +1,8 @@
 import Api from 'shared/api'
-import { useQuery } from 'react-query'
+import { useInfiniteQuery } from 'react-query'
 import { mapEdges } from 'shared/utils/graphql'
 
-function fetchRepoCommits({ provider, owner, repo, filters }) {
+function fetchRepoCommits({ provider, owner, repo, variables, after }) {
   const CommitFragment = `
    fragment CommitFragment on Commit {
         ciPassed
@@ -28,14 +28,18 @@ function fetchRepoCommits({ provider, owner, repo, filters }) {
     }
   `
   const query = `
-    query GetCommits($owner: String!, $repo: String!, $filters:CommitsSetFilters){
+    query GetCommits($owner: String!, $repo: String!, $filters:CommitsSetFilters, $after: String){
         owner(username:$owner){
             repository(name: $repo){
-                commits(filters: $filters){
+                commits(filters: $filters, first: 20, after: $after){
                   edges{
                     node{
                        ...CommitFragment
                     }
+                  }
+                  pageInfo {
+                    hasNextPage
+                    endCursor
                   }
              }
         }
@@ -51,17 +55,40 @@ function fetchRepoCommits({ provider, owner, repo, filters }) {
     variables: {
       owner,
       repo,
-      filters: {
-        ...filters,
-      },
+      ...variables,
+      after,
     },
   }).then((res) => {
-    return mapEdges(res?.data?.owner?.repository?.commits)
+    const { commits } = res?.data?.owner?.repository
+
+    return {
+      commits: mapEdges(commits),
+      pageInfo: commits.pageInfo,
+    }
   })
 }
 
 export function useCommits({ provider, owner, repo, filters }) {
-  return useQuery([provider, owner, repo, filters, 'commits'], () => {
-    return fetchRepoCommits({ provider, owner, repo, filters })
-  })
+  const variables = {
+    filters,
+  }
+  const { data, ...rest } = useInfiniteQuery(
+    [provider, owner, repo, variables, 'commits'],
+    ({ pageParam }) =>
+      fetchRepoCommits({
+        provider,
+        owner,
+        repo,
+        variables,
+        after: pageParam,
+      }),
+    {
+      getNextPageParam: (data) =>
+        data?.pageInfo?.hasNextPage ? data?.pageInfo.endCursor : undefined,
+    }
+  )
+  return {
+    data: { commits: data?.pages.map((page) => page?.commits).flat() },
+    ...rest,
+  }
 }

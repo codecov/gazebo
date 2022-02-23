@@ -42,7 +42,7 @@ const dataReturned = {
                 },
               },
               compareWithBase: {
-                changeWithParent: '65'
+                changeWithParent: '65',
               },
             },
           ],
@@ -88,7 +88,7 @@ describe('GetPulls', () => {
             },
           },
           compareWithBase: {
-            changeWithParent: '65'
+            changeWithParent: '65',
           },
         },
       ],
