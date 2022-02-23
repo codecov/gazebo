@@ -19,7 +19,7 @@ function Tabs({ provider, owner }) {
           children: 'Analytics',
         },
         {
-          pageName: isAdmin && 'accountAdmin',
+          pageName: isAdmin ? 'accountAdmin' : 'billingAndUsers',
           children: 'Settings',
         },
       ]}

@@ -7,8 +7,11 @@ import StudentCard from './StudentCard'
 import ManageAdminCard from './ManageAdminCard'
 import GithubIntegrationCard from './GithubIntegrationCard'
 import DeletionCard from './DeletionCard'
+import { useRedirectToBilling } from './hooks'
 
 function Admin({ provider, owner }) {
+  useRedirectToBilling()
+
   const { data: currentUser } = useUser({ provider })
   const isPersonalSettings =
     currentUser.user.username.toLowerCase() === owner.toLowerCase()

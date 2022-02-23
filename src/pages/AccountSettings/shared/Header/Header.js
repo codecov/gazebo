@@ -2,9 +2,11 @@ import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
+import { useIsCurrentUserAnAdmin } from 'services/user'
 
 function Header() {
   const { owner } = useParams()
+  const isAdmin = useIsCurrentUserAnAdmin({ owner })
 
   return (
     <>
@@ -14,7 +16,10 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
-            { pageName: 'accountAdmin', children: 'Settings' },
+            {
+              pageName: isAdmin ? 'accountAdmin' : 'billingAndUsers',
+              children: 'Settings',
+            },
           ]}
         />
       </div>

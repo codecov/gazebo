@@ -18,7 +18,7 @@ function Tabs() {
           children: 'Analytics',
         },
         {
-          pageName: isAdmin && 'accountAdmin',
+          pageName: isAdmin ? 'accountAdmin' : 'billingAndUsers',
           children: 'Settings',
         },
       ]}
