@@ -52,7 +52,7 @@ describe('AccountSettings', () => {
     })
   })
 
-  describe('when rendering for personal settings', () => {
+  describe('when rendering for admin users and is personal settings', () => {
     beforeEach(() => {
       setup({ url: '/account/gh/dorian', isAdmin: true })
     })
@@ -67,7 +67,26 @@ describe('AccountSettings', () => {
     })
   })
 
-  describe('when rendering for non admin users', () => {
+  describe('when rendering for non admin users and not personal settings', () => {
+    beforeEach(() => {
+      setup({ url: '/account/gh/random', isAdmin: false })
+    })
+
+    it('renders the right links', () => {
+      expect(
+        screen.queryByRole('link', { name: /Admin/ })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: /Access/ })
+      ).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: /billing & users/i })
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendering for non admin users and is personal settings', () => {
     beforeEach(() => {
       setup({ url: '/account/gh/dorian', isAdmin: false })
     })
