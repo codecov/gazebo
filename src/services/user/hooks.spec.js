@@ -11,6 +11,7 @@ import {
   useResyncUser,
   useOwner,
   useOnboardUser,
+  useIsCurrentUserAnAdmin,
 } from './hooks'
 
 const user = {
@@ -312,6 +313,48 @@ describe('useOwner', () => {
 
     it('returns the org', () => {
       expect(hookData.result.current.data).toEqual(codecovOrg)
+    })
+  })
+
+  describe('when calling useIsCurrentUserAnAdmin for admins', () => {
+    const codecovOrg = {
+      username: 'codecov',
+      avatarUrl: '',
+      isCurrentUserPartOfOrg: true,
+      isAdmin: true,
+    }
+    beforeEach(() => {
+      setup(codecovOrg)
+      hookData = renderHook(
+        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
+        { wrapper }
+      )
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
+    })
+
+    it('returns true value', () => {
+      expect(hookData.result.current).toEqual(true)
+    })
+  })
+
+  describe('when calling useIsCurrentUserAnAdmin for non-admins', () => {
+    const codecovOrg = {
+      username: 'codecov',
+      avatarUrl: '',
+      isCurrentUserPartOfOrg: true,
+      isAdmin: false,
+    }
+    beforeEach(() => {
+      setup(codecovOrg)
+      hookData = renderHook(
+        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
+        { wrapper }
+      )
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
+    })
+
+    it('returns false value', () => {
+      expect(hookData.result.current).toEqual(false)
     })
   })
 })
