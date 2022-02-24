@@ -8,8 +8,10 @@ import Button from 'ui/Button'
 
 import YamlEditor from './YamlEditor'
 import SuccessModal from './SuccessModal'
+import { useIsCurrentUserAnAdmin } from 'services/user'
 
 function YAML({ owner }) {
+  const isAdmin = useIsCurrentUserAnAdmin({ owner })
   const { data: yamlConfig } = useYamlConfig({
     variables: { username: owner },
   })
@@ -75,6 +77,7 @@ function YAML({ owner }) {
         name="editor"
         render={({ field: { onChange, value } }) => (
           <YamlEditor
+            isAdmin={isAdmin}
             value={value}
             onChange={onChange}
             placeholder={`All ${owner} repos will inherit this configuration`}
@@ -82,14 +85,16 @@ function YAML({ owner }) {
         )}
       />
       <div className="mt-4 float-right">
-        <Button
-          hook="save-yaml"
-          disabled={!formState.isDirty}
-          isLoading={formState.isSubmitting}
-          variant="primary"
-        >
-          Save Changes
-        </Button>
+        {isAdmin && (
+          <Button
+            hook="save-yaml"
+            disabled={!formState.isDirty}
+            isLoading={formState.isSubmitting}
+            variant="primary"
+          >
+            Save Changes
+          </Button>
+        )}
       </div>
     </form>
   )

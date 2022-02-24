@@ -21,6 +21,7 @@ import { useAutoActivate, useAccountDetails } from 'services/account'
 import { useUsers, useUpdateUser } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 import { isFreePlan } from 'shared/utils/billing'
+import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 
 const UserManagementClasses = {
   root: 'space-y-4 col-span-2 mb-20 flex-grow', // Select pushes page length out. For now padding
@@ -57,9 +58,7 @@ function createPills({ isAdmin, email, student }) {
   ]
 }
 
-function UserManagement({ provider, owner }) {
-  // local state is pulled from url params.
-  // Defaults are not shown in url.
+function useUsersData({ provider, owner }) {
   const { params, updateParams } = useLocationParams({
     activated: ApiFilterEnum.none, // Default to no filter on activated
     isAdmin: ApiFilterEnum.none, // Default to no filter on isAdmin
@@ -73,6 +72,25 @@ function UserManagement({ provider, owner }) {
     provider,
     owner,
     query: params,
+  })
+  const { data: currentUser } = useUser()
+
+  return {
+    params,
+    updateParams,
+    data,
+    isSuccess,
+    currentUser: currentUser?.user,
+  }
+}
+
+function UserManagement({ provider, owner }) {
+  const isAdmin = useIsCurrentUserAnAdmin({ owner })
+  // local state is pulled from url params.
+  // Defaults are not shown in url.
+  const { params, updateParams, data, isSuccess, currentUser } = useUsersData({
+    provider,
+    owner,
   })
   // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider })
@@ -145,15 +163,17 @@ function UserManagement({ provider, owner }) {
       <Card className={UserManagementClasses.results}>
         <div className={UserManagementClasses.cardHeader}>
           <h2 className={UserManagementClasses.title}>Users</h2>
-          <span className={UserManagementClasses.activateUsers}>
-            <Toggle
-              showLabel={true}
-              onClick={() => autoActivate(!accountDetails?.planAutoActivate)}
-              value={accountDetails?.planAutoActivate}
-              label="Auto activate users"
-              labelClass={UserManagementClasses.activateUsersText}
-            />
-          </span>
+          {isAdmin && (
+            <span className={UserManagementClasses.activateUsers}>
+              <Toggle
+                showLabel={true}
+                onClick={() => autoActivate(!accountDetails?.planAutoActivate)}
+                value={accountDetails?.planAutoActivate}
+                label="Auto activate users"
+                labelClass={UserManagementClasses.activateUsersText}
+              />
+            </span>
+          )}
         </div>
         <div>
           {isSuccess &&
@@ -175,7 +195,11 @@ function UserManagement({ provider, owner }) {
                     className={UserManagementClasses.cta}
                     color={user.activated ? 'red' : 'blue'}
                     variant={user.activated ? 'outline' : 'normal'}
-                    onClick={() => handleActivate(user)}
+                    onClick={() => {
+                      if (!isAdmin && user.username !== currentUser.username)
+                        return
+                      handleActivate(user)
+                    }}
                   >
                     {user.activated ? 'Deactivate' : 'Activate'}
                   </Button>
