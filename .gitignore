@@ -31,3 +31,6 @@ junit.xml
 
 # temporary
 /src/mock-window-property.js
+
+# storybook
+storybook-static

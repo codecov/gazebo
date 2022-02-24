@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { isNumber } from 'lodash'
+import isNumber from 'lodash/isNumber'
 
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -89,8 +89,8 @@ function CoverageReportCard({ data, provider, repo, owner }) {
         </p>
       ) : (
         <p className="flex-1 text-ds-gray-quinary">
-          The coverage of changes for this commit is {patch} (patch).
-          Data source from comparing between{' '}
+          The coverage of changes for this commit is {patch} (patch). Data
+          source from comparing between{' '}
           <A to={{ pageName: 'commit', options: { commit: parentCommitid } }}>
             {parentCommitid?.substr(0, 7)}
           </A>{' '}
