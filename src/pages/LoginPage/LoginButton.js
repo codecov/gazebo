@@ -8,7 +8,7 @@ import { useNavLinks } from 'services/navigation'
 
 const styles = {
   box: 'h-14 shadow flex items-center text-left bg-ds-gray-primary border border-ds-gray-quaternary rounded-sm',
-  link: 'h-full flex-grow flex items-center font-semibold hover:bg-ds-gray-secondary',
+  link: 'h-full grow flex items-center font-semibold hover:bg-ds-gray-secondary',
   dropdownGithub:
     'flex justify-center items-center h-full w-12 border-l border-ds-gray-quaternary hover:bg-ds-gray-secondary',
   logo: 'block mx-4 h-6 w-6',
