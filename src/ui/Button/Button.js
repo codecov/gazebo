@@ -14,7 +14,7 @@ const baseClass = `
 
   disabled:cursor-not-allowed 
 `
-const baseDisabledClasses = `disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-primary`
+const baseDisabledClasses = `disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary`
 const variantClasses = {
   default: `
     text-ds-gray-octonary bg-ds-gray-primary border-ds-gray-quaternary
