@@ -1,4 +1,4 @@
-import { isNumber } from 'lodash'
+import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 
 function Patch({ compareWithParent }) {

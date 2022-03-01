@@ -62,7 +62,7 @@ describe('CoverageReportCard', () => {
     })
     it('renders the description', () => {
       expect(
-        screen.getByText(/The average coverage of changes for this commit is/)
+        screen.getByText(/The coverage of changes for this commit is/)
       ).toBeInTheDocument()
     })
     it('renders CI Passed', () => {
