@@ -5,6 +5,7 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import BaseLayout from 'layouts/BaseLayout'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import { useUTM } from 'services/tracking/utm'
 // Not lazy loading because the page is very small and is accessed often
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -28,6 +29,8 @@ const queryClient = new QueryClient({
 })
 
 function App() {
+  useUTM()
+
   return (
     <ToastNotificationProvider>
       <QueryClientProvider client={queryClient}>

@@ -1,30 +1,20 @@
-import pick from 'lodash/pick'
 import qs from 'qs'
-import { useParams, useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { useFlags } from 'shared/featureFlags'
 import config from 'config'
-
-function forwardMarketingTag(search) {
-  const queryParams = qs.parse(search, {
-    ignoreQueryPrefix: true,
-  })
-  return pick(queryParams, [
-    'utm_source',
-    'utm_medium',
-    'utm_campaign',
-    'utm_term',
-    'utm_content',
-    'utm_department',
-  ])
-}
+import Cookie from 'js-cookie'
 
 function useNavLinks() {
-  const { search } = useLocation()
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
   const { gazeboRepoTabs, gazeboPullRequestPage } = useFlags({
     gazeboRepoTabs: false,
     gazeboPullRequestPage: false,
+  })
+
+  const utmCookie = Cookie.get('utmParams')
+  const utmCookieObj = qs.parse(utmCookie, {
+    ignoreQueryPrefix: true,
   })
 
   return {
@@ -41,7 +31,7 @@ function useNavLinks() {
           {
             to,
             private: privateScope,
-            ...forwardMarketingTag(search),
+            ...utmCookieObj,
           },
           { addQueryPrefix: true }
         )
@@ -52,7 +42,7 @@ function useNavLinks() {
     signUp: {
       text: 'Sign Up',
       path: () => {
-        const params = qs.stringify(forwardMarketingTag(search), {
+        const params = qs.stringify(utmCookieObj, {
           addQueryPrefix: true,
         })
         return `${config.MARKETING_BASE_URL}/sign-up/${params}`

@@ -1,20 +1,27 @@
 import ProgressComponent from './Progress'
 
-const Template = (args) => <Progress {...args} />
+const Template = (args) => <ProgressComponent {...args} />
 
 export const Progress = Template.bind({})
 
 Progress.args = {
-  amount: 80,
+  amount: 50,
 }
 
-export const Progress2 = Template.bind({})
+export const ProgressWithLabel = Template.bind({})
 
-Progress2.args = {
-  amount: 80,
+ProgressWithLabel.args = {
+  amount: 50,
+  label: true,
 }
 
 export default {
   title: 'Components/Progress',
   component: ProgressComponent,
+  argTypes: {
+    variant: {
+      type: 'select',
+      options: ['default', 'progressNeutral', 'progressDanger'],
+    },
+  },
 }
