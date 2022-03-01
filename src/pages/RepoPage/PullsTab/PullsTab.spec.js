@@ -15,7 +15,7 @@ describe('Pulls Pab', () => {
       data: [
         {
           node: {
-            author: { username: 'RulaKhaled' },
+            author: { username: 'RulaKhaled', avatarUrl: 'random' },
             compareWithBase: {
               patchTotals: {
                 coverage: 90,
@@ -34,7 +34,7 @@ describe('Pulls Pab', () => {
         },
         {
           node: {
-            author: { username: 'ThiagoCodecov' },
+            author: { username: 'ThiagoCodecov', avatarUrl: 'random' },
             compareWithBase: {
               patchTotals: {
                 coverage: 87,

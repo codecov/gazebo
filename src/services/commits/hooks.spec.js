@@ -28,6 +28,7 @@ const node1 = {
   createdAt: '2020',
   author: {
     username: 'rula',
+    avatarUrl: 'random',
   },
   totals: {
     coverage: 22,
@@ -50,6 +51,7 @@ const node2 = {
   createdAt: '2021',
   author: {
     username: 'rula2',
+    avatarUrl: 'random',
   },
   totals: {
     coverage: 19,
@@ -72,6 +74,7 @@ const node3 = {
   createdAt: '2020',
   author: {
     username: 'rula',
+    avatarUrl: 'random',
   },
   totals: {
     coverage: 22,

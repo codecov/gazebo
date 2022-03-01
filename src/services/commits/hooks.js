@@ -11,6 +11,7 @@ function fetchRepoCommits({ provider, owner, repo, variables, after }) {
         createdAt
         author{
              username
+             avatarUrl
         }
         totals{
              coverage

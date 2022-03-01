@@ -10,6 +10,7 @@ function fetchRepoPulls({ provider, owner, repo, variables }) {
         updatestamp
         author{
             username
+            avatarUrl
         }
         head{
             totals{

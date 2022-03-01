@@ -10,7 +10,7 @@ jest.mock('services/repo/hooks')
 describe('Pulls Table', () => {
   function setup({ modifiedProps = {}, overridePulls = {} }) {
     const defaultPull = {
-      author: { username: 'RulaKhaled' },
+      author: { username: 'RulaKhaled', avatarUrl: 'random' },
       compareWithBase: {
         changeWithParent: 14,
       },
