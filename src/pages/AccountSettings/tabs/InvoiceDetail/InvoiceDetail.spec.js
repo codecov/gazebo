@@ -151,7 +151,7 @@ describe('InvoiceDetail', () => {
 
     it('renders the subtotal', () => {
       expect(screen.getByText(/sub total/i)).toBeInTheDocument()
-      expect(screen.queryAllByText(/\$625\.51/i)[0]).toBeInTheDocument()
+      expect(screen.getAllByText(/\$625\.51/i)[0]).toBeInTheDocument()
     })
 
     it('renders the address of the customer', () => {
@@ -164,7 +164,7 @@ describe('InvoiceDetail', () => {
     })
 
     it('renders the total', () => {
-      expect(screen.queryAllByText(/\$625\.51/i)[1]).toBeInTheDocument()
+      expect(screen.getAllByText(/\$625\.51/i)[1]).toBeInTheDocument()
     })
   })
 
@@ -202,7 +202,7 @@ describe('InvoiceDetail', () => {
     })
 
     it('renders the total', () => {
-      expect(screen.queryAllByText(/\$625\.51/i)[1]).toBeInTheDocument()
+      expect(screen.getAllByText(/\$625\.51/i)[1]).toBeInTheDocument()
     })
   })
 })

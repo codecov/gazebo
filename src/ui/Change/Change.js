@@ -24,8 +24,7 @@ const textVariants = {
   },
 }
 
-const validateValue = (value) =>
-  value && !isNaN(value) && value !== 0 ? true : false
+const validateValue = (value) => value && !isNaN(value) && value !== 0
 
 // TODO: Change this component to something like "TotalsNumber" or "Delta" to be reused by Coverage, Patch and Change throughout our codebase
 const Change = ({ value, variant = 'default' }) => {

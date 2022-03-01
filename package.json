@@ -56,7 +56,7 @@
       "prettier --write"
     ],
     "src/**/*.{js,jsx,ts,tsx,json}": [
-      "eslint --fix --no-ignore --max-warnings=0"
+      "eslint --fix --no-ignore --quiet"
     ]
   },
   "browserslist": {
@@ -106,12 +106,14 @@
     "lint-staged": "^12.3.4",
     "msw": "^0.38.1",
     "postcss": "^8.4.6",
-    "postcss-font-magician": "^3.0.0",
     "prettier": "^2.5.1",
     "react-is": "^17.0.2",
     "react-test-renderer": "^17.0.2",
     "tailwindcss": "^3.0.23",
     "webpack": "^5.69.1"
+  },
+  "engines": {
+    "node": ">=16.14.0"
   },
   "jest": {
     "transformIgnorePatterns": [

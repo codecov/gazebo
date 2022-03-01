@@ -25,8 +25,8 @@ describe('OptionButton', () => {
     })
 
     it('renders options', () => {
-      expect(screen.queryByText('test option 1')).toBeInTheDocument()
-      expect(screen.queryByText('test option 2')).toBeInTheDocument()
+      expect(screen.getByText('test option 1')).toBeInTheDocument()
+      expect(screen.getByText('test option 2')).toBeInTheDocument()
     })
     it('fires click event', () => {
       userEvent.click(screen.queryByText('test option 2'))

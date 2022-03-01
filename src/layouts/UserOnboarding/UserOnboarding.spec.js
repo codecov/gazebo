@@ -33,7 +33,7 @@ describe('UserOnboarding', () => {
     })
 
     it('renders the onboarding modal', () => {
-      expect(screen.queryByText(/UserOnboardingModal/)).toBeInTheDocument()
+      expect(screen.getByText(/UserOnboardingModal/)).toBeInTheDocument()
     })
   })
 

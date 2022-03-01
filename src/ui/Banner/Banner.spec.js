@@ -13,7 +13,7 @@ describe('Banner', () => {
     })
 
     it('renders title title', () => {
-      expect(screen.queryByText(/this is the title/)).toBeInTheDocument()
+      expect(screen.getByText(/this is the title/)).toBeInTheDocument()
     })
   })
 
@@ -23,11 +23,11 @@ describe('Banner', () => {
     })
 
     it('renders title', () => {
-      expect(screen.queryByText(/title/)).toBeInTheDocument()
+      expect(screen.getByText(/title/)).toBeInTheDocument()
     })
 
     it('renders content', () => {
-      expect(screen.queryByText(/this is the content/)).toBeInTheDocument()
+      expect(screen.getByText(/this is the content/)).toBeInTheDocument()
     })
   })
 
@@ -36,7 +36,7 @@ describe('Banner', () => {
       setup({}, <span>this is the content</span>)
     })
     it('renders content', () => {
-      expect(screen.queryByText(/this is the content/)).toBeInTheDocument()
+      expect(screen.getByText(/this is the content/)).toBeInTheDocument()
     })
   })
 })

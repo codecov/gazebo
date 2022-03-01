@@ -27,7 +27,7 @@ describe('Header', () => {
 
     it('Ask for feedback banner is rendered', () => {
       expect(
-        screen.queryByText(
+        screen.getByText(
           /We would love to hear your feedback! Let us know what you think/
         )
       ).toBeInTheDocument()
