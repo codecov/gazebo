@@ -1,19 +1,14 @@
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useIsCurrentUserAnAdmin } from 'services/user'
-
-function useRedirect({ provider, owner }) {
-  return {
-    hardRedirect: useCallback(() => {
-      window.location.replace(`/account/${provider}/${owner}/billing`)
-    }, [provider, owner]),
-  }
-}
+import { useRedirect } from 'shared/useRedirect'
 
 export function useRedirectToBilling() {
   const { provider, owner } = useParams()
+  const href = `/account/${provider}/${owner}/billing`
+
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
-  const { hardRedirect } = useRedirect({ provider, owner })
+  const { hardRedirect } = useRedirect({ href })
 
   useEffect(() => {
     if (!isAdmin) {
