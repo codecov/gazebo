@@ -134,9 +134,7 @@ describe('CommitPage', () => {
         setup({ data: null, isLoading: false })
       })
       it('renders the Uploads', async () => {
-        await waitFor(() =>
-          expect(screen.getByText(/Not found/)).toBeInTheDocument()
-        )
+        await screen.findByText(/Not found/)
       })
     })
 
@@ -188,7 +186,7 @@ describe('CommitPage', () => {
       expect(screen.getByText(impactedFile.headName)).toBeInTheDocument()
       const change =
         impactedFile.headCoverage.coverage - impactedFile.baseCoverage.coverage
-      const formattedChange = `${change.toFixed(2)}%`
+      const formattedChange = `+${change.toFixed(2)}%`
       expect(screen.getByText(formattedChange)).toBeInTheDocument()
       const formattedPatch = `${impactedFile.patchCoverage.coverage.toFixed(
         2

@@ -85,7 +85,7 @@ describe('Pulls Table', () => {
 
     it('renders pulls change from base', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('14.00%')
+      expect(changeValue).toHaveTextContent('+14.00%')
     })
   })
 
