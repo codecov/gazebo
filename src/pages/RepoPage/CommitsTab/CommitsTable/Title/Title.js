@@ -3,12 +3,12 @@ import PropTypes from 'prop-types'
 
 import Avatar from 'ui/Avatar'
 import A from 'ui/A'
-import { defaultAuthor } from 'shared/defaults'
+import { DefaultAuthor } from 'shared/defaults'
 
 const Title = ({ message, author, commitid, createdAt }) => {
   const user = {
-    avatarUrl: author?.avatarUrl || defaultAuthor.avatarUrl,
-    username: author?.username || defaultAuthor.username,
+    avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
+    username: author?.username || DefaultAuthor.USERNAME,
   }
 
   const commitMessage = () => {

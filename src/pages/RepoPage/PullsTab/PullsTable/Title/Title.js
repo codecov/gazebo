@@ -2,12 +2,12 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import Avatar from 'ui/Avatar'
 import A from 'ui/A'
 import PropTypes from 'prop-types'
-import { defaultAuthor } from 'shared/defaults'
+import { DefaultAuthor } from 'shared/defaults'
 
 const Title = ({ author, pullId, title, updatestamp }) => {
   const user = {
-    avatarUrl: author?.avatarUrl || defaultAuthor.avatarUrl,
-    username: author?.username || defaultAuthor.username,
+    avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
+    username: author?.username || DefaultAuthor.USERNAME,
   }
 
   return (
