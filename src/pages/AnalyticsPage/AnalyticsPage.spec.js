@@ -52,19 +52,19 @@ describe('AnalyticsPage', () => {
     })
 
     it('renders tabs associated with the page', () => {
-      expect(screen.queryByText(/Tabs/)).toBeInTheDocument()
+      expect(screen.getByText(/Tabs/)).toBeInTheDocument()
     })
 
     it('renders a table displaying repository list', () => {
-      expect(screen.queryByText(/Repos/)).toBeInTheDocument()
+      expect(screen.getByText(/Repos/)).toBeInTheDocument()
     })
 
     it('renders a selectors displaying chart options list', () => {
-      expect(screen.queryByText(/Chart Selectors/)).toBeInTheDocument()
+      expect(screen.getByText(/Chart Selectors/)).toBeInTheDocument()
     })
 
     it('renders the line chart', () => {
-      expect(screen.queryByText(/Line Chart/)).toBeInTheDocument()
+      expect(screen.getByText(/Line Chart/)).toBeInTheDocument()
     })
   })
 

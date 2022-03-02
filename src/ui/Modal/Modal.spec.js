@@ -43,7 +43,7 @@ describe('Modal', () => {
     })
 
     it('renders the children', () => {
-      expect(screen.queryByText(props.body)).toBeInTheDocument()
+      expect(screen.getByText(props.body)).toBeInTheDocument()
     })
   })
 
@@ -64,7 +64,7 @@ describe('Modal', () => {
     })
 
     it('redners footer', () => {
-      expect(screen.queryByText(/this is the footer/)).toBeInTheDocument()
+      expect(screen.getByText(/this is the footer/)).toBeInTheDocument()
     })
   })
 
@@ -74,7 +74,7 @@ describe('Modal', () => {
     })
 
     it('renders subtitle', () => {
-      expect(screen.queryByText(/to complete the title/)).toBeInTheDocument()
+      expect(screen.getByText(/to complete the title/)).toBeInTheDocument()
     })
   })
 
@@ -94,8 +94,8 @@ describe('Modal', () => {
     })
 
     it('renders it', () => {
-      expect(screen.queryByText(/title/)).toBeInTheDocument()
-      expect(screen.queryByText(/body/)).toBeInTheDocument()
+      expect(screen.getByText(/title/)).toBeInTheDocument()
+      expect(screen.getByText(/body/)).toBeInTheDocument()
     })
   })
 })

@@ -55,7 +55,7 @@ describe('FileView', () => {
     it('renders the navigation breadcrumb', () => {
       expect(screen.getByText(/codecov/)).toBeInTheDocument()
       expect(screen.getByText(/repo-test/)).toBeInTheDocument()
-      expect(screen.queryByText(/master/)).toBeInTheDocument()
+      expect(screen.getByText(/master/)).toBeInTheDocument()
     })
 
     it('renders the title and path breadcrumb', () => {

@@ -7,6 +7,12 @@
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
+    "testing-library/no-node-access": "warn",
+    "testing-library/prefer-screen-queries": "warn",
+    "testing-library/no-render-in-setup": "warn",
+    "testing-library/no-unnecessary-act": "warn",
+    "testing-library/await-async-utils": "warn",
+    "testing-library/prefer-find-by": "warn",
     "complexity": ["error", 5],
     "max-statements": ["error", 10],
     "max-nested-callbacks": ["error", 2],
