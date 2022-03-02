@@ -187,12 +187,13 @@ describe('RepoPage', () => {
         commits,
         initialEntries: ['/gh/codecov/test/commits'],
       })
+      let select
       await waitFor(() => {
-        const select = screen.getByRole('button', {
+        select = screen.getByRole('button', {
           name: 'main chevron-down.svg',
         })
-        fireEvent.click(select)
       })
+      fireEvent.click(select)
     })
 
     it('renders the options of select branch', () => {
@@ -214,12 +215,14 @@ describe('RepoPage', () => {
         commits,
         initialEntries: ['/gh/codecov/test/commits'],
       })
+      let select
       await waitFor(() => {
-        const select = screen.getByRole('button', {
+        select = screen.getByRole('button', {
           name: 'main chevron-down.svg',
         })
-        fireEvent.click(select)
       })
+      fireEvent.click(select)
+
       const branch = screen.getByText(/test1/)
       fireEvent.click(branch)
     })

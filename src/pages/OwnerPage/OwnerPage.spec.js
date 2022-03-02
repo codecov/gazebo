@@ -49,7 +49,7 @@ describe('OwnerPage', () => {
 
     it('renders links to the settings', () => {
       expect(
-        screen.queryByRole('link', {
+        screen.getByRole('link', {
           name: /settings/i,
         })
       ).toBeInTheDocument()

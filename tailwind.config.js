@@ -3,9 +3,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
-  purge: {
-    content: ['./src/**/*.js', './src/*.js', './public/*.html'],
-  },
+  content: ['./src/**/*.js', './src/*.js', './public/*.html'],
   theme: {
     container: {
       center: true,
@@ -128,28 +126,4 @@ module.exports = {
       backgroundColor: ['disabled'],
     },
   },
-  plugins: [plugin(caretColorPlugin)],
-}
-
-function caretColorPlugin({ addUtilities, theme }) {
-  // inspired by https://github.com/Naoray/tailwind-caret-color
-  // which doesn't work for v2
-  const colors = theme('colors')
-  const newUtilities = {}
-  forIn(colors, (variants, colorName) => {
-    if (typeof variants === 'string') {
-      // no variant for the color, it's directly the color
-      newUtilities[`.caret-${colorName}`] = {
-        'caret-color': variants,
-      }
-    } else {
-      // map each variant of the color
-      forIn(variants, (color, variantName) => {
-        newUtilities[`.caret-${colorName}-${variantName}`] = {
-          'caret-color': color,
-        }
-      })
-    }
-  })
-  addUtilities(newUtilities)
 }

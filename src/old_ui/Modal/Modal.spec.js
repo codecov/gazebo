@@ -42,7 +42,7 @@ describe('Modal', () => {
     })
 
     it('renders the children', () => {
-      expect(screen.queryByText(props.children)).toBeInTheDocument()
+      expect(screen.getByText(props.children)).toBeInTheDocument()
     })
   })
 

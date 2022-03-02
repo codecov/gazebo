@@ -87,7 +87,7 @@ describe('AnalyticsPage', () => {
       const allRepos = screen.getAllByRole('option')[0]
       fireEvent.click(allRepos)
       expect(screen.queryByText(/2 Repos selected/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/All Repos/)).toBeInTheDocument()
+      expect(screen.getByText(/All Repos/)).toBeInTheDocument()
     })
 
     it('clears filters when clear filters button is clicked', () => {

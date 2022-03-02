@@ -15,7 +15,7 @@ function LegacyUser({ accountDetails, provider, owner }) {
 
   return (
     <div className="flex">
-      <Card className="flex-grow max-w-xl mr-4 px-12 py-10 pb-4">
+      <Card className="grow max-w-xl mr-4 px-12 py-10 pb-4">
         <h3 className="text-lg text-pink-500 font-bold">
           Per Repository Billing
         </h3>
