@@ -43,7 +43,7 @@
     "sentry": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && react-scripts build && node scripts/sentry.js",
     "test:ci": "react-scripts test --collectCoverage --reporters=default --reporters=jest-junit",
     "eject": "react-scripts eject",
-    "lint": "npx eslint --no-ignore --max-warnings=-1 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
+    "lint": "npx eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
     "storybook": "start-storybook -p 6006 -s public --no-dll",
     "build-storybook": "build-storybook -s public --no-dll",
     "chromatic": "npx chromatic --exit-zero-on-changes -ci",
@@ -52,11 +52,11 @@
     "generate-icons": "node ./scripts/icons.js"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "*.{js,jsx,ts,tsx,json,css,scss,md,json}": [
       "prettier --write"
     ],
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix --no-ignore --max-warnings=-1"
+      "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json"
     ]
   },
   "browserslist": {
@@ -99,6 +99,8 @@
     "@testing-library/user-event": "^13.5.0",
     "autoprefixer": "^10.4.2",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.25.4",
     "faker": "^5.5.3",
     "http-proxy-middleware": "^2.0.1",
     "husky": "^7.0.4",
