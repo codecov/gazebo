@@ -95,7 +95,7 @@ function CommitPage() {
           </A>
         </p>
       </div>
-      <div className="flex pt-8 flex-col gap-8 md:flex-row">
+      <div className="flex pt-8 flex-col-reverse gap-8 md:flex-row">
         <article className="flex flex-col flex-1 gap-4">
           <Switch>
             <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
