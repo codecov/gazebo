@@ -52,10 +52,10 @@
     "generate-icons": "node ./scripts/icons.js"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ],
-    "src/**/*.{js,jsx,ts,tsx,json}": [
+    "*.{js,jsx,ts,tsx}": [
       "eslint --fix --no-ignore --max-warnings=-1"
     ]
   },
