@@ -10,7 +10,7 @@
     "@stripe/stripe-js": "^1.22.0",
     "classnames": "^2.3.1",
     "date-fns": "^2.28.0",
-    "dompurify": "^2.3.4",
+    "dompurify": "^2.3.6",
     "downshift": "^6.1.7",
     "js-cookie": "^3.0.1",
     "launchdarkly-react-client-sdk": "^2.25.1",
@@ -31,7 +31,7 @@
     "react-scripts": "^5.0.0",
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
-    "victory": "^36.2.0",
+    "victory": "^36.3.0",
     "web-vitals": "^2.1.2",
     "websocket-extensions": "^0.1.4",
     "yup": "^0.32.11"
