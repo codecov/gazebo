@@ -94,7 +94,7 @@ function CommitPage() {
           </A>
         </p>
       </div>
-      <div className="flex pt-8 flex-col gap-8 md:flex-row">
+      <div className="flex pt-8 flex-col gap-8 md:flex-row-reverse">
         <aside className="flex gap-6 md:max-w-sm flex-col">
           <CoverageReportCard
             provider={provider}
