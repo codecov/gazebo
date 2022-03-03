@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Avatar from 'ui/Avatar'
 import A from 'ui/A'
-import { DefaultAuthor } from 'shared/defaults'
+import { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ message, author, commitid, createdAt }) => {
   const user = {
