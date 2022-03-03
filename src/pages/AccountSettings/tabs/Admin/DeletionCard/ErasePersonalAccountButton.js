@@ -1,10 +1,10 @@
-import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 
+import Modal from 'old_ui/Modal'
 import { useEraseAccount } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
-import Modal from 'old_ui/Modal'
 
 function ErasePersonalAccountButton({ provider, owner }) {
   const { mutate, isLoading } = useEraseAccount({ provider, owner })

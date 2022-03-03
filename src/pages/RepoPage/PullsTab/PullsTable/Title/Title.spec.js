@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import Title from '.'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import { QueryClientProvider, QueryClient } from 'react-query'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter } from 'react-router-dom'
+
+import Title from '.'
 
 jest.mock('services/repo/hooks')
 

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullsTable from '.'
 

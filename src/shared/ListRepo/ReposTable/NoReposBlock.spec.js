@@ -1,7 +1,10 @@
 import { render, screen } from 'custom-testing-library'
-import NoReposBlock from './NoReposBlock.js'
+
 import { MemoryRouter, Route } from 'react-router-dom'
+
 import { ActiveContext } from 'shared/context'
+
+import NoReposBlock from './NoReposBlock.js'
 
 describe('NoReposBlock', () => {
   function setup({ owner, active }) {

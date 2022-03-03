@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
-import { useRepos } from 'services/repos/hooks'
-import MultiSelect from 'ui/MultiSelect'
 import { useState } from 'react'
+
+import { useRepos } from 'services/repos/hooks'
 import Datepicker from 'ui/Datepicker'
+import MultiSelect from 'ui/MultiSelect'
 
 function formatDataForMultiselect(repos) {
   return repos.map((repo) => repo.name)

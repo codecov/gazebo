@@ -1,13 +1,13 @@
-import { useHistory, useParams } from 'react-router'
 import PropTypes from 'prop-types'
+import { useHistory, useParams } from 'react-router'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useUser } from 'services/user'
+import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
 import Tabs from './Tabs'
-import { ActiveContext } from 'shared/context'
 
 function HomePage({ active = false }) {
   const { push } = useHistory()

@@ -1,5 +1,5 @@
-import PropType from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
+import PropType from 'prop-types'
 
 function getScheduleStart(scheduledPhase) {
   const scheduleStart = fromUnixTime(scheduledPhase?.startDate)

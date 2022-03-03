@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { subDays } from 'date-fns'
-import SessionsTable from './SessionsTable'
 import userEvent from '@testing-library/user-event'
+import { subDays } from 'date-fns'
+
+import SessionsTable from './SessionsTable'
 
 const onRevoke = jest.fn(() => true)
 

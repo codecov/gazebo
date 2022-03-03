@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import FileView from './FileView'
-import { useOwner } from 'services/user'
-import { useFileWithMainCoverage } from 'services/file/hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useFileWithMainCoverage } from 'services/file/hooks'
+import { useOwner } from 'services/user'
+
+import FileView from './FileView'
 
 jest.mock('services/user')
 jest.mock('services/file/hooks')

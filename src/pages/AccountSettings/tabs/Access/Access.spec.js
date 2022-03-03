@@ -1,12 +1,15 @@
-import Access from './Access'
-import { subDays } from 'date-fns'
 import { render, screen } from 'custom-testing-library'
+
+import userEvent from '@testing-library/user-event'
+import { subDays } from 'date-fns'
+
 import {
-  useSessions,
   useDeleteSession,
   useGenerateToken,
+  useSessions,
 } from 'services/access'
-import userEvent from '@testing-library/user-event'
+
+import Access from './Access'
 
 jest.mock('services/access')
 

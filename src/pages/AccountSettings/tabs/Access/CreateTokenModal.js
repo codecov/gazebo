@@ -1,11 +1,12 @@
-import Modal from 'ui/Modal'
-import Button from 'ui/Button'
 import PropTypes from 'prop-types'
-import TextInput from 'ui/TextInput/TextInput'
-import { useForm } from 'react-hook-form'
-import { useGenerateToken } from 'services/access'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { useGenerateToken } from 'services/access'
+import Button from 'ui/Button'
 import CopyClipboard from 'ui/CopyClipboard'
+import Modal from 'ui/Modal'
+import TextInput from 'ui/TextInput/TextInput'
 
 function CreateTokenModal({ closeModal, provider }) {
   const { register, handleSubmit, watch } = useForm({

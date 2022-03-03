@@ -1,9 +1,9 @@
 import kebabCase from 'lodash/kebabCase'
-import Icon from './Icon'
 
+import Icon from './Icon'
+import * as svgDeveloper from './svg/developer'
 import * as svgOutline from './svg/outline'
 import * as svgSolid from './svg/solid'
-import * as svgDeveloper from './svg/developer'
 
 function Description() {
   return (

@@ -1,10 +1,11 @@
-import { MemoryRouter, Route } from 'react-router-dom'
-import { render, screen, act } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import UpgradePlanForm from './UpgradePlanForm'
 import { useUpgradePlan } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+
+import UpgradePlanForm from './UpgradePlanForm'
 
 jest.mock('services/account/hooks')
 jest.mock('services/toastNotification')

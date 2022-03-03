@@ -1,7 +1,8 @@
-import Api from 'shared/api'
-import { useQuery } from 'react-query'
 import keyBy from 'lodash/keyBy'
 import mapValues from 'lodash/mapValues'
+import { useQuery } from 'react-query'
+
+import Api from 'shared/api'
 
 function extractCoverageFromResponse(res) {
   const commit = res?.data?.owner?.repository?.commit

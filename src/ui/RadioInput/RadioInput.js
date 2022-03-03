@@ -1,7 +1,7 @@
-import { forwardRef } from 'react'
 import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
+import { forwardRef } from 'react'
 
 const RadioInput = forwardRef(
   ({ label, showLabel = true, disabled, ...props }, ref) => {

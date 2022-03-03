@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import { useLegacyRedirects } from 'services/redirects'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
+
+import { useLegacyRedirects } from 'services/redirects'
+
 import Header from './Header'
 
 jest.mock('services/redirects/hooks')

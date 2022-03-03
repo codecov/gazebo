@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Checkbox from 'ui/Checkbox'
 import TextInput from 'ui/TextInput'
 
-import { TYPE_PROJECTS, GOALS } from './config'
+import { GOALS, TYPE_PROJECTS } from './config'
 
 const TYPE_PROJECTS_CHECKBOXES = [
   {

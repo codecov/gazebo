@@ -1,6 +1,7 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
+import PropTypes from 'prop-types'
+
 import Avatar from 'old_ui/Avatar'
 
 const UserClasses = {

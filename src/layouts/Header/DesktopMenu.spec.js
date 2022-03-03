@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, useParams, Route, Switch } from 'react-router-dom'
-import { useUser } from 'services/user'
-import { useAccountDetails } from 'services/account'
+import { MemoryRouter, Route, Switch, useParams } from 'react-router-dom'
 
-import DesktopMenu from './DesktopMenu'
-import { LoginPrompt } from './DesktopMenu'
+import { useAccountDetails } from 'services/account'
+import { useUser } from 'services/user'
+
+import DesktopMenu, { LoginPrompt } from './DesktopMenu'
 
 jest.mock('services/user')
 jest.mock('services/account')

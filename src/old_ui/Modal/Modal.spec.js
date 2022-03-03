@@ -1,5 +1,7 @@
 import { render, screen } from 'custom-testing-library'
+
 import userEvent from '@testing-library/user-event'
+
 import Modal from './Modal'
 
 describe('Modal', () => {

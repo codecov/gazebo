@@ -1,9 +1,11 @@
-import { render, screen, act } from 'custom-testing-library'
+import { act, render, screen } from 'custom-testing-library'
+
 import userEvent from '@testing-library/user-event'
 
-import UserOnboardingModal from './UserOnboardingModal'
 import { useOnboardUser } from 'services/user'
+
 import { useOnboardingTracking } from './useOnboardingTracking'
+import UserOnboardingModal from './UserOnboardingModal'
 
 jest.mock('services/user')
 jest.mock('./useOnboardingTracking.js')

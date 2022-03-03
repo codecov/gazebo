@@ -1,10 +1,11 @@
+import { renderHook } from '@testing-library/react-hooks'
+import _ from 'lodash'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useFileWithMainCoverage, useCoverageWithFlags } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
-import _ from 'lodash'
+
+import { useCoverageWithFlags, useFileWithMainCoverage } from './hooks'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (

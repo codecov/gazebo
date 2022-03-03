@@ -1,7 +1,7 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useTable, useFlexLayout } from 'react-table'
-import cs from 'classnames'
+import { useFlexLayout, useTable } from 'react-table'
 
 const TableClasses = {
   headerCell: 'py-2 text-sm flex font-semibold px-3.5 text-ds-gray-quinary',

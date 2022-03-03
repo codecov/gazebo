@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
+import PropTypes from 'prop-types'
 
 const pageClasses =
   'outline-none focus:ring-1 relative inline-flex items-center p-2 text-sm font-medium'

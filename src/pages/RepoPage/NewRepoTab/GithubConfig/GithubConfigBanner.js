@@ -1,8 +1,9 @@
-import Banner from 'ui/Banner'
-import Icon from 'ui/Icon'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router'
+
 import { providerToName } from 'shared/utils/provider'
+import Banner from 'ui/Banner'
+import Icon from 'ui/Icon'
 
 const GithubConfigBanner = ({ privateRepo }) => {
   const { provider } = useParams()

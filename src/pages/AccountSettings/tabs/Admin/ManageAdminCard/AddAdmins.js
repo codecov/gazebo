@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
-import { useState, useRef } from 'react'
 import { useCombobox } from 'downshift'
+import PropTypes from 'prop-types'
+import { useRef, useState } from 'react'
 import useClickAway from 'react-use/lib/useClickAway'
 
-import { ApiFilterEnum } from 'services/navigation'
-import { getOwnerImg } from 'shared/utils'
-import { useUsers } from 'services/users'
 import TextInput from 'old_ui/TextInput'
 import User from 'old_ui/User'
+import { ApiFilterEnum } from 'services/navigation'
+import { useUsers } from 'services/users'
+import { getOwnerImg } from 'shared/utils'
 
 const styles = {
   listResult: (isOpen) =>

@@ -1,9 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import GithubIntegrationCard from './GithubIntegrationCard'
-import { useAccountDetails } from 'services/account'
 import config from 'config'
+
+import { useAccountDetails } from 'services/account'
+
+import GithubIntegrationCard from './GithubIntegrationCard'
 
 jest.mock('services/account')
 

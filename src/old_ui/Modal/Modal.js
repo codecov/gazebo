@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import ReactModal from 'react-modal'
 
-import Card from 'old_ui/Card'
 import Button from 'old_ui/Button'
+import Card from 'old_ui/Card'
 import Icon from 'old_ui/Icon'
 
 function Modal({ isOpen, onClose, children, title, ...rest }) {

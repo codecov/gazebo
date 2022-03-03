@@ -1,9 +1,9 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
-import Avatar from 'ui/Avatar'
-import A from 'ui/A'
 import { useOwner } from 'services/user'
+import A from 'ui/A'
+import Avatar from 'ui/Avatar'
 
 const OwnerData = ({ username }) => {
   const { data: ownerData } = useOwner({ username })

@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Switch, Route } from 'react-router-dom'
-import Header from './Header'
+import { MemoryRouter, Route, Switch } from 'react-router-dom'
+
 import { useUser } from 'services/user'
+
+import Header from './Header'
 
 jest.mock('services/user')
 

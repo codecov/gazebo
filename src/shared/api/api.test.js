@@ -1,4 +1,4 @@
-import { rest, graphql } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 
 import Api from './api'

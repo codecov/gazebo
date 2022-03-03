@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+
 import CodeRenderer from './CodeRenderer'
 import { LINE_TYPE } from './lineStates'
 

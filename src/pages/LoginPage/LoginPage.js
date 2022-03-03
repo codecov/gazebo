@@ -1,7 +1,8 @@
 import { useParams } from 'react-router'
 
-import LoginButton from './LoginButton'
 import A from 'ui/A'
+
+import LoginButton from './LoginButton'
 
 function getProviderShortName(provider) {
   const providerShortName = {

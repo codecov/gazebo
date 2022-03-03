@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+
 import NetworkErrorBoundary from './NetworkErrorBoundary'
 
 // silence all verbose console.error

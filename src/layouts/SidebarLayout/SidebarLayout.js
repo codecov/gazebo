@@ -1,5 +1,5 @@
-import PropType from 'prop-types'
 import cs from 'classnames'
+import PropType from 'prop-types'
 
 import ErrorBoundary from '../shared/ErrorBoundary'
 import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'

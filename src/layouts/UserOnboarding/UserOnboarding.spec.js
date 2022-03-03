@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 
-import UserOnboarding from './UserOnboarding'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
+
+import UserOnboarding from './UserOnboarding'
 
 jest.mock('services/user')
 jest.mock('shared/featureFlags')

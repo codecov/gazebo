@@ -1,7 +1,8 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
+import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
+import { getOwnerImg, getProviderPullURL } from 'shared/utils'
 import Spinner from 'ui/Spinner'
 
 const baseClass = `

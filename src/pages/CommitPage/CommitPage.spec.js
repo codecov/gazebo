@@ -1,8 +1,11 @@
 import { render, screen, waitFor } from 'custom-testing-library'
-import CommitPage from './CommitPage'
+
 import { MemoryRouter, Route } from 'react-router-dom'
+
 import { useCommit } from 'services/commit'
 import { useFileWithMainCoverage } from 'services/file/hooks'
+
+import CommitPage from './CommitPage'
 
 jest.mock('services/commit')
 jest.mock('services/file/hooks')
@@ -134,9 +137,7 @@ describe('CommitPage', () => {
         setup({ data: null, isLoading: false })
       })
       it('renders the Uploads', async () => {
-        await waitFor(() =>
-          expect(screen.getByText(/Not found/)).toBeInTheDocument()
-        )
+        await screen.findByText(/Not found/)
       })
     })
 

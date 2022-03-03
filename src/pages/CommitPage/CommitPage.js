@@ -1,17 +1,16 @@
-import { lazy, Suspense } from 'react'
-import { useParams, Switch, Route } from 'react-router-dom'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import { lazy, Suspense } from 'react'
+import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
 import { getProviderCommitURL } from 'shared/utils/provider'
-
-import Spinner from 'ui/Spinner'
-import Breadcrumb from 'ui/Breadcrumb'
 import A from 'ui/A'
+import Breadcrumb from 'ui/Breadcrumb'
+import Spinner from 'ui/Spinner'
 
 import CoverageReportCard from './CoverageReportCard'
-import UploadsCard from './UploadsCard'
 import Header from './Header'
+import UploadsCard from './UploadsCard'
 
 const CommitFileView = lazy(() => import('./subroute/CommitFileView.js'))
 const CommitsTable = lazy(() => import('./subroute/CommitsTable.js'))

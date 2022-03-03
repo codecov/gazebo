@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import YAMLViewer from './YAMLViewer'
 import { useCommitYaml } from 'services/commit'
+
+import YAMLViewer from './YAMLViewer'
 
 jest.mock('services/commit')
 

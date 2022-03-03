@@ -1,17 +1,16 @@
 import { lazy, Suspense } from 'react'
-import { useParams, Switch, Route, Redirect } from 'react-router-dom'
-
-import { useCommits } from 'services/commits'
+import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useCommits } from 'services/commits'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoBreadcrumb from './RepoBreadcrumb'
 
+const CommitsTab = lazy(() => import('./CommitsTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
 const PullsTab = lazy(() => import('./PullsTab'))
-const CommitsTab = lazy(() => import('./CommitsTab'))
 
 const path = '/:provider/:owner/:repo'
 

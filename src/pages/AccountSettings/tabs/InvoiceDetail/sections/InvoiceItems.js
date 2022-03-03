@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
+import PropTypes from 'prop-types'
 
 function formatPeriod(period) {
   if (period.start === period.end) return null

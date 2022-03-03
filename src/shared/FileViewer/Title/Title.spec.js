@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+
 import { TitleFlags } from './Title'
 
 const onChange = jest.fn(() => {})

@@ -1,14 +1,15 @@
-import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
+import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
-  commitErrored,
   commitEmptyUploads,
-  compareTotalsEmpty,
+  commitErrored,
   commitOnePending,
+  compareTotalsEmpty,
 } from 'services/commit/mocks'
+
 import { useUploads } from './hooks'
 
 const queryClient = new QueryClient({})

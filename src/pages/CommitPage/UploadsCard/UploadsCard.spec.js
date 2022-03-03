@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from 'custom-testing-library'
+import { fireEvent, render, screen } from 'custom-testing-library'
 
 import { useUploads } from './hooks'
 import UploadsCard from './UploadsCard'

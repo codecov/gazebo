@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import CoverageReportCard from './CoverageReportCard'
 import { MemoryRouter } from 'react-router-dom'
+
+import CoverageReportCard from './CoverageReportCard'
 
 jest.mock('services/commit')
 jest.mock('react-router-dom', () => ({

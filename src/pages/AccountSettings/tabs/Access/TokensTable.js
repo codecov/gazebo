@@ -1,7 +1,8 @@
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import PropTypes from 'prop-types'
+
 import Button from 'ui/Button'
 import Table from 'ui/Table'
-import PropTypes from 'prop-types'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 const tableColumns = [
   {

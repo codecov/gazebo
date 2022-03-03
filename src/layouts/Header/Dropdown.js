@@ -1,12 +1,12 @@
+import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import PropTypes from 'prop-types'
-
-import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
 import '@reach/menu-button/styles.css'
+import { useParams } from 'react-router'
+
 import AppLink from 'shared/AppLink'
+import { providerToName } from 'shared/utils/provider'
 import Avatar from 'ui/Avatar'
 import Icon from 'ui/Icon'
-import { useParams } from 'react-router'
-import { providerToName } from 'shared/utils/provider'
 
 function Dropdown({ currentUser }) {
   const { provider } = useParams()

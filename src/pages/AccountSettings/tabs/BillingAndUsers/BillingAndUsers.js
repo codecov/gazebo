@@ -2,13 +2,13 @@ import PropType from 'prop-types'
 
 import { useAccountDetails } from 'services/account'
 
-import InfoMessageStripeCallback from './InfoMessageStripeCallback'
-import InfoMessageCancellation from './InfoMessageCancellation'
 import CurrentPlanCard from './CurrentPlanCard'
+import InfoMessageCancellation from './InfoMessageCancellation'
+import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
+import LegacyUser from './LegacyUser'
 import PaymentCard from './PaymentCard'
 import UserManagement from './UserManagement'
-import LegacyUser from './LegacyUser'
 
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })

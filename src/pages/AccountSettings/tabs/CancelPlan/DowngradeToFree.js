@@ -1,13 +1,14 @@
+import { format, fromUnixTime } from 'date-fns'
 import PropType from 'prop-types'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { format, fromUnixTime } from 'date-fns'
 
 import Button from 'old_ui/Button'
 import Modal from 'old_ui/Modal'
-import { useCancelPlan, accountDetailsPropType } from 'services/account'
+import { accountDetailsPropType, useCancelPlan } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import { isFreePlan } from 'shared/utils/billing'
+
 import useBarecancel from './barecancel'
 
 function getEndPeriod(accountDetails) {

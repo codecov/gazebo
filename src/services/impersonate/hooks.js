@@ -1,7 +1,7 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
 import Cookie from 'js-cookie'
 import qs from 'qs'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 export function useImpersonate() {
   const { search } = useLocation()

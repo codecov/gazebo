@@ -1,16 +1,15 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { orderingOptions } from 'services/repos'
-import { useLocationParams } from 'services/navigation'
-import ReposTable from 'shared/ListRepo/ReposTable'
-import ChartSelectors from './ChartSelectors'
-import { useOwner } from 'services/user'
-import './analytics.css'
-
-import NotFound from 'pages/NotFound'
 import LogoSpinner from 'old_ui/LogoSpinner'
+import NotFound from 'pages/NotFound'
+import { useLocationParams } from 'services/navigation'
+import { orderingOptions } from 'services/repos'
+import { useOwner } from 'services/user'
+import ReposTable from 'shared/ListRepo/ReposTable'
 
+import ChartSelectors from './ChartSelectors'
+import './analytics.css'
 import Header from './Header'
 import Tabs from './Tabs'
 

@@ -1,16 +1,16 @@
-import PropTypes from 'prop-types'
-import { useState } from 'react'
-import cs from 'classnames'
 import {
-  CardNumberElement,
-  CardExpiryElement,
   CardCvcElement,
+  CardExpiryElement,
+  CardNumberElement,
   useElements,
 } from '@stripe/react-stripe-js'
+import cs from 'classnames'
+import PropTypes from 'prop-types'
+import { useState } from 'react'
 
-import { useUpdateCard } from 'services/account'
 import Button from 'old_ui/Button'
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useUpdateCard } from 'services/account'
 
 function useIsFormReady() {
   // Stripe fields takes a couple of second to appear

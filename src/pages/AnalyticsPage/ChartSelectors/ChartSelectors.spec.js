@@ -1,8 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import ChartSelectors from './ChartSelectors'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { subDays } from 'date-fns'
-import { useRepos } from 'services/repos/hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useRepos } from 'services/repos/hooks'
+
+import ChartSelectors from './ChartSelectors'
 
 jest.mock('services/repos/hooks')
 jest.mock('ui/Datepicker', () => () => 'Datepicker')

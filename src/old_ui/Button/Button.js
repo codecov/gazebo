@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+
 import AppLink from 'old_ui/AppLink'
 
 const basicClass =

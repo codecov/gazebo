@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
-
 import Sidemenu from 'ui/Sidemenu'
 
 function SideMenuAccount() {

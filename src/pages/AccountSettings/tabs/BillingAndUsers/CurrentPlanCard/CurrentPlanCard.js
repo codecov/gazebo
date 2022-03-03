@@ -1,12 +1,13 @@
 import Card from 'old_ui/Card'
 import { accountDetailsPropType } from 'services/account'
 import { isFreePlan } from 'shared/utils/billing'
+import A from 'ui/A'
 
 import ActionsBilling from './ActionsBilling'
-import BenefitList from '../../../shared/BenefitList'
-import Usage from './Usage'
 import ScheduledPlanDetails from './ScheduledPlanDetails'
-import A from 'ui/A'
+import Usage from './Usage'
+
+import BenefitList from '../../../shared/BenefitList'
 
 function CurrentPlanCard({ accountDetails }) {
   const plan = accountDetails.rootOrganization?.plan ?? accountDetails.plan

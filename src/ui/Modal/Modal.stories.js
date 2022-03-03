@@ -1,10 +1,10 @@
-import { useState } from 'react'
 import noop from 'lodash/noop'
+import { useState } from 'react'
 
 import Button from 'ui/Button'
 
-import Modal from './Modal'
 import BaseModal from './BaseModal'
+import Modal from './Modal'
 
 const Template = (args) => {
   const [isOpen, setIsOpen] = useState(false)

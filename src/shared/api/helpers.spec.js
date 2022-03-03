@@ -1,7 +1,9 @@
-import { snakeifyKeys, getHeaders, generatePath } from './helpers'
 import Cookie from 'js-cookie'
 
 import config from 'config'
+
+import { generatePath, getHeaders, snakeifyKeys } from './helpers'
+
 describe('generatePath', () => {
   it('generates a path without a query', () => {
     expect(generatePath({ path: '/epic' })).toStrictEqual(

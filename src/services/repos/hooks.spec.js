@@ -1,9 +1,10 @@
+import { act, renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useRepos } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useRepos } from './hooks'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
