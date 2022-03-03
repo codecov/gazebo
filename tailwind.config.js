@@ -1,6 +1,4 @@
-const forIn = require('lodash/forIn')
 const defaultTheme = require('tailwindcss/defaultTheme')
-const plugin = require('tailwindcss/plugin')
 
 module.exports = {
   content: ['./src/**/*.js', './src/*.js', './public/*.html'],
