@@ -20,7 +20,7 @@ describe('Commits Tab', () => {
       data: {
         commits: [
           {
-            author: { username: 'RulaKhaled' },
+            author: { username: 'RulaKhaled', avatarUrl: 'random' },
             compareWithParent: {
               patchTotals: {
                 coverage: 90,
@@ -34,7 +34,7 @@ describe('Commits Tab', () => {
             createdAt: '2021-08-30T19:33:49.819672',
           },
           {
-            author: { username: 'Terry' },
+            author: { username: 'Terry', avatarUrl: 'random' },
             compareWithParent: {
               patchTotals: {
                 coverage: 55,
