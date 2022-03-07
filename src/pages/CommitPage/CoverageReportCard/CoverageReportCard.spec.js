@@ -55,7 +55,7 @@ describe('CoverageReportCard', () => {
     })
     it('renders the Change', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('5.00%')
+      expect(changeValue).toHaveTextContent('+5.00%')
     })
     it('renders the Head', () => {
       expect(screen.getByText('HEAD')).toBeInTheDocument()
