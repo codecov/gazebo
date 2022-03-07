@@ -3,7 +3,6 @@ import { MemoryRouter } from 'react-router-dom'
 import Title from '.'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import { QueryClientProvider, QueryClient } from 'react-query'
-import { useOwner } from 'services/user'
 
 jest.mock('services/repo/hooks')
 jest.mock('services/user/hooks')
@@ -28,15 +27,8 @@ describe('Title', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      useOwner.mockReturnValue({
-        data: {
-          username: 'RulaKhaled',
-          avatarUrl: 'randompic',
-          isCurrentUserPartOfOrg: true,
-        },
-      })
       setup({
-        author: { username: 'RulaKhaled' },
+        author: { username: 'RulaKhaled', avatarUrl: 'random' },
         commitid: 'id',
         message: 'Test1',
         createdAt: '2021-08-30T19:33:49.819672',
@@ -64,9 +56,6 @@ describe('Title', () => {
 
   describe('when rendered with no owner data', () => {
     beforeEach(() => {
-      useOwner.mockReturnValue({
-        data: null,
-      })
       setup({
         author: null,
         commitid: 'id',
@@ -96,15 +85,8 @@ describe('Title', () => {
 
   describe('when rendered with message longer than 50', () => {
     beforeEach(() => {
-      useOwner.mockReturnValue({
-        data: {
-          username: 'RulaKhaled',
-          avatarUrl: 'randompic',
-          isCurrentUserPartOfOrg: true,
-        },
-      })
       setup({
-        author: { username: 'RulaKhaled' },
+        author: { username: 'RulaKhaled', avatarUrl: 'random' },
         commitid: 'id',
         message: 'Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1',
         createdAt: '2021-08-30T19:33:49.819672',
@@ -121,15 +103,8 @@ describe('Title', () => {
 
   describe('when rendered with no commit message', () => {
     beforeEach(() => {
-      useOwner.mockReturnValue({
-        data: {
-          username: 'RulaKhaled',
-          avatarUrl: 'randompic',
-          isCurrentUserPartOfOrg: true,
-        },
-      })
       setup({
-        author: { username: 'RulaKhaled' },
+        author: { username: 'RulaKhaled', avatarUrl: 'random' },
         commitid: 'id',
         message: null,
         createdAt: '2021-08-30T19:33:49.819672',
