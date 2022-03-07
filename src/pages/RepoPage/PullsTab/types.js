@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 export const PullRequestType = PropTypes.shape({
   author: PropTypes.shape({
     username: PropTypes.string,
+    avatarUrl: PropTypes.string,
   }),
   compareWithBase: PropTypes.shape({
     patchTotals: PropTypes.shape({

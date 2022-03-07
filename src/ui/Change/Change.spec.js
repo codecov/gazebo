@@ -10,7 +10,7 @@ describe('Change', () => {
     it('renders commit change when there is a valid value', () => {
       setup({ value: 23, variant: 'default' })
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('23.00%')
+      expect(changeValue).toHaveTextContent('+23.00%')
     })
 
     it('renders negative number when change is negative', () => {
