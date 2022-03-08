@@ -92,7 +92,7 @@ Upload.propTypes = {
   downloadUrl: PropTypes.string,
   flags: PropTypes.arrayOf(PropTypes.string),
   buildCode: PropTypes.string,
-  uploadType: PropTypes.bool,
+  uploadType: PropTypes.string,
   errors: PropTypes.arrayOf(
     PropTypes.shape({
       errorCode: PropTypes.oneOf([
