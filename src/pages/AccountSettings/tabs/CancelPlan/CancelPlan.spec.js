@@ -54,7 +54,7 @@ describe('CancelPlan', () => {
       data: getPlans(),
     })
     useCancelPlan.mockReturnValue({ mutate, isLoading: false })
-    render(
+    const { unmount } = render(
       <MemoryRouter initialEntries={['/my/initial/route']}>
         <CancelPlan provider={provider} owner={owner} />
         <Route
@@ -66,6 +66,8 @@ describe('CancelPlan', () => {
         />
       </MemoryRouter>
     )
+
+    return { unmount }
   }
 
   describe('when rendered', () => {
@@ -175,6 +177,17 @@ describe('CancelPlan', () => {
 
     it('has the button disabled', () => {
       expect(screen.getByRole('button')).toHaveAttribute('disabled')
+    })
+  })
+
+  describe('when unmounted', () => {
+    beforeEach(() => {
+      const { unmount } = setup(basicPlan)
+      unmount()
+    })
+
+    it('removes the baremetrics script', () => {
+      expect(screen.queryByTestId('baremetrics-script')).not.toBeInTheDocument()
     })
   })
 })

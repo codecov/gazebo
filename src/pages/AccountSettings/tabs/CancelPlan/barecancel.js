@@ -12,6 +12,7 @@ function loadScript() {
     'https://baremetrics-barecancel.baremetrics.com/js/application.js'
   script.async = !0
   script.id = 'baremetrics-script'
+  script.dataset.testid = 'baremetrics-script'
   document.body.appendChild(script)
 }
 
@@ -35,6 +36,7 @@ function useBarecancel(accountDetails, cancelPlan) {
     const scriptElement = document.getElementById('baremetrics-script')
     if (!!scriptElement) {
       scriptElement.parentNode.removeChild(scriptElement)
+      delete window.barecancel
     }
   }, [])
 
