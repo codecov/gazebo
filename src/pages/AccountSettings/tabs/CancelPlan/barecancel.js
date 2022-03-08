@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 
 import config from 'config'
 
@@ -11,6 +11,7 @@ function loadScript() {
   script.src =
     'https://baremetrics-barecancel.baremetrics.com/js/application.js'
   script.async = !0
+  script.id = 'baremetrics-script'
   document.body.appendChild(script)
 }
 
@@ -26,10 +27,18 @@ function useBarecancel(accountDetails, cancelPlan) {
       customer_oid: stripeCustomerId,
       comment_required: true,
       test_mode: config.NODE_ENV !== 'production',
-      callback_send: cancelPlan,
       /* eslint-enable camelcase */
     }
   }, [stripeCustomerId, cancelPlan])
+
+  const removeBaremetricsScript = useCallback(function () {
+    const scriptElement = document.getElementById('baremetrics-script')
+    if (!!scriptElement) {
+      scriptElement.parentNode.removeChild(scriptElement)
+    }
+  }, [])
+
+  return { removeBaremetricsScript }
 }
 
 export default useBarecancel

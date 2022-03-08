@@ -1,5 +1,5 @@
 import PropType from 'prop-types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { format, fromUnixTime } from 'date-fns'
 
@@ -51,7 +51,8 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
   ].some(Boolean)
   const periodEnd = getEndPeriod(accountDetails)
 
-  useBarecancel(accountDetails, cancelPlan)
+  const { removeScript } = useBarecancel(accountDetails, cancelPlan)
+  useEffect(() => () => removeScript(), [removeScript])
 
   return (
     <>
@@ -88,7 +89,10 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
             color="red"
             id="barecancel-trigger"
             disabled={isDisabled}
-            onClick={() => setIsModalOpen(false)}
+            onClick={() => {
+              setIsModalOpen(false)
+              cancelPlan()
+            }}
           >
             Continue Cancellation
           </Button>
