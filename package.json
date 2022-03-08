@@ -32,7 +32,7 @@
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
     "victory": "^36.3.0",
-    "web-vitals": "^2.1.2",
+    "web-vitals": "^2.1.4",
     "websocket-extensions": "^0.1.4",
     "yup": "^0.32.11"
   },
@@ -103,7 +103,7 @@
     "http-proxy-middleware": "^2.0.1",
     "husky": "^7.0.4",
     "jest-junit": "^13.0.0",
-    "lint-staged": "^12.3.4",
+    "lint-staged": "^12.3.5",
     "msw": "^0.38.1",
     "postcss": "^8.4.7",
     "prettier": "^2.5.1",
