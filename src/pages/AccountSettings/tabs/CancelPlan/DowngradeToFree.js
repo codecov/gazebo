@@ -51,8 +51,7 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
   ].some(Boolean)
   const periodEnd = getEndPeriod(accountDetails)
 
-  const { removeBaremetricsScript } = useBarecancel(accountDetails, cancelPlan)
-  useEffect(() => () => removeBaremetricsScript(), [removeBaremetricsScript])
+  useBarecancel(accountDetails, cancelPlan)
 
   return (
     <>

@@ -16,6 +16,14 @@ function loadScript() {
   document.body.appendChild(script)
 }
 
+function removeScript() {
+  const scriptElement = document.getElementById('baremetrics-script')
+  if (!!scriptElement) {
+    scriptElement.parentNode.removeChild(scriptElement)
+    delete window.barecancel
+  }
+}
+
 function useBarecancel(accountDetails, cancelPlan) {
   const stripeCustomerId = accountDetails.subscriptionDetail?.customer
   useEffect(() => {
@@ -30,17 +38,8 @@ function useBarecancel(accountDetails, cancelPlan) {
       test_mode: config.NODE_ENV !== 'production',
       /* eslint-enable camelcase */
     }
+    return () => removeScript()
   }, [stripeCustomerId, cancelPlan])
-
-  const removeBaremetricsScript = useCallback(function () {
-    const scriptElement = document.getElementById('baremetrics-script')
-    if (!!scriptElement) {
-      scriptElement.parentNode.removeChild(scriptElement)
-      delete window.barecancel
-    }
-  }, [])
-
-  return { removeBaremetricsScript }
 }
 
 export default useBarecancel
