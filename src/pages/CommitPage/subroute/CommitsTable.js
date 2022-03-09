@@ -20,7 +20,7 @@ const table = [
       </span>
     ),
     accessor: 'coverage',
-    width: 'w-7/12 min-w-min',
+    width: 'w-3/12 min-w-min',
   },
   {
     Header: <span className="w-full text-sm text-right">Patch</span>,
@@ -54,7 +54,7 @@ function useFormatTableData({ tableData = [], commit }) {
         </div>
       ),
       coverage: (
-        <div className="w-full flex gap-2 items-center">
+        <div className="flex flex-1 gap-2 items-center">
           <Progress amount={row?.headCoverage?.coverage || 0} label={true} />
         </div>
       ),

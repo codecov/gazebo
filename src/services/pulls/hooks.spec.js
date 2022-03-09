@@ -36,6 +36,7 @@ const dataReturned = {
               updatestamp: '20-2-2021',
               author: {
                 username: 'Rula',
+                avatarUrl: 'random',
               },
               head: {
                 totals: {
@@ -82,6 +83,7 @@ describe('GetPulls', () => {
           updatestamp: '20-2-2021',
           author: {
             username: 'Rula',
+            avatarUrl: 'random',
           },
           head: {
             totals: {

@@ -8,7 +8,7 @@ import Title from '.'
 jest.mock('services/repo/hooks')
 
 describe('Title', () => {
-  const author = { username: 'RulaKhaled' }
+  const author = { username: 'RulaKhaled', avatarUrl: 'random' }
   const pullId = 746
   const title = 'Test1'
   const updatestamp = '2021-08-30T19:33:49.819672'

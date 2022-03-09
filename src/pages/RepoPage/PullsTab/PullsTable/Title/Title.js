@@ -1,35 +1,19 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
-import { useOwner } from 'services/user'
 import A from 'ui/A'
-import Avatar from 'ui/Avatar'
-
-const OwnerData = ({ username }) => {
-  const { data: ownerData } = useOwner({ username })
-
-  return (
-    <Avatar
-      user={
-        ownerData || {
-          avatarUrl: 'https://avatars0.githubusercontent.com/u/?v=3&s=55',
-          username: 'default',
-        }
-      }
-      bordered
-    />
-  )
-}
-
-OwnerData.propTypes = {
-  username: PropTypes.string,
-}
+import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ author, pullId, title, updatestamp }) => {
+  const user = {
+    avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
+    username: author?.username || DefaultAuthor.USERNAME,
+  }
+
   return (
     <div className="flex flex-row w-96 lg:w-auto">
       <span className="flex items-center mr-5">
-        <OwnerData username={author?.username} />
+        <Avatar user={user} bordered />
       </span>
       <div className="flex flex-col w-5/6 lg:w-auto">
         <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
@@ -58,6 +42,7 @@ const Title = ({ author, pullId, title, updatestamp }) => {
 Title.propTypes = {
   author: PropTypes.shape({
     username: PropTypes.string,
+    avatarUrl: PropTypes.string,
   }),
   pullId: PropTypes.number,
   title: PropTypes.string,

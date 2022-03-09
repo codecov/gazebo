@@ -61,7 +61,7 @@ function CommitPage() {
           repo={repo}
           commit={commitSHA}
         />
-        <h1 className="text-lg font-semibold text-ds-gray-octonary mb-1 bt-4">
+        <h1 className="text-lg font-semibold text-ds-gray-octonary">
           {commit?.message}
         </h1>
         <p className="flex items-center text-ds-gray-quinary gap-1">
