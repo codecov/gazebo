@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
+import { useIsUploadsNumberExceeded } from 'services/uploadsNumber'
 import { providerFeedback } from 'shared/utils'
+import A from 'ui/A'
 import Avatar from 'ui/Avatar'
 import Banner from 'ui/Banner'
-import Icon from 'ui/Icon'
-import A from 'ui/A'
 import Button from 'ui/Button'
-import { useIsUploadsNumberExceeded } from 'services/uploadsNumber'
+import Icon from 'ui/Icon'
 
 const ExceededUploadsAlert = () => (
   <Banner

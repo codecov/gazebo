@@ -1,5 +1,6 @@
-import Checkbox from './Checkbox'
 import { useForm } from 'react-hook-form'
+
+import Checkbox from './Checkbox'
 
 const Template = (args) => {
   const { register, handleSubmit } = useForm()

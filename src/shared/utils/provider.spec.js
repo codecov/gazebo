@@ -1,8 +1,8 @@
 import {
-  providerImage,
-  providerToName,
   getProviderCommitURL,
   getProviderPullURL,
+  providerImage,
+  providerToName,
 } from './provider'
 
 describe('providerToName', () => {

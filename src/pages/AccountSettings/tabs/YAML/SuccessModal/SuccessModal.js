@@ -1,6 +1,7 @@
-import Modal from 'ui/Modal'
-import Button from 'ui/Button'
 import PropTypes from 'prop-types'
+
+import Button from 'ui/Button'
+import Modal from 'ui/Modal'
 
 function SuccessModal({ closeModal, owner, ...props }) {
   const title = 'Yaml configuration updated'

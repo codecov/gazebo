@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
+import PropTypes from 'prop-types'
 
 function checkClass(show, classes) {
   if (show) {

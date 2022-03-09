@@ -3,14 +3,13 @@ import ReactDOM from 'react-dom'
 import ReactModal from 'react-modal'
 
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
+import { withFeatureFlagProvider } from 'shared/featureFlags'
 
 import App from './App'
 import './globals.css'
-
 // TODO do not initialize 10 to 12 if enterprise.
 import reportWebVitals from './reportWebVitals'
 import './sentry.js'
-import { withFeatureFlagProvider } from 'shared/featureFlags'
 
 if (
   process.env.NODE_ENV === 'development' &&

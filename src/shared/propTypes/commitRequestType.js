@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 export const commitRequestType = PropTypes.shape({
   author: PropTypes.shape({
     username: PropTypes.string,
+    avatarUrl: PropTypes.string,
   }),
   compareWithParent: PropTypes.shape({
     patchTotals: PropTypes.shape({

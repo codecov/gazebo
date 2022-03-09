@@ -1,7 +1,7 @@
-import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { usePull } from './hooks'
 

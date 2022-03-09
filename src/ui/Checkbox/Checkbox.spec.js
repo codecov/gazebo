@@ -1,5 +1,6 @@
-import Checkbox from './Checkbox'
 import { render } from '@testing-library/react'
+
+import Checkbox from './Checkbox'
 
 describe('Checkbox', () => {
   let wrapper

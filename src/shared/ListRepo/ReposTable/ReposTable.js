@@ -1,18 +1,17 @@
-import PropTypes from 'prop-types'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import PropTypes from 'prop-types'
+import { useContext } from 'react'
 
+import { useRepos } from 'services/repos/hooks'
+import AppLink from 'shared/AppLink'
+import { ActiveContext } from 'shared/context'
+import { useFlags } from 'shared/featureFlags'
 import Button from 'ui/Button'
 import Progress from 'ui/Progress'
 import Table from 'ui/Table'
-import { useRepos } from 'services/repos/hooks'
-import AppLink from 'shared/AppLink'
 
-import RepoTitleLink from './RepoTitleLink'
 import NoReposBlock from './NoReposBlock'
-
-import { useFlags } from 'shared/featureFlags'
-import { useContext } from 'react'
-import { ActiveContext } from 'shared/context'
+import RepoTitleLink from './RepoTitleLink'
 
 const tableActive = [
   {

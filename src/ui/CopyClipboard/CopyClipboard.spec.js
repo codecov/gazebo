@@ -1,7 +1,9 @@
-import CopyClipboard from './CopyClipboard'
 import { render, screen } from 'custom-testing-library'
-import userEvent from '@testing-library/user-event'
+
 import { act } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
+import CopyClipboard from './CopyClipboard'
 
 jest.mock('copy-to-clipboard', () => () => true)
 

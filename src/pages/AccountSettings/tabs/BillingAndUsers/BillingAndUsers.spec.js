@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 
-import BillingAndUsers from './BillingAndUsers'
 import { useAccountDetails } from 'services/account'
+
+import BillingAndUsers from './BillingAndUsers'
 
 jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
 jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')

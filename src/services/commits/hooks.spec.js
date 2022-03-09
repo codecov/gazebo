@@ -1,8 +1,9 @@
-import { setupServer } from 'msw/node'
-import { renderHook, act } from '@testing-library/react-hooks'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { useCommits } from './hooks'
+import { act, renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
+import { useCommits } from './hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,6 +29,7 @@ const node1 = {
   createdAt: '2020',
   author: {
     username: 'rula',
+    avatarUrl: 'random',
   },
   totals: {
     coverage: 22,
@@ -50,6 +52,7 @@ const node2 = {
   createdAt: '2021',
   author: {
     username: 'rula2',
+    avatarUrl: 'random',
   },
   totals: {
     coverage: 19,
@@ -72,6 +75,7 @@ const node3 = {
   createdAt: '2020',
   author: {
     username: 'rula',
+    avatarUrl: 'random',
   },
   totals: {
     coverage: 22,

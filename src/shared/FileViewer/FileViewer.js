@@ -1,16 +1,16 @@
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import PropTypes from 'prop-types'
 
-import Breadcrumb from 'ui/Breadcrumb'
-import Progress from 'ui/Progress'
-import Change from 'ui/Change'
-import AppLink from 'shared/AppLink'
 import { useCoverageWithFlags } from 'services/file/hooks'
+import AppLink from 'shared/AppLink'
+import Breadcrumb from 'ui/Breadcrumb'
+import Change from 'ui/Change'
+import Progress from 'ui/Progress'
 
 import CodeRenderer from './CodeRenderer'
-import Title, { TitleFlags, TitleCoverage } from './Title'
 import { LINE_STATE, LINE_TYPE } from './lineStates'
+import Title, { TitleCoverage, TitleFlags } from './Title'
 
 function useCoverageData({ coverage, totals, selectedFlags }) {
   const coverageForAllFlags = selectedFlags.length === 0

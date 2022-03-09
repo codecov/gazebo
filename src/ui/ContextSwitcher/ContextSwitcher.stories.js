@@ -1,5 +1,6 @@
-import ContextSwitcher from './ContextSwitcher'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import ContextSwitcher from './ContextSwitcher'
 
 const Template = (args) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>

@@ -1,17 +1,17 @@
 import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router'
 
-import { useCommits } from 'services/commits'
 import { useBranches } from 'services/branches'
-import { useRepo } from 'services/repo'
+import { useCommits } from 'services/commits'
 import { useLocationParams } from 'services/navigation'
-
-import Checkbox from 'ui/Checkbox'
-import Select from 'ui/Select'
-import Icon from 'ui/Icon'
+import { useRepo } from 'services/repo'
 import Button from 'ui/Button'
+import Checkbox from 'ui/Checkbox'
+import Icon from 'ui/Icon'
+import Select from 'ui/Select'
 
 import CommitsTable from './CommitsTable'
+
 import { useSetCrumbs } from '../context'
 
 const useParamsFilters = (defaultBranch) => {

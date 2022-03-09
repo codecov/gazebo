@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+
 import Line from './Line'
 import { LINE_TYPE } from './lineStates'
 

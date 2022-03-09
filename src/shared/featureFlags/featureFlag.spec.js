@@ -6,9 +6,10 @@ import {
   useFlags as useLDFlags,
   withLDProvider,
 } from 'launchdarkly-react-client-sdk'
+
 import config from 'config'
 
-import { withFeatureFlagProvider, useFlags, useIdentifyUser } from './index'
+import { useFlags, useIdentifyUser, withFeatureFlagProvider } from './index'
 
 jest.mock('launchdarkly-react-client-sdk', () => ({
   __esModule: true,

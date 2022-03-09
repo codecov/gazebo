@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
+import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
 import Spinner from 'ui/Spinner'

@@ -42,6 +42,41 @@ This script is using Jest, so any valid Jest options can be added to the command
 
 We are using the [Testing Library](https://testing-library.com/docs/react-testing-library/intro) to test the React components.
 
+## Mutation testing
+
+##### NOTE: Mutation testing is not yet configured to auto run or added to the CI/CD, _running mutation tests app wide is extremely slow_ so it's limited for now but you can run them on any code you want.
+
+You can run to default configuration of mutation tests. (Located in mutate ket in `stryker.conf.js` file)
+
+```bash
+> npx stryker run
+```
+
+Alternatively you can look at the mutation score of a specific file you're working on. This will run mutation tests both on your
+file and where ever your file is being used.
+
+```bash
+> npx stryker run --mutate src/shared/utils/url.js
+```
+
+### Reading the result
+
+##### TODO: Write a proper guide on stryker in confluence and link it here
+
+Once the mutation suite is complete it should output a table with the results as well as a link to view a html report.
+
+> example: `file:///Users/ts/dev/gazebo/reports/mutation/html/index.html`
+
+From the html report you can view the mutates or specific tests and click on the round dots for more information on the result.
+
+"Mutants" are copies of our source code which have been tampered with, we expect good tests to have failed (killed) if the source code
+failed, if they still pass the mutant is considered to have survived.
+
+The mutation score is a highlevel estimation of the health/bugs in the codebase, it's not possible to automatically have a 100%
+score due to some edge cases not yet detectable, so we dont need to be shooting for 100%.
+
+Killed is **good**, survived is **bad**, timeouts are **fine** (because the test suite didn't falsely say it was a success).
+
 ## Linting
 
 ```bash

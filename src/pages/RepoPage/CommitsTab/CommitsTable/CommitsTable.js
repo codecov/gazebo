@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
+
 import { commitRequestType } from 'shared/propTypes'
-import Table from 'ui/Table'
 import Change from 'ui/Change'
+import Table from 'ui/Table'
 
-import Title from './Title'
-import Coverage from './Coverage'
-
-import Patch from './Patch'
 import CIStatus from './CIStatus'
+import Coverage from './Coverage'
+import Patch from './Patch'
+import Title from './Title'
 
 const headers = [
   {

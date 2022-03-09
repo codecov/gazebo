@@ -1,11 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { useStripe } from '@stripe/react-stripe-js'
 import Cookie from 'js-cookie'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 import Api from 'shared/api'
 import { ProviderCookieKeyMapping } from 'shared/api/helpers'
-import { Plans } from 'shared/utils/billing'
 import { useFlags } from 'shared/featureFlags'
+import { Plans } from 'shared/utils/billing'
 
 function getPathAccountDetails({ provider, owner }) {
   return `/${provider}/${owner}/account-details/`

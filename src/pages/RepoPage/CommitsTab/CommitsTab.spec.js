@@ -1,9 +1,11 @@
 import userEvent from '@testing-library/user-event'
-import { repoPageRender, screen } from '../repo-jest-setup'
 
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
+
 import CommitsTab from './CommitsTab'
+
+import { repoPageRender, screen } from '../repo-jest-setup'
 
 jest.mock('services/commits')
 jest.mock('services/repo')
@@ -20,7 +22,7 @@ describe('Commits Tab', () => {
       data: {
         commits: [
           {
-            author: { username: 'RulaKhaled' },
+            author: { username: 'RulaKhaled', avatarUrl: 'random' },
             compareWithParent: {
               patchTotals: {
                 coverage: 90,
@@ -34,7 +36,7 @@ describe('Commits Tab', () => {
             createdAt: '2021-08-30T19:33:49.819672',
           },
           {
-            author: { username: 'Terry' },
+            author: { username: 'Terry', avatarUrl: 'random' },
             compareWithParent: {
               patchTotals: {
                 coverage: 55,

@@ -1,10 +1,12 @@
 import { render, screen } from 'custom-testing-library'
+
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CancelPlan from './CancelPlan'
-import { useAccountDetails, usePlans, useCancelPlan } from 'services/account'
+import { useAccountDetails, useCancelPlan, usePlans } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+
+import CancelPlan from './CancelPlan'
 
 jest.mock('services/account/hooks')
 jest.mock('services/toastNotification')

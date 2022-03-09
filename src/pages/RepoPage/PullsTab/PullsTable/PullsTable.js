@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types'
 
+import Change from 'ui/Change'
 import Table from 'ui/Table'
 
-import { PullRequestType } from '../types'
 import Coverage from './Coverage'
-import Change from 'ui/Change'
 import Title from './Title'
+
+import { PullRequestType } from '../types'
 
 const headers = [
   {

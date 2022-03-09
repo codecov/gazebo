@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { useLegacyRedirects } from './hooks'
 import Cookie from 'js-cookie'
+
+import { useLegacyRedirects } from './hooks'
 
 describe('useLegacyRedirects', () => {
   let getSpy

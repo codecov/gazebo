@@ -1,7 +1,8 @@
 /* eslint-disable react/display-name */
-import { useState } from 'react'
-import PropTypes from 'prop-types'
 import identity from 'lodash/identity'
+import PropTypes from 'prop-types'
+import { useState } from 'react'
+
 import MultiSelect from './MultiSelect'
 
 const Template = ({ renderItem, onChange, ...args }) => {

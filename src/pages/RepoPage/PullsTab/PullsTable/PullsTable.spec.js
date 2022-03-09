@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullsTable from '.'
 
@@ -10,7 +10,7 @@ jest.mock('services/repo/hooks')
 describe('Pulls Table', () => {
   function setup({ modifiedProps = {}, overridePulls = {} }) {
     const defaultPull = {
-      author: { username: 'RulaKhaled' },
+      author: { username: 'RulaKhaled', avatarUrl: 'random' },
       compareWithBase: {
         changeWithParent: 14,
       },
@@ -85,7 +85,7 @@ describe('Pulls Table', () => {
 
     it('renders pulls change from base', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('14.00%')
+      expect(changeValue).toHaveTextContent('+14.00%')
     })
   })
 

@@ -1,5 +1,5 @@
-import * as React from 'react'
 import noop from 'lodash/noop'
+import * as React from 'react'
 
 const ToastContext = React.createContext({
   addNofitication: noop,

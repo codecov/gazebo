@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types'
+
 import A from 'ui/A'
 import Icon from 'ui/Icon'
-import PropTypes from 'prop-types'
 
 const Status = ({ ciPassed }) => {
   return (

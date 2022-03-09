@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types'
 import { format, fromUnixTime } from 'date-fns'
+import PropTypes from 'prop-types'
 
 import Button from 'old_ui/Button'
 import { subscriptionDetailType } from 'services/account'

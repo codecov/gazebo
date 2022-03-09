@@ -1,5 +1,5 @@
-import { forwardRef } from 'react'
 import PropTypes from 'prop-types'
+import { forwardRef } from 'react'
 import AceEditor from 'react-ace'
 
 import 'ace-builds/src-noconflict/theme-github'

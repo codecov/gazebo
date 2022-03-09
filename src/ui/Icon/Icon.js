@@ -1,10 +1,10 @@
-import PropType from 'prop-types'
-import get from 'lodash/get'
 import camelCase from 'lodash/camelCase'
+import get from 'lodash/get'
+import PropType from 'prop-types'
 
+import * as svgDeveloper from './svg/developer'
 import * as svgOutline from './svg/outline'
 import * as svgSolid from './svg/solid'
-import * as svgDeveloper from './svg/developer'
 
 const IconClasses = {
   sm: 'w-4 h-4',

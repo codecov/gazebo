@@ -1,13 +1,12 @@
-import { useParams } from 'react-router-dom'
-import { useOwner } from 'services/user'
 import dropRight from 'lodash/dropRight'
 import indexOf from 'lodash/indexOf'
+import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-
-import Breadcrumb from 'ui/Breadcrumb'
-import FileViewer from 'shared/FileViewer'
 import { useFileWithMainCoverage } from 'services/file/hooks'
+import { useOwner } from 'services/user'
+import FileViewer from 'shared/FileViewer'
+import Breadcrumb from 'ui/Breadcrumb'
 
 function getTreeLocation(paths, location) {
   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')

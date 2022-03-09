@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import HomePage from './HomePage'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
+
 import { useUser } from 'services/user'
+
+import HomePage from './HomePage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')

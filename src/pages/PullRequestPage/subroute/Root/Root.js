@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 const Root = () => {
   const { provider, owner, repo, pullid } = useParams()
