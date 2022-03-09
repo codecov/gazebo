@@ -1,5 +1,6 @@
-import RadioInput from './RadioInput'
 import { useForm } from 'react-hook-form'
+
+import RadioInput from './RadioInput'
 
 const Template = (args) => {
   const { register, handleSubmit } = useForm()

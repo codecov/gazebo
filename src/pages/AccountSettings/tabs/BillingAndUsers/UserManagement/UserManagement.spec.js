@@ -1,10 +1,11 @@
 import { render, screen, waitFor } from 'custom-testing-library'
+
 import user from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useUsers, useUpdateUser } from 'services/users'
 import { useAccountDetails, useAutoActivate } from 'services/account'
+import { useUpdateUser, useUsers } from 'services/users'
 
 import UserManagerment from './UserManagement'
 

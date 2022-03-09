@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import { rest } from 'msw'
 import faker from 'faker'
+import { rest } from 'msw'
 
 const chartUri = '/internal/charts/:provider/:owner/coverage/organization'
 

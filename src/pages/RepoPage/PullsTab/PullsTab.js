@@ -1,21 +1,22 @@
-import { useState, useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import { useLocationParams } from 'services/navigation'
 
+import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
-import { useSetCrumbs } from '../context'
-import PullsTable from './PullsTable'
 import {
-  orderItems,
   fitlerItems,
   orderingEnum,
-  stateEnum,
+  orderItems,
   orderNames,
+  stateEnum,
   stateNames,
 } from './enums'
+import PullsTable from './PullsTable'
+
+import { useSetCrumbs } from '../context'
 
 const defaultParams = {
   order: orderingEnum.Newest.order,

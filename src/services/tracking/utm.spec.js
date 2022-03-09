@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks'
 import Cookie from 'js-cookie'
+
 import { useUTM } from './utm'
 
 describe('useUTM', () => {

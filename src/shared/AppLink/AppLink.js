@@ -1,6 +1,6 @@
-import { forwardRef } from 'react'
-import PropTypes from 'prop-types'
 import defaultTo from 'lodash/defaultTo'
+import PropTypes from 'prop-types'
+import { forwardRef } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'

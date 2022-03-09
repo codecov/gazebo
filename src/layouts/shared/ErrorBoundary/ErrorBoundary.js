@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types'
 import * as Sentry from '@sentry/react'
+import PropTypes from 'prop-types'
+
 import A from 'ui/A'
 
 function DefaultUI() {

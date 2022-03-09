@@ -1,7 +1,7 @@
+import countBy from 'lodash/countBy'
+import groupBy from 'lodash/groupBy'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import groupBy from 'lodash/groupBy'
-import countBy from 'lodash/countBy'
 
 import { useCommit } from 'services/commit'
 import { UploadStateEnum } from 'shared/utils/commit'

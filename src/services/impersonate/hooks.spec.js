@@ -1,6 +1,6 @@
-import { useLocation } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
 import Cookie from 'js-cookie'
+import { useLocation } from 'react-router-dom'
 
 import { useImpersonate } from './hooks'
 

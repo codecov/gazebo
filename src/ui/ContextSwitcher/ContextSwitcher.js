@@ -1,15 +1,15 @@
-import PropTypes from 'prop-types'
+import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import cs from 'classnames'
-import Icon from 'ui/Icon'
-import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
+import PropTypes from 'prop-types'
+import { useParams } from 'react-router'
 
 import AppLink from 'shared/AppLink'
+import { providerToName } from 'shared/utils/provider'
+import A from 'ui/A'
 import Avatar from 'ui/Avatar'
+import Icon from 'ui/Icon'
 
 import './ContextSwitcher.css'
-import A from 'ui/A'
-import { useParams } from 'react-router'
-import { providerToName } from 'shared/utils/provider'
 
 const styles = {
   button: 'flex items-center text-xl font-semibold',

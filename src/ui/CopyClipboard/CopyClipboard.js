@@ -1,7 +1,8 @@
-import Icon from 'ui/Icon'
 import copy from 'copy-to-clipboard'
-import { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import { useEffect, useState } from 'react'
+
+import Icon from 'ui/Icon'
 
 function CopyClipboard({ string }) {
   const [showSuccess, setShowSuccess] = useState(false)

@@ -1,8 +1,8 @@
-import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
+import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useOrgCoverage } from './hooks'
 
+import { useOrgCoverage } from './hooks'
 import { orgCoverageHandler } from './mocks'
 
 const queryClient = new QueryClient({

@@ -1,8 +1,8 @@
 // https://testing-library.com/docs/react-testing-library/setup/#custom-render
 import { render } from '@testing-library/react'
-import { Route, MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
 import noop from 'lodash/noop'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { RepoBreadcrumbProvider } from './context'
 

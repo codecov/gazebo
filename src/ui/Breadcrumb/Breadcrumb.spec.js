@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import Breadcrumb from '.'
 import { MemoryRouter } from 'react-router-dom'
+
+import Breadcrumb from '.'
 
 describe('Breadcrumb', () => {
   function setup(props = {}) {

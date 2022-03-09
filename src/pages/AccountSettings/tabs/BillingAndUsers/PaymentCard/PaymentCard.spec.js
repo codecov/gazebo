@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import PaymentCard from './PaymentCard'
 import { useUpdateCard } from 'services/account'
+
+import PaymentCard from './PaymentCard'
 
 jest.mock('services/account/hooks')
 

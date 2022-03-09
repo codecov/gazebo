@@ -1,7 +1,10 @@
-import CreateTokenModal from './CreateTokenModal'
-import { render, screen, act } from 'custom-testing-library'
-import { useGenerateToken } from 'services/access'
+import { act, render, screen } from 'custom-testing-library'
+
 import userEvent from '@testing-library/user-event'
+
+import { useGenerateToken } from 'services/access'
+
+import CreateTokenModal from './CreateTokenModal'
 
 jest.mock('services/access')
 

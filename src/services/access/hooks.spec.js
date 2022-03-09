@@ -1,10 +1,12 @@
+import { act, renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useSessions, useDeleteSession, useGenerateToken } from './hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
+
 import { mapEdges } from 'shared/utils/graphql'
+
+import { useDeleteSession, useGenerateToken, useSessions } from './hooks'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, Switch } from 'react-router-dom'
+
 import GithubConfigBanner from './GithubConfigBanner'
-import { MemoryRouter, Switch, Route } from 'react-router-dom'
 
 describe('GithubConfigBanner', () => {
   function setup({ privateRepo }) {

@@ -1,8 +1,8 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import Avatar from 'ui/Avatar'
-import A from 'ui/A'
 import PropTypes from 'prop-types'
-import { DefaultAuthor } from 'ui/Avatar'
+
+import A from 'ui/A'
+import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ author, pullId, title, updatestamp }) => {
   const user = {

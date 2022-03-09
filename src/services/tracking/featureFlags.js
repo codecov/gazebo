@@ -1,4 +1,5 @@
 import { useIdentifyUser } from 'shared/featureFlags'
+
 import { getUserData } from './utils'
 
 const defaultUser = {

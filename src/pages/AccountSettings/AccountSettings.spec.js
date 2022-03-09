@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUser } from 'services/user'
+
 import AccountSettings from './AccountSettings'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')

@@ -1,6 +1,7 @@
-import Api from 'shared/api'
-import { useParams } from 'react-router-dom'
 import { useMutation, useQuery } from 'react-query'
+import { useParams } from 'react-router-dom'
+
+import Api from 'shared/api'
 
 export function useYamlConfig({ variables }) {
   const { provider } = useParams()

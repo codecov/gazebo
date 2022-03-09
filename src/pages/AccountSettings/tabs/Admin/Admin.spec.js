@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 
-import Admin from './Admin'
 import { useUser } from 'services/user'
+
+import Admin from './Admin'
 
 jest.mock('services/user')
 jest.mock('./NameEmailCard', () => () => 'NameEmailCard')

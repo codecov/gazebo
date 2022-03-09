@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import AddAdmins from './AddAdmins'
 import { useUsers } from 'services/users'
+
+import AddAdmins from './AddAdmins'
 
 jest.mock('services/users')
 

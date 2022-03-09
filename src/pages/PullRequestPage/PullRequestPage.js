@@ -1,14 +1,14 @@
-import { Suspense, lazy } from 'react'
-import { useParams, Switch, Route, Redirect } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
-import Header from './Header'
 import Card from './Card'
+import Header from './Header'
 
-const Root = lazy(() => import('./subroute/Root'))
 const FileDiff = lazy(() => import('./subroute/FileDiff'))
+const Root = lazy(() => import('./subroute/Root'))
 
 function PullRequestPage() {
   const { owner, repo, pullid } = useParams()

@@ -1,10 +1,11 @@
+import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
-import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { useSegmentPage } from './segment'
+import { MemoryRouter } from 'react-router-dom'
+
 import { useTracking } from './hooks'
+import { useSegmentPage } from './segment'
 
 jest.mock('./segment')
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
-import styles from './LogoSpinner.module.css'
 import { ReactComponent as Logo } from './logo.svg'
+import styles from './LogoSpinner.module.css'
 
 function LogoSpinner({ size = 100 }) {
   const height = `${size}px`

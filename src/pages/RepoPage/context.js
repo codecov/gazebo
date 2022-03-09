@@ -1,15 +1,15 @@
+import noop from 'lodash/noop'
 import {
-  useState,
   createContext,
-  useContext,
   useCallback,
+  useContext,
   useMemo,
+  useState,
 } from 'react'
 import { useParams } from 'react-router-dom'
-import noop from 'lodash/noop'
 
-import Icon from 'ui/Icon'
 import { useRepo } from 'services/repo'
+import Icon from 'ui/Icon'
 
 const RepoBreadcrumbContext = createContext([])
 const RepoBreadcrumbSettersContext = createContext({

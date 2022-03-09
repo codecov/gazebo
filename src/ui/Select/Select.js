@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
+import cs from 'classnames'
 import { useSelect } from 'downshift'
 import identity from 'lodash/identity'
-import cs from 'classnames'
+import PropTypes from 'prop-types'
 
 import Icon from 'ui/Icon'
 

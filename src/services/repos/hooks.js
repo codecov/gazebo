@@ -1,5 +1,5 @@
-import { useParams } from 'react-router-dom'
 import { useInfiniteQuery } from 'react-query'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'

@@ -24,11 +24,11 @@ InputWithNoLabel.args = {
 
 export const InputWithIcon = Template.bind({})
 InputWithIcon.args = {
-  placeholder: 'Search',
   icon: 'search',
+  placeholder: 'Search',
 }
 
 export default {
-  title: 'Components/TextInput',
   component: TextInput,
+  title: 'Components/TextInput',
 }

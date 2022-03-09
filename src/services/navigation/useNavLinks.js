@@ -1,9 +1,10 @@
+import Cookie from 'js-cookie'
 import qs from 'qs'
 import { useParams } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
 import config from 'config'
-import Cookie from 'js-cookie'
+
+import { useFlags } from 'shared/featureFlags'
 
 function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
@@ -12,7 +13,7 @@ function useNavLinks() {
     gazeboPullRequestPage: false,
   })
 
-  const utmCookie = Cookie.get("utmParams")
+  const utmCookie = Cookie.get('utmParams')
   const utmCookieObj = qs.parse(utmCookie, {
     ignoreQueryPrefix: true,
   })
@@ -31,7 +32,7 @@ function useNavLinks() {
           {
             to,
             private: privateScope,
-            ...utmCookieObj
+            ...utmCookieObj,
           },
           { addQueryPrefix: true }
         )

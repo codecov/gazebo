@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { useUpdateUser, useUsers } from 'services/users'
+
 import ManageAdminCard from './ManageAdminCard'
-import { useUsers, useUpdateUser } from 'services/users'
 
 jest.mock('services/users')
 jest.mock('./AddAdmins', () => () => 'AddAdmins')

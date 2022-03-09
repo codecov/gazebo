@@ -1,23 +1,23 @@
+import { useStripe } from '@stripe/react-stripe-js'
+import { waitFor } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react-hooks'
+import Cookie from 'js-cookie'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook, act } from '@testing-library/react-hooks'
-import { waitFor } from '@testing-library/react'
-import { useStripe } from '@stripe/react-stripe-js'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import Cookie from 'js-cookie'
 
 import { useFlags } from 'shared/featureFlags'
 
 import {
   useAccountDetails,
-  usePlans,
-  useCancelPlan,
-  useUpgradePlan,
-  useUpdateCard,
-  useInvoices,
-  useInvoice,
-  useEraseAccount,
   useAutoActivate,
+  useCancelPlan,
+  useEraseAccount,
+  useInvoice,
+  useInvoices,
+  usePlans,
+  useUpdateCard,
+  useUpgradePlan,
 } from './hooks'
 
 jest.mock('@stripe/react-stripe-js')

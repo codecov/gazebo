@@ -1,9 +1,8 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
-import Avatar from 'ui/Avatar'
 import A from 'ui/A'
-import { DefaultAuthor } from 'ui/Avatar'
+import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ message, author, commitid, createdAt }) => {
   const user = {
