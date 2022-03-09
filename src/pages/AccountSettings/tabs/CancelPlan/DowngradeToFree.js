@@ -1,6 +1,6 @@
 import { format, fromUnixTime } from 'date-fns'
 import PropType from 'prop-types'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import Button from 'old_ui/Button'
