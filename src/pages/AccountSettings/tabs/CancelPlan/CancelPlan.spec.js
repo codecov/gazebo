@@ -56,7 +56,7 @@ describe('CancelPlan', () => {
       data: getPlans(),
     })
     useCancelPlan.mockReturnValue({ mutate, isLoading: false })
-    render(
+    const { unmount } = render(
       <MemoryRouter initialEntries={['/my/initial/route']}>
         <CancelPlan provider={provider} owner={owner} />
         <Route
@@ -68,6 +68,8 @@ describe('CancelPlan', () => {
         />
       </MemoryRouter>
     )
+
+    return { unmount }
   }
 
   describe('when rendered', () => {
@@ -142,7 +144,6 @@ describe('CancelPlan', () => {
   describe('when calling the mutation', () => {
     beforeEach(() => {
       setup()
-      window.barecancel.params.callback_send()
       userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
       userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       // simulating the onSuccess callback given to mutate
@@ -157,7 +158,6 @@ describe('CancelPlan', () => {
   describe('when mutation is not successful', () => {
     beforeEach(() => {
       setup()
-      window.barecancel.params.callback_send()
       userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
       userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       // simulating the onError callback given to mutate
@@ -179,6 +179,17 @@ describe('CancelPlan', () => {
 
     it('has the button disabled', () => {
       expect(screen.getByRole('button')).toHaveAttribute('disabled')
+    })
+  })
+
+  describe('when unmounted', () => {
+    beforeEach(() => {
+      const { unmount } = setup(basicPlan)
+      unmount()
+    })
+
+    it('removes the baremetrics script', () => {
+      expect(screen.queryByTestId('baremetrics-script')).not.toBeInTheDocument()
     })
   })
 })
