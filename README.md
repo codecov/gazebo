@@ -67,7 +67,7 @@ Once the mutation suite is complete it should output a table with the results as
 
 > example: `file:///Users/ts/dev/gazebo/reports/mutation/html/index.html`
 
-From the html report you can vuew the mutates or specific tests and click on the round dots for more information on the result.
+From the html report you can view the mutates or specific tests and click on the round dots for more information on the result.
 
 "Mutants" are copies of our source code which have been tampered with, we expect good tests to have failed (killed) if the source code
 failed, if they still pass the mutant is considered to have survived.
