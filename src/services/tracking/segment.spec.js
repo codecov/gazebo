@@ -1,13 +1,13 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { useLocation } from 'react-router-dom'
 import Cookie from 'js-cookie'
+import { useLocation } from 'react-router-dom'
 
 import {
-  useSegmentPage,
-  identifySegmentUser,
-  trackSegmentEvent,
-  pageSegmentEvent,
   identifySegmentEvent,
+  identifySegmentUser,
+  pageSegmentEvent,
+  trackSegmentEvent,
+  useSegmentPage,
 } from './segment'
 
 window.analytics = {

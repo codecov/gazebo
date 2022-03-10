@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
-import Icon from 'ui/Icon'
 import AppLink from 'shared/AppLink'
+import Icon from 'ui/Icon'
 
 function RepoTitleLink({ repo, showRepoOwner, pageName }) {
   const options = {

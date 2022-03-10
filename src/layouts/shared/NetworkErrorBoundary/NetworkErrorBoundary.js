@@ -1,5 +1,5 @@
-import { Component } from 'react'
 import cs from 'classnames'
+import { Component } from 'react'
 
 import img401 from './assets/error-401.svg'
 import img403 from './assets/error-403.svg'

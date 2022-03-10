@@ -1,8 +1,9 @@
-import Button from 'ui/Button'
 import PropTypes from 'prop-types'
+
 import { useAccountDetails } from 'services/account'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { isFreePlan } from 'shared/utils/billing'
+import Button from 'ui/Button'
 
 function RequestButton({ owner, provider }) {
   const { data: accountDetails } = useAccountDetails({

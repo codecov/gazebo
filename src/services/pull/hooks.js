@@ -1,5 +1,6 @@
-import Api from 'shared/api'
 import { useQuery } from 'react-query'
+
+import Api from 'shared/api'
 
 export function usePull({ provider, owner, repo, pullid }) {
   const query = `

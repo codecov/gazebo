@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks'
+
 import { useIdentifyUser } from 'shared/featureFlags'
 
 import { useTrackFeatureFlags } from './featureFlags'

@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 
-import Icon from 'old_ui/Icon'
 import AppLink from 'old_ui/AppLink'
+import Icon from 'old_ui/Icon'
 
 function BackLink({ textLink, ...props }) {
   return (

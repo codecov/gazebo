@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { useInvoice, useAccountDetails } from 'services/account'
+
+import { useAccountDetails, useInvoice } from 'services/account'
+
 import InvoiceDetail from './InvoiceDetail'
 
 jest.mock('services/account/hooks')

@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import AnalyticsPage from './AnalyticsPage'
-import { useOwner } from 'services/user'
-import { useLocationParams } from 'services/navigation'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useLocationParams } from 'services/navigation'
+import { useOwner } from 'services/user'
+
+import AnalyticsPage from './AnalyticsPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')

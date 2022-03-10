@@ -1,4 +1,5 @@
 import * as yup from 'yup'
+
 import { invalidBusinessEmailDomains } from './constants'
 
 export const TYPE_PROJECTS = Object.freeze({

@@ -1,5 +1,6 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
+
 import { LINE_STATE } from './lineStates'
 
 const classNamePerLineState = {

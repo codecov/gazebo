@@ -1,6 +1,6 @@
+import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
-import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
 
 export function providerToName(provider) {
   return {

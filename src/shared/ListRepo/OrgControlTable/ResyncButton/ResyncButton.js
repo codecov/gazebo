@@ -1,9 +1,9 @@
-import Spinner from 'ui/Spinner'
-
 import { useParams } from 'react-router-dom'
+
 import { useResyncUser } from 'services/user'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
+import Spinner from 'ui/Spinner'
 
 function ResyncButton() {
   const { triggerResync, isSyncing } = useResyncUser()

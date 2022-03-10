@@ -1,7 +1,9 @@
 import { render, screen } from 'custom-testing-library'
+
 import userEvent from '@testing-library/user-event'
-import Modal from './Modal'
+
 import BaseModal from './BaseModal'
+import Modal from './Modal'
 
 describe('Modal', () => {
   let wrapper, props

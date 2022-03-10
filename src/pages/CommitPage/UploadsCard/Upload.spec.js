@@ -1,5 +1,5 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import { render, screen } from '@testing-library/react'
+import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 import Upload from './Upload'
 

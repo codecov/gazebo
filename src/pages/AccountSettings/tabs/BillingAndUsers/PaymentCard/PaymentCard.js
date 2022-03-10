@@ -1,12 +1,12 @@
-import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 
-import Card from 'old_ui/Card'
 import Button from 'old_ui/Button'
+import Card from 'old_ui/Card'
 import { subscriptionDetailType } from 'services/account'
 
-import CreditCardForm from './CreditCardForm'
 import CardInformation from './CardInformation'
+import CreditCardForm from './CreditCardForm'
 
 const proPlans = [
   'users-pr-inappm',

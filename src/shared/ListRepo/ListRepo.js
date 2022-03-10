@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
-import { Suspense } from 'react'
-import { orderingOptions, nonActiveOrderingOptions } from 'services/repos'
+import { Suspense, useContext } from 'react'
+import { useHistory } from 'react-router-dom'
+
+import { useLocationParams, useNavLinks } from 'services/navigation'
+import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
+import { ActiveContext } from 'shared/context'
 import Spinner from 'ui/Spinner'
+
 import OrgControlTable from './OrgControlTable'
 import ReposTable from './ReposTable'
-import { useLocationParams } from 'services/navigation'
-import { useHistory } from 'react-router-dom'
-import { useNavLinks } from 'services/navigation'
-import { ActiveContext } from 'shared/context'
-import { useContext } from 'react'
 
 const defaultQueryParams = {
   search: '',

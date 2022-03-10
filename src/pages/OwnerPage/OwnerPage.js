@@ -1,12 +1,13 @@
-import { useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import ListRepo from 'shared/ListRepo'
-import { useOwner } from 'services/user'
+import { useParams } from 'react-router-dom'
+
 import NotFound from 'pages/NotFound'
+import { useOwner } from 'services/user'
+import { ActiveContext } from 'shared/context'
+import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
 import Tabs from './Tabs'
-import { ActiveContext } from 'shared/context'
 
 function OwnerPage({ active = false }) {
   const { owner, provider } = useParams()

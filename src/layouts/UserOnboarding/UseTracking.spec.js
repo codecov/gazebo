@@ -1,11 +1,13 @@
-import { renderHook, act } from '@testing-library/react-hooks'
-import { useOnboardingTracking } from './useOnboardingTracking'
+import { act, renderHook } from '@testing-library/react-hooks'
+
 import { useOnboardingLocation } from 'services/location/hooks'
 import {
-  trackSegmentEvent,
-  pageSegmentEvent,
   identifySegmentEvent,
+  pageSegmentEvent,
+  trackSegmentEvent,
 } from 'services/tracking/segment'
+
+import { useOnboardingTracking } from './useOnboardingTracking'
 
 jest.mock('services/tracking/segment')
 jest.mock('services/location/hooks')

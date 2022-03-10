@@ -11,7 +11,17 @@ function loadScript() {
   script.src =
     'https://baremetrics-barecancel.baremetrics.com/js/application.js'
   script.async = !0
+  script.id = 'baremetrics-script'
+  script.dataset.testid = 'baremetrics-script'
   document.body.appendChild(script)
+}
+
+function removeScript() {
+  const scriptElement = document.getElementById('baremetrics-script')
+  if (!!scriptElement) {
+    scriptElement.parentNode.removeChild(scriptElement)
+    delete window.barecancel
+  }
 }
 
 function useBarecancel(accountDetails, cancelPlan) {
@@ -26,9 +36,9 @@ function useBarecancel(accountDetails, cancelPlan) {
       customer_oid: stripeCustomerId,
       comment_required: true,
       test_mode: config.NODE_ENV !== 'production',
-      callback_send: cancelPlan,
       /* eslint-enable camelcase */
     }
+    return () => removeScript()
   }, [stripeCustomerId, cancelPlan])
 }
 

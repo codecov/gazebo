@@ -1,11 +1,12 @@
-import Button from 'ui/Button'
 import PropTypes from 'prop-types'
-import { useSessions, useDeleteSession } from 'services/access'
+import { useState } from 'react'
+
+import { useDeleteSession, useSessions } from 'services/access'
+import Button from 'ui/Button'
+
+import CreateTokenModal from './CreateTokenModal'
 import SessionsTable from './SessionsTable'
 import TokensTable from './TokensTable'
-import CreateTokenModal from './CreateTokenModal'
-
-import { useState } from 'react'
 
 function Access({ provider }) {
   const { data } = useSessions({

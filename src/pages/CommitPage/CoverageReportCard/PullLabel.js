@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
 
 import { providerToName } from 'shared/utils'
-
-import Icon from 'ui/Icon'
 import A from 'ui/A'
+import Icon from 'ui/Icon'
 
 export default function PullLabel({ pullId, provider, providerPullUrl }) {
   if (pullId) {

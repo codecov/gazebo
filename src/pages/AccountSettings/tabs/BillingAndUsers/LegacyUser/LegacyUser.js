@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Card from 'old_ui/Card'
 import Button from 'old_ui/Button'
-import { useNavLinks, useStaticNavLinks } from 'services/navigation'
+import Card from 'old_ui/Card'
 import { accountDetailsPropType } from 'services/account'
+import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 
-import PaymentCard from '../PaymentCard'
 import LatestInvoiceCard from '../LatestInvoiceCard'
+import PaymentCard from '../PaymentCard'
 
 function LegacyUser({ accountDetails, provider, owner }) {
   const { upgradePlan } = useNavLinks()

@@ -1,6 +1,6 @@
-import PropType from 'prop-types'
-import get from 'lodash/get'
 import cs from 'classnames'
+import get from 'lodash/get'
+import PropType from 'prop-types'
 
 import * as svg from './svg'
 

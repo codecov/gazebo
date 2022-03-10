@@ -1,10 +1,10 @@
+import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import PropTypes from 'prop-types'
-
-import Icon from 'ui/Icon'
-import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
 import '@reach/menu-button/styles.css'
-import { providerToName, providerImage } from 'shared/utils/provider'
+
 import { useNavLinks } from 'services/navigation'
+import { providerImage, providerToName } from 'shared/utils/provider'
+import Icon from 'ui/Icon'
 
 const styles = {
   box: 'h-14 shadow flex items-center text-left bg-ds-gray-primary border border-ds-gray-quaternary rounded-sm',

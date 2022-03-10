@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types'
 import isNumber from 'lodash/isNumber'
+import PropTypes from 'prop-types'
 
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'

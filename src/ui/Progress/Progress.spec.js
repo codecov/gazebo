@@ -1,4 +1,5 @@
 import { render, screen } from 'custom-testing-library'
+
 import Progress from './Progress'
 
 describe('Progress', () => {

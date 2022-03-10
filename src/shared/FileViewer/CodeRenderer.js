@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types'
 import Highlight, { defaultProps } from 'prism-react-renderer'
+import PropTypes from 'prop-types'
+
 import 'shared/utils/prisimTheme.css'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 import './CodeRenderer.css'

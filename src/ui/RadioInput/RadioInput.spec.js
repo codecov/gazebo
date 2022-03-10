@@ -1,5 +1,6 @@
-import RadioInput from './RadioInput'
 import { render } from '@testing-library/react'
+
+import RadioInput from './RadioInput'
 
 describe('Radio', () => {
   let wrapper

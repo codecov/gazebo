@@ -1,6 +1,6 @@
-import { Router, Route } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
 import { createMemoryHistory } from 'history'
+import { Route, Router } from 'react-router-dom'
 
 import { useLocationParams } from './hooks'
 

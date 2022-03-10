@@ -1,6 +1,6 @@
-import { useLocation, useHistory } from 'react-router-dom'
-import qs from 'qs'
 import omitBy from 'lodash/omitBy'
+import qs from 'qs'
+import { useHistory, useLocation } from 'react-router-dom'
 
 export function useLocationParams(defaultParams = {}) {
   const { push } = useHistory()

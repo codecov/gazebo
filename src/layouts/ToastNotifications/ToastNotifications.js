@@ -2,6 +2,7 @@ import {
   useNotifications,
   useRemoveNotification,
 } from 'services/toastNotification'
+
 import NotificationItem from './NotificationItem'
 
 function ToastNotifications() {

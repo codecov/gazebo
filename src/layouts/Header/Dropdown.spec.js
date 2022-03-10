@@ -1,7 +1,7 @@
-import { render, fireEvent, screen } from '@testing-library/react'
-import { MemoryRouter, Switch, Route } from 'react-router-dom'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, Switch, useParams } from 'react-router-dom'
+
 import Dropdown from './Dropdown'
-import { useParams } from 'react-router-dom'
 
 const currentUser = {
   user: {
