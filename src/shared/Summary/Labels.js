@@ -58,12 +58,15 @@ export function compareLabels({ headCommit, baseCommit }) {
 }
 
 export function mapLabels(labels) {
-  return labels.map((element) => {
-    const { name, title, value } = element
+  return labels.map((label) => {
+    const { name, title, value } = label
     return (
-      <SummaryCard key={name} title={title}>
-        {value}
-      </SummaryCard>
+      title &&
+      value && (
+        <SummaryCard key={name} title={title}>
+          {value}
+        </SummaryCard>
+      )
     )
   })
 }
