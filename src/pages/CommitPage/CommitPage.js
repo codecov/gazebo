@@ -65,20 +65,7 @@ function CommitPage() {
           {commit?.message}
         </h1>
         <p className="flex items-center text-ds-gray-quinary gap-1">
-          {commit?.createdAt
-            ? formatDistanceToNow(new Date(commit?.createdAt), {
-                addSuffix: true,
-              })
-            : ''}
-          <A
-            to={{
-              pageName: 'owner',
-              options: { owner: commit?.author?.username },
-            }}
-          >
-            {commit?.author?.username}
-          </A>
-          authored commit
+          Commit
           <A
             variant="code"
             href={getProviderCommitURL({
@@ -91,6 +78,21 @@ function CommitPage() {
             isExternal={true}
           >
             {shortSHA}
+          </A>
+          was authorized{' '}
+          {commit?.createdAt
+            ? formatDistanceToNow(new Date(commit?.createdAt), {
+                addSuffix: true,
+              })
+            : ''}
+          {commit?.author?.username && ' by'}
+          <A
+            to={{
+              pageName: 'owner',
+              options: { owner: commit?.author?.username },
+            }}
+          >
+            {commit?.author?.username}
           </A>
         </p>
       </div>
