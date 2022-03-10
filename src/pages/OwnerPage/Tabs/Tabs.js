@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
+
+import { useIsCurrentUserAnAdmin } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import CallToAction from '../CallToAction'
-import { useIsCurrentUserAnAdmin } from 'services/user'
 
 function Tabs({ provider, owner }) {
   const isAdmin = useIsCurrentUserAnAdmin({ owner: owner?.username })

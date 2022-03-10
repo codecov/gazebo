@@ -1,4 +1,5 @@
 import cs from 'classnames'
+
 import img404 from './assets/error-404.svg'
 import styles from './NotFound.module.css'
 

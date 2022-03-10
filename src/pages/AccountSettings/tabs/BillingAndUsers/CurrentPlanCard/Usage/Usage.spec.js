@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
-import Usage from '.'
+
 import { useUploadsNumber } from 'services/uploadsNumber'
+
+import Usage from '.'
 
 jest.mock('services/uploadsNumber/hooks')
 

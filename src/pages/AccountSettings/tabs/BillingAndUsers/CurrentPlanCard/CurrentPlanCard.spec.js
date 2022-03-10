@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
 
 import CurrentPlanCard from './CurrentPlanCard'
-import { QueryClientProvider, QueryClient } from 'react-query'
 
 const proAccountDetails = {
   plan: {

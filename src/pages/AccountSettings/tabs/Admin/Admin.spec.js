@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useUser } from 'services/user'
 
 import Admin from './Admin'
-import { useUser } from 'services/user'
-import { MemoryRouter, Route } from 'react-router-dom'
 
 jest.mock('services/user')
 jest.mock('./NameEmailCard', () => () => 'NameEmailCard')

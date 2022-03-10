@@ -1,9 +1,10 @@
+import Cookie from 'js-cookie'
 import qs from 'qs'
 import { useParams } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
 import config from 'config'
-import Cookie from 'js-cookie'
+
+import { useFlags } from 'shared/featureFlags'
 
 function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()

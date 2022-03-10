@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
-import uniqueId from 'lodash/uniqueId'
 import defaultTo from 'lodash/defaultTo'
+import uniqueId from 'lodash/uniqueId'
+import PropTypes from 'prop-types'
 import { forwardRef } from 'react'
 
 import Icon from 'ui/Icon'

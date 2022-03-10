@@ -1,24 +1,25 @@
-import { Suspense, lazy } from 'react'
-import { useParams, Switch, Route, Redirect } from 'react-router-dom'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
+import { lazy, Suspense } from 'react'
+import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
-import LogoSpinner from 'old_ui/LogoSpinner'
-import SidebarLayout from 'layouts/SidebarLayout'
 import config from 'config'
 
-import SideMenuAccount from './SideMenuAccount'
-import Header from './shared/Header'
+import SidebarLayout from 'layouts/SidebarLayout'
+import LogoSpinner from 'old_ui/LogoSpinner'
 
-const CancelPlanTab = lazy(() => import('./tabs/CancelPlan'))
-const UpgradePlanTab = lazy(() => import('./tabs/UpgradePlan'))
-const InvoicesTab = lazy(() => import('./tabs/Invoices'))
-const InvoiceDetailTab = lazy(() => import('./tabs/InvoiceDetail'))
-const BillingAndUsersTab = lazy(() => import('./tabs/BillingAndUsers'))
-const AdminTab = lazy(() => import('./tabs/Admin'))
-const YAMLTab = lazy(() => import('./tabs/YAML'))
+import Header from './shared/Header'
+import SideMenuAccount from './SideMenuAccount'
+
 const AccessTab = lazy(() => import('./tabs/Access'))
+const AdminTab = lazy(() => import('./tabs/Admin'))
+const BillingAndUsersTab = lazy(() => import('./tabs/BillingAndUsers'))
+const CancelPlanTab = lazy(() => import('./tabs/CancelPlan'))
+const InvoiceDetailTab = lazy(() => import('./tabs/InvoiceDetail'))
+const InvoicesTab = lazy(() => import('./tabs/Invoices'))
 const NotFound = lazy(() => import('../NotFound'))
+const UpgradePlanTab = lazy(() => import('./tabs/UpgradePlan'))
+const YAMLTab = lazy(() => import('./tabs/YAML'))
 
 const stripePromise = loadStripe(config.STRIPE_KEY)
 

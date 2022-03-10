@@ -1,5 +1,6 @@
 /* eslint-disable react/display-name */
 import TextInput from './TextInput'
+
 import Icon from '../Icon'
 
 const Template = (args) => {

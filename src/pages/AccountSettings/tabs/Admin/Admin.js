@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 
 import { useUser } from 'services/user'
 
+import DeletionCard from './DeletionCard'
+import GithubIntegrationCard from './GithubIntegrationCard'
+import { useRedirectToBilling } from './hooks'
+import ManageAdminCard from './ManageAdminCard'
 import NameEmailCard from './NameEmailCard'
 import StudentCard from './StudentCard'
-import ManageAdminCard from './ManageAdminCard'
-import GithubIntegrationCard from './GithubIntegrationCard'
-import DeletionCard from './DeletionCard'
-import { useRedirectToBilling } from './hooks'
 
 function Admin({ provider, owner }) {
   useRedirectToBilling()
@@ -28,7 +28,7 @@ function Admin({ provider, owner }) {
       )}
       <div className="mt-8 flex flex-col md:flex-row">
         <GithubIntegrationCard provider={provider} owner={owner} />
-        <div className="flex-grow mt-8 md:mt-0">
+        <div className="grow mt-8 md:mt-0">
           <DeletionCard
             provider={provider}
             owner={owner}

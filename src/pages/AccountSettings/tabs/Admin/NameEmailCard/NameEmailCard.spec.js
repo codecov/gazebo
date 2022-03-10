@@ -1,9 +1,10 @@
-import { render, screen, act } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import NameEmailCard from './NameEmailCard'
-import { useUpdateProfile } from 'services/user'
 import { useAddNotification } from 'services/toastNotification'
+import { useUpdateProfile } from 'services/user'
+
+import NameEmailCard from './NameEmailCard'
 
 jest.mock('services/user/hooks')
 jest.mock('services/toastNotification')

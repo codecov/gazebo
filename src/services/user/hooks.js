@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
 import usePrevious from 'react-use/lib/usePrevious'
 
-import { mapEdges } from 'shared/utils/graphql'
 import Api from 'shared/api'
+import { mapEdges } from 'shared/utils/graphql'
 
 const currentUserFragment = `
 fragment CurrentUserFragment on Me {

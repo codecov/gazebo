@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import UpgradePlan from './UpgradePlan'
 import { useAccountDetails, usePlans } from 'services/account'
+
+import UpgradePlan from './UpgradePlan'
 
 jest.mock('services/account/hooks')
 jest.mock('./UpgradePlanForm', () => () => 'UpgradePlanForm')

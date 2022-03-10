@@ -1,6 +1,6 @@
-import { MemoryRouter, Route } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
 import Cookie from 'js-cookie'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
@@ -635,14 +635,14 @@ describe('useNavLinks', () => {
 })
 
 describe('useStaticNavLinks', () => {
-  const hookData = renderHook(() => useStaticNavLinks(), {
+  const view = renderHook(() => useStaticNavLinks(), {
     wrapper: (props) => (
       <MemoryRouter initialEntries={['/gh']} initialIndex={0}>
         <Route path="/:provider">{props.children}</Route>
       </MemoryRouter>
     ),
   })
-  const links = hookData.result.current
+  const links = view.result.current
   describe.each`
     link                       | outcome
     ${links.root}              | ${`${config.MARKETING_BASE_URL}`}

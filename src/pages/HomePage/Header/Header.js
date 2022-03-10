@@ -2,9 +2,9 @@ import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import { providerFeedback } from 'shared/utils'
+import A from 'ui/A'
 import Banner from 'ui/Banner'
 import Icon from 'ui/Icon'
-import A from 'ui/A'
 
 function Header() {
   const { provider } = useParams()

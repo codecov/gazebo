@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import CopyClipboard from 'ui/CopyClipboard'
 import cs from 'classnames'
+import { useState } from 'react'
+
+import CopyClipboard from 'ui/CopyClipboard'
 
 export default function InstructionBox() {
   const systemsEnum = {

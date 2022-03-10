@@ -1,10 +1,11 @@
-import {
-  trackSegmentEvent,
-  pageSegmentEvent,
-  identifySegmentEvent,
-} from 'services/tracking/segment'
-import { useOnboardingLocation } from 'services/location/hooks'
 import isArray from 'lodash/isArray'
+
+import { useOnboardingLocation } from 'services/location/hooks'
+import {
+  identifySegmentEvent,
+  pageSegmentEvent,
+  trackSegmentEvent,
+} from 'services/tracking/segment'
 
 export function useOnboardingTracking() {
   const { path, url } = useOnboardingLocation()

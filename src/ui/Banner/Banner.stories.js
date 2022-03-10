@@ -1,5 +1,6 @@
-import Banner from './Banner'
 import Icon from 'ui/Icon'
+
+import Banner from './Banner'
 
 const Template = (args) => {
   return (

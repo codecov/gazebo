@@ -3,10 +3,17 @@
     "react-app",
     "react-app/jest",
     "plugin:react/recommended",
+    "plugin:import/recommended",
     "prettier"
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
+    "testing-library/no-node-access": "warn",
+    "testing-library/prefer-screen-queries": "warn",
+    "testing-library/no-render-in-setup": "warn",
+    "testing-library/no-unnecessary-act": "warn",
+    "testing-library/await-async-utils": "warn",
+    "testing-library/prefer-find-by": "warn",
     "complexity": ["error", 5],
     "max-statements": ["error", 10],
     "max-nested-callbacks": ["error", 2],
@@ -17,7 +24,97 @@
         "ignore": ["children", "context", "className"]
       }
     ],
-    "camelcase": ["error", { "properties": "always" }]
+    "camelcase": ["error", { "properties": "always" }],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "external",
+          "builtin",
+          "internal",
+          "sibling",
+          "parent",
+          "index"
+        ],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "prop-types",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "custom-testing-library",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "testing-library",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "mocks",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "assets",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "layouts",
+            "group": "internal"
+          },
+          {
+            "pattern": "ui",
+            "group": "internal",
+            "position": "after"
+          },
+          {
+            "pattern": "old_ui",
+            "group": "internal",
+            "position": "after"
+          },
+          {
+            "pattern": "services",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "shared",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "pages",
+            "group": "internal"
+          },
+          {
+            "pattern": "config",
+            "group": "internal",
+            "position": "before"
+          }
+        ],
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "newlines-between": "always"
+      }
+    ]
   },
   "overrides": [
     // UI Rules
@@ -108,5 +205,23 @@
         "import/no-anonymous-default-export": "off"
       }
     }
-  ]
+  ],
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["layouts", "./src/layouts"],
+          ["ui", "./src/ui"],
+          ["old_ui", "./src/old_ui"],
+          ["pages", "./src/pages"],
+          ["shared", "./src/shared"],
+          ["services", "./src/services"],
+          ["mocks", "./src/mocks"],
+          ["assets", "./src/assets"],
+          ["custom-testing-library", "./src/custom-testing-library"],
+          ["config", "./src/config"]
+        ]
+      }
+    }
+  }
 }

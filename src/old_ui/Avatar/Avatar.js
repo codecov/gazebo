@@ -1,7 +1,7 @@
-import BBAvatar from './BBAvatar'
+import get from 'lodash/get'
 import PropTypes from 'prop-types'
 
-import get from 'lodash/get'
+import BBAvatar from './BBAvatar'
 
 function Avatar({ username, alt, className, avatarUrl }) {
   return (

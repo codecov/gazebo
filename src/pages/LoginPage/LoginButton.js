@@ -1,14 +1,14 @@
+import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import PropTypes from 'prop-types'
-
-import Icon from 'ui/Icon'
-import { Menu, MenuList, MenuButton, MenuLink } from '@reach/menu-button'
 import '@reach/menu-button/styles.css'
-import { providerToName, providerImage } from 'shared/utils/provider'
+
 import { useNavLinks } from 'services/navigation'
+import { providerImage, providerToName } from 'shared/utils/provider'
+import Icon from 'ui/Icon'
 
 const styles = {
   box: 'h-14 shadow flex items-center text-left bg-ds-gray-primary border border-ds-gray-quaternary rounded-sm',
-  link: 'h-full flex-grow flex items-center font-semibold hover:bg-ds-gray-secondary',
+  link: 'h-full grow flex items-center font-semibold hover:bg-ds-gray-secondary',
   dropdownGithub:
     'flex justify-center items-center h-full w-12 border-l border-ds-gray-quaternary hover:bg-ds-gray-secondary',
   logo: 'block mx-4 h-6 w-6',

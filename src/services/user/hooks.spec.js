@@ -1,17 +1,17 @@
-import { rest, graphql } from 'msw'
+import { act, renderHook } from '@testing-library/react-hooks'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook, act } from '@testing-library/react-hooks'
-import { MemoryRouter, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
-  useUser,
-  useUpdateProfile,
-  useMyContexts,
-  useResyncUser,
-  useOwner,
-  useOnboardUser,
   useIsCurrentUserAnAdmin,
+  useMyContexts,
+  useOnboardUser,
+  useOwner,
+  useResyncUser,
+  useUpdateProfile,
+  useUser,
 } from './hooks'
 
 const user = {

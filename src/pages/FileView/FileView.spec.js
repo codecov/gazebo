@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import FileView from './FileView'
-import { useOwner } from 'services/user'
-import { useFileWithMainCoverage } from 'services/file/hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useFileWithMainCoverage } from 'services/file/hooks'
+import { useOwner } from 'services/user'
+
+import FileView from './FileView'
 
 jest.mock('services/user')
 jest.mock('services/file/hooks')
@@ -55,7 +57,7 @@ describe('FileView', () => {
     it('renders the navigation breadcrumb', () => {
       expect(screen.getByText(/codecov/)).toBeInTheDocument()
       expect(screen.getByText(/repo-test/)).toBeInTheDocument()
-      expect(screen.queryByText(/master/)).toBeInTheDocument()
+      expect(screen.getByText(/master/)).toBeInTheDocument()
     })
 
     it('renders the title and path breadcrumb', () => {

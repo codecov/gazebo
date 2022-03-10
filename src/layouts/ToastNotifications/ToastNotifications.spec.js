@@ -1,10 +1,11 @@
 import { render, screen } from '@testing-library/react'
 
-import ToastNotifications from './ToastNotifications'
 import {
   useNotifications,
   useRemoveNotification,
 } from 'services/toastNotification'
+
+import ToastNotifications from './ToastNotifications'
 
 const notifications = [
   {

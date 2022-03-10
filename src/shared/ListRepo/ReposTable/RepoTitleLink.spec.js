@@ -1,6 +1,8 @@
 import { render, screen } from 'custom-testing-library'
-import RepoTitleLink from './RepoTitleLink'
+
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import RepoTitleLink from './RepoTitleLink'
 
 describe('RepoTitleLink', () => {
   const repo = {

@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types'
 import { sanitize } from 'dompurify'
-import { useForm, Controller } from 'react-hook-form'
 import noop from 'lodash/noop'
+import PropTypes from 'prop-types'
+import { Controller, useForm } from 'react-hook-form'
 
-import { useYamlConfig, useUpdateYaml } from 'services/yaml'
+import { useIsCurrentUserAnAdmin } from 'services/user'
+import { useUpdateYaml, useYamlConfig } from 'services/yaml'
 import Button from 'ui/Button'
 
-import YamlEditor from './YamlEditor'
 import SuccessModal from './SuccessModal'
-import { useIsCurrentUserAnAdmin } from 'services/user'
+import YamlEditor from './YamlEditor'
 
 function YAML({ owner }) {
   const isAdmin = useIsCurrentUserAnAdmin({ owner })

@@ -1,5 +1,6 @@
-import Api from 'shared/api'
 import { useQuery } from 'react-query'
+
+import Api from 'shared/api'
 
 function fetchRepoPulls({ provider, owner, repo, variables }) {
   const PullFragment = `
@@ -10,6 +11,7 @@ function fetchRepoPulls({ provider, owner, repo, variables }) {
         updatestamp
         author{
             username
+            avatarUrl
         }
         head{
             totals{

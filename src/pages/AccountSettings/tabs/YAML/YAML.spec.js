@@ -1,10 +1,12 @@
 import { render, screen, waitFor } from 'custom-testing-library'
+
+import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import userEvent from '@testing-library/user-event'
 import PropTypes from 'prop-types'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
+
 import { useIsCurrentUserAnAdmin } from 'services/user'
 
 import YAML from './YAML'
@@ -147,9 +149,7 @@ describe('YAMLTab', () => {
     it('The save button becomes unsaved changes and an error is displayed', async () => {
       const save = screen.getByRole('button', { name: /Save Changes/ })
       userEvent.click(save)
-      await waitFor(() =>
-        expect(screen.getByText(/bad config/)).toBeInTheDocument()
-      )
+      await screen.findByText(/bad config/)
     })
   })
 
@@ -171,9 +171,7 @@ describe('YAMLTab', () => {
       const save = screen.getByRole('button', { name: /Save Changes/ })
       userEvent.click(save)
 
-      await waitFor(() =>
-        expect(screen.getByText(/Something went wrong/)).toBeInTheDocument()
-      )
+      await screen.findByText(/Something went wrong/)
     })
   })
 

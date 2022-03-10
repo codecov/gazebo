@@ -1,5 +1,6 @@
+import Button from 'ui/Button'
+
 import TableComponent from './Table'
-import Button from '../Button'
 
 const Template = (args) => {
   return <TableComponent {...args} />

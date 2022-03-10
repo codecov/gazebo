@@ -1,17 +1,14 @@
 import { useParams } from 'react-router'
 
-import { NotFoundException } from 'shared/utils'
-
 import { useRepo } from 'services/repo'
-
+import { NotFoundException } from 'shared/utils'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
 import GithubConfig from './GithubConfig'
+import { useRedirectToVueOverview } from './hooks'
 import TerminalInstructions from './TerminalInstructions'
 import Token from './Token'
-
-import { useRedirectToVueOverview } from './hooks'
 
 function NewRepoTab() {
   const { provider, owner, repo } = useParams()

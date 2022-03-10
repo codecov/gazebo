@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
+
 import { useIsUploadsNumberExceeded } from 'services/uploadsNumber'
 
 import Header from './Header'
@@ -42,7 +43,7 @@ describe('Header', () => {
 
     it('Ask for feedback banner is rendered', () => {
       expect(
-        screen.queryByText(
+        screen.getByText(
           /We would love to hear your feedback! Let us know what you think/
         )
       ).toBeInTheDocument()
@@ -89,13 +90,13 @@ describe('Header', () => {
 
     it('renders the uploads number exceed alert', () => {
       expect(
-        screen.queryByText(/Upload limit has been reached/)
+        screen.getByText(/Upload limit has been reached/)
       ).toBeInTheDocument()
     })
 
     it('renders the body of the alert', () => {
       expect(
-        screen.queryByText(
+        screen.getByText(
           /This org is currently on the free plan; which includes 250 free uploads monthly/
         )
       ).toBeInTheDocument()

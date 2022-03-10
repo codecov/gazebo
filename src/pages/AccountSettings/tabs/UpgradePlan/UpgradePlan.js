@@ -6,8 +6,9 @@ import { useNavLinks } from 'services/navigation'
 
 import parasolImg from './parasol.png'
 import UpgradePlanForm from './UpgradePlanForm'
-import BenefitList from '../../shared/BenefitList'
+
 import BackLink from '../../shared/BackLink'
+import BenefitList from '../../shared/BenefitList'
 
 function UpgradePlan({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })

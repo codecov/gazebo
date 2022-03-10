@@ -1,9 +1,9 @@
+import defaultTo from 'lodash/defaultTo'
+import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 
-import PropTypes from 'prop-types'
-import A from 'ui/A'
 import AppLink from 'shared/AppLink'
-import defaultTo from 'lodash/defaultTo'
+import A from 'ui/A'
 
 function Breadcrumb({ paths = [] }) {
   return (

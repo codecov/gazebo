@@ -1,9 +1,8 @@
-import { repoPageRender, screen } from '../repo-jest-setup'
-
+import { useCommits } from 'services/commits'
+import { useRepo } from 'services/repo'
 import { NotFoundException } from 'shared/utils'
 
-import { useRepo } from 'services/repo'
-import { useCommits } from 'services/commits'
+import { repoPageRender, screen } from '../repo-jest-setup'
 
 import NewRepoTab from '.'
 

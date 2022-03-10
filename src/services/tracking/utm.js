@@ -1,7 +1,8 @@
-import { forwardMarketingTag } from 'shared/utils/url'
-import isEmpty from 'lodash/isEmpty'
 import Cookie from 'js-cookie'
+import isEmpty from 'lodash/isEmpty'
 import qs from 'qs'
+
+import { forwardMarketingTag } from 'shared/utils/url'
 
 // This hook is to capture utm related tags for the marketing team.
 // These are stored in the client's cookies and the api service will

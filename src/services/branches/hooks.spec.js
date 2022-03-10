@@ -1,8 +1,9 @@
-import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { useBranches } from './hooks'
 import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
+import { useBranches } from './hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {

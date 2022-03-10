@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
+
 import { useAccountDetails } from 'services/account'
-import A from 'ui/A'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { isFreePlan } from 'shared/utils/billing'
+import A from 'ui/A'
 
 function CallToAction({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({

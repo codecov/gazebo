@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import Coverage from '.'
 import { MemoryRouter } from 'react-router-dom'
+
+import Coverage from '.'
 
 describe('Coverage', () => {
   function setup({ commitid, totals }) {

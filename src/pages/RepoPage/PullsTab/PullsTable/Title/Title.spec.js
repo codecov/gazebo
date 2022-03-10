@@ -1,13 +1,14 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import Title from '.'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import { QueryClientProvider, QueryClient } from 'react-query'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter } from 'react-router-dom'
+
+import Title from '.'
 
 jest.mock('services/repo/hooks')
 
 describe('Title', () => {
-  const author = { username: 'RulaKhaled' }
+  const author = { username: 'RulaKhaled', avatarUrl: 'random' }
   const pullId = 746
   const title = 'Test1'
   const updatestamp = '2021-08-30T19:33:49.819672'

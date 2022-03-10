@@ -1,7 +1,8 @@
+import * as Sentry from '@sentry/browser'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
 import ErrorBoundary from './ErrorBoundary'
-import * as Sentry from '@sentry/browser'
 
 const thrownError = 'Alice in wonderland'
 function BadComponent() {

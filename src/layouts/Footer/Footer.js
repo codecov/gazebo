@@ -1,7 +1,8 @@
-import { useStaticNavLinks } from 'services/navigation'
-import { FooterItem } from './FooterItem'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import { useStaticNavLinks } from 'services/navigation'
 import A from 'ui/A'
+
+import { FooterItem } from './FooterItem'
 
 function Footer() {
   const { terms, privacy, security, gdpr, pricing, support, docs, enterprise } =

@@ -1,11 +1,11 @@
-import { providerFeedback } from 'shared/utils'
-import { useState } from 'react'
-import { useLegacyRedirects } from 'services/redirects'
-
 import PropTypes from 'prop-types'
+import { useState } from 'react'
+
+import { useLegacyRedirects } from 'services/redirects'
+import { providerFeedback } from 'shared/utils'
+import A from 'ui/A'
 import Banner from 'ui/Banner'
 import Icon from 'ui/Icon'
-import A from 'ui/A'
 
 function Header({ provider, owner, repo, commit }) {
   const [selectedOldUI, setSelectedOldUI] = useState(false)
