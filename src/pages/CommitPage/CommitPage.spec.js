@@ -83,18 +83,6 @@ const fileData = {
   flagNames: [],
 }
 
-const dataWithNoAuthor = {
-  commit: {
-    state: 'complete',
-    totals: {
-      coverage: 38.30846,
-    },
-    commitid: '7200398h48a3cebc0728d915763c2fd9e92132408',
-    pullId: 10,
-    createdAt: '2020-08-25T16:35:32',
-    author: null,
-  },
-}
 describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
