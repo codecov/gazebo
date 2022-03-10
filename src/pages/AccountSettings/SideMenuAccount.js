@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom'
+
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 import Sidemenu from 'ui/Sidemenu'
 

@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
+
 import { useIsCurrentUserAnAdmin } from 'services/user'
 
 import Tabs from './Tabs'
-import { QueryClientProvider, QueryClient } from 'react-query'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('../CallToAction', () => () => 'CallToAction')

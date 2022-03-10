@@ -1,5 +1,6 @@
-import { useRedirect } from './hooks'
 import { renderHook } from '@testing-library/react-hooks'
+
+import { useRedirect } from './hooks'
 
 const href = `/account/gh/rula/billing`
 describe('useRedirect', () => {

@@ -1,6 +1,7 @@
-import TabNavigation from 'ui/TabNavigation'
-import { useIsCurrentUserAnAdmin } from 'services/user'
 import { useParams } from 'react-router-dom'
+
+import { useIsCurrentUserAnAdmin } from 'services/user'
+import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
   const { owner } = useParams()

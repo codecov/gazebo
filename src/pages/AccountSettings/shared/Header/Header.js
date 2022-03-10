@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
-import TabNavigation from 'ui/TabNavigation'
 import { useIsCurrentUserAnAdmin } from 'services/user'
+import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
   const { owner } = useParams()
