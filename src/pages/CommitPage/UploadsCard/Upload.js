@@ -67,7 +67,9 @@ const Upload = ({
               <span className="text-xs ml-1">{flag}</span>
             </span>
           ))}
-          {<span className="text-ds-gray-quinary text-xs">carry-forward</span>}
+          {isCarriedForward && (
+            <span className="text-ds-gray-quinary text-xs">carry-forward</span>
+          )}
         </div>
         {downloadUrl && (
           <A
