@@ -5,6 +5,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import Header from './Header'
+import Summary from './Summary'
 import Card from './Card'
 
 const Root = lazy(() => import('./subroute/Root'))
@@ -35,6 +36,7 @@ function PullRequestPage() {
         ]}
       />
       <Header />
+      <Summary page="compare" />
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 space-y-2">
         <div className="col-span-2">
           <Switch>

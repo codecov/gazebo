@@ -14,6 +14,21 @@ export function usePull({ provider, owner, repo, pullid }) {
                 username
               }
               updatestamp
+              head {
+                commitid
+                totals {
+                  coverage
+                }
+              }
+              comparedTo {
+                commitid
+              }
+              compareWithBase {
+                patchTotals {
+                  coverage
+                }
+                changeWithParent
+              }
             }
           }
         }

@@ -8,7 +8,7 @@ import Change from 'ui/Change'
 import CIStatusLabel from './CIStatusLabel'
 import Header from './Header'
 import PullLabel from './PullLabel'
-import TotalsLabel from './TotalsLabel'
+import SummaryCard from 'shared/Summary/SummaryCard'
 
 /* 
   TODO This/useCommit was not implemented correctly and needs a refactor, leaving for the moment.
@@ -49,7 +49,7 @@ function CoverageReportCard({ data, provider, repo, owner }) {
     <div className="flex flex-1 p-4 gap-4 flex-col border text-ds-gray-octonary">
       <Header state={state} />
       <div className="flex gap-4 px-4 justify-between flex-1 text-xs">
-        <TotalsLabel
+        <SummaryCard
           title={
             <>
               <span>HEAD</span>
@@ -58,13 +58,13 @@ function CoverageReportCard({ data, provider, repo, owner }) {
           }
         >
           {coverage ? `${coverage} %` : '-'}
-        </TotalsLabel>
-        <TotalsLabel title="Patch">
+        </SummaryCard>
+        <SummaryCard title="Patch">
           <span className="text-xl text-center font-light">{patch}</span>
-        </TotalsLabel>
-        <TotalsLabel title="Change">
+        </SummaryCard>
+        <SummaryCard title="Change">
           <Change value={change} variant="coverageCard" />
-        </TotalsLabel>
+        </SummaryCard>
       </div>
       {state === 'error' ? (
         <p className="flex-1 text-ds-gray-quinary text-sm leading-5">
