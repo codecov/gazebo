@@ -1,5 +1,5 @@
-import { totalsLabels, compareLabels, mapLabels } from 'shared/Summary/Labels'
 import { usePull } from 'services/pull/hooks'
+import { compareLabels, mapLabels, totalsLabels } from 'shared/Summary/Labels'
 
 function useSummaryData(page, params) {
   let labels = []
@@ -9,10 +9,10 @@ function useSummaryData(page, params) {
       const { data: pull } = usePull({ provider, owner, repo, pullid })
 
       const compareWithBase = pull?.compareWithBase
-      const head = pull.head
+      const head = pull?.head
       const patch = compareWithBase?.patchTotals?.coverage
       const change = compareWithBase?.changeWithParent
-      const base = pull.comparedTo
+      const base = pull?.comparedTo
       const compareCards = {
         headCommit: head?.commitid,
         baseCommit: base?.commitid,
