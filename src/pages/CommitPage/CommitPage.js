@@ -26,6 +26,7 @@ function CommitPage() {
   })
 
   const commit = data?.commit
+  const username = commit?.author?.username
 
   const loadingState = (
     <div className="flex-1 flex justify-center m-4">
@@ -85,14 +86,14 @@ function CommitPage() {
                 addSuffix: true,
               })
             : ''}
-          {commit?.author?.username && ' by'}
+          {username && ' by'}
           <A
             to={{
               pageName: 'owner',
-              options: { owner: commit?.author?.username },
+              options: { owner: username },
             }}
           >
-            {commit?.author?.username}
+            {username}
           </A>
         </p>
       </div>
