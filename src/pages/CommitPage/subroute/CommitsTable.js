@@ -7,13 +7,13 @@ import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
-const getFileData = ({ row }) => {
-  const headCov = row?.headCoverage?.coverage
-  const patchCov = row?.patchCoverage?.coverage
-  const baseCov = row?.baseCoverage?.coverage
-  const change = headCov - baseCov
+const getFileData = ({ headCoverage, patchCoverage, baseCoverage }) => {
+  const headCov = headCoverage?.coverage
+  const patchCov = patchCoverage?.coverage
+  const baseCov = baseCoverage?.coverage
+  const change = isNumber(headCov) && isNumber(baseCov) ? headCov - baseCov : 0
 
-  const hasData = isNumber(headCov) && isNumber(patchCov) && isNumber(change)
+  const hasData = isNumber(headCov) || isNumber(patchCov)
   const noDataDisplay = hasData && '-'
 
   return {
@@ -55,7 +55,11 @@ const table = [
 function useFormatTableData({ tableData, commit }) {
   return tableData.map((row) => {
     const { headCoverage, patchCoverage, hasData, change, noDataDisplay } =
-      getFileData({ row })
+      getFileData({
+        headCoverage: row?.headCoverage,
+        patchCoverage: row?.patchCoverage,
+        baseCoverage: row?.baseCoverage,
+      })
 
     return {
       name: (
@@ -78,14 +82,14 @@ function useFormatTableData({ tableData, commit }) {
           <Progress amount={headCoverage} label={true} />
         </div>
       ) : (
-        noDataDisplay
+        <div className="flex flex-1 justify-end">{noDataDisplay}</div>
       ),
-      patch: isNumber(patchCoverage) ? (
+      patch: (
         <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {patchCoverage?.toFixed(2)}%
+          {isNumber(patchCoverage)
+            ? `${patchCoverage?.toFixed(2)}%`
+            : noDataDisplay}
         </span>
-      ) : (
-        noDataDisplay
       ),
       change: hasData ? (
         <Change value={change} variant="default" />
