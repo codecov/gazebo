@@ -7,6 +7,23 @@ import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
+const getFileData = ({ headCoverage, patchCoverage }) => {
+  const headCove = headCoverage?.coverage
+  const patchCov = patchCoverage?.coverage
+  const change = headCove - patchCov
+
+  const hasData = isNumber(headCove) && isNumber(patchCov)
+  const noDataDisplay = hasData && '-'
+
+  return {
+    headCoverage: headCove,
+    patchCoverage: patchCov,
+    hasData,
+    change,
+    noDataDisplay,
+  }
+}
+
 const table = [
   {
     Header: 'Name',
@@ -34,9 +51,40 @@ const table = [
   },
 ]
 
-function useFormatTableData({ tableData = [], commit }) {
+function useFormatTableData({ commit }) {
+  const tableData = [
+    {
+      headName: 'src/index2.py',
+      baseCoverage: {
+        coverage: 62.5,
+      },
+      headCoverage: {
+        coverage: 50.0,
+      },
+      patchCoverage: {
+        coverage: 37.5,
+      },
+    },
+    {
+      headName: 'src/index2.py',
+      baseCoverage: {
+        coverage: null,
+      },
+      headCoverage: {
+        coverage: null,
+      },
+      patchCoverage: {
+        coverage: null,
+      },
+    },
+  ]
   return tableData.map((row) => {
-    const change = row?.headCoverage?.coverage - row?.baseCoverage?.coverage
+    const { headCoverage, patchCoverage, hasData, change, noDataDisplay } =
+      getFileData({
+        headCoverage: row?.headCoverage,
+        patchCoverage: row?.patchCoverage,
+      })
+
     return {
       name: (
         <div className="flex flex-col">
@@ -53,19 +101,27 @@ function useFormatTableData({ tableData = [], commit }) {
           </span>
         </div>
       ),
-      coverage: (
+      coverage: isNumber(headCoverage) ? (
         <div className="flex flex-1 gap-2 items-center">
-          <Progress amount={row?.headCoverage?.coverage || 0} label={true} />
+          <Progress amount={headCoverage} label={true} />
         </div>
+      ) : (
+        noDataDisplay
       ),
-      patch: (
+      patch: isNumber(patchCoverage) ? (
         <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {isNumber(row?.patchCoverage?.coverage)
-            ? `${row?.patchCoverage?.coverage?.toFixed(2)}%`
-            : '-'}
+          ${patchCoverage?.toFixed(2)}%
+        </span>
+      ) : (
+        noDataDisplay
+      ),
+      change: hasData ? (
+        <Change value={change} variant="default" />
+      ) : (
+        <span className="text-ds-gray-quinary text-sm whitespace-nowrap -m-14 lg:-m-12">
+          No data available
         </span>
       ),
-      change: <Change value={change} variant="default" />,
     }
   })
 }
