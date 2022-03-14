@@ -50,7 +50,8 @@
     "chromatic": "npx chromatic --exit-zero-on-changes -ci",
     "format-staged": "npx prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'",
     "postinstall": "husky install",
-    "generate-icons": "node ./scripts/icons.js"
+    "generate-icons": "node ./scripts/icons.js",
+    "build-pentest": "export REACT_APP_API_URL=\"https://2lhg10h91qybbasknf5g1j4d-api.codecov.report\" && export REACT_APP_BASE_URL=\"https://2lhg10h91qybbasknf5g1j4d.codecov.report\" && npm run build"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md,json}": [
