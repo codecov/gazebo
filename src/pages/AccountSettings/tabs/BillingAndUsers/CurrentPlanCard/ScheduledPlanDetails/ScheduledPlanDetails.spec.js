@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
 
 import ScheduledPlanDetails from './ScheduledPlanDetails'
-import { QueryClientProvider, QueryClient } from 'react-query'
 
 const queryClient = new QueryClient()
 

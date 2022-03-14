@@ -30,6 +30,7 @@ const validateValue = (value) => value && !isNaN(value) && value !== 0
 const Change = ({ value, variant = 'default' }) => {
   const containerClass = variantClasses[variant]
   const isValid = validateValue(value)
+  const val = value?.toFixed(2)
 
   return (
     <div className={containerClass} data-testid="change-value">
@@ -40,7 +41,7 @@ const Change = ({ value, variant = 'default' }) => {
             [textVariants[variant]['uncovered']]: value < 0,
           })}
         >
-          {value.toFixed(2)}%
+          {value > 0 ? `+${val}` : val}%
         </span>
       ) : (
         <>-</>

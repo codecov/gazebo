@@ -2,10 +2,10 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
 import config from 'config'
-import { ErrorCodeEnum, UploadTypes } from 'shared/utils/commit'
 
-import Icon from 'ui/Icon'
+import { ErrorCodeEnum, UploadTypes } from 'shared/utils/commit'
 import A from 'ui/A'
+import Icon from 'ui/Icon'
 
 function humanReadableError(errorCode) {
   if (errorCode === ErrorCodeEnum.fileNotFoundInStorage)

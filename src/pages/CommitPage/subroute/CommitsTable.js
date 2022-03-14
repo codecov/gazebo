@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types'
 import isNumber from 'lodash/isNumber'
+import PropTypes from 'prop-types'
 
-import Table from 'ui/Table'
 import A from 'ui/A'
+import Change from 'ui/Change'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
-import Change from 'ui/Change'
+import Table from 'ui/Table'
 
 const table = [
   {

@@ -1,5 +1,6 @@
-import Sidemenu from './Sidemenu'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
+
+import Sidemenu from './Sidemenu'
 
 const Template = (args) => (
   <MemoryRouter initialEntries={['/account/gh/codecov']}>

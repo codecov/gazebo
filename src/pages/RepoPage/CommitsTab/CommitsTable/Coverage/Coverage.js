@@ -1,5 +1,6 @@
-import Progress from 'ui/Progress'
 import PropTypes from 'prop-types'
+
+import Progress from 'ui/Progress'
 
 const Coverage = ({ totals }) => {
   return (

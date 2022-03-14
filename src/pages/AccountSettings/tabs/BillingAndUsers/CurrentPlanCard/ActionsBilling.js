@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Button from 'old_ui/Button'
 import githubLogo from 'assets/githublogo.png'
-import { useNavLinks, useStaticNavLinks } from 'services/navigation'
+import Button from 'old_ui/Button'
 import { accountDetailsPropType } from 'services/account'
+import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 
 function shouldRenderCancelLink(accountDetails, isFreePlan) {
   // cant cancel a free plan

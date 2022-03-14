@@ -1,5 +1,6 @@
-import TabNavigation from './TabNavigation'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
+
+import TabNavigation from './TabNavigation'
 
 const Template = (args) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>

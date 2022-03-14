@@ -1,5 +1,6 @@
-import { useEffect, useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useParams } from 'react-router'
+
 import { useCommits } from 'services/commits'
 
 function useRedirect() {

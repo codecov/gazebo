@@ -1,8 +1,9 @@
-import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { usePulls } from './hooks'
 import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
+import { usePulls } from './hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,7 @@ const dataReturned = {
               updatestamp: '20-2-2021',
               author: {
                 username: 'Rula',
+                avatarUrl: 'random',
               },
               head: {
                 totals: {
@@ -81,6 +83,7 @@ describe('GetPulls', () => {
           updatestamp: '20-2-2021',
           author: {
             username: 'Rula',
+            avatarUrl: 'random',
           },
           head: {
             totals: {

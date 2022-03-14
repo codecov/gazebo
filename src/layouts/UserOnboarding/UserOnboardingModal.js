@@ -1,17 +1,17 @@
+import { yupResolver } from '@hookform/resolvers/yup'
+import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import noop from 'lodash/noop'
 import ReactModal from 'react-modal'
 
-import BaseModal from 'ui/Modal/BaseModal'
-import Button from 'ui/Button'
 import { useOnboardUser } from 'services/user'
+import Button from 'ui/Button'
+import BaseModal from 'ui/Modal/BaseModal'
 
-import FormInformation from './FormInformation'
+import { getInitialDataForm, getSchema, shouldGoToEmailStep } from './config'
 import FormEmails from './FormEmails'
-import { getInitialDataForm, shouldGoToEmailStep, getSchema } from './config'
+import FormInformation from './FormInformation'
 import { useOnboardingTracking } from './useOnboardingTracking'
 
 function usePerStepProp({ currentUser }) {

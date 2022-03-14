@@ -1,7 +1,8 @@
-import Api from 'shared/api'
-import { useQuery, useQueryClient } from 'react-query'
-import { mapEdges } from 'shared/utils/graphql'
 import map from 'lodash/map'
+import { useQuery, useQueryClient } from 'react-query'
+
+import Api from 'shared/api'
+import { mapEdges } from 'shared/utils/graphql'
 const comparisonFragment = `
   fragment ComparisonFragment on Commit {
     compareWithParent {

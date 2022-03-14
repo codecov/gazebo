@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/reports
 
 # production
 /build
@@ -34,3 +35,7 @@ junit.xml
 
 # storybook
 storybook-static
+
+# stryker temp files
+.stryker-tmp
+stryker.log

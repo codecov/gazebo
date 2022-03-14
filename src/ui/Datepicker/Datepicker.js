@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import moment from 'moment'
 import PropTypes from 'prop-types'
+import React, { useEffect } from 'react'
 import 'react-dates/initialize'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates'
 import 'react-dates/lib/css/_datepicker.css'
-import moment from 'moment'
+
 import './Datepicker.css'
 
 function Datepicker({ params, updateParams }) {

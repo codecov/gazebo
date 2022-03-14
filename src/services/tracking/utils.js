@@ -1,9 +1,9 @@
-import omitBy from 'lodash/omitBy'
-import isNull from 'lodash/isNull'
 import defaults from 'lodash/defaults'
+import isNull from 'lodash/isNull'
 import mapKeys from 'lodash/mapKeys'
-import snakeCase from 'lodash/snakeCase'
+import omitBy from 'lodash/omitBy'
 import pick from 'lodash/pick'
+import snakeCase from 'lodash/snakeCase'
 
 export function getUserData(userData, defaultData) {
   // only limiting the keys from the defaults data

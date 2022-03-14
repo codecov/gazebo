@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
+
 import CommitsTable from './CommitsTable'
 
 jest.mock('services/commits/hooks')
@@ -23,7 +24,7 @@ describe('CommitsTable', () => {
       setup({
         commits: [
           {
-            author: { username: 'RulaKhaled' },
+            author: { username: 'RulaKhaled', avatarUrl: 'random' },
             compareWithParent: {
               patchTotals: {
                 coverage: 90,
@@ -42,7 +43,7 @@ describe('CommitsTable', () => {
             createdAt: '2021-08-30T19:33:49.819672',
           },
           {
-            author: { username: 'Terry' },
+            author: { username: 'Terry', avatarUrl: 'random' },
             compareWithParent: {
               patchTotals: {
                 coverage: 55,

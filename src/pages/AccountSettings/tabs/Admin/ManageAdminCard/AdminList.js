@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom'
 
-import { useUsers, useUpdateUser } from 'services/users'
+import User from 'old_ui/User'
 import { ApiFilterEnum } from 'services/navigation'
+import { useUpdateUser, useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 import { providerToName } from 'shared/utils/provider'
 import Button from 'ui/Button'
-import User from 'old_ui/User'
 
 import AddAdmins from './AddAdmins'
 

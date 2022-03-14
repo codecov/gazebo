@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import CoverageReportCard from './CoverageReportCard'
 import { MemoryRouter } from 'react-router-dom'
+
+import CoverageReportCard from './CoverageReportCard'
 
 jest.mock('services/commit')
 jest.mock('react-router-dom', () => ({
@@ -55,7 +56,7 @@ describe('CoverageReportCard', () => {
     })
     it('renders the Change', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('5.00%')
+      expect(changeValue).toHaveTextContent('+5.00%')
     })
     it('renders the Head', () => {
       expect(screen.getByText('HEAD')).toBeInTheDocument()

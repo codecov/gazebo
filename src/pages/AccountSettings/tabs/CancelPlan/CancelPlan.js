@@ -1,15 +1,16 @@
-import PropType from 'prop-types'
 import difference from 'lodash/difference'
+import PropType from 'prop-types'
 
 import Card from 'old_ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
 
-import umbrellaImg from './umbrella.svg'
 import DowngradeToFree from './DowngradeToFree'
-import BenefitList from '../../shared/BenefitList'
+import umbrellaImg from './umbrella.svg'
+
 import BackLink from '../../shared/BackLink'
+import BenefitList from '../../shared/BenefitList'
 
 function CancelPlan({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })

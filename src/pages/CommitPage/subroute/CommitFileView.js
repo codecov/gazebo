@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useFileWithMainCoverage } from 'services/file/hooks'
-
 import FileViewer from 'shared/FileViewer'
 import Breadcrumb from 'ui/Breadcrumb'
 

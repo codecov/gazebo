@@ -1,7 +1,8 @@
 /* eslint-disable react/display-name */
-import { useState } from 'react'
-import PropTypes from 'prop-types'
 import identity from 'lodash/identity'
+import PropTypes from 'prop-types'
+import { useState } from 'react'
+
 import Select from './Select'
 
 const Template = ({ renderItem, renderSelected, onChange, ...args }) => {

@@ -1,8 +1,10 @@
-import Icon from 'ui/Icon'
-import { IconEnum } from './enums'
-import Progress from 'ui/Progress'
-import A from 'ui/A'
 import PropTypes from 'prop-types'
+
+import A from 'ui/A'
+import Icon from 'ui/Icon'
+import Progress from 'ui/Progress'
+
+import { IconEnum } from './enums'
 
 const PullState = ({ state }) => {
   const icon = IconEnum.find((item) => state === item.state)

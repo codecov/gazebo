@@ -1,7 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
 import { useAccountDetails } from 'services/account'
 import * as Segment from 'services/tracking/segment'
+
 import CallToAction from './CallToAction'
 
 const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')

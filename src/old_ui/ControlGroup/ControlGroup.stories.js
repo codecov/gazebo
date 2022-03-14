@@ -1,7 +1,8 @@
-import ControlGroup from './ControlGroup'
-import TextInput from 'old_ui/TextInput'
-import Select from 'old_ui/Select'
 import Button from 'old_ui/Button'
+import Select from 'old_ui/Select'
+import TextInput from 'old_ui/TextInput'
+
+import ControlGroup from './ControlGroup'
 
 // Due to responsive issues and class name priority items are left to set their own flex property.
 const className = 'flex-1'

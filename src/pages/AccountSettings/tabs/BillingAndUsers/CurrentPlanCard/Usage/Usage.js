@@ -1,11 +1,12 @@
-import { accountDetailsPropType } from 'services/account'
-import PropTypes from 'prop-types'
-import Progress from 'ui/Progress'
-import Icon from 'ui/Icon'
-import A from 'ui/A'
 import { subDays } from 'date-fns'
-import { useUploadsNumber } from 'services/uploadsNumber/hooks'
+import PropTypes from 'prop-types'
 import { useParams } from 'react-router'
+
+import { accountDetailsPropType } from 'services/account'
+import { useUploadsNumber } from 'services/uploadsNumber/hooks'
+import A from 'ui/A'
+import Icon from 'ui/Icon'
+import Progress from 'ui/Progress'
 
 const getRollingTimeWindow = () => {
   const today = new Date()

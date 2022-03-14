@@ -2,12 +2,10 @@ import PropTypes from 'prop-types'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
-
-import Card from 'old_ui/Card'
-import A from 'ui/A'
-
 import githubLogo from 'assets/githublogo.png'
+import Card from 'old_ui/Card'
+import { useAccountDetails } from 'services/account'
+import A from 'ui/A'
 
 function GithubIntegrationCard({ provider, owner }) {
   const shouldRender = provider === 'gh' && !config.IS_ENTERPRISE

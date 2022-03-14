@@ -1,7 +1,7 @@
 import { format, fromUnixTime } from 'date-fns'
 
-import { subscriptionDetailType } from 'services/account'
 import Message from 'old_ui/Message'
+import { subscriptionDetailType } from 'services/account'
 
 function getPeriodEnd(subscriptionDetail) {
   const periodEnd = fromUnixTime(subscriptionDetail.currentPeriodEnd)

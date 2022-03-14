@@ -1,33 +1,15 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
-import Avatar from 'ui/Avatar'
 import A from 'ui/A'
-import { useOwner } from 'services/user'
-
-const OwnerData = ({ username }) => {
-  const { data: ownerData } = useOwner({ username })
-
-  return (
-    <span className="flex items-center mr-6">
-      <Avatar
-        user={
-          ownerData || {
-            avatarUrl: 'https://avatars0.githubusercontent.com/u/?v=3&s=55',
-            username: 'default',
-          }
-        }
-        bordered
-      />
-    </span>
-  )
-}
-
-OwnerData.propTypes = {
-  username: PropTypes.string,
-}
+import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ message, author, commitid, createdAt }) => {
+  const user = {
+    avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
+    username: author?.username || DefaultAuthor.USERNAME,
+  }
+
   const commitMessage = () => {
     if (!message) return 'commit message unavailable'
     const msg =
@@ -39,7 +21,9 @@ const Title = ({ message, author, commitid, createdAt }) => {
 
   return (
     <div className="flex flex-row w-96 lg:w-auto">
-      <OwnerData username={author?.username} />
+      <span className="flex items-center mr-5">
+        <Avatar user={user} bordered />
+      </span>
       <div className="flex flex-col w-5/6 lg:w-auto">
         <A to={{ pageName: 'commit', options: { commit: commitid } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
@@ -67,6 +51,7 @@ const Title = ({ message, author, commitid, createdAt }) => {
 Title.propTypes = {
   author: PropTypes.shape({
     username: PropTypes.string,
+    avatarUrl: PropTypes.string,
   }),
   commitid: PropTypes.string,
   message: PropTypes.string,

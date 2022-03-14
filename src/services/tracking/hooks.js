@@ -1,7 +1,8 @@
 import { useUser } from 'services/user'
-import { gtmUser, setDataLayer } from './gtm'
-import { segmentUser, identifySegmentUser, useSegmentPage } from './segment'
+
 import { useTrackFeatureFlags } from './featureFlags'
+import { gtmUser, setDataLayer } from './gtm'
+import { identifySegmentUser, segmentUser, useSegmentPage } from './segment'
 import { getUserData } from './utils'
 
 const trackingInfo = [

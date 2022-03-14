@@ -1,4 +1,4 @@
-import { normalizeFormData, ApiFilterEnum } from './normalize'
+import { ApiFilterEnum, normalizeFormData } from './normalize'
 
 // normalizeFormData for API requests, as Django has some odd behavior in string expectations
 describe('normalizeFormData', () => {

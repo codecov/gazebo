@@ -1,8 +1,8 @@
-import { repoPageRender, screen, fireEvent, waitFor } from './repo-jest-setup'
-
-import { useRepo } from 'services/repo/hooks'
-import { useCommits } from 'services/commits'
 import { useBranches } from 'services/branches'
+import { useCommits } from 'services/commits'
+import { useRepo } from 'services/repo/hooks'
+
+import { fireEvent, repoPageRender, screen, waitFor } from './repo-jest-setup'
 
 import RepoPage from '.'
 

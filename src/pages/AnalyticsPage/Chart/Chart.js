@@ -1,16 +1,16 @@
+import { format } from 'date-fns'
+import moment from 'moment'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
+import { useDebounce, useWindowSize } from 'react-use'
 import {
+  VictoryAccessibleGroup,
+  VictoryAxis,
   VictoryChart,
   VictoryLine,
-  VictoryAxis,
-  VictoryVoronoiContainer,
   VictoryTooltip,
-  VictoryAccessibleGroup,
+  VictoryVoronoiContainer,
 } from 'victory'
-import { format } from 'date-fns'
-import { useWindowSize, useDebounce } from 'react-use'
-import { useState } from 'react'
-import moment from 'moment'
 
 import { useOrgCoverage } from 'services/charts'
 

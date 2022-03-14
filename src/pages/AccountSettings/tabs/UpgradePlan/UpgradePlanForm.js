@@ -1,9 +1,9 @@
-import PropType from 'prop-types'
-import { format, fromUnixTime } from 'date-fns'
-import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
+import { format, fromUnixTime } from 'date-fns'
+import PropType from 'prop-types'
+import { Controller, useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom'
+import * as yup from 'yup'
 
 import Button from 'old_ui/Button'
 import Select from 'old_ui/Select'

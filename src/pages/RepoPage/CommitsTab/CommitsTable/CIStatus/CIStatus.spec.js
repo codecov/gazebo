@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import CIStatus from './CIStatus'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import CIStatus from './CIStatus'
 
 describe('CIStatus', () => {
   function setup(props) {
