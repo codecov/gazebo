@@ -7,16 +7,17 @@ import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
-const getFileData = ({ headCoverage, patchCoverage }) => {
-  const headCove = headCoverage?.coverage
-  const patchCov = patchCoverage?.coverage
-  const change = headCove - patchCov
+const getFileData = ({ row }) => {
+  const headCov = row?.headCoverage?.coverage
+  const patchCov = row?.patchCoverage?.coverage
+  const baseCov = row?.baseCoverage?.coverage
+  const change = headCov - baseCov
 
-  const hasData = isNumber(headCove) && isNumber(patchCov)
+  const hasData = isNumber(headCov) && isNumber(patchCov) && isNumber(change)
   const noDataDisplay = hasData && '-'
 
   return {
-    headCoverage: headCove,
+    headCoverage: headCov,
     patchCoverage: patchCov,
     hasData,
     change,
@@ -51,39 +52,10 @@ const table = [
   },
 ]
 
-function useFormatTableData({ commit }) {
-  const tableData = [
-    {
-      headName: 'src/index2.py',
-      baseCoverage: {
-        coverage: 62.5,
-      },
-      headCoverage: {
-        coverage: 50.0,
-      },
-      patchCoverage: {
-        coverage: 37.5,
-      },
-    },
-    {
-      headName: 'src/index2.py',
-      baseCoverage: {
-        coverage: null,
-      },
-      headCoverage: {
-        coverage: null,
-      },
-      patchCoverage: {
-        coverage: null,
-      },
-    },
-  ]
+function useFormatTableData({ tableData, commit }) {
   return tableData.map((row) => {
     const { headCoverage, patchCoverage, hasData, change, noDataDisplay } =
-      getFileData({
-        headCoverage: row?.headCoverage,
-        patchCoverage: row?.patchCoverage,
-      })
+      getFileData({ row })
 
     return {
       name: (
@@ -110,7 +82,7 @@ function useFormatTableData({ commit }) {
       ),
       patch: isNumber(patchCoverage) ? (
         <span className="text-sm text-right w-full text-ds-gray-octonary">
-          ${patchCoverage?.toFixed(2)}%
+          {patchCoverage?.toFixed(2)}%
         </span>
       ) : (
         noDataDisplay

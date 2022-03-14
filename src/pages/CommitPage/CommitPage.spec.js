@@ -202,6 +202,7 @@ describe('CommitPage', () => {
       const formattedPatch = `${impactedFile.patchCoverage.coverage.toFixed(
         2
       )}%`
+      console.log(formattedPatch)
       expect(screen.getByText(formattedPatch)).toBeInTheDocument()
       const formattedHeadCoverage = `${impactedFile.headCoverage.coverage.toFixed(
         2
