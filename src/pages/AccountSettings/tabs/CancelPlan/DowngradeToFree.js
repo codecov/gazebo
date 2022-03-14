@@ -89,7 +89,10 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
             color="red"
             id="barecancel-trigger"
             disabled={isDisabled}
-            onClick={() => setIsModalOpen(false)}
+            onClick={() => {
+              setIsModalOpen(false)
+              cancelPlan()
+            }}
           >
             Continue Cancellation
           </Button>
