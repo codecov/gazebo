@@ -6,11 +6,7 @@ import { ErrorCodeEnum } from 'shared/utils/commit'
 
 import Icon from 'ui/Icon'
 import A from 'ui/A'
-
-const UploadTypes = Object.freeze({
-  UPLOADED: 'UPLOADED',
-  CARRIED_FORWARD: 'CARRIEDFORWARD',
-})
+import { UploadTypes } from 'shared/utils'
 
 function humanReadableError(errorCode) {
   if (errorCode === ErrorCodeEnum.fileNotFoundInStorage)
