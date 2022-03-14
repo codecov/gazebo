@@ -83,7 +83,7 @@
     }
   ],
   "devDependencies": {
-    "@babel/core": "^7.17.5",
+    "@babel/core": "^7.17.7",
     "@sentry/cli": "^1.73.2",
     "@storybook/addon-a11y": "^6.4.19",
     "@storybook/addon-actions": "^6.4.19",
@@ -105,7 +105,7 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.25.4",
     "faker": "^5.5.3",
-    "http-proxy-middleware": "^2.0.1",
+    "http-proxy-middleware": "^2.0.4",
     "husky": "^7.0.4",
     "jest-junit": "^13.0.0",
     "lint-staged": "^12.3.5",
