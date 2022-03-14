@@ -6,7 +6,7 @@ import { ErrorCodeEnum } from 'shared/utils/commit'
 
 import Icon from 'ui/Icon'
 import A from 'ui/A'
-import { UploadTypes } from 'shared/utils'
+import { UploadTypes } from 'shared/utils/commit'
 
 function humanReadableError(errorCode) {
   if (errorCode === ErrorCodeEnum.fileNotFoundInStorage)
