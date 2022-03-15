@@ -4,9 +4,9 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
-import Header from './Header'
-import Summary from './Summary'
 import Card from './Card'
+import CompareSummary from './CompareSummary'
+import Header from './Header'
 
 const FileDiff = lazy(() => import('./subroute/FileDiff'))
 const Root = lazy(() => import('./subroute/Root'))
@@ -36,7 +36,7 @@ function PullRequestPage() {
         ]}
       />
       <Header />
-      <Summary page="compare" />
+      <CompareSummary />
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 space-y-2">
         <div className="col-span-2">
           <Switch>

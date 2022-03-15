@@ -1,9 +1,12 @@
-import Change from 'ui/Change'
 import isNumber from 'lodash/isNumber'
-import SummaryCard from 'shared/Summary/SummaryCard'
-import A from 'ui/A'
+import { useParams } from 'react-router-dom'
 
-export function totalsLabels({ head, patch, change }) {
+import { usePull } from 'services/pull/hooks'
+import A from 'ui/A'
+import Change from 'ui/Change'
+import Summary from 'ui/Summary'
+
+function totalsLabels({ head, patch, change }) {
   return [
     // TODO: change the "value" for Head and Patch to the component
     {
@@ -35,7 +38,7 @@ export function totalsLabels({ head, patch, change }) {
   ]
 }
 
-export function compareLabels({ headCommit, baseCommit }) {
+function compareLabels({ headCommit, baseCommit }) {
   return [
     {
       name: 'source',
@@ -57,16 +60,33 @@ export function compareLabels({ headCommit, baseCommit }) {
   ]
 }
 
-export function mapLabels(labels) {
-  return labels.map((label) => {
-    const { name, title, value } = label
-    return (
-      title &&
-      value && (
-        <SummaryCard key={name} title={title}>
-          {value}
-        </SummaryCard>
-      )
-    )
-  })
+function extractPullData(pull) {
+  const compareWithBase = pull?.compareWithBase
+  const head = pull?.head
+  const base = pull?.comparedTo
+
+  return {
+    head,
+    patch: compareWithBase?.patchTotals?.coverage,
+    change: compareWithBase?.changeWithParent,
+    compareCards: {
+      headCommit: head?.commitid,
+      baseCommit: base?.commitid,
+    },
+  }
 }
+
+function CompareSummary() {
+  const { provider, owner, repo, pullid } = useParams()
+  const { data: pull } = usePull({ provider, owner, repo, pullid })
+  const { head, patch, change, compareCards } = extractPullData(pull)
+
+  const labels = [
+    ...totalsLabels({ head, patch, change }),
+    ...compareLabels(compareCards),
+  ]
+
+  return <Summary labels={labels} />
+}
+
+export default CompareSummary

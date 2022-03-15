@@ -4,11 +4,11 @@ import PropTypes from 'prop-types'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
 import Change from 'ui/Change'
+import SummaryCard from 'ui/SummaryCard/SummaryCard'
 
 import CIStatusLabel from './CIStatusLabel'
 import Header from './Header'
 import PullLabel from './PullLabel'
-import SummaryCard from 'shared/Summary/SummaryCard'
 
 /* 
   TODO This/useCommit was not implemented correctly and needs a refactor, leaving for the moment.

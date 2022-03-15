@@ -13,4 +13,5 @@ export default function SummaryCard({ children, title }) {
 
 SummaryCard.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  children: PropTypes.element,
 }
