@@ -11,6 +11,7 @@ const getFileData = ({ headCoverage, patchCoverage, baseCoverage }) => {
   const headCov = headCoverage?.coverage
   const patchCov = patchCoverage?.coverage
   const baseCov = baseCoverage?.coverage
+
   const change = isNumber(headCov) && isNumber(baseCov) ? headCov - baseCov : 0
 
   const hasData = isNumber(headCov) || isNumber(patchCov)
@@ -94,7 +95,7 @@ function useFormatTableData({ tableData, commit }) {
       change: hasData ? (
         <Change value={change} variant="default" />
       ) : (
-        <span className="text-ds-gray-quinary text-sm whitespace-nowrap -m-14 lg:-m-12">
+        <span className="text-ds-gray-quinary text-sm whitespace-nowrap -ml-14 lg:-ml-12">
           No data available
         </span>
       ),

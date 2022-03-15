@@ -81,6 +81,38 @@ describe('CommitsTable', () => {
       expect(copy).toBeInTheDocument()
     })
   })
+
+  describe('when some data is missing', () => {
+    beforeEach(() => {
+      setup([
+        {
+          headName: '',
+          baseCoverage: {},
+          headCoverage: {
+            coverage: 67,
+          },
+          patchCoverage: {
+            coverage: 98,
+          },
+        },
+      ])
+    })
+
+    it('renders head coverage', () => {
+      const coverage = screen.queryByText(/67.00%/)
+      expect(coverage).toBeInTheDocument()
+    })
+
+    it('renders patch coverage', () => {
+      const coverage = screen.queryByText(/98.00%/)
+      expect(coverage).toBeInTheDocument()
+    })
+
+    it('renders dash for change', () => {
+      const dash = screen.getByText('-')
+      expect(dash).toBeInTheDocument()
+    })
+  })
   describe('when no changes', () => {
     beforeEach(() => {
       setup()
