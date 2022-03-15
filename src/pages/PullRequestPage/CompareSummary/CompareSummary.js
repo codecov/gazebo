@@ -69,21 +69,19 @@ function extractPullData(pull) {
     head,
     patch: compareWithBase?.patchTotals?.coverage,
     change: compareWithBase?.changeWithParent,
-    compareCards: {
-      headCommit: head?.commitid,
-      baseCommit: base?.commitid,
-    },
+    headCommit: head?.commitid,
+    baseCommit: base?.commitid,
   }
 }
 
 function CompareSummary() {
   const { provider, owner, repo, pullid } = useParams()
   const { data: pull } = usePull({ provider, owner, repo, pullid })
-  const { head, patch, change, compareCards } = extractPullData(pull)
+  const { head, patch, change, headCommit, baseCommit } = extractPullData(pull)
 
   const labels = [
     ...totalsLabels({ head, patch, change }),
-    ...compareLabels(compareCards),
+    ...compareLabels({ headCommit, baseCommit }),
   ]
 
   return <Summary labels={labels} />
