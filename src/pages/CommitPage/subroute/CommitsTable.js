@@ -53,7 +53,7 @@ const table = [
   },
 ]
 
-function useFormatTableData({ tableData, commit }) {
+function useFormatTableData({ tableData = [], commit }) {
   return tableData.map((row) => {
     const { headCoverage, patchCoverage, hasData, change, noDataDisplay } =
       getFileData({
