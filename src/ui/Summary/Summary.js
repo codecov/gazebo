@@ -1,20 +1,20 @@
 import PropTypes from 'prop-types'
 
-import SummaryCard from 'ui/SummaryCard'
+import SummaryField from 'ui/SummaryField'
 
-function Summary({ cards }) {
+function Summary({ fields }) {
   return (
-    cards &&
-    cards.length > 0 && (
+    fields &&
+    fields.length > 0 && (
       <div className="flex gap-8 border-b border-ds-gray-secondary py-2">
-        {cards.map((card) => {
-          const { name, title, value } = card
+        {fields.map((field) => {
+          const { name, title, value } = field
           return (
             title &&
             value && (
-              <SummaryCard key={name} title={title}>
+              <SummaryField key={name} title={title}>
                 {value}
-              </SummaryCard>
+              </SummaryField>
             )
           )
         })}
@@ -24,7 +24,7 @@ function Summary({ cards }) {
 }
 
 Summary.propTypes = {
-  cards: PropTypes.arrayOf(
+  fields: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       title: PropTypes.oneOfType([PropTypes.element, PropTypes.string])

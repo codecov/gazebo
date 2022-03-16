@@ -5,41 +5,41 @@ import Summary from '.'
 describe('Summary', () => {
   let container
 
-  function setup({ cards }) {
-    ;({ container } = render(<Summary cards={cards} />))
+  function setup({ fields }) {
+    ;({ container } = render(<Summary fields={fields} />))
   }
 
-  it('doesnt render anything when cards array is empty', () => {
-    const cards = []
-    setup({ cards })
+  it('doesnt render anything when fields array is empty', () => {
+    const fields = []
+    setup({ fields })
 
     expect(container).toBeEmptyDOMElement()
   })
 
-  it('renders a summary card for every card provided', () => {
-    const cardOne = {
-      name: 'firstCard',
+  it('renders a summary field for every field provided', () => {
+    const fieldOne = {
+      name: 'firstfield',
       title: 'random title',
       value: 'random value',
     }
-    const cardTwo = {
-      name: 'secondCard',
+    const fieldTwo = {
+      name: 'secondfield',
       title: <span>Fancy title</span>,
       value: <span>Fancy value</span>,
     }
-    const cards = [cardOne, cardTwo]
-    setup({ cards })
+    const fields = [fieldOne, fieldTwo]
+    setup({ fields })
 
     expect(container).not.toBeEmptyDOMElement()
 
-    const cardOneTitle = screen.getByText('random title')
-    expect(cardOneTitle).toBeInTheDocument()
-    const cardOneValue = screen.getByText('random value')
-    expect(cardOneValue).toBeInTheDocument()
+    const fieldOneTitle = screen.getByText('random title')
+    expect(fieldOneTitle).toBeInTheDocument()
+    const fieldOneValue = screen.getByText('random value')
+    expect(fieldOneValue).toBeInTheDocument()
 
-    const cardTwoTitle = screen.getByText('Fancy title')
-    expect(cardTwoTitle).toBeInTheDocument()
-    const cardTwoValue = screen.getByText('Fancy value')
-    expect(cardTwoValue).toBeInTheDocument()
+    const fieldTwoTitle = screen.getByText('Fancy title')
+    expect(fieldTwoTitle).toBeInTheDocument()
+    const fieldTwoValue = screen.getByText('Fancy value')
+    expect(fieldTwoValue).toBeInTheDocument()
   })
 })

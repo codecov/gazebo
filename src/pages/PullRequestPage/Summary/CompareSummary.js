@@ -1,12 +1,18 @@
+import { head } from 'lodash'
 import isNumber from 'lodash/isNumber'
-import { useParams } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
 import A from 'ui/A'
 import Change from 'ui/Change'
 import Summary from 'ui/Summary'
 
-function totalsCards({ head, patch, change }) {
+import { usePullForCompareSummary } from './hooks'
+
+function totalsCards({
+  headCoverage,
+  headCommit,
+  patchCoverage,
+  changeCoverage,
+}) {
   return [
     // TODO: change the "value" for Head and Patch to the component
     {
@@ -14,26 +20,28 @@ function totalsCards({ head, patch, change }) {
       title: (
         <>
           <span>HEAD</span>
-          <span className="text-ds-gray-octonary">
-            {head.commitid.substr(0, 7)}
-          </span>
+          {headCommit && (
+            <span className="text-ds-gray-octonary">
+              {headCommit.substr(0, 7)}
+            </span>
+          )}
         </>
       ),
-      value: head.totals.coverage ? `${head?.totals.coverage} %` : '-',
+      value: headCoverage ? `${headCoverage} %` : '-',
     },
     {
       name: 'patch',
       title: 'Patch',
       value: (
         <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {isNumber(patch) ? `${patch?.toFixed(2)}%` : '-'}
+          {isNumber(patchCoverage) ? `${patchCoverage?.toFixed(2)}%` : '-'}
         </span>
       ),
     },
     {
       name: 'change',
       title: 'Change',
-      value: <Change value={change} variant="coverageCard" />,
+      value: <Change value={changeCoverage} variant="coverageCard" />,
     },
   ]
 }
@@ -60,30 +68,23 @@ function compareCards({ headCommit, baseCommit }) {
   ]
 }
 
-function _extractPullData(pull) {
-  const compareWithBase = pull?.compareWithBase
-  const head = pull?.head
-  const base = pull?.comparedTo
-
-  return {
-    head,
-    patch: compareWithBase?.patchTotals?.coverage,
-    change: compareWithBase?.changeWithParent,
-    headCommit: head?.commitid,
-    baseCommit: base?.commitid,
-  }
-}
-
 function CompareSummary() {
-  const { provider, owner, repo, pullid } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullid })
-  const { head, patch, change, headCommit, baseCommit } = _extractPullData(pull)
-  const cards = [
-    ...totalsCards({ head, patch, change }),
+  const {
+    headCoverage,
+    patchCoverage,
+    changeCoverage,
+    headCommit,
+    baseCommit,
+  } = usePullForCompareSummary()
+
+  console.log(headCommit, patchCoverage, changeCoverage, headCommit, baseCommit)
+
+  const fields = [
+    ...totalsCards({ headCoverage, headCommit, patchCoverage, changeCoverage }),
     ...compareCards({ headCommit, baseCommit }),
   ]
 
-  return <Summary cards={cards} />
+  return <Summary fields={fields} />
 }
 
 export default CompareSummary

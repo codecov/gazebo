@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 
-import SummaryCard from '.'
+import SummaryField from '.'
 
-describe('SummaryCard', () => {
+describe('SummaryField', () => {
   function setup({ children, title }) {
-    render(<SummaryCard title={title}>{children}</SummaryCard>)
+    render(<SummaryField title={title}>{children}</SummaryField>)
   }
 
   it('renders complete card when title and children are provided', () => {
