@@ -1,4 +1,3 @@
-import { head } from 'lodash'
 import isNumber from 'lodash/isNumber'
 
 import A from 'ui/A'
