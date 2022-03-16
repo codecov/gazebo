@@ -5,11 +5,6 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { usePull } from './hooks'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
