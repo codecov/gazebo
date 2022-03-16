@@ -55,11 +55,7 @@ function Line({
       >
         {number}
       </td>
-      <td
-        className={cs('pl-2 break-all', {
-          'opacity-50': lineState === LINE_STATE.BLANK,
-        })}
-      >
+      <td className="pl-2 break-all">
         {line.map((token, key) => (
           <span key={key} {...getTokenProps({ token, key })} />
         ))}
