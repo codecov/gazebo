@@ -2,29 +2,21 @@ import PropTypes from 'prop-types'
 
 import SummaryCard from 'ui/SummaryCard'
 
-function mapLabels(labels) {
-  return labels.map((label) => {
-    const { name, title, value } = label
-    return (
-      title &&
-      value && (
-        <SummaryCard key={name} title={title}>
-          {value}
-        </SummaryCard>
-      )
-    )
-  })
-}
-
-function Summary({ labels }) {
-  const data = mapLabels(labels)
-
+function Summary({ cards }) {
   return (
-    data &&
-    data.length > 0 && (
+    cards &&
+    cards.length > 0 && (
       <div className="flex gap-8 border-b border-ds-gray-secondary py-2">
-        {data.map((child) => {
-          return child
+        {cards.map((card) => {
+          const { name, title, value } = card
+          return (
+            title &&
+            value && (
+              <SummaryCard key={name} title={title}>
+                {value}
+              </SummaryCard>
+            )
+          )
         })}
       </div>
     )
@@ -32,11 +24,15 @@ function Summary({ labels }) {
 }
 
 Summary.propTypes = {
-  labels: PropTypes.shape({
-    head: PropTypes.object.isRequired,
-    patch: PropTypes.number.isRequired,
-    change: PropTypes.number.isRequired,
-  }),
+  cards: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      title: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
+        .isRequired,
+      value: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
+        .isRequired,
+    })
+  ),
 }
 
 export default Summary

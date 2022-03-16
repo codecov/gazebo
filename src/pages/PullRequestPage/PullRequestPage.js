@@ -5,8 +5,8 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import Card from './Card'
-import CompareSummary from './CompareSummary'
 import Header from './Header'
+import CompareSummary from './Summary'
 
 const FileDiff = lazy(() => import('./subroute/FileDiff'))
 const Root = lazy(() => import('./subroute/Root'))

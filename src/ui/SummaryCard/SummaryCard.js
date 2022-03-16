@@ -6,12 +6,12 @@ export default function SummaryCard({ children, title }) {
       <h4 className="flex font-semibold gap-2 text-ds-gray-quinary font-mono text-xs">
         {title}
       </h4>
-      <p className="text-xl font-light">{children}</p>
+      {children && <p className="text-xl font-light">{children}</p>}
     </div>
   )
 }
 
 SummaryCard.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  children: PropTypes.element,
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 }

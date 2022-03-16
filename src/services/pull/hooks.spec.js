@@ -5,6 +5,11 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { usePull } from './hooks'
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
+  useParams: jest.fn(() => {}),
+}))
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -30,6 +35,21 @@ const pull = {
   updatestamp: '2021-03-03T17:54:07.727453',
   author: {
     username: 'landonorris',
+  },
+  head: {
+    commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+    totals: {
+      coverage: 78.33,
+    },
+  },
+  comparedTo: {
+    commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+  },
+  compareWithBase: {
+    patchTotals: {
+      coverage: 92.12,
+    },
+    changeWithParent: 38.94,
   },
 }
 
