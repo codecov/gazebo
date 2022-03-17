@@ -1,8 +1,8 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import { lazy, Suspense } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
+import { formatTimeToNow } from 'shared/formatTimeToNow'
 import { getProviderCommitURL } from 'shared/utils/provider'
 import A from 'ui/A'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -27,6 +27,7 @@ function CommitPage() {
 
   const commit = data?.commit
   const username = commit?.author?.username
+  console.log(commit.createdAt)
 
   const loadingState = (
     <div className="flex-1 flex justify-center m-4">
@@ -81,11 +82,7 @@ function CommitPage() {
             {shortSHA}
           </A>
           was authorized{' '}
-          {commit?.createdAt
-            ? formatDistanceToNow(new Date(commit?.createdAt), {
-                addSuffix: true,
-              })
-            : ''}
+          {commit?.createdAt ? formatTimeToNow(commit?.createdAt) : ''}
           {username && ' by'}
           <A
             to={{
