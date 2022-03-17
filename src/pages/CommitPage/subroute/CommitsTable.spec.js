@@ -59,7 +59,7 @@ describe('CommitsTable', () => {
       expect(noData).toBeInTheDocument()
     })
   })
-  describe('when data is missing', () => {
+  describe('when all data is missing', () => {
     beforeEach(() => {
       setup([
         {
@@ -71,14 +71,46 @@ describe('CommitsTable', () => {
       ])
     })
 
-    it('renders coverage', () => {
-      const coverage = screen.getByText(/0.00%/)
+    it('does not render coverage', () => {
+      const coverage = screen.queryByText(/0.00%/)
+      expect(coverage).not.toBeInTheDocument()
+    })
+
+    it('renders no available data copy', () => {
+      const copy = screen.getByText('No data available')
+      expect(copy).toBeInTheDocument()
+    })
+  })
+
+  describe('when some data is missing', () => {
+    beforeEach(() => {
+      setup([
+        {
+          headName: '',
+          baseCoverage: {},
+          headCoverage: {
+            coverage: 67,
+          },
+          patchCoverage: {
+            coverage: 98,
+          },
+        },
+      ])
+    })
+
+    it('renders head coverage', () => {
+      const coverage = screen.queryByText(/67.00%/)
       expect(coverage).toBeInTheDocument()
     })
 
-    it('render - for missing change', () => {
-      const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('-')
+    it('renders patch coverage', () => {
+      const coverage = screen.queryByText(/98.00%/)
+      expect(coverage).toBeInTheDocument()
+    })
+
+    it('renders dash for change', () => {
+      const dash = screen.getByText('-')
+      expect(dash).toBeInTheDocument()
     })
   })
   describe('when no changes', () => {
