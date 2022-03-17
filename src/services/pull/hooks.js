@@ -4,10 +4,10 @@ import Api from 'shared/api'
 
 export function usePull({ provider, owner, repo, pullId }) {
   const query = `
-    query Pull($owner: String!, $repo: String!, $pullid: Int!) {
+    query Pull($owner: String!, $repo: String!, $pullId: Int!) {
         owner(username: $owner) {
           repository(name: $repo) {
-            pull(id: $pullid) {
+            pull(id: $pullId) {
               pullId
               title
               state
@@ -44,7 +44,7 @@ export function usePull({ provider, owner, repo, pullId }) {
         provider,
         owner,
         repo,
-        pullid: parseInt(pullId, 10),
+        pullId: parseInt(pullId, 10),
       },
     }).then((res) => res?.data?.owner?.repository?.pull)
   })
