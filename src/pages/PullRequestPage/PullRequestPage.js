@@ -5,6 +5,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import Card from './Card'
+import Commits from './Commits'
 import Header from './Header'
 import CompareSummary from './Summary'
 
@@ -38,7 +39,7 @@ function PullRequestPage() {
       <Header />
       <CompareSummary />
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 space-y-2">
-        <div className="col-span-2">
+        <article className="col-span-2">
           <Switch>
             <Route
               path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
@@ -58,15 +59,10 @@ function PullRequestPage() {
               to="/:provider/:owner/:repo/pull/:pullId"
             />
           </Switch>
-        </div>
-        <div className="flex flex-col gap-4">
+        </article>
+        <aside className="flex flex-col gap-4 self-start sticky top-1.5">
           {/* Placeholder, make each card is own component importing the pre styled card */}
-          <Card title="Coverage Report">
-            <p>Test</p>
-          </Card>
-          <Card title="Commits">
-            <p>Test</p>
-          </Card>
+          <Commits />
           <Card title="Flags">
             <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
             <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
@@ -74,7 +70,7 @@ function PullRequestPage() {
             <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
             <p>Test</p> <p>Test</p> <p>Test</p>{' '}
           </Card>
-        </div>
+        </aside>
       </div>
     </div>
   )

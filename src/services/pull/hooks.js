@@ -30,6 +30,32 @@ export function usePull({ provider, owner, repo, pullId }) {
                 }
                 changeWithParent
               }
+              commits(first: 20) {
+                totalCount
+                pageInfo {
+                  hasNextPage
+                  startCursor
+                  hasPreviousPage
+                }
+                edges {
+                  node {
+                    commitid
+                    message
+                    compareWithParent {
+                      patchTotals {
+                        coverage
+                      }
+                      changeWithParent
+                    }
+                    totals {
+                      coverage
+                    }
+                    author {
+                      username
+                    }
+                  }
+                }
+              }
             }
           }
         }
