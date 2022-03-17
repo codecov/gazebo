@@ -2,7 +2,7 @@ import { useQuery } from 'react-query'
 
 import Api from 'shared/api'
 
-export function usePull({ provider, owner, repo, pullid }) {
+export function usePull({ provider, owner, repo, pullId }) {
   const query = `
     query Pull($owner: String!, $repo: String!, $pullid: Int!) {
         owner(username: $owner) {
@@ -36,7 +36,7 @@ export function usePull({ provider, owner, repo, pullid }) {
       }
     `
 
-  return useQuery(['pull', provider, owner, repo, pullid], () => {
+  return useQuery(['pull', provider, owner, repo, pullId], () => {
     return Api.graphql({
       provider,
       query,
@@ -44,7 +44,7 @@ export function usePull({ provider, owner, repo, pullid }) {
         provider,
         owner,
         repo,
-        pullid: parseInt(pullid, 10),
+        pullid: parseInt(pullId, 10),
       },
     }).then((res) => res?.data?.owner?.repository?.pull)
   })
