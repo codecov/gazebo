@@ -6,7 +6,7 @@ function Summary({ fields }) {
   return (
     fields &&
     fields.length > 0 && (
-      <div className="flex gap-8 border-b border-ds-gray-secondary py-2">
+      <div className="flex gap-8 justify-start align-start">
         {fields.map((field) => {
           const { name, title, value } = field
           return (

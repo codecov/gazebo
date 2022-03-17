@@ -51,7 +51,7 @@ function compareCards({ headCommit, baseCommit }) {
       name: 'source',
       title: 'Source',
       value: headCommit && baseCommit && (
-        <p className="text-ds-gray-octonary text-sm">
+        <p className="text-ds-gray-octonary text-sm mt-2">
           Coverage data based on{' '}
           <span className="uppercase font-medium">head</span>{' '}
           <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
@@ -76,14 +76,16 @@ function CompareSummary() {
     baseCommit,
   } = usePullForCompareSummary()
 
-  console.log(headCommit, patchCoverage, changeCoverage, headCommit, baseCommit)
-
   const fields = [
     ...totalsCards({ headCoverage, headCommit, patchCoverage, changeCoverage }),
     ...compareCards({ headCommit, baseCommit }),
   ]
 
-  return <Summary fields={fields} />
+  return (
+    <div className="border-b border-ds-gray-secondary pb-4">
+      <Summary fields={fields} />
+    </div>
+  )
 }
 
 export default CompareSummary
