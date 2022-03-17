@@ -6,7 +6,7 @@ export default function SummaryField({ children, title }) {
       <h4 className="flex font-semibold gap-2 text-ds-gray-quinary font-mono text-xs">
         {title}
       </h4>
-      {children && <p className="text-xl font-light">{children}</p>}
+      {children && <div className="text-xl font-light">{children}</div>}
     </div>
   )
 }
