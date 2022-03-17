@@ -1,17 +1,25 @@
 import { render, screen } from '@testing-library/react'
 
-import Change from '.'
+import TotalsNumber from '.'
 
-describe('Change', () => {
+describe('TotalsNumber', () => {
   function setup({ value, variant }) {
-    render(<Change value={value} variant={variant} />)
+    render(
+      <TotalsNumber
+        value={value}
+        variant={variant}
+        showChange
+        data-testid="change-value"
+      />
+    )
   }
 
   describe('when rendered', () => {
     it('renders commit change when there is a valid value', () => {
       setup({ value: 23, variant: 'default' })
-      const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('+23.00%')
+      const changeValue = screen.getByTestId('number-value')
+      expect(changeValue).toHaveTextContent('23.00%')
+      expect(changeValue).toHaveClass("before:content-['+']")
     })
 
     it('renders negative number when change is negative', () => {

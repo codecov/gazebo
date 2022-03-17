@@ -2,10 +2,10 @@ import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 
 import A from 'ui/A'
-import Change from 'ui/Change'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
+import TotalsNumber from 'ui/TotalsNumber'
 
 const table = [
   {
@@ -55,23 +55,31 @@ function useFormatTableData({ tableData = [], commit }) {
       ),
       coverage: (
         <div className="flex flex-1 gap-2 items-center">
-          <Progress amount={row?.headCoverage?.coverage || 0} label={true} />
+          <Progress
+            amount={row?.headCoverage?.coverage || 0}
+            label
+            isCoverage
+          />
         </div>
       ),
       patch: (
-        <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {isNumber(row?.patchCoverage?.coverage)
-            ? `${row?.patchCoverage?.coverage?.toFixed(2)}%`
-            : '-'}
-        </span>
+        <TotalsNumber
+          value={
+            isNumber(row?.patchCoverage?.coverage)
+              ? row?.patchCoverage?.coverage
+              : Number.NaN
+          }
+        />
       ),
-      change: <Change value={change} variant="default" />,
+      change: (
+        <TotalsNumber value={change} showChange data-testid="change-value" />
+      ),
     }
   })
 }
 
 function CommitsTable({ data = [], commit, state }) {
-  const formatedData = useFormatTableData({ tableData: data, commit })
+  const formattedData = useFormatTableData({ tableData: data, commit })
 
   if (state === 'pending') {
     return (
@@ -83,7 +91,7 @@ function CommitsTable({ data = [], commit, state }) {
 
   return (
     <>
-      <Table data={formatedData} columns={table} />
+      <Table data={formattedData} columns={table} />
       {data?.length === 0 && (
         <p className="mx-4">No Files covered by tests were changed</p>
       )}

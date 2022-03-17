@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import CoverageReportCard from './CoverageReportCard'
@@ -56,7 +56,9 @@ describe('CoverageReportCard', () => {
     })
     it('renders the Change', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('+5.00%')
+      const child = within(changeValue).getByTestId('number-value')
+      expect(changeValue).toHaveTextContent('5.00%')
+      expect(child).toHaveClass("before:content-['+']")
     })
     it('renders the Head', () => {
       expect(screen.getByText('HEAD')).toBeInTheDocument()
@@ -95,7 +97,7 @@ describe('CoverageReportCard', () => {
 
     it('renders PACTH after polling', () => {
       expect(screen.getByText(/Patch/)).toBeInTheDocument()
-      expect(screen.queryAllByText(/11.10/)).toHaveLength(2)
+      expect(screen.getByText(/11.10/)).toBeInTheDocument()
     })
 
     it('does not render the pull lable', () => {
