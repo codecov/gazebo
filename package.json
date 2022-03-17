@@ -84,7 +84,7 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.17.7",
-    "@sentry/cli": "^1.74.0",
+    "@sentry/cli": "^1.74.1",
     "@storybook/addon-a11y": "^6.4.19",
     "@storybook/addon-actions": "^6.4.19",
     "@storybook/addon-essentials": "^6.4.19",
@@ -100,7 +100,7 @@
     "@testing-library/react": "^12.1.4",
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.5.0",
-    "autoprefixer": "^10.4.3",
+    "autoprefixer": "^10.4.4",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.25.4",
