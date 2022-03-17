@@ -102,6 +102,14 @@ describe('CommitPage', () => {
       setup({ data: dataReturned, isSuccess: true })
     })
 
+    it('the Subtext of commit header', () => {
+      expect(screen.getByText(/Commit/)).toBeInTheDocument()
+      expect(screen.getAllByText(/abcd/)[0]).toBeInTheDocument()
+      expect(screen.getByText(/was authorized/)).toBeInTheDocument()
+      expect(screen.getByText(/over 1 year ago by/)).toBeInTheDocument()
+      expect(screen.getByText(/febg/)).toBeInTheDocument()
+    })
+
     it('the Uploads', () => {
       expect(screen.getByText(/Uploads/)).toBeInTheDocument()
     })

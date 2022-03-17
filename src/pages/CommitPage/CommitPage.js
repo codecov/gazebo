@@ -26,6 +26,7 @@ function CommitPage() {
   })
 
   const commit = data?.commit
+  const username = commit?.author?.username
 
   const loadingState = (
     <div className="flex-1 flex justify-center m-4">
@@ -65,20 +66,7 @@ function CommitPage() {
           {commit?.message}
         </h1>
         <p className="flex items-center text-ds-gray-quinary gap-1">
-          {commit?.createdAt
-            ? formatDistanceToNow(new Date(commit?.createdAt), {
-                addSuffix: true,
-              })
-            : ''}
-          <A
-            to={{
-              pageName: 'owner',
-              options: { owner: commit?.author?.username },
-            }}
-          >
-            {commit?.author?.username}
-          </A>
-          authored commit
+          Commit
           <A
             variant="code"
             href={getProviderCommitURL({
@@ -91,6 +79,21 @@ function CommitPage() {
             isExternal={true}
           >
             {shortSHA}
+          </A>
+          was authorized{' '}
+          {commit?.createdAt
+            ? formatDistanceToNow(new Date(commit?.createdAt), {
+                addSuffix: true,
+              })
+            : ''}
+          {username && ' by'}
+          <A
+            to={{
+              pageName: 'owner',
+              options: { owner: username },
+            }}
+          >
+            {username}
           </A>
         </p>
       </div>
