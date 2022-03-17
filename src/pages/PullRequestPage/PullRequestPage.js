@@ -11,7 +11,7 @@ const FileDiff = lazy(() => import('./subroute/FileDiff'))
 const Root = lazy(() => import('./subroute/Root'))
 
 function PullRequestPage() {
-  const { owner, repo, pullid } = useParams()
+  const { owner, repo, pullId } = useParams()
 
   const Loader = (
     <div className="flex items-center justify-center py-16">
@@ -27,10 +27,10 @@ function PullRequestPage() {
           { pageName: 'repo', text: repo },
           { pageName: 'pulls', text: 'Pulls' },
           {
-            pageName: 'pull',
-            options: { pullid },
+            pageName: 'pullDetail',
+            options: { pullId },
             readOnly: true,
-            text: pullid,
+            text: pullId,
           },
         ]}
       />
@@ -39,21 +39,21 @@ function PullRequestPage() {
         <div className="col-span-2">
           <Switch>
             <Route
-              path="/:provider/:owner/:repo/pull/:pullid/tree/:path+"
+              path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
               exact
             >
               <Suspense fallback={Loader}>
                 <FileDiff />
               </Suspense>
             </Route>
-            <Route path="/:provider/:owner/:repo/pull/:pullid" exact={true}>
+            <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
               <Suspense fallback={Loader}>
                 <Root />
               </Suspense>
             </Route>
             <Redirect
-              from="/:provider/:owner/:repo/pull/:pullid/*"
-              to="/:provider/:owner/:repo/pull/:pullid"
+              from="/:provider/:owner/:repo/pull/:pullId/*"
+              to="/:provider/:owner/:repo/pull/:pullId"
             />
           </Switch>
         </div>

@@ -13,10 +13,10 @@ describe('PullRequestPage', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
     render(
       <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullid" exact={true}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
           <PullRequestPage />
         </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullid/tree/:path">
+        <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path">
           <PullRequestPage />
         </Route>
       </MemoryRouter>
