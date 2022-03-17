@@ -6,6 +6,7 @@ import Spinner from 'ui/Spinner'
 
 import Card from './Card'
 import Header from './Header'
+import CompareSummary from './Summary'
 
 const FileDiff = lazy(() => import('./subroute/FileDiff'))
 const Root = lazy(() => import('./subroute/Root'))
@@ -35,6 +36,7 @@ function PullRequestPage() {
         ]}
       />
       <Header />
+      <CompareSummary />
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 space-y-2">
         <div className="col-span-2">
           <Switch>

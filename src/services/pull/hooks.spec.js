@@ -31,6 +31,21 @@ const pull = {
   author: {
     username: 'landonorris',
   },
+  head: {
+    commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+    totals: {
+      coverage: 78.33,
+    },
+  },
+  comparedTo: {
+    commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+  },
+  compareWithBase: {
+    patchTotals: {
+      coverage: 92.12,
+    },
+    changeWithParent: 38.94,
+  },
 }
 
 const dataReturned = {
