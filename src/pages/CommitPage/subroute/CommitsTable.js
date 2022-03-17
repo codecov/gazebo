@@ -1,5 +1,6 @@
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
+import { useMemo } from 'react'
 
 import A from 'ui/A'
 import Change from 'ui/Change'
@@ -7,10 +8,10 @@ import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
-const getFileData = ({ headCoverage, patchCoverage, baseCoverage }) => {
-  const headCov = headCoverage?.coverage
-  const patchCov = patchCoverage?.coverage
-  const baseCov = baseCoverage?.coverage
+const getFileData = (row, commit) => {
+  const headCov = row?.headCoverage?.coverage
+  const patchCov = row?.patchCoverage?.coverage
+  const baseCov = row?.baseCoverage?.coverage
 
   const change = isNumber(headCov) && isNumber(baseCov) ? headCov - baseCov : 0
 
@@ -23,6 +24,8 @@ const getFileData = ({ headCoverage, patchCoverage, baseCoverage }) => {
     hasData,
     change,
     noDataDisplay,
+    headName: row?.headName,
+    commit,
   }
 }
 
@@ -53,14 +56,17 @@ const table = [
   },
 ]
 
-function useFormatTableData({ tableData = [], commit }) {
+function createTable({ tableData = [] }) {
   return tableData.map((row) => {
-    const { headCoverage, patchCoverage, hasData, change, noDataDisplay } =
-      getFileData({
-        headCoverage: row?.headCoverage,
-        patchCoverage: row?.patchCoverage,
-        baseCoverage: row?.baseCoverage,
-      })
+    const {
+      headName,
+      headCoverage,
+      noDataDisplay,
+      patchCoverage,
+      hasData,
+      change,
+      commit,
+    } = row
 
     return {
       name: (
@@ -68,13 +74,13 @@ function useFormatTableData({ tableData = [], commit }) {
           <A
             to={{
               pageName: 'commitFile',
-              options: { commit, path: row.headName },
+              options: { commit, path: headName },
             }}
           >
-            <span>{row.headName?.split('/').pop()}</span>
+            <span>{headName?.split('/').pop()}</span>
           </A>
           <span className="text-xs mt-0.5 text-ds-gray-quinary">
-            {row.headName}
+            {headName}
           </span>
         </div>
       ),
@@ -104,7 +110,11 @@ function useFormatTableData({ tableData = [], commit }) {
 }
 
 function CommitsTable({ data = [], commit, state }) {
-  const formatedData = useFormatTableData({ tableData: data, commit })
+  const formatedData = useMemo(
+    () => data.map((row) => getFileData(row, commit)),
+    [data, commit]
+  )
+  const tableContent = createTable({ tableData: formatedData })
 
   if (state === 'pending') {
     return (
@@ -116,7 +126,7 @@ function CommitsTable({ data = [], commit, state }) {
 
   return (
     <>
-      <Table data={formatedData} columns={table} />
+      <Table data={tableContent} columns={table} />
       {data?.length === 0 && (
         <p className="mx-4">No Files covered by tests were changed</p>
       )}
