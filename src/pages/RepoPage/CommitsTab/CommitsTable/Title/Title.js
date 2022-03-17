@@ -6,10 +6,7 @@ import A from 'ui/A'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ message, author, commitid, createdAt }) => {
-  const formattedDate = useMemo(
-    () => createdAt && formatTimeToNow(createdAt),
-    [createdAt]
-  )
+  const formattedDate = useMemo(() => formatTimeToNow(createdAt), [createdAt])
   const user = {
     avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
     username: author?.username || DefaultAuthor.USERNAME,

@@ -19,7 +19,7 @@ function Header() {
   const { provider, owner, repo, pullid } = useParams()
   const { data: pull } = usePull({ provider, owner, repo, pullid })
   const formattedDate = useMemo(
-    () => pull?.updatestamp && formatTimeToNow(pull?.updatestamp),
+    () => formatTimeToNow(pull?.updatestamp),
     [pull?.updatestamp]
   )
 

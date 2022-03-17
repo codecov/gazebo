@@ -39,7 +39,7 @@ function CommitPage() {
     (file) => file.headName === path
   )
   const formattedDate = useMemo(
-    () => commit?.createdAt && formatTimeToNow(commit?.createdAt),
+    () => formatTimeToNow(commit?.createdAt),
     [commit?.createdAt]
   )
 

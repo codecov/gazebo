@@ -24,6 +24,7 @@ const getUTCDate = (date) => {
 }
 
 export function formatTimeToNow(date) {
+  if (!date) return
   return formatDistanceToNow(getUTCDate(date), {
     addSuffix: true,
   })

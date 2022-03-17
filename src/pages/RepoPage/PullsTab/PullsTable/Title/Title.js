@@ -7,7 +7,7 @@ import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ author, pullId, title, updatestamp }) => {
   const formattedDate = useMemo(
-    () => updatestamp && formatTimeToNow(updatestamp),
+    () => formatTimeToNow(updatestamp),
     [updatestamp]
   )
   const user = {
