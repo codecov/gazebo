@@ -94,6 +94,7 @@ function transformPullToTable(commits) {
               ? compareWithParent?.patchTotals?.coverage * 100
               : Number.NaN
           }
+          data-testid="patch-value"
         />
       ),
       change: <TotalsNumber value={change} showChange />,
