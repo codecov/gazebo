@@ -37,7 +37,7 @@ function Description() {
   )
 }
 
-export const AllOutlineIcons = () => {
+export const AllOutlineIcons = (args) => {
   const options = Object.keys(svgOutline)
 
   return (
@@ -50,7 +50,7 @@ export const AllOutlineIcons = () => {
               key={iconName}
               className="p-3 center flex border border-gray-200"
             >
-              <Icon name={iconName} variant="outline" />
+              <Icon name={iconName} {...args} />
               <p className="ml-2">{kebabCase(iconName)}</p>
             </div>
           )
@@ -59,8 +59,12 @@ export const AllOutlineIcons = () => {
     </>
   )
 }
+AllOutlineIcons.args = {
+  variant: 'outline',
+  size: 'sm',
+}
 
-export const AllSolidIcons = () => {
+export const AllSolidIcons = (args) => {
   const options = Object.keys(svgSolid)
 
   return (
@@ -73,7 +77,7 @@ export const AllSolidIcons = () => {
               key={iconName}
               className="p-3 center flex border border-gray-200"
             >
-              <Icon name={iconName} variant="solid" />
+              <Icon name={iconName} {...args} />
               <p className="ml-2">{iconName}</p>
             </div>
           )
@@ -82,8 +86,12 @@ export const AllSolidIcons = () => {
     </>
   )
 }
+AllSolidIcons.args = {
+  variant: 'solid',
+  size: 'sm',
+}
 
-export const AllDeveloperIcons = () => {
+export const AllDeveloperIcons = (args) => {
   const options = Object.keys(svgDeveloper)
 
   return (
@@ -96,7 +104,7 @@ export const AllDeveloperIcons = () => {
               key={iconName}
               className="p-3 center flex border border-gray-200"
             >
-              <Icon name={iconName} variant="developer" />
+              <Icon name={iconName} {...args} />
               <p className="ml-2">{kebabCase(iconName)}</p>
             </div>
           )
@@ -105,29 +113,46 @@ export const AllDeveloperIcons = () => {
     </>
   )
 }
+AllDeveloperIcons.args = {
+  variant: 'developer',
+  size: 'sm',
+}
 
-export const IconSize = () => {
+export const IconSize = (args) => {
   return (
     <>
       <h1 className="text-2xl">Icon size</h1>
       <br />
       <div className="flex mt-2 items-center">
-        <Icon name="search" size="sm" />
+        <Icon name="search" size="sm" {...args} />
         <p className="ml-4">Size = sm</p>
       </div>
       <div className="flex mt-2 items-center">
-        <Icon name="search" size="md" />
+        <Icon name="search" size="md" {...args} />
         <p className="ml-4">Size = md</p>
       </div>
       <div className="flex mt-2 items-center">
-        <Icon name="search" size="lg" />
+        <Icon name="search" size="lg" {...args} />
         <p className="ml-4">Size = lg</p>
       </div>
     </>
   )
 }
+IconSize.args = {
+  variant: 'outline',
+}
 
 export default {
   title: 'Components/Icon',
   component: Icon,
+  argTypes: {
+    variant: {
+      options: ['solid', 'outline', 'developer'],
+      control: { type: 'select' },
+    },
+    size: {
+      options: ['sm', 'md', 'lg'],
+      control: { type: 'select' },
+    },
+  },
 }
