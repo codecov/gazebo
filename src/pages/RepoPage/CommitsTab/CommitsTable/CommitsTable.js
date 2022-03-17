@@ -69,6 +69,9 @@ function transformPullToTable(commits) {
       ciPassed,
     } = commit
     const change = totals?.coverage - parent?.totals?.coverage
+    const patchValue = compareWithParent?.patchTotals?.coverage
+      ? compareWithParent?.patchTotals?.coverage * 100
+      : Number.NaN
 
     return {
       title: (
@@ -87,16 +90,7 @@ function transformPullToTable(commits) {
         />
       ),
       coverage: <Coverage totals={totals} />,
-      patch: (
-        <TotalsNumber
-          value={
-            compareWithParent?.patchTotals?.coverage
-              ? compareWithParent?.patchTotals?.coverage * 100
-              : Number.NaN
-          }
-          data-testid="patch-value"
-        />
-      ),
+      patch: <TotalsNumber value={patchValue} data-testid="patch-value" />,
       change: <TotalsNumber value={change} showChange />,
     }
   })

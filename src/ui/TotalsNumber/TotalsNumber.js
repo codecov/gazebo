@@ -46,7 +46,7 @@ const TotalsNumber = ({
 }
 
 TotalsNumber.propTypes = {
-  value: PropTypes.number,
+  value: PropTypes.number.isRequired,
   plain: PropTypes.bool,
   inline: PropTypes.bool,
   large: PropTypes.bool,
