@@ -1,8 +1,8 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
-import { formatTimeToNow } from 'shared/formatTimeToNow'
+import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderCommitURL } from 'shared/utils/provider'
 import A from 'ui/A'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -27,7 +27,6 @@ function CommitPage() {
 
   const commit = data?.commit
   const username = commit?.author?.username
-  console.log(commit.createdAt)
 
   const loadingState = (
     <div className="flex-1 flex justify-center m-4">
@@ -38,6 +37,10 @@ function CommitPage() {
   const shortSHA = commitSHA?.substr(0, 7)
   const diff = commit?.compareWithParent?.impactedFiles?.find(
     (file) => file.headName === path
+  )
+  const formattedDate = useMemo(
+    () => commit?.createdAt && formatTimeToNow(commit?.createdAt),
+    [commit?.createdAt]
   )
 
   return !isLoading && commit ? (
@@ -81,8 +84,7 @@ function CommitPage() {
           >
             {shortSHA}
           </A>
-          was authorized{' '}
-          {commit?.createdAt ? formatTimeToNow(commit?.createdAt) : ''}
+          was authorized {commit?.createdAt ? formattedDate : ''}
           {username && ' by'}
           <A
             to={{

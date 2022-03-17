@@ -1,10 +1,15 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
+import { useMemo } from 'react'
 
+import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ message, author, commitid, createdAt }) => {
+  const formattedDate = useMemo(
+    () => createdAt && formatTimeToNow(createdAt),
+    [createdAt]
+  )
   const user = {
     avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
     username: author?.username || DefaultAuthor.USERNAME,
@@ -36,10 +41,7 @@ const Title = ({ message, author, commitid, createdAt }) => {
           </A>
           {createdAt && (
             <span className="text-ds-gray-quinary">
-              {' opened ' +
-                formatDistanceToNow(new Date(createdAt), {
-                  addSuffix: true,
-                })}
+              {' opened ' + formattedDate}
             </span>
           )}
         </p>
