@@ -32,7 +32,15 @@ function UploadsCard() {
               </span>
               {sortedUploads[title].map(
                 (
-                  { ciUrl, buildCode, createdAt, flags, downloadUrl, errors },
+                  {
+                    ciUrl,
+                    buildCode,
+                    createdAt,
+                    flags,
+                    downloadUrl,
+                    errors,
+                    uploadType,
+                  },
                   i
                 ) => (
                   <Upload
@@ -43,6 +51,7 @@ function UploadsCard() {
                     downloadUrl={downloadUrl}
                     errors={errors}
                     key={i}
+                    uploadType={uploadType}
                   />
                 )
               )}
