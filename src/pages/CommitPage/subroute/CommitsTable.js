@@ -1,11 +1,33 @@
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
+import { useMemo } from 'react'
 
 import A from 'ui/A'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
+
+const getFileData = (row, commit) => {
+  const headCov = row?.headCoverage?.coverage
+  const patchCov = row?.patchCoverage?.coverage
+  const baseCov = row?.baseCoverage?.coverage
+
+  const change = isNumber(headCov) && isNumber(baseCov) ? headCov - baseCov : 0
+
+  const hasData = isNumber(headCov) || isNumber(patchCov)
+  const noDataDisplay = hasData && '-'
+
+  return {
+    headCoverage: headCov,
+    patchCoverage: patchCov,
+    hasData,
+    change,
+    noDataDisplay,
+    headName: row?.headName,
+    commit,
+  }
+}
 
 const table = [
   {
@@ -34,33 +56,43 @@ const table = [
   },
 ]
 
-function useFormatTableData({ tableData = [], commit }) {
+function createTable({ tableData = [] }) {
   return tableData.map((row) => {
-    const change = row?.headCoverage?.coverage - row?.baseCoverage?.coverage
+    const {
+      headName,
+      headCoverage,
+      noDataDisplay,
+      hasData,
+      change,
+      commit,
+    } = row
+
     return {
       name: (
         <div className="flex flex-col">
           <A
             to={{
               pageName: 'commitFile',
-              options: { commit, path: row.headName },
+              options: { commit, path: headName },
             }}
           >
-            <span>{row.headName?.split('/').pop()}</span>
+            <span>{headName?.split('/').pop()}</span>
           </A>
           <span className="text-xs mt-0.5 text-ds-gray-quinary">
-            {row.headName}
+            {headName}
           </span>
         </div>
       ),
-      coverage: (
+      coverage: isNumber(headCoverage) ? (
         <div className="flex flex-1 gap-2 items-center">
           <Progress
-            amount={row?.headCoverage?.coverage || 0}
+            amount={headCoverage}
             label
             isCoverage
           />
         </div>
+      ) : (
+        <div className="flex flex-1 justify-end">{noDataDisplay}</div>
       ),
       patch: (
         <TotalsNumber
@@ -71,15 +103,23 @@ function useFormatTableData({ tableData = [], commit }) {
           }
         />
       ),
-      change: (
-        <TotalsNumber value={change} showChange data-testid="change-value" />
+      change: hasData ? (
+          <TotalsNumber value={change} showChange data-testid="change-value" />
+      ) : (
+        <span className="text-ds-gray-quinary text-sm whitespace-nowrap -ml-14 lg:-ml-12">
+          No data available
+        </span>
       ),
     }
   })
 }
 
 function CommitsTable({ data = [], commit, state }) {
-  const formattedData = useFormatTableData({ tableData: data, commit })
+  const formattedData = useMemo(
+    () => data.map((row) => getFileData(row, commit)),
+    [data, commit]
+  )
+  const tableContent = createTable({ tableData: formattedData })
 
   if (state === 'pending') {
     return (
@@ -91,7 +131,7 @@ function CommitsTable({ data = [], commit, state }) {
 
   return (
     <>
-      <Table data={formattedData} columns={table} />
+      <Table data={tableContent} columns={table} />
       {data?.length === 0 && (
         <p className="mx-4">No Files covered by tests were changed</p>
       )}

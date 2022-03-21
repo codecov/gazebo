@@ -16,7 +16,7 @@ const Title = ({ author, pullId, title, updatestamp }) => {
         <Avatar user={user} bordered />
       </span>
       <div className="flex flex-col w-5/6 lg:w-auto">
-        <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
+        <A to={{ pageName: 'pullDetail', options: { pullId } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
             {title}
           </h2>
