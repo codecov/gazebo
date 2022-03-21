@@ -15,6 +15,7 @@ describe('UploadsCard', () => {
         createdAt: '2020-08-25T16:36:19.559474+00:00',
         downloadUrl: 'download.com',
         buildCode: '1234',
+        uploadType: 'CARRIEDFORWARD',
       })
     })
 
@@ -43,7 +44,12 @@ describe('UploadsCard', () => {
         'download.com'
       )
     })
+
+    it('renders carry-forward text', () => {
+      expect(screen.getByText('carry-forward')).toBeInTheDocument()
+    })
   })
+
   describe('build without build link', () => {
     beforeEach(() => {
       setup({ buildCode: '1234' })
@@ -123,6 +129,13 @@ describe('UploadsCard', () => {
       expect(screen.getByText(/processing failed/)).toBeInTheDocument()
       expect(screen.getByText(/upload expired/)).toBeInTheDocument()
       expect(screen.getByText(/upload is empty/)).toBeInTheDocument()
+    })
+  })
+
+  describe('rendering uploaded type of uploads', () => {
+    setup({ uploadType: 'UPLOADED' })
+    it('does not render carry-forward text', () => {
+      expect(screen.queryByText('carry-forward')).not.toBeInTheDocument()
     })
   })
 })

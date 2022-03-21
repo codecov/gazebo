@@ -24,7 +24,7 @@ const Coverage = ({ head, state, pullId }) =>
   typeof head?.totals?.coverage === 'number' ? (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
       <PullState state={state} />
-      <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
+      <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
       </A>
       <Progress amount={head?.totals?.coverage} label={true} />
@@ -32,7 +32,7 @@ const Coverage = ({ head, state, pullId }) =>
   ) : (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
       <PullState state={state} />
-      <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
+      <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
       </A>
       <span className="text-ds-gray-quinary text-sm">
