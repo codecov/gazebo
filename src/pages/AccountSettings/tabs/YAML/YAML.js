@@ -77,7 +77,7 @@ function YAML({ owner }) {
         name="editor"
         render={({ field: { onChange, value } }) => (
           <YamlEditor
-            isAdmin={isAdmin}
+            readOnly={!isAdmin}
             value={value}
             onChange={onChange}
             placeholder={`All ${owner} repos will inherit this configuration`}

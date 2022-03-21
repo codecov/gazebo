@@ -176,35 +176,39 @@ function UserManagement({ provider, owner }) {
         </div>
         <div>
           {isSuccess &&
-            data.results.map((user) => (
-              <div
-                key={user.username}
-                className={UserManagementClasses.userTable}
-              >
-                <User
-                  className={UserManagementClasses.user}
-                  username={user.username}
-                  name={user.name}
-                  avatarUrl={getOwnerImg(provider, user.username)}
-                  pills={createPills(user)}
-                />
-                <div className={UserManagementClasses.ctaWrapper}>
-                  <Button
-                    data-cy={`activate-${user.username}`}
-                    className={UserManagementClasses.cta}
-                    color={user.activated ? 'red' : 'blue'}
-                    variant={user.activated ? 'outline' : 'normal'}
-                    onClick={() => {
-                      if (!isAdmin && user.username !== currentUser.username)
-                        return
-                      handleActivate(user)
-                    }}
-                  >
-                    {user.activated ? 'Deactivate' : 'Activate'}
-                  </Button>
+            data.results.map((user) => {
+              const disabled =
+                !isAdmin && user.username !== currentUser.username
+              return (
+                <div
+                  key={user.username}
+                  className={UserManagementClasses.userTable}
+                >
+                  <User
+                    className={UserManagementClasses.user}
+                    username={user.username}
+                    name={user.name}
+                    avatarUrl={getOwnerImg(provider, user.username)}
+                    pills={createPills(user)}
+                  />
+                  <div className={UserManagementClasses.ctaWrapper}>
+                    <Button
+                      data-cy={`activate-${user.username}`}
+                      className={UserManagementClasses.cta}
+                      color={user.activated ? 'red' : 'blue'}
+                      variant={user.activated ? 'outline' : 'normal'}
+                      onClick={() => {
+                        if (disabled) return
+                        handleActivate(user)
+                      }}
+                      disabled={disabled}
+                    >
+                      {user.activated ? 'Deactivate' : 'Activate'}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
         </div>
         <FormPaginate
           totalPages={data.totalPages}

@@ -10,7 +10,6 @@ const YamlEditor = forwardRef(({ ...props }, ref) => {
   return (
     <AceEditor
       ref={ref}
-      readOnly={!props?.isAdmin}
       mode="yaml"
       theme="github"
       name="yaml-editor"
@@ -27,7 +26,7 @@ YamlEditor.displayName = 'YamlEditor'
 
 YamlEditor.propTypes = {
   value: PropTypes.string,
-  isAdmin: PropTypes.bool,
+  readOnly: PropTypes.bool,
 }
 
 export default YamlEditor

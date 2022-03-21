@@ -357,6 +357,21 @@ describe('useOwner', () => {
       expect(hookData.result.current).toEqual(false)
     })
   })
+
+  describe('when calling useIsCurrentUserAnAdmin for undefined owners', () => {
+    beforeEach(() => {
+      setup()
+      hookData = renderHook(
+        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
+        { wrapper }
+      )
+      return hookData.waitFor(() => hookData.result.current)
+    })
+
+    it('returns undefined', () => {
+      expect(hookData.result.current).toEqual(undefined)
+    })
+  })
 })
 
 describe('useResyncUser', () => {
