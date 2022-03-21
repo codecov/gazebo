@@ -14,8 +14,8 @@ export function getPullDataForCompareSummary({ head, base, compareWithBase }) {
 }
 
 export function usePullForCompareSummary() {
-  const { provider, owner, repo, pullid } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullid })
+  const { provider, owner, repo, pullId } = useParams()
+  const { data: pull } = usePull({ provider, owner, repo, pullId })
   const head = pull?.head
   const base = pull?.comparedTo
   const compareWithBase = pull?.compareWithBase

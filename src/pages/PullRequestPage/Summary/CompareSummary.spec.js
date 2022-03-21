@@ -49,7 +49,7 @@ describe('CompareSummary', () => {
 
     render(
       <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullid">
+        <Route path="/:provider/:owner/:repo/pull/:pullId">
           <CompareSummary />
         </Route>
       </MemoryRouter>

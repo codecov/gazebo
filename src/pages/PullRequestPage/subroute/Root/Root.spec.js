@@ -8,7 +8,7 @@ describe('Root', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
     render(
       <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullid">
+        <Route path="/:provider/:owner/:repo/pull/:pullId">
           <Root />
         </Route>
       </MemoryRouter>

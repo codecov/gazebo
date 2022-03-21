@@ -56,7 +56,7 @@ describe('usePullForCompareSummary', () => {
       owner: 'caleb',
       provider: 'gh',
       repo: 'mighty-nein',
-      pullid: '9',
+      pullId: '9',
     })
     usePull.mockReturnValue({ data: pull })
     hookData = renderHook(() => usePullForCompareSummary())
