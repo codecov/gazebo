@@ -9,3 +9,8 @@ export const ErrorCodeEnum = Object.freeze({
   reportExpired: 'REPORT_EXPIRED',
   reportEmpty: 'REPORT_EMPTY',
 })
+
+export const UploadTypes = Object.freeze({
+  UPLOADED: 'UPLOADED',
+  CARRIED_FORWARD: 'CARRIEDFORWARD',
+})

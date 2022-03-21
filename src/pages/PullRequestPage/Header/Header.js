@@ -15,8 +15,8 @@ const pullStateToColor = {
 }
 
 function Header() {
-  const { provider, owner, repo, pullid } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullid })
+  const { provider, owner, repo, pullId } = useParams()
+  const { data: pull } = usePull({ provider, owner, repo, pullId })
 
   return (
     <div className="border-t border-b border-ds-gray-secondary py-4">
