@@ -1,6 +1,6 @@
-import Change from 'ui/Change'
-
 import Summary from './Summary'
+
+import TotalsNumber from '../TotalsNumber'
 
 const Template = (args) => <Summary {...args} />
 
@@ -36,7 +36,7 @@ SummaryManyCards.args = {
     {
       name: 'change',
       title: 'Change',
-      value: <Change value={27.36} variant="coverageCard" />,
+      value: <TotalsNumber value={27.36} showChange />,
     },
   ],
 }

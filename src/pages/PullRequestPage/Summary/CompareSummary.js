@@ -1,10 +1,11 @@
 import isNumber from 'lodash/isNumber'
 
 import A from 'ui/A'
-import Change from 'ui/Change'
 import Summary from 'ui/Summary'
 
 import { usePullForCompareSummary } from './hooks'
+
+import TotalsNumber from '../../../ui/TotalsNumber'
 
 function totalsCards({
   headCoverage,
@@ -26,21 +27,24 @@ function totalsCards({
           )}
         </>
       ),
-      value: headCoverage ? `${headCoverage} %` : '-',
+      value: <TotalsNumber value={headCoverage} large plain />,
     },
     {
       name: 'patch',
       title: 'Patch',
-      value: (
-        <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {isNumber(patchCoverage) ? `${patchCoverage?.toFixed(2)}%` : '-'}
-        </span>
-      ),
+      value: <TotalsNumber value={patchCoverage} large plain />,
     },
     {
       name: 'change',
       title: 'Change',
-      value: <Change value={changeCoverage} variant="coverageCard" />,
+      value: (
+        <TotalsNumber
+          value={changeCoverage}
+          showChange
+          large
+          data-testid="change-value"
+        />
+      ),
     },
   ]
 }

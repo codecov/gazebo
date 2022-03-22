@@ -45,12 +45,6 @@ NoValue.args = {
   value: 0,
 }
 
-export const NoValueWithZeroAllowed = Template.bind({})
-NoValueWithZeroAllowed.args = {
-  value: 0,
-  allowZero: true,
-}
-
 export default {
   title: 'Components/TotalsNumber',
   component: TotalsNumber,

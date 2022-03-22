@@ -64,7 +64,7 @@ describe('CompareSummary', () => {
     it('renders a card for every valid field', () => {
       const headCardTitle = screen.getByText('HEAD')
       expect(headCardTitle).toBeInTheDocument()
-      const headCardValue = screen.getByText(`${pull.head.totals.coverage} %`)
+      const headCardValue = screen.getByText(`${pull.head.totals.coverage}%`)
       expect(headCardValue).toBeInTheDocument()
 
       const patchCardTitle = screen.getByText('Patch')
@@ -77,9 +77,10 @@ describe('CompareSummary', () => {
       const changeCardTitle = screen.getByText('Change')
       expect(changeCardTitle).toBeInTheDocument()
       const changeCardValue = screen.getByText(
-        `+${pull.compareWithBase.changeWithParent}%`
+        `${pull.compareWithBase.changeWithParent}%`
       )
       expect(changeCardValue).toBeInTheDocument()
+      expect(changeCardValue).toHaveClass("before:content-['+']")
 
       const sourceCardTitle = screen.getByText('Source')
       expect(sourceCardTitle).toBeInTheDocument()

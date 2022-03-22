@@ -15,28 +15,27 @@ const getNumberClasses = ({ value, plain, showChange }) =>
     "before:content-['+']": value > 0 && showChange,
   })
 
-const validateValue = (value) => value && !isNaN(value) && value !== 0
+const validateValue = (value) => (value && !isNaN(value)) || value === 0
 
 const TotalsNumber = ({
   value,
   plain,
   inline,
   showChange,
-  allowZero,
   large,
   ...props
 }) => {
   const containerClass = getVariantClasses({ inline, large })
   const numberClass = getNumberClasses({ value, plain, showChange })
   const isValid = validateValue(value)
-  const val = value?.toFixed(2)
+  const numberValue = isValid && value?.toFixed(2)
   const { className, ...rest } = props
 
   return (
     <div className={containerClass} {...rest}>
-      {isValid || (allowZero && value === 0) ? (
+      {isValid ? (
         <span data-testid="number-value" className={numberClass}>
-          {val}%
+          {numberValue}%
         </span>
       ) : (
         <>-</>
@@ -46,12 +45,11 @@ const TotalsNumber = ({
 }
 
 TotalsNumber.propTypes = {
-  value: PropTypes.number.isRequired,
+  value: PropTypes.number,
   plain: PropTypes.bool,
   inline: PropTypes.bool,
   large: PropTypes.bool,
   showChange: PropTypes.bool,
-  allowZero: PropTypes.bool,
 }
 
 export default TotalsNumber

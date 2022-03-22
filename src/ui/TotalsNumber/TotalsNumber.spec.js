@@ -34,10 +34,10 @@ describe('TotalsNumber', () => {
       expect(changeValue).toHaveTextContent('-')
     })
 
-    it('renders - when you get 0 change', () => {
+    it('renders 0 when you get 0 change', () => {
       setup({ value: 0, variant: 'default' })
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('-')
+      expect(changeValue).toHaveTextContent('0')
     })
   })
 })
