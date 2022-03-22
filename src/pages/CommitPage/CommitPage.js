@@ -80,7 +80,7 @@ function CommitPage() {
           >
             {shortSHA}
           </A>
-          was authorized{' '}
+          was authored{' '}
           {commit?.createdAt
             ? formatDistanceToNow(new Date(commit?.createdAt), {
                 addSuffix: true,
