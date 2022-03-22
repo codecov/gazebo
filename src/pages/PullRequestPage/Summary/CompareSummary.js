@@ -1,5 +1,3 @@
-import isNumber from 'lodash/isNumber'
-
 import A from 'ui/A'
 import Summary from 'ui/Summary'
 
@@ -14,7 +12,6 @@ function totalsCards({
   changeCoverage,
 }) {
   return [
-    // TODO: change the "value" for Head and Patch to the component
     {
       name: 'head',
       title: (
