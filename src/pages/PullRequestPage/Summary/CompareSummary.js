@@ -1,9 +1,8 @@
 import A from 'ui/A'
 import Summary from 'ui/Summary'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import { usePullForCompareSummary } from './hooks'
-
-import TotalsNumber from '../../../ui/TotalsNumber'
 
 function totalsCards({
   headCoverage,

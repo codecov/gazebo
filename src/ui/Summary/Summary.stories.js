@@ -6,7 +6,7 @@ const Template = (args) => <Summary {...args} />
 
 export const DefaultSummary = Template.bind({})
 DefaultSummary.args = {
-  cards: [
+  fields: [
     {
       name: 'sample title',
       title: 'Sample title',
@@ -17,7 +17,7 @@ DefaultSummary.args = {
 
 export const SummaryManyCards = Template.bind({})
 SummaryManyCards.args = {
-  cards: [
+  fields: [
     {
       name: 'Head',
       title: (
@@ -26,17 +26,17 @@ SummaryManyCards.args = {
           <span className="text-ds-gray-octonary">fc43199</span>
         </>
       ),
-      value: `39.67%`,
+      value: <TotalsNumber value={39.67} plain large />,
     },
     {
       name: 'patch',
       title: 'Patch',
-      value: `83.43%`,
+      value: <TotalsNumber value={83.43} plain large />,
     },
     {
       name: 'change',
       title: 'Change',
-      value: <TotalsNumber value={27.36} showChange />,
+      value: <TotalsNumber value={27.36} showChange large />,
     },
   ],
 }
