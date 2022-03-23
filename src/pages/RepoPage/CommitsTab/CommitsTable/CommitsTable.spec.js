@@ -111,4 +111,37 @@ describe('CommitsTable', () => {
       expect(text).toBeInTheDocument()
     })
   })
+
+  describe('when rendered with an invalid patch value', () => {
+    beforeEach(() => {
+      setup({
+        commits: [
+          {
+            author: { username: 'RabeeAbuBaker', avatarUrl: 'random' },
+            compareWithParent: {
+              patchTotals: {
+                coverage: null,
+              },
+            },
+            totals: {
+              coverage: 45,
+            },
+            parent: {
+              totals: {
+                coverage: 98,
+              },
+            },
+            commitid: 'id',
+            message: 'Test1',
+            createdAt: '2021-08-30T19:33:49.819672',
+          },
+        ],
+      })
+    })
+
+    it('render - for missing patch', () => {
+      const changeValue = screen.getByTestId('patch-value')
+      expect(changeValue).toHaveTextContent('-')
+    })
+  })
 })

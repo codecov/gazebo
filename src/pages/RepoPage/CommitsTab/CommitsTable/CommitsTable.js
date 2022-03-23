@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types'
 
 import { commitRequestType } from 'shared/propTypes'
-import Change from 'ui/Change'
 import Table from 'ui/Table'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import CIStatus from './CIStatus'
 import Coverage from './Coverage'
-import Patch from './Patch'
 import Title from './Title'
 
 const headers = [
@@ -70,6 +69,9 @@ function transformPullToTable(commits) {
       ciPassed,
     } = commit
     const change = totals?.coverage - parent?.totals?.coverage
+    const patchValue = compareWithParent?.patchTotals?.coverage
+      ? compareWithParent?.patchTotals?.coverage * 100
+      : Number.NaN
 
     return {
       title: (
@@ -88,8 +90,8 @@ function transformPullToTable(commits) {
         />
       ),
       coverage: <Coverage totals={totals} />,
-      patch: <Patch compareWithParent={compareWithParent} />,
-      change: <Change value={change} variant="default" />,
+      patch: <TotalsNumber value={patchValue} data-testid="patch-value" />,
+      change: <TotalsNumber value={change} showChange />,
     }
   })
 }
