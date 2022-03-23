@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
-import Change from 'ui/Change'
 import SummaryField from 'ui/SummaryField/SummaryField'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import CIStatusLabel from './CIStatusLabel'
 import Header from './Header'
@@ -19,7 +19,7 @@ import PullLabel from './PullLabel'
 */
 function extractCommitData(data) {
   const rawPatch = data?.compareWithParent?.patchTotals?.coverage
-  const patch = isNumber(rawPatch) ? `${(rawPatch * 100).toFixed(2)} %` : '-'
+  const patch = isNumber(rawPatch) ? rawPatch * 100 : Number.NaN
   const coverage = data?.totals?.coverage
   const parentCoverage = data?.parent?.totals?.coverage
 
@@ -57,13 +57,18 @@ function CoverageReportCard({ data, provider, repo, owner }) {
             </>
           }
         >
-          {coverage ? `${coverage} %` : '-'}
+          <TotalsNumber value={coverage} large plain />
         </SummaryField>
         <SummaryField title="Patch">
-          <span className="text-xl text-center font-light">{patch}</span>
+          <TotalsNumber value={patch} large plain />
         </SummaryField>
         <SummaryField title="Change">
-          <Change value={change} variant="coverageCard" />
+          <TotalsNumber
+            value={change}
+            large
+            showChange
+            data-testid="change-value"
+          />
         </SummaryField>
       </div>
       {state === 'error' ? (
