@@ -108,6 +108,7 @@ export function useCommit({
               state
               commitid
               pullId
+              branchName
               createdAt
               author {
                 username

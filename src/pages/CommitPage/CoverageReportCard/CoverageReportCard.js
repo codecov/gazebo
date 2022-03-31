@@ -6,9 +6,9 @@ import A from 'ui/A'
 import SummaryField from 'ui/SummaryField/SummaryField'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import CIStatusLabel from './CIStatusLabel'
 import Header from './Header'
-import PullLabel from './PullLabel'
+
+import PullLabel from '../Header/PullLabel'
 
 /* 
   TODO This/useCommit was not implemented correctly and needs a refactor, leaving for the moment.
@@ -35,7 +35,7 @@ function extractCommitData(data) {
 }
 
 function CoverageReportCard({ data, provider, repo, owner }) {
-  const { coverage, commitid, parentCommitid, ciPassed, change, patch, state } =
+  const { coverage, commitid, parentCommitid, change, patch, state } =
     extractCommitData(data)
 
   const providerPullUrl = getProviderPullURL({
@@ -103,7 +103,6 @@ function CoverageReportCard({ data, provider, repo, owner }) {
         </p>
       )}
       <div className="flex gap-2">
-        <CIStatusLabel ciPassed={ciPassed} />
         <PullLabel
           pullId={data?.pullId}
           provider={provider}

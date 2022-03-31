@@ -68,9 +68,6 @@ describe('CoverageReportCard', () => {
         screen.getByText(/The coverage of changes for this commit is/)
       ).toBeInTheDocument()
     })
-    it('renders CI Passed', () => {
-      expect(screen.getByText('CI Passed')).toBeInTheDocument()
-    })
     it('renders the pull lable', () => {
       expect(screen.getByText(/pull-request-open.svg/)).toBeInTheDocument()
     })

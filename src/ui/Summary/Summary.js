@@ -10,7 +10,6 @@ function Summary({ fields }) {
         {fields.map((field) => {
           const { name, title, value } = field
           return (
-            title &&
             value && (
               <SummaryField key={name} title={title}>
                 {value}
