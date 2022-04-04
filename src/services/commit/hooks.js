@@ -89,7 +89,10 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
     }
   )
 }
-
+/*
+TODO This/useCommit was not implemented correctly and needs a refactor, leaving for the moment.
+- useCommit is not reusable and also does not let you fetch commit data without polling files which is another call
+*/
 export function useCommit({
   provider,
   owner,

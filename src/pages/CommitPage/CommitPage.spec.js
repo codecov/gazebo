@@ -10,6 +10,10 @@ import CommitPage from './CommitPage'
 jest.mock('services/commit')
 jest.mock('services/file/hooks')
 jest.mock('./Header/Header.js', () => () => 'The Header')
+jest.mock(
+  './Summary/CommitDetailsSummary.js',
+  () => () => 'Commit Details Summary'
+)
 
 const dataReturned = {
   commit: {
@@ -83,20 +87,10 @@ const fileData = {
   flagNames: [],
 }
 
-// const commitData = {
-//   changeCoverage: 95.09,
-//   headCommitId: 'ca3fe8ad0632288b67909ba9793b00e5d109547b',
-//   headCoverage: 90.91,
-//   parentCommitId: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-//   patchCoverage: 75,
-//   state: 'complete',
-// }
-
 describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
     useFileWithMainCoverage.mockReturnValue(fileData)
-    // useCommitForSummary.mockReturnValue(commitData)
 
     render(
       <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
@@ -112,24 +106,16 @@ describe('CommitPage', () => {
       setup({ data: dataReturned, isSuccess: true })
     })
 
-    // it('the Subtext of commit header', () => {
-    // expect(screen.getByText(/making changes/)).toBeInTheDocument()
-    // expect(screen.getAllByText(/abcd/)[0]).toBeInTheDocument()
-    // expect(screen.getByText(/was authored/)).toBeInTheDocument()
-    // expect(screen.getByText(/over 1 year ago by/)).toBeInTheDocument()
-    // expect(screen.getByText(/febg/)).toBeInTheDocument()
-    // })
-
     it('the Uploads', () => {
       expect(screen.getByText(/Uploads/)).toBeInTheDocument()
     })
 
-    it('the Coverage report', () => {
-      expect(screen.getByText(/Coverage report/)).toBeInTheDocument()
-    })
-
     it('the Header', () => {
       expect(screen.getByText(/The Header/)).toBeInTheDocument()
+    })
+
+    it('Commit Details Summary', () => {
+      expect(screen.getByText(/Commit Details Summary/)).toBeInTheDocument()
     })
 
     it('the impacted files', () => {

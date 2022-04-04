@@ -5,7 +5,6 @@ import { useCommit } from 'services/commit'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
-import CoverageReportCard from './CoverageReportCard'
 import Header from './Header'
 import CommitDetailsSummary from './Summary'
 import UploadsCard from './UploadsCard'
@@ -51,22 +50,10 @@ function CommitPage() {
           },
         ]}
       />
-      <Header
-        provider={provider}
-        owner={owner}
-        repo={repo}
-        commit={commit}
-        commitSHA={commitSHA}
-      />
+      <Header />
       <CommitDetailsSummary />
       <div className="flex pt-6 flex-col gap-8 md:flex-row-reverse">
         <aside className="flex flex-1 gap-6 md:max-w-sm flex-col self-start sticky top-1.5">
-          <CoverageReportCard
-            provider={provider}
-            repo={repo}
-            owner={owner}
-            data={commit}
-          />
           <UploadsCard />
         </aside>
         <article className="flex flex-1 flex-col gap-4">

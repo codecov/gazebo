@@ -74,15 +74,6 @@ const commitData = {
   state: 'complete',
 }
 
-const errorCommitData = {
-  changeCoverage: undefined,
-  headCommitId: undefined,
-  headCoverage: NaN,
-  parentCommitId: undefined,
-  patchCoverage: NaN,
-  state: 'error',
-}
-
 describe('CommitDetailsSummary', () => {
   function setup({ commitData }) {
     useCommitForSummary.mockReturnValue(commitData)

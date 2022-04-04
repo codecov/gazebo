@@ -1,7 +1,8 @@
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { useCommit } from 'services/commit'
 import { useLegacyRedirects } from 'services/redirects'
 import {
   getProviderCommitURL,
@@ -15,21 +16,22 @@ import Icon from 'ui/Icon'
 import CIStatusLabel from './CIStatusLabel'
 import PullLabel from './PullLabel'
 
-function Header({ provider, owner, repo, commit }) {
+function Header() {
+  const { provider, owner, repo, commit: commitSHA } = useParams()
+  const { data } = useCommit({
+    provider,
+    owner,
+    repo,
+    commitid: commitSHA,
+  })
+
   const [selectedOldUI, setSelectedOldUI] = useState(false)
   const cookiePath = `/${provider}/${owner}/`
-  const {
-    author,
-    pullId,
-    message,
-    createdAt,
-    branchName,
-    commitid: commitSHA,
-  } = commit
+  const { author, pullId, message, createdAt, branchName, ciPassed } =
+    data?.commit
+
   const shortSHA = commitSHA?.slice(0, 7)
   const uri = `${cookiePath}${repo}/commit/${shortSHA}`
-
-  const username = author?.username
 
   useLegacyRedirects({
     cookieName: 'commit_detail_page',
@@ -83,21 +85,21 @@ function Header({ provider, owner, repo, commit }) {
       <div className="flex gap-x-4">
         <div className="flex items-center text-ds-gray-quinary gap-1">
           <div>
-            <span className="font-light">
-              {createdAt
-                ? formatDistanceToNow(new Date(createdAt), {
-                    addSuffix: true,
-                  })
-                : ''}
-            </span>{' '}
-            {username && (
+            {createdAt && (
+              <span className="font-light">
+                {formatDistanceToNow(new Date(createdAt), {
+                  addSuffix: true,
+                })}
+              </span>
+            )}{' '}
+            {author?.username && (
               <A
                 to={{
                   pageName: 'owner',
-                  options: { owner: username },
+                  options: { owner: author.username },
                 }}
               >
-                {username}
+                {author.username}
               </A>
             )}{' '}
             <span className="font-light">authored commit</span>
@@ -115,7 +117,7 @@ function Header({ provider, owner, repo, commit }) {
           >
             {shortSHA}
           </A>
-          <CIStatusLabel ciPassed={commit.ciPassed} />
+          <CIStatusLabel ciPassed={ciPassed} />
           <span className="flex items-center">
             <Icon name="branch" variant="developer" size="sm" />
             {branchName}
@@ -129,13 +131,6 @@ function Header({ provider, owner, repo, commit }) {
       </div>
     </div>
   )
-}
-
-Header.propTypes = {
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
-  repo: PropTypes.string.isRequired,
-  commit: PropTypes.any,
 }
 
 export default Header
