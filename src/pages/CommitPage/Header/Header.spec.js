@@ -111,7 +111,7 @@ describe('Header', () => {
     it('renders branch name', () => {
       expect(screen.getByText('main')).toBeInTheDocument()
     })
-    it('renders the pull lable', () => {
+    it('renders the pull label', () => {
       expect(screen.getByText(/pull-request-open.svg/)).toBeInTheDocument()
     })
   })
@@ -159,6 +159,22 @@ describe('Header', () => {
         cookiePath: '/gh/test/',
         selectedOldUI: true,
       })
+    })
+  })
+
+  describe('renders with patch', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          commit: { ...dataReturned.commit, pullId: null },
+        },
+      })
+    })
+
+    it('does not render the pull label', () => {
+      expect(
+        screen.queryByText(/pull-request-open.svg/)
+      ).not.toBeInTheDocument()
     })
   })
 })
