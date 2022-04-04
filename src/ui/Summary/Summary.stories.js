@@ -1,6 +1,6 @@
-import Change from 'ui/Change'
-
 import Summary from './Summary'
+
+import TotalsNumber from '../TotalsNumber'
 
 const Template = (args) => <Summary {...args} />
 
@@ -26,17 +26,17 @@ SummaryManyFields.args = {
           <span className="text-ds-gray-octonary">fc43199</span>
         </>
       ),
-      value: `39.67%`,
+      value: <TotalsNumber value={39.67} plain large />,
     },
     {
       name: 'patch',
       title: 'Patch',
-      value: `83.43%`,
+      value: <TotalsNumber value={83.43} plain large />,
     },
     {
       name: 'change',
       title: 'Change',
-      value: <Change value={27.36} variant="coverageCard" />,
+      value: <TotalsNumber value={27.36} showChange large />,
     },
   ],
 }

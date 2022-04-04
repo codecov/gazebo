@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom'
 import { useCoverageWithFlags } from 'services/file/hooks'
 import AppLink from 'shared/AppLink'
 import Breadcrumb from 'ui/Breadcrumb'
-import Change from 'ui/Change'
 import Progress from 'ui/Progress'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import CodeRenderer from './CodeRenderer'
 import { LINE_STATE, LINE_TYPE } from './lineStates'
@@ -106,8 +106,8 @@ function FileViewer({
             <Breadcrumb paths={[...treePaths]} />
           </div>
           <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
-            <Progress amount={coverageTotals} label={true} />
-            <Change value={change} variant="fileViewer" />
+            <Progress amount={coverageTotals} label />
+            <TotalsNumber value={change} inline showChange />
           </div>
         </div>
         {content ? (

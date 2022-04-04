@@ -197,8 +197,11 @@ describe('CommitPage', () => {
       expect(screen.getByText(impactedFile.headName)).toBeInTheDocument()
       const change =
         impactedFile.headCoverage.coverage - impactedFile.baseCoverage.coverage
-      const formattedChange = `+${change.toFixed(2)}%`
-      expect(screen.getByText(formattedChange)).toBeInTheDocument()
+      const formattedChange = `${change.toFixed(2)}%`
+      const changeValue = screen.getByText(formattedChange)
+      expect(changeValue).toBeInTheDocument()
+      expect(changeValue).toHaveClass("before:content-['+']")
+
       const formattedPatch = `${impactedFile.patchCoverage.coverage.toFixed(
         2
       )}%`
