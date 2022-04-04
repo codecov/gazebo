@@ -6,7 +6,7 @@ const Template = (args) => <Summary {...args} />
 
 export const DefaultSummary = Template.bind({})
 DefaultSummary.args = {
-  cards: [
+  fields: [
     {
       name: 'sample title',
       title: 'Sample title',
@@ -15,9 +15,9 @@ DefaultSummary.args = {
   ],
 }
 
-export const SummaryManyCards = Template.bind({})
-SummaryManyCards.args = {
-  cards: [
+export const SummaryManyFields = Template.bind({})
+SummaryManyFields.args = {
+  fields: [
     {
       name: 'Head',
       title: (

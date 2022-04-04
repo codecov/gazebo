@@ -5,6 +5,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import Card from './Card'
+import Flags from './Flags'
 import Header from './Header'
 import CompareSummary from './Summary'
 
@@ -61,19 +62,10 @@ function PullRequestPage() {
         </div>
         <div className="flex flex-col gap-4">
           {/* Placeholder, make each card is own component importing the pre styled card */}
-          <Card title="Coverage Report">
-            <p>Test</p>
-          </Card>
           <Card title="Commits">
             <p>Test</p>
           </Card>
-          <Card title="Flags">
-            <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-            <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-            <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-            <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-            <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-          </Card>
+          <Flags />
         </div>
       </div>
     </div>
