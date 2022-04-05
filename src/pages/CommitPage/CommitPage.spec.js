@@ -10,6 +10,10 @@ import CommitPage from './CommitPage'
 jest.mock('services/commit')
 jest.mock('services/file/hooks')
 jest.mock('./Header/Header.js', () => () => 'The Header')
+jest.mock(
+  './Summary/CommitDetailsSummary.js',
+  () => () => 'Commit Details Summary'
+)
 
 const dataReturned = {
   commit: {
@@ -102,24 +106,16 @@ describe('CommitPage', () => {
       setup({ data: dataReturned, isSuccess: true })
     })
 
-    it('the Subtext of commit header', () => {
-      expect(screen.getByText(/Commit/)).toBeInTheDocument()
-      expect(screen.getAllByText(/abcd/)[0]).toBeInTheDocument()
-      expect(screen.getByText(/was authored/)).toBeInTheDocument()
-      expect(screen.getByText(/over 1 year ago by/)).toBeInTheDocument()
-      expect(screen.getByText(/febg/)).toBeInTheDocument()
-    })
-
     it('the Uploads', () => {
       expect(screen.getByText(/Uploads/)).toBeInTheDocument()
     })
 
-    it('the Coverage report', () => {
-      expect(screen.getByText(/Coverage report/)).toBeInTheDocument()
-    })
-
     it('the Header', () => {
       expect(screen.getByText(/The Header/)).toBeInTheDocument()
+    })
+
+    it('Commit Details Summary', () => {
+      expect(screen.getByText(/Commit Details Summary/)).toBeInTheDocument()
     })
 
     it('the impacted files', () => {
