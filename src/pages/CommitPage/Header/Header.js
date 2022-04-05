@@ -83,7 +83,7 @@ function Header() {
       </div>
       <h1 className="text-lg font-semibold text-ds-gray-octonary">{message}</h1>
       <div className="flex gap-x-4">
-        <div className="flex items-center text-ds-gray-quinary gap-1">
+        <div className="flex items-center text-ds-gray-quinary gap-2">
           <div>
             {createdAt && (
               <span className="font-light">
@@ -92,6 +92,7 @@ function Header() {
                 })}
               </span>
             )}{' '}
+            {/* TODO: deconstruct username from author in a const above once we have less statements (after removing the top banner) */}
             {author?.username && (
               <A
                 to={{
@@ -102,21 +103,21 @@ function Header() {
                 {author.username}
               </A>
             )}{' '}
-            <span className="font-light">authored commit</span>
+            <span className="font-light">authored commit</span>{' '}
+            <A
+              variant="code"
+              href={getProviderCommitURL({
+                provider,
+                owner,
+                repo,
+                commit: commitSHA,
+              })}
+              hook="provider commit url"
+              isExternal={true}
+            >
+              {shortSHA}
+            </A>
           </div>
-          <A
-            variant="code"
-            href={getProviderCommitURL({
-              provider,
-              owner,
-              repo,
-              commit: commitSHA,
-            })}
-            hook="provider commit url"
-            isExternal={true}
-          >
-            {shortSHA}
-          </A>
           <CIStatusLabel ciPassed={ciPassed} />
           <span className="flex items-center">
             <Icon name="branch" variant="developer" size="sm" />
