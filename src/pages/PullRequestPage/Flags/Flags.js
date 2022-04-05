@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useFlagsForComparePage } from 'services/flags'
 import Table from 'ui/Table'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import Card from '../Card'
 
@@ -9,7 +10,7 @@ const tableColumns = [
   {
     Header: <span>Name</span>,
     accessor: 'col1',
-    width: 'w-5/12',
+    width: 'w-4/12',
   },
   {
     Header: <span className="w-full text-right">HEAD %</span>,
@@ -24,9 +25,37 @@ const tableColumns = [
   {
     Header: <span className="w-full text-right">+/-</span>,
     accessor: 'col4',
-    width: 'w-2/12',
+    width: 'w-3/12',
   },
 ]
+
+function getTableData(data) {
+  return (
+    data &&
+    data.map((flag) => {
+      const { name, headReportTotals, baseReportTotals, diffTotals } = flag
+
+      const headCoverage = headReportTotals?.coverage
+      const baseCoverage = baseReportTotals?.coverage
+      const patchCoverage = diffTotals && diffTotals[5]
+      const changeCoverage =
+        headCoverage && baseCoverage && headCoverage - baseCoverage
+
+      return {
+        col1: <h2 key={name}>{name}</h2>,
+        col2: <TotalsNumber value={headCoverage} plain />,
+        col3: <TotalsNumber value={patchCoverage} plain />,
+        col4: (
+          <TotalsNumber
+            value={changeCoverage}
+            showChange
+            data-testid="change-value"
+          />
+        ),
+      }
+    })
+  )
+}
 
 function Flags() {
   const { owner, provider, repo, pullId: pullid } = useParams()
@@ -37,33 +66,7 @@ function Flags() {
     query: { pullid },
   })
 
-  const tableData = data.map((flag, index) => {
-    const { name, headReportTotals, baseReportTotals, diffTotals } = flag
-
-    const headCoverage = headReportTotals?.coverage
-    const baseCoverage = baseReportTotals?.coverage
-    const patch = diffTotals && diffTotals[5]
-    const change = headCoverage && baseCoverage && headCoverage - baseCoverage
-
-    return {
-      col1: <div key={index}>{name}</div>,
-      col2: (
-        <div key="b" className="w-full text-right">
-          {headCoverage}
-        </div>
-      ),
-      col3: (
-        <div key="c" className="w-full text-right">
-          {patch}
-        </div>
-      ),
-      col4: (
-        <div key="d" className="w-full text-right">
-          {change}
-        </div>
-      ),
-    }
-  })
+  const tableData = getTableData(data)
 
   return (
     <Card title="Flags">
