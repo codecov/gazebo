@@ -4,19 +4,25 @@ import { useParams } from 'react-router-dom'
 
 import { useCommit } from '../../../services/commit'
 
-export function getCommitDataForSummary({ data }) {
-  const rawPatch = data?.commit.compareWithParent?.patchTotals?.coverage
+export function getCommitDataForSummary({
+  compareWithParent,
+  totals,
+  parent,
+  state,
+  commitid,
+}) {
+  const rawPatch = compareWithParent?.patchTotals?.coverage
   const patchCoverage = isNumber(rawPatch) ? rawPatch * 100 : Number.NaN
-  const headCoverage = data?.commit.totals?.coverage
-  const parentCoverage = data?.commit.parent?.totals?.coverage
+  const headCoverage = totals?.coverage
+  const parentCoverage = parent?.totals?.coverage
 
   return {
     headCoverage,
     patchCoverage,
     changeCoverage: headCoverage - parentCoverage,
-    headCommitId: data?.commit.commitid,
-    parentCommitId: data?.commit.parent?.commitid,
-    state: data?.commit.state,
+    headCommitId: commitid,
+    parentCommitId: parent?.commitid,
+    state: state,
   }
 }
 
@@ -29,5 +35,17 @@ export function useCommitForSummary() {
     commitid: commitSHA,
   })
 
-  return useMemo(() => getCommitDataForSummary({ data }), [data])
+  const { compareWithParent, totals, parent, state, commitid } = data?.commit
+
+  return useMemo(
+    () =>
+      getCommitDataForSummary({
+        compareWithParent,
+        totals,
+        parent,
+        state,
+        commitid,
+      }),
+    [compareWithParent, totals, parent, state, commitid]
+  )
 }

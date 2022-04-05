@@ -44,7 +44,7 @@ function Header() {
     provider,
     owner,
     repo,
-    pullId: pullId,
+    pullId,
   })
 
   return (

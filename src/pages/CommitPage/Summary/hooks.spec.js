@@ -72,17 +72,18 @@ const data = {
   },
 }
 
-const rawPatch = data?.commit?.compareWithParent?.patchTotals?.coverage
-const parentCoverage = data?.commit?.parent?.totals?.coverage
-const headCoverage = data?.commit?.totals?.coverage
+const commit = data?.commit
+const rawPatch = commit?.compareWithParent?.patchTotals?.coverage
+const parentCoverage = commit?.parent?.totals?.coverage
+const headCoverage = commit?.totals?.coverage
 
 const successfulExpectedData = {
-  headCoverage: data?.commit?.totals?.coverage,
+  headCoverage: commit?.totals?.coverage,
   patchCoverage: isNumber(rawPatch) ? rawPatch * 100 : Number.NaN,
   changeCoverage: headCoverage - parentCoverage,
-  headCommitId: data?.commit?.commitid,
-  parentCommitId: data?.commit?.parent?.commitid,
-  state: data?.commit?.state,
+  headCommitId: commit?.commitid,
+  parentCommitId: commit?.parent?.commitid,
+  state: commit?.state,
 }
 
 describe('usePullForCompareSummary', () => {
@@ -107,7 +108,15 @@ describe('usePullForCompareSummary', () => {
 
 describe('getPullDataForCompareSummary', () => {
   it('returns all values accordingly', () => {
-    const returnedData = getCommitDataForSummary({ data })
+    const { compareWithParent, totals, parent, state, commitid } = data?.commit
+
+    const returnedData = getCommitDataForSummary({
+      compareWithParent,
+      totals,
+      parent,
+      state,
+      commitid,
+    })
     expect(returnedData).toEqual(successfulExpectedData)
   })
 
