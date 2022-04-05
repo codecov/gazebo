@@ -92,6 +92,8 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
 /*
 TODO This/useCommit was not implemented correctly and needs a refactor, leaving for the moment.
 - useCommit is not reusable and also does not let you fetch commit data without polling files which is another call
+- Refer to the following PR for the change where props of the component are replaced with this hook and for such cases
+ we need to address the issue above and refactor the hook for better usage. https://github.com/codecov/gazebo/pull/1248
 */
 export function useCommit({
   provider,
