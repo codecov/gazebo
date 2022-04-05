@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useFlagsForComparePage } from 'services/flags'
+import A from 'ui/A'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -57,6 +58,41 @@ function getTableData(data) {
   )
 }
 
+function getCardInfo({ tableData, isTablePopulated }) {
+  return {
+    withFlags: {
+      title: 'Flags',
+      value: <Table data={tableData} columns={tableColumns} />,
+    },
+    withoutFlags: {
+      title: (
+        <div className="flex justify-between w-full">
+          <span>Flags</span>
+          <button className="text-ds-blue" onClick={handleOnDismiss}>
+            Dismiss
+          </button>
+        </div>
+      ),
+      value: (
+        <div className="flex flex-col">
+          <h1>image</h1>
+          <p>
+            Flags feature is not yet configured. Learn how flags can
+            <A hook="flags" to={{ pageName: 'flags' }}>
+              help your team today
+            </A>
+            .
+          </p>
+        </div>
+      ),
+    },
+  }[isTablePopulated]
+}
+
+function handleOnDismiss() {
+  // pass
+}
+
 function Flags() {
   const { owner, provider, repo, pullId: pullid } = useParams()
   const { data } = useFlagsForComparePage({
@@ -67,12 +103,10 @@ function Flags() {
   })
 
   const tableData = getTableData(data)
+  const isTablePopulated = tableData.length > 0 ? 'withFlags' : 'withoutFlags'
+  const { title, value } = getCardInfo({ tableData, isTablePopulated })
 
-  return (
-    <Card title="Flags">
-      <Table data={tableData} columns={tableColumns} />
-    </Card>
-  )
+  return <Card title={title}>{value}</Card>
 }
 
 export default Flags
