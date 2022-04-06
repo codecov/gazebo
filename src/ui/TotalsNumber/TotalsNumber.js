@@ -1,11 +1,10 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-const getVariantClasses = ({ inline, large }) =>
+const getVariantClasses = ({ light, large }) =>
   cs({
-    'text-xl text-center font-light': large,
-    'flex justify-end font-semibold': !large,
-    'w-full': !inline,
+    'text-xl font-light': large,
+    'font-semibold': !large && !light,
   })
 
 const getNumberClasses = ({ value, plain, showChange }) =>
@@ -17,15 +16,8 @@ const getNumberClasses = ({ value, plain, showChange }) =>
 
 const validateValue = (value) => (value && !isNaN(value)) || value === 0
 
-const TotalsNumber = ({
-  value,
-  plain,
-  inline,
-  showChange,
-  large,
-  ...props
-}) => {
-  const containerClass = getVariantClasses({ inline, large })
+const TotalsNumber = ({ value, plain, light, showChange, large, ...props }) => {
+  const containerClass = getVariantClasses({ light, large })
   const numberClass = getNumberClasses({ value, plain, showChange })
   const isValid = validateValue(value)
   const numberValue = isValid && value?.toFixed(2)
@@ -47,8 +39,8 @@ const TotalsNumber = ({
 TotalsNumber.propTypes = {
   value: PropTypes.number,
   plain: PropTypes.bool,
-  inline: PropTypes.bool,
   large: PropTypes.bool,
+  light: PropTypes.bool,
   showChange: PropTypes.bool,
 }
 

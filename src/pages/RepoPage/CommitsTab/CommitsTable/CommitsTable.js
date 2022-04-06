@@ -90,8 +90,20 @@ function transformPullToTable(commits) {
         />
       ),
       coverage: <Coverage totals={totals} />,
-      patch: <TotalsNumber value={patchValue} data-testid="patch-value" />,
-      change: <TotalsNumber value={change} showChange />,
+      /*
+          The container div fot TotalsNumber is added due to the current state of table cells styling,
+          shouldn't be necessary in the future if fixed/updated
+      */
+      patch: (
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={patchValue} data-testid="patch-value" />
+        </div>
+      ),
+      change: (
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={change} showChange />
+        </div>
+      ),
     }
   })
 }
