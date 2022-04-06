@@ -29,7 +29,7 @@ const headers = [
     width: 'w-2/12 lg:w-3/12',
   },
   {
-    Header: <span className="w-full text-right">Patch</span>,
+    Header: <span className="w-full text-right">Patch %</span>,
     accessor: 'patch',
     width: 'w-1/12',
   },

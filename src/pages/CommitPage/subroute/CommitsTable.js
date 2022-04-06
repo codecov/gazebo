@@ -44,7 +44,7 @@ const table = [
     width: 'w-3/12 min-w-min',
   },
   {
-    Header: <span className="w-full text-sm text-right">Patch</span>,
+    Header: <span className="w-full text-sm text-right">Patch %</span>,
     accessor: 'patch',
     width: 'w-28 min-w-min',
   },
