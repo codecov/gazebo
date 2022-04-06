@@ -659,6 +659,7 @@ describe('useStaticNavLinks', () => {
     ${links.freeTrial}         | ${`${config.MARKETING_BASE_URL}/trial`}
     ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
     ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
+    ${links.flags}             | ${'https://docs.codecov.com/docs/flags'}
     ${links.userAppManagePage} | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}

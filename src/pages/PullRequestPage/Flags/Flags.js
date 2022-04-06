@@ -38,7 +38,7 @@ function getTableData(data) {
 
       const headCoverage = headReportTotals?.coverage
       const baseCoverage = baseReportTotals?.coverage
-      const patchCoverage = diffTotals && diffTotals[5]
+      const patchCoverage = diffTotals?.coverage
       const changeCoverage =
         headCoverage && baseCoverage && headCoverage - baseCoverage
 
@@ -61,6 +61,7 @@ function getTableData(data) {
 function getCardInfo({ tableData, isTablePopulated }) {
   return {
     withFlags: {
+      // TODO: Add carryforward flag title here. This endpoint doesn't surface if a flag is CFF or not, so this would be a feature for the GQL implementation here
       title: 'Flags',
       value: <Table data={tableData} columns={tableColumns} />,
     },
@@ -75,6 +76,7 @@ function getCardInfo({ tableData, isTablePopulated }) {
       ),
       value: (
         <div className="flex flex-col">
+          {/* TODO: Add actual image; waiting on Terry's opinion on adding assets to the code */}
           <h1>image</h1>
           <p>
             Flags feature is not yet configured. Learn how flags can
