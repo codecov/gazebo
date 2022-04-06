@@ -107,7 +107,7 @@ function FileViewer({
           </div>
           <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
             <Progress amount={coverageTotals} label />
-            <TotalsNumber value={change} inline showChange />
+            <TotalsNumber value={change} showChange />
           </div>
         </div>
         {content ? (
