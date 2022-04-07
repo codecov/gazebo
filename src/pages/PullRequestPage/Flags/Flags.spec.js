@@ -147,6 +147,12 @@ describe('Flags Card', () => {
         /Flags feature is not yet configured. Learn how flags can/i
       )
       expect(flagsDescription).toBeInTheDocument()
+      const flagsAnchor = screen.getByRole('link', /help your team today/i)
+      expect(flagsAnchor).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/flags'
+      )
+      expect(flagsDescription).toBeInTheDocument()
       const flagsMarketingImg = screen.getByRole('img', {
         name: /FlagManagement/,
       })
