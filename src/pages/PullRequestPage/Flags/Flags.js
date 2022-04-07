@@ -46,14 +46,25 @@ function getTableData(data) {
 
       return {
         col1: <h2 key={name}>{name}</h2>,
-        col2: <TotalsNumber value={headCoverage} plain />,
-        col3: <TotalsNumber value={patchCoverage} plain />,
+        col2: (
+          <div className="w-full flex justify-end">
+            <TotalsNumber value={headCoverage} plain light />
+          </div>
+        ),
+        col3: (
+          <div className="w-full flex justify-end">
+            <TotalsNumber value={patchCoverage} plain light />
+          </div>
+        ),
         col4: (
-          <TotalsNumber
-            value={changeCoverage}
-            showChange
-            data-testid="change-value"
-          />
+          <div className="w-full flex justify-end">
+            <TotalsNumber
+              value={changeCoverage}
+              showChange
+              data-testid="change-value"
+              light
+            />
+          </div>
         ),
       }
     })
