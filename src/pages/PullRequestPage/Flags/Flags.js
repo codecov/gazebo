@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import flagManagement from 'assets/svg/flagManagement.svg'
 import { useFlagsForComparePage } from 'services/flags'
 import A from 'ui/A'
 import Table from 'ui/Table'
@@ -58,7 +60,13 @@ function getTableData(data) {
   )
 }
 
-function getCardInfo({ tableData, isTablePopulated }) {
+function handleOnDismiss(setIsCardDismissed) {
+  setIsCardDismissed(true)
+  localStorage.setItem('dismissFlagsCard', true)
+}
+
+function getCardInfo({ tableData, isDataPopulated, setIsCardDismissed }) {
+  const isTablePopulated = isDataPopulated ? 'withFlags' : 'withoutFlags'
   return {
     withFlags: {
       // TODO: Add carryforward flag title here. This endpoint doesn't surface if a flag is CFF or not, so this would be a feature for the GQL implementation here
@@ -69,15 +77,17 @@ function getCardInfo({ tableData, isTablePopulated }) {
       title: (
         <div className="flex justify-between w-full">
           <span>Flags</span>
-          <button className="text-ds-blue" onClick={handleOnDismiss}>
+          <button
+            className="text-ds-blue"
+            onClick={() => handleOnDismiss(setIsCardDismissed)}
+          >
             Dismiss
           </button>
         </div>
       ),
       value: (
         <div className="flex flex-col">
-          {/* TODO: Add actual image; waiting on Terry's opinion on adding assets to the code */}
-          <h1>image</h1>
+          <img alt="FlagManagement" src={flagManagement} />
           <p>
             Flags feature is not yet configured. Learn how flags can
             <A hook="flags" to={{ pageName: 'flags' }}>
@@ -91,10 +101,6 @@ function getCardInfo({ tableData, isTablePopulated }) {
   }[isTablePopulated]
 }
 
-function handleOnDismiss() {
-  // pass
-}
-
 function Flags() {
   const { owner, provider, repo, pullId: pullid } = useParams()
   const { data } = useFlagsForComparePage({
@@ -104,9 +110,21 @@ function Flags() {
     query: { pullid },
   })
 
+  const [isCardDismissed, setIsCardDismissed] = useState(
+    localStorage.getItem('dismissFlagsCard') === 'true'
+  )
   const tableData = getTableData(data)
-  const isTablePopulated = tableData.length > 0 ? 'withFlags' : 'withoutFlags'
-  const { title, value } = getCardInfo({ tableData, isTablePopulated })
+  const isDataPopulated = tableData && tableData.length > 0
+
+  if (!isDataPopulated && isCardDismissed) {
+    return ''
+  }
+
+  const { title, value } = getCardInfo({
+    tableData,
+    isDataPopulated,
+    setIsCardDismissed,
+  })
 
   return <Card title={title}>{value}</Card>
 }

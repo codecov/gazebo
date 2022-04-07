@@ -1,4 +1,4 @@
-import { render, screen } from 'custom-testing-library'
+import { act, render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
@@ -11,6 +11,9 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => {}),
 }))
 jest.mock('services/flags')
+
+jest.spyOn(window.localStorage.__proto__, 'setItem')
+window.localStorage.__proto__.setItem = jest.fn()
 
 const mockFlagsData = {
   data: [
@@ -89,7 +92,7 @@ describe('Flags Card', () => {
     )
   }
 
-  describe('when rendered with valid data', () => {
+  describe('when rendered with populated data', () => {
     beforeEach(() => {
       setup(mockFlagsData)
     })
@@ -120,9 +123,10 @@ describe('Flags Card', () => {
     })
   })
 
-  describe('when rendered with no data', () => {
+  describe('when rendered without flags but card is not dismissed', () => {
     beforeEach(() => {
-      setup({ data: [] })
+      const mockEmptyResponse = { data: [] }
+      setup(mockEmptyResponse)
     })
 
     it('renders a card for every valid field', () => {
@@ -143,7 +147,51 @@ describe('Flags Card', () => {
         /Flags feature is not yet configured. Learn how flags can/i
       )
       expect(flagsDescription).toBeInTheDocument()
-      // TODO: Add test for image
+      const flagsMarketingImg = screen.getByRole('img', {
+        name: /FlagManagement/,
+      })
+      expect(flagsMarketingImg).toBeInTheDocument()
+      expect(flagsMarketingImg).toHaveAttribute('src', 'flagManagement.svg')
+      expect(flagsMarketingImg).toHaveAttribute('alt', 'FlagManagement')
+    })
+
+    it('dismisses the card after dismiss button is pressed', () => {
+      let flagsCardTitle = screen.getByText('Flags')
+      expect(flagsCardTitle).toBeInTheDocument()
+      const dismissButton = screen.getByRole('button', { name: /Dismiss/i })
+      dismissButton.click()
+      expect(localStorage.setItem).toBeCalledWith('dismissFlagsCard', true)
+
+      flagsCardTitle = screen.queryByText('Flags')
+      expect(flagsCardTitle).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when card is dismissed', () => {
+    beforeEach(() => {
+      const mockEmptyResponse = { data: [] }
+      setup(mockEmptyResponse)
+    })
+
+    it('card wont be rendered whatsoever', () => {
+      screen.getByRole('button', { name: /Dismiss/i }).click()
+      const nameTableField = screen.queryByText(`Name`)
+      expect(nameTableField).not.toBeInTheDocument()
+      const headTableField = screen.queryByText(`HEAD %`)
+      expect(headTableField).not.toBeInTheDocument()
+      const patchTableField = screen.queryByText(`Patch %`)
+      expect(patchTableField).not.toBeInTheDocument()
+      const changeTableField = screen.queryByText(`+/-`)
+      expect(changeTableField).not.toBeInTheDocument()
+
+      const flagsCardTitle = screen.queryByText('Flags')
+      expect(flagsCardTitle).not.toBeInTheDocument()
+      const dismissButton = screen.queryByText('Dismiss')
+      expect(dismissButton).not.toBeInTheDocument()
+      const flagsDescription = screen.queryByText(
+        /Flags feature is not yet configured. Learn how flags can/i
+      )
+      expect(flagsDescription).not.toBeInTheDocument()
     })
   })
 })
