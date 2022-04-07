@@ -76,7 +76,7 @@ describe('CommitsTable', () => {
     })
 
     it('renders commit table Patch header', () => {
-      const patch = screen.getByText('Patch')
+      const patch = screen.getByText('Patch %')
       expect(patch).toBeInTheDocument()
     })
 

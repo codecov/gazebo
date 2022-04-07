@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 import TotalsNumber from '../TotalsNumber'
@@ -27,12 +28,13 @@ function Progress({ amount, label, variant = 'default' }) {
       )}
 
       {label && (
-        <TotalsNumber
-          data-testid="coverage-value"
-          value={amount}
-          plain
-          inline={!!amountInNumber}
-        />
+        <div
+          className={cs({
+            'w-full flex justify-end': !amountInNumber,
+          })}
+        >
+          <TotalsNumber data-testid="coverage-value" value={amount} plain />
+        </div>
       )}
     </div>
   )

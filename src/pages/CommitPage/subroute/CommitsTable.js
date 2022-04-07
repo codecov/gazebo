@@ -44,7 +44,7 @@ const table = [
     width: 'w-3/12 min-w-min',
   },
   {
-    Header: <span className="w-full text-sm text-right">Patch</span>,
+    Header: <span className="w-full text-sm text-right">Patch %</span>,
     accessor: 'patch',
     width: 'w-28 min-w-min',
   },
@@ -81,9 +81,19 @@ function createTable({ tableData = [] }) {
           <Progress amount={headCoverage} label />
         </div>
       ),
-      patch: <TotalsNumber value={patchCoverage} />,
+      /*
+          The container div fot TotalsNumber is added due to the current state of table cells styling,
+          shouldn't be necessary in the future if fixed/updated
+      */
+      patch: (
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={patchCoverage} />
+        </div>
+      ),
       change: hasData ? (
-        <TotalsNumber value={change} showChange data-testid="change-value" />
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={change} showChange data-testid="change-value" />
+        </div>
       ) : (
         <span className="text-ds-gray-quinary text-sm whitespace-nowrap -ml-14 lg:-ml-12">
           No data available

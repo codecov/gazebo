@@ -2,12 +2,6 @@ import TotalsNumber from './TotalsNumber'
 
 const Template = (args) => <TotalsNumber {...args} />
 
-export const InlineNumber = Template.bind({})
-InlineNumber.args = {
-  value: 34,
-  inline: true,
-}
-
 export const NumberWithChange = Template.bind({})
 NumberWithChange.args = {
   value: 22,
@@ -38,6 +32,12 @@ PlainLargeNumber.args = {
   value: 78,
   large: true,
   plain: true,
+}
+
+export const LightNumber = Template.bind({})
+LightNumber.args = {
+  value: 61,
+  light: true,
 }
 
 export const NoValue = Template.bind({})
