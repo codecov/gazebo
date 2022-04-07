@@ -401,6 +401,12 @@ function useStaticNavLinks() {
       text: 'Team Bot',
       openNewTab: true,
     },
+    flags: {
+      text: 'Flags',
+      path: () => 'https://docs.codecov.com/docs/flags',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
 

@@ -15,8 +15,8 @@ DefaultSummary.args = {
   ],
 }
 
-export const SummaryManyCards = Template.bind({})
-SummaryManyCards.args = {
+export const SummaryManyFields = Template.bind({})
+SummaryManyFields.args = {
   fields: [
     {
       name: 'Head',

@@ -6,7 +6,7 @@ import { usePull } from 'services/pull'
 export function getPullDataForCompareSummary({ head, base, compareWithBase }) {
   return {
     headCoverage: head?.totals?.coverage,
-    patchCoverage: compareWithBase?.patchTotals?.coverage,
+    patchCoverage: compareWithBase?.patchTotals?.coverage * 100,
     changeCoverage: compareWithBase?.changeWithParent,
     headCommit: head?.commitid,
     baseCommit: base?.commitid,
