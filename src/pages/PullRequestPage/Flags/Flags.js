@@ -32,6 +32,8 @@ const tableColumns = [
   },
 ]
 
+const localStorageKey = 'gz-dismissFlagsCard'
+
 function getTableData(data) {
   return (
     data &&
@@ -73,18 +75,18 @@ function getTableData(data) {
 
 function handleOnDismiss(setIsCardDismissed) {
   setIsCardDismissed(true)
-  localStorage.setItem('dismissFlagsCard', true)
+  localStorage.setItem(localStorageKey, 'true')
 }
 
-function getCardInfo({ tableData, isDataPopulated, setIsCardDismissed }) {
-  const isTablePopulated = isDataPopulated ? 'withFlags' : 'withoutFlags'
+function getTableInfo({ tableData, isTableDataEmpty, setIsCardDismissed }) {
+  const cardInfo = isTableDataEmpty ? 'showMarketingInfo' : 'showFlagsData'
   return {
-    withFlags: {
+    showFlagsData: {
       // TODO: Add carryforward flag title here. This endpoint doesn't surface if a flag is CFF or not, so this would be a feature for the GQL implementation here
       title: 'Flags',
       value: <Table data={tableData} columns={tableColumns} />,
     },
-    withoutFlags: {
+    showMarketingInfo: {
       title: (
         <div className="flex justify-between w-full">
           <span>Flags</span>
@@ -109,7 +111,7 @@ function getCardInfo({ tableData, isDataPopulated, setIsCardDismissed }) {
         </div>
       ),
     },
-  }[isTablePopulated]
+  }[cardInfo]
 }
 
 function Flags() {
@@ -122,22 +124,19 @@ function Flags() {
   })
 
   const [isCardDismissed, setIsCardDismissed] = useState(
-    localStorage.getItem('dismissFlagsCard') === 'true'
+    !!JSON.parse(localStorage.getItem(localStorageKey))
   )
   const tableData = getTableData(data)
-  const isDataPopulated = tableData && tableData.length > 0
-
-  if (!isDataPopulated && isCardDismissed) {
-    return ''
-  }
-
-  const { title, value } = getCardInfo({
+  const isTableDataEmpty = tableData && tableData.length <= 0
+  const { title, value } = getTableInfo({
     tableData,
-    isDataPopulated,
+    isTableDataEmpty,
     setIsCardDismissed,
   })
 
-  return <Card title={title}>{value}</Card>
+  return (
+    !(isTableDataEmpty && isCardDismissed) && <Card title={title}>{value}</Card>
+  )
 }
 
 export default Flags

@@ -166,7 +166,7 @@ describe('Flags Card', () => {
       expect(flagsCardTitle).toBeInTheDocument()
       const dismissButton = screen.getByRole('button', { name: /Dismiss/i })
       dismissButton.click()
-      expect(localStorage.setItem).toBeCalledWith('dismissFlagsCard', true)
+      expect(localStorage.setItem).toBeCalledWith('gz-dismissFlagsCard', 'true')
 
       flagsCardTitle = screen.queryByText('Flags')
       expect(flagsCardTitle).not.toBeInTheDocument()
