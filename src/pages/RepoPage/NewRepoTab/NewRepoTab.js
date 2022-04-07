@@ -47,10 +47,7 @@ function NewRepoTab() {
           <Icon name="external-link" size="sm" />
         </span>{' '}
         and{' '}
-        <A
-          href={'https://docs.codecov.com/docs/codecov-tutorial'}
-          isExternal={true}
-        >
+        <A href={'https://docs.codecov.com/docs/codecov-tutorial'} isExternal>
           Codecov Tutorial
         </A>{' '}
         to learn more.

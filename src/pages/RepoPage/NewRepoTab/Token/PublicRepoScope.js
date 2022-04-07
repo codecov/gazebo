@@ -9,10 +9,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
       <p className="text-base">
         If the public project is on TravisCI, CircleCI, AppVeyor, Azure
         Pipelines, or
-        <A
-          href="https://github.com/codecov/codecov-action#usage"
-          isExternal={true}
-        >
+        <A href="https://github.com/codecov/codecov-action#usage" isExternal>
           {' '}
           GitHub Actions
         </A>{' '}
@@ -33,7 +30,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
       <A
         href="https://github.com/codecov/codecov-action#usage"
         target="_blank"
-        isExternal={true}
+        isExternal
       >
         {' '}
         GitHub Actions
