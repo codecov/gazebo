@@ -38,7 +38,8 @@ const Title = ({ message, author, commitid, createdAt }) => {
           </A>
           {createdAt && (
             <span className="text-ds-gray-quinary">
-              {' opened ' + formattedDate}
+              {' '}
+              opened {formattedDate}
             </span>
           )}
         </p>
