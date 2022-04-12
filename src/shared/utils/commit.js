@@ -14,3 +14,8 @@ export const UploadTypes = Object.freeze({
   UPLOADED: 'UPLOADED',
   CARRIED_FORWARD: 'CARRIEDFORWARD',
 })
+
+export const TruncateEnum = Object.freeze({
+  EXPAND: 'see more...',
+  COLLAPSE: 'see less...',
+})
