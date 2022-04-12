@@ -1,4 +1,7 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
+
+import TotalsNumber from '../TotalsNumber'
 
 const variantClasses = {
   default: `bg-ds-primary-green`,
@@ -7,20 +10,31 @@ const variantClasses = {
 }
 
 function Progress({ amount, label, variant = 'default' }) {
-  const amountInNumber = isNaN(amount) ? 0 : amount
+  const amountInNumber = isNaN(amount) ? 0 : Number(amount)
   const className = variantClasses[variant]
 
   return (
     <div className="w-full items-center flex">
-      <div className="w-full bg-ds-gray-secondary mr-4 h-2.5">
-        <div
-          data-testid="org-progress-bar"
-          className={`${className} h-2.5`}
-          style={{ width: `${amountInNumber}%` }}
-        />
-      </div>
+      {amountInNumber ? (
+        <div className="w-full bg-ds-gray-secondary mr-4 h-2.5">
+          <div
+            data-testid="org-progress-bar"
+            className={`${className} h-2.5`}
+            style={{ width: `${amountInNumber}%` }}
+          />
+        </div>
+      ) : (
+        ''
+      )}
+
       {label && (
-        <span className="font-semibold">{amountInNumber.toFixed(2)}%</span>
+        <div
+          className={cs({
+            'w-full flex justify-end': !amountInNumber,
+          })}
+        >
+          <TotalsNumber data-testid="coverage-value" value={amount} plain />
+        </div>
       )}
     </div>
   )

@@ -3,27 +3,26 @@ import PropTypes from 'prop-types'
 import { useMemo } from 'react'
 
 import A from 'ui/A'
-import Change from 'ui/Change'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
+import TotalsNumber from 'ui/TotalsNumber'
 
 const getFileData = (row, commit) => {
   const headCov = row?.headCoverage?.coverage
   const patchCov = row?.patchCoverage?.coverage
   const baseCov = row?.baseCoverage?.coverage
 
-  const change = isNumber(headCov) && isNumber(baseCov) ? headCov - baseCov : 0
+  const change =
+    isNumber(headCov) && isNumber(baseCov) ? headCov - baseCov : Number.NaN
 
   const hasData = isNumber(headCov) || isNumber(patchCov)
-  const noDataDisplay = hasData && '-'
 
   return {
     headCoverage: headCov,
     patchCoverage: patchCov,
     hasData,
     change,
-    noDataDisplay,
     headName: row?.headName,
     commit,
   }
@@ -45,7 +44,7 @@ const table = [
     width: 'w-3/12 min-w-min',
   },
   {
-    Header: <span className="w-full text-sm text-right">Patch</span>,
+    Header: <span className="w-full text-sm text-right">Patch %</span>,
     accessor: 'patch',
     width: 'w-28 min-w-min',
   },
@@ -58,15 +57,8 @@ const table = [
 
 function createTable({ tableData = [] }) {
   return tableData.map((row) => {
-    const {
-      headName,
-      headCoverage,
-      noDataDisplay,
-      patchCoverage,
-      hasData,
-      change,
-      commit,
-    } = row
+    const { headName, headCoverage, hasData, change, commit, patchCoverage } =
+      row
 
     return {
       name: (
@@ -84,22 +76,24 @@ function createTable({ tableData = [] }) {
           </span>
         </div>
       ),
-      coverage: isNumber(headCoverage) ? (
+      coverage: (
         <div className="flex flex-1 gap-2 items-center">
-          <Progress amount={headCoverage} label={true} />
+          <Progress amount={headCoverage} label />
         </div>
-      ) : (
-        <div className="flex flex-1 justify-end">{noDataDisplay}</div>
       ),
+      /*
+          The container div fot TotalsNumber is added due to the current state of table cells styling,
+          shouldn't be necessary in the future if fixed/updated
+      */
       patch: (
-        <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {isNumber(patchCoverage)
-            ? `${patchCoverage?.toFixed(2)}%`
-            : noDataDisplay}
-        </span>
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={patchCoverage} />
+        </div>
       ),
       change: hasData ? (
-        <Change value={change} variant="default" />
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={change} showChange data-testid="change-value" />
+        </div>
       ) : (
         <span className="text-ds-gray-quinary text-sm whitespace-nowrap -ml-14 lg:-ml-12">
           No data available
@@ -110,11 +104,11 @@ function createTable({ tableData = [] }) {
 }
 
 function CommitsTable({ data = [], commit, state }) {
-  const formatedData = useMemo(
+  const formattedData = useMemo(
     () => data.map((row) => getFileData(row, commit)),
     [data, commit]
   )
-  const tableContent = createTable({ tableData: formatedData })
+  const tableContent = createTable({ tableData: formattedData })
 
   if (state === 'pending') {
     return (

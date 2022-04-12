@@ -7,7 +7,7 @@ const Coverage = ({ totals }) => {
     <div className="w-full justify-end flex">
       {typeof totals?.coverage === 'number' ? (
         <span className="w-64">
-          <Progress amount={totals?.coverage} label={true} />
+          <Progress amount={totals?.coverage} label />
         </span>
       ) : (
         <span className="text-ds-gray-quinary text-sm">

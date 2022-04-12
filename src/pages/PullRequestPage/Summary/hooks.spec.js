@@ -30,7 +30,7 @@ const pull = {
   },
   compareWithBase: {
     patchTotals: {
-      coverage: 92.12,
+      coverage: 0.9212,
     },
     changeWithParent: 38.94,
   },
@@ -42,7 +42,7 @@ const compareWithBase = pull?.compareWithBase
 
 const succesfulExpectedData = {
   headCoverage: head?.totals?.coverage,
-  patchCoverage: compareWithBase?.patchTotals?.coverage,
+  patchCoverage: compareWithBase?.patchTotals?.coverage * 100,
   changeCoverage: compareWithBase?.changeWithParent,
   headCommit: head?.commitid,
   baseCommit: base?.commitid,
@@ -77,7 +77,8 @@ describe('getPullDataForCompareSummary', () => {
   it('returns undefined for undefined parameters', () => {
     const undefinedExpectedData = {
       headCoverage: undefined,
-      patchCoverage: undefined,
+      // TODO: Change this back to undefined; since we're multiplying by 100, this returns NaN type
+      patchCoverage: NaN,
       changeCoverage: undefined,
       headCommit: undefined,
       baseCommit: undefined,

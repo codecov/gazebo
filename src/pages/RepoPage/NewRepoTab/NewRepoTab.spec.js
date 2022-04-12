@@ -56,6 +56,17 @@ describe('New Repo Tab', () => {
       const token = screen.getByText(/randomToken/)
       expect(token).toBeInTheDocument()
     })
+
+    it('renders Codecov tutorial', () => {
+      const codecovTutorialLink = screen.getByRole('link', {
+        name: /Codecov tutorial/i,
+      })
+      expect(codecovTutorialLink).toBeInTheDocument()
+      expect(codecovTutorialLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/codecov-tutorial'
+      )
+    })
   })
 
   describe('repo is public and user is part of org', () => {

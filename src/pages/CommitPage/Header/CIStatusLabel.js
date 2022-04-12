@@ -5,7 +5,7 @@ import Icon from 'ui/Icon'
 
 export default function CIStatusLabel({ ciPassed }) {
   return (
-    <div className="flex items-center gap-1 text-xs">
+    <div className="flex items-center text-xs">
       <span
         className={cs({
           'text-ds-primary-green': ciPassed,
