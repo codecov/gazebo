@@ -12,7 +12,7 @@ module.exports = {
           'Poppins',
           'ui-sans-serif',
           'system-ui',
-          ' apple-system',
+          'apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
           'Roboto',
