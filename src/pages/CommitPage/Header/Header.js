@@ -15,6 +15,7 @@ import Icon from 'ui/Icon'
 
 import CIStatusLabel from './CIStatusLabel'
 import PullLabel from './PullLabel'
+import TruncatedMessage from './TruncatedMessage'
 
 function Header() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
@@ -81,7 +82,7 @@ function Header() {
           </p>
         </Banner>
       </div>
-      <h1 className="text-lg font-semibold text-ds-gray-octonary">{message}</h1>
+      {message && <TruncatedMessage message={message} />}
       <div className="flex gap-x-4">
         <div className="flex items-center text-ds-gray-quinary gap-2">
           <div>
