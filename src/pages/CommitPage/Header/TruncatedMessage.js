@@ -6,6 +6,7 @@ import { TruncateEnum } from 'shared/utils/commit'
 
 function TruncatedMessage({ message }) {
   const [truncateLabel, setTruncateLabel] = useState(TruncateEnum.EXPAND)
+
   const isLongMessage = message.length > 50
   const truncatedMsg =
     truncateLabel === TruncateEnum.EXPAND
@@ -16,7 +17,7 @@ function TruncatedMessage({ message }) {
 
   return (
     <div>
-      <pre className="text-lg font-semibold break-all whitespace-pre-wrap inline">
+      <pre className="text-lg font-semibold break-all whitespace-pre-wrap inline font-default">
         {sanitize(truncatedMsg)}{' '}
       </pre>
       {isLongMessage && (

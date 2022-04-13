@@ -10,12 +10,12 @@ describe('TruncatedMessage', () => {
     render(<TruncatedMessage message={message} />)
   }
 
-  describe('renders short message as it is', () => {
+  describe('When commit message is less than 50 characters', () => {
     beforeEach(() => {
       setup({ message: 'This is a short message' })
     })
 
-    it('renders the message', () => {
+    it('renders the the full message', () => {
       expect(screen.getByText(/This is a short message/)).toBeInTheDocument()
     })
 
@@ -24,13 +24,13 @@ describe('TruncatedMessage', () => {
     })
   })
 
-  describe('renders truncated long message', () => {
+  describe('When commit message is longer than 50 characters', () => {
     beforeEach(() => {
       setup({ message: longMessage })
     })
 
     it('renders the short version of the message', () => {
-      const shortVersion = longMessage.substr(0, 50)
+      const shortVersion = longMessage.substring(0, 50)
       expect(screen.getByText(shortVersion)).toBeInTheDocument()
     })
 
@@ -39,14 +39,14 @@ describe('TruncatedMessage', () => {
     })
   })
 
-  describe('when expand a truncated message', () => {
+  describe('When expand a truncated message', () => {
     beforeEach(() => {
       setup({ message: longMessage })
       const button = screen.getByText('see more...')
       fireEvent.click(button)
     })
 
-    it('renders see less...', () => {
+    it('renders the collapse button', () => {
       expect(screen.getByText(/see less.../)).toBeInTheDocument()
     })
   })
