@@ -39,7 +39,7 @@ describe('TruncatedMessage', () => {
     })
   })
 
-  describe('When expand a truncated message', () => {
+  describe('Check truncate buttons', () => {
     beforeEach(() => {
       setup({ message: longMessage })
       const button = screen.getByText('see more...')
@@ -48,6 +48,12 @@ describe('TruncatedMessage', () => {
 
     it('renders the collapse button', () => {
       expect(screen.getByText(/see less.../)).toBeInTheDocument()
+    })
+
+    it('renders the expand button', () => {
+      const button = screen.getByText('see less...')
+      fireEvent.click(button)
+      expect(screen.getByText(/see more.../)).toBeInTheDocument()
     })
   })
 })
