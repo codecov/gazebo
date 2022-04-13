@@ -2,7 +2,12 @@ import { sanitize } from 'dompurify'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { TruncateEnum } from 'shared/utils/commit'
+import A from 'ui/A'
+
+const TruncateEnum = Object.freeze({
+  EXPAND: 'see more...',
+  COLLAPSE: 'see less...',
+})
 
 function TruncatedMessage({ message }) {
   const [truncateLabel, setTruncateLabel] = useState(TruncateEnum.EXPAND)
@@ -17,12 +22,11 @@ function TruncatedMessage({ message }) {
 
   return (
     <div>
-      <pre className="text-lg font-semibold break-all whitespace-pre-wrap inline font-default">
+      <pre className="text-lg font-semibold break-all whitespace-pre-wrap inline font-sans">
         {sanitize(truncatedMsg)}{' '}
       </pre>
       {isLongMessage && (
-        <button
-          className="text-ds-blue-darker"
+        <A
           onClick={() =>
             setTruncateLabel(
               truncateLabel === TruncateEnum.EXPAND
@@ -32,7 +36,7 @@ function TruncatedMessage({ message }) {
           }
         >
           {truncateLabel}
-        </button>
+        </A>
       )}
     </div>
   )
