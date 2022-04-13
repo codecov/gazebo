@@ -13,25 +13,10 @@ jest.mock('./ManageAdminCard', () => () => 'ManageAdminCard')
 jest.mock('./DeletionCard', () => () => 'DeletionCard')
 
 describe('AdminTab', () => {
-  let originalLocation
-
   const defaultProps = {
     provider: 'gh',
     owner: 'codecov',
   }
-
-  beforeAll(() => {
-    originalLocation = global.window.location
-    delete global.window.location
-    global.window.location = {
-      replace: jest.fn(),
-    }
-  })
-
-  afterAll(() => {
-    jest.resetAllMocks()
-    window.location = originalLocation
-  })
 
   function setup({ owner }) {
     useUser.mockReturnValue({
@@ -45,10 +30,6 @@ describe('AdminTab', () => {
       ...defaultProps,
       owner,
     }
-
-    const mockError = jest.fn()
-    const spy = jest.spyOn(console, 'error')
-    spy.mockImplementation(mockError)
 
     render(
       <MemoryRouter initialEntries={['/account/gh/codecov']}>
@@ -83,10 +64,6 @@ describe('AdminTab', () => {
       const card = screen.getByText(/DeletionCard/)
       expect(card).toBeInTheDocument()
     })
-
-    it('location replace was called (redirected)', () => {
-      expect(window.location.replace).toHaveBeenCalledTimes(1)
-    })
   })
 
   describe('when rendered for organization', () => {
@@ -107,10 +84,6 @@ describe('AdminTab', () => {
     it('renders the DeletionCard', () => {
       const card = screen.getByText(/DeletionCard/)
       expect(card).toBeInTheDocument()
-    })
-
-    it('location replace was called (redirected)', () => {
-      expect(window.location.replace).toHaveBeenCalledTimes(1)
     })
   })
 })

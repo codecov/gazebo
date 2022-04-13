@@ -57,7 +57,7 @@ describe('Tabs', () => {
         screen.getByRole('link', {
           name: /settings/i,
         })
-      ).toHaveAttribute('href', '/account/gh/codecov/billing')
+      ).toHaveAttribute('href', '/account/gh/codecov')
     })
   })
 })

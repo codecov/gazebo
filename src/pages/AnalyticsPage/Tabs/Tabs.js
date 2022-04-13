@@ -1,12 +1,6 @@
-import { useParams } from 'react-router-dom'
-
-import { useIsCurrentUserAnAdmin } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
-  const { owner } = useParams()
-  const isAdmin = useIsCurrentUserAnAdmin({ owner })
-
   return (
     <TabNavigation
       tabs={[
@@ -19,7 +13,7 @@ function Tabs() {
           children: 'Analytics',
         },
         {
-          pageName: isAdmin ? 'accountAdmin' : 'billingAndUsers',
+          pageName: 'accountAdmin',
           children: 'Settings',
         },
       ]}
