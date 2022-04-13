@@ -8,9 +8,8 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
     <>
       <p className="text-base">
         If the public project is on TravisCI, CircleCI, AppVeyor, Azure
-        Pipelines, or
+        Pipelines, or{' '}
         <A href="https://github.com/codecov/codecov-action#usage" isExternal>
-          {' '}
           GitHub Actions
         </A>{' '}
         an upload token is not required. Otherwise, you&apos;ll need to set the
@@ -26,13 +25,12 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
     </>
   ) : (
     <p className="text-base">
-      If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or
+      If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or{' '}
       <A
         href="https://github.com/codecov/codecov-action#usage"
         target="_blank"
         isExternal
       >
-        {' '}
         GitHub Actions
       </A>{' '}
       an upload token is not required. Otherwise, you&apos;ll need a token to
