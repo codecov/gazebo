@@ -16,18 +16,29 @@ function SideMenuAccount() {
     // Need that extra div because the side menu gets stretched otherwise
     <div>
       <Sidemenu
-        links={[
-          {
-            pageName: isAdmin ? 'accountAdmin' : '',
-            exact: true,
-          },
-          {
-            pageName: isPersonalSettings
-              ? 'internalAccessTab'
-              : 'billingAndUsers',
-          },
-          { pageName: 'yamlTab' },
-        ]}
+        links={
+          isAdmin
+            ? [
+                {
+                  pageName: 'accountAdmin',
+                  exact: true,
+                },
+                {
+                  pageName: isPersonalSettings
+                    ? 'internalAccessTab'
+                    : 'billingAndUsers',
+                },
+                { pageName: 'yamlTab' },
+              ]
+            : [
+                {
+                  pageName: isPersonalSettings
+                    ? 'internalAccessTab'
+                    : 'billingAndUsers',
+                },
+                { pageName: 'yamlTab' },
+              ]
+        }
       />
     </div>
   )

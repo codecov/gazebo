@@ -198,7 +198,6 @@ function UserManagement({ provider, owner }) {
                       color={user.activated ? 'red' : 'blue'}
                       variant={user.activated ? 'outline' : 'normal'}
                       onClick={() => {
-                        if (disabled) return
                         handleActivate(user)
                       }}
                       disabled={disabled}
