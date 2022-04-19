@@ -8,7 +8,7 @@ export default function SummaryField({ children, title }) {
           {title}
         </h4>
       )}
-      {children && <p className="text-xl font-light">{children}</p>}
+      {children && <div className="text-xl font-light">{children}</div>}
     </div>
   )
 }
