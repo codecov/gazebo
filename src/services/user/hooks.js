@@ -102,6 +102,7 @@ export function useOwner({ username, opts = {} }) {
 
 export function useIsCurrentUserAnAdmin({ owner }) {
   const { data: ownerData } = useOwner({ username: owner })
+  if (ownerData?.isAdmin === undefined) return false
 
   return ownerData?.isAdmin
 }

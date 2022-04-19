@@ -323,13 +323,17 @@ describe('useOwner', () => {
       isCurrentUserPartOfOrg: true,
       isAdmin: true,
     }
-    beforeEach(() => {
+    beforeEach(async () => {
       setup(codecovOrg)
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
       hookData = renderHook(
         () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
         { wrapper }
       )
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
+      return act(() =>
+        hookData.waitFor(() => hookData.result.current.isSuccess)
+      )
     })
 
     it('returns true value', () => {
@@ -344,13 +348,17 @@ describe('useOwner', () => {
       isCurrentUserPartOfOrg: true,
       isAdmin: false,
     }
-    beforeEach(() => {
+    beforeEach(async () => {
       setup(codecovOrg)
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
       hookData = renderHook(
         () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
         { wrapper }
       )
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
+      return act(() =>
+        hookData.waitFor(() => hookData.result.current.isSuccess)
+      )
     })
 
     it('returns false value', () => {
@@ -359,17 +367,22 @@ describe('useOwner', () => {
   })
 
   describe('when calling useIsCurrentUserAnAdmin for undefined owners', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup()
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
       hookData = renderHook(
         () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
         { wrapper }
       )
-      return hookData.waitFor(() => hookData.result.current)
+
+      return act(() =>
+        hookData.waitFor(() => hookData.result.current.isSuccesss)
+      )
     })
 
-    it('returns undefined', () => {
-      expect(hookData.result.current).toEqual(undefined)
+    it('returns false', () => {
+      expect(hookData.result.current).toEqual(false)
     })
   })
 })
