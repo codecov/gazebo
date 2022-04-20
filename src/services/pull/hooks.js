@@ -41,15 +41,7 @@ export function usePull({ provider, owner, repo, pullId }) {
                   node {
                     commitid
                     message
-                    compareWithParent {
-                      patchTotals {
-                        coverage
-                      }
-                      changeWithParent
-                    }
-                    totals {
-                      coverage
-                    }
+                    createdAt
                     author {
                       username
                     }
