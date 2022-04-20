@@ -27,6 +27,7 @@ function TruncatedMessage({ message }) {
       </pre>
       {isLongMessage && (
         <A
+          hook="truncate-message"
           onClick={() =>
             setTruncateLabel(
               truncateLabel === TruncateEnum.EXPAND

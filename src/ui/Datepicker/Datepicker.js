@@ -9,10 +9,10 @@ import './Datepicker.css'
 
 function Datepicker({ params, updateParams }) {
   const [startDate, setStartDate] = React.useState(
-    params?.startDate ? moment(params?.startDate) : null
+    params?.startDate ? moment(new Date(params?.startDate)) : null
   )
   const [endDate, setEndDate] = React.useState(
-    params?.endDate ? moment(params?.endDate) : null
+    params?.endDate ? moment(new Date(params?.endDate)) : null
   )
   const [focusedInput, setFocusedInput] = React.useState()
 
@@ -22,8 +22,8 @@ function Datepicker({ params, updateParams }) {
 
     if (startDate && endDate) {
       updateParams({
-        startDate: moment(startDate).format(),
-        endDate: moment(endDate).format(),
+        startDate: moment(new Date(startDate)).format(),
+        endDate: moment(new Date(endDate)).format(),
       })
     }
 
@@ -36,8 +36,8 @@ function Datepicker({ params, updateParams }) {
   }
 
   useEffect(() => {
-    setStartDate(params?.startDate ? moment(params?.startDate) : null)
-    setEndDate(params?.endDate ? moment(params?.endDate) : null)
+    setStartDate(params?.startDate ? moment(new Date(params?.startDate)) : null)
+    setEndDate(params?.endDate ? moment(new Date(params?.endDate)) : null)
   }, [params])
 
   return (

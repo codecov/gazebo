@@ -1,4 +1,3 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -9,6 +8,7 @@ import {
   getProviderPullURL,
   providerFeedback,
 } from 'shared/utils'
+import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import Icon from 'ui/Icon'
@@ -87,11 +87,7 @@ function Header() {
         <div className="flex items-center text-ds-gray-quinary gap-2">
           <div>
             {createdAt && (
-              <span className="font-light">
-                {formatDistanceToNow(new Date(createdAt), {
-                  addSuffix: true,
-                })}
-              </span>
+              <span className="font-light">{formatTimeToNow(createdAt)}</span>
             )}{' '}
             {/* TODO: deconstruct username from author in a const above once we have less statements (after removing the top banner) */}
             {author?.username && (

@@ -1,9 +1,9 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
 import config from 'config'
 
 import { ErrorCodeEnum, UploadTypes } from 'shared/utils/commit'
+import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
@@ -48,9 +48,7 @@ const Upload = ({
         </div>
         {createdAt && (
           <span className="text-xs text-ds-gray-quinary">
-            {formatDistanceToNow(new Date(createdAt), {
-              addSuffix: true,
-            })}
+            {formatTimeToNow(createdAt)}
           </span>
         )}
       </div>
