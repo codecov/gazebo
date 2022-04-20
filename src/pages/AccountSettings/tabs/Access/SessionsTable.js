@@ -1,6 +1,6 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
+import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Table from 'ui/Table'
 
@@ -34,9 +34,7 @@ function SessionsTable({ sessions, onRevoke }) {
         {s.ip}
       </p>
     ),
-    col2: s.lastseen
-      ? formatDistanceToNow(new Date(s.lastseen), { addSuffix: true })
-      : '-',
+    col2: s.lastseen ? formatTimeToNow(s.lastseen) : '-',
     col3: s.useragent,
     col4: (
       <Button

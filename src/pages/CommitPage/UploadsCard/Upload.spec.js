@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+
+import { formatTimeToNow } from 'shared/utils/dates'
 
 import Upload from './Upload'
 
@@ -30,12 +31,7 @@ describe('UploadsCard', () => {
     })
     it('created at dates', () => {
       // If we dont use date-fns this test will break over time
-      const createDate = formatDistanceToNow(
-        new Date('2020-08-25T16:36:19.559474+00:00'),
-        {
-          addSuffix: true,
-        }
-      )
+      const createDate = formatTimeToNow('2020-08-25T16:36:19.559474+00:00')
       expect(screen.getByText(createDate)).toBeInTheDocument()
     })
     it('renders a download link', () => {
