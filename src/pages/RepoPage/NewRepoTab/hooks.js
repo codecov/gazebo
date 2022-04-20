@@ -1,16 +1,24 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useParams } from 'react-router'
 
 import { useCommits } from 'services/commits'
-import { useRedirect } from 'shared/useRedirect'
+
+function useRedirect() {
+  const { provider, owner, repo } = useParams()
+
+  return {
+    hardRedirect: useCallback(() => {
+      window.location.replace(`/${provider}/${owner}/${repo}`)
+    }, [provider, owner, repo]),
+  }
+}
 
 export function useRedirectToVueOverview({
   noAccessOpenSource,
   missingUploadToken,
 }) {
+  const { hardRedirect } = useRedirect()
   const { provider, owner, repo } = useParams()
-  const href = `/${provider}/${owner}/${repo}`
-  const { hardRedirect } = useRedirect({ href })
   const { data: commits } = useCommits({ provider, owner, repo })
 
   useEffect(() => {
