@@ -8,10 +8,15 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 
 function humanReadableError(errorCode) {
-  if (errorCode === ErrorCodeEnum.fileNotFoundInStorage)
+  if (
+    errorCode?.toLowerCase() ===
+    ErrorCodeEnum.fileNotFoundInStorage.toLowerCase()
+  )
     return 'processing failed'
-  if (errorCode === ErrorCodeEnum.reportExpired) return 'upload expired'
-  if (errorCode === ErrorCodeEnum.reportEmpty) return 'upload is empty'
+  if (errorCode?.toLowerCase() === ErrorCodeEnum.reportExpired.toLowerCase())
+    return 'upload expired'
+  if (errorCode?.toLowerCase() === ErrorCodeEnum.reportEmpty.toLowerCase())
+    return 'upload is empty'
 }
 
 const Upload = ({
