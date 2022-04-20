@@ -6,9 +6,6 @@ import { mapEdges } from 'shared/utils/graphql'
 
 export function getPullDataForCommitsList({ commits }) {
   return commits.map((commit) => ({
-    headCoverage: commit?.totals?.coverage,
-    patchCoverage: commit?.compareWithParent?.patchTotals?.coverage,
-    changeCoverage: commit?.compareWithParent?.changeWithParent,
     message: commit?.message,
     commitid: commit?.commitid,
     author: commit?.author?.username,
