@@ -19,7 +19,10 @@ function List({ items, onItemSelect }) {
       <ul className="border border-ds-gray-secondary w-full text-ds-gray-octonary">
         {items.map(({ name, value }, index) => (
           <li key={name} className={getListClasses({ index })}>
-            <button onClick={() => onItemSelect && onItemSelect(name)}>
+            <button
+              className="w-full"
+              onClick={() => onItemSelect && onItemSelect(name)}
+            >
               {value}
             </button>
           </li>
