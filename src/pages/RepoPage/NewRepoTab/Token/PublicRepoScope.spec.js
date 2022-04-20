@@ -19,6 +19,16 @@ describe('PublicRepoScope', () => {
       ).toBeInTheDocument()
       expect(screen.getByText(/mytoken/)).toBeInTheDocument()
     })
+    it('renders Github Actions link', () => {
+      const ghActionsLink = screen.getByRole('link', {
+        name: /Github Actions/i,
+      })
+      expect(ghActionsLink).toBeInTheDocument()
+      expect(ghActionsLink).toHaveAttribute(
+        'href',
+        'https://github.com/codecov/codecov-action#usage'
+      )
+    })
   })
   describe('not part of org', () => {
     beforeEach(() => {
@@ -34,6 +44,16 @@ describe('PublicRepoScope', () => {
           { exact: false }
         )
       ).toBeInTheDocument()
+    })
+    it('renders Github Actions link', () => {
+      const ghActionsLink = screen.getByRole('link', {
+        name: /Github Actions/i,
+      })
+      expect(ghActionsLink).toBeInTheDocument()
+      expect(ghActionsLink).toHaveAttribute(
+        'href',
+        'https://github.com/codecov/codecov-action#usage'
+      )
     })
   })
 })

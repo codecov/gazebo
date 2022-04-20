@@ -137,8 +137,8 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user have a pro year plan', () => {
-    beforeEach(() => {
-      setup(proPlanYear)
+    beforeEach(async () => {
+      await act(async () => await setup(proPlanYear))
     })
 
     it('renders Dropdown with the year plan selected', () => {
@@ -163,8 +163,10 @@ describe('UpgradePlanForm', () => {
 
     describe('when updating to a year plan', () => {
       beforeEach(() => {
-        userEvent.click(screen.getAllByRole('button')[0])
-        userEvent.click(screen.getAllByRole('option')[1])
+        return act(async () => {
+          await userEvent.click(screen.getAllByRole('button')[0])
+          userEvent.click(screen.getAllByRole('option')[1])
+        })
       })
 
       it('has the price for the month', () => {
@@ -209,20 +211,22 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('if there is an invoice', () => {
-    beforeEach(() => {
-      const invoice = {
-        periodStart: 1595270468,
-        periodEnd: 1597948868,
-        dueDate: '1600544863',
-        amountPaid: 9600.0,
-        amountDue: 9600.0,
-        amountRemaining: 0.0,
-        total: 9600.0,
-        subtotal: 9600.0,
-        invoicePdf:
-          'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
-      }
-      setup(proPlanMonth, invoice)
+    beforeEach(async () => {
+      await act(async () => {
+        const invoice = {
+          periodStart: 1595270468,
+          periodEnd: 1597948868,
+          dueDate: '1600544863',
+          amountPaid: 9600.0,
+          amountDue: 9600.0,
+          amountRemaining: 0.0,
+          total: 9600.0,
+          subtotal: 9600.0,
+          invoicePdf:
+            'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+        }
+        await setup(proPlanMonth, invoice)
+      })
     })
 
     it('renders the next billing period', () => {

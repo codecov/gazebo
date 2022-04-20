@@ -1,8 +1,6 @@
-import isNumber from 'lodash/isNumber'
-
 import A from 'ui/A'
-import Change from 'ui/Change'
 import Summary from 'ui/Summary'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import { usePullForCompareSummary } from './hooks'
 
@@ -13,7 +11,6 @@ function totalsCards({
   changeCoverage,
 }) {
   return [
-    // TODO: change the "value" for Head and Patch to the component
     {
       name: 'head',
       title: (
@@ -26,21 +23,24 @@ function totalsCards({
           )}
         </>
       ),
-      value: headCoverage ? `${headCoverage} %` : '-',
+      value: <TotalsNumber value={headCoverage} large plain />,
     },
     {
       name: 'patch',
       title: 'Patch',
-      value: (
-        <span className="text-sm text-right w-full text-ds-gray-octonary">
-          {isNumber(patchCoverage) ? `${patchCoverage?.toFixed(2)}%` : '-'}
-        </span>
-      ),
+      value: <TotalsNumber value={patchCoverage} large plain />,
     },
     {
       name: 'change',
       title: 'Change',
-      value: <Change value={changeCoverage} variant="coverageCard" />,
+      value: (
+        <TotalsNumber
+          value={changeCoverage}
+          showChange
+          large
+          data-testid="change-value"
+        />
+      ),
     },
   ]
 }

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 
+import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
 const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
@@ -7,9 +8,16 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
     <>
       <p className="text-base">
         If the public project is on TravisCI, CircleCI, AppVeyor, Azure
-        Pipelines, or GitHub Actions an upload token is not required. Otherwise,
-        you&apos;ll need to set the token below and set it in your CI
-        environment variables.
+        Pipelines, or{' '}
+        <A
+          href="https://github.com/codecov/codecov-action#usage"
+          isExternal
+          hook="gh-actions"
+        >
+          GitHub Actions
+        </A>{' '}
+        an upload token is not required. Otherwise, you&apos;ll need to set the
+        token below and set it in your CI environment variables.
       </p>
       <p className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
@@ -21,9 +29,17 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
     </>
   ) : (
     <p className="text-base">
-      If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or
-      GitHub Actions an upload token is not required. Otherwise, you&apos;ll
-      need a token to from the authorized member or admin.
+      If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or{' '}
+      <A
+        href="https://github.com/codecov/codecov-action#usage"
+        target="_blank"
+        isExternal
+        hook="gh-actions"
+      >
+        GitHub Actions
+      </A>{' '}
+      an upload token is not required. Otherwise, you&apos;ll need a token to
+      from the authorized member or admin.
     </p>
   )
 }

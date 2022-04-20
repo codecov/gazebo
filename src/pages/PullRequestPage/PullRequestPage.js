@@ -4,8 +4,8 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
-import Card from './Card'
 import Commits from './Commits'
+import Flags from './Flags'
 import Header from './Header'
 import CompareSummary from './Summary'
 
@@ -61,15 +61,8 @@ function PullRequestPage() {
           </Switch>
         </article>
         <aside className="flex flex-col gap-4 self-start sticky top-1.5">
-          {/* Placeholder, make each card is own component importing the pre styled card */}
           <Commits />
-          <Card title="Flags">
-            <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-            <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-            <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-            <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-            <p>Test</p> <p>Test</p> <p>Test</p>{' '}
-          </Card>
+          <Flags />
         </aside>
       </div>
     </div>

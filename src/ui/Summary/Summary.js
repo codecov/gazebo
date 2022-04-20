@@ -10,7 +10,6 @@ function Summary({ fields }) {
         {fields.map((field) => {
           const { name, title, value } = field
           return (
-            title &&
             value && (
               <SummaryField key={name} title={title}>
                 {value}
@@ -27,8 +26,7 @@ Summary.propTypes = {
   fields: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
-      title: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
-        .isRequired,
+      title: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
       value: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
         .isRequired,
     })

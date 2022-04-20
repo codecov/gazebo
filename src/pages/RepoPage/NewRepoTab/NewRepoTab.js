@@ -46,6 +46,10 @@ function NewRepoTab() {
         <span className="inline-block text-gray-500">
           <Icon name="external-link" size="sm" />
         </span>{' '}
+        and{' '}
+        <A href={'https://docs.codecov.com/docs/codecov-tutorial'} isExternal>
+          Codecov Tutorial
+        </A>{' '}
         to learn more.
       </p>
 

@@ -1,6 +1,6 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
+import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
@@ -27,10 +27,8 @@ const Title = ({ author, pullId, title, updatestamp }) => {
           </A>
           {updatestamp && (
             <span className="text-ds-gray-quinary">
-              {' opened ' +
-                formatDistanceToNow(new Date(updatestamp), {
-                  addSuffix: true,
-                })}
+              {' '}
+              opened {formatTimeToNow(updatestamp)}
             </span>
           )}
         </p>

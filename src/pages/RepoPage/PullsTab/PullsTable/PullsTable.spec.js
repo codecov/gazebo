@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import { render, screen, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { formatTimeToNow } from 'shared/utils/dates'
 
 import PullsTable from '.'
 
@@ -66,9 +67,7 @@ describe('Pulls Table', () => {
     })
 
     it('renders pulls updatestamp', () => {
-      const dt = formatDistanceToNow(new Date('2021-08-30T19:33:49.819672'), {
-        addSuffix: true,
-      })
+      const dt = formatTimeToNow('2021-08-30T19:33:49.819672')
       const dt1 = screen.getByText('opened ' + dt)
       expect(dt1).toBeInTheDocument()
     })
@@ -85,7 +84,9 @@ describe('Pulls Table', () => {
 
     it('renders pulls change from base', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('+14.00%')
+      const child = within(changeValue).getByTestId('number-value')
+      expect(child).toHaveTextContent('14.00%')
+      expect(child).toHaveClass("before:content-['+']")
     })
   })
 
