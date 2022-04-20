@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useUser } from 'services/user'
 
 import AccountSettings from './AccountSettings'
 
@@ -16,7 +16,7 @@ jest.mock('./tabs/InvoiceDetail', () => () => 'InvoiceDetail')
 jest.mock('services/user/hooks')
 
 describe('AccountSettings', () => {
-  function setup({ url, isAdmin }) {
+  function setup(url = '/account/gh/codecov') {
     useUser.mockReturnValue({
       data: {
         user: {
@@ -24,9 +24,6 @@ describe('AccountSettings', () => {
         },
       },
     })
-
-    useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
-
     render(
       <MemoryRouter initialEntries={[url]}>
         <Route path="/account/:provider/:owner/">
@@ -38,7 +35,7 @@ describe('AccountSettings', () => {
 
   describe('when rendering for an organization', () => {
     beforeEach(() => {
-      setup({ url: '/account/gh/codecov', isAdmin: true })
+      setup()
     })
 
     it('renders the right links', () => {
@@ -53,49 +50,13 @@ describe('AccountSettings', () => {
     })
   })
 
-  describe('when rendering for admin users and is personal settings', () => {
+  describe('when rendering for personal settings', () => {
     beforeEach(() => {
-      setup({ url: '/account/gh/dorian', isAdmin: true })
+      setup('/account/gh/dorian')
     })
 
     it('renders the right links', () => {
       expect(screen.getByRole('link', { name: /Admin/ })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /Access/ })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /billing & users/i })
-      ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when rendering for non admin users and not personal settings', () => {
-    beforeEach(() => {
-      setup({ url: '/account/gh/random', isAdmin: false })
-    })
-
-    it('renders the right links', () => {
-      expect(
-        screen.queryByRole('link', { name: /Admin/ })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /Access/ })
-      ).not.toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-      expect(
-        screen.getByRole('link', { name: /billing & users/i })
-      ).toBeInTheDocument()
-    })
-  })
-
-  describe('when rendering for non admin users and is personal settings', () => {
-    beforeEach(() => {
-      setup({ url: '/account/gh/dorian', isAdmin: false })
-    })
-
-    it('renders the right links', () => {
-      expect(
-        screen.queryByRole('link', { name: /Admin/ })
-      ).not.toBeInTheDocument()
       expect(screen.getByRole('link', { name: /Access/ })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
       expect(
