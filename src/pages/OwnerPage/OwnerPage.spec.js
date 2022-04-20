@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import OwnerPage from './OwnerPage'
+import { MemoryRouter, Route } from 'react-router-dom'
+
 import { useAccountDetails } from 'services/account'
 import { useOwner } from 'services/user'
-import { MemoryRouter, Route } from 'react-router-dom'
+
+import OwnerPage from './OwnerPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
@@ -49,7 +51,7 @@ describe('OwnerPage', () => {
 
     it('renders links to the settings', () => {
       expect(
-        screen.queryByRole('link', {
+        screen.getByRole('link', {
           name: /settings/i,
         })
       ).toBeInTheDocument()

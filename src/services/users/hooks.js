@@ -1,4 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+
 import Api from 'shared/api'
 
 function getPathUsers({ provider, owner }) {

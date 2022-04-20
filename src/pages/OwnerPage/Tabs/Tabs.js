@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+
 import TabNavigation from 'ui/TabNavigation'
 
 import CallToAction from '../CallToAction'

@@ -1,29 +1,29 @@
 import PropTypes from 'prop-types'
-import Modal from 'ui/Modal'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+
+import Button from 'old_ui/Button'
+import Card from 'old_ui/Card'
+import Toggle from 'old_ui/Toggle'
+import User from 'old_ui/User'
+import { useAccountDetails, useAutoActivate } from 'services/account'
+import {
+  ApiFilterEnum,
+  useLocationParams,
+  useNavLinks,
+} from 'services/navigation'
+import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useUpdateUser, useUsers } from 'services/users'
+import { getOwnerImg } from 'shared/utils'
+import { isFreePlan } from 'shared/utils/billing'
+import A from 'ui/A'
+import Modal from 'ui/Modal'
 
 import { FormControls } from './FormControls'
 import { FormPaginate } from './FormPaginate'
 
-import Card from 'old_ui/Card'
-import Toggle from 'old_ui/Toggle'
-import User from 'old_ui/User'
-import Button from 'old_ui/Button'
-import A from 'ui/A'
-
-import {
-  useLocationParams,
-  ApiFilterEnum,
-  useNavLinks,
-} from 'services/navigation'
-import { useAutoActivate, useAccountDetails } from 'services/account'
-import { useUsers, useUpdateUser } from 'services/users'
-import { getOwnerImg } from 'shared/utils'
-import { isFreePlan } from 'shared/utils/billing'
-
 const UserManagementClasses = {
-  root: 'space-y-4 col-span-2 mb-20 flex-grow', // Select pushes page length out. For now padding
+  root: 'space-y-4 col-span-2 mb-20 grow', // Select pushes page length out. For now padding
   cardHeader: 'flex justify-between items-center pb-4',
   activateUsers:
     'flex items-center py-2 px-4 shadow rounded-full text-blue-500',
@@ -57,9 +57,7 @@ function createPills({ isAdmin, email, student }) {
   ]
 }
 
-function UserManagement({ provider, owner }) {
-  // local state is pulled from url params.
-  // Defaults are not shown in url.
+function useUsersData({ provider, owner }) {
   const { params, updateParams } = useLocationParams({
     activated: ApiFilterEnum.none, // Default to no filter on activated
     isAdmin: ApiFilterEnum.none, // Default to no filter on isAdmin
@@ -73,6 +71,25 @@ function UserManagement({ provider, owner }) {
     provider,
     owner,
     query: params,
+  })
+  const { data: currentUser } = useUser()
+
+  return {
+    params,
+    updateParams,
+    data,
+    isSuccess,
+    currentUser: currentUser?.user,
+  }
+}
+
+function UserManagement({ provider, owner }) {
+  const isAdmin = useIsCurrentUserAnAdmin({ owner })
+  // local state is pulled from url params.
+  // Defaults are not shown in url.
+  const { params, updateParams, data, isSuccess, currentUser } = useUsersData({
+    provider,
+    owner,
   })
   // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider })
@@ -145,43 +162,52 @@ function UserManagement({ provider, owner }) {
       <Card className={UserManagementClasses.results}>
         <div className={UserManagementClasses.cardHeader}>
           <h2 className={UserManagementClasses.title}>Users</h2>
-          <span className={UserManagementClasses.activateUsers}>
-            <Toggle
-              showLabel={true}
-              onClick={() => autoActivate(!accountDetails?.planAutoActivate)}
-              value={accountDetails?.planAutoActivate}
-              label="Auto activate users"
-              labelClass={UserManagementClasses.activateUsersText}
-            />
-          </span>
+          {isAdmin && (
+            <span className={UserManagementClasses.activateUsers}>
+              <Toggle
+                showLabel={true}
+                onClick={() => autoActivate(!accountDetails?.planAutoActivate)}
+                value={accountDetails?.planAutoActivate}
+                label="Auto activate users"
+                labelClass={UserManagementClasses.activateUsersText}
+              />
+            </span>
+          )}
         </div>
         <div>
           {isSuccess &&
-            data.results.map((user) => (
-              <div
-                key={user.username}
-                className={UserManagementClasses.userTable}
-              >
-                <User
-                  className={UserManagementClasses.user}
-                  username={user.username}
-                  name={user.name}
-                  avatarUrl={getOwnerImg(provider, user.username)}
-                  pills={createPills(user)}
-                />
-                <div className={UserManagementClasses.ctaWrapper}>
-                  <Button
-                    data-cy={`activate-${user.username}`}
-                    className={UserManagementClasses.cta}
-                    color={user.activated ? 'red' : 'blue'}
-                    variant={user.activated ? 'outline' : 'normal'}
-                    onClick={() => handleActivate(user)}
-                  >
-                    {user.activated ? 'Deactivate' : 'Activate'}
-                  </Button>
+            data.results.map((user) => {
+              const disabled =
+                !isAdmin && user.username !== currentUser.username
+              return (
+                <div
+                  key={user.username}
+                  className={UserManagementClasses.userTable}
+                >
+                  <User
+                    className={UserManagementClasses.user}
+                    username={user.username}
+                    name={user.name}
+                    avatarUrl={getOwnerImg(provider, user.username)}
+                    pills={createPills(user)}
+                  />
+                  <div className={UserManagementClasses.ctaWrapper}>
+                    <Button
+                      data-cy={`activate-${user.username}`}
+                      className={UserManagementClasses.cta}
+                      color={user.activated ? 'red' : 'blue'}
+                      variant={user.activated ? 'outline' : 'normal'}
+                      onClick={() => {
+                        handleActivate(user)
+                      }}
+                      disabled={disabled}
+                    >
+                      {user.activated ? 'Deactivate' : 'Activate'}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
         </div>
         <FormPaginate
           totalPages={data.totalPages}

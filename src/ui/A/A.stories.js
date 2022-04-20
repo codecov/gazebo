@@ -1,4 +1,5 @@
 import A from './A'
+
 import Icon from '../Icon'
 
 const Template = (args) => <A {...args} />

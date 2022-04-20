@@ -1,7 +1,9 @@
 import { render, screen } from 'custom-testing-library'
+
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
+
 import Header from './Header'
 
 const pull = {
@@ -22,7 +24,7 @@ describe('Header', () => {
 
     render(
       <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullid">
+        <Route path="/:provider/:owner/:repo/pull/:pullId">
           <Header />
         </Route>
       </MemoryRouter>

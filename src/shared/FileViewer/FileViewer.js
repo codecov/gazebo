@@ -1,16 +1,16 @@
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import PropTypes from 'prop-types'
 
+import { useCoverageWithFlags } from 'services/file/hooks'
+import AppLink from 'shared/AppLink'
 import Breadcrumb from 'ui/Breadcrumb'
 import Progress from 'ui/Progress'
-import Change from 'ui/Change'
-import AppLink from 'shared/AppLink'
-import { useCoverageWithFlags } from 'services/file/hooks'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import CodeRenderer from './CodeRenderer'
-import Title, { TitleFlags, TitleCoverage } from './Title'
 import { LINE_STATE, LINE_TYPE } from './lineStates'
+import Title, { TitleCoverage, TitleFlags } from './Title'
 
 function useCoverageData({ coverage, totals, selectedFlags }) {
   const coverageForAllFlags = selectedFlags.length === 0
@@ -106,8 +106,8 @@ function FileViewer({
             <Breadcrumb paths={[...treePaths]} />
           </div>
           <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
-            <Progress amount={coverageTotals} label={true} />
-            <Change value={change} variant="fileViewer" />
+            <Progress amount={coverageTotals} label />
+            <TotalsNumber value={change} showChange />
           </div>
         </div>
         {content ? (

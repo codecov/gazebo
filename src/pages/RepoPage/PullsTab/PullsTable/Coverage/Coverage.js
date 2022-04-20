@@ -1,8 +1,10 @@
-import Icon from 'ui/Icon'
-import { IconEnum } from './enums'
-import Progress from 'ui/Progress'
-import A from 'ui/A'
 import PropTypes from 'prop-types'
+
+import A from 'ui/A'
+import Icon from 'ui/Icon'
+import Progress from 'ui/Progress'
+
+import { IconEnum } from './enums'
 
 const PullState = ({ state }) => {
   const icon = IconEnum.find((item) => state === item.state)
@@ -22,15 +24,15 @@ const Coverage = ({ head, state, pullId }) =>
   typeof head?.totals?.coverage === 'number' ? (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
       <PullState state={state} />
-      <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
+      <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
       </A>
-      <Progress amount={head?.totals?.coverage} label={true} />
+      <Progress amount={head?.totals?.coverage} label />
     </div>
   ) : (
     <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
       <PullState state={state} />
-      <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
+      <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
       </A>
       <span className="text-ds-gray-quinary text-sm">

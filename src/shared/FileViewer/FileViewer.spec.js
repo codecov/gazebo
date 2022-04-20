@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
 import { useCoverageWithFlags } from 'services/file/hooks'
 
 import FileViewer from './FileViewer'

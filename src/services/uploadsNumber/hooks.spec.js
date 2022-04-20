@@ -1,9 +1,9 @@
-import { setupServer } from 'msw/node'
-import { renderHook } from '@testing-library/react-hooks'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { useUploadsNumber } from './hooks'
+import { act, renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
-import { useIsUploadsNumberExceeded } from './hooks'
+import { setupServer } from 'msw/node'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
+import { useIsUploadsNumberExceeded, useUploadsNumber } from './hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,13 +70,16 @@ describe('GetUploadsNumber', () => {
   })
 
   describe('when calling useIsUploadsNumberExceeded', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup()
-      hookData = renderHook(
-        () => useIsUploadsNumberExceeded({ provider, owner }),
-        {
-          wrapper,
-        }
+      await act(
+        async () =>
+          (hookData = await renderHook(
+            () => useIsUploadsNumberExceeded({ provider, owner }),
+            {
+              wrapper,
+            }
+          ))
       )
     })
 

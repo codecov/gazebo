@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types'
+
 import { commitRequestType } from 'shared/propTypes'
 import Table from 'ui/Table'
-import Change from 'ui/Change'
+import TotalsNumber from 'ui/TotalsNumber'
 
-import Title from './Title'
-import Coverage from './Coverage'
-
-import Patch from './Patch'
 import CIStatus from './CIStatus'
+import Coverage from './Coverage'
+import Title from './Title'
 
 const headers = [
   {
@@ -30,7 +29,7 @@ const headers = [
     width: 'w-2/12 lg:w-3/12',
   },
   {
-    Header: <span className="w-full text-right">Patch</span>,
+    Header: <span className="w-full text-right">Patch %</span>,
     accessor: 'patch',
     width: 'w-1/12',
   },
@@ -70,6 +69,9 @@ function transformPullToTable(commits) {
       ciPassed,
     } = commit
     const change = totals?.coverage - parent?.totals?.coverage
+    const patchValue = compareWithParent?.patchTotals?.coverage
+      ? compareWithParent?.patchTotals?.coverage * 100
+      : Number.NaN
 
     return {
       title: (
@@ -88,8 +90,20 @@ function transformPullToTable(commits) {
         />
       ),
       coverage: <Coverage totals={totals} />,
-      patch: <Patch compareWithParent={compareWithParent} />,
-      change: <Change value={change} variant="default" />,
+      /*
+          The container div fot TotalsNumber is added due to the current state of table cells styling,
+          shouldn't be necessary in the future if fixed/updated
+      */
+      patch: (
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={patchValue} data-testid="patch-value" />
+        </div>
+      ),
+      change: (
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={change} showChange />
+        </div>
+      ),
     }
   })
 }

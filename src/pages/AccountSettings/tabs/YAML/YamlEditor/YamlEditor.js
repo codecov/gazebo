@@ -1,5 +1,5 @@
-import { forwardRef } from 'react'
 import PropTypes from 'prop-types'
+import { forwardRef } from 'react'
 import AceEditor from 'react-ace'
 
 import 'ace-builds/src-noconflict/theme-github'
@@ -26,6 +26,7 @@ YamlEditor.displayName = 'YamlEditor'
 
 YamlEditor.propTypes = {
   value: PropTypes.string,
+  readOnly: PropTypes.bool.isRequired,
 }
 
 export default YamlEditor

@@ -1,7 +1,7 @@
-import { setupServer } from 'msw/node'
 import { renderHook } from '@testing-library/react-hooks'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { usePull } from './hooks'
 
@@ -30,6 +30,21 @@ const pull = {
   updatestamp: '2021-03-03T17:54:07.727453',
   author: {
     username: 'landonorris',
+  },
+  head: {
+    commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+    totals: {
+      coverage: 78.33,
+    },
+  },
+  comparedTo: {
+    commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+  },
+  compareWithBase: {
+    patchTotals: {
+      coverage: 92.12,
+    },
+    changeWithParent: 38.94,
   },
 }
 

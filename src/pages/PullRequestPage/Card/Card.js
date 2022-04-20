@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 
 export default function Card({ title, children }) {
   return (
-    <div>
-      <div className="border-t border-l border-r border-ds-gray-secondary p-4 semibold text-base">
+    <div className="border border-ds-gray-secondary">
+      <div className="mx-4 mt-4 pb-4 font-semibold text-md border-b border-ds-gray-secondary flex justify-between items-baseline">
         {title}
       </div>
-      <div className="bg-ds-gray-primary p-4 max-h-80 overflow-y-auto">
+      <div className="mx-4 mb-4 pt-4 max-h-80 overflow-y-auto divide-y border-ds-gray-secondary">
         {children}
       </div>
     </div>
@@ -14,5 +14,5 @@ export default function Card({ title, children }) {
 }
 
 Card.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
 }

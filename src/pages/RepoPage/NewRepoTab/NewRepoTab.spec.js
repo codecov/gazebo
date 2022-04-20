@@ -1,9 +1,8 @@
-import { repoPageRender, screen } from '../repo-jest-setup'
-
+import { useCommits } from 'services/commits'
+import { useRepo } from 'services/repo'
 import { NotFoundException } from 'shared/utils'
 
-import { useRepo } from 'services/repo'
-import { useCommits } from 'services/commits'
+import { repoPageRender, screen } from '../repo-jest-setup'
 
 import NewRepoTab from '.'
 
@@ -56,6 +55,17 @@ describe('New Repo Tab', () => {
     it('renders the passed token', () => {
       const token = screen.getByText(/randomToken/)
       expect(token).toBeInTheDocument()
+    })
+
+    it('renders Codecov tutorial', () => {
+      const codecovTutorialLink = screen.getByRole('link', {
+        name: /Codecov tutorial/i,
+      })
+      expect(codecovTutorialLink).toBeInTheDocument()
+      expect(codecovTutorialLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/codecov-tutorial'
+      )
     })
   })
 

@@ -1,13 +1,13 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
 import Card from 'old_ui/Card'
-import Button from 'ui/Button'
-import TextInput from 'ui/TextInput'
 import { useAddNotification } from 'services/toastNotification'
 import { useUpdateProfile } from 'services/user'
+import Button from 'ui/Button'
+import TextInput from 'ui/TextInput'
 
 function getSchema() {
   return yup.object().shape({

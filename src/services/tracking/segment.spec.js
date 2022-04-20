@@ -1,13 +1,13 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { useLocation } from 'react-router-dom'
 import Cookie from 'js-cookie'
+import { useLocation } from 'react-router-dom'
 
 import {
-  useSegmentPage,
-  identifySegmentUser,
-  trackSegmentEvent,
-  pageSegmentEvent,
   identifySegmentEvent,
+  identifySegmentUser,
+  pageSegmentEvent,
+  trackSegmentEvent,
+  useSegmentPage,
 } from './segment'
 
 window.analytics = {
@@ -107,7 +107,6 @@ describe('identifySegmentUser', () => {
 
     it('hook should make 3 different identify calls', () => {
       expect(window.analytics.identify.mock.instances).toHaveLength(3)
-      // console.log(expect(window.analytics.identify.mock.instances[2].identify).toBeCalledWith(1))
       expect(
         window.analytics.identify.mock.instances[0].identify
       ).toBeCalledWith(

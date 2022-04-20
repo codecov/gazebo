@@ -1,5 +1,6 @@
-import Api from 'shared/api'
 import { useInfiniteQuery } from 'react-query'
+
+import Api from 'shared/api'
 
 function fetchRepoPulls({ provider, owner, repo, variables, after }) {
   const PullFragment = `
@@ -10,6 +11,7 @@ function fetchRepoPulls({ provider, owner, repo, variables, after }) {
         updatestamp
         author{
             username
+            avatarUrl
         }
         head{
             totals{

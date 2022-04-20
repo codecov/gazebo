@@ -1,8 +1,10 @@
 import { render, screen } from 'custom-testing-library'
+
 import userEvent from '@testing-library/user-event'
-import { useParams, MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useParams } from 'react-router-dom'
 
 import { useResyncUser } from 'services/user'
+
 import ResyncButton from './ResyncButton'
 
 jest.mock('react-router-dom', () => ({

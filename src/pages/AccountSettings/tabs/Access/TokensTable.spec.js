@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { subDays } from 'date-fns'
-import TokensTable from './TokensTable'
 import userEvent from '@testing-library/user-event'
+import { subDays } from 'date-fns'
+
+import TokensTable from './TokensTable'
 
 const onTokenRevoke = jest.fn(() => true)
 

@@ -1,21 +1,23 @@
 import { lazy } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
-
-import { ToastNotificationProvider } from 'services/toastNotification'
-import BaseLayout from 'layouts/BaseLayout'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
+
+import BaseLayout from 'layouts/BaseLayout'
+import { ToastNotificationProvider } from 'services/toastNotification'
+import { useUTM } from 'services/tracking/utm'
+
 // Not lazy loading because the page is very small and is accessed often
 
-const LoginPage = lazy(() => import('./pages/LoginPage'))
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
-const HomePage = lazy(() => import('./pages/HomePage'))
-const CommitPage = lazy(() => import('./pages/CommitPage'))
-const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
-const FileViewPage = lazy(() => import('./pages/FileView'))
-const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
-const RepoPage = lazy(() => import('pages/RepoPage/RepoPage'))
+const CommitPage = lazy(() => import('./pages/CommitPage'))
+const FileViewPage = lazy(() => import('./pages/FileView'))
+const HomePage = lazy(() => import('./pages/HomePage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const OwnerPage = lazy(() => import('./pages/OwnerPage'))
+const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
+const RepoPage = lazy(() => import('./pages/RepoPage/RepoPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,6 +30,8 @@ const queryClient = new QueryClient({
 })
 
 function App() {
+  useUTM()
+
   return (
     <ToastNotificationProvider>
       <QueryClientProvider client={queryClient}>
@@ -79,14 +83,14 @@ function App() {
               to="/:provider/:owner/:repo/pull/*"
             />
             <Route
-              path="/:provider/:owner/:repo/pull/:pullid/tree/:path+"
+              path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
               exact
             >
               <BaseLayout>
                 <PullRequestPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/pull/:pullid">
+            <Route path="/:provider/:owner/:repo/pull/:pullId">
               <BaseLayout>
                 <PullRequestPage />
               </BaseLayout>

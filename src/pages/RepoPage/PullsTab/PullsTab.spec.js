@@ -1,6 +1,7 @@
-import { repoPageRender, fireEvent, screen } from '../repo-jest-setup'
-
 import { usePulls } from 'services/pulls/hooks'
+
+import { fireEvent, repoPageRender, screen } from '../repo-jest-setup'
+
 import PullsTab from '.'
 
 jest.mock('services/pulls/hooks')
@@ -17,7 +18,7 @@ describe('Pulls Pab', () => {
         pulls: [
           {
             node: {
-              author: { username: 'RulaKhaled' },
+              author: { username: 'RulaKhaled', avatarUrl: 'random' },
               compareWithBase: {
                 patchTotals: {
                   coverage: 90,
@@ -36,7 +37,7 @@ describe('Pulls Pab', () => {
           },
           {
             node: {
-              author: { username: 'ThiagoCodecov' },
+              author: { username: 'ThiagoCodecov', avatarUrl: 'random' },
               compareWithBase: {
                 patchTotals: {
                   coverage: 87,

@@ -1,6 +1,8 @@
-import Chart from './Chart'
 import { render, screen } from '@testing-library/react'
+
 import { useOrgCoverage } from 'services/charts'
+
+import Chart from './Chart'
 
 jest.mock('services/charts')
 

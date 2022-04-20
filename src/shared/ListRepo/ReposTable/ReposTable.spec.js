@@ -1,10 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepos } from 'services/repos/hooks'
 import { orderingOptions } from 'services/repos'
-
+import { useRepos } from 'services/repos/hooks'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
 

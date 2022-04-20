@@ -1,10 +1,10 @@
-import PropType from 'prop-types'
-import get from 'lodash/get'
 import camelCase from 'lodash/camelCase'
+import get from 'lodash/get'
+import PropType from 'prop-types'
 
+import * as svgDeveloper from './svg/developer'
 import * as svgOutline from './svg/outline'
 import * as svgSolid from './svg/solid'
-import * as svgDeveloper from './svg/developer'
 
 const IconClasses = {
   sm: 'w-4 h-4',
@@ -27,7 +27,7 @@ function Icon({ name, variant = 'outline', size = 'md' }) {
 Icon.propTypes = {
   /* To add more icons, update /scripts/icons.js and run "npm run generate-icons"*/
   name: PropType.string.isRequired,
-  variant: PropType.string,
+  variant: PropType.oneOf(['outline', 'solid', 'developer']),
   size: PropType.oneOf(['sm', 'md', 'lg']),
 }
 

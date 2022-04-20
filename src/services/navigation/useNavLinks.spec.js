@@ -1,5 +1,6 @@
-import { MemoryRouter, Route } from 'react-router-dom'
 import { renderHook } from '@testing-library/react-hooks'
+import Cookie from 'js-cookie'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
@@ -87,9 +88,12 @@ describe('useNavLinks', () => {
     })
 
     it('forwards the utm tags', () => {
-      setup([
-        '/gh?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e&not=f',
-      ])
+      Cookie.set(
+        'utmParams',
+        'utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+      )
+      setup(['/gh/doggo/squirrel-locator'])
+
       expect(
         hookData.result.current.signIn.path({
           to: 'htts://app.codecov.io/gh/codecov',
@@ -97,6 +101,7 @@ describe('useNavLinks', () => {
       ).toBe(
         `${config.BASE_URL}/login/gh?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov&utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e`
       )
+      Cookie.remove('utmParams')
     })
   })
 
@@ -580,9 +585,17 @@ describe('useNavLinks', () => {
 
   describe('signup forward the marketing link', () => {
     beforeEach(() => {
+      Cookie.set(
+        'utmParams',
+        'utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+      )
       setup([
         '/gh?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e&not=f',
       ])
+    })
+
+    afterEach(() => {
+      Cookie.remove('utmParams')
     })
 
     it('returns the correct url', () => {
@@ -622,14 +635,14 @@ describe('useNavLinks', () => {
 })
 
 describe('useStaticNavLinks', () => {
-  const hookData = renderHook(() => useStaticNavLinks(), {
+  const view = renderHook(() => useStaticNavLinks(), {
     wrapper: (props) => (
       <MemoryRouter initialEntries={['/gh']} initialIndex={0}>
         <Route path="/:provider">{props.children}</Route>
       </MemoryRouter>
     ),
   })
-  const links = hookData.result.current
+  const links = view.result.current
   describe.each`
     link                       | outcome
     ${links.root}              | ${`${config.MARKETING_BASE_URL}`}
@@ -646,6 +659,7 @@ describe('useStaticNavLinks', () => {
     ${links.freeTrial}         | ${`${config.MARKETING_BASE_URL}/trial`}
     ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
     ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
+    ${links.flags}             | ${'https://docs.codecov.com/docs/flags'}
     ${links.userAppManagePage} | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}

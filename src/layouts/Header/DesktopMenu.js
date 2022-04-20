@@ -1,11 +1,12 @@
 import { useLocation } from 'react-router'
+import { useParams } from 'react-router-dom'
 
-import Dropdown from './Dropdown'
-import Button from 'ui/Button'
-import A from 'ui/A'
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
-import { useParams } from 'react-router-dom'
+import A from 'ui/A'
+import Button from 'ui/Button'
+
+import Dropdown from './Dropdown'
 import RequestButton from './RequestButton'
 
 export function LoginPrompt() {

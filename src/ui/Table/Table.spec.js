@@ -1,5 +1,6 @@
-import Table from './Table'
 import { render, screen } from '@testing-library/react'
+
+import Table from './Table'
 
 const data = [
   {

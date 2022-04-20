@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react'
+import moment from 'moment'
 import PropTypes from 'prop-types'
+import React, { useEffect } from 'react'
 import 'react-dates/initialize'
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates'
 import 'react-dates/lib/css/_datepicker.css'
-import moment from 'moment'
+
 import './Datepicker.css'
 
 function Datepicker({ params, updateParams }) {
   const [startDate, setStartDate] = React.useState(
-    params?.startDate ? moment(params?.startDate) : null
+    params?.startDate ? moment(new Date(params?.startDate)) : null
   )
   const [endDate, setEndDate] = React.useState(
-    params?.endDate ? moment(params?.endDate) : null
+    params?.endDate ? moment(new Date(params?.endDate)) : null
   )
   const [focusedInput, setFocusedInput] = React.useState()
 
@@ -21,8 +22,8 @@ function Datepicker({ params, updateParams }) {
 
     if (startDate && endDate) {
       updateParams({
-        startDate: moment(startDate).format(),
-        endDate: moment(endDate).format(),
+        startDate: moment(new Date(startDate)).format(),
+        endDate: moment(new Date(endDate)).format(),
       })
     }
 
@@ -35,8 +36,8 @@ function Datepicker({ params, updateParams }) {
   }
 
   useEffect(() => {
-    setStartDate(params?.startDate ? moment(params?.startDate) : null)
-    setEndDate(params?.endDate ? moment(params?.endDate) : null)
+    setStartDate(params?.startDate ? moment(new Date(params?.startDate)) : null)
+    setEndDate(params?.endDate ? moment(new Date(params?.endDate)) : null)
   }, [params])
 
   return (

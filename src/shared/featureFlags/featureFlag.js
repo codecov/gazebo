@@ -1,10 +1,11 @@
 /* eslint-disable no-restricted-imports */
-import { useEffect } from 'react'
 import {
-  withLDProvider,
-  useFlags as useLDFlags,
   useLDClient,
+  useFlags as useLDFlags,
+  withLDProvider,
 } from 'launchdarkly-react-client-sdk'
+import { useEffect } from 'react'
+
 import config from 'config'
 
 // This is an older pattern that launch darkly still uses.

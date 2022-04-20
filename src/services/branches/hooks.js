@@ -1,5 +1,6 @@
-import Api from 'shared/api'
 import { useQuery } from 'react-query'
+
+import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
 
 export function useBranches({ provider, owner, repo }) {

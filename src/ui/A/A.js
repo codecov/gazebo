@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types'
 import cs from 'classnames'
+import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
 import Icon from 'ui/Icon'
@@ -45,7 +45,7 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
       {children}
       {isExternal && (
         <span className="text-ds-gray-quinary">
-          <Icon size="sm" name="external-link"></Icon>
+          <Icon size="sm" name="external-link" />
         </span>
       )}
     </a>

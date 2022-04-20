@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Card from 'old_ui/Card'
 import Button from 'old_ui/Button'
-import { useNavLinks, useStaticNavLinks } from 'services/navigation'
+import Card from 'old_ui/Card'
 import { accountDetailsPropType } from 'services/account'
+import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 
-import PaymentCard from '../PaymentCard'
 import LatestInvoiceCard from '../LatestInvoiceCard'
+import PaymentCard from '../PaymentCard'
 
 function LegacyUser({ accountDetails, provider, owner }) {
   const { upgradePlan } = useNavLinks()
@@ -15,7 +15,7 @@ function LegacyUser({ accountDetails, provider, owner }) {
 
   return (
     <div className="flex">
-      <Card className="flex-grow max-w-xl mr-4 px-12 py-10 pb-4">
+      <Card className="grow max-w-xl mr-4 px-12 py-10 pb-4">
         <h3 className="text-lg text-pink-500 font-bold">
           Per Repository Billing
         </h3>

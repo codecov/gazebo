@@ -1,7 +1,8 @@
+import PropTypes from 'prop-types'
+
+import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Table from 'ui/Table'
-import PropTypes from 'prop-types'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
 const tableColumns = [
   {
@@ -32,9 +33,7 @@ function TokensTable({ tokens, onRevoke }) {
     col2: (
       <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">{`xxxx ${t.lastFour}`}</p>
     ),
-    col3: t.lastseen
-      ? formatDistanceToNow(new Date(t.lastseen), { addSuffix: true })
-      : '-',
+    col3: t.lastseen ? formatTimeToNow(t.lastseen) : '-',
     col4: (
       <Button
         hook="revoke-sesson"

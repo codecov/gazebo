@@ -1,4 +1,5 @@
 import Button from './Button'
+
 import Icon from '../Icon'
 
 const Template = (args) => <Button {...args} />

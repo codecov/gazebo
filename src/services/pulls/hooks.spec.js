@@ -1,8 +1,9 @@
-import { setupServer } from 'msw/node'
-import { renderHook, act } from '@testing-library/react-hooks'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { usePulls } from './hooks'
+import { act, renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
+import { usePulls } from './hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,7 @@ const node1 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'Rula',
+    avatarUrl: 'random',
   },
   head: {
     totals: {
@@ -49,6 +51,7 @@ const node2 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'Rula',
+    avatarUrl: 'random',
   },
   head: {
     totals: {
@@ -69,6 +72,7 @@ const node3 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'Rula',
+    avatarUrl: 'random',
   },
   head: {
     totals: {

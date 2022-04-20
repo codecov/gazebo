@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
 
 import { providerToName } from 'shared/utils'
-
-import Icon from 'ui/Icon'
 import A from 'ui/A'
+import Icon from 'ui/Icon'
 
 export default function PullLabel({ pullId, provider, providerPullUrl }) {
   if (pullId) {
@@ -12,8 +11,7 @@ export default function PullLabel({ pullId, provider, providerPullUrl }) {
         <span className="text-ds-gray-senary">
           <Icon size="sm" variant="developer" name="pull-request-open" />
         </span>
-        <A to={{ pageName: 'pull', options: { pullid: pullId } }}>#{pullId}</A>{' '}
-        (
+        <A to={{ pageName: 'pullDetail', options: { pullId } }}>#{pullId}</A> (
         <A href={providerPullUrl} hook="provider url" isExternal={true}>
           {providerToName(provider)}
         </A>

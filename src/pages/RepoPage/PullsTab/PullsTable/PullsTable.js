@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types'
 
 import Table from 'ui/Table'
+import TotalsNumber from 'ui/TotalsNumber'
+
+import Coverage from './Coverage'
+import Title from './Title'
 
 import { PullRequestType } from '../types'
-import Coverage from './Coverage'
-import Change from 'ui/Change'
-import Title from './Title'
 
 const headers = [
   {
@@ -67,7 +68,11 @@ function transformPullToTable(pulls) {
         />
       ),
       coverage: <Coverage head={head} state={state} pullId={pullId} />,
-      change: <Change value={change} variant="default" />,
+      change: (
+        <div className="w-full flex justify-end">
+          <TotalsNumber value={change} showChange data-testid="change-value" />
+        </div>
+      ),
     }
   })
 }

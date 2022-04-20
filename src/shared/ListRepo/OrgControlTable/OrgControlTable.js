@@ -1,11 +1,12 @@
-import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 import useDebounce from 'react-use/lib/useDebounce'
 
+import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
 import OptionButton from 'ui/OptionButton'
 import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
-import { orderingOptions, nonActiveOrderingOptions } from 'services/repos'
+
 import GithubPrivateScopeLogin from './GithubPrivateScopeLogin'
 import ResyncButton from './ResyncButton'
 

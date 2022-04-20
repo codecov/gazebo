@@ -1,7 +1,8 @@
-import Api from 'shared/api'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { mapEdges } from 'shared/utils/graphql'
 import groupBy from 'lodash/groupBy'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+
+import Api from 'shared/api'
+import { mapEdges } from 'shared/utils/graphql'
 
 export function useSessions({ provider }) {
   const query = `

@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route } from 'react-router-dom'
-import ListRepo from './ListRepo'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import ListRepo from './ListRepo'
 
 jest.mock(
   './OrgControlTable/GithubPrivateScopeLogin',

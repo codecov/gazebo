@@ -1,6 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { useImage } from 'react-image'
+
 import AvatarSVG from './AvatarSVG.js'
 
 let baseClasses = 'rounded-full h-6 w-6 flex items-center justify-center'

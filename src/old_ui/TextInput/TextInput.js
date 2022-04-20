@@ -1,6 +1,6 @@
-import { forwardRef } from 'react'
-import PropTypes from 'prop-types'
 import cs from 'classnames'
+import PropTypes from 'prop-types'
+import { forwardRef } from 'react'
 
 const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
   const classes = cs(

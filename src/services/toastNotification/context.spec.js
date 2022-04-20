@@ -1,10 +1,10 @@
-import { renderHook, act } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react-hooks'
 
 import {
-  useNotifications,
-  useAddNotification,
-  useRemoveNotification,
   ToastNotificationProvider,
+  useAddNotification,
+  useNotifications,
+  useRemoveNotification,
 } from './context'
 
 function useNotificationContexts() {

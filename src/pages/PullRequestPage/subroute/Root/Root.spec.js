@@ -1,4 +1,5 @@
 import { render, screen } from 'custom-testing-library'
+
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Root from './Root'
@@ -7,7 +8,7 @@ describe('Root', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
     render(
       <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullid">
+        <Route path="/:provider/:owner/:repo/pull/:pullId">
           <Root />
         </Route>
       </MemoryRouter>

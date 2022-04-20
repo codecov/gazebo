@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from 'custom-testing-library'
+import { fireEvent, render, screen } from 'custom-testing-library'
 
 import { useUploads } from './hooks'
 import UploadsCard from './UploadsCard'
@@ -14,7 +14,7 @@ describe('UploadsCard', () => {
   describe('renders', () => {
     beforeEach(() => {
       setup({
-        uploadsProviderList: ['travis', 'circleci'],
+        uploadsProviderList: ['travis', 'circleci', 'null'],
         uploadsOverview: 'uploads overview',
         sortedUploads: {
           travis: [
@@ -60,6 +60,21 @@ describe('UploadsCard', () => {
               buildCode: '111111',
             },
           ],
+          null: [
+            {
+              state: 'processed',
+              provider: 'null',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl:
+                '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+              ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/111111',
+              uploadType: 'uploaded',
+              jobCode: '33333',
+              buildCode: '33333',
+            },
+          ],
         },
         hasNoUploads: false,
       })
@@ -76,9 +91,14 @@ describe('UploadsCard', () => {
       expect(screen.getByText(/111111/)).toBeInTheDocument()
       expect(screen.getByText(/721065763/)).toBeInTheDocument()
       expect(screen.getByText(/721065746/)).toBeInTheDocument()
+      expect(screen.getByText(/33333/)).toBeInTheDocument()
     })
     it('renders flags', () => {
       expect(screen.getByText(/flagone/)).toBeInTheDocument()
+    })
+
+    it('does not render null as an upload provider label', () => {
+      expect(screen.queryByText(/null/)).not.toBeInTheDocument()
     })
   })
   describe('renders no Uploads', () => {

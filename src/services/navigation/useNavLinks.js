@@ -1,30 +1,21 @@
-import pick from 'lodash/pick'
+import Cookie from 'js-cookie'
 import qs from 'qs'
-import { useParams, useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
 import config from 'config'
 
-function forwardMarketingTag(search) {
-  const queryParams = qs.parse(search, {
-    ignoreQueryPrefix: true,
-  })
-  return pick(queryParams, [
-    'utm_source',
-    'utm_medium',
-    'utm_campaign',
-    'utm_term',
-    'utm_content',
-    'utm_department',
-  ])
-}
+import { useFlags } from 'shared/featureFlags'
 
 function useNavLinks() {
-  const { search } = useLocation()
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
   const { gazeboRepoTabs, gazeboPullRequestPage } = useFlags({
     gazeboRepoTabs: false,
     gazeboPullRequestPage: false,
+  })
+
+  const utmCookie = Cookie.get('utmParams')
+  const utmCookieObj = qs.parse(utmCookie, {
+    ignoreQueryPrefix: true,
   })
 
   return {
@@ -41,7 +32,7 @@ function useNavLinks() {
           {
             to,
             private: privateScope,
-            ...forwardMarketingTag(search),
+            ...utmCookieObj,
           },
           { addQueryPrefix: true }
         )
@@ -52,7 +43,7 @@ function useNavLinks() {
     signUp: {
       text: 'Sign Up',
       path: () => {
-        const params = qs.stringify(forwardMarketingTag(search), {
+        const params = qs.stringify(utmCookieObj, {
           addQueryPrefix: true,
         })
         return `${config.MARKETING_BASE_URL}/sign-up/${params}`
@@ -170,7 +161,7 @@ function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/commit/${commit}`,
       isExternalLink: false,
-      text: 'Commits',
+      text: 'Commit',
     },
     commitFile: {
       path: (
@@ -181,18 +172,7 @@ function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/commit/${commit}/${path}`,
       isExternalLink: false,
-      text: 'Commits',
-    },
-    pull: {
-      path: (
-        { provider = p, owner = o, repo = r, pullid } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullid}`,
-      isExternalLink: true,
-      text: 'Commits',
+      text: 'Commit File',
     },
     treeView: {
       path: (
@@ -419,6 +399,12 @@ function useStaticNavLinks() {
       path: () => 'https://docs.codecov.com/docs/team-bot',
       isExternalLink: true,
       text: 'Team Bot',
+      openNewTab: true,
+    },
+    flags: {
+      text: 'Flags',
+      path: () => 'https://docs.codecov.com/docs/flags',
+      isExternalLink: true,
       openNewTab: true,
     },
   }

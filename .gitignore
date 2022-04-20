@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/reports
 
 # production
 /build
@@ -31,3 +32,10 @@ junit.xml
 
 # temporary
 /src/mock-window-property.js
+
+# storybook
+storybook-static
+
+# stryker temp files
+.stryker-tmp
+stryker.log

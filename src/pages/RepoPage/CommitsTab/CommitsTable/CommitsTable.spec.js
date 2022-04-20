@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from 'react-query'
+
 import CommitsTable from './CommitsTable'
 
 jest.mock('services/commits/hooks')
@@ -23,7 +24,7 @@ describe('CommitsTable', () => {
       setup({
         commits: [
           {
-            author: { username: 'RulaKhaled' },
+            author: { username: 'RulaKhaled', avatarUrl: 'random' },
             compareWithParent: {
               patchTotals: {
                 coverage: 90,
@@ -42,7 +43,7 @@ describe('CommitsTable', () => {
             createdAt: '2021-08-30T19:33:49.819672',
           },
           {
-            author: { username: 'Terry' },
+            author: { username: 'Terry', avatarUrl: 'random' },
             compareWithParent: {
               patchTotals: {
                 coverage: 55,
@@ -75,7 +76,7 @@ describe('CommitsTable', () => {
     })
 
     it('renders commit table Patch header', () => {
-      const patch = screen.getByText('Patch')
+      const patch = screen.getByText('Patch %')
       expect(patch).toBeInTheDocument()
     })
 
@@ -108,6 +109,39 @@ describe('CommitsTable', () => {
     it('renders on null message', () => {
       const text = screen.getByText(/we can't find this commit/)
       expect(text).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with an invalid patch value', () => {
+    beforeEach(() => {
+      setup({
+        commits: [
+          {
+            author: { username: 'RabeeAbuBaker', avatarUrl: 'random' },
+            compareWithParent: {
+              patchTotals: {
+                coverage: null,
+              },
+            },
+            totals: {
+              coverage: 45,
+            },
+            parent: {
+              totals: {
+                coverage: 98,
+              },
+            },
+            commitid: 'id',
+            message: 'Test1',
+            createdAt: '2021-08-30T19:33:49.819672',
+          },
+        ],
+      })
+    })
+
+    it('render - for missing patch', () => {
+      const changeValue = screen.getByTestId('patch-value')
+      expect(changeValue).toHaveTextContent('-')
     })
   })
 })

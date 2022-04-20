@@ -1,12 +1,13 @@
-import Api from 'shared/api'
 import { useQuery } from 'react-query'
 
-export function usePull({ provider, owner, repo, pullid }) {
+import Api from 'shared/api'
+
+export function usePull({ provider, owner, repo, pullId }) {
   const query = `
-    query Pull($owner: String!, $repo: String!, $pullid: Int!) {
+    query Pull($owner: String!, $repo: String!, $pullId: Int!) {
         owner(username: $owner) {
           repository(name: $repo) {
-            pull(id: $pullid) {
+            pull(id: $pullId) {
               pullId
               title
               state
@@ -14,13 +15,28 @@ export function usePull({ provider, owner, repo, pullid }) {
                 username
               }
               updatestamp
+              head {
+                commitid
+                totals {
+                  coverage
+                }
+              }
+              comparedTo {
+                commitid
+              }
+              compareWithBase {
+                patchTotals {
+                  coverage
+                }
+                changeWithParent
+              }
             }
           }
         }
       }
     `
 
-  return useQuery(['pull', provider, owner, repo, pullid], () => {
+  return useQuery(['pull', provider, owner, repo, pullId], () => {
     return Api.graphql({
       provider,
       query,
@@ -28,7 +44,7 @@ export function usePull({ provider, owner, repo, pullid }) {
         provider,
         owner,
         repo,
-        pullid: parseInt(pullid, 10),
+        pullId: parseInt(pullId, 10),
       },
     }).then((res) => res?.data?.owner?.repository?.pull)
   })

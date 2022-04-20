@@ -1,13 +1,12 @@
-import capitalize from 'lodash/capitalize'
 import cs from 'classnames'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
+import capitalize from 'lodash/capitalize'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull/hooks'
+import { formatTimeToNow } from 'shared/utils/dates'
+import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
-
-import { getProviderPullURL } from 'shared/utils/provider'
 
 const pullStateToColor = {
   OPEN: 'bg-ds-primary-green',
@@ -16,8 +15,8 @@ const pullStateToColor = {
 }
 
 function Header() {
-  const { provider, owner, repo, pullid } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullid })
+  const { provider, owner, repo, pullId } = useParams()
+  const { data: pull } = usePull({ provider, owner, repo, pullId })
 
   return (
     <div className="border-t border-b border-ds-gray-secondary py-4">
@@ -53,11 +52,7 @@ function Header() {
           >
             {pull?.author?.username}
           </A>{' '}
-          &bull;{' '}
-          {pull?.updatestamp &&
-            formatDistanceToNow(new Date(pull?.updatestamp), {
-              addSuffix: true,
-            })}
+          &bull; {pull?.updatestamp && formatTimeToNow(pull.updatestamp)}
         </span>
       </p>
     </div>

@@ -1,13 +1,15 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
+
+import { formatTimeToNow } from 'shared/utils/dates'
+
 import Title from '.'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import { QueryClientProvider, QueryClient } from 'react-query'
 
 jest.mock('services/repo/hooks')
 
 describe('Title', () => {
-  const author = { username: 'RulaKhaled' }
+  const author = { username: 'RulaKhaled', avatarUrl: 'random' }
   const pullId = 746
   const title = 'Test1'
   const updatestamp = '2021-08-30T19:33:49.819672'
@@ -45,9 +47,7 @@ describe('Title', () => {
     })
 
     it('renders pull updatestamp', () => {
-      const dt = formatDistanceToNow(new Date('2021-08-30T19:33:49.819672'), {
-        addSuffix: true,
-      })
+      const dt = formatTimeToNow('2021-08-30T19:33:49.819672')
       const dt1 = screen.getByText('opened ' + dt)
       expect(dt1).toBeInTheDocument()
     })

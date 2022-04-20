@@ -1,4 +1,5 @@
 import cs from 'classnames'
+
 import { useImpersonate } from 'services/impersonate'
 
 import DesktopMenu from './DesktopMenu'

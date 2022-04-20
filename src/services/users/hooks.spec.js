@@ -1,9 +1,9 @@
+import { act, renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { renderHook, act } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { useUsers, useUpdateUser } from './hooks'
+import { useUpdateUser, useUsers } from './hooks'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
