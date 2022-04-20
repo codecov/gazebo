@@ -7,16 +7,20 @@ import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
+const UploadErrorMessage = {
+  [ErrorCodeEnum.fileNotFoundInStorage]: 'processing failed',
+  [ErrorCodeEnum.reportExpired]: 'upload expired',
+  [ErrorCodeEnum.reportEmpty]: 'upload is empty',
+  noMatch: 'unknown error',
+}
+
 function humanReadableError(errorCode) {
-  if (
-    errorCode?.toLowerCase() ===
-    ErrorCodeEnum.fileNotFoundInStorage.toLowerCase()
-  )
-    return 'processing failed'
-  if (errorCode?.toLowerCase() === ErrorCodeEnum.reportExpired.toLowerCase())
-    return 'upload expired'
-  if (errorCode?.toLowerCase() === ErrorCodeEnum.reportEmpty.toLowerCase())
-    return 'upload is empty'
+  if (typeof errorCode === 'string') {
+    return (
+      UploadErrorMessage[errorCode?.toUpperCase()] || UploadErrorMessage.noMatch
+    )
+  }
+  return UploadErrorMessage.noMatch
 }
 
 const Upload = ({

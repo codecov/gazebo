@@ -6,7 +6,7 @@ import TotalsNumber from 'ui/TotalsNumber'
 import { useCommitForSummary } from './hooks'
 
 const getSourceSummaryCards = ({ headCommitId, parentCommitId, state }) =>
-  state?.toLowerCase() === UploadStateEnum.error.toLowerCase()
+  state?.toUpperCase() === UploadStateEnum.error
     ? [
         {
           name: 'error',
