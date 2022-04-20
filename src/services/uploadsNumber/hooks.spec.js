@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -70,13 +70,16 @@ describe('GetUploadsNumber', () => {
   })
 
   describe('when calling useIsUploadsNumberExceeded', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup()
-      hookData = renderHook(
-        () => useIsUploadsNumberExceeded({ provider, owner }),
-        {
-          wrapper,
-        }
+      await act(
+        async () =>
+          (hookData = await renderHook(
+            () => useIsUploadsNumberExceeded({ provider, owner }),
+            {
+              wrapper,
+            }
+          ))
       )
     })
 

@@ -49,7 +49,6 @@ function getComponentToRender(pageConfig, activeClassName) {
 const AppLink = forwardRef(
   ({ pageName, options, activeClassName, children, ...props }, ref) => {
     const pageConfig = useLinkConfig(pageName)
-
     const Component = getComponentToRender(pageConfig, activeClassName)
     const completeProps = useCompleteProps(
       Component,

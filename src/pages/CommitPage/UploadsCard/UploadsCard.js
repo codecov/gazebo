@@ -7,6 +7,8 @@ import Upload from './Upload'
 
 import YamlModal from '../YamlModal'
 
+const NULL = 'null'
+
 function UploadsCard() {
   const [showYAMLModal, setShowYAMLModal] = useState(false)
   const { uploadsProviderList, uploadsOverview, sortedUploads, hasNoUploads } =
@@ -27,12 +29,22 @@ function UploadsCard() {
         <div className="bg-ds-gray-primary h-64 max-h-64 overflow-auto flex flex-col flex-1 divide-y divide-solid divide-ds-gray-secondary">
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
-              <span className="text-sm font-semibold flex-1 py-1 px-4">
-                {title}
-              </span>
+              {title !== NULL && (
+                <span className="text-sm font-semibold flex-1 py-1 px-4">
+                  {title}
+                </span>
+              )}
               {sortedUploads[title].map(
                 (
-                  { ciUrl, buildCode, createdAt, flags, downloadUrl, errors },
+                  {
+                    ciUrl,
+                    buildCode,
+                    createdAt,
+                    flags,
+                    downloadUrl,
+                    errors,
+                    uploadType,
+                  },
                   i
                 ) => (
                   <Upload
@@ -43,6 +55,7 @@ function UploadsCard() {
                     downloadUrl={downloadUrl}
                     errors={errors}
                     key={i}
+                    uploadType={uploadType}
                   />
                 )
               )}
