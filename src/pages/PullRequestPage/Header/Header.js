@@ -6,7 +6,6 @@ import { usePull } from 'services/pull/hooks'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
-import CopyClipboard from 'ui/CopyClipboard'
 
 const pullStateToColor = {
   OPEN: 'bg-ds-primary-green',
@@ -19,21 +18,9 @@ function Header() {
   const { data: pull } = usePull({ provider, owner, repo, pullId })
 
   return (
-    <div className="border-t border-b border-ds-gray-secondary py-4">
-      <h1 className="flex items-center text-lg font-semibold leading-10">
-        {pull?.title} #{pull?.pullId}{' '}
-        {pull?.pullId && (
-          <CopyClipboard
-            string={getProviderPullURL({
-              provider,
-              owner,
-              repo,
-              pullId: pull?.pullId,
-            })}
-          />
-        )}
-      </h1>
-      <p className="flex items-center gap-2">
+    <div className="border-b border-ds-gray-secondary pb-4">
+      <h1 className="flex items-center gap-2 text-lg font-semibold">
+        {pull?.title}
         <span
           className={cs(
             'text-white font-bold px-3 py-0.5 text-xs rounded',
@@ -42,8 +29,10 @@ function Header() {
         >
           {capitalize(pull?.state)}
         </span>
+      </h1>
+      <p className="flex items-center gap-2">
         <span>
-          Authored by{' '}
+          {pull?.updatestamp && formatTimeToNow(pull.updatestamp)}{' '}
           <A
             to={{
               pageName: 'owner',
@@ -52,7 +41,21 @@ function Header() {
           >
             {pull?.author?.username}
           </A>{' '}
-          &bull; {pull?.updatestamp && formatTimeToNow(pull.updatestamp)}
+          authored{' '}
+          {pull?.pullId && (
+            <A
+              href={getProviderPullURL({
+                provider,
+                owner,
+                repo,
+                pullId: pull?.pullId,
+              })}
+              hook="provider-pr-link"
+              isExternal={true}
+            >
+              #{pull?.pullId}
+            </A>
+          )}
         </span>
       </p>
     </div>
