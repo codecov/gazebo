@@ -1,12 +1,14 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import List from '.'
 
 describe('List', () => {
   let container
 
-  function setup({ items }) {
-    ;({ container } = render(<List items={items} />))
+  function setup({ items, onItemSelect }) {
+    ;({ container } = render(
+      <List items={items} onItemSelect={onItemSelect} />
+    ))
   }
 
   it("doesn't render anything when items array is empty", () => {
@@ -42,10 +44,9 @@ describe('List', () => {
       {
         name: 'firstItem',
         value: 'Click me',
-        onItemSelect: handleItemSelect,
       },
     ]
-    setup({ items })
+    setup({ items, onItemSelect: handleItemSelect })
 
     expect(container).not.toBeEmptyDOMElement()
     const listItem = screen.getByText(/click me/i)

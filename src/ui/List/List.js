@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const getListClasses = ({ index }) =>
   cs(
-    'text-left w-full px-6 py-2',
+    'flex text-left px-6 py-2',
     'hover:bg-ds-gray-primary',
     'transition duration-500',
     'cursor-pointer',
@@ -12,18 +12,16 @@ const getListClasses = ({ index }) =>
     }
   )
 
-function List({ items }) {
+function List({ items, onItemSelect }) {
   return (
     items &&
     items.length > 0 && (
-      <ul className="border border-ds-gray-secondary w-96 text-ds-gray-octonary">
-        {items.map(({ name, value, onItemSelect }, index) => (
-          <li
-            key={name}
-            className={getListClasses({ index })}
-            onClick={() => onItemSelect && onItemSelect(name)}
-          >
-            {value}
+      <ul className="border border-ds-gray-secondary w-full text-ds-gray-octonary">
+        {items.map(({ name, value }, index) => (
+          <li key={name} className={getListClasses({ index })}>
+            <button onClick={() => onItemSelect && onItemSelect(name)}>
+              {value}
+            </button>
           </li>
         ))}
       </ul>
@@ -37,9 +35,9 @@ List.propTypes = {
       name: PropTypes.string.isRequired,
       value: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
         .isRequired,
-      onItemSelect: PropTypes.func,
     })
   ),
+  onItemSelect: PropTypes.func,
 }
 
 export default List

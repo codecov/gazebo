@@ -2,7 +2,11 @@ import List from './List'
 
 import Avatar from '../Avatar'
 
-const Template = (args) => <List {...args} />
+const Template = (args) => (
+  <div className="items-start h-96 w-96 m-auto">
+    <List {...args} />
+  </div>
+)
 
 export const SimpleList = Template.bind({})
 SimpleList.args = {
@@ -49,4 +53,5 @@ ListWithElements.args = {
 export default {
   title: 'Components/List',
   component: List,
+  argTypes: { onItemSelect: { action: 'clicked' } },
 }
