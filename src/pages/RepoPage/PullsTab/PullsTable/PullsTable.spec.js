@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -84,7 +84,9 @@ describe('Pulls Table', () => {
 
     it('renders pulls change from base', () => {
       const changeValue = screen.getByTestId('change-value')
-      expect(changeValue).toHaveTextContent('+14.00%')
+      const child = within(changeValue).getByTestId('number-value')
+      expect(child).toHaveTextContent('14.00%')
+      expect(child).toHaveClass("before:content-['+']")
     })
   })
 

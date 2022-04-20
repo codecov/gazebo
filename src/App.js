@@ -83,14 +83,14 @@ function App() {
               to="/:provider/:owner/:repo/pull/*"
             />
             <Route
-              path="/:provider/:owner/:repo/pull/:pullid/tree/:path+"
+              path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
               exact
             >
               <BaseLayout>
                 <PullRequestPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/pull/:pullid">
+            <Route path="/:provider/:owner/:repo/pull/:pullId">
               <BaseLayout>
                 <PullRequestPage />
               </BaseLayout>

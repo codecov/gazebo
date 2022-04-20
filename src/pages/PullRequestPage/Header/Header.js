@@ -1,6 +1,5 @@
 import cs from 'classnames'
 import capitalize from 'lodash/capitalize'
-import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull/hooks'
@@ -16,12 +15,8 @@ const pullStateToColor = {
 }
 
 function Header() {
-  const { provider, owner, repo, pullid } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullid })
-  const formattedDate = useMemo(
-    () => formatTimeToNow(pull?.updatestamp),
-    [pull?.updatestamp]
-  )
+  const { provider, owner, repo, pullId } = useParams()
+  const { data: pull } = usePull({ provider, owner, repo, pullId })
 
   return (
     <div className="border-t border-b border-ds-gray-secondary py-4">
@@ -57,7 +52,7 @@ function Header() {
           >
             {pull?.author?.username}
           </A>{' '}
-          &bull; {pull?.updatestamp && formattedDate}
+          &bull; {pull?.updatestamp && formatTimeToNow(pull.updatestamp)}
         </span>
       </p>
     </div>

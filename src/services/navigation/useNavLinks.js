@@ -161,7 +161,7 @@ function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/commit/${commit}`,
       isExternalLink: false,
-      text: 'Commits',
+      text: 'Commit',
     },
     commitFile: {
       path: (
@@ -172,18 +172,7 @@ function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/commit/${commit}/${path}`,
       isExternalLink: false,
-      text: 'Commits',
-    },
-    pull: {
-      path: (
-        { provider = p, owner = o, repo = r, pullid } = {
-          provider: p,
-          owner: o,
-          repo: r,
-        }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullid}`,
-      isExternalLink: true,
-      text: 'Commits',
+      text: 'Commit File',
     },
     treeView: {
       path: (
@@ -410,6 +399,12 @@ function useStaticNavLinks() {
       path: () => 'https://docs.codecov.com/docs/team-bot',
       isExternalLink: true,
       text: 'Team Bot',
+      openNewTab: true,
+    },
+    flags: {
+      text: 'Flags',
+      path: () => 'https://docs.codecov.com/docs/flags',
+      isExternalLink: true,
       openNewTab: true,
     },
   }

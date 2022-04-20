@@ -1,15 +1,10 @@
 import PropTypes from 'prop-types'
-import { useMemo } from 'react'
 
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
 const Title = ({ author, pullId, title, updatestamp }) => {
-  const formattedDate = useMemo(
-    () => formatTimeToNow(updatestamp),
-    [updatestamp]
-  )
   const user = {
     avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
     username: author?.username || DefaultAuthor.USERNAME,
@@ -21,7 +16,7 @@ const Title = ({ author, pullId, title, updatestamp }) => {
         <Avatar user={user} bordered />
       </span>
       <div className="flex flex-col w-5/6 lg:w-auto">
-        <A to={{ pageName: 'pull', options: { pullid: pullId } }}>
+        <A to={{ pageName: 'pullDetail', options: { pullId } }}>
           <h2 className="font-medium text-sm md:text-base text-black">
             {title}
           </h2>
@@ -33,7 +28,7 @@ const Title = ({ author, pullId, title, updatestamp }) => {
           {updatestamp && (
             <span className="text-ds-gray-quinary">
               {' '}
-              opened {formattedDate}
+              opened {formatTimeToNow(updatestamp)}
             </span>
           )}
         </p>

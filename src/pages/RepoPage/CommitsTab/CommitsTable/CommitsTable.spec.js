@@ -76,7 +76,7 @@ describe('CommitsTable', () => {
     })
 
     it('renders commit table Patch header', () => {
-      const patch = screen.getByText('Patch')
+      const patch = screen.getByText('Patch %')
       expect(patch).toBeInTheDocument()
     })
 
@@ -109,6 +109,39 @@ describe('CommitsTable', () => {
     it('renders on null message', () => {
       const text = screen.getByText(/we can't find this commit/)
       expect(text).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with an invalid patch value', () => {
+    beforeEach(() => {
+      setup({
+        commits: [
+          {
+            author: { username: 'RabeeAbuBaker', avatarUrl: 'random' },
+            compareWithParent: {
+              patchTotals: {
+                coverage: null,
+              },
+            },
+            totals: {
+              coverage: 45,
+            },
+            parent: {
+              totals: {
+                coverage: 98,
+              },
+            },
+            commitid: 'id',
+            message: 'Test1',
+            createdAt: '2021-08-30T19:33:49.819672',
+          },
+        ],
+      })
+    })
+
+    it('render - for missing patch', () => {
+      const changeValue = screen.getByTestId('patch-value')
+      expect(changeValue).toHaveTextContent('-')
     })
   })
 })
