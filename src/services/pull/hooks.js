@@ -30,6 +30,24 @@ export function usePull({ provider, owner, repo, pullId }) {
                 }
                 changeWithParent
               }
+              commits {
+                totalCount
+                pageInfo {
+                  hasNextPage
+                  startCursor
+                  hasPreviousPage
+                }
+                edges {
+                  node {
+                    commitid
+                    message
+                    createdAt
+                    author {
+                      username
+                    }
+                  }
+                }
+              }
             }
           }
         }

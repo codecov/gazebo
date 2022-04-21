@@ -7,6 +7,7 @@ import PullRequestPage from './PullRequestPage'
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./Summary', () => () => 'CompareSummary')
 jest.mock('./Flags', () => () => 'Flags')
+jest.mock('./Commits', () => () => 'Commits')
 
 jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./subroute/FileDiff', () => () => 'FileDiff')
@@ -119,6 +120,21 @@ describe('PullRequestPage', () => {
 
     it('renders', () => {
       expect(screen.getByText(/Flags/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('commits', () => {
+    beforeEach(async () => {
+      setup({
+        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+      })
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+    })
+
+    it('renders', () => {
+      expect(screen.getByText(/Commits/i)).toBeInTheDocument()
     })
   })
 })
