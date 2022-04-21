@@ -1,9 +1,9 @@
-import { usePullCommits } from './hooks'
+import { useCompareCommits } from './hooks'
 
 import Card from '../Card'
 
 function Commits() {
-  const { data: commits } = usePullCommits()
+  const { data: commits } = useCompareCommits()
   return (
     <Card title="Commits">
       {commits.map(({ message, commitid, author }) => (
@@ -17,7 +17,7 @@ function Commits() {
           </p>
         </div>
       ))}
-      {(commits?.length === 0 || !commits) && (
+      {commits?.length === 0 && (
         <p className="text-ds-gray-quaternary">no commits</p>
       )}
     </Card>

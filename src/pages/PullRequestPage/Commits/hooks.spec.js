@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
 
-import { usePullCommits } from './hooks'
+import { useCompareCommits } from './hooks'
 
 jest.mock('services/pull/hooks')
 
@@ -32,12 +32,12 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('usePullCommits', () => {
+describe('useCompareCommits', () => {
   let hookData
 
   function setup() {
     usePull.mockReturnValue({ data: pull, isSuccess: true })
-    hookData = renderHook(() => usePullCommits(), { wrapper })
+    hookData = renderHook(() => useCompareCommits(), { wrapper })
   }
 
   beforeEach(() => {

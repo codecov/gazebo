@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Commits from './Commits'
-import { usePullCommits } from './hooks'
+import { useCompareCommits } from './hooks'
 
 jest.mock('./hooks')
 
@@ -27,7 +27,7 @@ const mockPullCommits = {
 
 describe('Commits Card', () => {
   function setup(data) {
-    usePullCommits.mockReturnValue(data)
+    useCompareCommits.mockReturnValue(data)
 
     render(
       <QueryClientProvider client={queryClient}>
