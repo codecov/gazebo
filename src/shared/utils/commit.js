@@ -10,7 +10,7 @@ export const ErrorCodeEnum = Object.freeze({
   reportEmpty: 'REPORT_EMPTY',
 })
 
-export const UploadTypes = Object.freeze({
+export const UploadTypeEnum = Object.freeze({
   UPLOADED: 'UPLOADED',
   CARRIED_FORWARD: 'CARRIEDFORWARD',
 })

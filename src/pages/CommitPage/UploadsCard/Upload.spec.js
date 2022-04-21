@@ -132,18 +132,37 @@ describe('UploadsCard', () => {
       expect(screen.getByText(/upload expired/)).toBeInTheDocument()
       expect(screen.getByText(/upload is empty/)).toBeInTheDocument()
     })
-  })
-  it('handles new errors the front end doesnt know how to handle', () => {
-    setup({
-      errors: [{ errorCode: 'SOME_NEW_ERROR' }],
+    it('handles new errors the front end doesnt know how to handle', () => {
+      setup({
+        errors: [{ errorCode: 'SOME_NEW_ERROR' }],
+      })
+      expect(screen.getByText(/unknown error/)).toBeInTheDocument()
     })
-    expect(screen.getByText(/unknown error/)).toBeInTheDocument()
-  })
-  it('handles an unexpected error type', () => {
-    setup({
-      errors: [{ errorCode: { error: 'bad config or something' } }],
+    it('handles an unexpected error type', () => {
+      setup({
+        errors: [{ errorCode: { error: 'bad config or something' } }],
+      })
+      expect(screen.getByText(/unknown error/)).toBeInTheDocument()
     })
-    expect(screen.getByText(/unknown error/)).toBeInTheDocument()
+    it('handles upload state error but no error code resolved as an known error', () => {
+      setup({
+        state: 'ERROR',
+      })
+      expect(screen.getByText(/unknown error/)).toBeInTheDocument()
+    })
+    it('handles upload state error but no errors returned', () => {
+      setup({
+        state: 'ERROR',
+        errors: [],
+      })
+      expect(screen.getByText(/unknown error/)).toBeInTheDocument()
+    })
+    it('If no state is provided and no errors received do not show an error', () => {
+      setup({
+        error: [],
+      })
+      expect(screen.queryByText(/unknown error/)).not.toBeInTheDocument()
+    })
   })
 
   describe('rendering uploaded type of uploads', () => {
