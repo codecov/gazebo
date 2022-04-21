@@ -19,7 +19,7 @@ describe('UploadsCard', () => {
         sortedUploads: {
           travis: [
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -32,7 +32,7 @@ describe('UploadsCard', () => {
               buildCode: '721065746',
             },
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:25.820340+00:00',
               updatedAt: '2020-08-25T16:36:25.859889+00:00',
@@ -47,7 +47,7 @@ describe('UploadsCard', () => {
           ],
           circleci: [
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'circleci',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -62,7 +62,7 @@ describe('UploadsCard', () => {
           ],
           null: [
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'null',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',

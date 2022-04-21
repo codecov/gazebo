@@ -44,6 +44,7 @@ function UploadsCard() {
                     downloadUrl,
                     errors,
                     uploadType,
+                    state,
                   },
                   i
                 ) => (
@@ -56,6 +57,7 @@ function UploadsCard() {
                     errors={errors}
                     key={i}
                     uploadType={uploadType}
+                    state={state}
                   />
                 )
               )}

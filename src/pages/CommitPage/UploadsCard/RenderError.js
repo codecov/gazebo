@@ -30,12 +30,14 @@ const RenderError = ({ errors = [], state }) => (
         {humanReadableError(errorCode)}
       </span>
     ))}
-    {errors.length === 0 && state?.toUpperCase() === UploadStateEnum.errorCode && (
-      <span className="flex gap-1 items-center text-ds-primary-red">
-        <Icon size="sm" name="exclamation" variant="solid" />
-        {humanReadableError()}
-      </span>
-    )}
+    {errors.length === 0 &&
+      typeof state === 'string' &&
+      state?.toUpperCase() === UploadStateEnum.error && (
+        <span className="flex gap-1 items-center text-ds-primary-red">
+          <Icon size="sm" name="exclamation" variant="solid" />
+          {humanReadableError()}
+        </span>
+      )}
   </>
 )
 

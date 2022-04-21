@@ -17,7 +17,7 @@ jest.mock(
 
 const dataReturned = {
   commit: {
-    state: 'complete',
+    state: 'COMPLETE',
     totals: {
       coverage: 38.30846,
     },
@@ -45,7 +45,7 @@ const dataReturned = {
     },
     uploads: [
       {
-        state: 'processed',
+        state: 'PROCESSED',
         provider: 'travis',
         createdAt: '2020-08-25T16:36:19.559474+00:00',
         updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -56,7 +56,7 @@ const dataReturned = {
         uploadType: 'uploaded',
       },
       {
-        state: 'processed',
+        state: 'PROCESSED',
         provider: 'travis',
         createdAt: '2020-08-25T16:36:25.820340+00:00',
         updatedAt: '2020-08-25T16:36:25.859889+00:00',
@@ -270,7 +270,7 @@ describe('CommitPage', () => {
           },
           uploads: [
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -281,7 +281,7 @@ describe('CommitPage', () => {
               uploadType: 'uploaded',
             },
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:25.820340+00:00',
               updatedAt: '2020-08-25T16:36:25.859889+00:00',
