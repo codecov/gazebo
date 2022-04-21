@@ -30,7 +30,7 @@ export function usePull({ provider, owner, repo, pullId }) {
                 }
                 changeWithParent
               }
-              commits(first: 20) {
+              commits {
                 totalCount
                 pageInfo {
                   hasNextPage
