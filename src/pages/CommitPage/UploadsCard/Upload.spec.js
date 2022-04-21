@@ -96,6 +96,11 @@ describe('UploadsCard', () => {
     })
   })
   describe('rendering errors', () => {
+    beforeEach(() => {
+      // Supress proptype warnings.
+      jest.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
     it('fileNotFoundInStorage error', () => {
       setup({
         errors: [{ errorCode: 'FILE_NOT_IN_STORAGE' }],
@@ -120,12 +125,25 @@ describe('UploadsCard', () => {
           { errorCode: 'FILE_NOT_IN_STORAGE' },
           { errorCode: 'REPORT_EXPIRED' },
           { errorCode: 'REPORT_EMPTY' },
+          { errorCode: 'SOME_NEW_ERROR' },
         ],
       })
       expect(screen.getByText(/processing failed/)).toBeInTheDocument()
       expect(screen.getByText(/upload expired/)).toBeInTheDocument()
       expect(screen.getByText(/upload is empty/)).toBeInTheDocument()
     })
+  })
+  it('handles new errors the front end doesnt know how to handle', () => {
+    setup({
+      errors: [{ errorCode: 'SOME_NEW_ERROR' }],
+    })
+    expect(screen.getByText(/unknown error/)).toBeInTheDocument()
+  })
+  it('handles an unexpected error type', () => {
+    setup({
+      errors: [{ errorCode: { error: 'bad config or something' } }],
+    })
+    expect(screen.getByText(/unknown error/)).toBeInTheDocument()
   })
 
   describe('rendering uploaded type of uploads', () => {
