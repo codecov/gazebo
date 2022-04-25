@@ -10,7 +10,7 @@ describe('TruncatedMessage', () => {
     render(<TruncatedMessage message={message} />)
   }
 
-  describe('When commit message is less than 50 characters', () => {
+  describe('When commit message is less than 160 characters', () => {
     beforeEach(() => {
       setup({ message: 'This is a short message' })
     })
@@ -24,13 +24,13 @@ describe('TruncatedMessage', () => {
     })
   })
 
-  describe('When commit message is longer than 50 characters', () => {
+  describe('When commit message is longer than 160 characters', () => {
     beforeEach(() => {
       setup({ message: longMessage })
     })
 
     it('renders the short version of the message', () => {
-      const shortVersion = longMessage.substring(0, 50)
+      const shortVersion = longMessage.substring(0, 159)
       expect(screen.getByText(shortVersion)).toBeInTheDocument()
     })
 
