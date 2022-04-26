@@ -8,7 +8,14 @@ function Footer() {
   const { terms, privacy, security, gdpr, pricing, support, docs, enterprise } =
     useStaticNavLinks()
 
-  const leftMenu = [{ text: '© 2021 Codecov' }, terms, privacy, security, gdpr]
+  const year = new Date().getFullYear()
+  const leftMenu = [
+    { text: `© ${year} Codecov` },
+    terms,
+    privacy,
+    security,
+    gdpr,
+  ]
   const rightMenu = [pricing, support, docs, enterprise]
   return (
     <footer className="flex-none">
