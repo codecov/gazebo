@@ -17,8 +17,9 @@ function useLinkConfig(pageName) {
 }
 
 function _adjustPathForGLSubgroups({ path }) {
+  // This function takes in any path for a Gitlab user and replaces any colon with forward slash
+  // to adjust external urls to Gitlab
   const { provider } = useParams()
-  console.log(provider)
   if (providerToName(provider) !== 'Gitlab') {
     return path
   }
