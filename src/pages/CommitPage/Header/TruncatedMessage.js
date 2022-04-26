@@ -12,11 +12,11 @@ const TruncateEnum = Object.freeze({
 function TruncatedMessage({ message }) {
   const [truncateLabel, setTruncateLabel] = useState(TruncateEnum.EXPAND)
 
-  const isLongMessage = message.length > 160
+  const isLongMessage = message.length > 165
   const truncatedMsg =
     truncateLabel === TruncateEnum.EXPAND
       ? isLongMessage
-        ? message.substr(0, 160)
+        ? message.substr(0, 165)
         : message
       : message
 
