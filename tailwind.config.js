@@ -4,7 +4,7 @@ module.exports = {
   content: ['./src/**/*.js', './src/*.js', './public/*.html'],
   theme: {
     container: {
-      center: true,
+      center: false,
     },
     extend: {
       fontFamily: {
