@@ -90,8 +90,6 @@
     "@storybook/addon-actions": "^6.4.22",
     "@storybook/addon-essentials": "^6.4.22",
     "@storybook/addon-links": "^6.4.22",
-    "@storybook/builder-webpack5": "^6.4.22",
-    "@storybook/manager-webpack5": "^6.4.22",
     "@storybook/node-logger": "^6.4.22",
     "@storybook/preset-create-react-app": "^4.1.0",
     "@storybook/react": "^6.4.22",
@@ -115,8 +113,7 @@
     "prettier": "^2.6.0",
     "react-is": "^17.0.2",
     "react-test-renderer": "^17.0.2",
-    "tailwindcss": "^3.0.23",
-    "webpack": "^5.70.0"
+    "tailwindcss": "^3.0.23"
   },
   "engines": {
     "node": "16.14.0",
