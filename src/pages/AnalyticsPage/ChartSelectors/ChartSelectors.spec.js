@@ -7,11 +7,10 @@ import { useRepos } from 'services/repos/hooks'
 import ChartSelectors from './ChartSelectors'
 
 jest.mock('services/repos/hooks')
-jest.mock('ui/Datepicker', () => () => 'Datepicker')
+jest.mock('ui/DateRangePicker', () => () => 'DateRangePicker')
 
 describe('AnalyticsPage', () => {
   let props
-  let wrapper
   function setup({ params, owner, active, sortItem, updateParams }) {
     const { repositories } = params
     useRepos.mockReturnValue({
@@ -26,7 +25,7 @@ describe('AnalyticsPage', () => {
       params,
       updateParams,
     }
-    wrapper = render(
+    render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
         <Route path="/analytics/:provider/:owner">
           <ChartSelectors {...props} />
@@ -74,7 +73,7 @@ describe('AnalyticsPage', () => {
     })
 
     it('renders the datepicker', () => {
-      expect(screen.getByText(/Datepicker/)).toBeInTheDocument()
+      expect(screen.getByText(/DateRangePicker/)).toBeInTheDocument()
     })
 
     it('renders the MultiSelect', () => {
@@ -82,7 +81,7 @@ describe('AnalyticsPage', () => {
     })
 
     it('triggers the multiselect onChange when clicked', () => {
-      const button = wrapper.getByRole('button', {
+      const button = screen.getByRole('button', {
         name: 'Select repos to choose',
       })
       fireEvent.click(button)
@@ -93,7 +92,7 @@ describe('AnalyticsPage', () => {
     })
 
     it('clears filters when clear filters button is clicked', () => {
-      const button = wrapper.getByRole('button', { name: 'Clear filters' })
+      const button = screen.getByRole('button', { name: 'Clear filters' })
       fireEvent.click(button)
       expect(props.updateParams).toHaveBeenCalledWith({
         endDate: '',

@@ -1,5 +1,4 @@
-import { format } from 'date-fns'
-import moment from 'moment'
+import { format, formatRelative } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useDebounce, useWindowSize } from 'react-use'
@@ -26,10 +25,10 @@ const tailwindResponsive = {
 
 function chartQuery({ params }) {
   const dayDifferenceThreshold = 180
-  const dayDifference = moment(params?.endDate).diff(
-    moment(params?.startDate),
-    'days',
-    false
+
+  const dayDifference = formatRelative(
+    new Date(params?.endDate),
+    new Date(params?.startDate)
   )
   const groupingUnit = dayDifference < dayDifferenceThreshold ? 'day' : 'week'
   const startDate = params?.startDate ? params?.startDate : undefined
