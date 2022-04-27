@@ -5,20 +5,16 @@ import 'react-datepicker/dist/react-datepicker.css'
 
 import './DateRangePicker.css'
 
-function DatepRangePicker({ params, updateParams }) {
+function DateRangePicker({ startDate, endDate, updateParams }) {
   const [dateRange, setDateRange] = useState([
-    params?.startDate ? new Date(params.startDate) : null,
-    params?.endDate ? new Date(params.endDate) : null,
+    typeof startDate === 'string' ? new Date(startDate) : undefined,
+    typeof endDate === 'string' ? new Date(endDate) : undefined,
   ])
-  const [startDate, endDate] = dateRange
+  const [_startDate, _endDate] = dateRange
 
   function handleDateChange([startDate, endDate]) {
     setDateRange([startDate, endDate])
-    updateParams((oldParams) => ({
-      ...oldParams,
-      startDate,
-      endDate,
-    }))
+    updateParams(startDate, endDate)
   }
 
   return (
@@ -26,8 +22,8 @@ function DatepRangePicker({ params, updateParams }) {
       <DatePicker
         name="DateRangePicker"
         selectsRange={true}
-        startDate={startDate}
-        endDate={endDate}
+        startDate={_startDate}
+        endDate={_endDate}
         onChange={handleDateChange}
         selectsStart
         placeholderText="Start Date"
@@ -37,12 +33,10 @@ function DatepRangePicker({ params, updateParams }) {
   )
 }
 
-DatepRangePicker.propTypes = {
-  params: PropTypes.shape({
-    startDate: PropTypes.string,
-    endDate: PropTypes.string,
-  }).isRequired,
+DateRangePicker.propTypes = {
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
   updateParams: PropTypes.func.isRequired,
 }
 
-export default DatepRangePicker
+export default DateRangePicker

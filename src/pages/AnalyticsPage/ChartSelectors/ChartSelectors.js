@@ -30,8 +30,8 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
 
   const handleClearFilters = () => {
     updateParams({
-      startDate: '',
-      endDate: '',
+      startDate: null,
+      endDate: null,
       repositories: [],
     })
     setSelectedRepos([])
@@ -41,7 +41,13 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
     <div className="flex gap-4 flex-wrap justify-center sm:flex-nowrap sm:justify-start">
       <div className="flex flex-col gap-3">
         <span className="font-semibold">Dates</span>
-        <DateRangePicker params={params} updateParams={updateParams} />
+        <DateRangePicker
+          startDate={params.startDate}
+          endDate={params.endDate}
+          updateParams={(startDate, endDate) =>
+            updateParams({ startDate, endDate })
+          }
+        />
       </div>
       <div className="flex flex-col w-52 gap-3">
         <span className="font-semibold">Repositories</span>

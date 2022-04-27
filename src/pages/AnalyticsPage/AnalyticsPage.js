@@ -20,8 +20,8 @@ const defaultQueryParams = {
   repositories: [],
   ordering: orderingOptions[0]['ordering'],
   direction: orderingOptions[0]['direction'],
-  startDate: '',
-  endDate: '',
+  startDate: null,
+  endDate: null,
 }
 
 function AnalyticsPage() {

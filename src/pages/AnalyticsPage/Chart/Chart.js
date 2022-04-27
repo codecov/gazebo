@@ -1,4 +1,4 @@
-import { format, formatRelative } from 'date-fns'
+import { differenceInCalendarDays, format } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useDebounce, useWindowSize } from 'react-use'
@@ -23,13 +23,21 @@ const tailwindResponsive = {
   '2xl': 1536,
 }
 
+const calculateDayDifference = (end, start) => {
+  if (end && start) {
+    return differenceInCalendarDays(end, start)
+  }
+  return 0
+}
+
 function chartQuery({ params }) {
   const dayDifferenceThreshold = 180
 
-  const dayDifference = formatRelative(
-    new Date(params?.endDate),
-    new Date(params?.startDate)
+  const dayDifference = calculateDayDifference(
+    params?.endDate,
+    params?.startDate
   )
+
   const groupingUnit = dayDifference < dayDifferenceThreshold ? 'day' : 'week'
   const startDate = params?.startDate ? params?.startDate : undefined
   const endDate = params?.endDate ? params?.endDate : undefined
