@@ -8,7 +8,7 @@ function Footer() {
   const { terms, privacy, security, gdpr, pricing, support, docs, enterprise } =
     useStaticNavLinks()
 
-  const year = new Date().getFullYear()
+  const year = new Date().getUTCFullYear()
   const leftMenu = [
     { text: `© ${year} Codecov` },
     terms,

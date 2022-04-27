@@ -16,12 +16,15 @@ describe('Footer', () => {
 
   describe('renders the current years copywrite', () => {
     beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('3301-01-01'))
       setup()
+    })
+    afterAll(() => {
+      jest.useRealTimers()
     })
 
     it('renders a link', () => {
-      const year = new Date().getFullYear()
-      const copywrite = screen.getByText(`© ${year} Codecov`)
+      const copywrite = screen.getByText(`© 3301 Codecov`)
       expect(copywrite).toBeInTheDocument()
     })
   })
