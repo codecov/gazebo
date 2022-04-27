@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Install deps
-          command: npm ci
+          command: npm install --ignore-engines
       - save_cache:
           key: npm-deps-{{ checksum "package-lock.json" }}
           paths:
