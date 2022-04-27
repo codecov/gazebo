@@ -29,7 +29,7 @@ function _adjustPathForGLSubgroups(path) {
 
   const regex = /(https?:\/\/gitlab.com\/)([^/]*)(.*)/
   const [domain, owner, rest] = path.split(regex).filter(Boolean)
-  return domain + owner.replace(/\:/g, '/') + rest
+  return domain + owner.replace(/:/g, '/') + rest
 }
 
 function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
