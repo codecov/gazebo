@@ -31,20 +31,7 @@ export function providerFeedback(providerName) {
   }[providerToName(providerName)]
 }
 
-export function _adjustGLOwnerWithSubgroups({ provider, owner }) {
-  // Adjusts external url's for any gitlab owners who have subgroups. Gitlab subgroups look like
-  // this => "user:subgroup", but Gitlab URLs look like this => "user/subgroup". Hence, this function
-  // is to detect if we have a gitlab user with a subgroup and adjust it accordingly
-
-  if (providerToName(provider) === 'Gitlab' && owner.includes(':')) {
-    owner = owner.replace(':', '/')
-  }
-  return owner
-}
-
 export function getProviderCommitURL({ provider, owner, repo, commit }) {
-  owner = _adjustGLOwnerWithSubgroups({ provider, owner })
-
   return {
     Github: `https://github.com/${owner}/${repo}/commit/${commit}`,
     BitBucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
@@ -53,8 +40,6 @@ export function getProviderCommitURL({ provider, owner, repo, commit }) {
 }
 
 export function getProviderPullURL({ provider, owner, repo, pullId }) {
-  owner = _adjustGLOwnerWithSubgroups({ provider, owner })
-
   return {
     Github: `https://github.com/${owner}/${repo}/pull/${pullId}`,
     BitBucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,

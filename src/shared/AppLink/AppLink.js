@@ -1,11 +1,9 @@
-import { split } from 'lodash'
 import defaultTo from 'lodash/defaultTo'
 import PropTypes from 'prop-types'
 import { forwardRef } from 'react'
-import { Link, NavLink, useParams } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
-import { providerToName } from 'shared/utils/provider'
 
 function useLinkConfig(pageName) {
   const navLinks = useNavLinks()
@@ -16,25 +14,6 @@ function useLinkConfig(pageName) {
   return null
 }
 
-function _adjustPathForGLSubgroups({ path }) {
-  // This function takes in any path for a Gitlab user and replaces any colon with forward slash
-  // to adjust external urls to Gitlab
-  const { provider } = useParams()
-  if (providerToName(provider) !== 'Gitlab') {
-    return path
-  }
-
-  const splitParam = 'https://'
-  const splitUrl = path.split(splitParam)
-
-  if (splitUrl[1].includes(':')) {
-    splitUrl[1] = splitUrl[1].replace(/\:/g, '/')
-    return splitUrl.join(splitParam)
-  }
-
-  return path
-}
-
 function useCompleteProps(
   Component,
   props,
@@ -43,8 +22,6 @@ function useCompleteProps(
   activeClassName
 ) {
   let path = pageConfig?.path(options)
-
-  path = _adjustPathForGLSubgroups({ path })
 
   const propsLink = pageConfig?.isExternalLink ? { href: path } : { to: path }
   const propsTarget = pageConfig?.openNewTab ? { target: '_blank' } : {}

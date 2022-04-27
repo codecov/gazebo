@@ -18,6 +18,20 @@ const variantClasses = {
   code: `font-mono text-ds-blue-darker`,
 }
 
+function _adjustPathForGLSubgroups(path) {
+  // Adjusts external url's for any gitlab owners who have subgroups. Gitlab subgroups look like
+  // this => "user:subgroup", but Gitlab URLs look like this => "user/subgroup". Hence, this function
+  // is to detect if we have a gitlab user with a subgroup and adjust it accordingly. The regex identifies the
+  // domain + owner (by selecting everything till the next forward slash) and selecting everything else
+  if (!path.includes('gitlab')) {
+    return path
+  }
+
+  const regex = /(https?:\/\/gitlab.com\/)([^/]*)(.*)/
+  const [domain, owner, rest] = path.split(regex).filter(Boolean)
+  return domain + owner.replace(/\:/g, '/') + rest
+}
+
 function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
   const className = cs(
     baseClass,
@@ -37,6 +51,9 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
   ) : (
     <a
       {...completeProps}
+      href={
+        completeProps?.href && _adjustPathForGLSubgroups(completeProps?.href)
+      }
       className={className}
       data-cy={hook}
       data-marketing={hook}

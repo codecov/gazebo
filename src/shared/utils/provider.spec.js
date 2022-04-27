@@ -1,5 +1,4 @@
 import {
-  _adjustGLOwnerWithSubgroups,
   getProviderCommitURL,
   getProviderPullURL,
   providerImage,
@@ -72,16 +71,6 @@ describe('getProviderCommitURL', () => {
       'https://gitlab.com/codecov/python/-/commit/12de'
     )
   })
-  it('return gitlab with subgroup commit URL', () => {
-    expect(
-      getProviderCommitURL({
-        provider: 'gl',
-        owner: 'codecov:subgroup',
-        repo,
-        commit,
-      })
-    ).toBe('https://gitlab.com/codecov/subgroup/python/-/commit/12de')
-  })
   it('return github commit URL', () => {
     expect(getProviderCommitURL({ provider: 'gh', owner, repo, commit })).toBe(
       'https://github.com/codecov/python/commit/12de'
@@ -100,16 +89,6 @@ describe('getProviderPullURL', () => {
       'https://gitlab.com/codecov/python/-/merge_requests/aebf'
     )
   })
-  it('return gitlab with subgroup PR URL', () => {
-    expect(
-      getProviderPullURL({
-        provider: 'gl',
-        owner: 'codecov:subgroup',
-        repo,
-        pullId,
-      })
-    ).toBe('https://gitlab.com/codecov/subgroup/python/-/merge_requests/aebf')
-  })
   it('return github PR URL', () => {
     expect(getProviderPullURL({ provider: 'gh', owner, repo, pullId })).toBe(
       'https://github.com/codecov/python/pull/aebf'
@@ -119,24 +98,5 @@ describe('getProviderPullURL', () => {
     expect(getProviderPullURL({ provider: 'bb', owner, repo, pullId })).toBe(
       'https://bitbucket.org/codecov/python/pull-requests/aebf'
     )
-  })
-})
-
-describe('_adjustGLOwnerWithSubgroups', () => {
-  it('returns owner if provider isnt gitlab', () => {
-    expect(_adjustGLOwnerWithSubgroups({ provider: 'gh', owner })).toBe(
-      'codecov'
-    )
-  })
-
-  it('returns owner if gitlab owner doesnt have subgroups', () => {
-    expect(_adjustGLOwnerWithSubgroups({ provider: 'gl', owner })).toBe(
-      'codecov'
-    )
-  })
-  it('returns adjusted owner if gitlab and owner has subgroups', () => {
-    expect(
-      _adjustGLOwnerWithSubgroups({ provider: 'gl', owner: 'codecov:subgroup' })
-    ).toBe('codecov/subgroup')
   })
 })
