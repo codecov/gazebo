@@ -21,7 +21,7 @@ function useCompleteProps(
   pageConfig,
   activeClassName
 ) {
-  let path = pageConfig?.path(options)
+  const path = pageConfig?.path(options)
 
   const propsLink = pageConfig?.isExternalLink ? { href: path } : { to: path }
   const propsTarget = pageConfig?.openNewTab ? { target: '_blank' } : {}
