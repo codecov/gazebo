@@ -1,4 +1,4 @@
-import { differenceInCalendarDays, format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useDebounce, useWindowSize } from 'react-use'
@@ -14,6 +14,7 @@ import {
 import { useOrgCoverage } from 'services/charts'
 
 import './chart.css'
+import { chartQuery } from './utils'
 
 const tailwindResponsive = {
   sm: 640,
@@ -21,29 +22,6 @@ const tailwindResponsive = {
   lg: 1024,
   xl: 1280,
   '2xl': 1536,
-}
-
-const calculateDayDifference = (end, start) => {
-  if (end && start) {
-    return differenceInCalendarDays(parseISO(end), parseISO(start))
-  }
-  return 0
-}
-
-function chartQuery({ params }) {
-  const dayDifferenceThreshold = 180
-  const dayDifference = calculateDayDifference(
-    params?.endDate,
-    params?.startDate
-  )
-  const groupingUnit = dayDifference < dayDifferenceThreshold ? 'day' : 'week'
-  const startDate = params?.startDate ? params?.startDate : undefined
-  const endDate = params?.endDate ? params?.endDate : undefined
-
-  const repositories =
-    params?.repositories?.length > 0 ? params?.repositories : undefined
-
-  return { groupingUnit, startDate, endDate, repositories }
 }
 
 const defaultStyles = {
@@ -65,7 +43,7 @@ function Chart({ provider, owner, params }) {
   } = useOrgCoverage({
     provider,
     owner,
-    query: chartQuery({ params }),
+    query: chartQuery(params),
   })
   const [styles, setStyles] = useState(defaultStyles)
   const { width } = useWindowSize()

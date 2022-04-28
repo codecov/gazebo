@@ -10,7 +10,7 @@ function formatDataForMultiselect(repos) {
 }
 
 function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
-  const { search, repositories } = params
+  const { search, repositories, startDate, endDate } = params
   const [selectedRepos, setSelectedRepos] = useState(repositories)
   const { data } = useRepos({
     active,
@@ -23,12 +23,16 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
 
   const items = formatDataForMultiselect(data?.repos)
 
-  const onChangeHandler = (item) => {
+  const onSelectChangeHandler = (item) => {
     setSelectedRepos(item)
     updateParams({ repositories: item })
   }
 
-  const handleClearFilters = () => {
+  const onDateRangeChangeHandler = ([startDate, endDate]) => {
+    updateParams({ startDate, endDate })
+  }
+
+  const clearFiltersHandler = () => {
     updateParams({
       startDate: null,
       endDate: null,
@@ -42,11 +46,9 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
       <div className="flex flex-col gap-3">
         <span className="font-semibold">Dates</span>
         <DateRangePicker
-          startDate={params.startDate}
-          endDate={params.endDate}
-          onChange={(startDate, endDate) =>
-            updateParams({ startDate, endDate })
-          }
+          startDate={startDate}
+          endDate={endDate}
+          onChange={onDateRangeChangeHandler}
         />
       </div>
       <div className="flex flex-col w-52 gap-3">
@@ -54,13 +56,16 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
         <MultiSelect
           ariaName="Select repos to choose"
           items={items}
-          onChange={onChangeHandler}
+          onChange={onSelectChangeHandler}
           resourceName="Repo"
           selectedItems={selectedRepos}
           customClasses={customClasses}
         />
       </div>
-      <button className="text-ds-blue-darker mt-7" onClick={handleClearFilters}>
+      <button
+        className="text-ds-blue-darker mt-7"
+        onClick={clearFiltersHandler}
+      >
         Clear filters
       </button>
     </div>

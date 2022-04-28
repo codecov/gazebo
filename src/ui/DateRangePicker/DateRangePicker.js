@@ -14,7 +14,7 @@ function DateRangePicker({ startDate, endDate, onChange }) {
 
   function handleDateChange([startDate, endDate]) {
     setDateRange([startDate, endDate])
-    onChange(startDate, endDate)
+    onChange([startDate, endDate])
   }
 
   return (

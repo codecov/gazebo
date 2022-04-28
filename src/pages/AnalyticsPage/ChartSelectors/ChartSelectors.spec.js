@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -7,9 +7,8 @@ import { useRepos } from 'services/repos/hooks'
 import ChartSelectors from './ChartSelectors'
 
 jest.mock('services/repos/hooks')
-jest.mock('ui/DateRangePicker', () => () => 'DateRangePicker')
 
-describe('AnalyticsPage', () => {
+describe('ChartSelectors', () => {
   let props
   function setup({ params, owner, active, sortItem, updateParams }) {
     const { repositories } = params
@@ -72,8 +71,20 @@ describe('AnalyticsPage', () => {
       })
     })
 
-    it('renders the datepicker', () => {
-      expect(screen.getByText(/DateRangePicker/)).toBeInTheDocument()
+    describe('changing the date updates the selected dates', () => {
+      it('assert the start date can be set', async () => {
+        expect(window.location.search).toBe('')
+
+        const picker = screen.getByRole('textbox')
+        fireEvent.click(picker)
+
+        const theThird = screen.getByRole('option', {
+          name: 'Choose Sunday, April 3rd, 2022',
+        })
+        fireEvent.click(theThird)
+
+        await waitFor(() => expect(picker.value).toBe('04/03/2022 - '))
+      })
     })
 
     it('renders the MultiSelect', () => {
