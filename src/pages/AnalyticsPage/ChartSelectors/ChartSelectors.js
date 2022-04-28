@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useRepos } from 'services/repos/hooks'
-import Datepicker from 'ui/Datepicker'
+import DateRangePicker from 'ui/DateRangePicker'
 import MultiSelect from 'ui/MultiSelect'
 
 function formatDataForMultiselect(repos) {
@@ -30,8 +30,8 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
 
   const handleClearFilters = () => {
     updateParams({
-      startDate: '',
-      endDate: '',
+      startDate: null,
+      endDate: null,
       repositories: [],
     })
     setSelectedRepos([])
@@ -41,7 +41,13 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
     <div className="flex gap-4 flex-wrap justify-center sm:flex-nowrap sm:justify-start">
       <div className="flex flex-col gap-3">
         <span className="font-semibold">Dates</span>
-        <Datepicker params={params} updateParams={updateParams} />
+        <DateRangePicker
+          startDate={params.startDate}
+          endDate={params.endDate}
+          onChange={(startDate, endDate) =>
+            updateParams({ startDate, endDate })
+          }
+        />
       </div>
       <div className="flex flex-col w-52 gap-3">
         <span className="font-semibold">Repositories</span>
