@@ -71,16 +71,6 @@
       "last 1 safari version"
     ]
   },
-  "bundlesize": [
-    {
-      "path": "./build/static/js/*.js",
-      "maxSize": "200 kB"
-    },
-    {
-      "path": "./build/static/css/*.css",
-      "maxSize": "50 kB"
-    }
-  ],
   "devDependencies": {
     "@babel/core": "^7.17.8",
     "@sentry/cli": "^1.74.2",
