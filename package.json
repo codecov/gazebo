@@ -6,7 +6,7 @@
     "@hookform/resolvers": "^2.8.5",
     "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
-    "@stripe/react-stripe-js": "^1.7.0",
+    "@stripe/react-stripe-js": "^1.7.2",
     "@stripe/stripe-js": "^1.25.0",
     "classnames": "^2.3.1",
     "date-fns": "^2.28.0",
@@ -118,7 +118,7 @@
     "webpack": "^5.70.0"
   },
   "engines": {
-    "node": ">=16.14.0"
+    "node": "16.14.2"
   },
   "jest": {
     "transformIgnorePatterns": [
