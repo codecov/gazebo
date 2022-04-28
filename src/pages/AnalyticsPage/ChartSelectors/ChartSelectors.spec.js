@@ -72,18 +72,24 @@ describe('ChartSelectors', () => {
     })
 
     describe('changing the date updates the selected dates', () => {
+      beforeEach(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2022-03-15'))
+      })
+      afterAll(() => {
+        jest.useRealTimers()
+      })
       it('assert the start date can be set', async () => {
         expect(window.location.search).toBe('')
 
         const picker = screen.getByRole('textbox')
         fireEvent.click(picker)
 
-        const theThird = screen.getByRole('option', {
-          name: 'Choose Sunday, April 3rd, 2022',
+        const selectedDate = screen.getByRole('option', {
+          name: 'Choose Wednesday, March 23rd, 2022',
         })
-        fireEvent.click(theThird)
+        fireEvent.click(selectedDate)
 
-        await waitFor(() => expect(picker.value).toBe('04/03/2022 - '))
+        await waitFor(() => expect(picker.value).toBe('03/23/2022 - '))
       })
     })
 
