@@ -7,8 +7,6 @@ import PropTypes from 'prop-types'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useIsCurrentUserAnAdmin } from 'services/user'
-
 import YAML from './YAML'
 
 const queryClient = new QueryClient()
@@ -24,7 +22,6 @@ const wrapper = ({ children }) => (
 jest.mock('react-ace', () => (props) => <MockReactAce {...props} />)
 jest.mock('ace-builds/src-noconflict/theme-github', () => {})
 jest.mock('ace-builds/src-noconflict/mode-yaml', () => {})
-jest.mock('services/user')
 
 const basicYamlConfig = { data: { owner: { yaml: '' } } }
 const updateYamlConfig = (y) => ({
@@ -69,10 +66,8 @@ describe('YAMLTab', () => {
 
     render(<YAML owner="doggo" />, { wrapper })
   }
-  describe('basic tests for admin users', () => {
+  describe('basic tests', () => {
     beforeEach(() => {
-      useIsCurrentUserAnAdmin.mockReturnValue(true)
-
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: updateYamlConfig(''),
@@ -102,8 +97,6 @@ describe('YAMLTab', () => {
 
   describe('saves a valid yaml file', () => {
     beforeEach(async () => {
-      useIsCurrentUserAnAdmin.mockReturnValue(true)
-
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: updateYamlConfig(''),
@@ -134,8 +127,6 @@ describe('YAMLTab', () => {
 
   describe('fails and displays linting error', () => {
     beforeEach(async () => {
-      useIsCurrentUserAnAdmin.mockReturnValue(true)
-
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: updateYamlConfigError('bad config'),
@@ -155,8 +146,6 @@ describe('YAMLTab', () => {
 
   describe('The api fails', () => {
     beforeEach(async () => {
-      useIsCurrentUserAnAdmin.mockReturnValue(true)
-
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: { errors: [{ message: 'something' }] },
@@ -172,29 +161,6 @@ describe('YAMLTab', () => {
       userEvent.click(save)
 
       await screen.findByText(/Something went wrong/)
-    })
-  })
-
-  describe('basic tests for non-admin users', () => {
-    beforeEach(() => {
-      useIsCurrentUserAnAdmin.mockReturnValue(false)
-
-      setup({
-        YamlConfig: basicYamlConfig,
-        UpdateYamlConfig: updateYamlConfig(''),
-      })
-    })
-
-    it('renders the description text', () => {
-      const tab = screen.getByText(
-        /Changes made to the Global yml will override the default repo settings and is applied to all repositories in the org./
-      )
-      expect(tab).toBeInTheDocument()
-    })
-
-    it('The save button is not rendered', () => {
-      const save = screen.queryByRole('button', { name: /Save Changes/ })
-      expect(save).not.toBeInTheDocument()
     })
   })
 })

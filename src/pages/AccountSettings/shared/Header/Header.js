@@ -14,10 +14,7 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
-            {
-              pageName: 'accountAdmin',
-              children: 'Settings',
-            },
+            { pageName: 'accountAdmin', children: 'Settings' },
           ]}
         />
       </div>
