@@ -7,7 +7,6 @@ import config from 'config'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
-import { useIsCurrentUserAnAdmin } from 'services/user'
 
 import Header from './shared/Header'
 import SideMenuAccount from './SideMenuAccount'
@@ -26,7 +25,6 @@ const stripePromise = loadStripe(config.STRIPE_KEY)
 
 function AccountSettings() {
   const { provider, owner } = useParams()
-  const isAdmin = useIsCurrentUserAnAdmin({ owner })
 
   const tabLoading = (
     <div className="h-full w-full flex items-center justify-center">
@@ -41,11 +39,7 @@ function AccountSettings() {
         <Suspense fallback={tabLoading}>
           <Switch>
             <Route path="/account/:provider/:owner/" exact>
-              {isAdmin ? (
-                <AdminTab provider={provider} owner={owner} />
-              ) : (
-                <Redirect to={`/account/${provider}/${owner}/billing/`} />
-              )}
+              <AdminTab provider={provider} owner={owner} />
             </Route>
             <Route path="/account/:provider/:owner/yaml/" exact>
               <YAMLTab provider={provider} owner={owner} />
