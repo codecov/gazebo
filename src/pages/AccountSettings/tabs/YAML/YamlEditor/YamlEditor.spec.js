@@ -4,7 +4,7 @@ import YamlEditor from './YamlEditor'
 
 describe('YamlEditor', () => {
   function setup(props) {
-    render(<YamlEditor {...props} readOnly />)
+    render(<YamlEditor {...props} />)
   }
 
   describe('when rendered', () => {

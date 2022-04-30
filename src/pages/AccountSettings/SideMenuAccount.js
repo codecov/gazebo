@@ -1,14 +1,11 @@
 import { useParams } from 'react-router-dom'
 
-import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useUser } from 'services/user'
 import Sidemenu from 'ui/Sidemenu'
 
 function SideMenuAccount() {
   const { owner } = useParams()
-
   const { data: currentUser } = useUser()
-  const isAdmin = useIsCurrentUserAnAdmin({ owner })
-
   const isPersonalSettings =
     currentUser.user.username.toLowerCase() === owner.toLowerCase()
 
@@ -16,29 +13,15 @@ function SideMenuAccount() {
     // Need that extra div because the side menu gets stretched otherwise
     <div>
       <Sidemenu
-        links={
-          isAdmin
-            ? [
-                {
-                  pageName: 'accountAdmin',
-                  exact: true,
-                },
-                {
-                  pageName: isPersonalSettings
-                    ? 'internalAccessTab'
-                    : 'billingAndUsers',
-                },
-                { pageName: 'yamlTab' },
-              ]
-            : [
-                {
-                  pageName: isPersonalSettings
-                    ? 'internalAccessTab'
-                    : 'billingAndUsers',
-                },
-                { pageName: 'yamlTab' },
-              ]
-        }
+        links={[
+          { pageName: 'accountAdmin', exact: true },
+          {
+            pageName: isPersonalSettings
+              ? 'internalAccessTab'
+              : 'billingAndUsers',
+          },
+          { pageName: 'yamlTab' },
+        ]}
       />
     </div>
   )
