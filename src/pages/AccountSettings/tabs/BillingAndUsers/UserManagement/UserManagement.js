@@ -12,7 +12,6 @@ import {
   useLocationParams,
   useNavLinks,
 } from 'services/navigation'
-import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 import { useUpdateUser, useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 import { isFreePlan } from 'shared/utils/billing'
@@ -57,7 +56,9 @@ function createPills({ isAdmin, email, student }) {
   ]
 }
 
-function useUsersData({ provider, owner }) {
+function UserManagement({ provider, owner }) {
+  // local state is pulled from url params.
+  // Defaults are not shown in url.
   const { params, updateParams } = useLocationParams({
     activated: ApiFilterEnum.none, // Default to no filter on activated
     isAdmin: ApiFilterEnum.none, // Default to no filter on isAdmin
@@ -71,25 +72,6 @@ function useUsersData({ provider, owner }) {
     provider,
     owner,
     query: params,
-  })
-  const { data: currentUser } = useUser()
-
-  return {
-    params,
-    updateParams,
-    data,
-    isSuccess,
-    currentUser: currentUser?.user,
-  }
-}
-
-function UserManagement({ provider, owner }) {
-  const isAdmin = useIsCurrentUserAnAdmin({ owner })
-  // local state is pulled from url params.
-  // Defaults are not shown in url.
-  const { params, updateParams, data, isSuccess, currentUser } = useUsersData({
-    provider,
-    owner,
   })
   // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider })
@@ -162,52 +144,43 @@ function UserManagement({ provider, owner }) {
       <Card className={UserManagementClasses.results}>
         <div className={UserManagementClasses.cardHeader}>
           <h2 className={UserManagementClasses.title}>Users</h2>
-          {isAdmin && (
-            <span className={UserManagementClasses.activateUsers}>
-              <Toggle
-                showLabel={true}
-                onClick={() => autoActivate(!accountDetails?.planAutoActivate)}
-                value={accountDetails?.planAutoActivate}
-                label="Auto activate users"
-                labelClass={UserManagementClasses.activateUsersText}
-              />
-            </span>
-          )}
+          <span className={UserManagementClasses.activateUsers}>
+            <Toggle
+              showLabel={true}
+              onClick={() => autoActivate(!accountDetails?.planAutoActivate)}
+              value={accountDetails?.planAutoActivate}
+              label="Auto activate users"
+              labelClass={UserManagementClasses.activateUsersText}
+            />
+          </span>
         </div>
         <div>
           {isSuccess &&
-            data.results.map((user) => {
-              const disabled =
-                !isAdmin && user.username !== currentUser.username
-              return (
-                <div
-                  key={user.username}
-                  className={UserManagementClasses.userTable}
-                >
-                  <User
-                    className={UserManagementClasses.user}
-                    username={user.username}
-                    name={user.name}
-                    avatarUrl={getOwnerImg(provider, user.username)}
-                    pills={createPills(user)}
-                  />
-                  <div className={UserManagementClasses.ctaWrapper}>
-                    <Button
-                      data-cy={`activate-${user.username}`}
-                      className={UserManagementClasses.cta}
-                      color={user.activated ? 'red' : 'blue'}
-                      variant={user.activated ? 'outline' : 'normal'}
-                      onClick={() => {
-                        handleActivate(user)
-                      }}
-                      disabled={disabled}
-                    >
-                      {user.activated ? 'Deactivate' : 'Activate'}
-                    </Button>
-                  </div>
+            data.results.map((user) => (
+              <div
+                key={user.username}
+                className={UserManagementClasses.userTable}
+              >
+                <User
+                  className={UserManagementClasses.user}
+                  username={user.username}
+                  name={user.name}
+                  avatarUrl={getOwnerImg(provider, user.username)}
+                  pills={createPills(user)}
+                />
+                <div className={UserManagementClasses.ctaWrapper}>
+                  <Button
+                    data-cy={`activate-${user.username}`}
+                    className={UserManagementClasses.cta}
+                    color={user.activated ? 'red' : 'blue'}
+                    variant={user.activated ? 'outline' : 'normal'}
+                    onClick={() => handleActivate(user)}
+                  >
+                    {user.activated ? 'Deactivate' : 'Activate'}
+                  </Button>
                 </div>
-              )
-            })}
+              </div>
+            ))}
         </div>
         <FormPaginate
           totalPages={data.totalPages}
