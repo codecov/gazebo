@@ -3,7 +3,6 @@ import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
 import { Controller, useForm } from 'react-hook-form'
 
-import { useIsCurrentUserAnAdmin } from 'services/user'
 import { useUpdateYaml, useYamlConfig } from 'services/yaml'
 import Button from 'ui/Button'
 
@@ -11,7 +10,6 @@ import SuccessModal from './SuccessModal'
 import YamlEditor from './YamlEditor'
 
 function YAML({ owner }) {
-  const isAdmin = useIsCurrentUserAnAdmin({ owner })
   const { data: yamlConfig } = useYamlConfig({
     variables: { username: owner },
   })
@@ -77,7 +75,6 @@ function YAML({ owner }) {
         name="editor"
         render={({ field: { onChange, value } }) => (
           <YamlEditor
-            readOnly={!isAdmin}
             value={value}
             onChange={onChange}
             placeholder={`All ${owner} repos will inherit this configuration`}
@@ -85,16 +82,14 @@ function YAML({ owner }) {
         )}
       />
       <div className="mt-4 float-right">
-        {isAdmin && (
-          <Button
-            hook="save-yaml"
-            disabled={!formState.isDirty}
-            isLoading={formState.isSubmitting}
-            variant="primary"
-          >
-            Save Changes
-          </Button>
-        )}
+        <Button
+          hook="save-yaml"
+          disabled={!formState.isDirty}
+          isLoading={formState.isSubmitting}
+          variant="primary"
+        >
+          Save Changes
+        </Button>
       </div>
     </form>
   )
