@@ -80,6 +80,7 @@ export function useOwner({ username, opts = {} }) {
         username
         avatarUrl
         isCurrentUserPartOfOrg
+        isAdmin
       }
     }
   `
@@ -97,6 +98,12 @@ export function useOwner({ username, opts = {} }) {
     },
     opts
   )
+}
+
+export function useIsCurrentUserAnAdmin({ owner }) {
+  const { data: ownerData } = useOwner({ username: owner })
+
+  return !!ownerData?.isAdmin
 }
 
 export function useMyContexts() {
