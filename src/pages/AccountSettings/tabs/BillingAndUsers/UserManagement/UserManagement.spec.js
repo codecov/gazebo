@@ -5,12 +5,14 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
 
 import { useAccountDetails, useAutoActivate } from 'services/account'
+import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 import { useUpdateUser, useUsers } from 'services/users'
 
 import UserManagerment from './UserManagement'
 
 jest.mock('services/users/hooks')
 jest.mock('services/account/hooks')
+jest.mock('services/user/hooks')
 
 const queryClient = new QueryClient()
 
@@ -50,6 +52,14 @@ const defaultQuery = {
   pageSize: 50,
 }
 
+const mockUserData = {
+  data: {
+    user: {
+      username: 'rula',
+    },
+  },
+}
+
 describe('UserManagerment', () => {
   function setup({
     mockUseUsersValue = users,
@@ -57,10 +67,13 @@ describe('UserManagerment', () => {
     mockUseUsersImplementation,
     mockUseAccountDetails = account,
     mockUseAutoActivate = updateAccount,
-  } = {}) {
+    isAdmin,
+  }) {
     useUpdateUser.mockReturnValue(mockUseUpdateUserValue)
     useAccountDetails.mockReturnValue(mockUseAccountDetails)
     useAutoActivate.mockReturnValue(mockUseAutoActivate)
+    useUser.mockReturnValue(mockUserData)
+    useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
 
     if (mockUseUsersImplementation) {
       useUsers.mockImplementation(mockUseUsersImplementation)
@@ -93,7 +106,7 @@ describe('UserManagerment', () => {
             ],
           },
         }
-        setup({ mockUseUsersValue })
+        setup({ mockUseUsersValue, isAdmin: true })
       })
       it('renders the user list', () => {
         const placeholder = screen.getByText(/@earthspirit/)
@@ -112,7 +125,7 @@ describe('UserManagerment', () => {
             results: [],
           },
         }
-        setup({ mockUseUsersValue })
+        setup({ mockUseUsersValue, isAdmin: true })
       })
       it('renders the user list', () => {
         const Avatar = screen.queryAllByRole('img')
@@ -131,7 +144,7 @@ describe('UserManagerment', () => {
             results: [{ username: 'dazzle', student: true }],
           },
         }
-        setup({ mockUseUsersValue })
+        setup({ mockUseUsersValue, isAdmin: true })
       })
       it('renders if student user', () => {
         const placeholder = screen.getByText(/dazzle$/)
@@ -151,7 +164,7 @@ describe('UserManagerment', () => {
             results: [{ username: 'dazzle', isAdmin: true }],
           },
         }
-        setup({ mockUseUsersValue })
+        setup({ mockUseUsersValue, isAdmin: true })
       })
       it('renders if admin user', () => {
         const placeholder = screen.getByText(/dazzle$/)
@@ -171,7 +184,7 @@ describe('UserManagerment', () => {
             results: [{ username: 'dazzle', email: 'dazzle@dota.com' }],
           },
         }
-        setup({ mockUseUsersValue })
+        setup({ mockUseUsersValue, isAdmin: true })
       })
       it('renders an email', () => {
         const placeholder = screen.getByText(/dazzle$/)
@@ -190,7 +203,7 @@ describe('UserManagerment', () => {
       [/In-active users/, { ...defaultQuery, activated: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
-        setup()
+        setup({ isAdmin: true })
       })
 
       it(`Renders the correct selection: ${label}`, () => {
@@ -230,7 +243,7 @@ describe('UserManagerment', () => {
       [/Collaborators/, { ...defaultQuery, isAdmin: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
-        setup()
+        setup({ isAdmin: true })
       })
 
       it(`Renders the correct selection: ${label}`, () => {
@@ -279,7 +292,7 @@ describe('UserManagerment', () => {
           }),
         },
       })
-      setup({ mockUseUsersImplementation })
+      setup({ mockUseUsersImplementation, isAdmin: true })
     })
 
     it('Makes the correct query to the api', () => {
@@ -348,7 +361,7 @@ describe('UserManagerment', () => {
         },
       }
 
-      setup({ mockUseUsersValue, mockUseUpdateUserValue })
+      setup({ mockUseUsersValue, mockUseUpdateUserValue, isAdmin: true })
     })
 
     it('Renders a inactive user with a Activate button', () => {
@@ -448,6 +461,7 @@ describe('UserManagerment', () => {
         mockUseUsersValue,
         mockUseUpdateUserValue,
         mockUseAccountDetails,
+        isAdmin: true,
       })
     })
 
@@ -566,6 +580,7 @@ describe('UserManagerment', () => {
         mockUseUsersValue,
         mockUseUpdateUserValue,
         mockUseAccountDetails,
+        isAdmin: true,
       })
     })
 
@@ -604,7 +619,7 @@ describe('UserManagerment', () => {
         },
       }
 
-      setup({ mockUseUsersValue, mockUseUpdateUserValue })
+      setup({ mockUseUsersValue, mockUseUpdateUserValue, isAdmin: true })
     })
 
     it('Renders a inactive user with a Deactivate button', () => {
@@ -642,7 +657,7 @@ describe('UserManagerment', () => {
           }
         }
 
-        setup({ mockUseUsersImplementation })
+        setup({ mockUseUsersImplementation, isAdmin: true })
       })
 
       it('Clicking a page updates the query page', async () => {
@@ -665,7 +680,7 @@ describe('UserManagerment', () => {
             results: [],
           },
         }
-        setup({ mockUseUsersValue })
+        setup({ mockUseUsersValue, isAdmin: true })
       })
 
       it('Does not render', async () => {
@@ -682,7 +697,7 @@ describe('UserManagerment', () => {
     describe('On change', () => {
       beforeEach(() => {
         jest.resetAllMocks()
-        setup()
+        setup({ isAdmin: true })
       })
 
       it('Clicking triggers a change', async () => {
@@ -692,6 +707,111 @@ describe('UserManagerment', () => {
           expect(updateAccountMutate).toHaveBeenCalledTimes(1)
         )
       })
+    })
+  })
+
+  describe('Non-admin users', () => {
+    let mutateMock = jest.fn()
+    beforeEach(() => {
+      const mockUseUpdateUserValue = {
+        mutate: mutateMock,
+      }
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          totalPages: 1,
+          results: [
+            {
+              ownerid: 11,
+              activated: true,
+              username: 'rula',
+              avatarUrl: '',
+            },
+          ],
+        },
+      }
+      setup({ mockUseUpdateUserValue, mockUseUsersValue, isAdmin: false })
+    })
+
+    it('Able to "Deactivate" themselves', async () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Deactivate',
+      })
+      user.click(ActivateBtn)
+      await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
+      expect(mutateMock).toHaveBeenLastCalledWith({
+        targetUserOwnerid: 11,
+        activated: false,
+      })
+    })
+
+    it('Does not render Auto activate users Toggle', async () => {
+      const toggle = screen.queryByText(/Auto activate users/)
+      expect(toggle).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Non-admin users deactivating random users', () => {
+    let mutateMock = jest.fn()
+    beforeEach(() => {
+      const mockUseUpdateUserValue = {
+        mutate: mutateMock,
+      }
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          totalPages: 1,
+          results: [
+            {
+              ownerid: 11,
+              activated: true,
+              username: 'random user',
+              avatarUrl: '',
+            },
+          ],
+        },
+      }
+      setup({ mockUseUpdateUserValue, mockUseUsersValue, isAdmin: false })
+    })
+
+    it('Not able to deactivate users', async () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Deactivate',
+      })
+      user.click(ActivateBtn)
+      expect(mutateMock).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  describe('Non-admin users activating random users', () => {
+    let mutateMock = jest.fn()
+    beforeEach(() => {
+      const mockUseUpdateUserValue = {
+        mutate: mutateMock,
+      }
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          totalPages: 1,
+          results: [
+            {
+              ownerid: 11,
+              activated: false,
+              username: 'random user',
+              avatarUrl: '',
+            },
+          ],
+        },
+      }
+      setup({ mockUseUpdateUserValue, mockUseUsersValue, isAdmin: false })
+    })
+
+    it('Not able to activate users', async () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Activate',
+      })
+      user.click(ActivateBtn)
+      expect(mutateMock).toHaveBeenCalledTimes(0)
     })
   })
 })
