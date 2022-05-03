@@ -1,6 +1,7 @@
 import keyBy from 'lodash/keyBy'
 import mapValues from 'lodash/mapValues'
 import { useQuery } from 'react-query'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
@@ -82,6 +83,37 @@ export function useCoverageWithFlags(
     },
     options
   )
+}
+
+export function useCoverageData({ coverage, totals, selectedFlags }) {
+  const coverageForAllFlags = selectedFlags.length === 0
+  const { owner, repo, provider, ref, ...path } = useParams()
+  const queryPerFlag = useCoverageWithFlags(
+    {
+      provider,
+      owner,
+      repo,
+      ref,
+      path: path[0],
+      flags: selectedFlags,
+    },
+    {
+      // only run the query if we are filtering per flag
+      enabled: !coverageForAllFlags,
+      suspense: false,
+    }
+  )
+
+  if (coverageForAllFlags) {
+    // no flag selected, we can return the default coverage
+    return { coverage, totals, isLoading: false }
+  }
+
+  return {
+    coverage: queryPerFlag.data?.coverage ?? {},
+    totals: queryPerFlag.data?.totals ?? 0,
+    isLoading: queryPerFlag.isLoading,
+  }
 }
 
 export function useFileWithMainCoverage({ provider, owner, repo, ref, path }) {
