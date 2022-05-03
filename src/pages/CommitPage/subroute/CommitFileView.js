@@ -1,9 +1,8 @@
-/*eslint max-statements: [2, 1, {ignoreTopLevelFunctions: true}]*/ // M
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useCoverageData, useFileWithMainCoverage } from 'services/file/hooks'
+import { useCommitBasedCoverageForFileviewer } from 'services/file/hooks'
 import CodeRenderer from 'shared/FileViewer/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRendererProgressHeader'
 import FileviewerToggleHeader from 'ui/FileviewerToggleHeader'
@@ -18,31 +17,20 @@ const ErrorDisplayMessage = (
 )
 
 function CommitFileView({ diff }) {
-  const { owner, repo, provider, commit, path } = useParams()
-  const { data } = useFileWithMainCoverage({
-    provider,
-    owner,
-    repo,
-    ref: commit,
-    path: path,
-  })
-
-  // TODO: probably move this to some sort of context
+  const { path } = useParams()
   const [selectedFlags, setSelectedFlags] = useState([])
+  // TODO: probably move this to some sort of context
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
 
-  // TODO: fix this use of double hook (you don't need useFileWithMainCoverage and useCoverageData)
   const {
     isLoading: coverageIsLoading,
     totals: fileCoverage,
     coverage: coverageData,
-  } = useCoverageData({
-    coverage: data?.coverage,
-    totals: data?.totals,
-    selectedFlags,
-  })
+    flagNames,
+    content,
+  } = useCommitBasedCoverageForFileviewer({ selectedFlags })
 
   const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
 
@@ -56,7 +44,7 @@ function CommitFileView({ diff }) {
     setPartial,
   }
   const flagData = {
-    flagNames: data?.flagNames,
+    flagNames,
     selectedFlags,
     setSelectedFlags,
   }
@@ -75,13 +63,13 @@ function CommitFileView({ diff }) {
           fileCoverage={fileCoverage}
           change={change}
         />
-        {data?.content ? (
+        {content ? (
           <CodeRenderer
             showCovered={covered}
             showUncovered={uncovered}
             coverage={coverageData}
             showPartial={partial}
-            code={data?.content}
+            code={content}
             fileName={path}
           />
         ) : (
