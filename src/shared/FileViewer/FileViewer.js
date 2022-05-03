@@ -66,6 +66,7 @@ function FileViewer({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* It's own UI component cause it's used in CD and standalone CD page */}
       <Title
         title={title}
         Flags={() => (
@@ -94,12 +95,14 @@ function FileViewer({
         />
       </Title>
 
+      {/* Lines 98-113 should be a standalone header */}
+      {/* It's own UI component cause it's used in CD and standalone CD page */}
       <div>
         <div
           className={`
             flex flex-row flex-wrap items-start justify-between gap-2 sm:items-center
             bg-ds-gray-primary
-            border-t p-3 border-r border-l border-solid border-ds-gray-tertiary 
+            border-t p-3 border-r border-l border-solid border-ds-gray-tertiary
           `}
         >
           <div className="flex-1">
