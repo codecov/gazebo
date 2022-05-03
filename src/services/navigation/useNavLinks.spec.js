@@ -646,7 +646,7 @@ describe('useStaticNavLinks', () => {
   describe.each`
     link                       | outcome
     ${links.root}              | ${`${config.MARKETING_BASE_URL}`}
-    ${links.terms}             | ${`${config.MARKETING_BASE_URL}/terms`}
+    ${links.terms}             | ${`${config.MARKETING_BASE_URL}/terms-and-conditions`}
     ${links.privacy}           | ${`${config.MARKETING_BASE_URL}/privacy`}
     ${links.security}          | ${`${config.MARKETING_BASE_URL}/security`}
     ${links.gdpr}              | ${`${config.MARKETING_BASE_URL}/gdpr`}
