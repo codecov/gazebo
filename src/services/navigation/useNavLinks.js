@@ -279,7 +279,7 @@ function useStaticNavLinks() {
     },
     terms: {
       text: 'Terms',
-      path: () => `${config.MARKETING_BASE_URL}/terms`,
+      path: () => `${config.MARKETING_BASE_URL}/terms-and-conditions`,
       isExternalLink: true,
       openNewTab: true,
     },
