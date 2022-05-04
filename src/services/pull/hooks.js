@@ -30,6 +30,53 @@ export function usePull({ provider, owner, repo, pullId }) {
                 }
                 changeWithParent
               }
+              pullComparison {
+                baseTotals {
+                  coverage
+                  fileCount
+                  lineCount
+                  hitsCount
+                  missesCount
+                  partialsCount
+                }
+                headTotals {
+                  coverage
+                  fileCount
+                  lineCount
+                  hitsCount
+                  missesCount
+                  partialsCount
+                }
+                files {
+                  baseName
+                  headName
+                  isNewFile
+                  baseTotals {
+                    coverage
+                    lineCount
+                    hitsCount
+                    missesCount
+                    partialsCount
+                  }
+                  headTotals {
+                    coverage
+                    lineCount
+                    hitsCount
+                    missesCount
+                    partialsCount
+                  }
+                  segments {
+                    header
+                    lines {
+                      baseNumber
+                      headNumber
+                      baseCoverage
+                      headCoverage
+                      content
+                    }
+                  }
+                }
+              }
               commits {
                 totalCount
                 pageInfo {
