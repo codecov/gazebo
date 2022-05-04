@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Icon from 'ui/Icon'
 
-export default function CIStatusLabel({ ciPassed }) {
+export default function CIStatusLabel({ ciPassed = false }) {
   return (
     <div className="flex items-center text-xs">
       <span
