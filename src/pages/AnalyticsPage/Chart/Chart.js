@@ -177,8 +177,8 @@ Chart.propTypes = {
   provider: PropTypes.string.isRequired,
   owner: PropTypes.string.isRequired,
   params: PropTypes.shape({
-    startDate: PropTypes.string,
-    endDate: PropTypes.string,
+    startDate: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+    endDate: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
     repositories: PropTypes.array,
   }),
 }

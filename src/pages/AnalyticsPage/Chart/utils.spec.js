@@ -17,7 +17,7 @@ describe('calculateDayDifference', () => {
       expect(calculateDayDifference({})).toBe(0)
     })
   })
-  describe('retirns the number of days difference given a range', () => {
+  describe('returns the number of days difference given a range', () => {
     it('no end date provided', () => {
       const start = '2019-12-31T14:36:28.511Z'
       const end = '2020-08-31'
