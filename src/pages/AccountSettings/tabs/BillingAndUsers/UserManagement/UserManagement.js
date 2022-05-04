@@ -86,7 +86,7 @@ function useUsersData({ provider, owner }) {
 function UserManagement({ provider, owner }) {
   // local state is pulled from url params.
   // Defaults are not shown in url.
-  const { params, updateParams, data, isSuccess, currentUser } = useUsersData({
+  const { params, updateParams, data, isSuccess } = useUsersData({
     provider,
     owner,
   })
