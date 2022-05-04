@@ -35,6 +35,8 @@ describe('ChartSelectors', () => {
 
   describe('when the owner exists', () => {
     beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2022-04-20'))
+
       setup({
         params: {
           search: 'Repo name 1',
@@ -70,14 +72,11 @@ describe('ChartSelectors', () => {
         },
       })
     })
+    afterAll(() => {
+      jest.useRealTimers()
+    })
 
     describe('changing the date updates the selected dates', () => {
-      beforeEach(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2022-03-15'))
-      })
-      afterAll(() => {
-        jest.useRealTimers()
-      })
       it('assert the start date can be set', async () => {
         expect(window.location.search).toBe('')
 
