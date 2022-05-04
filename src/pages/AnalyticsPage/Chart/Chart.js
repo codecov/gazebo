@@ -1,5 +1,4 @@
 import { format } from 'date-fns'
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useDebounce, useWindowSize } from 'react-use'
@@ -15,6 +14,7 @@ import {
 import { useOrgCoverage } from 'services/charts'
 
 import './chart.css'
+import { chartQuery } from './utils'
 
 const tailwindResponsive = {
   sm: 640,
@@ -22,23 +22,6 @@ const tailwindResponsive = {
   lg: 1024,
   xl: 1280,
   '2xl': 1536,
-}
-
-function chartQuery({ params }) {
-  const dayDifferenceThreshold = 180
-  const dayDifference = moment(params?.endDate).diff(
-    moment(params?.startDate),
-    'days',
-    false
-  )
-  const groupingUnit = dayDifference < dayDifferenceThreshold ? 'day' : 'week'
-  const startDate = params?.startDate ? params?.startDate : undefined
-  const endDate = params?.endDate ? params?.endDate : undefined
-
-  const repositories =
-    params?.repositories?.length > 0 ? params?.repositories : undefined
-
-  return { groupingUnit, startDate, endDate, repositories }
 }
 
 const defaultStyles = {
@@ -60,7 +43,7 @@ function Chart({ provider, owner, params }) {
   } = useOrgCoverage({
     provider,
     owner,
-    query: chartQuery({ params }),
+    query: chartQuery(params),
   })
   const [styles, setStyles] = useState(defaultStyles)
   const { width } = useWindowSize()
@@ -194,8 +177,8 @@ Chart.propTypes = {
   provider: PropTypes.string.isRequired,
   owner: PropTypes.string.isRequired,
   params: PropTypes.shape({
-    startDate: PropTypes.string,
-    endDate: PropTypes.string,
+    startDate: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+    endDate: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
     repositories: PropTypes.array,
   }),
 }
