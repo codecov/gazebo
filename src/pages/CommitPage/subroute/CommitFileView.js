@@ -7,14 +7,16 @@ import CodeRenderer from 'shared/FileViewer/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRendererProgressHeader'
 import FileviewerToggleHeader from 'ui/FileviewerToggleHeader'
 
-const ErrorDisplayMessage = (
-  <div className="border-solid border-ds-gray-tertiary border p-4">
-    <p>
-      There was a problem getting the source code from your provider. Unable to
-      show line by line coverage.
-    </p>
-  </div>
-)
+function ErrorDisplayMessage() {
+  return (
+    <div className="border-solid border-ds-gray-tertiary border p-4">
+      <p>
+        There was a problem getting the source code from your provider. Unable
+        to show line by line coverage.
+      </p>
+    </div>
+  )
+}
 
 function CommitFileView({ diff }) {
   const { path } = useParams()
