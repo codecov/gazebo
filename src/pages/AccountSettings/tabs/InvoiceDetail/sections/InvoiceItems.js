@@ -1,11 +1,20 @@
-import { format, fromUnixTime } from 'date-fns'
+import { fromUnixTime } from 'date-fns'
+import { format, utcToZonedTime } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 
 function formatPeriod(period) {
   if (period.start === period.end) return null
 
-  const start = format(fromUnixTime(period.start), 'MMMM do yyyy')
-  const end = format(fromUnixTime(period.end), 'MMMM do yyyy')
+  const start = format(
+    utcToZonedTime(fromUnixTime(period.start), 'UTC'),
+    'MMMM do yyyy',
+    { timeZone: 'UTC' }
+  )
+  const end = format(
+    utcToZonedTime(fromUnixTime(period.end), 'UTC'),
+    'MMMM do yyyy',
+    { timeZone: 'UTC' }
+  )
 
   return ` - Period from ${start} to ${end}`
 }

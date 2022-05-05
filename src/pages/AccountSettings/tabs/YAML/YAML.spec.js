@@ -175,7 +175,7 @@ describe('YAMLTab', () => {
     })
   })
 
-  describe('basic tests for non-admin users', () => {
+  xdescribe('basic tests for non-admin users', () => {
     beforeEach(() => {
       useIsCurrentUserAnAdmin.mockReturnValue(false)
 
