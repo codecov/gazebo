@@ -1,7 +1,6 @@
 import keyBy from 'lodash/keyBy'
 import mapValues from 'lodash/mapValues'
 import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
@@ -85,14 +84,20 @@ export function useCoverageWithFlags(
   )
 }
 
-export function useCommitBasedCoverageForFileviewer({ selectedFlags }) {
-  const { owner, repo, provider, commit, path } = useParams()
+export function useCommitBasedCoverageForFileviewer({
+  owner,
+  repo,
+  provider,
+  commit,
+  path,
+  selectedFlags,
+}) {
   const { data } = useFileWithMainCoverage({
     provider,
     owner,
     repo,
     ref: commit,
-    path: path,
+    path,
   })
 
   const coverageForAllFlags = selectedFlags.length === 0
@@ -103,7 +108,7 @@ export function useCommitBasedCoverageForFileviewer({ selectedFlags }) {
       owner,
       repo,
       ref: commit,
-      path: path[0],
+      path,
       flags: selectedFlags,
     },
     {

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileviewer } from 'services/file'
 
@@ -16,10 +16,6 @@ jest.mock(
 )
 jest.mock('shared/FileViewer/CodeRenderer', () => () => 'The Coderenderer')
 jest.mock('services/file/hooks')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
 
 const queryClient = new QueryClient()
 
@@ -32,13 +28,6 @@ describe('CommitFileView', () => {
   function setup(props) {
     const { content } = props
 
-    useParams.mockReturnValue({
-      owner: 'fjord',
-      provider: 'gh',
-      commit: '123sha',
-      repo: 'gazebo',
-      path: 'folder/subfolder/file.js',
-    })
     useCommitBasedCoverageForFileviewer.mockReturnValue({
       isLoading: false,
       totals: 53.43,

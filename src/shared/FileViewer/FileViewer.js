@@ -99,7 +99,7 @@ function FileViewer({
           className={`
             flex flex-row flex-wrap items-start justify-between gap-2 sm:items-center
             bg-ds-gray-primary
-            border-t p-3 border-r border-l border-solid border-ds-gray-tertiary 
+            border-t p-3 border-r border-l border-solid border-ds-gray-tertiary
           `}
         >
           <div className="flex-1">

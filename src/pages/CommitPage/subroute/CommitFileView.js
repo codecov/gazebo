@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileviewer } from 'services/file/hooks'
 import CodeRenderer from 'shared/FileViewer/CodeRenderer'
+import Breadcrumb from 'ui/Breadcrumb'
 import CodeRendererProgressHeader from 'ui/CodeRendererProgressHeader'
 import FileviewerToggleHeader from 'ui/FileviewerToggleHeader'
 
@@ -18,13 +19,42 @@ function ErrorDisplayMessage() {
   )
 }
 
-function CommitFileView({ diff }) {
-  const { path } = useParams()
+// This function solely done to eliminate max-statements complexity
+// TODO: probably move this to some sort of context
+function useCoverageAndFlagsStates() {
   const [selectedFlags, setSelectedFlags] = useState([])
-  // TODO: probably move this to some sort of context
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
+
+  return {
+    partial,
+    covered,
+    uncovered,
+    lineCoverageStatesAndSetters: {
+      covered,
+      setCovered,
+      uncovered,
+      setUncovered,
+      partial,
+      setPartial,
+    },
+    flagsState: { selectedFlags, setSelectedFlags },
+  }
+}
+
+function CommitFileView({ diff }) {
+  const { owner, repo, provider, commit, path } = useParams()
+  const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
+
+  // *********** This is temporary code that will be here in the meantime *********** //
+  const {
+    partial,
+    covered,
+    uncovered,
+    lineCoverageStatesAndSetters,
+    flagsState: { selectedFlags, setSelectedFlags },
+  } = useCoverageAndFlagsStates()
 
   const {
     isLoading: coverageIsLoading,
@@ -32,19 +62,15 @@ function CommitFileView({ diff }) {
     coverage: coverageData,
     flagNames,
     content,
-  } = useCommitBasedCoverageForFileviewer({ selectedFlags })
+  } = useCommitBasedCoverageForFileviewer({
+    owner,
+    repo,
+    provider,
+    commit,
+    path,
+    selectedFlags,
+  })
 
-  const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
-
-  // *********** This is temporary code that will be here in the meantime *********** //
-  const lineCoverageStatesAndSetters = {
-    covered,
-    setCovered,
-    uncovered,
-    setUncovered,
-    partial,
-    setPartial,
-  }
   const flagData = {
     flagNames,
     selectedFlags,
@@ -52,9 +78,23 @@ function CommitFileView({ diff }) {
   }
   // *********** This is temporary code that will be here in the meantime *********** //
 
+  const title = (
+    <Breadcrumb
+      paths={[
+        {
+          pageName: 'commit',
+          text: 'Impacted files',
+          options: { commit: commit },
+        },
+        { pageName: 'path', text: path.split('/').pop() },
+      ]}
+    />
+  )
+
   return (
     <div className="flex flex-col gap-4">
       <FileviewerToggleHeader
+        title={title}
         flagData={flagData}
         coverageIsLoading={coverageIsLoading}
         lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
