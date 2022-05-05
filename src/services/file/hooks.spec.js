@@ -5,7 +5,11 @@ import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCoverageWithFlags, useFileWithMainCoverage } from './hooks'
+import {
+  useCommitBasedCoverageForFileviewer,
+  useCoverageWithFlags,
+  useFileWithMainCoverage,
+} from './hooks'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -245,6 +249,57 @@ describe('useCoverageWithFlags', () => {
           .mapValues('coverage')
           .value(),
       })
+    })
+  })
+})
+
+xdescribe('useCommitBasedCoverageForFileviewer', () => {
+  let hookData
+
+  function setup(returnedData, selectedFlags) {
+    server.use(
+      graphql.query('CommitBasedCoverageForFileviewer', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(returnedData))
+      })
+    )
+    hookData = renderHook(
+      () => useCommitBasedCoverageForFileviewer({ selectedFlags }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('when with commit without flags', () => {
+    const selectedFlags = []
+    const returnedData = {
+      isLoading: false,
+      totals: 23.45,
+      coverage: {
+        1: 'H',
+        2: 'H',
+        5: 'H',
+        6: 'H',
+        9: 'H',
+        10: 'H',
+        13: 'M',
+        14: 'P',
+        15: 'M',
+        16: 'M',
+        17: 'M',
+        21: 'H',
+      },
+      flagNames: ['flagOne', 'flagTwo'],
+      content:
+        'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};',
+    }
+    beforeEach(() => {
+      setup(returnedData, selectedFlags)
+      return hookData.waitFor(() => hookData.result.current.isSuccess)
+    })
+
+    it('returns commit file coverage', () => {
+      console.log('here')
     })
   })
 })

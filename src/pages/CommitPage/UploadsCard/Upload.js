@@ -2,17 +2,16 @@ import PropTypes from 'prop-types'
 
 import config from 'config'
 
-import { ErrorCodeEnum, UploadTypes } from 'shared/utils/commit'
+import {
+  ErrorCodeEnum,
+  UploadStateEnum,
+  UploadTypeEnum,
+} from 'shared/utils/commit'
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-function humanReadableError(errorCode) {
-  if (errorCode === ErrorCodeEnum.fileNotFoundInStorage)
-    return 'processing failed'
-  if (errorCode === ErrorCodeEnum.reportExpired) return 'upload expired'
-  if (errorCode === ErrorCodeEnum.reportEmpty) return 'upload is empty'
-}
+import RenderError from './RenderError'
 
 const Upload = ({
   ciUrl,
@@ -22,8 +21,9 @@ const Upload = ({
   downloadUrl,
   errors = [],
   uploadType,
+  state,
 }) => {
-  const isCarriedForward = uploadType === UploadTypes.CARRIED_FORWARD
+  const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
 
   return (
     <div className="py-2 px-4 flex flex-col gap-1">
@@ -36,15 +36,7 @@ const Upload = ({
           ) : (
             buildCode
           )}
-          {errors.map(({ errorCode, i }) => (
-            <span
-              key={`errorCode-${errorCode}-${i}`}
-              className="flex gap-1 items-center text-ds-primary-red"
-            >
-              <Icon size="sm" name="exclamation" variant="solid" />
-              {humanReadableError(errorCode)}
-            </span>
-          ))}
+          <RenderError errors={errors} state={state} />
         </div>
         {createdAt && (
           <span className="text-xs text-ds-gray-quinary">
@@ -80,6 +72,12 @@ const Upload = ({
 }
 
 Upload.propTypes = {
+  state: PropTypes.oneOf([
+    UploadStateEnum.error,
+    UploadStateEnum.uploaded,
+    UploadStateEnum.processed,
+    UploadStateEnum.complete,
+  ]),
   ciUrl: PropTypes.string,
   createdAt: PropTypes.string,
   downloadUrl: PropTypes.string,

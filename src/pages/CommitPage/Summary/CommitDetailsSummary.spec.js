@@ -123,7 +123,7 @@ describe('CommitDetailsSummary', () => {
 
   describe('when rendered with state error', () => {
     beforeEach(() => {
-      setup({ commitData: { ...commitData, state: 'error' } })
+      setup({ commitData: { ...commitData, state: 'ERROR' } })
     })
 
     it('renders error message', () => {

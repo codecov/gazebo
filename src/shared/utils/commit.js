@@ -2,6 +2,7 @@ export const UploadStateEnum = Object.freeze({
   error: 'ERROR',
   uploaded: 'UPLOADED',
   processed: 'PROCESSED',
+  complete: 'COMPLETE',
 })
 
 export const ErrorCodeEnum = Object.freeze({
@@ -10,7 +11,7 @@ export const ErrorCodeEnum = Object.freeze({
   reportEmpty: 'REPORT_EMPTY',
 })
 
-export const UploadTypes = Object.freeze({
+export const UploadTypeEnum = Object.freeze({
   UPLOADED: 'UPLOADED',
   CARRIED_FORWARD: 'CARRIEDFORWARD',
 })

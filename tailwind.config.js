@@ -112,7 +112,7 @@ module.exports = {
   variants: {
     extend: {
       textColor: ['disabled'],
-      margin: ['responsive', 'last'],
+      margin: ['responsive', 'first', 'last'],
       opacity: ['disabled', 'hover'],
       cursor: ['disabled'],
       transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
@@ -120,7 +120,7 @@ module.exports = {
       borderStyle: ['first'],
       borderColor: ['first', 'disabled'],
       borderWidth: ['first'],
-      padding: ['responsive', 'last'],
+      padding: ['responsive', 'first', 'last'],
       backgroundColor: ['disabled'],
     },
   },

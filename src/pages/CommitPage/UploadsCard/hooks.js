@@ -37,12 +37,12 @@ export function useUploads() {
 
   useEffect(() => {
     const countedStates = countBy(uploads, (upload) => upload.state)
-    const string = Object.entries(countedStates)
+    const errorCount = Object.entries(countedStates)
       .map(
         ([state, count]) => `${count} ${humanReadableOverview(state, count)}`
       )
       .join(', ')
-    setUploadsOverview(string)
+    setUploadsOverview(errorCount)
   }, [uploads, uploadsProviderList])
 
   return {

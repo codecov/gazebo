@@ -710,7 +710,7 @@ describe('UserManagerment', () => {
     })
   })
 
-  describe('Non-admin users', () => {
+  xdescribe('Non-admin users', () => {
     let mutateMock = jest.fn()
     beforeEach(() => {
       const mockUseUpdateUserValue = {
@@ -751,7 +751,7 @@ describe('UserManagerment', () => {
     })
   })
 
-  describe('Non-admin users deactivating random users', () => {
+  xdescribe('Non-admin users deactivating random users', () => {
     let mutateMock = jest.fn()
     beforeEach(() => {
       const mockUseUpdateUserValue = {
@@ -783,7 +783,7 @@ describe('UserManagerment', () => {
     })
   })
 
-  describe('Non-admin users activating random users', () => {
+  xdescribe('Non-admin users activating random users', () => {
     let mutateMock = jest.fn()
     beforeEach(() => {
       const mockUseUpdateUserValue = {

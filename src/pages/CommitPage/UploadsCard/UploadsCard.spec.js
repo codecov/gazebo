@@ -19,7 +19,7 @@ describe('UploadsCard', () => {
         sortedUploads: {
           travis: [
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -32,7 +32,7 @@ describe('UploadsCard', () => {
               buildCode: '721065746',
             },
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:25.820340+00:00',
               updatedAt: '2020-08-25T16:36:25.859889+00:00',
@@ -47,7 +47,7 @@ describe('UploadsCard', () => {
           ],
           circleci: [
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'circleci',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -59,10 +59,23 @@ describe('UploadsCard', () => {
               jobCode: '111111',
               buildCode: '111111',
             },
+            {
+              state: 'COMPLETE',
+              provider: 'circleci',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: [],
+              downloadUrl:
+                '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+              ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/111111',
+              uploadType: 'CARRIEDFORWARD',
+              jobCode: '837462',
+              buildCode: '837462',
+            },
           ],
           null: [
             {
-              state: 'processed',
+              state: 'PROCESSED',
               provider: 'null',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -92,6 +105,7 @@ describe('UploadsCard', () => {
       expect(screen.getByText(/721065763/)).toBeInTheDocument()
       expect(screen.getByText(/721065746/)).toBeInTheDocument()
       expect(screen.getByText(/33333/)).toBeInTheDocument()
+      expect(screen.getByText(/837462/)).toBeInTheDocument()
     })
     it('renders flags', () => {
       expect(screen.getByText(/flagone/)).toBeInTheDocument()

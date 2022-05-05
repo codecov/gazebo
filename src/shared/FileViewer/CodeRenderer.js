@@ -16,6 +16,8 @@ function CodeRenderer({
   showPartial = false,
   fileName,
 }) {
+  const showLines = { showCovered, showUncovered, showPartial }
+
   return (
     <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border font-mono">
       <colgroup>
@@ -36,9 +38,7 @@ function CodeRenderer({
                 line={line}
                 number={i + 1}
                 coverage={coverage && coverage[i + 1]}
-                showCovered={showCovered}
-                showPartial={showPartial}
-                showUncovered={showUncovered}
+                showLines={showLines}
                 getLineProps={getLineProps}
                 getTokenProps={getTokenProps}
               />

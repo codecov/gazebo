@@ -22,7 +22,7 @@ export function getCommitDataForSummary({
     changeCoverage: headCoverage - parentCoverage,
     headCommitId: commitid,
     parentCommitId: parent?.commitid,
-    state: state,
+    state,
   }
 }
 

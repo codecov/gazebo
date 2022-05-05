@@ -16,6 +16,8 @@ describe('Analytics coverage chart', () => {
 
   describe('No coverage data exists', () => {
     beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
+
       setup({
         provider: 'gh',
         owner: 'codecov',
@@ -27,6 +29,9 @@ describe('Analytics coverage chart', () => {
         chart: [],
       })
     })
+    afterAll(() => {
+      jest.useRealTimers()
+    })
 
     it('renders no chart', () => {
       expect(screen.queryAllByRole('presentation').length).toBe(0)
@@ -35,6 +40,8 @@ describe('Analytics coverage chart', () => {
 
   describe('Chart with data', () => {
     beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
+
       setup({
         provider: 'gh',
         owner: 'codecov',
@@ -48,6 +55,9 @@ describe('Analytics coverage chart', () => {
           { date: '2020-01-17T20:18:39.413Z', coverage: 50 },
         ],
       })
+    })
+    afterAll(() => {
+      jest.useRealTimers()
     })
 
     it('renders victory', () => {

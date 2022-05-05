@@ -65,16 +65,49 @@ describe('A', () => {
   })
 
   describe('when a link is external render icon', () => {
-    beforeEach(() => {
+    it('renders a A', () => {
       setup({
         children: 'hola',
         href: '/banana',
         hook: 'banana',
       })
+      expect(screen.getByRole('link')).toHaveAttribute('href', '/banana')
     })
 
-    it('renders a A', () => {
-      expect(screen.getByRole('link')).toHaveAttribute('href', '/banana')
+    it('adjusts the links owner if it includes gitlab and the owner has a subgroup', () => {
+      setup({
+        children: 'gitlab bad child',
+        href: 'https://gitlab.com/array.com-internal:engineering/monorepo/builds/2329258074',
+        hook: 'gitlab-woa',
+      })
+      expect(screen.getByRole('link')).toHaveAttribute(
+        'href',
+        'https://gitlab.com/array.com-internal/engineering/monorepo/builds/2329258074'
+      )
+    })
+
+    it('adjusts the links owner if it includes gitlab and the owner has many subgroups', () => {
+      setup({
+        children: 'gitlab bad child',
+        href: 'https://gitlab.com/array.com-internal:engineering:another/monorepo/builds/2329258074',
+        hook: 'gitlab-woa',
+      })
+      expect(screen.getByRole('link')).toHaveAttribute(
+        'href',
+        'https://gitlab.com/array.com-internal/engineering/another/monorepo/builds/2329258074'
+      )
+    })
+
+    it('doesnt adjust the link if the link has colons outside the owner', () => {
+      setup({
+        children: 'gitlab bad child',
+        href: 'https://gitlab.com/array.com-internal/monorepo:something/builds/2329258074',
+        hook: 'gitlab-woa',
+      })
+      expect(screen.getByRole('link')).toHaveAttribute(
+        'href',
+        'https://gitlab.com/array.com-internal/monorepo:something/builds/2329258074'
+      )
     })
   })
 })
