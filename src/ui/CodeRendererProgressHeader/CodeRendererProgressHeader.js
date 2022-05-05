@@ -11,6 +11,7 @@ function CodeRendererProgressHeader({ treePaths, fileCoverage, change }) {
    * @param {Float} fileCoverage total coverage of current file
    * @param {Float} change difference between head and base coverage. Only used in commmit based file viewer
    */
+
   return (
     <div
       className={`
