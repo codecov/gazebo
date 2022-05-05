@@ -1,5 +1,4 @@
 import { format, formatDistanceToNow, fromUnixTime, parseISO } from 'date-fns'
-import { utcToZonedTime } from 'date-fns-tz'
 import { useMemo } from 'react'
 
 export function useDateFormatted(date, formatDescription = 'MMMM do yyyy') {
@@ -14,8 +13,7 @@ export function formatTimeToNow(date) {
   if (!date) return null
 
   const parser = typeof date === 'number' ? fromUnixTime : parseISO
-
-  return formatDistanceToNow(utcToZonedTime(parser(date), 'UTC'), {
+  return formatDistanceToNow(parser(date), {
     addSuffix: true,
   })
 }
