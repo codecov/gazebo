@@ -10,22 +10,14 @@ export function useDateFormatted(date, formatDescription = 'MMMM do yyyy') {
   }, [date, formatDescription])
 }
 
-const getUTCDate = (date) => {
-  const dt = new Date(date)
-  const utcDate = Date.UTC(
-    dt.getUTCFullYear(),
-    dt.getUTCMonth(),
-    dt.getUTCDate(),
-    dt.getUTCHours(),
-    dt.getUTCMinutes(),
-    dt.getUTCSeconds()
-  )
-  return new Date(utcDate)
-}
-
 export function formatTimeToNow(date) {
-  if (!date) return
-  return formatDistanceToNow(getUTCDate(date), {
+  if (!date) return null
+  const parsedDate =
+    typeof date === 'number'
+      ? fromUnixTime(date)
+      : parseISO(new Date(date).toISOString())
+
+  return formatDistanceToNow(parsedDate, {
     addSuffix: true,
   })
 }
