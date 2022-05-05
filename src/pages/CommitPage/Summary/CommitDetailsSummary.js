@@ -45,7 +45,7 @@ const getSourceSummaryCards = ({ headCommitId, parentCommitId, state }) =>
               <A to={{ pageName: 'commit', options: { commit: headCommitId } }}>
                 {headCommitId?.slice(0, 7)}
               </A>{' '}
-              compared to <span className="uppercase font-medium">base</span>{' '}
+              compared to <span className="uppercase font-medium">parent</span>{' '}
               <A
                 to={{ pageName: 'commit', options: { commit: parentCommitId } }}
               >
