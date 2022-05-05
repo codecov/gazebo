@@ -12,7 +12,7 @@ const TruncateEnum = Object.freeze({
 
 function TruncatedMessage({ message }) {
   const [truncateLabel, setTruncateLabel] = useState(TruncateEnum.EXPAND)
-  const [isTruncatable, setTruncatable] = useState()
+  const [isTruncatable, setIsTruncatable] = useState(false)
   const msgRef = useRef(null)
 
   useEffect(() => {
@@ -22,9 +22,9 @@ function TruncatedMessage({ message }) {
       element.offsetHeight < element.scrollHeight ||
       element.offsetWidth < element.scrollWidth
     ) {
-      setTruncatable(true)
+      setIsTruncatable(true)
     } else {
-      setTruncatable(false)
+      setIsTruncatable(false)
     }
   }, [])
 
@@ -35,8 +35,7 @@ function TruncatedMessage({ message }) {
         className={cs(
           'text-lg font-semibold break-all whitespace-div-wrap inline font-sans',
           {
-            'line-clamp-1':
-              truncateLabel === TruncateEnum.EXPAND && truncateLabel,
+            'line-clamp-1': truncateLabel === TruncateEnum.EXPAND,
           }
         )}
       >
