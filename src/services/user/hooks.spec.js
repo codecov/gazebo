@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
+  useIsCurrentUserAnAdmin,
   useMyContexts,
   useOnboardUser,
   useOwner,
@@ -302,6 +303,7 @@ describe('useOwner', () => {
       username: 'codecov',
       avatarUrl: '',
       isCurrentUserPartOfOrg: true,
+      isAdmin: false,
     }
 
     beforeEach(() => {
@@ -311,6 +313,76 @@ describe('useOwner', () => {
 
     it('returns the org', () => {
       expect(hookData.result.current.data).toEqual(codecovOrg)
+    })
+  })
+
+  describe('when calling useIsCurrentUserAnAdmin for admins', () => {
+    const codecovOrg = {
+      username: 'codecov',
+      avatarUrl: '',
+      isCurrentUserPartOfOrg: true,
+      isAdmin: true,
+    }
+    beforeEach(async () => {
+      setup(codecovOrg)
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
+      hookData = renderHook(
+        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
+        { wrapper }
+      )
+      return act(() =>
+        hookData.waitFor(() => hookData.result.current.isSuccess)
+      )
+    })
+
+    it('returns true value', () => {
+      expect(hookData.result.current).toEqual(true)
+    })
+  })
+
+  describe('when calling useIsCurrentUserAnAdmin for non-admins', () => {
+    const codecovOrg = {
+      username: 'codecov',
+      avatarUrl: '',
+      isCurrentUserPartOfOrg: true,
+      isAdmin: false,
+    }
+    beforeEach(async () => {
+      setup(codecovOrg)
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
+      hookData = renderHook(
+        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
+        { wrapper }
+      )
+      return act(() =>
+        hookData.waitFor(() => hookData.result.current.isSuccess)
+      )
+    })
+
+    it('returns false value', () => {
+      expect(hookData.result.current).toEqual(false)
+    })
+  })
+
+  describe('when calling useIsCurrentUserAnAdmin for undefined owners', () => {
+    beforeEach(async () => {
+      setup()
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
+      hookData = renderHook(
+        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
+        { wrapper }
+      )
+
+      return act(() =>
+        hookData.waitFor(() => hookData.result.current.isSuccesss)
+      )
+    })
+
+    it('returns false', () => {
+      expect(hookData.result.current).toEqual(false)
     })
   })
 })

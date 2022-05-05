@@ -26,6 +26,7 @@ YamlEditor.displayName = 'YamlEditor'
 
 YamlEditor.propTypes = {
   value: PropTypes.string,
+  readOnly: PropTypes.bool.isRequired,
 }
 
 export default YamlEditor
