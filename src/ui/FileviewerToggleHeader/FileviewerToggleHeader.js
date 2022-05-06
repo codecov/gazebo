@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { LINE_STATE } from 'shared/FileViewer/lineStates'
 import Title, { TitleCoverage, TitleFlags } from 'shared/FileViewer/Title'
 
-function FileviewerToggleHeader({
+function FileViewerToggleHeader({
   title,
   flagData,
   coverageIsLoading,
@@ -51,11 +51,11 @@ function FileviewerToggleHeader({
   )
 }
 
-FileviewerToggleHeader.propTypes = {
+FileViewerToggleHeader.propTypes = {
   flagData: PropTypes.object,
   coverageIsLoading: PropTypes.bool.isRequired,
   lineCoverageStatesAndSetters: PropTypes.object,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 }
 
-export default FileviewerToggleHeader
+export default FileViewerToggleHeader
