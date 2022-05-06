@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
-import { LINE_STATE } from 'shared/FileViewer/lineStates'
-import Title, { TitleCoverage, TitleFlags } from 'shared/FileViewer/Title'
+import { LINE_STATE } from './Title/lineStates'
+import Title, { TitleCoverage, TitleFlags } from './Title/Title'
 
 function ToggleHeader({
   title,

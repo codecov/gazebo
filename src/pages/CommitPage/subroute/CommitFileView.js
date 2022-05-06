@@ -3,8 +3,8 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
-import CodeRenderer from 'shared/FileViewer/CodeRenderer'
 import Breadcrumb from 'ui/Breadcrumb'
+import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRendererProgressHeader'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 

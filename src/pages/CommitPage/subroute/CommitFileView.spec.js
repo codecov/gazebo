@@ -14,7 +14,7 @@ jest.mock(
   'ui/CodeRendererProgressHeader/CodeRendererProgressHeader',
   () => () => 'The Progress Header for Coderenderer'
 )
-jest.mock('shared/FileViewer/CodeRenderer', () => () => 'The Coderenderer')
+jest.mock('ui/CodeRenderer', () => () => 'The Coderenderer')
 jest.mock('services/file/hooks')
 
 const queryClient = new QueryClient()

@@ -15,7 +15,7 @@ jest.mock(
   'ui/CodeRendererProgressHeader/CodeRendererProgressHeader',
   () => () => 'The Progress Header for Coderenderer'
 )
-jest.mock('shared/FileViewer/CodeRenderer', () => () => 'The Coderenderer')
+jest.mock('ui/CodeRenderer', () => () => 'The Coderenderer')
 jest.mock('services/file/hooks')
 jest.mock('services/user')
 
