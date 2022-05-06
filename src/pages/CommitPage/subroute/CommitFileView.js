@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useCommitBasedCoverageForFileviewer } from 'services/file/hooks'
+import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
 import CodeRenderer from 'shared/FileViewer/CodeRenderer'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRendererProgressHeader from 'ui/CodeRendererProgressHeader'
@@ -62,7 +62,7 @@ function CommitFileView({ diff }) {
     coverage: coverageData,
     flagNames,
     content,
-  } = useCommitBasedCoverageForFileviewer({
+  } = useCommitBasedCoverageForFileViewer({
     owner,
     repo,
     provider,

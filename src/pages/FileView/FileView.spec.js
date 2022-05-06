@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommitBasedCoverageForFileviewer } from 'services/file'
+import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
 
 import FileView from './FileView'
@@ -27,7 +27,7 @@ describe('FileView', () => {
       data: owner,
     })
 
-    useCommitBasedCoverageForFileviewer.mockReturnValue({
+    useCommitBasedCoverageForFileViewer.mockReturnValue({
       isLoading: false,
       totals: 53.43,
       coverage: {

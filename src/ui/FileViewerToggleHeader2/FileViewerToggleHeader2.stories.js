@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FileviewerToggleHeader from './FileviewerToggleHeader'
+import FileViewerToggleHeader from './FileViewerToggleHeader2'
 
 const Template = (args) => {
   const [covered, setCovered] = useState(true)
@@ -31,7 +31,7 @@ const Template = (args) => {
       initialEntries={['/gh/codecov/gazebo/commit/123sha/flag1/mafs.js']}
     >
       <Route path="/:provider/:owner/:repo/commit/:commit/:path">
-        <FileviewerToggleHeader
+        <FileViewerToggleHeader
           flagData={flagData}
           lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
           {...args}
@@ -41,17 +41,17 @@ const Template = (args) => {
   )
 }
 
-export const SimpleFileviewerToggleHeader = Template.bind({})
-SimpleFileviewerToggleHeader.args = {
+export const SimpleFileViewerToggleHeader = Template.bind({})
+SimpleFileViewerToggleHeader.args = {
   coverageIsLoading: false,
 }
 
-export const LoadingFileviewerToggleHeader = Template.bind({})
-LoadingFileviewerToggleHeader.args = {
+export const LoadingFileViewerToggleHeader = Template.bind({})
+LoadingFileViewerToggleHeader.args = {
   coverageIsLoading: true,
 }
 
 export default {
-  title: 'Components/FileviewerToggleHeader',
-  component: FileviewerToggleHeader,
+  title: 'Components/FileViewerToggleHeader',
+  component: FileViewerToggleHeader,
 }

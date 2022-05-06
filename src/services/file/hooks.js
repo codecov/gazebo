@@ -84,7 +84,7 @@ export function useCoverageWithFlags(
   )
 }
 
-export function useCommitBasedCoverageForFileviewer({
+export function useCommitBasedCoverageForFileViewer({
   owner,
   repo,
   provider,

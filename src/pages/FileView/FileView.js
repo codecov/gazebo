@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useCommitBasedCoverageForFileviewer } from 'services/file/hooks'
+import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
 import { useOwner } from 'services/user'
 import CodeRenderer from 'shared/FileViewer/CodeRenderer'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -71,7 +71,7 @@ function FileView() {
     totals: fileCoverage,
     coverage: coverageData,
     isLoading: coverageIsLoading,
-  } = useCommitBasedCoverageForFileviewer({
+  } = useCommitBasedCoverageForFileViewer({
     owner,
     repo,
     provider,

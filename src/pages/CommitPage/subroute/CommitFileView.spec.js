@@ -2,13 +2,13 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommitBasedCoverageForFileviewer } from 'services/file'
+import { useCommitBasedCoverageForFileViewer } from 'services/file'
 
 import CommitFileView from './CommitFileView'
 
 jest.mock(
-  'ui/FileviewerToggleHeader/FileviewerToggleHeader',
-  () => () => 'The Fileviewer Toggle Header'
+  'ui/FileViewerToggleHeader/FileViewerToggleHeader',
+  () => () => 'The FileViewer Toggle Header'
 )
 jest.mock(
   'ui/CodeRendererProgressHeader/CodeRendererProgressHeader',
@@ -28,7 +28,7 @@ describe('CommitFileView', () => {
   function setup(props) {
     const { content } = props
 
-    useCommitBasedCoverageForFileviewer.mockReturnValue({
+    useCommitBasedCoverageForFileViewer.mockReturnValue({
       isLoading: false,
       totals: 53.43,
       coverage: {
@@ -72,9 +72,9 @@ describe('CommitFileView', () => {
       })
     })
 
-    it('renders the Fileviewer Header, Coderenderer Header, and Coderenderer', () => {
+    it('renders the FileViewer Header, Coderenderer Header, and Coderenderer', () => {
       expect(
-        screen.getByText(/The Fileviewer Toggle Header/)
+        screen.getByText(/The FileViewer Toggle Header/)
       ).toBeInTheDocument()
       expect(
         screen.getByText(/The Progress Header for Coderenderer/)
@@ -93,9 +93,9 @@ describe('CommitFileView', () => {
       setup({ content: null })
     })
 
-    it('renders the Fileviewer Header, Coderenderer Header, and error message', () => {
+    it('renders the FileViewer Header, Coderenderer Header, and error message', () => {
       expect(
-        screen.getByText(/The Fileviewer Toggle Header/)
+        screen.getByText(/The FileViewer Toggle Header/)
       ).toBeInTheDocument()
       expect(
         screen.getByText(/The Progress Header for Coderenderer/)
