@@ -8,7 +8,7 @@ import { useOwner } from 'services/user'
 import FileView from './FileView'
 
 jest.mock(
-  'ui/FileviewerToggleHeader/FileviewerToggleHeader',
+  'ui/FileViewer/ToggleHeader/ToggleHeader',
   () => () => 'The Fileviewer Toggle Header'
 )
 jest.mock(

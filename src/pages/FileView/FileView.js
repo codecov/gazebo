@@ -9,7 +9,7 @@ import { useOwner } from 'services/user'
 import CodeRenderer from 'shared/FileViewer/CodeRenderer'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRendererProgressHeader from 'ui/CodeRendererProgressHeader'
-// import FileviewerToggleHeader from 'ui/FileviewerToggleHeader'
+import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 function ErrorDisplayMessage() {
   return (
@@ -109,12 +109,12 @@ function FileView() {
         />
       </div>
       <div className="border-t border-solid border-ds-gray-tertiary pt-6">
-        {/* <FileviewerToggleHeader
+        <ToggleHeader
           title={'File Viewer'}
           flagData={flagData}
           coverageIsLoading={coverageIsLoading}
           lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
-        /> */}
+        />
         <CodeRendererProgressHeader
           treePaths={treePaths} // This is only populated in standalone fileviewer
           fileCoverage={fileCoverage}

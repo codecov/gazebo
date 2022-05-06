@@ -7,7 +7,7 @@ import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import CommitFileView from './CommitFileView'
 
 jest.mock(
-  'ui/FileViewerToggleHeader/FileViewerToggleHeader',
+  'ui/FileViewer/ToggleHeader/ToggleHeader',
   () => () => 'The FileViewer Toggle Header'
 )
 jest.mock(

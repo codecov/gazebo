@@ -6,7 +6,7 @@ import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
 import CodeRenderer from 'shared/FileViewer/CodeRenderer'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRendererProgressHeader from 'ui/CodeRendererProgressHeader'
-// import FileviewerToggleHeader from 'ui/FileviewerToggleHeader'
+import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 function ErrorDisplayMessage() {
   return (
@@ -93,12 +93,12 @@ function CommitFileView({ diff }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* <FileviewerToggleHeader
+      <ToggleHeader
         title={title}
         flagData={flagData}
         coverageIsLoading={coverageIsLoading}
         lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
-      /> */}
+      />
       <div>
         <CodeRendererProgressHeader
           treePaths={[]} // This is only populated in standalone fileviewer

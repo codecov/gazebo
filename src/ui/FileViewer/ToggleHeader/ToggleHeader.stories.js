@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import ToggleHeader from './FileViewerToggleHeader2'
+import ToggleHeader from './ToggleHeader'
 
 const Template = (args) => {
   const [covered, setCovered] = useState(true)
