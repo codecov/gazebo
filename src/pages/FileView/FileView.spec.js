@@ -12,7 +12,7 @@ jest.mock(
   () => () => 'The Fileviewer Toggle Header'
 )
 jest.mock(
-  'ui/CodeRendererProgressHeader/CodeRendererProgressHeader',
+  'ui/CodeRenderer/CodeRendererProgressHeader',
   () => () => 'The Progress Header for Coderenderer'
 )
 jest.mock('ui/CodeRenderer', () => () => 'The Coderenderer')

@@ -36,7 +36,7 @@ function getLineState({ coverage, showLines }) {
     : LINE_STATE.BLANK
 }
 
-function Line({
+function SingleLine({
   line,
   number,
   coverage,
@@ -44,6 +44,7 @@ function Line({
   getLineProps,
   getTokenProps,
 }) {
+  console.log(number, coverage, showLines, getLineProps, getTokenProps)
   const lineState = getLineState({ coverage, showLines })
 
   return (
@@ -66,7 +67,7 @@ function Line({
   )
 }
 
-Line.propTypes = {
+SingleLine.propTypes = {
   line: PropTypes.array.isRequired,
   coverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
   showLines: PropTypes.shape({
@@ -79,4 +80,4 @@ Line.propTypes = {
   getTokenProps: PropTypes.func,
 }
 
-export default Line
+export default SingleLine
