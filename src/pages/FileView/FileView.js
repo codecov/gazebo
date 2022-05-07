@@ -8,7 +8,7 @@ import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
 import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
-import ProgressHeader from 'ui/CodeRenderer/ProgressHeader'
+import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 function ErrorDisplayMessage() {
@@ -115,7 +115,7 @@ function FileView() {
           coverageIsLoading={coverageIsLoading}
           lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
         />
-        <ProgressHeader
+        <CodeRendererProgressHeader
           treePaths={treePaths} // This is only populated in standalone fileviewer
           fileCoverage={fileCoverage}
         />

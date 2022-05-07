@@ -4,7 +4,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Progress from 'ui/Progress'
 import TotalsNumber from 'ui/TotalsNumber'
 
-function ProgressHeader({ treePaths, fileCoverage, change }) {
+function CodeRendererProgressHeader({ treePaths, fileCoverage, change }) {
   /**
    * Header component that shows progress bar for the Code Renderer component.
    * @param {[String]} treePaths path of file from root directory. Only used in standalone file viewer
@@ -31,10 +31,10 @@ function ProgressHeader({ treePaths, fileCoverage, change }) {
   )
 }
 
-ProgressHeader.propTypes = {
+CodeRendererProgressHeader.propTypes = {
   change: PropTypes.number,
   treePaths: PropTypes.array,
   fileCoverage: PropTypes.number,
 }
 
-export default ProgressHeader
+export default CodeRendererProgressHeader
