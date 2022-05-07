@@ -1,9 +1,9 @@
-import CodeRendererProgressHeader from './CodeRendererProgressHeader'
+import ProgressHeader from './ProgressHeader'
 
-const Template = (args) => <CodeRendererProgressHeader {...args} />
+const Template = (args) => <ProgressHeader {...args} />
 
-export const SimpleCodeRendererProgressHeader = Template.bind({})
-SimpleCodeRendererProgressHeader.args = {
+export const SimpleProgressHeader = Template.bind({})
+SimpleProgressHeader.args = {
   treePaths: [],
   fileCoverage: 39.28,
   change: 34.21,
@@ -23,6 +23,6 @@ ProgressHeaderWithoutChange.args = {
 }
 
 export default {
-  title: 'Components/CodeRendererProgressHeader',
-  component: CodeRendererProgressHeader,
+  title: 'Components/ProgressHeader',
+  component: ProgressHeader,
 }

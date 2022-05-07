@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 
-import CodeRendererProgressHeader from './CodeRendererProgressHeader'
+import ProgressHeader from './ProgressHeader'
 
-describe('CodeRendererProgressHeader', () => {
+describe('ProgressHeader', () => {
   function setup(props) {
-    render(<CodeRendererProgressHeader {...props} />)
+    render(<ProgressHeader {...props} />)
   }
 
   describe('when rendered with without treepaths', () => {

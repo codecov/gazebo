@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
-import CodeRendererProgressHeader from 'ui/CodeRendererProgressHeader'
+import ProgressHeader from 'ui/CodeRenderer/ProgressHeader'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 function ErrorDisplayMessage() {
@@ -100,7 +100,7 @@ function CommitFileView({ diff }) {
         lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
       />
       <div>
-        <CodeRendererProgressHeader
+        <ProgressHeader
           treePaths={[]} // This is only populated in standalone fileviewer
           fileCoverage={fileCoverage}
           change={change}
