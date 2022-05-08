@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { TitleFlags } from './Title'
+import Title, { TitleFlags } from './Title'
 
 const onChange = jest.fn(() => {})
 
@@ -50,6 +50,32 @@ describe('TitleFlags', () => {
 
     it('uncovered', () => {
       expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+    })
+  })
+})
+
+describe('Title', () => {
+  function setup(props) {
+    jest.mock('ui/FileViewer/ToggleHeader/Title', () => ({
+      ...jest.requireActual('ui/FileViewer/ToggleHeader/Title'), // import and retain the original functionalities
+      TitleFlags: jest.fn(() => () => 'Sample Title Flags'),
+    }))
+    render(<Title {...props} />)
+  }
+
+  describe('when rendered', () => {
+    beforeEach(() => {
+      setup({
+        title: 'sample title',
+        Flags: () => {
+          ;<div>This is representing the flags</div>
+        },
+      })
+    })
+
+    it('shows the title', () => {
+      expect(screen.getByText('sample title')).toBeInTheDocument()
+      expect(screen.getByText('View coverage by:')).toBeInTheDocument()
     })
   })
 })
