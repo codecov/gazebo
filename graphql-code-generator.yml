@@ -1,0 +1,19 @@
+hooks:
+  afterAllFileWrite:
+    - prettier --write
+overwrite: true
+watch: true
+watchConfig:
+  usePolling: true
+  interval: 1000
+schema: ${SCHEMA_PATH:http://localhost:8000/graphql/gh}
+documents: 'src/**/*.graphql'
+generates:
+  ./src/generated.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-query'
+    config:
+      fetcher:
+        endpoint: 'http://localhost:8000/graphql/gh'

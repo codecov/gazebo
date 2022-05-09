@@ -2,6 +2,14 @@ import { useQuery } from 'react-query'
 
 import Api from 'shared/api'
 
+import { usePullQuery } from '../../generated'
+
+export function usePull2({ provider, owner, repo, pullId }) {
+  const variables = { provider, owner, repo, pullId: parseInt(pullId, 10) }
+
+  return usePullQuery(variables)
+}
+
 export function usePull({ provider, owner, repo, pullId }) {
   const query = `
     query Pull($owner: String!, $repo: String!, $pullId: Int!) {

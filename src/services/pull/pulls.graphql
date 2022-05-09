@@ -1,0 +1,48 @@
+query Pull($owner: String!, $repo: String!, $pullId: Int!) {
+  owner(username: $owner) {
+    repository(name: $repo) {
+      pull(id: $pullId) {
+        pullId
+        title
+        state
+        author {
+          username
+        }
+        updatestamp
+        head {
+          commitid
+          totals {
+            coverage
+          }
+        }
+        comparedTo {
+          commitid
+        }
+        compareWithBase {
+          patchTotals {
+            coverage
+          }
+          changeWithParent
+        }
+        commits {
+          totalCount
+          pageInfo {
+            hasNextPage
+            startCursor
+            hasPreviousPage
+          }
+          edges {
+            node {
+              commitid
+              message
+              createdAt
+              author {
+                username
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
