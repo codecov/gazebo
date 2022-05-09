@@ -76,6 +76,7 @@ Upload.propTypes = {
     UploadStateEnum.error,
     UploadStateEnum.uploaded,
     UploadStateEnum.processed,
+    UploadStateEnum.complete,
   ]),
   ciUrl: PropTypes.string,
   createdAt: PropTypes.string,

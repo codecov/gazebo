@@ -160,6 +160,10 @@ Read more at the [official documentation.](https://mswjs.io/docs/getting-started
 
 ## Impersonation
 
+Below is the old way, this probably still works but I usually impersonate through the [django dashboard with the VPN](https://api.codecov.io/3Iz61TsiAL/codecov_auth/owner/). If this is not working you need to make a [SOCII request](https://codecovio.atlassian.net/jira/software/projects/SOC/boards/7) to be a staff member.
+
+---
+
 It is possible to impersonate other users for debugging purposes if you are a `Codecov Staff User`. Details on how to impersonate users are explained below:
 
 1. Make sure your codecov user is marked as staff. You can do this by checking the `is_staff` column of the User table. If you are not a staff user, reach out to the [#eng-help](https://codecovteam.slack.com/archives/CDMMWG602)
@@ -172,15 +176,3 @@ It is possible to impersonate other users for debugging purposes if you are a `C
 5. Save the cookie and reload the page... you should be impersonating!
 
 **NOTE: Make sure you delete the staff_user cookie after you are done impersonating**
-
-## Debugging failed checks
-
-### Bundlesize
-
-(PR checks temporarirly disabled)
-
-We have a relatively agressive bundlesize check in place to ensure we serve a lean and performance web application.
-
-As we add more features our bundle will grow over time. We will adjust these thresholds on a case by case basis. If you're running into this check; this command will allow us to investigate what is taking space in the final production build.
-
-`npm run build -- --stats && npx webpack-bundle-analyzer ./build/bundle-stats.json`

@@ -1,0 +1,19 @@
+.react-datepicker {
+  @apply border-ds-gray-tertiary;
+}
+
+.react-datepicker__header {
+  @apply border-b-ds-gray-tertiary;
+}
+
+.react-datepicker__triangle {
+  @apply hidden;
+}
+
+.react-datepicker__header {
+  @apply bg-white;
+}
+
+.react-datepicker__day {
+  @apply rounded-none font-sans font-normal;
+}
