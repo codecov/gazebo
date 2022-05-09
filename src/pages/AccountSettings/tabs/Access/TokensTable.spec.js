@@ -11,7 +11,7 @@ const data = {
     {
       sessionid: 32,
       ip: null,
-      lastseen: subDays(new Date(), 3),
+      lastseen: subDays(new Date(), 3).toISOString(),
       useragent: null,
       owner: 2,
       type: 'api',
@@ -21,7 +21,7 @@ const data = {
     {
       sessionid: 6,
       ip: null,
-      lastseen: subDays(new Date(), 1),
+      lastseen: subDays(new Date(), 1).toISOString(),
       useragent: null,
       owner: 2,
       type: 'api',
