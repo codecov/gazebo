@@ -1,12 +1,13 @@
 import { renderHook } from '@testing-library/react-hooks'
 
-import { useDateFormatted } from './dates'
+import { formatTimeToNow, useDateFormatted } from './dates'
 
-describe('useDateFormatted', () => {
-  let hookData
+describe('useDateFormatted and formatTimeToNow functions', () => {
+  let hookData, formattedDate
 
   function setup(date, formatDescription) {
     hookData = renderHook(() => useDateFormatted(date, formatDescription))
+    formattedDate = formatTimeToNow(date)
   }
 
   describe('when called with no date', () => {
@@ -16,6 +17,7 @@ describe('useDateFormatted', () => {
 
     it('returns null', () => {
       expect(hookData.result.current).toBe(null)
+      expect(formattedDate).toBe(null)
     })
   })
 
@@ -26,6 +28,7 @@ describe('useDateFormatted', () => {
 
     it('returns the date with the default format', () => {
       expect(hookData.result.current).toBe('September 8th 2020')
+      expect(formattedDate).toBe('over 1 year ago')
     })
   })
 
@@ -36,6 +39,7 @@ describe('useDateFormatted', () => {
 
     it('returns the date with the right format', () => {
       expect(hookData.result.current).toBe('September 2020')
+      expect(formattedDate).toBe('over 1 year ago')
     })
   })
 
@@ -46,6 +50,7 @@ describe('useDateFormatted', () => {
 
     it('returns the date with the default format', () => {
       expect(hookData.result.current).toBe('July 20th 2020')
+      expect(formattedDate).toBe('almost 2 years ago')
     })
   })
 })
