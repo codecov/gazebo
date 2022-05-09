@@ -12,8 +12,9 @@ export function useDateFormatted(date, formatDescription = 'MMMM do yyyy') {
 export function formatTimeToNow(date) {
   if (!date) return null
 
-  const parser = typeof date === 'number' ? fromUnixTime : parseISO
-  return formatDistanceToNow(parser(date), {
+  const parsedDate =
+    typeof date === 'number' ? fromUnixTime(date) : parseISO(date + 'Z')
+  return formatDistanceToNow(parsedDate, {
     addSuffix: true,
   })
 }
