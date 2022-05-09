@@ -1,13 +1,13 @@
 import cs from 'classnames'
 import { sanitize } from 'dompurify'
 import PropTypes from 'prop-types'
-import { useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 import A from 'ui/A'
 
 const TruncateEnum = Object.freeze({
-  EXPAND: 'see more...',
-  COLLAPSE: 'see less...',
+  EXPAND: 'see more',
+  COLLAPSE: 'see less',
 })
 
 function TruncatedMessage({ message }) {
@@ -15,7 +15,7 @@ function TruncatedMessage({ message }) {
   const [isTruncatable, setIsTruncatable] = useState(false)
   const msgRef = useRef(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = msgRef.current
 
     if (
@@ -32,8 +32,9 @@ function TruncatedMessage({ message }) {
     <div>
       <pre
         ref={msgRef}
+        data-testid="truncate-message"
         className={cs(
-          'text-lg font-semibold break-all whitespace-div-wrap inline font-sans',
+          'text-lg font-semibold break-all whitespace-pre-wrap inline font-sans',
           {
             'line-clamp-1': truncateLabel === TruncateEnum.EXPAND,
           }
