@@ -12,17 +12,15 @@ describe('Line', () => {
     { types: ['plain'], content: '' },
   ]
 
-  function setup(number, coverage, showCovered, showUncovered) {
+  function setup(number, coverage, showLines) {
     render(
       <table>
         <tbody>
           <Line
-            showCovered={showCovered}
             line={line}
-            showUncovered={showUncovered}
             number={number}
             coverage={coverage}
-            showPartial={true}
+            showLines={showLines}
             getTokenProps={() => {}}
             getLineProps={() => {}}
           />
@@ -33,7 +31,12 @@ describe('Line', () => {
 
   describe('renders base line', () => {
     beforeEach(() => {
-      setup(1, null, false, false)
+      const showLines = {
+        showCovered: false,
+        showUncovered: false,
+        showPartial: true,
+      }
+      setup(1, null, showLines)
     })
 
     it('render base line', () => {
@@ -43,7 +46,12 @@ describe('Line', () => {
 
   describe('renders highlighted covered line', () => {
     beforeEach(() => {
-      setup(1, LINE_TYPE.HIT, true, false)
+      const showLines = {
+        showCovered: true,
+        showUncovered: false,
+        showPartial: true,
+      }
+      setup(1, LINE_TYPE.HIT, showLines)
     })
 
     it('render covered line', () => {
@@ -53,7 +61,12 @@ describe('Line', () => {
 
   describe('renders base covered line', () => {
     beforeEach(() => {
-      setup(1, LINE_TYPE.HIT, false, false)
+      const showLines = {
+        showCovered: false,
+        showUncovered: false,
+        showPartial: true,
+      }
+      setup(1, LINE_TYPE.HIT, showLines)
     })
 
     it('render covered line', () => {
@@ -63,7 +76,12 @@ describe('Line', () => {
 
   describe('renders highlighted uncovered line', () => {
     beforeEach(() => {
-      setup(1, LINE_TYPE.MISS, true, true)
+      const showLines = {
+        showCovered: true,
+        showUncovered: true,
+        showPartial: true,
+      }
+      setup(1, LINE_TYPE.MISS, showLines)
     })
 
     it('render uncovered line', () => {
@@ -73,7 +91,12 @@ describe('Line', () => {
 
   describe('renders base uncovered line', () => {
     beforeEach(() => {
-      setup(1, LINE_TYPE.MISS, false, false)
+      const showLines = {
+        showCovered: false,
+        showUncovered: false,
+        showPartial: true,
+      }
+      setup(1, LINE_TYPE.MISS, showLines)
     })
 
     it('render uncovered line', () => {
@@ -83,7 +106,12 @@ describe('Line', () => {
 
   describe('renders highlighted partial line', () => {
     beforeEach(() => {
-      setup(2, LINE_TYPE.PARTIAL, true, true)
+      const showLines = {
+        showCovered: true,
+        showUncovered: true,
+        showPartial: true,
+      }
+      setup(2, LINE_TYPE.PARTIAL, showLines)
     })
 
     it('render partial line', () => {

@@ -46,6 +46,7 @@ RenderError.propTypes = {
     UploadStateEnum.error,
     UploadStateEnum.uploaded,
     UploadStateEnum.processed,
+    UploadStateEnum.complete,
   ]),
   errors: PropTypes.arrayOf(
     PropTypes.shape({
