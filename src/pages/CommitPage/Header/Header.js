@@ -11,9 +11,9 @@ import {
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
+import CIStatusLabel from 'ui/CIStatus'
 import Icon from 'ui/Icon'
 
-import CIStatusLabel from './CIStatusLabel'
 import PullLabel from './PullLabel'
 import TruncatedMessage from './TruncatedMessage'
 
