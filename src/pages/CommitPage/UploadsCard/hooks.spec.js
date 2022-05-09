@@ -46,8 +46,8 @@ describe('useUploads', () => {
     afterEach(() => server.resetHandlers())
 
     describe('when data is loaded', () => {
-      it('returns sortedUploads', async () => {
-        await hookData.waitFor(() => {
+      it('returns sortedUploads', () => {
+        hookData.waitFor(() => {
           expect(hookData.result.current.sortedUploads).toMatchObject({})
         })
       })
@@ -73,16 +73,16 @@ describe('useUploads', () => {
     afterEach(() => server.resetHandlers())
 
     describe('when data is loaded', () => {
-      it('returns uploadsOverview', async () => {
-        await hookData.waitFor(() => {
+      it('returns uploadsOverview', () => {
+        hookData.waitFor(() => {
           expect(hookData.result.current.uploadsOverview).toEqual(
-            '2 errored, 3 are pending, 1 successful'
+            '2 errored, 3 are pending, 1 successful, 1 carried forward'
           )
         })
       })
 
-      it('returns sortedUploads', async () => {
-        await hookData.waitFor(() => {
+      it('returns sortedUploads', () => {
+        hookData.waitFor(() => {
           expect(hookData.result.current.sortedUploads).toMatchObject({
             'github actions': [
               {
@@ -187,8 +187,8 @@ describe('useUploads', () => {
         })
       })
 
-      it('returns a uploadsProviderList', async () => {
-        await hookData.waitFor(() => {
+      it('returns a uploadsProviderList', () => {
+        hookData.waitFor(() => {
           expect(hookData.result.current.uploadsProviderList).toEqual([
             'travis',
             'github actions',
@@ -196,8 +196,8 @@ describe('useUploads', () => {
         })
       })
 
-      it('returns a hasNoUploads', async () => {
-        await hookData.waitFor(() => {
+      it('returns a hasNoUploads', () => {
+        hookData.waitFor(() => {
           expect(hookData.result.current.hasNoUploads).toEqual(false)
         })
       })
@@ -211,8 +211,8 @@ describe('useUploads', () => {
     afterEach(() => server.resetHandlers())
 
     describe('when data is loaded', () => {
-      it('returns uploadsOverview', async () => {
-        await hookData.waitFor(() => {
+      it('returns uploadsOverview', () => {
+        hookData.waitFor(() => {
           expect(hookData.result.current.uploadsOverview).toEqual(
             '1 is pending'
           )

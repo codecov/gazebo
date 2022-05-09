@@ -183,6 +183,17 @@ const commitDataError = {
           createdAt: '2020-08-25T16:36:25.820340+00:00',
           updatedAt: '2020-08-25T16:36:25.859889+00:00',
           flags: ['front-end'],
+          uploadType: 'UPLOADED',
+          jobCode: '1234',
+        },
+      },
+      {
+        node: {
+          state: 'COMPLETE',
+          provider: 'github actions',
+          createdAt: '2020-08-25T16:36:25.820340+00:00',
+          updatedAt: '2020-08-25T16:36:25.859889+00:00',
+          flags: ['front-end'],
           uploadType: 'CARRYFORWARDED',
           jobCode: '1234',
         },
