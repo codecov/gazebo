@@ -1,0 +1,70 @@
+name: Production - Build and Push to GCP Artifact Registry
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  setup-build-publish:
+    name: Setup, Build, Publish
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: 'Enable experimental docker'
+        run: |
+          sudo bash -c 'echo "{\"experimental\": true, \"cgroup-parent\": \"/actions_job\"}" > /etc/docker/daemon.json'
+          sudo systemctl restart docker
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Configure Workload Identity Federation and generate an access token.
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0.6.0'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.CODECOV_GCP_WIDP }}
+          service_account: ${{ secrets.CODECOV_GCP_WIDSA }}
+
+      - name: Docker configuration
+        run: |-
+          echo ${{steps.auth.outputs.access_token}} | docker login -u oauth2accesstoken --password-stdin https://us-docker.pkg.dev
+
+      # Build the Docker image
+      - name: Build
+        env:
+          BUILD_ENV: production
+          DEPLOY_ENV: production
+          NPM_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+        run: |-
+          make build
+
+      - name: Build Enterprise
+        env:
+          BUILD_ENV: production
+          DEPLOY_ENV: enterprise
+          NPM_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+        run: |-
+          make build
+
+      # Push the Docker image to Google Artifact Registry
+      - name: Publish
+        env:
+          BUILD_ENV: production
+          DEPLOY_ENV: production
+        run: |-
+          make push
+
+      - name: Publish
+        env:
+          BUILD_ENV: production
+          DEPLOY_ENV: enterprise
+        run: |-
+          make push
