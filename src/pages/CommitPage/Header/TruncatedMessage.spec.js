@@ -25,10 +25,6 @@ describe('TruncatedMessage', () => {
     })
   })
 
-  it('should mock ref and offsetWidth', () => {
-    setup({ message: longMessage })
-  })
-
   describe('When commit message is longer than a line', () => {
     beforeEach(() => {
       Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
