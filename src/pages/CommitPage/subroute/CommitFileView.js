@@ -85,8 +85,6 @@ function CommitFileView({ diff }) {
   }
   // *********** This is temporary code that will be here in the meantime *********** //
 
-  console.log(coverageData)
-
   const title = (
     <Breadcrumb
       paths={[
@@ -126,7 +124,7 @@ function CommitFileView({ diff }) {
                 showLines={showLines}
                 getLineProps={getLineProps}
                 getTokenProps={getTokenProps}
-                coverage={null}
+                coverage={coverageData && coverageData[i + 1]}
               />
             )}
           />
