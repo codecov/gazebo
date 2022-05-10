@@ -9,6 +9,7 @@ import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
+import SingleLine from 'ui/CodeRenderer/SingleLine'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 function ErrorDisplayMessage() {
@@ -121,12 +122,26 @@ function FileView() {
         />
         {content ? (
           <CodeRenderer
-            showCovered={covered}
-            showUncovered={uncovered}
-            coverage={coverageData}
-            showPartial={partial}
             code={content}
             fileName={paths.slice(-1)[0]}
+            LineComponent={({ i, line, getLineProps, getTokenProps }) => {
+              const showLines = {
+                showCovered: covered,
+                showPartial: partial,
+                showUncovered: uncovered,
+              }
+              return (
+                <SingleLine
+                  key={i}
+                  line={line}
+                  number={i + 1}
+                  showLines={showLines}
+                  getLineProps={getLineProps}
+                  getTokenProps={getTokenProps}
+                  coverage={coverageData && coverageData[i + 1]}
+                />
+              )
+            }}
           />
         ) : (
           <ErrorDisplayMessage />

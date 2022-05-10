@@ -44,7 +44,6 @@ function SingleLine({
   getLineProps,
   getTokenProps,
 }) {
-  console.log(number, coverage, showLines, getLineProps, getTokenProps)
   const lineState = getLineState({ coverage, showLines })
 
   return (
