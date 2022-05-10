@@ -3,7 +3,7 @@ name: Production - Build and Push to GCP Artifact Registry
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   setup-build-publish:

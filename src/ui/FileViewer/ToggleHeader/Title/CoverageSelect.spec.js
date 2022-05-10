@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 
+import { LINE_STATE } from 'shared/utils/fileviewerLines'
+
 import CoverageSelect from './CoverageSelect'
-import { LINE_STATE } from './lineStates'
 
 const onChange = jest.fn(() => {})
 
