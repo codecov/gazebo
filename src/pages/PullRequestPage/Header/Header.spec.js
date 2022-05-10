@@ -42,10 +42,6 @@ describe('Header', () => {
         })
       ).toBeInTheDocument()
       expect(screen.getByText(/open/i)).toBeInTheDocument()
-      const userLink = screen.getByRole('link', {
-        name: /landonorris/i,
-      })
-      expect(userLink).toHaveAttribute('href', '/gh/landonorris')
       const prNumber = screen.getByText(/#5/i)
       expect(prNumber).toBeInTheDocument()
     })
