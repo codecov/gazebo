@@ -16,4 +16,5 @@ generates:
       - 'typescript-react-query'
     config:
       fetcher:
-        endpoint: 'http://localhost:8000/graphql/gh'
+        func: 'shared/api/genApi#useFetchData'
+        isReactHook: false

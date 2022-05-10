@@ -7,7 +7,7 @@ const defaultConfig = {
   SENTRY_ENVIRONMENT: 'staging',
 }
 
-function removeReactAppPrefix(obj) {
+function removeReactAppPrefix(obj: any) {
   // in .env file, the variable must start with REACT_APP_
   // to be injected in the application, so we remove that
   // prefix to be more convenient for us

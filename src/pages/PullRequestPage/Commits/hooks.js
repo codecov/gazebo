@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
+import { usePullQuery } from 'generated'
 import { mapEdges } from 'shared/utils/graphql'
 
 export function getCompareCommitsData({ commits }) {
@@ -14,7 +14,14 @@ export function getCompareCommitsData({ commits }) {
 
 export function useCompareCommits() {
   const { provider, owner, repo, pullId } = useParams()
-  const { data: pull, ...rest } = usePull({ provider, owner, repo, pullId })
+  const { data, ...rest } = usePullQuery({
+    provider,
+    owner,
+    repo,
+    pullId: parseInt(pullId, 10),
+  })
+
+  const pull = data.owner?.repository?.pull
 
   // Can likely replace with react-query's select.
   const commits = useMemo(

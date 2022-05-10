@@ -2,7 +2,7 @@ import cs from 'classnames'
 import capitalize from 'lodash/capitalize'
 import { useParams } from 'react-router-dom'
 
-import { usePull } from 'services/pull/hooks'
+import { usePullQuery } from 'generated'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -16,7 +16,14 @@ const pullStateToColor = {
 function Header() {
   // TODO: When we update the cicd link and branch link to mobe this to a hook to match the rest of the page.
   const { provider, owner, repo, pullId } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullId })
+  const { data } = usePullQuery({
+    provider,
+    owner,
+    repo,
+    pullId: parseInt(pullId, 10),
+  })
+
+  const pull = data.owner?.repository?.pull
 
   return (
     <div className="border-b border-ds-gray-secondary pb-4">
