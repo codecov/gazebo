@@ -50,7 +50,7 @@ describe('SingleLine', () => {
       const showLines = {
         showCovered: true,
         showUncovered: false,
-        showPartial: true,
+        showPartial: false,
       }
       setup(1, LINE_TYPE.HIT, showLines)
     })
@@ -65,7 +65,7 @@ describe('SingleLine', () => {
       const showLines = {
         showCovered: false,
         showUncovered: false,
-        showPartial: true,
+        showPartial: false,
       }
       setup(1, LINE_TYPE.HIT, showLines)
     })
@@ -78,9 +78,9 @@ describe('SingleLine', () => {
   describe('renders highlighted uncovered line', () => {
     beforeEach(() => {
       const showLines = {
-        showCovered: true,
+        showCovered: false,
         showUncovered: true,
-        showPartial: true,
+        showPartial: false,
       }
       setup(1, LINE_TYPE.MISS, showLines)
     })
@@ -95,7 +95,7 @@ describe('SingleLine', () => {
       const showLines = {
         showCovered: false,
         showUncovered: false,
-        showPartial: true,
+        showPartial: false,
       }
       setup(1, LINE_TYPE.MISS, showLines)
     })
@@ -108,8 +108,8 @@ describe('SingleLine', () => {
   describe('renders highlighted partial line', () => {
     beforeEach(() => {
       const showLines = {
-        showCovered: true,
-        showUncovered: true,
+        showCovered: false,
+        showUncovered: false,
         showPartial: true,
       }
       setup(2, LINE_TYPE.PARTIAL, showLines)
@@ -117,6 +117,21 @@ describe('SingleLine', () => {
 
     it('render partial line', () => {
       expect(screen.getAllByLabelText('partial line of code').length).toBe(1)
+    })
+  })
+
+  describe('renders base partial line', () => {
+    beforeEach(() => {
+      const showLines = {
+        showCovered: false,
+        showUncovered: false,
+        showPartial: false,
+      }
+      setup(1, LINE_TYPE.PARTIAL, showLines)
+    })
+
+    it('render partial line', () => {
+      expect(screen.getAllByLabelText('line of code').length).toBe(1)
     })
   })
 })
