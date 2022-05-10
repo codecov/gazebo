@@ -47,7 +47,7 @@ function SingleLine({
   const lineState = getLineState({ coverage, showLines })
 
   return (
-    <tr {...getLineProps({ line, key: number })}>
+    <tr {...getLineProps({ line, key: number })} data-testid="fv-single-line">
       <td
         aria-label={lineStateToLabel[lineState]}
         className={cs(

@@ -28,7 +28,7 @@ function getTreeLocation(paths, location) {
 }
 
 // This function solely done to eliminate max-statements complexity
-// TODO: probably move this to some sort of context
+// TODO: probably move this to some sort of context; think of a solution with useReducer
 function useCoverageAndFlagsStates() {
   const [selectedFlags, setSelectedFlags] = useState([])
   const [covered, setCovered] = useState(true)
@@ -124,24 +124,21 @@ function FileView() {
           <CodeRenderer
             code={content}
             fileName={paths.slice(-1)[0]}
-            LineComponent={({ i, line, getLineProps, getTokenProps }) => {
-              const showLines = {
-                showCovered: covered,
-                showPartial: partial,
-                showUncovered: uncovered,
-              }
-              return (
-                <SingleLine
-                  key={i}
-                  line={line}
-                  number={i + 1}
-                  showLines={showLines}
-                  getLineProps={getLineProps}
-                  getTokenProps={getTokenProps}
-                  coverage={coverageData && coverageData[i + 1]}
-                />
-              )
-            }}
+            LineComponent={({ i, line, getLineProps, getTokenProps }) => (
+              <SingleLine
+                key={i}
+                line={line}
+                number={i + 1}
+                showLines={{
+                  showCovered: covered,
+                  showPartial: partial,
+                  showUncovered: uncovered,
+                }}
+                getLineProps={getLineProps}
+                getTokenProps={getTokenProps}
+                coverage={coverageData && coverageData[i + 1]}
+              />
+            )}
           />
         ) : (
           <ErrorDisplayMessage />
