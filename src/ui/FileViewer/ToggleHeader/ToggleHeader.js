@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
 
-import { LINE_STATE } from 'shared/FileViewer/lineStates'
-import Title, { TitleCoverage, TitleFlags } from 'shared/FileViewer/Title'
-import Breadcrumb from 'ui/Breadcrumb'
+import { LINE_STATE } from 'shared/utils/fileviewerLines'
 
-function FileviewerToggleHeader({
-  lineCoverageStatesAndSetters,
+import Title, { TitleCoverage, TitleFlags } from './Title/Title'
+
+function ToggleHeader({
+  title,
   flagData,
   coverageIsLoading,
+  lineCoverageStatesAndSetters,
 }) {
   /**
    * Header component that toggles covered, partial and uncovered lines for the File Viewer page.
@@ -17,23 +17,9 @@ function FileviewerToggleHeader({
    * @param {Object} flagData flag names and their respective state and setter
    * @param {Bool} coverageIsLoading loading boolean to conditioanlly render the flags component
    */
-  const { commit, path } = useParams()
   const { covered, setCovered, uncovered, setUncovered, partial, setPartial } =
     lineCoverageStatesAndSetters
   const { flagNames, selectedFlags, setSelectedFlags } = flagData
-
-  const title = (
-    <Breadcrumb
-      paths={[
-        {
-          pageName: 'commit',
-          text: 'Impacted files',
-          options: { commit: commit },
-        },
-        { pageName: 'path', text: path.split('/').pop() },
-      ]}
-    />
-  )
 
   return (
     <Title
@@ -66,10 +52,11 @@ function FileviewerToggleHeader({
   )
 }
 
-FileviewerToggleHeader.propTypes = {
-  lineCoverageStatesAndSetters: PropTypes.object,
+ToggleHeader.propTypes = {
   flagData: PropTypes.object,
   coverageIsLoading: PropTypes.bool.isRequired,
+  lineCoverageStatesAndSetters: PropTypes.object,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 }
 
-export default FileviewerToggleHeader
+export default ToggleHeader

@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
-  useCommitBasedCoverageForFileviewer,
+  useCommitBasedCoverageForFileViewer,
   useCoverageWithFlags,
   useFileWithMainCoverage,
 } from './hooks'
@@ -253,7 +253,7 @@ describe('useCoverageWithFlags', () => {
   })
 })
 
-xdescribe('useCommitBasedCoverageForFileviewer', () => {
+xdescribe('useCommitBasedCoverageForFileViewer', () => {
   let hookData
 
   function setup(returnedData, selectedFlags) {
@@ -263,7 +263,7 @@ xdescribe('useCommitBasedCoverageForFileviewer', () => {
       })
     )
     hookData = renderHook(
-      () => useCommitBasedCoverageForFileviewer({ selectedFlags }),
+      () => useCommitBasedCoverageForFileViewer({ selectedFlags }),
       {
         wrapper,
       }
