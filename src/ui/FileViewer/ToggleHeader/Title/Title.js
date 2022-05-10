@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import MultiSelect from 'ui/MultiSelect'
 import Spinner from 'ui/Spinner'
 
-import CoverageSelect from '../CoverageSelect'
+import CoverageSelect from './CoverageSelect'
 
 export default function Title({ title, Flags, children }) {
   return (

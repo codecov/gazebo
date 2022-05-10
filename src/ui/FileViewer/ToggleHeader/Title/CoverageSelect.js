@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import { LINE_STATE } from './lineStates'
+import { LINE_STATE } from 'shared/utils/fileviewerLines'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]: 'bg-ds-coverage-covered border-ds-primary-green',

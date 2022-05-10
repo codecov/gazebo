@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 
+import { LINE_TYPE } from 'shared/utils/fileviewerLines'
+
 import CodeRenderer from './CodeRenderer'
-import { LINE_TYPE } from './lineStates'
 
 describe('CodeRenderer', () => {
   const code = `

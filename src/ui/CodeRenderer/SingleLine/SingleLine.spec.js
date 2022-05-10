@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
 
-import Line from './Line'
-import { LINE_TYPE } from './lineStates'
+import { LINE_TYPE } from 'shared/utils/fileviewerLines'
 
-describe('Line', () => {
+import SingleLine from './SingleLine'
+
+describe('SingleLine', () => {
   const line = [
     { types: ['plain'], content: '      ' },
     { types: ['punctuation'], content: '...' },
@@ -16,7 +17,7 @@ describe('Line', () => {
     render(
       <table>
         <tbody>
-          <Line
+          <SingleLine
             line={line}
             number={number}
             coverage={coverage}

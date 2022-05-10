@@ -1,25 +1,21 @@
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommitBasedCoverageForFileviewer } from 'services/file'
+import { useCommitBasedCoverageForFileViewer } from 'services/file'
 
 import CommitFileView from './CommitFileView'
 
 jest.mock(
-  'ui/FileviewerToggleHeader/FileviewerToggleHeader',
-  () => () => 'The Fileviewer Toggle Header'
+  'ui/FileViewer/ToggleHeader/ToggleHeader',
+  () => () => 'The FileViewer Toggle Header'
 )
 jest.mock(
-  'ui/CodeRendererProgressHeader/CodeRendererProgressHeader',
+  'ui/CodeRenderer/CodeRendererProgressHeader',
   () => () => 'The Progress Header for Coderenderer'
 )
-jest.mock('shared/FileViewer/CodeRenderer', () => () => 'The Coderenderer')
+jest.mock('ui/CodeRenderer', () => () => 'The Coderenderer')
 jest.mock('services/file/hooks')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
 
 const queryClient = new QueryClient()
 
@@ -32,14 +28,7 @@ describe('CommitFileView', () => {
   function setup(props) {
     const { content } = props
 
-    useParams.mockReturnValue({
-      owner: 'fjord',
-      provider: 'gh',
-      commit: '123sha',
-      repo: 'gazebo',
-      path: 'folder/subfolder/file.js',
-    })
-    useCommitBasedCoverageForFileviewer.mockReturnValue({
+    useCommitBasedCoverageForFileViewer.mockReturnValue({
       isLoading: false,
       totals: 53.43,
       coverage: {
@@ -83,9 +72,9 @@ describe('CommitFileView', () => {
       })
     })
 
-    it('renders the Fileviewer Header, Coderenderer Header, and Coderenderer', () => {
+    it('renders the FileViewer Header, Coderenderer Header, and Coderenderer', () => {
       expect(
-        screen.getByText(/The Fileviewer Toggle Header/)
+        screen.getByText(/The FileViewer Toggle Header/)
       ).toBeInTheDocument()
       expect(
         screen.getByText(/The Progress Header for Coderenderer/)
@@ -104,9 +93,9 @@ describe('CommitFileView', () => {
       setup({ content: null })
     })
 
-    it('renders the Fileviewer Header, Coderenderer Header, and error message', () => {
+    it('renders the FileViewer Header, Coderenderer Header, and error message', () => {
       expect(
-        screen.getByText(/The Fileviewer Toggle Header/)
+        screen.getByText(/The FileViewer Toggle Header/)
       ).toBeInTheDocument()
       expect(
         screen.getByText(/The Progress Header for Coderenderer/)
