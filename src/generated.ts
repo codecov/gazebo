@@ -1,7 +1,5 @@
 import { useQuery, UseQueryOptions } from 'react-query'
-
-import { useFetchData } from './shared/api/genApi'
-
+import { useFetchData } from 'shared/api/genApi'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -772,11 +770,9 @@ export const PullDocument = `
 export const usePullQuery = <TData = PullQuery, TError = unknown>(
   variables: PullQueryVariables,
   options?: UseQueryOptions<PullQuery, TError, TData>
-) => {
-  console.log(variables, PullDocument)
-  return useQuery<PullQuery, TError, TData>(
+) =>
+  useQuery<PullQuery, TError, TData>(
     ['Pull', variables],
     useFetchData<PullQuery, PullQueryVariables>(PullDocument, variables),
     options
   )
-}
