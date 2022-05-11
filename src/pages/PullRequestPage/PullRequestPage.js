@@ -9,7 +9,7 @@ import Flags from './Flags'
 import Header from './Header'
 import CompareSummary from './Summary'
 
-const FileDiff = lazy(() => import('./subroute/FileDiff'))
+const FullFile = lazy(() => import('./subroute/FullFile'))
 const Root = lazy(() => import('./subroute/Root'))
 
 function PullRequestPage() {
@@ -46,7 +46,7 @@ function PullRequestPage() {
               exact
             >
               <Suspense fallback={Loader}>
-                <FileDiff />
+                <FullFile />
               </Suspense>
             </Route>
             <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>

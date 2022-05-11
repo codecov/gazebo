@@ -2,14 +2,14 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FileDiff from './FileDiff'
+import FullFile from './FullFile'
 
-describe('FileDiff', () => {
+describe('FullFile', () => {
   function setup({ initialEntries = ['/fg/something/something/dark/side'] }) {
     render(
       <MemoryRouter initialEntries={initialEntries}>
         <Route path="/fg/:path+">
-          <FileDiff />
+          <FullFile />
         </Route>
       </MemoryRouter>
     )

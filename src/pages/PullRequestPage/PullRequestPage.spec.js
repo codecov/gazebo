@@ -10,7 +10,7 @@ jest.mock('./Flags', () => () => 'Flags')
 jest.mock('./Commits', () => () => 'Commits')
 
 jest.mock('./subroute/Root', () => () => 'Root')
-jest.mock('./subroute/FileDiff', () => () => 'FileDiff')
+jest.mock('./subroute/FullFile', () => () => 'FullFile')
 
 describe('PullRequestPage', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
@@ -74,7 +74,7 @@ describe('PullRequestPage', () => {
     })
 
     it('rendered', () => {
-      expect(screen.getByText(/FileDiff/i)).toBeInTheDocument()
+      expect(screen.getByText(/FullFile/i)).toBeInTheDocument()
     })
   })
 
