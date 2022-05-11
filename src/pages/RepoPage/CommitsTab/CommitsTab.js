@@ -78,7 +78,7 @@ function CommitsTab() {
           </h2>
           <div>
             <Select
-              className="bg-ds-gray-primary"
+              variant="gray"
               items={branchesNames}
               onChange={(branch) => {
                 updateParams({ branch })
