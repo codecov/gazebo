@@ -53,8 +53,7 @@ function YAML({ owner }) {
       <div className="border-b border-ds-gray-secondary pb-4 mb-4">
         <p className="font-semimbold text-lg">Global yml</p>
         <p>
-          Changes made to the Global yml will override the default repo settings
-          and is applied to all repositories in the org.{' '}
+          Changes made to the Global yml are applied to all repositories in the org if they do not have a repo level yaml.{' '}
           <a
             className="text-ds-blue hover:underline"
             href="https://docs.codecov.io/docs/codecov-yaml"
