@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import { LINE_STATE, LINE_TYPE } from './lineStates'
+import { LINE_STATE, LINE_TYPE } from 'shared/utils/fileviewerLines'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]:
@@ -20,29 +20,32 @@ const lineStateToLabel = {
   [LINE_STATE.PARTIAL]: 'partial line of code',
 }
 
-function Line({
-  showUncovered,
-  showCovered,
+// Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
+function getLineState({ coverage, showLines }) {
+  const { showCovered, showUncovered, showPartial } = showLines
+  return coverage
+    ? {
+        [LINE_TYPE.HIT]: showCovered ? LINE_STATE.COVERED : LINE_STATE.BLANK,
+        [LINE_TYPE.MISS]: showUncovered
+          ? LINE_STATE.UNCOVERED
+          : LINE_STATE.BLANK,
+        [LINE_TYPE.PARTIAL]: showPartial
+          ? LINE_STATE.PARTIAL
+          : LINE_STATE.BLANK,
+      }[coverage]
+    : LINE_STATE.BLANK
+}
+
+function SingleLine({
   line,
   number,
-  showPartial,
   coverage,
+  showLines,
   getLineProps,
   getTokenProps,
 }) {
-  const lineState = getLineState()
-
-  // Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
-  // eslint-disable-next-line complexity
-  function getLineState() {
-    if (coverage === LINE_TYPE.HIT && showCovered) {
-      return LINE_STATE.COVERED
-    } else if (coverage === LINE_TYPE.MISS && showUncovered) {
-      return LINE_STATE.UNCOVERED
-    } else if (coverage === LINE_TYPE.PARTIAL && showPartial) {
-      return LINE_STATE.PARTIAL
-    } else return LINE_STATE.BLANK
-  }
+  console.log(number, coverage, showLines, getLineProps, getTokenProps)
+  const lineState = getLineState({ coverage, showLines })
 
   return (
     <tr {...getLineProps({ line, key: number })}>
@@ -64,15 +67,17 @@ function Line({
   )
 }
 
-Line.propTypes = {
+SingleLine.propTypes = {
   line: PropTypes.array.isRequired,
   coverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
-  showCovered: PropTypes.bool.isRequired,
-  showUncovered: PropTypes.bool.isRequired,
+  showLines: PropTypes.shape({
+    showCovered: PropTypes.bool.isRequired,
+    showUncovered: PropTypes.bool.isRequired,
+    showPartial: PropTypes.bool.isRequired,
+  }),
   number: PropTypes.number.isRequired,
   getLineProps: PropTypes.func,
   getTokenProps: PropTypes.func,
-  showPartial: PropTypes.bool.isRequired,
 }
 
-export default Line
+export default SingleLine

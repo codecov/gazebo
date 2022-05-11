@@ -1,31 +1,49 @@
+import cs from 'classnames'
 import { sanitize } from 'dompurify'
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 import A from 'ui/A'
 
 const TruncateEnum = Object.freeze({
-  EXPAND: 'see more...',
-  COLLAPSE: 'see less...',
+  EXPAND: 'see more',
+  COLLAPSE: 'see less',
 })
 
 function TruncatedMessage({ message }) {
   const [truncateLabel, setTruncateLabel] = useState(TruncateEnum.EXPAND)
+  const [isTruncatable, setIsTruncatable] = useState(false)
+  const msgRef = useRef(null)
 
-  const isLongMessage = message.length > 50
-  const truncatedMsg =
-    truncateLabel === TruncateEnum.EXPAND
-      ? isLongMessage
-        ? message.substr(0, 50)
-        : message
-      : message
+  useLayoutEffect(() => {
+    const element = msgRef.current
+
+    if (
+      element.offsetHeight < element.scrollHeight ||
+      element.offsetWidth < element.scrollWidth
+    ) {
+      setIsTruncatable(true)
+    } else {
+      setIsTruncatable(false)
+    }
+  }, [])
 
   return (
     <div>
-      <pre className="text-lg font-semibold break-all whitespace-pre-wrap inline font-sans">
-        {sanitize(truncatedMsg)}{' '}
+      <pre
+        ref={msgRef}
+        data-testid="truncate-message"
+        className={cs(
+          'text-lg font-semibold break-all whitespace-pre-wrap inline font-sans',
+          {
+            'line-clamp-1': truncateLabel === TruncateEnum.EXPAND,
+          }
+        )}
+      >
+        {sanitize(message)}{' '}
       </pre>
-      {isLongMessage && (
+
+      {isTruncatable && (
         <A
           hook="truncate-message"
           onClick={() =>

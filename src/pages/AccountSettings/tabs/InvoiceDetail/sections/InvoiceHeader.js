@@ -1,4 +1,5 @@
-import { format, fromUnixTime } from 'date-fns'
+import { fromUnixTime } from 'date-fns'
+import { format, utcToZonedTime } from 'date-fns-tz'
 
 import { invoicePropType } from 'services/account'
 
@@ -27,7 +28,11 @@ function InvoiceHeader({ invoice }) {
       <div className="text-right">
         <h1 className="text-xl text-gray-800">INVOICE</h1>
         <p className="text-sm text-gray-400">
-          {format(fromUnixTime(invoice.created), 'MMMM do, yyyy')}
+          {format(
+            utcToZonedTime(fromUnixTime(invoice.created), 'UTC'),
+            'MMMM do, yyyy',
+            { timeZone: 'UTC' }
+          )}
           <br />
           {invoice.currency.toUpperCase()}
           <br />#{invoice.number}

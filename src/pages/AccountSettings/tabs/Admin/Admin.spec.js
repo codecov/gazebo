@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 
@@ -17,7 +18,7 @@ describe('AdminTab', () => {
     owner: 'codecov',
   }
 
-  function setup(over = {}) {
+  function setup({ owner }) {
     useUser.mockReturnValue({
       data: {
         user: {
@@ -27,9 +28,16 @@ describe('AdminTab', () => {
     })
     const props = {
       ...defaultProps,
-      ...over,
+      owner,
     }
-    render(<Admin {...props} />)
+
+    render(
+      <MemoryRouter initialEntries={['/account/gh/codecov']}>
+        <Route path="/account/:provider/:owner/">
+          <Admin {...props} />
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('when rendered for user', () => {
@@ -60,7 +68,7 @@ describe('AdminTab', () => {
 
   describe('when rendered for organization', () => {
     beforeEach(() => {
-      setup()
+      setup({ owner: '' })
     })
 
     it('renders the ManageAdminCard', () => {

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useRepos } from 'services/repos/hooks'
-import Datepicker from 'ui/Datepicker'
+import DateRangePicker from 'ui/DateRangePicker'
 import MultiSelect from 'ui/MultiSelect'
 
 function formatDataForMultiselect(repos) {
@@ -10,7 +10,7 @@ function formatDataForMultiselect(repos) {
 }
 
 function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
-  const { search, repositories } = params
+  const { search, repositories, startDate, endDate } = params
   const [selectedRepos, setSelectedRepos] = useState(repositories)
   const { data } = useRepos({
     active,
@@ -23,15 +23,19 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
 
   const items = formatDataForMultiselect(data?.repos)
 
-  const onChangeHandler = (item) => {
+  const onSelectChangeHandler = (item) => {
     setSelectedRepos(item)
     updateParams({ repositories: item })
   }
 
-  const handleClearFilters = () => {
+  const onDateRangeChangeHandler = ([startDate, endDate]) => {
+    updateParams({ startDate, endDate })
+  }
+
+  const clearFiltersHandler = () => {
     updateParams({
-      startDate: '',
-      endDate: '',
+      startDate: null,
+      endDate: null,
       repositories: [],
     })
     setSelectedRepos([])
@@ -41,20 +45,27 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
     <div className="flex gap-4 flex-wrap justify-center sm:flex-nowrap sm:justify-start">
       <div className="flex flex-col gap-3">
         <span className="font-semibold">Dates</span>
-        <Datepicker params={params} updateParams={updateParams} />
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onChange={onDateRangeChangeHandler}
+        />
       </div>
       <div className="flex flex-col w-52 gap-3">
         <span className="font-semibold">Repositories</span>
         <MultiSelect
           ariaName="Select repos to choose"
           items={items}
-          onChange={onChangeHandler}
+          onChange={onSelectChangeHandler}
           resourceName="Repo"
           selectedItems={selectedRepos}
           customClasses={customClasses}
         />
       </div>
-      <button className="text-ds-blue-darker mt-7" onClick={handleClearFilters}>
+      <button
+        className="text-ds-blue-darker mt-7"
+        onClick={clearFiltersHandler}
+      >
         Clear filters
       </button>
     </div>

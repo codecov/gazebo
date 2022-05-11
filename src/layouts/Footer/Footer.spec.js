@@ -1,38 +1,31 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import { FooterItem } from './FooterItem'
+import Footer from './Footer'
 
-describe('FooterItem', () => {
-  function setup(props) {
-    render(<FooterItem {...props} />)
+describe('Footer', () => {
+  function setup() {
+    render(
+      <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+        <Route path="/:provider/:owner/:repo">
+          <Footer />
+        </Route>
+      </MemoryRouter>
+    )
   }
 
-  describe('pass a "path" prop', () => {
-    const text = 'Doggo 🐕'
-    const path = () => '/outside'
-
+  describe('renders the current years copywrite', () => {
     beforeEach(() => {
-      setup({ text, path })
+      jest.useFakeTimers().setSystemTime(new Date('3301-01-01'))
+      setup()
+    })
+    afterAll(() => {
+      jest.useRealTimers()
     })
 
     it('renders a link', () => {
-      const layout = screen.getByText(text)
-      expect(layout).toBeInTheDocument()
-      const a = screen.getByRole('link')
-      expect(a).toBeInTheDocument()
-    })
-  })
-
-  describe('only pass a "lable" prop', () => {
-    const text = 'Fear Noodle 🐍'
-
-    beforeEach(() => {
-      setup({ text })
-    })
-
-    it('does not render a link', () => {
-      const layout = screen.getByText(text)
-      expect(layout).toBeInTheDocument()
+      const copywrite = screen.getByText(`© 3301 Codecov`)
+      expect(copywrite).toBeInTheDocument()
     })
   })
 })
