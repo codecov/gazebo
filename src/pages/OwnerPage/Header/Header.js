@@ -19,7 +19,7 @@ const ExceededUploadsAlert = () => (
   >
     <p className="text-ds-gray-quinary">
       This org is currently on the free plan; which includes 250 free uploads
-      monthly. This month’s period has been reached and the reports will not
+      on a rolling monthly basis. This limit has been reached and the reports will not
       generate. To resolve this,{' '}
       <A to={{ pageName: 'upgradePlan' }}>upgrade plan</A> and you’ll have
       unlimited uploads.

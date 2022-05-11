@@ -1,4 +1,3 @@
-import { subDays } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router'
 
@@ -7,25 +6,6 @@ import { useUploadsNumber } from 'services/uploadsNumber/hooks'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
-
-const getRollingTimeWindow = () => {
-  const today = new Date()
-  const monthAgoDate = subDays(today, 30)
-
-  const thisMonth = today.getMonth() + 1
-  const thisDay = today.getDate()
-
-  const lastMonth = monthAgoDate.getMonth() + 1
-  const monthAgoDay = monthAgoDate.getDate()
-
-  const currentDate = `${thisMonth}/${thisDay}`
-  const monthAgo = `${lastMonth}/${monthAgoDay}`
-
-  return {
-    currentDate,
-    monthAgo,
-  }
-}
 
 const ActiveUsers = ({ accountDetails }) => (
   <p className="my-4">
@@ -45,7 +25,6 @@ function Usage({ accountDetails, isBasicPlan }) {
 
   const progressAmount = (uploadsNumber * 100) / maxUploadNumber || 0 //sometimes we get null
   const isUsageExceeded = uploadsNumber >= maxUploadNumber
-  const { currentDate, monthAgo } = getRollingTimeWindow()
 
   const variant = isUsageExceeded ? 'progressDanger' : 'progressNeutral'
 
@@ -55,10 +34,7 @@ function Usage({ accountDetails, isBasicPlan }) {
       <ActiveUsers accountDetails={accountDetails} />
       {isBasicPlan && (
         <div className="grid gap-4">
-          <p>
-            {uploadsNumber} of 250 uploads month{' '}
-            {`${monthAgo} - ${currentDate}`}
-          </p>
+          <p>{uploadsNumber} of 250 uploads - trailing 30 days</p>
           <div>
             <Progress amount={progressAmount} label={false} variant={variant} />
           </div>

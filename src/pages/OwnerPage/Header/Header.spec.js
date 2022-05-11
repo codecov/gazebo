@@ -97,7 +97,7 @@ describe('Header', () => {
     it('renders the body of the alert', () => {
       expect(
         screen.getByText(
-          /This org is currently on the free plan; which includes 250 free uploads monthly/
+          /This org is currently on the free plan; which includes 250 free uploads on a rolling monthly basis. This limit has been reached and the reports will not generate/
         )
       ).toBeInTheDocument()
     })
