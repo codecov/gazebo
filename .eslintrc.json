@@ -7,6 +7,7 @@
     "prettier"
   ],
   "rules": {
+    "import/no-unresolved": "error",
     "react/react-in-jsx-scope": "off",
     "testing-library/no-node-access": "warn",
     "testing-library/prefer-screen-queries": "warn",
@@ -104,6 +105,11 @@
           },
           {
             "pattern": "config",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "generated",
             "group": "internal",
             "position": "before"
           }
@@ -207,6 +213,9 @@
     }
   ],
   "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
     "import/resolver": {
       "alias": {
         "map": [
@@ -219,8 +228,13 @@
           ["mocks", "./src/mocks"],
           ["assets", "./src/assets"],
           ["custom-testing-library", "./src/custom-testing-library"],
-          ["config", "./src/config"]
+          ["config", "./src/config"],
+          ["generated", "./src/generated"]
         ]
+      },
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "./tsconfig.json"
       }
     }
   }

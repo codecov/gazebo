@@ -2,7 +2,7 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
+import { usePullQuery } from 'generated'
 
 import Header from './Header'
 
@@ -15,12 +15,13 @@ const pull = {
     username: 'landonorris',
   },
 }
+const data = { owner: { repository: { pull } } }
 
-jest.mock('services/pull/hooks')
+jest.mock('generated')
 
 describe('Header', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
-    usePull.mockReturnValue({ data: pull })
+    usePullQuery.mockReturnValue({ data })
 
     render(
       <MemoryRouter initialEntries={initialEntries}>

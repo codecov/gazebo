@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePullQuery } from 'generated'
+
 import { mapEdges } from 'shared/utils/graphql'
 
 export function getCompareCommitsData({ commits }) {

@@ -59,6 +59,9 @@
     ],
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json"
+    ],
+    "src/genrated.ts": [
+      "npx eslint --fix -c .eslintrc.json 'src/generated.ts'"
     ]
   },
   "browserslist": {
@@ -94,10 +97,12 @@
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.5.0",
     "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/parser": "^5.23.0",
     "autoprefixer": "^10.4.4",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-alias": "^1.1.2",
-    "eslint-plugin-import": "^2.25.4",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.26.0",
     "faker": "^5.5.3",
     "graphql": "^16.5.0",
     "http-proxy-middleware": "^2.0.4",

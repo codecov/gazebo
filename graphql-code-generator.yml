@@ -1,6 +1,3 @@
-hooks:
-  afterAllFileWrite:
-    - npx eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json 'src/generated.ts'
 overwrite: true
 watch: true
 watchConfig:
@@ -17,4 +14,3 @@ generates:
     config:
       fetcher:
         func: 'shared/api/genApi#useFetchData'
-        isReactHook: false

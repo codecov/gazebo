@@ -3,6 +3,7 @@ import capitalize from 'lodash/capitalize'
 import { useParams } from 'react-router-dom'
 
 import { usePullQuery } from 'generated'
+
 import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'

@@ -2,11 +2,11 @@ import { renderHook } from '@testing-library/react-hooks'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
+import { usePullQuery } from 'generated'
 
 import { useCompareCommits } from './hooks'
 
-jest.mock('services/pull/hooks')
+jest.mock('generated')
 
 const pull = {
   pullId: 5,
@@ -22,6 +22,7 @@ const pull = {
     ],
   },
 }
+const data = { owner: { repository: { pull } } }
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -36,7 +37,7 @@ describe('useCompareCommits', () => {
   let hookData
 
   function setup() {
-    usePull.mockReturnValue({ data: pull, isSuccess: true })
+    usePullQuery.mockReturnValue({ data, isSuccess: true })
     hookData = renderHook(() => useCompareCommits(), { wrapper })
   }
 

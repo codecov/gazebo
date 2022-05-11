@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { useParams } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
+import { usePullQuery } from 'generated'
 
 import { getPullDataForCompareSummary, usePullForCompareSummary } from './hooks'
 
@@ -9,7 +9,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
 }))
-jest.mock('services/pull/hooks')
+jest.mock('generated')
 
 const pull = {
   pullId: 5,
@@ -35,6 +35,7 @@ const pull = {
     changeWithParent: 38.94,
   },
 }
+const data = { owner: { repository: { pull } } }
 
 const head = pull?.head
 const base = pull?.comparedTo
@@ -58,7 +59,7 @@ describe('usePullForCompareSummary', () => {
       repo: 'mighty-nein',
       pullId: '9',
     })
-    usePull.mockReturnValue({ data: pull })
+    usePullQuery.mockReturnValue({ data })
     hookData = renderHook(() => usePullForCompareSummary())
   }
 
