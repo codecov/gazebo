@@ -8,9 +8,10 @@ export function useCompareDiff() {
   const { provider, owner, repo, pullId } = useParams()
   const { data: pull, ...rest } = usePull({ provider, owner, repo, pullId })
   const data = {
-    files: pull?.pullComparison?.files,
-    baseTotals: pull?.pullComparison?.baseTotals,
-    headTotals: pull?.pullComparison?.headTotals,
+    baseTotals: pull?.compareWithBase?.baseTotals,
+    files: pull?.compareWithBase?.fileComparisons,
+    headTotals: pull?.compareWithBase?.headTotals,
+    patchTotals: pull?.compareWithBase?.patchTotals,
   }
   return { data, ...rest }
 }

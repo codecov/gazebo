@@ -18,7 +18,7 @@ export function usePull({ provider, owner, repo, pullId }) {
               head {
                 commitid
                 totals {
-                  coverage
+                  percentCovered
                 }
               }
               comparedTo {
@@ -26,13 +26,13 @@ export function usePull({ provider, owner, repo, pullId }) {
               }
               compareWithBase {
                 patchTotals {
-                  coverage
+                  percentCovered
                 }
                 changeWithParent
               }
-              pullComparison {
+              compareWithBase {
                 baseTotals {
-                  coverage
+                  percentCovered
                   fileCount
                   lineCount
                   hitsCount
@@ -40,26 +40,28 @@ export function usePull({ provider, owner, repo, pullId }) {
                   partialsCount
                 }
                 headTotals {
-                  coverage
+                  percentCovered
                   fileCount
                   lineCount
                   hitsCount
                   missesCount
                   partialsCount
                 }
-                files {
+                fileComparisons {
                   baseName
                   headName
                   isNewFile
+                  hasDiff
+                  hasChanges
                   baseTotals {
-                    coverage
+                    percentCovered
                     lineCount
                     hitsCount
                     missesCount
                     partialsCount
                   }
                   headTotals {
-                    coverage
+                    percentCovered
                     lineCount
                     hitsCount
                     missesCount
