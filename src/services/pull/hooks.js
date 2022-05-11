@@ -16,6 +16,8 @@ export function usePull({ provider, owner, repo, pullId }) {
               }
               updatestamp
               head {
+                branchName
+                ciPassed
                 commitid
                 totals {
                   percentCovered

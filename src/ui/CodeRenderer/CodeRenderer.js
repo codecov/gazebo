@@ -2,11 +2,11 @@ import Highlight, { defaultProps } from 'prism-react-renderer'
 import PropTypes from 'prop-types'
 
 import 'shared/utils/prisimTheme.css'
+import { LINE_TYPE } from 'shared/utils/fileviewerLines'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 import './CodeRenderer.css'
 
-import Line from './Line'
-import { LINE_TYPE } from './lineStates'
+import SingleLine from './SingleLine'
 
 function CodeRenderer({
   code,
@@ -16,6 +16,8 @@ function CodeRenderer({
   showPartial = false,
   fileName,
 }) {
+  const showLines = { showCovered, showUncovered, showPartial }
+
   return (
     <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border font-mono">
       <colgroup>
@@ -31,14 +33,12 @@ function CodeRenderer({
         >
           {({ tokens, getLineProps, getTokenProps }) =>
             tokens.map((line, i) => (
-              <Line
+              <SingleLine
                 key={i}
                 line={line}
                 number={i + 1}
                 coverage={coverage && coverage[i + 1]}
-                showCovered={showCovered}
-                showPartial={showPartial}
-                showUncovered={showUncovered}
+                showLines={showLines}
                 getLineProps={getLineProps}
                 getTokenProps={getTokenProps}
               />

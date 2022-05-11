@@ -3,13 +3,12 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
-import { useOwner } from 'services/user'
 
-import FileView from './FileView'
+import CommitFileView from './CommitFileView'
 
 jest.mock(
   'ui/FileViewer/ToggleHeader/ToggleHeader',
-  () => () => 'The Fileviewer Toggle Header'
+  () => () => 'The FileViewer Toggle Header'
 )
 jest.mock(
   'ui/CodeRenderer/CodeRendererProgressHeader',
@@ -17,15 +16,17 @@ jest.mock(
 )
 jest.mock('ui/CodeRenderer', () => () => 'The Coderenderer')
 jest.mock('services/file/hooks')
-jest.mock('services/user')
 
 const queryClient = new QueryClient()
 
-describe('FileView', () => {
-  function setup({ content, owner }) {
-    useOwner.mockReturnValue({
-      data: owner,
-    })
+const diff = {
+  headCoverage: { coverage: 40.23 },
+  baseCoverage: { coverage: 14.12 },
+}
+
+describe('CommitFileView', () => {
+  function setup(props) {
+    const { content } = props
 
     useCommitBasedCoverageForFileViewer.mockReturnValue({
       isLoading: false,
@@ -51,12 +52,12 @@ describe('FileView', () => {
     render(
       <MemoryRouter
         initialEntries={[
-          '/gh/criticalrole/mightynein/blob/19236709182orym9234879/folder/subfolder/file.js',
+          '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
         ]}
       >
-        <Route path="/:provider/:owner/:repo/blob/:ref/*">
+        <Route path="/:provider/:owner/:repo/commit/:commit/:path">
           <QueryClientProvider client={queryClient}>
-            <FileView />
+            <CommitFileView diff={diff} />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>
@@ -65,21 +66,15 @@ describe('FileView', () => {
 
   describe('when there is content to be shown', () => {
     beforeEach(() => {
-      const content =
-        'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};'
-      const owner = {
-        username: 'criticalrole',
-        isCurrentUserPartOfOrg: true,
-      }
-      setup({ content, owner })
+      setup({
+        content:
+          'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};',
+      })
     })
 
-    it('renders the Breadcrumbs, Fileviewer Header, Coderenderer Header, and Coderenderer', () => {
-      expect(screen.getByText(/criticalrole/)).toBeInTheDocument()
-      expect(screen.getByText(/mightynein/)).toBeInTheDocument()
-      expect(screen.getByText(/19236709182orym9234879/)).toBeInTheDocument()
+    it('renders the FileViewer Header, Coderenderer Header, and Coderenderer', () => {
       expect(
-        screen.getByText(/The Fileviewer Toggle Header/)
+        screen.getByText(/The FileViewer Toggle Header/)
       ).toBeInTheDocument()
       expect(
         screen.getByText(/The Progress Header for Coderenderer/)
@@ -93,29 +88,14 @@ describe('FileView', () => {
     })
   })
 
-  describe('when there is no owner data to be shown', () => {
+  describe('when there is no content to be shown', () => {
     beforeEach(() => {
-      setup({ owner: null })
+      setup({ content: null })
     })
 
-    it('renders the 404 message', () => {
-      expect(screen.getByText(/Not found/)).toBeInTheDocument()
-      expect(screen.getByText(/404/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when there is an owner but no content to be shown', () => {
-    beforeEach(() => {
-      const owner = {
-        username: 'criticalrole',
-        isCurrentUserPartOfOrg: true,
-      }
-      setup({ content: null, owner })
-    })
-
-    it('renders the Fileviewer Header, Coderenderer Header, and error message', () => {
+    it('renders the FileViewer Header, Coderenderer Header, and error message', () => {
       expect(
-        screen.getByText(/The Fileviewer Toggle Header/)
+        screen.getByText(/The FileViewer Toggle Header/)
       ).toBeInTheDocument()
       expect(
         screen.getByText(/The Progress Header for Coderenderer/)

@@ -28,7 +28,7 @@ describe('AccessTab', () => {
           {
             sessionid: 32,
             ip: '172.21.0.1',
-            lastseen: subDays(new Date(), 3),
+            lastseen: subDays(new Date(), 3).toISOString(),
             useragent: 'Chrome/5.0 (Windows; Intel 10)',
             owner: 2,
             type: 'login',
