@@ -14,6 +14,11 @@ const SelectClasses = {
   ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10 max-h-72 overflow-y-scroll',
 }
 
+const variantClasses = {
+  default: ``,
+  buttonPadding: `py-1`,
+}
+
 const SELECT_ALL_OPTION = '__all__'
 
 function MultiSelect({
@@ -24,7 +29,7 @@ function MultiSelect({
   renderItem = identity,
   renderSelected,
   ariaName,
-  customClasses,
+  variant = 'default',
 }) {
   const itemsWithReset = [SELECT_ALL_OPTION, ...items]
   const {
@@ -88,7 +93,7 @@ function MultiSelect({
       <button
         aria-label={ariaName}
         type="button"
-        className={cs(SelectClasses.button, customClasses?.button)}
+        className={cs(SelectClasses.button, variantClasses[variant])}
         {...getToggleButtonProps()}
       >
         {renderButton()}
@@ -116,9 +121,7 @@ MultiSelect.propTypes = {
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string.isRequired,
   resourceName: PropTypes.string.isRequired,
-  customClasses: PropTypes.shape({
-    button: PropTypes.string,
-  }),
+  variant: PropTypes.oneOf(['default', 'buttonPadding']),
 }
 
 export default MultiSelect
