@@ -1,6 +1,6 @@
 hooks:
   afterAllFileWrite:
-    - prettier --write
+    - npx eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json 'src/generated.ts'
 overwrite: true
 watch: true
 watchConfig:
