@@ -7,6 +7,8 @@ import { usePullQuery } from 'generated'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
+import CIStatusLabel from 'ui/CIStatus'
+import Icon from 'ui/Icon'
 
 const pullStateToColor = {
   OPEN: 'bg-ds-primary-green',
@@ -27,7 +29,7 @@ function Header() {
   const pull = data.owner?.repository?.pull
 
   return (
-    <div className="border-b border-ds-gray-secondary pb-4">
+    <div className="border-b border-ds-gray-secondary pb-4 text-xs">
       <h1 className="flex items-center gap-2 text-lg font-semibold">
         {pull?.title}
         <span
@@ -42,15 +44,7 @@ function Header() {
       <p className="flex items-center gap-2">
         <span>
           {pull?.updatestamp && formatTimeToNow(pull.updatestamp)}{' '}
-          <A
-            to={{
-              pageName: 'owner',
-              options: { owner: pull?.author?.username },
-            }}
-          >
-            {pull?.author?.username}
-          </A>{' '}
-          authored{' '}
+          <span className="bold">{pull?.author?.username}</span> authored{' '}
           {pull?.pullId && (
             <A
               href={getProviderPullURL({
@@ -65,6 +59,11 @@ function Header() {
               #{pull?.pullId}
             </A>
           )}
+        </span>
+        <CIStatusLabel ciPassed={pull?.head?.ciPassed} />
+        <span className="flex items-center">
+          <Icon name="branch" variant="developer" size="sm" />
+          {pull?.head?.branchName}
         </span>
       </p>
     </div>

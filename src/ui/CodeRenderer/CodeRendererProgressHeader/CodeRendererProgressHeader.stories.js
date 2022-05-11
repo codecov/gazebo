@@ -9,15 +9,15 @@ SimpleCodeRendererProgressHeader.args = {
   change: 34.21,
 }
 
-export const ProgressHeaderWithTreepaths = Template.bind({})
-ProgressHeaderWithTreepaths.args = {
+export const CodeRendererProgressHeaderWithTreepaths = Template.bind({})
+CodeRendererProgressHeaderWithTreepaths.args = {
   treePaths: [{ pageName: 'owner', text: 'owner' }],
   fileCoverage: 14.28,
   change: 34.21,
 }
 
-export const ProgressHeaderWithoutChange = Template.bind({})
-ProgressHeaderWithoutChange.args = {
+export const CodeRendererProgressHeaderWithoutChange = Template.bind({})
+CodeRendererProgressHeaderWithoutChange.args = {
   treePaths: [],
   fileCoverage: 39.28,
 }
