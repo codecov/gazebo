@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 
-import { LINE_TYPE } from 'shared/FileViewer/lineStates'
+import { LINE_TYPE } from 'shared/utils/fileviewerLines'
 
 const FileDiff = ({ headName, segments = [] }) => {
   return (
