@@ -4,11 +4,12 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
+import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
+import SingleLine from 'ui/CodeRenderer/SingleLine'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 function ErrorDisplayMessage() {
@@ -27,7 +28,7 @@ function getTreeLocation(paths, location) {
 }
 
 // This function solely done to eliminate max-statements complexity
-// TODO: probably move this to some sort of context
+// TODO: probably move this to some sort of context; think of a solution with useReducer
 function useCoverageAndFlagsStates() {
   const [selectedFlags, setSelectedFlags] = useState([])
   const [covered, setCovered] = useState(true)
@@ -121,12 +122,23 @@ function FileView() {
         />
         {content ? (
           <CodeRenderer
-            showCovered={covered}
-            showUncovered={uncovered}
-            coverage={coverageData}
-            showPartial={partial}
             code={content}
             fileName={paths.slice(-1)[0]}
+            LineComponent={({ i, line, getLineProps, getTokenProps }) => (
+              <SingleLine
+                key={i}
+                line={line}
+                number={i + 1}
+                showLines={{
+                  showCovered: covered,
+                  showPartial: partial,
+                  showUncovered: uncovered,
+                }}
+                getLineProps={getLineProps}
+                getTokenProps={getTokenProps}
+                coverage={coverageData && coverageData[i + 1]}
+              />
+            )}
           />
         ) : (
           <ErrorDisplayMessage />
