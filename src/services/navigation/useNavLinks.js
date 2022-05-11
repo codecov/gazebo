@@ -8,9 +8,16 @@ import { useFlags } from 'shared/featureFlags'
 
 function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
-  const { gazeboRepoTabs, gazeboPullRequestPage } = useFlags({
+  const {
+    gazeboRepoTabs,
+    gazeboPullRequestPage,
+    gazeboCommitsTab,
+    gazeboPullsTab,
+  } = useFlags({
     gazeboRepoTabs: false,
     gazeboPullRequestPage: false,
+    gazeboCommitsTab: false,
+    gazeboPullsTab: false,
   })
 
   const utmCookie = Cookie.get('utmParams')
@@ -149,7 +156,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commits`,
-      isExternalLink: gazeboRepoTabs,
+      isExternalLink: gazeboCommitsTab,
       text: 'Commits',
     },
     commit: {
@@ -232,7 +239,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/pulls`,
-      isExternalLink: gazeboRepoTabs,
+      isExternalLink: gazeboPullsTab,
       text: 'Pulls',
     },
     pullDetail: {
