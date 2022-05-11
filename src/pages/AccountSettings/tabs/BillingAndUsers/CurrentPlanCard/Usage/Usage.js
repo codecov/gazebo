@@ -56,8 +56,7 @@ function Usage({ accountDetails, isBasicPlan }) {
       {isBasicPlan && (
         <div className="grid gap-4">
           <p>
-            {uploadsNumber} of 250 uploads month{' '}
-            {`${monthAgo} - ${currentDate}`}
+            {uploadsNumber} of 250 uploads - trailing 30 days
           </p>
           <div>
             <Progress amount={progressAmount} label={false} variant={variant} />
