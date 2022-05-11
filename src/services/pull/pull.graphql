@@ -10,6 +10,8 @@ query Pull($owner: String!, $repo: String!, $pullId: Int!) {
         }
         updatestamp
         head {
+          branchName
+          ciPassed
           commitid
           totals {
             coverage

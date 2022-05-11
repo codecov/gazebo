@@ -678,6 +678,8 @@ export type PullQuery = {
         author?: { __typename?: 'Owner'; username?: string | null } | null
         head?: {
           __typename?: 'Commit'
+          branchName?: string | null
+          ciPassed?: boolean | null
           commitid?: string | null
           totals?: {
             __typename?: 'CoverageTotals'
@@ -731,6 +733,8 @@ export const PullDocument = `
         }
         updatestamp
         head {
+          branchName
+          ciPassed
           commitid
           totals {
             coverage
