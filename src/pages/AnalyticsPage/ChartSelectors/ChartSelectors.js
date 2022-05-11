@@ -19,8 +19,6 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
     owner,
     first: Infinity,
   })
-  const customClasses = { button: 'py-1' }
-
   const items = formatDataForMultiselect(data?.repos)
 
   const onSelectChangeHandler = (item) => {
@@ -59,7 +57,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           onChange={onSelectChangeHandler}
           resourceName="Repo"
           selectedItems={selectedRepos}
-          customClasses={customClasses}
+          variant="buttonPadding"
         />
       </div>
       <button
