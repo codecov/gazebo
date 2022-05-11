@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
+import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'

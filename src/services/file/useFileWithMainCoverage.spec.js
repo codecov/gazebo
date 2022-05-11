@@ -5,11 +5,7 @@ import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import {
-  useCommitBasedCoverageForFileViewer,
-  useCoverageWithFlags,
-  useFileWithMainCoverage,
-} from './hooks'
+import { useFileWithMainCoverage } from '.'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -174,132 +170,6 @@ describe('useFileWithMainCoverage', () => {
           .mapValues('coverage')
           .value(),
       })
-    })
-  })
-})
-
-describe('useCoverageWithFlags', () => {
-  let hookData
-
-  function setup(dataReturned) {
-    server.use(
-      graphql.query('CoverageForFileWithFlags', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
-      })
-    )
-    hookData = renderHook(() => useCoverageWithFlags({ provider }), {
-      wrapper,
-    })
-  }
-
-  describe('when called for commit', () => {
-    const data = {
-      owner: {
-        repository: {
-          commit: {
-            commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-            flagNames: ['a', 'b'],
-            coverageFile: {
-              content:
-                'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
-              coverage: [
-                {
-                  line: 1,
-                  coverage: 1,
-                },
-                {
-                  line: 2,
-                  coverage: 1,
-                },
-                {
-                  line: 4,
-                  coverage: 1,
-                },
-                {
-                  line: 5,
-                  coverage: 1,
-                },
-                {
-                  line: 7,
-                  coverage: 1,
-                },
-                {
-                  line: 8,
-                  coverage: 1,
-                },
-              ],
-            },
-          },
-          branch: null,
-        },
-      },
-    }
-    beforeEach(() => {
-      setup(data)
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
-    })
-
-    it('returns commit file coverage', () => {
-      expect(hookData.result.current.data).toEqual({
-        ...data.owner.repository.commit.coverageFile,
-        totals: 0,
-        flagNames: ['a', 'b'],
-        coverage: _.chain(data.owner.repository.commit.coverageFile.coverage)
-          .keyBy('line')
-          .mapValues('coverage')
-          .value(),
-      })
-    })
-  })
-})
-
-xdescribe('useCommitBasedCoverageForFileViewer', () => {
-  let hookData
-
-  function setup(returnedData, selectedFlags) {
-    server.use(
-      graphql.query('CommitBasedCoverageForFileviewer', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(returnedData))
-      })
-    )
-    hookData = renderHook(
-      () => useCommitBasedCoverageForFileViewer({ selectedFlags }),
-      {
-        wrapper,
-      }
-    )
-  }
-
-  describe('when with commit without flags', () => {
-    const selectedFlags = []
-    const returnedData = {
-      isLoading: false,
-      totals: 23.45,
-      coverage: {
-        1: 'H',
-        2: 'H',
-        5: 'H',
-        6: 'H',
-        9: 'H',
-        10: 'H',
-        13: 'M',
-        14: 'P',
-        15: 'M',
-        16: 'M',
-        17: 'M',
-        21: 'H',
-      },
-      flagNames: ['flagOne', 'flagTwo'],
-      content:
-        'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};',
-    }
-    beforeEach(() => {
-      setup(returnedData, selectedFlags)
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
-    })
-
-    it('returns commit file coverage', () => {
-      console.log('here')
     })
   })
 })
