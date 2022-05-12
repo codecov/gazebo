@@ -13,6 +13,11 @@ const SelectClasses = {
   ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10',
 }
 
+const variantClass = {
+  default: ``,
+  gray: `bg-ds-gray-primary`,
+}
+
 function Select({
   placeholder = 'Select',
   items,
@@ -28,7 +33,7 @@ function Select({
    */
   renderSelected,
   ariaName,
-  className,
+  variant = 'default',
 }) {
   const {
     isOpen,
@@ -73,7 +78,7 @@ function Select({
       <button
         aria-label={ariaName}
         type="button"
-        className={`${SelectClasses.button} ${className}`}
+        className={cs(SelectClasses.button, variantClass[variant])}
         {...getToggleButtonProps()}
       >
         {renderButton()}
@@ -101,7 +106,7 @@ Select.propTypes = {
   renderItem: PropTypes.func,
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string,
-  className: PropTypes.string,
+  variant: PropTypes.oneOf(['default', 'gray']),
 }
 
 export default Select
