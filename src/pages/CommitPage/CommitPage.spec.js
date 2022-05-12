@@ -3,12 +3,12 @@ import { render, screen, waitFor } from 'custom-testing-library'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
-import { useFileWithMainCoverage } from 'services/file/hooks'
+import { useFileWithMainCoverage } from 'services/file'
 
 import CommitPage from './CommitPage'
 
 jest.mock('services/commit')
-jest.mock('services/file/hooks')
+jest.mock('services/file')
 jest.mock('./Header/Header.js', () => () => 'The Header')
 jest.mock('./subroute/CommitFileView.js', () => () => 'The Commit File View')
 jest.mock(

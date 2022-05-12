@@ -2,10 +2,11 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useCommitBasedCoverageForFileViewer } from 'services/file/hooks'
+import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
+import SingleLine from 'ui/CodeRenderer/SingleLine'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 function ErrorDisplayMessage() {
@@ -20,7 +21,7 @@ function ErrorDisplayMessage() {
 }
 
 // This function solely done to eliminate max-statements complexity
-// TODO: probably move this to some sort of context
+// TODO: probably move this to some sort of context; think of a solution with useReducer
 function useCoverageAndFlagsStates() {
   const [selectedFlags, setSelectedFlags] = useState([])
   const [covered, setCovered] = useState(true)
@@ -76,6 +77,12 @@ function CommitFileView({ diff }) {
     selectedFlags,
     setSelectedFlags,
   }
+
+  const showLines = {
+    showCovered: covered,
+    showPartial: partial,
+    showUncovered: uncovered,
+  }
   // *********** This is temporary code that will be here in the meantime *********** //
 
   const title = (
@@ -107,12 +114,19 @@ function CommitFileView({ diff }) {
         />
         {content ? (
           <CodeRenderer
-            showCovered={covered}
-            showUncovered={uncovered}
-            coverage={coverageData}
-            showPartial={partial}
             code={content}
             fileName={path}
+            LineComponent={({ i, line, getLineProps, getTokenProps }) => (
+              <SingleLine
+                key={i + 1}
+                line={line}
+                number={i + 1}
+                showLines={showLines}
+                getLineProps={getLineProps}
+                getTokenProps={getTokenProps}
+                coverage={coverageData && coverageData[i + 1]}
+              />
+            )}
           />
         ) : (
           <ErrorDisplayMessage />

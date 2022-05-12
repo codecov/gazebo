@@ -14,8 +14,7 @@ jest.mock(
   'ui/CodeRenderer/CodeRendererProgressHeader',
   () => () => 'The Progress Header for Coderenderer'
 )
-jest.mock('ui/CodeRenderer', () => () => 'The Coderenderer')
-jest.mock('services/file/hooks')
+jest.mock('services/file')
 
 const queryClient = new QueryClient()
 
@@ -26,25 +25,12 @@ const diff = {
 
 describe('CommitFileView', () => {
   function setup(props) {
-    const { content } = props
+    const { content, coverage } = props
 
     useCommitBasedCoverageForFileViewer.mockReturnValue({
       isLoading: false,
       totals: 53.43,
-      coverage: {
-        1: 'H',
-        2: 'H',
-        5: 'H',
-        6: 'H',
-        9: 'H',
-        10: 'H',
-        13: 'M',
-        14: 'P',
-        15: 'M',
-        16: 'M',
-        17: 'M',
-        21: 'H',
-      },
+      coverage,
       flagNames: ['flagOne', 'flagTwo'],
       content,
     })
@@ -65,10 +51,25 @@ describe('CommitFileView', () => {
   }
 
   describe('when there is content to be shown', () => {
+    afterEach(() => jest.clearAllMocks())
     beforeEach(() => {
       setup({
         content:
           'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};',
+        coverage: {
+          1: 'H',
+          2: 'H',
+          5: 'H',
+          6: 'H',
+          9: 'H',
+          10: 'H',
+          13: 'M',
+          14: 'P',
+          15: 'M',
+          16: 'M',
+          17: 'M',
+          21: 'H',
+        },
       })
     })
 
@@ -79,18 +80,36 @@ describe('CommitFileView', () => {
       expect(
         screen.getByText(/The Progress Header for Coderenderer/)
       ).toBeInTheDocument()
-      expect(screen.getByText(/The Coderenderer/)).toBeInTheDocument()
       expect(
         screen.queryByText(
           /There was a problem getting the source code from your provider./
         )
       ).not.toBeInTheDocument()
+
+      const allTestIds = screen.getAllByTestId('fv-single-line')
+      expect(allTestIds.length).toEqual(21)
     })
   })
 
   describe('when there is no content to be shown', () => {
     beforeEach(() => {
-      setup({ content: null })
+      setup({
+        content: null,
+        coverage: {
+          1: 'H',
+          2: 'H',
+          5: 'H',
+          6: 'H',
+          9: 'H',
+          10: 'H',
+          13: 'M',
+          14: 'P',
+          15: 'M',
+          16: 'M',
+          17: 'M',
+          21: 'H',
+        },
+      })
     })
 
     it('renders the FileViewer Header, Coderenderer Header, and error message', () => {
@@ -100,7 +119,6 @@ describe('CommitFileView', () => {
       expect(
         screen.getByText(/The Progress Header for Coderenderer/)
       ).toBeInTheDocument()
-      expect(screen.queryByText(/The Coderenderer/)).not.toBeInTheDocument()
       expect(
         screen.getByText(
           /There was a problem getting the source code from your provider./
