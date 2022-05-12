@@ -57,7 +57,6 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           onChange={onSelectChangeHandler}
           resourceName="Repo"
           selectedItems={selectedRepos}
-          variant="buttonPadding"
         />
       </div>
       <button

@@ -16,7 +16,6 @@ const SelectClasses = {
 
 const variantClasses = {
   default: ``,
-  buttonPadding: `py-1`,
 }
 
 const SELECT_ALL_OPTION = '__all__'
@@ -121,7 +120,7 @@ MultiSelect.propTypes = {
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string.isRequired,
   resourceName: PropTypes.string.isRequired,
-  variant: PropTypes.oneOf(['default', 'buttonPadding']),
+  variant: PropTypes.oneOf(['default']),
 }
 
 export default MultiSelect
