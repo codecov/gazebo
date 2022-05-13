@@ -90,8 +90,8 @@ function DiffLine({
         className={cs('pl-2 break-all', {
           'first-letter:mr-2': checkRawDiff(lineContent[0].content),
           'bg-ds-gray-secondary':
-            highlight(lineContent[0].content) ||
-            highlight(lineContent[1].content),
+            highlight(lineContent[0]?.content) ||
+            highlight(lineContent[1]?.content),
         })}
       >
         {lineContent.map((token, key) => (
