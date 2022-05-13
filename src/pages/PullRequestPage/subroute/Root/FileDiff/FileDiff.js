@@ -12,6 +12,8 @@ const FileDiff = ({
   baseTotals,
   patchTotals,
   lineCoverageStatesAndSetters,
+  isNewFile,
+  isRenamedFile,
   ...rest
 }) => {
   console.log('\n')
@@ -37,6 +39,8 @@ const FileDiff = ({
         headName={headName}
         headCoverage={headCoverage}
         changeCoverage={changeCoverage}
+        isNewFile={isNewFile}
+        isRenamedFile={isRenamedFile}
       />
       {/* CodeRenderer */}
       {segments.map((segment, segmentIndex) => {
@@ -44,25 +48,20 @@ const FileDiff = ({
         return (
           <CodeRenderer
             code={content}
-            key={segmentIndex}
+            key={`${headName}-${segmentIndex}`}
             fileName={headName}
             rendererType="diff"
-            LineComponent={({ i, line, getLineProps, getTokenProps }) => {
-              // Wdyt
-              const currentLine = segment.lines[i]
-              return (
-                <DiffLine
-                  key={i + 1}
-                  // Question: I added this so I don't have to recreate currentLine for every line, but it isn't as clear; thoughts?
-                  segmentLine={segment.lines[i]}
-                  rendererLine={line}
-                  showLines={showLines}
-                  // coverage={coverageData && coverageData[i + 1]}
-                  getLineProps={getLineProps}
-                  getTokenProps={getTokenProps}
-                />
-              )
-            }}
+            LineComponent={({ i, line, ...props }) => (
+              <DiffLine
+                // If this line one of the first 3 or last three lines of the segment
+                edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
+                key={i + 1}
+                showLines={showLines}
+                lineContent={line}
+                {...props}
+                {...segment.lines[i]}
+              />
+            )}
           />
         )
       })}
@@ -94,6 +93,8 @@ FileDiff.propTypes = {
       ),
     })
   ),
+  isNewFile: PropTypes.bool,
+  isRenamedFile: PropTypes.bool,
 }
 
 export default FileDiff

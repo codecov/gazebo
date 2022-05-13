@@ -55,11 +55,11 @@ const Root = () => {
             lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
           />
         </div>
-        {diff?.files?.map((diff, i) => {
+        {diff?.files?.map((file, i) => {
           return (
             <FileDiff
               key={`impacted-file-${i}`}
-              {...diff}
+              {...file}
               lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
             />
           )
