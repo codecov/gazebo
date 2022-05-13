@@ -11,11 +11,19 @@ const FileDiff = ({
   headTotals,
   baseTotals,
   patchTotals,
+  lineCoverageStatesAndSetters,
   ...rest
 }) => {
   console.log('\n')
   console.log('file diff - segments')
   console.log(segments)
+
+  const { covered, uncovered, partial } = lineCoverageStatesAndSetters
+  const showLines = {
+    showCovered: covered,
+    showPartial: partial,
+    showUncovered: uncovered,
+  }
 
   const headCoverage = headTotals?.percentCovered
   const changeCoverage = headCoverage - baseTotals?.percentCovered
@@ -40,19 +48,15 @@ const FileDiff = ({
             fileName={headName}
             rendererType="diff"
             LineComponent={({ i, line, getLineProps, getTokenProps }) => {
-              // <DoubleLine
-              console.log('segment.lines[i]')
-              console.log(segment.lines[i])
+              // Wdyt
+              const currentLine = segment.lines[i]
               return (
                 <DiffLine
                   key={i + 1}
-                  line={line}
-                  number={i + 1}
-                  showLines={{
-                    showCovered: false,
-                    showPartial: false,
-                    showUncovered: false,
-                  }}
+                  // Question: I added this so I don't have to recreate currentLine for every line, but it isn't as clear; thoughts?
+                  segmentLine={segment.lines[i]}
+                  rendererLine={line}
+                  showLines={showLines}
                   // coverage={coverageData && coverageData[i + 1]}
                   getLineProps={getLineProps}
                   getTokenProps={getTokenProps}

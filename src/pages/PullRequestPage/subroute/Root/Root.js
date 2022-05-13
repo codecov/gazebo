@@ -7,15 +7,11 @@ import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import FileDiff from './FileDiff'
 
 function useCoverageAndFlagsStates() {
-  const [selectedFlags, setSelectedFlags] = useState([])
   const [covered, setCovered] = useState(true)
   const [uncovered, setUncovered] = useState(true)
   const [partial, setPartial] = useState(true)
 
   return {
-    partial,
-    covered,
-    uncovered,
     lineCoverageStatesAndSetters: {
       covered,
       setCovered,
@@ -24,7 +20,6 @@ function useCoverageAndFlagsStates() {
       partial,
       setPartial,
     },
-    flagsState: { selectedFlags, setSelectedFlags },
   }
 }
 
@@ -46,13 +41,7 @@ const Root = () => {
   const { data: diff, isLoading } = useCompareDiff()
 
   // *********** This is temporary code that will be here in the meantime *********** //
-  const {
-    partial,
-    covered,
-    uncovered,
-    lineCoverageStatesAndSetters,
-    flagsState: { selectedFlags, setSelectedFlags },
-  } = useCoverageAndFlagsStates()
+  const { lineCoverageStatesAndSetters } = useCoverageAndFlagsStates()
   // *********** This is temporary code that will be here in the meantime *********** //
 
   return (
@@ -67,7 +56,13 @@ const Root = () => {
           />
         </div>
         {diff?.files?.map((diff, i) => {
-          return <FileDiff key={`impacted-file-${i}`} {...diff} />
+          return (
+            <FileDiff
+              key={`impacted-file-${i}`}
+              {...diff}
+              lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
+            />
+          )
         })}
       </div>
     )

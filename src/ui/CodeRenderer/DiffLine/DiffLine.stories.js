@@ -1,5 +1,6 @@
 import DiffLine from './DiffLine'
 
+// This is copypasted, needs some work
 const Template = (args) => {
   const line = [
     { types: { types: ['keyword'] }, content: 'function' },

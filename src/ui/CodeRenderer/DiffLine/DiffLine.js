@@ -36,38 +36,35 @@ function getLineState({ coverage, showLines }) {
     : LINE_STATE.BLANK
 }
 
-function DiffLine({
-  line,
-  number,
-  coverage,
-  showLines,
-  getLineProps,
-  getTokenProps,
-}) {
-  const lineState = getLineState({ coverage, showLines })
+function DiffLine({ showLines, segmentLine, rendererLine, getTokenProps }) {
+  const { headNumber, baseNumber, headCoverage, baseCoverage } = segmentLine
+
+  const baseLineState = getLineState({ coverage: baseCoverage, showLines })
+  const headLineState = getLineState({ coverage: headCoverage, showLines })
 
   return (
-    <tr {...getLineProps({ line, key: number })} data-testid="fv-single-line">
+    <tr data-testid="fv-single-line">
       <td
-        aria-label={lineStateToLabel[lineState]}
+        aria-label={lineStateToLabel[baseLineState]}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
-          classNamePerLineState[lineState]
+          classNamePerLineState[baseLineState]
         )}
       >
-        {number}
+        {baseNumber}
       </td>
       <td
-        aria-label={lineStateToLabel[lineState]}
+        aria-label={lineStateToLabel[headLineState]}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
-          classNamePerLineState[lineState]
+          classNamePerLineState[headLineState]
         )}
       >
-        {number}
+        {headNumber}
       </td>
-      <td className="pl-2 break-all first-letter:mr-2">
-        {line.map((token, key) => (
+      {/* Figure out a way to make this overwrite the token.operator class */}
+      <td className="pl-2 break-all first-letter:mr-2 bg-ds-gray-secondary">
+        {rendererLine.map((token, key) => (
           <span key={key} {...getTokenProps({ token, key })} />
         ))}
       </td>
@@ -76,7 +73,7 @@ function DiffLine({
 }
 
 DiffLine.propTypes = {
-  line: PropTypes.array.isRequired,
+  rendererLine: PropTypes.array.isRequired,
   coverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
   showLines: PropTypes.shape({
     showCovered: PropTypes.bool.isRequired,
