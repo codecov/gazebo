@@ -20,6 +20,22 @@ const lineStateToLabel = {
   [LINE_STATE.PARTIAL]: 'partial line of code',
 }
 
+/**
+ * Check if the first characte is a + or -
+ * @param {String} str
+ * @returns {Boolean}
+ */
+const checkRawDiff = (str) => /^\+|-/i.test(str)
+
+/**
+ * Check if the line is part of a diff and it is the beginning or end of a segment
+ * @param {Number} i
+ * @param {Number} fileEnd
+ * @param {String} str
+ * @returns
+ */
+const shouldHighlight = (isEdge) => (str) => checkRawDiff(str) || !isEdge
+
 // Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
 function getLineState({ coverage, showLines }) {
   const { showCovered, showUncovered, showPartial } = showLines
@@ -36,11 +52,19 @@ function getLineState({ coverage, showLines }) {
     : LINE_STATE.BLANK
 }
 
-function DiffLine({ showLines, segmentLine, rendererLine, getTokenProps }) {
-  const { headNumber, baseNumber, headCoverage, baseCoverage } = segmentLine
-
+function DiffLine({
+  edgeOfFile = false,
+  getTokenProps,
+  showLines,
+  lineContent,
+  headNumber,
+  baseNumber,
+  headCoverage,
+  baseCoverage,
+}) {
   const baseLineState = getLineState({ coverage: baseCoverage, showLines })
   const headLineState = getLineState({ coverage: headCoverage, showLines })
+  const highlight = shouldHighlight(edgeOfFile)
 
   return (
     <tr data-testid="fv-single-line">
@@ -62,9 +86,15 @@ function DiffLine({ showLines, segmentLine, rendererLine, getTokenProps }) {
       >
         {headNumber}
       </td>
-      {/* Figure out a way to make this overwrite the token.operator class */}
-      <td className="pl-2 break-all first-letter:mr-2 bg-ds-gray-secondary">
-        {rendererLine.map((token, key) => (
+      <td
+        className={cs('pl-2 break-all', {
+          'first-letter:mr-2': checkRawDiff(lineContent[0].content),
+          'bg-ds-gray-secondary':
+            highlight(lineContent[0].content) ||
+            highlight(lineContent[1].content),
+        })}
+      >
+        {lineContent.map((token, key) => (
           <span key={key} {...getTokenProps({ token, key })} />
         ))}
       </td>
@@ -73,15 +103,17 @@ function DiffLine({ showLines, segmentLine, rendererLine, getTokenProps }) {
 }
 
 DiffLine.propTypes = {
-  rendererLine: PropTypes.array.isRequired,
-  coverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
+  edgeOfFile: PropTypes.bool,
+  lineContent: PropTypes.array.isRequired,
   showLines: PropTypes.shape({
     showCovered: PropTypes.bool.isRequired,
     showUncovered: PropTypes.bool.isRequired,
     showPartial: PropTypes.bool.isRequired,
-  }),
-  number: PropTypes.number.isRequired,
-  getLineProps: PropTypes.func,
+  }).isRequired,
+  headNumber: PropTypes.string,
+  baseNumber: PropTypes.string,
+  baseCoverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
+  headCoverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
   getTokenProps: PropTypes.func,
 }
 

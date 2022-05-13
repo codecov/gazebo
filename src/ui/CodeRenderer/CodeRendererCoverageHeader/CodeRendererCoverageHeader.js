@@ -4,12 +4,29 @@ import PropTypes from 'prop-types'
 import CopyClipboard from 'ui/CopyClipboard'
 import TotalsNumber from 'ui/TotalsNumber'
 
+// Cleanup / Complexity to support file lables.
+const FlagControl = ({ headCoverage, patchCoverage, changeCoverage }) => (
+  <>
+    {isFinite(headCoverage) && <Checkvalue value={headCoverage} />}
+    {isFinite(patchCoverage) && <Checkvalue value={patchCoverage} />}
+    {isFinite(changeCoverage) && <Checkvalue value={changeCoverage} />}
+  </>
+)
+const Checkvalue = (value) => (
+  <>
+    <span className="font-semibold text-ds-gray-quinary">HEAD</span>{' '}
+    <TotalsNumber value={value} plain light />
+  </>
+)
+
 function CodeRendererCoverageHeader({
   header,
   headName,
   headCoverage,
   patchCoverage,
   changeCoverage,
+  isNewFile = false,
+  isRenamed = false,
 }) {
   /**
    * Header component that shows coverage values for the Code Renderer component.
@@ -35,26 +52,15 @@ function CodeRendererCoverageHeader({
         {/* TODO: Figure out where this clipboard is going to! */}
         <CopyClipboard string={headName} />
       </div>
-      {/* TODO: we need to change how we deal with 0 with the totals number */}
+      {/* TODO: style, API is missing is file renamed on API */}
+      {isNewFile && <span>New</span>}
+      {isRenamed && <span>Renamed</span>}
       <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
-        {isFinite(headCoverage) && (
-          <>
-            <span className="font-semibold text-ds-gray-quinary">HEAD</span>{' '}
-            <TotalsNumber value={headCoverage} plain light />
-          </>
-        )}
-        {isFinite(patchCoverage) && (
-          <>
-            <span className="font-semibold text-ds-gray-quinary">Patch</span>{' '}
-            <TotalsNumber value={patchCoverage} plain light />
-          </>
-        )}
-        {isFinite(changeCoverage) && (
-          <>
-            <span className="font-semibold text-ds-gray-quinary">Change</span>{' '}
-            <TotalsNumber value={changeCoverage} showChange light />
-          </>
-        )}
+        <FlagControl
+          headCoverage={headCoverage}
+          patchCoverage={patchCoverage}
+          changeCoverage={changeCoverage}
+        />
       </div>
     </div>
   )
@@ -66,6 +72,9 @@ CodeRendererCoverageHeader.propTypes = {
   headCoverage: PropTypes.number,
   patchCoverage: PropTypes.number,
   changeCoverage: PropTypes.number,
+  // This seems too specific should it be more render props?
+  isNewFile: PropTypes.bool,
+  isRenamed: PropTypes.bool,
 }
 
 export default CodeRendererCoverageHeader
