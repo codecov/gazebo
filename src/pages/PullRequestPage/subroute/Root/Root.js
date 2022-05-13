@@ -1,12 +1,38 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
+import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 import FileDiff from './FileDiff'
+
+function useCoverageAndFlagsStates() {
+  const [selectedFlags, setSelectedFlags] = useState([])
+  const [covered, setCovered] = useState(true)
+  const [uncovered, setUncovered] = useState(true)
+  const [partial, setPartial] = useState(true)
+
+  return {
+    partial,
+    covered,
+    uncovered,
+    lineCoverageStatesAndSetters: {
+      covered,
+      setCovered,
+      uncovered,
+      setUncovered,
+      partial,
+      setPartial,
+    },
+    flagsState: { selectedFlags, setSelectedFlags },
+  }
+}
 
 export function useCompareDiff() {
   const { provider, owner, repo, pullId } = useParams()
   const { data: pull, ...rest } = usePull({ provider, owner, repo, pullId })
+  console.log('whole pull request')
+  console.log(pull)
   const data = {
     baseTotals: pull?.compareWithBase?.baseTotals,
     files: pull?.compareWithBase?.fileComparisons,
@@ -19,14 +45,31 @@ export function useCompareDiff() {
 const Root = () => {
   const { data: diff, isLoading } = useCompareDiff()
 
+  // *********** This is temporary code that will be here in the meantime *********** //
+  const {
+    partial,
+    covered,
+    uncovered,
+    lineCoverageStatesAndSetters,
+    flagsState: { selectedFlags, setSelectedFlags },
+  } = useCoverageAndFlagsStates()
+  // *********** This is temporary code that will be here in the meantime *********** //
+
   return (
     !isLoading && (
-      <>
-        {/* Todo get the covered/miss/partial selector/title in here, might move the service to the FileDiff component, thoughts? */}
+      <div className="flex flex-col gap-4">
+        <div className="border-b border-ds-gray-secondary pb-4">
+          <ToggleHeader
+            flagData={null}
+            title={'Impacted Files'}
+            coverageIsLoading={isLoading}
+            lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
+          />
+        </div>
         {diff?.files?.map((diff, i) => {
           return <FileDiff key={`impacted-file-${i}`} {...diff} />
         })}
-      </>
+      </div>
     )
   )
 }

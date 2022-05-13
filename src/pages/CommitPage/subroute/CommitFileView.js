@@ -116,6 +116,7 @@ function CommitFileView({ diff }) {
           <CodeRenderer
             code={content}
             fileName={path}
+            rendererType="single"
             LineComponent={({ i, line, getLineProps, getTokenProps }) => (
               <SingleLine
                 key={i + 1}

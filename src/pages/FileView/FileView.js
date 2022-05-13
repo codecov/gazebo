@@ -124,6 +124,7 @@ function FileView() {
           <CodeRenderer
             code={content}
             fileName={paths.slice(-1)[0]}
+            rendererType="single"
             LineComponent={({ i, line, getLineProps, getTokenProps }) => (
               <SingleLine
                 key={i}

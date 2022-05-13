@@ -5,11 +5,14 @@ import 'shared/utils/prisimTheme.css'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 import './CodeRenderer.css'
 
-function CodeRenderer({ code, fileName, LineComponent }) {
+function CodeRenderer({ code, fileName, LineComponent, rendererType }) {
   return (
     <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border font-mono">
       <colgroup>
         <col width="40" />
+        {rendererType && rendererType.toLowerCase() === 'diff' && (
+          <col width="40" />
+        )}
         <col />
       </colgroup>
       <tbody>
@@ -33,6 +36,7 @@ function CodeRenderer({ code, fileName, LineComponent }) {
 CodeRenderer.propTypes = {
   code: PropTypes.string.isRequired,
   fileName: PropTypes.string.isRequired,
+  rendererType: PropTypes.oneOf(['diff', 'single']),
   LineComponent: PropTypes.func.isRequired,
 }
 

@@ -74,8 +74,8 @@ function CreateTokenModal({ closeModal, provider }) {
       body={
         <div className="flex flex-col">
           <span className="font-semibold mb-4 text-sm">Personal API token</span>
-          <div className="flex items-center">
-            <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary ">
+          <div className="flex items-center gap-2">
+            <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary mr-2">
               {token}
             </span>
             <CopyClipboard string={token} />
