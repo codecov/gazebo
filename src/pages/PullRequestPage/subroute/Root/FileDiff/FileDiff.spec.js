@@ -17,6 +17,11 @@ describe('FileDiff', () => {
             lines: [{ content: 'abc' }, { content: 'def' }],
           },
         ],
+        lineCoverageStatesAndSetters: {
+          covered: true,
+          uncovered: true,
+          partial: true,
+        },
       })
     })
     it('renders the name of a impacted file', () => {

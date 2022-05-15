@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types'
+import { Fragment } from 'react'
 
 import { LINE_TYPE } from 'shared/utils/fileviewerLines'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererCoverageHeader from 'ui/CodeRenderer/CodeRendererCoverageHeader'
+import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
 
 const FileDiff = ({
@@ -14,12 +16,9 @@ const FileDiff = ({
   lineCoverageStatesAndSetters,
   isNewFile,
   isRenamedFile,
+  hasChanges,
   ...rest
 }) => {
-  console.log('\n')
-  console.log('file diff - segments')
-  console.log(segments)
-
   const { covered, uncovered, partial } = lineCoverageStatesAndSetters
   const showLines = {
     showCovered: covered,
@@ -46,23 +45,25 @@ const FileDiff = ({
       {segments.map((segment, segmentIndex) => {
         const content = segment.lines.map((line) => line.content).join('\n')
         return (
-          <CodeRenderer
-            code={content}
-            key={`${headName}-${segmentIndex}`}
-            fileName={headName}
-            rendererType="diff"
-            LineComponent={({ i, line, ...props }) => (
-              <DiffLine
-                // If this line one of the first 3 or last three lines of the segment
-                edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
-                key={i + 1}
-                showLines={showLines}
-                lineContent={line}
-                {...props}
-                {...segment.lines[i]}
-              />
-            )}
-          />
+          <Fragment key={`${headName}-${segmentIndex}`}>
+            {hasChanges && <CodeRendererInfoRow type={'unexpectedChanges'} />}
+            <CodeRenderer
+              code={content}
+              fileName={headName}
+              rendererType="diff"
+              LineComponent={({ i, line, ...props }) => (
+                <DiffLine
+                  // If this line one of the first 3 or last three lines of the segment
+                  key={i + 1}
+                  showLines={showLines}
+                  lineContent={line}
+                  edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
+                  {...props}
+                  {...segment.lines[i]}
+                />
+              )}
+            />
+          </Fragment>
         )
       })}
     </div>

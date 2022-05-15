@@ -21,7 +21,7 @@ const lineStateToLabel = {
 }
 
 /**
- * Check if the first characte is a + or -
+ * Check if the first character is a + or -
  * @param {String} str
  * @returns {Boolean}
  */
@@ -29,8 +29,7 @@ const checkRawDiff = (str) => /^\+|-/i.test(str)
 
 /**
  * Check if the line is part of a diff and it is the beginning or end of a segment
- * @param {Number} i
- * @param {Number} fileEnd
+ * @param {Number} isEdge
  * @param {String} str
  * @returns
  */
@@ -88,7 +87,9 @@ function DiffLine({
       </td>
       <td
         className={cs('pl-2 break-all', {
-          'first-letter:mr-2': checkRawDiff(lineContent[0].content),
+          'first-letter:mr-2': checkRawDiff(
+            lineContent && lineContent[1] && lineContent[1].content
+          ),
           'bg-ds-gray-secondary':
             highlight(lineContent[0]?.content) ||
             highlight(lineContent[1]?.content),

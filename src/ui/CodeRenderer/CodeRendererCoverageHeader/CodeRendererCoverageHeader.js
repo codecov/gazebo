@@ -7,14 +7,20 @@ import TotalsNumber from 'ui/TotalsNumber'
 // Cleanup / Complexity to support file lables.
 const FlagControl = ({ headCoverage, patchCoverage, changeCoverage }) => (
   <>
-    {isFinite(headCoverage) && <Checkvalue value={headCoverage} />}
-    {isFinite(patchCoverage) && <Checkvalue value={patchCoverage} />}
-    {isFinite(changeCoverage) && <Checkvalue value={changeCoverage} />}
+    {isFinite(headCoverage) && (
+      <Checkvalue value={headCoverage} title={'HEAD'} />
+    )}
+    {isFinite(patchCoverage) && (
+      <Checkvalue value={patchCoverage} title={'Patch'} />
+    )}
+    {isFinite(changeCoverage) && (
+      <Checkvalue value={changeCoverage} title={'Change'} />
+    )}
   </>
 )
-const Checkvalue = (value) => (
+const Checkvalue = ({ value, title }) => (
   <>
-    <span className="font-semibold text-ds-gray-quinary">HEAD</span>{' '}
+    <span className="font-semibold text-ds-gray-quinary">{title}</span>{' '}
     <TotalsNumber value={value} plain light />
   </>
 )
@@ -50,7 +56,7 @@ function CodeRendererCoverageHeader({
         <span className="font-semibold">{headName}</span>
         {/* TODO: adjust this copyclipboard component have a gray variant*/}
         {/* TODO: Figure out where this clipboard is going to! */}
-        <CopyClipboard string={headName} />
+        {headName && <CopyClipboard string={headName} />}
       </div>
       {/* TODO: style, API is missing is file renamed on API */}
       {isNewFile && <span>New</span>}

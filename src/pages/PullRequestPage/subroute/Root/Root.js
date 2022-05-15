@@ -26,8 +26,6 @@ function useCoverageAndFlagsStates() {
 export function useCompareDiff() {
   const { provider, owner, repo, pullId } = useParams()
   const { data: pull, ...rest } = usePull({ provider, owner, repo, pullId })
-  console.log('whole pull request')
-  console.log(pull)
   const data = {
     baseTotals: pull?.compareWithBase?.baseTotals,
     files: pull?.compareWithBase?.fileComparisons,
