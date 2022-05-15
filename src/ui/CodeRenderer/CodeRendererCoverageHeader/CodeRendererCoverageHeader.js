@@ -18,12 +18,24 @@ const FlagControl = ({ headCoverage, patchCoverage, changeCoverage }) => (
     )}
   </>
 )
+
+FlagControl.propTypes = {
+  headCoverage: PropTypes.number,
+  patchCoverage: PropTypes.number,
+  changeCoverage: PropTypes.number,
+}
+
 const Checkvalue = ({ value, title }) => (
   <>
     <span className="font-semibold text-ds-gray-quinary">{title}</span>{' '}
     <TotalsNumber value={value} plain light />
   </>
 )
+
+Checkvalue.propTypes = {
+  value: PropTypes.number,
+  title: PropTypes.string,
+}
 
 function CodeRendererCoverageHeader({
   header,

@@ -14,9 +14,9 @@ const FileDiff = ({
   baseTotals,
   patchTotals,
   lineCoverageStatesAndSetters,
+  hasChanges,
   isNewFile,
   isRenamedFile,
-  hasChanges,
   ...rest
 }) => {
   const { covered, uncovered, partial } = lineCoverageStatesAndSetters
@@ -28,6 +28,7 @@ const FileDiff = ({
 
   const headCoverage = headTotals?.percentCovered
   const changeCoverage = headCoverage - baseTotals?.percentCovered
+  const patchCoverage = patchTotals?.percentCovered
   const header = segments[0]?.header
 
   return (
@@ -38,6 +39,7 @@ const FileDiff = ({
         headName={headName}
         headCoverage={headCoverage}
         changeCoverage={changeCoverage}
+        patchCoverage={patchCoverage}
         isNewFile={isNewFile}
         isRenamedFile={isRenamedFile}
       />
@@ -96,6 +98,21 @@ FileDiff.propTypes = {
   ),
   isNewFile: PropTypes.bool,
   isRenamedFile: PropTypes.bool,
+  headTotals: PropTypes.shape({
+    percentCovered: PropTypes.number,
+  }),
+  baseTotals: PropTypes.shape({
+    percentCovered: PropTypes.number,
+  }),
+  patchTotals: PropTypes.shape({
+    percentCovered: PropTypes.number,
+  }),
+  lineCoverageStatesAndSetters: PropTypes.shape({
+    covered: PropTypes.bool,
+    uncovered: PropTypes.bool,
+    partial: PropTypes.bool,
+  }),
+  hasChanges: PropTypes.bool,
 }
 
 export default FileDiff
