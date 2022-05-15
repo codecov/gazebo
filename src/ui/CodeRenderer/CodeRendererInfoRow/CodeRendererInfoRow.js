@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 
+import { CODE_RENDERER_INFO } from 'shared/utils/fileviewer'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
 const message = {
-  unexpectedChanges: (
+  [CODE_RENDERER_INFO.UNEXPECTED_CHANGES]: (
     <div className="flex gap-1">
       <Icon variant="outline" name="information-circle" size="sm" />
       <span>

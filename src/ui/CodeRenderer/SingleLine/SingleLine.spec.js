@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { LINE_TYPE } from 'shared/utils/fileviewerLines'
+import { LINE_TYPE } from 'shared/utils/fileviewer'
 
 import SingleLine from './SingleLine'
 

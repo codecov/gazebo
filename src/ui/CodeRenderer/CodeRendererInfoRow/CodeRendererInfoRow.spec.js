@@ -1,42 +1,23 @@
 import { render, screen } from '@testing-library/react'
 
-import CodeRendererCoverageHeader from './CodeRendererInfoRow'
+import { CODE_RENDERER_INFO } from 'shared/utils/fileviewer'
 
-// This is copypasted, needs some work
-xdescribe('CodeRendererCoverageHeader', () => {
+import CodeRendererInfoRow from './CodeRendererInfoRow'
+
+//TODO: Almost there, missing the usenavlinks part
+xdescribe('CodeRendererInfoRow', () => {
   function setup(props) {
-    render(<CodeRendererCoverageHeader {...props} />)
+    render(<CodeRendererInfoRow {...props} />)
   }
 
-  describe('when rendered with without treepaths', () => {
+  describe('when rendered with unexpected changes', () => {
     beforeEach(() => {
-      setup({ treePaths: [], fileCoverage: 39.28, change: 34.21 })
+      setup({ type: CODE_RENDERER_INFO.UNEXPECTED_CHANGES })
     })
 
-    it('renders progress percent and change percent', () => {
-      const change = screen.getByText(/34.21%/)
-      expect(change).toBeInTheDocument()
-      const headCoverage = screen.getByText(/39.28%/)
-      expect(headCoverage).toBeInTheDocument()
-    })
-  })
-
-  describe('when rendered with treepaths', () => {
-    beforeEach(() => {
-      setup({
-        treePaths: [{ pageName: 'owner', text: 'owner' }],
-        fileCoverage: 39.28,
-        change: 34.21,
-      })
-    })
-
-    it('renders progress, change and filepath', () => {
-      const change = screen.getByText(/34.21%/)
-      expect(change).toBeInTheDocument()
-      const headCoverage = screen.getByText(/39.28%/)
-      expect(headCoverage).toBeInTheDocument()
-      const treePath = screen.getByText(/owner/)
-      expect(treePath).toBeInTheDocument()
+    it('renders message relevant to unexpected info', () => {
+      expect(screen.getByText(/indirect coverage change/)).toBeInTheDocument()
+      //TODO: Missing to check if the anchor leads to the static page
     })
   })
 })

@@ -1,12 +1,11 @@
 import { render, screen } from '@testing-library/react'
 
-import { LINE_TYPE } from 'shared/utils/fileviewerLines'
+import { LINE_TYPE } from 'shared/utils/fileviewer'
 
 import DiffLine from './DiffLine'
 
-// This is copypasted, needs some work
-xdescribe('DiffLine', () => {
-  const line = [
+describe('DiffLine', () => {
+  const lineContent = [
     { types: ['plain'], content: '      ' },
     { types: ['punctuation'], content: '...' },
     { types: ['plain'], content: 'treePaths' },
@@ -14,15 +13,13 @@ xdescribe('DiffLine', () => {
     { types: ['plain'], content: '' },
   ]
 
-  function setup(number, coverage, showLines) {
+  function setup(props) {
     render(
       <table>
         <tbody>
           <DiffLine
-            line={line}
-            number={number}
-            coverage={coverage}
-            showLines={showLines}
+            {...props}
+            lineContent={lineContent}
             getTokenProps={() => {}}
             getLineProps={() => {}}
           />
@@ -31,59 +28,107 @@ xdescribe('DiffLine', () => {
     )
   }
 
-  describe('renders base line', () => {
-    beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
+  describe('renders base lines', () => {
+    const props = {
+      edgeOfFile: false,
+      showLines: {
+        showCovered: true,
+        showUncovered: true,
         showPartial: true,
-      }
-      setup(1, null, showLines)
-    })
+      },
+      headNumber: '1',
+      baseNumber: '1',
+      headCoverage: null,
+      baseCoverage: null,
+    }
 
-    it('render base line', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(1)
+    it('when coverage is null', () => {
+      setup(props)
+      expect(screen.getAllByLabelText('line of code').length).toBe(2)
     })
   })
 
-  describe('renders highlighted covered line', () => {
+  describe('renders highlighted covered lines', () => {
     beforeEach(() => {
-      const showLines = {
-        showCovered: true,
-        showUncovered: false,
-        showPartial: false,
+      const props = {
+        edgeOfFile: false,
+        showLines: {
+          showCovered: true,
+          showUncovered: true,
+          showPartial: true,
+        },
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'H',
+        baseCoverage: 'H',
       }
-      setup(1, LINE_TYPE.HIT, showLines)
+      setup(props)
     })
 
-    it('render covered line', () => {
+    it('render covered lines if there is coverage and showCoverage is true', () => {
+      expect(screen.getAllByLabelText('covered line of code').length).toBe(2)
+    })
+  })
+
+  describe('renders highlighted covered line for head', () => {
+    beforeEach(() => {
+      const props = {
+        edgeOfFile: false,
+        showLines: {
+          showCovered: true,
+          showUncovered: true,
+          showPartial: true,
+        },
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'H',
+        baseCoverage: null,
+      }
+      setup(props)
+    })
+
+    it('render covered lines if there is coverage and showCoverage is true', () => {
       expect(screen.getAllByLabelText('covered line of code').length).toBe(1)
     })
   })
 
-  describe('renders base covered line', () => {
+  describe('renders highlighted uncovered lines', () => {
     beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: false,
+      const props = {
+        edgeOfFile: false,
+        showLines: {
+          showCovered: true,
+          showUncovered: true,
+          showPartial: true,
+        },
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'M',
+        baseCoverage: 'M',
       }
-      setup(1, LINE_TYPE.HIT, showLines)
+      setup(props)
     })
 
-    it('render covered line', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(1)
+    it('render uncovered line', () => {
+      expect(screen.getAllByLabelText('uncovered line of code').length).toBe(2)
     })
   })
 
-  describe('renders highlighted uncovered line', () => {
+  describe('renders highlighted uncovered base', () => {
     beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: true,
-        showPartial: false,
+      const props = {
+        edgeOfFile: false,
+        showLines: {
+          showCovered: true,
+          showUncovered: true,
+          showPartial: true,
+        },
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: null,
+        baseCoverage: 'M',
       }
-      setup(1, LINE_TYPE.MISS, showLines)
+      setup(props)
     })
 
     it('render uncovered line', () => {
@@ -91,48 +136,47 @@ xdescribe('DiffLine', () => {
     })
   })
 
-  describe('renders base uncovered line', () => {
+  describe('renders highlighted partial lines', () => {
     beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: false,
+      const props = {
+        edgeOfFile: false,
+        showLines: {
+          showCovered: true,
+          showUncovered: true,
+          showPartial: true,
+        },
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'P',
+        baseCoverage: 'P',
       }
-      setup(1, LINE_TYPE.MISS, showLines)
+      setup(props)
     })
 
-    it('render uncovered line', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(1)
+    it('render partial lines', () => {
+      expect(screen.getAllByLabelText('partial line of code').length).toBe(2)
     })
   })
 
-  describe('renders highlighted partial line', () => {
+  describe('renders highlighted partial head', () => {
     beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: true,
+      const props = {
+        edgeOfFile: true,
+        showLines: {
+          showCovered: true,
+          showUncovered: true,
+          showPartial: true,
+        },
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'P',
+        baseCoverage: null,
       }
-      setup(2, LINE_TYPE.PARTIAL, showLines)
+      setup(props)
     })
 
     it('render partial line', () => {
       expect(screen.getAllByLabelText('partial line of code').length).toBe(1)
-    })
-  })
-
-  describe('renders base partial line', () => {
-    beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: false,
-      }
-      setup(1, LINE_TYPE.PARTIAL, showLines)
-    })
-
-    it('render partial line', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(1)
     })
   })
 })

@@ -71,8 +71,8 @@ function CodeRendererCoverageHeader({
         {headName && <CopyClipboard string={headName} />}
       </div>
       {/* TODO: style, API is missing is file renamed on API */}
-      {isNewFile && <span>New</span>}
-      {isRenamed && <span>Renamed</span>}
+      {/* {isNewFile && <span>New</span>} */}
+      {/* {isRenamed && <span>Renamed</span>} */}
       <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
         <FlagControl
           headCoverage={headCoverage}

@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import { LINE_STATE, LINE_TYPE } from 'shared/utils/fileviewerLines'
+import { getLineState, LINE_STATE, LINE_TYPE } from 'shared/utils/fileviewer'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]:
@@ -18,22 +18,6 @@ const lineStateToLabel = {
   [LINE_STATE.UNCOVERED]: 'uncovered line of code',
   [LINE_STATE.BLANK]: 'line of code',
   [LINE_STATE.PARTIAL]: 'partial line of code',
-}
-
-// Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
-function getLineState({ coverage, showLines }) {
-  const { showCovered, showUncovered, showPartial } = showLines
-  return coverage
-    ? {
-        [LINE_TYPE.HIT]: showCovered ? LINE_STATE.COVERED : LINE_STATE.BLANK,
-        [LINE_TYPE.MISS]: showUncovered
-          ? LINE_STATE.UNCOVERED
-          : LINE_STATE.BLANK,
-        [LINE_TYPE.PARTIAL]: showPartial
-          ? LINE_STATE.PARTIAL
-          : LINE_STATE.BLANK,
-      }[coverage]
-    : LINE_STATE.BLANK
 }
 
 function SingleLine({

@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 
-import { LINE_TYPE } from 'shared/utils/fileviewerLines'
+import {
+  CODE_RENDERER_INFO,
+  CODE_RENDERER_TYPE,
+  LINE_TYPE,
+} from 'shared/utils/fileviewer'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererCoverageHeader from 'ui/CodeRenderer/CodeRendererCoverageHeader'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
@@ -48,11 +52,15 @@ const FileDiff = ({
         const content = segment.lines.map((line) => line.content).join('\n')
         return (
           <Fragment key={`${headName}-${segmentIndex}`}>
-            {hasChanges && <CodeRendererInfoRow type={'unexpectedChanges'} />}
+            {hasChanges && (
+              <CodeRendererInfoRow
+                type={CODE_RENDERER_INFO.UNEXPECTED_CHANGES}
+              />
+            )}
             <CodeRenderer
               code={content}
               fileName={headName}
-              rendererType="diff"
+              rendererType={CODE_RENDERER_TYPE.DIFF}
               LineComponent={({ i, line, ...props }) => (
                 <DiffLine
                   // If this line one of the first 3 or last three lines of the segment

@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import { LINE_STATE, LINE_TYPE } from 'shared/utils/fileviewerLines'
+import { getLineState, LINE_STATE, LINE_TYPE } from 'shared/utils/fileviewer'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]:
@@ -35,22 +35,6 @@ const checkRawDiff = (str) => /^\+|-/i.test(str)
  */
 const shouldHighlight = (isEdge) => (str) => checkRawDiff(str) || !isEdge
 
-// Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
-function getLineState({ coverage, showLines }) {
-  const { showCovered, showUncovered, showPartial } = showLines
-  return coverage
-    ? {
-        [LINE_TYPE.HIT]: showCovered ? LINE_STATE.COVERED : LINE_STATE.BLANK,
-        [LINE_TYPE.MISS]: showUncovered
-          ? LINE_STATE.UNCOVERED
-          : LINE_STATE.BLANK,
-        [LINE_TYPE.PARTIAL]: showPartial
-          ? LINE_STATE.PARTIAL
-          : LINE_STATE.BLANK,
-      }[coverage]
-    : LINE_STATE.BLANK
-}
-
 function DiffLine({
   edgeOfFile = false,
   getTokenProps,
@@ -66,7 +50,7 @@ function DiffLine({
   const highlight = shouldHighlight(edgeOfFile)
 
   return (
-    <tr data-testid="fv-single-line">
+    <tr data-testid="fv-diff-line">
       <td
         aria-label={lineStateToLabel[baseLineState]}
         className={cs(

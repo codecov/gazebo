@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom'
 import NotFound from 'pages/NotFound'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
+import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
@@ -124,7 +125,7 @@ function FileView() {
           <CodeRenderer
             code={content}
             fileName={paths.slice(-1)[0]}
-            rendererType="single"
+            rendererType={CODE_RENDERER_TYPE.SINGLE_LINE}
             LineComponent={({ i, line, getLineProps, getTokenProps }) => (
               <SingleLine
                 key={i}

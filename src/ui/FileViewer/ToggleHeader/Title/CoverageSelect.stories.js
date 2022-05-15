@@ -1,4 +1,4 @@
-import { LINE_STATE } from 'shared/utils/fileviewerLines'
+import { LINE_STATE } from 'shared/utils/fileviewer'
 
 import { TitleCoverage } from './Title'
 

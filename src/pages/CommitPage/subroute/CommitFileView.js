@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
+import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
@@ -116,7 +117,7 @@ function CommitFileView({ diff }) {
           <CodeRenderer
             code={content}
             fileName={path}
-            rendererType="single"
+            rendererType={CODE_RENDERER_TYPE.SINGLE_LINE}
             LineComponent={({ i, line, getLineProps, getTokenProps }) => (
               <SingleLine
                 key={i + 1}

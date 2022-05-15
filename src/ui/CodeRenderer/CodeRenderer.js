@@ -2,6 +2,7 @@ import Highlight, { defaultProps } from 'prism-react-renderer'
 import PropTypes from 'prop-types'
 
 import 'shared/utils/prisimTheme.css'
+import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 import './CodeRenderer.css'
 
@@ -10,9 +11,7 @@ function CodeRenderer({ code, fileName, LineComponent, rendererType }) {
     <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border font-mono">
       <colgroup>
         <col width="40" />
-        {rendererType && rendererType.toLowerCase() === 'diff' && (
-          <col width="40" />
-        )}
+        {rendererType === CODE_RENDERER_TYPE.DIFF && <col width="40" />}
         <col />
       </colgroup>
       <tbody>
@@ -36,7 +35,10 @@ function CodeRenderer({ code, fileName, LineComponent, rendererType }) {
 CodeRenderer.propTypes = {
   code: PropTypes.string.isRequired,
   fileName: PropTypes.string.isRequired,
-  rendererType: PropTypes.oneOf(['diff', 'single']),
+  rendererType: PropTypes.oneOf([
+    CODE_RENDERER_TYPE.DIFF,
+    CODE_RENDERER_TYPE.SINGLE_LINE,
+  ]),
   LineComponent: PropTypes.func.isRequired,
 }
 
