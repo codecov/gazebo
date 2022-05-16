@@ -68,7 +68,6 @@ describe('FileDiff', () => {
     beforeEach(() => {
       setup({
         headName: 'main.ts',
-        segments: [],
         lineCoverageStatesAndSetters: {
           covered: true,
           uncovered: true,
