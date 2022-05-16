@@ -63,4 +63,22 @@ describe('FileDiff', () => {
       expect(screen.getByText(/Unexpected Changes/i)).toBeInTheDocument()
     })
   })
+
+  describe('when segment is an empty array', () => {
+    beforeEach(() => {
+      setup({
+        headName: 'main.ts',
+        segments: [],
+        lineCoverageStatesAndSetters: {
+          covered: true,
+          uncovered: true,
+          partial: true,
+        },
+      })
+    })
+    it('doesnt render information on the code renderer', () => {
+      expect(screen.queryByText(/Unexpected Changes/i)).not.toBeInTheDocument()
+      expect(screen.queryByText('fv-diff-line')).not.toBeInTheDocument()
+    })
+  })
 })

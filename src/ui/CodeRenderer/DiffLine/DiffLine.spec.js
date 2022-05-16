@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react'
 
-import { LINE_TYPE } from 'shared/utils/fileviewer'
-
 import DiffLine from './DiffLine'
 
 const content = [
@@ -183,7 +181,6 @@ describe('DiffLine', () => {
   describe('detects edge of file', () => {
     beforeEach(() => {
       const props = {
-        edgeOfFile: true,
         showLines: {
           showCovered: true,
           showUncovered: true,
