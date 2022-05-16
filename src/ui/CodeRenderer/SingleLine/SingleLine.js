@@ -1,24 +1,12 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import { getLineState, LINE_STATE, LINE_TYPE } from 'shared/utils/fileviewer'
-
-const classNamePerLineState = {
-  [LINE_STATE.COVERED]:
-    'bg-ds-coverage-covered border-ds-primary-green border-r-2',
-  [LINE_STATE.UNCOVERED]:
-    'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
-  [LINE_STATE.BLANK]: 'border-ds-gray-tertiary border-r',
-  [LINE_STATE.PARTIAL]:
-    'bg-ds-coverage-partial border-ds-primary-yellow border-r-2',
-}
-
-const lineStateToLabel = {
-  [LINE_STATE.COVERED]: 'covered line of code',
-  [LINE_STATE.UNCOVERED]: 'uncovered line of code',
-  [LINE_STATE.BLANK]: 'line of code',
-  [LINE_STATE.PARTIAL]: 'partial line of code',
-}
+import {
+  classNamePerLineState,
+  getLineState,
+  LINE_TYPE,
+  lineStateToLabel,
+} from 'shared/utils/fileviewer'
 
 function SingleLine({
   line,

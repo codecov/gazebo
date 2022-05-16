@@ -12,6 +12,23 @@ export const LINE_STATE = Object.freeze({
   PARTIAL: 'PARTIAL',
 })
 
+export const classNamePerLineState = {
+  [LINE_STATE.COVERED]:
+    'bg-ds-coverage-covered border-ds-primary-green border-r-2',
+  [LINE_STATE.UNCOVERED]:
+    'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
+  [LINE_STATE.BLANK]: 'border-ds-gray-tertiary border-r',
+  [LINE_STATE.PARTIAL]:
+    'bg-ds-coverage-partial border-ds-primary-yellow border-r-2',
+}
+
+export const lineStateToLabel = {
+  [LINE_STATE.COVERED]: 'covered line of code',
+  [LINE_STATE.UNCOVERED]: 'uncovered line of code',
+  [LINE_STATE.BLANK]: 'line of code',
+  [LINE_STATE.PARTIAL]: 'partial line of code',
+}
+
 export const CODE_RENDERER_TYPE = Object.freeze({
   DIFF: 'DIFF',
   SINGLE_LINE: 'SINGLE-LINE',
