@@ -70,6 +70,7 @@ function DiffLine({
         {headNumber}
       </td>
       <td
+        data-testid="affected-lines"
         className={cs('pl-2 break-all', {
           'first-letter:mr-2': checkRawDiff(
             lineContent && lineContent[1] && lineContent[1].content

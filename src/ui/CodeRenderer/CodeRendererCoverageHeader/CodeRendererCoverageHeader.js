@@ -53,6 +53,8 @@ function CodeRendererCoverageHeader({
    * @param {Float} headCoverage coverage belonging to the head of the segment
    * @param {Float} patchCoverage patch belonging to the file of the segment
    * @param {Float} changeCoverage change belonging to the file of the segment
+   * @param {Bool} isNewFile boolean that says if this is a new file
+   * @param {Bool} isRenamed boolean that says if this is a renamed file
    */
 
   return (
@@ -70,9 +72,7 @@ function CodeRendererCoverageHeader({
         {/* TODO: Figure out where this clipboard is going to! */}
         {headName && <CopyClipboard string={headName} />}
       </div>
-      {/* TODO: style, API is missing is file renamed on API */}
-      {/* {isNewFile && <span>New</span>} */}
-      {/* {isRenamed && <span>Renamed</span>} */}
+      {/* TODO: design ask on how to display new, renamed or deleted? file */}
       <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
         <FlagControl
           headCoverage={headCoverage}

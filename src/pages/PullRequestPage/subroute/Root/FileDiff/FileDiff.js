@@ -52,7 +52,7 @@ const FileDiff = ({
         const content = segment.lines.map((line) => line.content).join('\n')
         return (
           <Fragment key={`${headName}-${segmentIndex}`}>
-            {hasChanges && (
+            {segment.header === null && (
               <CodeRendererInfoRow
                 type={CODE_RENDERER_INFO.UNEXPECTED_CHANGES}
               />

@@ -4,16 +4,16 @@ import { LINE_TYPE } from 'shared/utils/fileviewer'
 
 import DiffLine from './DiffLine'
 
-describe('DiffLine', () => {
-  const lineContent = [
-    { types: ['plain'], content: '      ' },
-    { types: ['punctuation'], content: '...' },
-    { types: ['plain'], content: 'treePaths' },
-    { types: ['punctuation'], content: ',' },
-    { types: ['plain'], content: '' },
-  ]
+const content = [
+  { types: ['plain'], content: '      ' },
+  { types: ['punctuation'], content: '...' },
+  { types: ['plain'], content: 'treePaths' },
+  { types: ['punctuation'], content: ',' },
+  { types: ['plain'], content: '' },
+]
 
-  function setup(props) {
+describe('DiffLine', () => {
+  function setup(props, lineContent = content) {
     render(
       <table>
         <tbody>
@@ -161,7 +161,7 @@ describe('DiffLine', () => {
   describe('renders highlighted partial head', () => {
     beforeEach(() => {
       const props = {
-        edgeOfFile: true,
+        edgeOfFile: false,
         showLines: {
           showCovered: true,
           showUncovered: true,
@@ -177,6 +177,37 @@ describe('DiffLine', () => {
 
     it('render partial line', () => {
       expect(screen.getAllByLabelText('partial line of code').length).toBe(1)
+    })
+  })
+
+  describe('detects edge of file', () => {
+    beforeEach(() => {
+      const props = {
+        edgeOfFile: true,
+        showLines: {
+          showCovered: true,
+          showUncovered: true,
+          showPartial: true,
+        },
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'P',
+        baseCoverage: null,
+      }
+      const content = [
+        { types: ['plain'], content: '' },
+        { types: ['punctuation'], content: '+' },
+        { types: ['plain'], content: 'treePaths' },
+        { types: ['punctuation'], content: ',' },
+        { types: ['plain'], content: '' },
+      ]
+      setup(props, content)
+    })
+
+    it('render partial line', () => {
+      expect(screen.getByTestId('affected-lines')).toHaveClass(
+        'bg-ds-gray-secondary'
+      )
     })
   })
 })
