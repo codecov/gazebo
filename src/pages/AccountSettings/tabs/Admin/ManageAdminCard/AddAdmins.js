@@ -36,7 +36,7 @@ function ResultList({
 
   return users.map((user, index) => (
     <li
-      className={styles.item(highlightedIndex === index)}
+      className={cs(styles.item(highlightedIndex === index), 'cursor-pointer')}
       key={user.username}
       {...getItemProps({ item: user, index })}
     >
