@@ -57,9 +57,11 @@ describe('imageReducer', () => {
   })
   describe('type set to unknown case', () => {
     it('throws an error', () => {
-      expect(imageReducer({}, { type: 'unknown' })).toThrowError(
-        'Unhandled action type: unknown'
-      )
+      function unknownType() {
+        imageReducer({}, { type: 'unknown' })
+      }
+
+      expect(unknownType).toThrow('Unhandled action type: unknown')
     })
   })
 })
