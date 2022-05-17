@@ -1,29 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
-
-import * as fs from 'fs'
-import * as path from 'path'
 
 import { useImage } from './hooks'
-
-const server = setupServer(
-  rest.get('https://api.backend.dev/image.png', (_, res, ctx) => {
-    const imgBuff = fs.readFileSync(
-      path.resolve(__dirname, '../../assets/githublogo.png')
-    )
-
-    return res(
-      ctx.set('Content-Length', imgBuff.byteLength.toString()),
-      ctx.set('Content-Type', 'image/png'),
-      ctx.body(imgBuff)
-    )
-  })
-)
-
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
 
 describe('useImage', () => {
   let hookData
