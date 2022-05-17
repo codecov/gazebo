@@ -418,6 +418,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    unexpectedChanges: {
+      text: 'Unexpected Changes',
+      path: () => 'https://docs.codecov.com/docs/unexpected-coverage-changes',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
 

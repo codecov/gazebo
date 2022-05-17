@@ -1,3 +1,4 @@
+import isFinite from 'lodash/isFinite'
 import PropTypes from 'prop-types'
 
 import Breadcrumb from 'ui/Breadcrumb'
@@ -25,7 +26,7 @@ function CodeRendererProgressHeader({ treePaths, fileCoverage, change }) {
       </div>
       <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
         <Progress amount={fileCoverage} label />
-        {change && <TotalsNumber value={change} showChange />}
+        {isFinite(change) && <TotalsNumber value={change} showChange />}
       </div>
     </div>
   )
