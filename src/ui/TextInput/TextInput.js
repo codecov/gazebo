@@ -13,10 +13,10 @@ const styles = {
     'absolute text-ds-gray-quaternary left-2 h-full flex items-center',
 }
 
-// TODO dont pass className to input
 const TextInput = forwardRef(
   ({ type = 'text', icon, label, placeholder, ...props }, ref) => {
     const id = uniqueId('text-input')
+    const { className, ...newProps } = props
 
     // If no label, the placeholder is used as a hidden label for a11y
     const textLabel = defaultTo(label, placeholder)
@@ -45,7 +45,7 @@ const TextInput = forwardRef(
               'pl-7': Boolean(icon),
             })}
             placeholder={placeholder}
-            {...props}
+            {...newProps}
           />
         </div>
       </div>

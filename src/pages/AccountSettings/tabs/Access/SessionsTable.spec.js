@@ -17,7 +17,7 @@ describe('SessionsTable', () => {
         {
           sessionid: 32,
           ip: '172.21.0.1',
-          lastseen: subDays(new Date(), 3),
+          lastseen: subDays(new Date(), 3).toISOString(),
           useragent: 'Chrome/5.0 (Windows; Intel 10)',
           owner: 2,
           type: 'login',
@@ -26,7 +26,7 @@ describe('SessionsTable', () => {
         {
           sessionid: 6,
           ip: '172.23.0.2',
-          lastseen: subDays(new Date(), 1),
+          lastseen: subDays(new Date(), 1).toISOString(),
           useragent:
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
           owner: 2,

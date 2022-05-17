@@ -81,7 +81,7 @@ describe('YAMLTab', () => {
 
     it('renders the description text', () => {
       const tab = screen.getByText(
-        /Changes made to the Global yml will override the default repo settings and is applied to all repositories in the org./
+        /Changes made to the Global yaml are applied to all repositories in the org if they do not have a repo level yaml./
       )
       expect(tab).toBeInTheDocument()
     })
