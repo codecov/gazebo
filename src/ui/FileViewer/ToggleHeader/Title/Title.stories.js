@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { LINE_STATE } from 'shared/utils/fileviewerLines'
+import { LINE_STATE } from 'shared/utils/fileviewer'
 
 import Title, { TitleCoverage, TitleFlags } from './Title'
 

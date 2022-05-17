@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { LINE_STATE } from 'shared/utils/fileviewerLines'
+import { LINE_STATE } from 'shared/utils/fileviewer'
 
 import Title, { TitleCoverage, TitleFlags } from './Title/Title'
 
@@ -19,19 +19,20 @@ function ToggleHeader({
    */
   const { covered, setCovered, uncovered, setUncovered, partial, setPartial } =
     lineCoverageStatesAndSetters
-  const { flagNames, selectedFlags, setSelectedFlags } = flagData
 
   return (
     <Title
       title={title}
-      Flags={() => (
-        <TitleFlags
-          list={flagNames}
-          current={selectedFlags}
-          onChange={setSelectedFlags}
-          flagsIsLoading={coverageIsLoading}
-        />
-      )}
+      Flags={() =>
+        flagData && (
+          <TitleFlags
+            list={flagData?.flagNames}
+            current={flagData?.selectedFlags}
+            onChange={flagData?.setSelectedFlags}
+            flagsIsLoading={coverageIsLoading}
+          />
+        )
+      }
     >
       <TitleCoverage
         onChange={() => setCovered((covered) => !covered)}
