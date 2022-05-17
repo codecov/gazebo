@@ -46,6 +46,42 @@ export const commitOnePending = graphql.query('Commit', (req, res, ctx) => {
   )
 })
 
+export const commitOneCarriedForward = graphql.query(
+  'Commit',
+  (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.data({
+        owner: {
+          repository: {
+            commit: {
+              ...commitDataError,
+              uploads: {
+                edges: [
+                  {
+                    node: {
+                      state: 'COMPLETE',
+                      provider: 'travis',
+                      createdAt: '2020-08-25T16:36:19.559474+00:00',
+                      updatedAt: '2020-08-25T16:36:19.679868+00:00',
+                      downloadUrl: '/test.txt',
+                      ciUrl: 'https://example.com',
+                      uploadType: 'CARRYFORWARDED',
+                      jobCode: '1234',
+                      buildCode: '1234',
+                      flags: ['unit'],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      })
+    )
+  }
+)
+
 export const commitEmptyUploads = graphql.query('Commit', (req, res, ctx) => {
   return res(
     ctx.status(200),
@@ -179,6 +215,17 @@ const commitDataError = {
       {
         node: {
           state: 'PROCESSED',
+          provider: 'github actions',
+          createdAt: '2020-08-25T16:36:25.820340+00:00',
+          updatedAt: '2020-08-25T16:36:25.859889+00:00',
+          flags: ['front-end'],
+          uploadType: 'UPLOADED',
+          jobCode: '1234',
+        },
+      },
+      {
+        node: {
+          state: 'COMPLETE',
           provider: 'github actions',
           createdAt: '2020-08-25T16:36:25.820340+00:00',
           updatedAt: '2020-08-25T16:36:25.859889+00:00',

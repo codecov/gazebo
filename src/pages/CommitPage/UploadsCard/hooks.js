@@ -11,6 +11,7 @@ function humanReadableOverview(state, count) {
   if (state === UploadStateEnum.error) return 'errored'
   if (state === UploadStateEnum.uploaded) return `${plural(count)} pending`
   if (state === UploadStateEnum.processed) return 'successful'
+  if (state === UploadStateEnum.complete) return 'carried forward'
 }
 
 export function useUploads() {
