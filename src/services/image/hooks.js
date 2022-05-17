@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react'
+import { useLayoutEffect, useReducer } from 'react'
 
 function imagePromiseFactory({ src }) {
   return new Promise((resolveSource, rejectSource) => {
@@ -41,7 +41,7 @@ export function useImage({ src }) {
     error: null,
   })
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch({ type: 'pending' })
 
     imagePromiseFactory({ decode: true, src })
