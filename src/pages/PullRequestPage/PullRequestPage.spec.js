@@ -19,9 +19,9 @@ describe('PullRequestPage', () => {
         <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
           <PullRequestPage />
         </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path">
+        {/* <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path">
           <PullRequestPage />
-        </Route>
+        </Route> */}
       </MemoryRouter>
     )
   }
@@ -63,25 +63,25 @@ describe('PullRequestPage', () => {
     })
   })
 
-  describe('file view', () => {
-    beforeEach(async () => {
-      setup({
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
-      })
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-    })
+  // describe('file view', () => {
+  //   beforeEach(async () => {
+  //     setup({
+  //       initialEntries: ['/gh/test-org/test-repo/pull/12'],
+  //     })
+  //     await waitFor(() =>
+  //       expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+  //     )
+  //   })
 
-    it('rendered', () => {
-      expect(screen.getByText(/FullFile/i)).toBeInTheDocument()
-    })
-  })
+  //   it('rendered', () => {
+  //     expect(screen.getByText(/FullFile/i)).toBeInTheDocument()
+  //   })
+  // })
 
   describe('compare summary', () => {
     beforeEach(async () => {
       setup({
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -96,7 +96,7 @@ describe('PullRequestPage', () => {
   describe('header', () => {
     beforeEach(async () => {
       setup({
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -111,7 +111,7 @@ describe('PullRequestPage', () => {
   describe('flags', () => {
     beforeEach(async () => {
       setup({
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -126,7 +126,7 @@ describe('PullRequestPage', () => {
   describe('commits', () => {
     beforeEach(async () => {
       setup({
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
