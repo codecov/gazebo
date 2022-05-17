@@ -1,3 +1,5 @@
+import Cookie from 'js-cookie'
+
 import { useIdentifyUser } from 'shared/featureFlags'
 
 import { getUserData } from './utils'
@@ -28,6 +30,12 @@ const defaultUser = {
 
 function createUser(user) {
   if (!user) return
+  const username =
+    Cookie.get('github-username') ||
+    Cookie.get('bitbucket-username') ||
+    Cookie.get('gitlab-username') ||
+    user.user.username
+
   const { custom: defaultCustom, ...defaultTopLevel } = defaultUser
   const topLevelUser = Object.assign({}, defaultTopLevel, {
     key: user.trackingMetadata.ownerid,
@@ -35,7 +43,10 @@ function createUser(user) {
     email: user.email,
     avatar: user.user.avatarUrl,
   })
-  return { ...topLevelUser, custom: getUserData(user, defaultCustom) }
+  return {
+    ...topLevelUser,
+    custom: getUserData({ ...user, username }, defaultCustom),
+  }
 }
 
 export function useTrackFeatureFlags(user) {
