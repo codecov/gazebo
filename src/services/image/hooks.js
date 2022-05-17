@@ -4,12 +4,16 @@ function imagePromiseFactory({ src }) {
   return new Promise((resolve, reject) => {
     return new Promise((resolve, reject) => {
       const i = new Image()
+      i.src = src
       i.onload = () => i.decode().then(resolve).catch(reject)
       i.onerror = reject
-      i.src = src
-    }).then(() => {
-      resolve(src)
     })
+      .then(() => {
+        resolve(src)
+      })
+      .catch(() => {
+        reject(true)
+      })
   })
 }
 
