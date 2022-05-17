@@ -1,32 +1,32 @@
 import { useEffect, useReducer } from 'react'
 
 function imagePromiseFactory({ src }) {
-  return new Promise((resolve, reject) => {
-    return new Promise((resolve, reject) => {
-      const i = new Image()
-      i.src = src
-      i.onload = () => i.decode().then(resolve).catch(reject)
-      i.onerror = reject
+  return new Promise((resolveSource, rejectSource) => {
+    return new Promise((resolveImage, rejectImage) => {
+      const image = new Image()
+      image.src = src
+      image.onload = () => image.decode().then(resolveImage).catch(rejectImage)
+      image.onerror = rejectImage
     })
       .then(() => {
-        resolve(src)
+        resolveSource(src)
       })
       .catch(() => {
-        reject(true)
+        rejectSource(true)
       })
   })
 }
 
-function imageReducer(state, action) {
+export function imageReducer(state, action) {
   switch (action.type) {
     case 'pending': {
-      return { status: 'pending', src: undefined, error: null }
+      return { status: action.type, src: undefined, error: null }
     }
     case 'resolved': {
-      return { status: 'resolved', src: action.src, error: null }
+      return { status: action.type, src: action.src, error: null }
     }
     case 'rejected': {
-      return { status: 'rejected', src: undefined, error: action.error }
+      return { status: action.type, src: undefined, error: action.error }
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)
@@ -42,6 +42,8 @@ export function useImage({ src }) {
   })
 
   useEffect(() => {
+    dispatch({ type: 'pending' })
+
     imagePromiseFactory({ decode: true, src })
       .then((src) => {
         dispatch({ type: 'resolved', src })
