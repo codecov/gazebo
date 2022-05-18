@@ -11,12 +11,10 @@ export default function Title({ title, Flags, children }) {
       <span className="text-ds-gray-senary font-semibold text-base">
         {title}
       </span>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-7">
-        <span className="mb-2 sm:mb-0 text-xs font-semibold">
-          View coverage by:
-        </span>
+      <div className="flex flex-row items-center justify-between gap-4 lg:gap-7">
+        <span className="text-xs font-semibold">View coverage by:</span>
         {children}
-        {Flags()}
+        <Flags />
       </div>
     </div>
   )

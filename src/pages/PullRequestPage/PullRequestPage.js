@@ -38,7 +38,7 @@ function PullRequestPage() {
       />
       <Header />
       <CompareSummary />
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 space-y-2">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
         <article className="col-span-2">
           <Switch>
             <Route

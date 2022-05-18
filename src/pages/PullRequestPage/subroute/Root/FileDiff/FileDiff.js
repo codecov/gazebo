@@ -21,7 +21,6 @@ const FileDiff = ({
   hasChanges,
   isNewFile,
   isRenamedFile,
-  ...rest
 }) => {
   const { covered, uncovered, partial } = lineCoverageStatesAndSetters
   const showLines = {
@@ -46,6 +45,7 @@ const FileDiff = ({
         patchCoverage={patchCoverage}
         isNewFile={isNewFile}
         isRenamedFile={isRenamedFile}
+        hasChanges={hasChanges}
       />
       {/* CodeRenderer */}
       {segments.map((segment, segmentIndex) => {
