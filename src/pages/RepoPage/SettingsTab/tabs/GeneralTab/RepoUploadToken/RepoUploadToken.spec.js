@@ -3,16 +3,20 @@ import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useAddNotification } from 'services/toastNotification'
 import { useRegenerateUploadToken } from 'services/uploadToken'
 
 import RepoUploadToken from './RepoUploadToken'
 
 jest.mock('services/uploadToken')
+jest.mock('services/toastNotification')
 
 describe('RepoUploadToken', () => {
   const mutate = jest.fn()
+  const addNotification = jest.fn()
 
   function setup(uploadToken = undefined) {
+    useAddNotification.mockReturnValue(addNotification)
     useRegenerateUploadToken.mockReturnValue({
       mutate,
       data: { uploadToken },
@@ -102,6 +106,27 @@ describe('RepoUploadToken', () => {
 
     it('renders the new token', () => {
       expect(screen.getByText('CODECOV_TOKEN=new token')).toBeInTheDocument()
+    })
+  })
+
+  describe('when mutation is not successful', () => {
+    beforeEach(async () => {
+      setup('new token')
+      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
+      userEvent.click(
+        screen.getByRole('button', { name: 'Generate New Token' })
+      )
+      mutate.mock.calls[0][1].onError()
+    })
+    it('calls the mutation', () => {
+      expect(mutate).toHaveBeenCalled()
+    })
+
+    it('adds an error notification', () => {
+      expect(addNotification).toHaveBeenCalledWith({
+        type: 'error',
+        text: 'Something went wrong',
+      })
     })
   })
 })
