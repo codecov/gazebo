@@ -67,9 +67,7 @@ describe('Title', () => {
     beforeEach(() => {
       setup({
         title: 'sample title',
-        Flags: () => {
-          ;<div>This is representing the flags</div>
-        },
+        Flags: () => <div>This is representing the flags</div>,
       })
     })
 
