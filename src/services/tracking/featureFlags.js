@@ -35,7 +35,7 @@ const defaultUser = {
 }
 
 /**
- * Retruns a unique user and key if the user cookie does not match the me query response
+ * Creates a unique user and key if the user cookie does not match the me query response
  *
  * @param {String} name
  * @param {String} ownerid
@@ -44,7 +44,7 @@ const defaultUser = {
 function setUniqueKeyAndUsername(name, ownerid) {
   const cookieUsername = getUsernameCookie()
   const username = cookieUsername ?? name
-  const key = setUniqueKey(name, ownerid)
+  const key = setUniqueKey(name, ownerid, cookieUsername)
 
   return { username, key }
 }
@@ -53,13 +53,12 @@ function setUniqueKeyAndUsername(name, ownerid) {
  * Set a unique key for the user identification process
  *
  * @param {String} name
- * @param {String} username
+ * @param {String} ownerid
  * @param {String} ownerid
  * @param {String|undefined} cookieUsername
  * @returns {string}
  */
-function setUniqueKey(name, ownerid) {
-  const cookieUsername = getUsernameCookie()
+function setUniqueKey(name, ownerid, cookieUsername) {
   const staff = getStaffCookie()
   const key =
     cookieUsername !== name && cookieUsername && staff !== cookieUsername
