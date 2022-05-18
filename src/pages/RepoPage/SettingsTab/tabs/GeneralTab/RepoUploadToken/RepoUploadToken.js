@@ -22,7 +22,7 @@ function useRegenerateToken({ provider, owner, repo }) {
     repo,
   })
 
-  function regenerateToken() {
+  async function regenerateToken() {
     mutate(null, {
       onError: () =>
         addToast({
@@ -58,8 +58,8 @@ const RegenerateTokenModel = ({ closeModal, regenerateToken, isLoading }) => (
             isLoading={isLoading}
             hook="generate-token"
             variant="primary"
-            onClick={() => {
-              regenerateToken()
+            onClick={async () => {
+              await regenerateToken()
               closeModal()
             }}
           >
@@ -72,8 +72,9 @@ const RegenerateTokenModel = ({ closeModal, regenerateToken, isLoading }) => (
 )
 
 RegenerateTokenModel.propTypes = {
-  closeModal: PropTypes.func,
-  regenerateToken: PropTypes.func,
+  closeModal: PropTypes.func.isRequired,
+  regenerateToken: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
 }
 
 function RepoUploadToken({ uploadToken }) {
@@ -117,7 +118,13 @@ function RepoUploadToken({ uploadToken }) {
           <TokenWrapper uploadToken={TokenFormatEnum.SECOND_FORMAT + token} />
         </div>
         <div>
-          <Button onClick={() => setShowModal(true)}>Regenerate</Button>
+          <Button
+            hook="show-modal"
+            onClick={() => setShowModal(true)}
+            disabled={isLoading}
+          >
+            Regenerate
+          </Button>
           {showModal && (
             <RegenerateTokenModel
               closeModal={() => setShowModal(false)}
@@ -132,6 +139,6 @@ function RepoUploadToken({ uploadToken }) {
 }
 
 RepoUploadToken.propTypes = {
-  uploadToken: PropTypes.string,
+  uploadToken: PropTypes.string.isRequired,
 }
 export default RepoUploadToken
