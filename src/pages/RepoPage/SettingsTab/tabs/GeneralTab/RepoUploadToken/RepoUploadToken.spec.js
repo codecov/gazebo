@@ -1,8 +1,7 @@
-import { act, render, screen } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
-
 
 import { useRegenerateUploadToken } from 'services/uploadToken'
 
@@ -59,9 +58,7 @@ describe('RepoUploadToken', () => {
   describe('when the user clicks on regenerate button', () => {
     beforeEach(() => {
       setup()
-      act(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
     })
 
     it('displays the regenerate upload token modal', () => {
@@ -79,9 +76,7 @@ describe('RepoUploadToken', () => {
 
     describe('when user clicks on Cancel button', () => {
       beforeEach(() => {
-        act(() => {
-          userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-        })
+        userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
       })
       it('does not call the mutation', () => {
         expect(mutate).not.toHaveBeenCalled()
@@ -96,16 +91,12 @@ describe('RepoUploadToken', () => {
   describe('when user clicks on Generate New Token button', () => {
     beforeEach(() => {
       setup('new token')
-      act(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
     })
     it('calls the mutation', () => {
-      act(() => {
-        userEvent.click(
-          screen.getByRole('button', { name: 'Generate New Token' })
-        )
-      })
+      userEvent.click(
+        screen.getByRole('button', { name: 'Generate New Token' })
+      )
       expect(mutate).toHaveBeenCalled()
     })
 

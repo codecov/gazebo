@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -77,12 +77,8 @@ describe('useRegenerateUploadToken', () => {
 
     describe('when calling the mutation', () => {
       beforeEach(() => {
-        return act(() => {
-          hookData.result.current.mutate()
-          return hookData.waitFor(
-            () => hookData.result.current.status !== 'idle'
-          )
-        })
+        hookData.result.current.mutate()
+        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
       })
 
       it('returns isLoading true', () => {
