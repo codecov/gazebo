@@ -1,31 +1,18 @@
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
 import { useRegenerateUploadToken } from 'services/uploadToken'
+import TokenWrapper from 'shared/TokenWrapper'
 import A from 'ui/A'
 import Button from 'ui/Button'
-import CopyClipboard from 'ui/CopyClipboard'
+import Modal from 'ui/Modal'
 
 const TokenFormatEnum = Object.freeze({
   FIRST_FORMAT: 'codecov: \n token: ',
   SECOND_FORMAT: 'CODECOV_TOKEN=',
 })
-
-const TokenWrapper = ({ uploadToken }) => {
-  return (
-    <div className="flex flex-row">
-      <pre className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto">
-        {uploadToken}
-      </pre>
-      <CopyClipboard string={uploadToken} />
-    </div>
-  )
-}
-
-TokenWrapper.propTypes = {
-  uploadToken: PropTypes.string.isRequired,
-}
 
 function useRegenerateToken({ provider, owner, repo }) {
   const addToast = useAddNotification()
@@ -48,9 +35,51 @@ function useRegenerateToken({ provider, owner, repo }) {
   return { regenerateToken, ...rest }
 }
 
+const RegenerateTokenModel = ({ closeModal, regenerateToken, isLoading }) => (
+  <Modal
+    isOpen={true}
+    onClose={closeModal}
+    title="New upload token"
+    body={
+      <div className="flex  flex-col gap-4">
+        <h2 className="font-semibold"> Personal API token</h2>
+        <p>If you save the new token, make sure to update your CI yml</p>
+      </div>
+    }
+    footer={
+      <div className="flex gap-2">
+        <div>
+          <Button hook="close-modal" onClick={closeModal}>
+            Cancel
+          </Button>
+        </div>
+        <div>
+          <Button
+            isLoading={isLoading}
+            hook="generate-token"
+            variant="primary"
+            onClick={() => {
+              regenerateToken()
+              closeModal()
+            }}
+          >
+            Generate New Token
+          </Button>
+        </div>
+      </div>
+    }
+  />
+)
+
+RegenerateTokenModel.propTypes = {
+  closeModal: PropTypes.func,
+  regenerateToken: PropTypes.func,
+}
+
 function RepoUploadToken({ uploadToken }) {
   const { provider, owner, repo } = useParams()
-  const { regenerateToken, data } = useRegenerateToken({
+  const [showModal, setShowModal] = useState(false)
+  const { regenerateToken, isLoading, data } = useRegenerateToken({
     provider,
     owner,
     repo,
@@ -66,7 +95,7 @@ function RepoUploadToken({ uploadToken }) {
           learn more
         </A>
       </p>
-      <hr></hr>
+      <hr />
       <div className="mt-4 border-2 border-gray-100 p-4 flex xl:w-4/5 2xl:w-3/5">
         <div className="flex-1 flex flex-col gap-4">
           <p>Add this token to your codecov.yml</p>
@@ -88,7 +117,14 @@ function RepoUploadToken({ uploadToken }) {
           <TokenWrapper uploadToken={TokenFormatEnum.SECOND_FORMAT + token} />
         </div>
         <div>
-          <Button onClick={() => regenerateToken()}>Regenerate</Button>
+          <Button onClick={() => setShowModal(true)}>Regenerate</Button>
+          {showModal && (
+            <RegenerateTokenModel
+              closeModal={() => setShowModal(false)}
+              regenerateToken={regenerateToken}
+              isLoading={isLoading}
+            />
+          )}
         </div>
       </div>
     </div>
