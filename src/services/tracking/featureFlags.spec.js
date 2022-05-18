@@ -80,12 +80,12 @@ describe('useTrackFeatureFlags', () => {
       expect(mockIdentifyUser).lastCalledWith({
         name: 'doggo',
         email: 'test@test.com',
-        key: 'hello-laudna',
+        key: 'impersonated',
         avatar: 'doggo.picz',
         custom: {
           guest: false,
           student: false,
-          username: 'laudna',
+          username: 'doggo',
           service: null,
           ownerid: 'hello',
           service_id: null,
@@ -125,12 +125,12 @@ describe('useTrackFeatureFlags', () => {
       expect(mockIdentifyUser).lastCalledWith({
         name: 'doggo',
         email: 'test@test.com',
-        key: 'hello-laudna',
+        key: 'impersonated',
         avatar: 'doggo.picz',
         custom: {
           guest: false,
           student: false,
-          username: 'laudna',
+          username: 'doggo',
           service: null,
           ownerid: 'hello',
           service_id: null,
@@ -169,12 +169,12 @@ describe('useTrackFeatureFlags', () => {
       expect(mockIdentifyUser).lastCalledWith({
         name: 'doggo',
         email: 'test@test.com',
-        key: 'hello-laudna',
+        key: 'impersonated',
         avatar: 'doggo.picz',
         custom: {
           guest: false,
           student: false,
-          username: 'laudna',
+          username: 'doggo',
           service: null,
           ownerid: 'hello',
           service_id: null,

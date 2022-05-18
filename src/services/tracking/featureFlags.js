@@ -4,12 +4,6 @@ import { useIdentifyUser } from 'shared/featureFlags'
 
 import { getUserData } from './utils'
 
-const getUsernameCookie = () =>
-  Cookie.get('github-username') ||
-  Cookie.get('bitbucket-username') ||
-  Cookie.get('gitlab-username')
-const getStaffCookie = () => Cookie.get('staff_user')
-
 const defaultUser = {
   name: null,
   email: null,
@@ -35,40 +29,6 @@ const defaultUser = {
 }
 
 /**
- * Creates a unique user and key if the user cookie does not match the me query response
- *
- * @param {String} name
- * @param {String} ownerid
- * @returns {{username: String, key: String}} returns username and a unique identifier
- */
-function setUniqueKeyAndUsername(name, ownerid) {
-  const cookieUsername = getUsernameCookie()
-  const username = cookieUsername ?? name
-  const key = setUniqueKey(name, ownerid, cookieUsername)
-
-  return { username, key }
-}
-
-/**
- * Set a unique key for the user identification process
- *
- * @param {String} name
- * @param {String} ownerid
- * @param {String} ownerid
- * @param {String|undefined} cookieUsername
- * @returns {string}
- */
-function setUniqueKey(name, ownerid, cookieUsername) {
-  const staff = getStaffCookie()
-  const key =
-    cookieUsername !== name && cookieUsername && staff !== cookieUsername
-      ? `${ownerid}-${cookieUsername}`
-      : ownerid
-
-  return key
-}
-
-/**
  * Takes the user object from the me query extends a default user shape and extends the object with the passed user object.
  * If there is no user (not logged in) dont identify user.
  *
@@ -78,10 +38,8 @@ function setUniqueKey(name, ownerid, cookieUsername) {
 function createUser(user) {
   if (!user) return
 
-  const { username, key } = setUniqueKeyAndUsername(
-    user.user.username,
-    user.trackingMetadata.ownerid
-  )
+  const staff = Cookie.get('staff_user')
+  const key = staff ? `impersonated` : user.trackingMetadata.ownerid
   const { custom: defaultCustom, ...defaultTopLevel } = defaultUser
   const topLevelUser = Object.assign({}, defaultTopLevel, {
     key,
@@ -89,9 +47,10 @@ function createUser(user) {
     email: user.email,
     avatar: user.user.avatarUrl,
   })
+
   return {
     ...topLevelUser,
-    custom: getUserData({ ...user, username }, defaultCustom),
+    custom: getUserData({ ...user }, defaultCustom),
   }
 }
 
