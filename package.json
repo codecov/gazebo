@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@graphql-codegen/near-operation-file-preset": "^2.2.12",
     "@hookform/resolvers": "^2.8.5",
     "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
@@ -61,7 +62,7 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json"
     ],
-    "src/genrated.ts": [
+    "src/generated.ts": [
       "npx eslint --fix -c .eslintrc.json 'src/generated.ts'"
     ]
   },
