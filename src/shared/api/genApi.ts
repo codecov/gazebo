@@ -6,8 +6,8 @@ import { getHeaders } from './helpers'
 
 export function useFetchData<TData, TVariables>(
   query: string,
-  variables: TVariables
-): () => Promise<TData> {
+  variables?: TVariables
+): (variables: TVariables) => Promise<TData> {
   const { provider } = useParams<{ provider: string }>()
   const uri = `${config.API_URL}/graphql/${provider}`
   const headers = {
@@ -16,7 +16,7 @@ export function useFetchData<TData, TVariables>(
     'Content-Type': 'application/json; charset=utf-8',
   }
 
-  return async () => {
+  return async (variables: TVariables) => {
     const res = await fetch(uri, {
       method: 'POST',
       headers: {
