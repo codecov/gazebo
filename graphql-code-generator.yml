@@ -1,16 +1,28 @@
 overwrite: true
-watch: true
+watch: false
 watchConfig:
   usePolling: true
   interval: 1000
 schema: ${SCHEMA_PATH:http://localhost:8000/graphql/gh}
 documents: 'src/**/*.graphql'
 generates:
-  ./src/generated.ts:
+  src/types.ts:
+    - typescript
+  src/:
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.ts
+      baseTypesPath: types.ts
+    config:
+      addInfiniteQuery: true
+      fetcher:
+        func: 'shared/api/genApi#useFetchData'
+        isReactHook: true
     plugins:
       - 'typescript'
       - 'typescript-operations'
       - 'typescript-react-query'
-    config:
-      fetcher:
-        func: 'shared/api/genApi#useFetchData'
+hooks:
+  afterAllFileWrite:
+    - prettier --write "src/**/*.ts"
+    - npx eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json 'src/**/*.ts'
