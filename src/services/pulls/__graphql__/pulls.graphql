@@ -1,0 +1,50 @@
+query GetPulls(
+  $owner: String!
+  $repo: String!
+  $orderingDirection: OrderingDirection
+  $filters: PullsSetFilters
+  $after: String
+) {
+  owner(username: $owner) {
+    repository(name: $repo) {
+      pulls(
+        orderingDirection: $orderingDirection
+        filters: $filters
+        first: 20
+        after: $after
+      ) {
+        edges {
+          node {
+            ...PullFragment
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+}
+
+fragment PullFragment on Pull {
+  pullId
+  title
+  state
+  updatestamp
+  author {
+    username
+    avatarUrl
+  }
+  head {
+    totals {
+      coverage
+    }
+  }
+  compareWithBase {
+    patchTotals {
+      coverage
+    }
+    changeWithParent
+  }
+}
