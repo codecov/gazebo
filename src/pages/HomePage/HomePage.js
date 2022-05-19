@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useHistory, useParams } from 'react-router'
+import { useHistory, useParams } from 'react-router-dom'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useUser } from 'services/user'

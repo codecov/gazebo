@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import PropTypes from 'prop-types'
 import '@reach/menu-button/styles.css'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 import AppLink from 'shared/AppLink'
 import { providerToName } from 'shared/utils/provider'

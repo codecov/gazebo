@@ -60,17 +60,19 @@ function CodeRendererCoverageHeader({
   return (
     <div
       className={`
-        flex flex-row flex-wrap items-start justify-between gap-2 sm:items-center
+        flex flex-row flex-wrap items-center justify-between gap-2 sm:items-center
         bg-ds-gray-primary
         border-t p-3 border-r border-l border-solid border-ds-gray-tertiary
       `}
     >
-      <div className="flex gap-2 text-ds-gray-quinary items-center">
+      <div className="flex gap-1 text-ds-gray-quinary items-center">
         <span>{header}</span>
         <span className="font-semibold">{headName}</span>
         {/* TODO: adjust this copyclipboard component have a gray variant*/}
         {/* TODO: Figure out where this clipboard is going to! */}
-        {headName && <CopyClipboard string={headName} />}
+        {headName && (
+          <CopyClipboard string={headName} showLabel={false} variant="muted" />
+        )}
       </div>
       {/* TODO: design ask on how to display new, renamed or deleted? file */}
       <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">

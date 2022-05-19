@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
