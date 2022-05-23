@@ -1,4 +1,4 @@
-import { useMutation } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 
 import Api from 'shared/api'
 import { providerToName } from 'shared/utils'
@@ -18,5 +18,10 @@ function regenerateUploadToken({ provider, owner, repo }) {
 }
 
 export function useRegenerateUploadToken({ provider, owner, repo }) {
-  return useMutation(() => regenerateUploadToken({ provider, owner, repo }))
+  const queryClient = useQueryClient()
+  return useMutation(() => regenerateUploadToken({ provider, owner, repo }), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('GetRepo')
+    },
+  })
 }
