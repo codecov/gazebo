@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { act } from 'react-test-renderer'
 
 import { useRegenerateUploadToken } from './hooks'
 
@@ -52,7 +53,7 @@ describe('useRegenerateUploadToken', () => {
   function setup({ provider, owner, repo }) {
     server.use(
       rest.patch(
-        `/${provider}/${owner}/repos/${repo}/regenerate-upload-token/`,
+        `internal/${provider}/${owner}/repos/${repo}/regenerate-upload-token/`,
         (req, res, ctx) => {
           return res(ctx.status(200), ctx.json(repoDetails))
         }
@@ -68,7 +69,7 @@ describe('useRegenerateUploadToken', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup({ provider: 'gh', owner: 'codecov', repo: 'gazebo' })
+      setup({ provider: 'github', owner: 'codecov', repo: 'gazebo' })
     })
 
     it('returns isLoading false', () => {
@@ -83,6 +84,20 @@ describe('useRegenerateUploadToken', () => {
 
       it('returns isLoading true', () => {
         expect(hookData.result.current.isLoading).toBeTruthy()
+      })
+    })
+
+    describe('When success', () => {
+      beforeEach(async () => {
+        return act(async () => {
+          hookData.result.current.mutate({})
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
+        })
+      })
+
+      it('returns isSuccess true', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
       })
     })
   })
