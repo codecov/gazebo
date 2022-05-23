@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
-import { useUpdateRepo } from 'services/repoUpdate/hooks'
+import { useUpdateRepo } from 'services/repoUpdate'
 import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
@@ -17,14 +16,16 @@ function useUpdateDefaultBranch({ provider, owner, repo }) {
   })
 
   async function updateDefaultBranch(branch) {
-    const body = { branch }
-    mutate(body, {
-      onError: () =>
-        addToast({
-          type: 'error',
-          text: 'Something went wrong',
-        }),
-    })
+    mutate(
+      { branch },
+      {
+        onError: () =>
+          addToast({
+            type: 'error',
+            text: 'Something went wrong',
+          }),
+      }
+    )
   }
 
   return { updateDefaultBranch, ...rest }
@@ -35,13 +36,12 @@ function DefaultBranch({ defaultBranch }) {
 
   const { data: branches } = useBranches({ provider, owner, repo })
   const branchesNames = branches?.map((branch) => branch.name) || []
-  const [branch, setBranch] = useState(defaultBranch)
-
-  const { updateDefaultBranch } = useUpdateDefaultBranch({
+  const { updateDefaultBranch, data } = useUpdateDefaultBranch({
     provider,
     owner,
     repo,
   })
+  const branch = data?.branch || defaultBranch
 
   return (
     <div className="flex flex-col gap-2">
@@ -59,9 +59,8 @@ function DefaultBranch({ defaultBranch }) {
           <Select
             variant="gray"
             items={branchesNames}
-            onChange={async (branch) => {
-              await updateDefaultBranch(branch)
-              setBranch(branch)
+            onChange={(branch) => {
+              updateDefaultBranch(branch)
             }}
             value={branch}
           />

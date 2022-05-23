@@ -1,4 +1,4 @@
-import { useMutation } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 
 import Api from 'shared/api'
 import { providerToName } from 'shared/utils'
@@ -18,11 +18,12 @@ function updateRepo({ provider, owner, repo, body }) {
 }
 
 export function useUpdateRepo({ provider, owner, repo }) {
+  const queryClient = useQueryClient()
   return useMutation(
     ({ ...body }) => updateRepo({ provider, owner, repo, body }),
     {
-      onError: (err) => {
-        console.log(err)
+      onSuccess: () => {
+        queryClient.invalidateQueries('GetRepo')
       },
     }
   )
