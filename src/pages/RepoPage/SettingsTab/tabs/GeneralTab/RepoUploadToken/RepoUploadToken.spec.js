@@ -1,4 +1,4 @@
-import { render, screen } from 'custom-testing-library'
+import { act, render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -18,6 +18,7 @@ describe('RepoUploadToken', () => {
   function setup(uploadToken = undefined) {
     useAddNotification.mockReturnValue(addNotification)
     useRegenerateUploadToken.mockReturnValue({
+      isLoading: false,
       mutate,
       data: { uploadToken },
     })
@@ -62,7 +63,9 @@ describe('RepoUploadToken', () => {
   describe('when the user clicks on regenerate button', () => {
     beforeEach(() => {
       setup()
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
+      act(() =>
+        userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
+      )
     })
 
     it('displays the regenerate upload token modal', () => {
@@ -80,7 +83,9 @@ describe('RepoUploadToken', () => {
 
     describe('when user clicks on Cancel button', () => {
       beforeEach(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+        act(() =>
+          userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+        )
       })
       it('does not call the mutation', () => {
         expect(mutate).not.toHaveBeenCalled()
@@ -93,14 +98,18 @@ describe('RepoUploadToken', () => {
   })
 
   describe('when user clicks on Generate New Token button', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup('new token')
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
+      await act(async () => {
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Regenerate' })
+        )
+        userEvent.click(
+          screen.getByRole('button', { name: 'Generate New Token' })
+        )
+      })
     })
     it('calls the mutation', () => {
-      userEvent.click(
-        screen.getByRole('button', { name: 'Generate New Token' })
-      )
       expect(mutate).toHaveBeenCalled()
     })
 
@@ -112,11 +121,15 @@ describe('RepoUploadToken', () => {
   describe('when mutation is not successful', () => {
     beforeEach(async () => {
       setup('new token')
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      userEvent.click(
-        screen.getByRole('button', { name: 'Generate New Token' })
-      )
-      mutate.mock.calls[0][1].onError()
+      await act(async () => {
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Regenerate' })
+        )
+        userEvent.click(
+          screen.getByRole('button', { name: 'Generate New Token' })
+        )
+        mutate.mock.calls[0][1].onError()
+      })
     })
     it('calls the mutation', () => {
       expect(mutate).toHaveBeenCalled()
