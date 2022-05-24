@@ -7,13 +7,9 @@ import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 
-function useUpdateDefaultBranch({ provider, owner, repo }) {
+function useUpdateDefaultBranch() {
   const addToast = useAddNotification()
-  const { mutate, ...rest } = useUpdateRepo({
-    provider,
-    owner,
-    repo,
-  })
+  const { mutate, ...rest } = useUpdateRepo()
 
   async function updateDefaultBranch(branch) {
     mutate(
@@ -36,21 +32,18 @@ function DefaultBranch({ defaultBranch }) {
 
   const { data: branches } = useBranches({ provider, owner, repo })
   const branchesNames = branches?.map((branch) => branch.name) || []
-  const { updateDefaultBranch, data } = useUpdateDefaultBranch({
-    provider,
-    owner,
-    repo,
-  })
+  const { updateDefaultBranch, data } = useUpdateDefaultBranch()
+
   const branch = data?.branch || defaultBranch
 
   return (
-    <div className="flex flex-col gap-2">
-      <h1 className="text-lg font-semibold">Default Branch</h1>
-      <p className="mb-4">
-        Selection for branch context of data in coverage dashboard
-      </p>
-      <hr />
-      <div className="flex flex-col mt-4 border-2 border-gray-100 p-4 xl:w-4/5 2xl:w-3/5 gap-4">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-lg font-semibold">Default Branch</h1>
+        <p>Selection for branch context of data in coverage dashboard</p>
+        <hr />
+      </div>
+      <div className="flex flex-col border-2 border-gray-100 p-4 xl:w-4/5 2xl:w-3/5 gap-4">
         <h2 className="font-semibold flex gap-1">
           <Icon name="branch" variant="developer" size="sm" />
           Branch Context

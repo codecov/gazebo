@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
 import { useRegenerateUploadToken } from './hooks'
@@ -44,7 +45,11 @@ afterAll(() => server.close())
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
+    <Route path="/:provider/:owner/:repo">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
 )
 
 describe('useRegenerateUploadToken', () => {

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from 'react-query'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 import { providerToName } from 'shared/utils'
@@ -17,7 +18,8 @@ function updateRepo({ provider, owner, repo, body }) {
   return Api.patch({ path, provider: refactoredProvider, body })
 }
 
-export function useUpdateRepo({ provider, owner, repo }) {
+export function useUpdateRepo() {
+  const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
   return useMutation(
     ({ ...body }) => updateRepo({ provider, owner, repo, body }),
