@@ -10,7 +10,7 @@ function GeneralTab() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       {data?.repository?.uploadToken && (
         <RepoUploadToken uploadToken={data?.repository?.uploadToken} />
       )}

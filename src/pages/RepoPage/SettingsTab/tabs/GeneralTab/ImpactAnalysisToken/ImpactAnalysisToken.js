@@ -92,8 +92,10 @@ function ImpactAnalysisToken({ profilingToken }) {
     <div>
       <div className="flex gap-2">
         <h1 className="font-semibold text-lg mb-2">Impact analysis token</h1>
-        <div>
-          <Button variant="secondary">BETA</Button>
+        <div className="mt-1">
+          <p className="flex items-center font-semibold rounded px-4 text-white bg-ds-pink-tertiary">
+            BETA
+          </p>
         </div>
       </div>
       <p className="mb-4">
