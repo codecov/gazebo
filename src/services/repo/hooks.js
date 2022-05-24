@@ -11,6 +11,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
           private
           uploadToken
           defaultBranch
+          profilingToken
         }
       }
     }

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useRepo } from 'services/repo'
 
 import DefaultBranch from './DefaultBranch'
+import ImpactAnalysisToken from './ImpactAnalysisToken'
 import RepoUploadToken from './RepoUploadToken'
 
 function GeneralTab() {
@@ -15,6 +16,11 @@ function GeneralTab() {
       )}
       {data?.repository?.defaultBranch && (
         <DefaultBranch defaultBranch={data?.repository?.defaultBranch} />
+      )}
+      {data?.repository?.profilingToken && (
+        <ImpactAnalysisToken
+          profilingToken={data?.repository?.profilingToken}
+        />
       )}
     </div>
   )
