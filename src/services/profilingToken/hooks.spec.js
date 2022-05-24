@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
 import { useRegenerateProfilingToken } from './hooks'
@@ -22,26 +23,30 @@ afterAll(() => server.close())
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
+    <Route path="/:provider/:owner/:repo">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
 )
 
 describe('useRegenerateProfilingToken', () => {
   let hookData
 
-  function setup({ provider }) {
+  function setup() {
     server.use(
       rest.patch('/graphql/gh/', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(data))
       })
     )
-    hookData = renderHook(() => useRegenerateProfilingToken({ provider }), {
+    hookData = renderHook(() => useRegenerateProfilingToken(), {
       wrapper,
     })
   }
 
   describe('when called', () => {
     beforeEach(() => {
-      setup({ provider: 'gh' })
+      setup()
     })
 
     it('returns isLoading false', () => {
@@ -50,7 +55,7 @@ describe('useRegenerateProfilingToken', () => {
 
     describe('when calling the mutation', () => {
       beforeEach(() => {
-        hookData.result.current.mutate({ owner: 'rula', repoName: 'test' })
+        hookData.result.current.mutate()
         return hookData.waitFor(() => hookData.result.current.status !== 'idle')
       })
 
@@ -62,7 +67,7 @@ describe('useRegenerateProfilingToken', () => {
     describe('When success', () => {
       beforeEach(async () => {
         return act(async () => {
-          hookData.result.current.mutate({ owner: 'rula', repoName: 'test' })
+          hookData.result.current.mutate()
           await hookData.waitFor(() => hookData.result.current.isLoading)
           await hookData.waitFor(() => !hookData.result.current.isLoading)
         })

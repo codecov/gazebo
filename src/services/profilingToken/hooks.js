@@ -1,11 +1,13 @@
 import { useMutation, useQueryClient } from 'react-query'
+import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
 
-export function useRegenerateProfilingToken({ provider }) {
+export function useRegenerateProfilingToken() {
+  const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
   return useMutation(
-    ({ owner, repoName }) => {
+    () => {
       const query = `
         mutation($input: RegenerateProfilingTokenInput!) {
         regenerateProfilingToken(input: $input) {
@@ -16,7 +18,7 @@ export function useRegenerateProfilingToken({ provider }) {
           }
         }
       `
-      const variables = { input: { owner, repoName } }
+      const variables = { input: { owner, repoName: repo } }
       return Api.graphqlMutation({
         provider,
         query,
