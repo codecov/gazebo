@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from 'react-query'
+import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
 import { providerToName } from 'shared/utils'
@@ -17,7 +18,8 @@ function regenerateUploadToken({ provider, owner, repo }) {
   return Api.patch({ path, provider: refactoredProvider })
 }
 
-export function useRegenerateUploadToken({ provider, owner, repo }) {
+export function useRegenerateUploadToken() {
+  const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
   return useMutation(() => regenerateUploadToken({ provider, owner, repo }), {
     onSuccess: () => {
