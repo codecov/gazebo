@@ -55,26 +55,23 @@ const wrapper = ({ children }) => (
 describe('useRegenerateUploadToken', () => {
   let hookData
 
-  function setup({ provider, owner, repo }) {
+  function setup() {
     server.use(
       rest.patch(
-        `internal/${provider}/${owner}/repos/${repo}/regenerate-upload-token/`,
+        `internal/github/codecov/repos/gazebo/regenerate-upload-token/`,
         (req, res, ctx) => {
           return res(ctx.status(200), ctx.json(repoDetails))
         }
       )
     )
-    hookData = renderHook(
-      () => useRegenerateUploadToken({ provider, owner, repo }),
-      {
-        wrapper,
-      }
-    )
+    hookData = renderHook(() => useRegenerateUploadToken(), {
+      wrapper,
+    })
   }
 
   describe('when called', () => {
     beforeEach(() => {
-      setup({ provider: 'github', owner: 'codecov', repo: 'gazebo' })
+      setup()
     })
 
     it('returns isLoading false', () => {

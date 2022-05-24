@@ -54,23 +54,20 @@ const wrapper = ({ children }) => (
 describe('useUpdateRepo', () => {
   let hookData
 
-  function setup({ provider, owner, repo }) {
+  function setup() {
     server.use(
-      rest.patch(
-        `internal/${provider}/${owner}/repos/${repo}/`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(repoDetails))
-        }
-      )
+      rest.patch(`internal/github/codecov/repos/gazebo/`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(repoDetails))
+      })
     )
-    hookData = renderHook(() => useUpdateRepo({ provider, owner, repo }), {
+    hookData = renderHook(() => useUpdateRepo(), {
       wrapper,
     })
   }
 
   describe('when called', () => {
     beforeEach(() => {
-      setup({ provider: 'github', owner: 'codecov', repo: 'gazebo' })
+      setup()
     })
 
     it('returns isLoading false', () => {
