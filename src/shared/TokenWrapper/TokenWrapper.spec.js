@@ -4,7 +4,7 @@ import TokenWrapper from './TokenWrapper'
 
 describe('TokenWrapper', () => {
   function setup() {
-    render(<TokenWrapper uploadToken="randomToken" />)
+    render(<TokenWrapper token="randomToken" />)
   }
 
   describe('public scope', () => {
