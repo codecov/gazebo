@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const RegenerateTokenModel = ({ closeModal, regenerateToken, isLoading }) => (
+const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
   <Modal
     isOpen={true}
     onClose={closeModal}
@@ -11,7 +11,7 @@ const RegenerateTokenModel = ({ closeModal, regenerateToken, isLoading }) => (
     body={
       <div className="flex  flex-col gap-4">
         <h2 className="font-semibold"> Personal API token</h2>
-        <p>If you save the new token, make sure to update your CI yml</p>
+        <span>If you save the new token, make sure to update your CI yml</span>
       </div>
     }
     footer={
@@ -39,10 +39,10 @@ const RegenerateTokenModel = ({ closeModal, regenerateToken, isLoading }) => (
   />
 )
 
-RegenerateTokenModel.propTypes = {
+RegenerateTokenModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
   regenerateToken: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default RegenerateTokenModel
+export default RegenerateTokenModal

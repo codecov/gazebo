@@ -6,13 +6,13 @@ function SideMenuSettings() {
       <Sidemenu
         links={[
           {
-            pageName: 'general',
+            pageName: 'settingsGeneral',
             exact: true,
           },
           {
-            pageName: 'repoYaml',
+            pageName: 'settingsYaml',
           },
-          { pageName: 'badge' },
+          { pageName: 'settingsBadge' },
         ]}
       />
     </div>

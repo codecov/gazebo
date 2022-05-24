@@ -7,13 +7,8 @@ import RepoUploadToken from './RepoUploadToken'
 function GeneralTab() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
-  return (
-    <>
-      {data?.repository?.uploadToken && (
-        <RepoUploadToken uploadToken={data?.repository?.uploadToken} />
-      )}
-    </>
-  )
+  const uploadToken = data?.repository?.uploadToken
+  return <>{uploadToken && <RepoUploadToken uploadToken={uploadToken} />}</>
 }
 
 export default GeneralTab

@@ -269,7 +269,7 @@ function useNavLinks() {
       isExternalLink: gazeboSettingsTab,
       text: 'Settings',
     },
-    general: {
+    settingsGeneral: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
@@ -280,7 +280,7 @@ function useNavLinks() {
       isExternalLink: gazeboSettingsTab,
       text: 'General',
     },
-    repoYaml: {
+    settingsYaml: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
@@ -291,7 +291,7 @@ function useNavLinks() {
       isExternalLink: gazeboSettingsTab,
       text: 'Yaml',
     },
-    badge: {
+    settingsBadge: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,

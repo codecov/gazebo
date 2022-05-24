@@ -7,7 +7,7 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import TokenWrapper from 'ui/TokenWrapper'
 
-import RegenerateTokenModel from './RegenerateTokenModel'
+import RegenerateTokenModal from './RegenerateTokenModal'
 
 const TokenFormatEnum = Object.freeze({
   FIRST_FORMAT: 'codecov: \n token: ',
@@ -66,6 +66,9 @@ function RepoUploadToken({ uploadToken }) {
           </p>
           <TokenWrapper token={TokenFormatEnum.FIRST_FORMAT + token} />
           <h1 className="font-semibold ">OR</h1>
+          <p>
+            If you’d like to add the token directly to your CI/CD Environment:
+          </p>
           <TokenWrapper token={TokenFormatEnum.SECOND_FORMAT + token} />
         </div>
         <div>
@@ -77,7 +80,7 @@ function RepoUploadToken({ uploadToken }) {
             Regenerate
           </Button>
           {showModal && (
-            <RegenerateTokenModel
+            <RegenerateTokenModal
               closeModal={() => setShowModal(false)}
               regenerateToken={regenerateToken}
               isLoading={isLoading}
