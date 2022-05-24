@@ -113,9 +113,9 @@ function RepoUploadToken({ uploadToken }) {
             </A>
             .
           </p>
-          <TokenWrapper uploadToken={TokenFormatEnum.FIRST_FORMAT + token} />
+          <TokenWrapper token={TokenFormatEnum.FIRST_FORMAT + token} />
           <h1 className="font-semibold ">OR</h1>
-          <TokenWrapper uploadToken={TokenFormatEnum.SECOND_FORMAT + token} />
+          <TokenWrapper token={TokenFormatEnum.SECOND_FORMAT + token} />
         </div>
         <div>
           <Button
