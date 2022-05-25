@@ -9,7 +9,6 @@ describe('Label', () => {
 
   it('Renders the content', () => {
     setup({ children: 'test' })
-
     expect(screen.getByText('test')).toBeInTheDocument()
   })
 })

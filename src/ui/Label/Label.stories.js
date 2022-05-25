@@ -15,7 +15,7 @@ const TemplateInherits = (args) => (
       Default inherits the current css color making it extremely flexible. The
       subtle variant will not.
     </p>
-    <Label {...args}>Lable which can use the `current` css property</Label>
+    <Label {...args}>Label which can use the `current` css property</Label>
   </div>
 )
 
