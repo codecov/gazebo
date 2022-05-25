@@ -9,6 +9,7 @@ import Flags from './Flags'
 import Header from './Header'
 import CompareSummary from './Summary'
 
+const FullFile = lazy(() => import('./subroute/FullFile'))
 const Root = lazy(() => import('./subroute/Root'))
 
 function PullRequestPage() {
@@ -40,6 +41,14 @@ function PullRequestPage() {
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
         <article className="col-span-2">
           <Switch>
+            <Route
+              path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
+              exact
+            >
+              <Suspense fallback={Loader}>
+                <FullFile />
+              </Suspense>
+            </Route>
             <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
               <Suspense fallback={Loader}>
                 <Root />
