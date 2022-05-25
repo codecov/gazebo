@@ -7,9 +7,16 @@ import {
   LINE_TYPE,
 } from 'shared/utils/fileviewer'
 import CodeRenderer from 'ui/CodeRenderer'
-import CodeRendererCoverageHeader from 'ui/CodeRenderer/CodeRendererCoverageHeader'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
+import FileHeader from 'ui/CodeRenderer/FileHeader'
+
+function setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
+  if (isNewFile) return 'New'
+  if (isRenamedFile) return 'Renamed'
+  if (isDeletedFile) return 'Deleted'
+  return null
+}
 
 const FileDiff = ({
   headName,
@@ -18,9 +25,9 @@ const FileDiff = ({
   baseTotals,
   patchTotals,
   lineCoverageStatesAndSetters,
-  hasChanges,
   isNewFile,
   isRenamedFile,
+  isDeletedFile,
 }) => {
   const { covered, uncovered, partial } = lineCoverageStatesAndSetters
   const showLines = {
@@ -33,26 +40,27 @@ const FileDiff = ({
   const changeCoverage = headCoverage - baseTotals?.percentCovered
   const patchCoverage = patchTotals?.percentCovered
   const header = segments[0]?.header
-
+  const fileLabel = setFileLabel({ isNewFile, isRenamedFile, isDeletedFile })
+  const coverage = [
+    { label: 'HEAD', value: headCoverage },
+    { label: 'Patch', value: patchCoverage },
+    { label: 'Change', value: changeCoverage },
+  ]
   return (
     <div>
       {/* Header */}
-      <CodeRendererCoverageHeader
+      <FileHeader
         header={header}
         headName={headName}
-        headCoverage={headCoverage}
-        changeCoverage={changeCoverage}
-        patchCoverage={patchCoverage}
-        isNewFile={isNewFile}
-        isRenamedFile={isRenamedFile}
-        hasChanges={hasChanges}
+        coverage={coverage}
+        fileLabel={fileLabel}
       />
       {/* CodeRenderer */}
       {segments.map((segment, segmentIndex) => {
         const content = segment.lines.map((line) => line.content).join('\n')
         return (
           <Fragment key={`${headName}-${segmentIndex}`}>
-            {segment.header === null && (
+            {segments?.hasUnintendedChanges && (
               <CodeRendererInfoRow
                 type={CODE_RENDERER_INFO.UNEXPECTED_CHANGES}
               />
@@ -106,6 +114,7 @@ FileDiff.propTypes = {
   ),
   isNewFile: PropTypes.bool,
   isRenamedFile: PropTypes.bool,
+  isDeletedFile: PropTypes.bool,
   headTotals: PropTypes.shape({
     percentCovered: PropTypes.number,
   }),

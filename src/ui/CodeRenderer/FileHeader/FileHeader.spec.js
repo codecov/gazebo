@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react'
 
-import CodeRendererCoverageHeader from './CodeRendererCoverageHeader'
+import FileHeader from './FileHeader'
 
 jest.mock('ui/CopyClipboard', () => () => 'Copy Clipboard')
 
 //TODO: This needs the whole test
-describe('CodeRendererCoverageHeader', () => {
+describe('FileHeader', () => {
   function setup(props) {
-    render(<CodeRendererCoverageHeader {...props} />)
+    render(<FileHeader {...props} />)
   }
 
   describe('when provided with all props', () => {
