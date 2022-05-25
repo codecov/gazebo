@@ -12,13 +12,17 @@ const getListClasses = ({ index }) =>
     }
   )
 
-function List({ items, onItemSelect }) {
+function List({ items, onItemSelect, noBorder }) {
   return (
     items &&
     items.length > 0 && (
-      <ul className="border border-ds-gray-secondary w-full text-ds-gray-octonary">
+      <ul
+        className={cs('w-full text-ds-gray-octonary', {
+          'border border-ds-gray-secondary': !noBorder,
+        })}
+      >
         {items.map(({ name, value }, index) => (
-          <li key={name} className={getListClasses({ index })}>
+          <li key={name} className={getListClasses({ index, noBorder })}>
             <button
               className="w-full"
               onClick={() => onItemSelect && onItemSelect(name)}
@@ -41,6 +45,7 @@ List.propTypes = {
     })
   ),
   onItemSelect: PropTypes.func,
+  noBorder: PropTypes.bool,
 }
 
 export default List

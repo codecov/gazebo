@@ -1,4 +1,5 @@
 const _ = require('lodash')
+
 const fs = require('fs')
 
 const enabledIcons = [
@@ -19,6 +20,7 @@ const enabledIcons = [
   'speakerphone',
   'exclamation',
   'branch',
+  'refresh',
 ]
 
 console.log('Generating Icons import')
