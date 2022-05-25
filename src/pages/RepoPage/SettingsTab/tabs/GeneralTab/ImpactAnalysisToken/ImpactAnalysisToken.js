@@ -33,7 +33,7 @@ function ImpactAnalysisToken({ profilingToken }) {
     data?.data?.regenerateProfilingToken?.profilingToken || profilingToken
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <div className="flex gap-2">
           <h1 className="font-semibold text-lg">Impact analysis token</h1>
@@ -45,13 +45,13 @@ function ImpactAnalysisToken({ profilingToken }) {
         </div>
         <p>
           Token is used for impact analysis feature only{' '}
-          <A to={{ pageName: 'docs' }} isExternal>
+          <A to={{ pageName: 'runtimeInsights' }} isExternal>
             learn more
           </A>
         </p>
         <hr />
       </div>
-      <div className="mt-4 border-2 border-gray-100 p-4 flex xl:w-4/5 2xl:w-3/5">
+      <div className="border-2 border-gray-100 p-4 flex xl:w-4/5 2xl:w-3/5">
         <div className="flex-1 flex flex-col gap-4">
           <p>
             If you are not using this feature, you do not need the token. If you

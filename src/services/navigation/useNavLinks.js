@@ -451,6 +451,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    runtimeInsights: {
+      text: 'Runtime Insights',
+      path: () => 'https://docs.codecov.com/docs/runtime-insights',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
 

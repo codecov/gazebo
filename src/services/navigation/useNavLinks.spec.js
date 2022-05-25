@@ -727,6 +727,7 @@ describe('useStaticNavLinks', () => {
     ${links.integrityCheck}    | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
     ${links.codecovGithuhApp}  | ${'https://github.com/apps/codecov'}
     ${links.teamBot}           | ${'https://docs.codecov.com/docs/team-bot'}
+    ${links.runtimeInsights}   | ${'https://docs.codecov.com/docs/runtime-insights'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)
