@@ -4,7 +4,6 @@ import FileHeader from './FileHeader'
 
 jest.mock('ui/CopyClipboard', () => () => 'Copy Clipboard')
 
-//TODO: This needs the whole test
 describe('FileHeader', () => {
   function setup(props) {
     render(<FileHeader {...props} />)
@@ -15,9 +14,11 @@ describe('FileHeader', () => {
       setup({
         header: '-16,7, +16,7',
         headName: 'folder/file.js',
-        headCoverage: 12.34,
-        patchCoverage: 23.45,
-        changeCoverage: 34.56,
+        coverage: [
+          { label: 'HEAD', value: 12.34 },
+          { label: 'Patch', value: 23.45 },
+          { label: 'Change', value: 34.56 },
+        ],
       })
     })
 
@@ -44,9 +45,7 @@ describe('FileHeader', () => {
       setup({
         header: '-16,7, +16,7',
         headName: 'folder/file.js',
-        headCoverage: null,
-        patchCoverage: null,
-        changeCoverage: null,
+        coverage: [],
       })
     })
 
@@ -57,5 +56,30 @@ describe('FileHeader', () => {
     })
   })
 
-  // TODO: Add test with renamed/new file
+  describe('with file label', () => {
+    beforeEach(() => {
+      setup({
+        header: '-16,7, +16,7',
+        headName: 'folder/file.js',
+        fileLabel: 'New',
+      })
+    })
+
+    it('renders a file status label', () => {
+      expect(screen.getByText(/New/)).toBeInTheDocument()
+    })
+  })
+
+  describe('without file label', () => {
+    beforeEach(() => {
+      setup({
+        header: '-16,7, +16,7',
+        headName: 'folder/file.js',
+      })
+    })
+
+    it('does not render a file status label if no fileLabel is passed', () => {
+      expect(screen.queryByText(/New/)).not.toBeInTheDocument()
+    })
+  })
 })
