@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import CopyClipboard from 'ui/CopyClipboard'
 import TotalsNumber from 'ui/TotalsNumber'
 
-// Cleanup / Complexity to support file lables.
+// Cleanup / Complexity to support file labels.
 const FlagControl = ({ headCoverage, patchCoverage, changeCoverage }) => (
   <>
     {isFinite(headCoverage) && (
