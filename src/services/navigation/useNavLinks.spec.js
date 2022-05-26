@@ -589,17 +589,17 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.general.path()).toBe(
+      expect(hookData.result.current.settingsGeneral.path()).toBe(
         '/gh/RulaKhaled/test/settings'
       )
     })
     it('can override the params', () => {
-      expect(hookData.result.current.general.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/settings'
-      )
-      expect(hookData.result.current.general.path({ repo: 'cat' })).toBe(
-        '/gh/RulaKhaled/cat/settings'
-      )
+      expect(
+        hookData.result.current.settingsGeneral.path({ provider: 'bb' })
+      ).toBe('/bb/RulaKhaled/test/settings')
+      expect(
+        hookData.result.current.settingsGeneral.path({ repo: 'cat' })
+      ).toBe('/gh/RulaKhaled/cat/settings')
     })
   })
 
@@ -609,15 +609,15 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.repoYaml.path()).toBe(
+      expect(hookData.result.current.settingsYaml.path()).toBe(
         '/gh/RulaKhaled/test/settings/yaml'
       )
     })
     it('can override the params', () => {
-      expect(hookData.result.current.repoYaml.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/settings/yaml'
-      )
-      expect(hookData.result.current.repoYaml.path({ repo: 'cat' })).toBe(
+      expect(
+        hookData.result.current.settingsYaml.path({ provider: 'bb' })
+      ).toBe('/bb/RulaKhaled/test/settings/yaml')
+      expect(hookData.result.current.settingsYaml.path({ repo: 'cat' })).toBe(
         '/gh/RulaKhaled/cat/settings/yaml'
       )
     })
@@ -629,15 +629,15 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.badge.path()).toBe(
+      expect(hookData.result.current.settingsBadge.path()).toBe(
         '/gh/RulaKhaled/test/settings/badge'
       )
     })
     it('can override the params', () => {
-      expect(hookData.result.current.badge.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/settings/badge'
-      )
-      expect(hookData.result.current.badge.path({ repo: 'cat' })).toBe(
+      expect(
+        hookData.result.current.settingsBadge.path({ provider: 'bb' })
+      ).toBe('/bb/RulaKhaled/test/settings/badge')
+      expect(hookData.result.current.settingsBadge.path({ repo: 'cat' })).toBe(
         '/gh/RulaKhaled/cat/settings/badge'
       )
     })
@@ -720,6 +720,7 @@ describe('useStaticNavLinks', () => {
     ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
     ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
     ${links.flags}             | ${'https://docs.codecov.com/docs/flags'}
+    ${links.unexpectedChanges} | ${'https://docs.codecov.com/docs/unexpected-coverage-changes'}
     ${links.userAppManagePage} | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}

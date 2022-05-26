@@ -1,11 +1,19 @@
+import cs from 'classnames'
 import copy from 'copy-to-clipboard'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 
 import Icon from 'ui/Icon'
 
-function CopyClipboard({ string }) {
+const copyIconClasses = {
+  default: `text-ds-blue-darker`,
+  muted: `text-ds-grey-octinary`,
+}
+
+function CopyClipboard({ string, showLabel = false, variant = 'default' }) {
   const [showSuccess, setShowSuccess] = useState(false)
+
+  const copyIconClass = copyIconClasses[variant]
 
   function handleCopy() {
     setShowSuccess(copy(string))
@@ -21,19 +29,25 @@ function CopyClipboard({ string }) {
   return (
     <button
       onClick={handleCopy}
-      className="flex outline-none focus:outline-none items-center ml-2"
+      className="flex outline-none focus:outline-none items-center"
     >
       {showSuccess ? (
         <div className="text-ds-primary-green">
           <Icon className="fill-current" name="check" />
         </div>
       ) : (
-        <div className="text-ds-blue-darker">
+        <div className={copyIconClass}>
           <Icon className="fill-current" name="clipboard-copy" />
         </div>
       )}
 
-      <span className="cursor-pointer text-ds-blue-darker text-xs font-semibold">
+      <span
+        className={cs('cursor-pointer text-xs font-semibold', {
+          'text-ds-blue-darker': variant === 'default',
+          [copyIconClass]: variant === 'muted',
+          'sr-only': !showLabel,
+        })}
+      >
         copy
       </span>
     </button>
@@ -42,6 +56,8 @@ function CopyClipboard({ string }) {
 
 CopyClipboard.propTypes = {
   string: PropTypes.string.isRequired,
+  showLabel: PropTypes.bool,
+  variant: PropTypes.oneOf(['default', 'muted']),
 }
 
 export default CopyClipboard

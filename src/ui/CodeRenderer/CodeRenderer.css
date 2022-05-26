@@ -11,3 +11,12 @@ tbody tr:first-child td {
 tbody tr:last-child td {
   @apply pb-2;
 }
+
+/* I inspected the page took the selectors and overode the background to be transparent */
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  @apply bg-transparent;
+}
