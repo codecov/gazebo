@@ -113,7 +113,7 @@ module.exports = {
   variants: {
     extend: {
       textColor: ['disabled'],
-      margin: ['responsive', 'first', 'last'],
+      margin: ['responsive', 'first', 'last', 'first-letter'],
       opacity: ['disabled', 'hover'],
       cursor: ['disabled'],
       transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],

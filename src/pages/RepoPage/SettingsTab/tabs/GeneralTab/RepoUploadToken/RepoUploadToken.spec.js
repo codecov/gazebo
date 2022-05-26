@@ -45,6 +45,11 @@ describe('RepoUploadToken', () => {
       expect(p).toBeInTheDocument()
       const note = screen.getByText('Note:')
       expect(note).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'If you’d like to add the token directly to your CI/CD Environment:'
+        )
+      ).toBeInTheDocument()
     })
     it('renders two formats of token', () => {
       const firstFormat = screen.getByText(/CODECOV_TOKEN=old token/)

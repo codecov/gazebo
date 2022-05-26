@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 import { providerToName } from 'shared/utils/provider'
 import Banner from 'ui/Banner'

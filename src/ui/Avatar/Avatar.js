@@ -1,6 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import { useImage } from 'react-image'
+
+import { useImage } from 'services/image'
 
 import AvatarSVG from './AvatarSVG.js'
 
@@ -11,8 +12,7 @@ function Avatar({ user, bordered, ariaLabel }) {
   const classes = cs(baseClasses, bordered ? borderedClasses : '')
 
   const { src, error } = useImage({
-    srcList: user.avatarUrl,
-    useSuspense: false,
+    src: user.avatarUrl,
   })
 
   const letter = user.username ? user.username[0] : '?'

@@ -102,7 +102,7 @@ function getTableInfo({ tableData, isTableDataEmpty, setIsCardDismissed }) {
         <div className="flex flex-col">
           <img alt="FlagManagement" src={flagManagement} />
           <p>
-            Flags feature is not yet configured. Learn how flags can
+            Flags feature is not yet configured. Learn how flags can{' '}
             <A hook="flags" to={{ pageName: 'flags' }}>
               help your team today
             </A>

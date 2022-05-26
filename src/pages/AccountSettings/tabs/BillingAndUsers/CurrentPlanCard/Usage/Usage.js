@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 import { accountDetailsPropType } from 'services/account'
 import { useUploadsNumber } from 'services/uploadsNumber/hooks'
