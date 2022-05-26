@@ -6,6 +6,7 @@ import { forwardRef } from 'react'
 const Checkbox = forwardRef(
   ({ label, showLabel = true, disabled, ...props }, ref) => {
     const id = uniqueId('radio-input')
+    const { className, ...newProps } = props
 
     return (
       <div
@@ -20,7 +21,7 @@ const Checkbox = forwardRef(
           disabled={disabled}
           className="cursor-pointer mr-2"
           type="checkbox"
-          {...props}
+          {...newProps}
         />
         <label
           htmlFor={id}

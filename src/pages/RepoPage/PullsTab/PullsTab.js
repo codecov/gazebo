@@ -1,8 +1,9 @@
 import { useLayoutEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
+import Button from 'ui/Button'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
@@ -45,7 +46,7 @@ function useFormControls() {
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
   const [selectedOrder, setSelectedOrder] = useState(paramOrderName)
 
-  const { data: pulls } = usePulls({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePulls({
     provider,
     owner,
     repo,
@@ -55,6 +56,8 @@ function useFormControls() {
     orderingDirection: order,
   })
 
+  const pulls = data?.pulls
+
   return {
     setSelectedOrder,
     setSelectedStates,
@@ -62,6 +65,9 @@ function useFormControls() {
     selectedStates,
     selectedOrder,
     updateParams,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   }
 }
 
@@ -74,6 +80,9 @@ function PullsTab() {
     selectedStates,
     selectedOrder,
     updateParams,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useFormControls()
 
   useLayoutEffect(() => {
@@ -123,6 +132,17 @@ function PullsTab() {
         </div>
       </div>
       <PullsTable pulls={pulls} />
+      {hasNextPage && (
+        <div className="flex-1 mt-4 flex justify-center">
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

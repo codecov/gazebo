@@ -9,7 +9,11 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
       <p className="text-base">
         If the public project is on TravisCI, CircleCI, AppVeyor, Azure
         Pipelines, or{' '}
-        <A href="https://github.com/codecov/codecov-action#usage" isExternal>
+        <A
+          href="https://github.com/codecov/codecov-action#usage"
+          isExternal
+          hook="gh-actions"
+        >
           GitHub Actions
         </A>{' '}
         an upload token is not required. Otherwise, you&apos;ll need to set the
@@ -17,7 +21,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
       </p>
       <p className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
-        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
+        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5 mr-2">
           {token}
         </span>
         <CopyClipboard string={token} />
@@ -30,6 +34,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
         href="https://github.com/codecov/codecov-action#usage"
         target="_blank"
         isExternal
+        hook="gh-actions"
       >
         GitHub Actions
       </A>{' '}

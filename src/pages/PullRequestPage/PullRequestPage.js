@@ -4,12 +4,12 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
-import Card from './Card'
+import Commits from './Commits'
 import Flags from './Flags'
 import Header from './Header'
 import CompareSummary from './Summary'
 
-const FileDiff = lazy(() => import('./subroute/FileDiff'))
+const FullFile = lazy(() => import('./subroute/FullFile'))
 const Root = lazy(() => import('./subroute/Root'))
 
 function PullRequestPage() {
@@ -38,15 +38,15 @@ function PullRequestPage() {
       />
       <Header />
       <CompareSummary />
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 space-y-2">
-        <div className="col-span-2">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
+        <article className="col-span-2">
           <Switch>
             <Route
               path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
               exact
             >
               <Suspense fallback={Loader}>
-                <FileDiff />
+                <FullFile />
               </Suspense>
             </Route>
             <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
@@ -59,14 +59,11 @@ function PullRequestPage() {
               to="/:provider/:owner/:repo/pull/:pullId"
             />
           </Switch>
-        </div>
-        <div className="flex flex-col gap-4">
-          {/* Placeholder, make each card is own component importing the pre styled card */}
-          <Card title="Commits">
-            <p>Test</p>
-          </Card>
+        </article>
+        <aside className="flex flex-col gap-4 self-start sticky top-1.5">
+          <Commits />
           <Flags />
-        </div>
+        </aside>
       </div>
     </div>
   )

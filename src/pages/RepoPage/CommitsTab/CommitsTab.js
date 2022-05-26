@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
 import { useCommits } from 'services/commits'
@@ -78,7 +78,7 @@ function CommitsTab() {
           </h2>
           <div>
             <Select
-              className="bg-ds-gray-primary"
+              variant="gray"
               items={branchesNames}
               onChange={(branch) => {
                 updateParams({ branch })

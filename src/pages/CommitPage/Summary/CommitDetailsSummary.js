@@ -1,3 +1,4 @@
+import { UploadStateEnum } from 'shared/utils/commit'
 import A from 'ui/A'
 import Summary from 'ui/Summary'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -5,12 +6,12 @@ import TotalsNumber from 'ui/TotalsNumber'
 import { useCommitForSummary } from './hooks'
 
 const getSourceSummaryCards = ({ headCommitId, parentCommitId, state }) =>
-  state === 'error'
+  state?.toUpperCase() === UploadStateEnum.error
     ? [
         {
           name: 'error',
           value: (
-            <p className="flex-1 text-ds-gray-quinary text-sm leading-5 max-w-sm border-l border-ds-gray-secondary pl-4">
+            <p className="text-ds-gray-quinary text-sm leading-5 max-w-sm border-l border-ds-gray-secondary pl-4">
               There is an error processing the coverage reports. Common issues
               are{' '}
               <A
@@ -44,7 +45,7 @@ const getSourceSummaryCards = ({ headCommitId, parentCommitId, state }) =>
               <A to={{ pageName: 'commit', options: { commit: headCommitId } }}>
                 {headCommitId?.slice(0, 7)}
               </A>{' '}
-              compared to <span className="uppercase font-medium">base</span>{' '}
+              compared to <span className="uppercase font-medium">parent</span>{' '}
               <A
                 to={{ pageName: 'commit', options: { commit: parentCommitId } }}
               >

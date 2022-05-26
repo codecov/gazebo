@@ -1,5 +1,4 @@
-import { useLocation } from 'react-router'
-import { useParams } from 'react-router-dom'
+import { useLocation , useParams } from 'react-router-dom'
 
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'

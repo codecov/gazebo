@@ -1,4 +1,4 @@
-import { act, render, screen } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 

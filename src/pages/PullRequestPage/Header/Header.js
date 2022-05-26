@@ -1,12 +1,13 @@
 import cs from 'classnames'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import capitalize from 'lodash/capitalize'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull/hooks'
+import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'
-import CopyClipboard from 'ui/CopyClipboard'
+import CIStatusLabel from 'ui/CIStatus'
+import Icon from 'ui/Icon'
 
 const pullStateToColor = {
   OPEN: 'bg-ds-primary-green',
@@ -15,25 +16,14 @@ const pullStateToColor = {
 }
 
 function Header() {
+  // TODO: When we update the cicd link and branch link to mobe this to a hook to match the rest of the page.
   const { provider, owner, repo, pullId } = useParams()
   const { data: pull } = usePull({ provider, owner, repo, pullId })
 
   return (
-    <div className="border-t border-b border-ds-gray-secondary py-4">
-      <h1 className="flex items-center text-lg font-semibold leading-10">
-        {pull?.title} #{pull?.pullId}{' '}
-        {pull?.pullId && (
-          <CopyClipboard
-            string={getProviderPullURL({
-              provider,
-              owner,
-              repo,
-              pullId: pull?.pullId,
-            })}
-          />
-        )}
-      </h1>
-      <p className="flex items-center gap-2">
+    <div className="border-b border-ds-gray-secondary pb-4 text-xs">
+      <h1 className="flex items-center gap-2 text-lg font-semibold">
+        {pull?.title}
         <span
           className={cs(
             'text-white font-bold px-3 py-0.5 text-xs rounded',
@@ -42,21 +32,30 @@ function Header() {
         >
           {capitalize(pull?.state)}
         </span>
+      </h1>
+      <p className="flex items-center gap-2">
         <span>
-          Authored by{' '}
-          <A
-            to={{
-              pageName: 'owner',
-              options: { owner: pull?.author?.username },
-            }}
-          >
-            {pull?.author?.username}
-          </A>{' '}
-          &bull;{' '}
-          {pull?.updatestamp &&
-            formatDistanceToNow(new Date(pull?.updatestamp), {
-              addSuffix: true,
-            })}
+          {pull?.updatestamp && formatTimeToNow(pull.updatestamp)}{' '}
+          <span className="bold">{pull?.author?.username}</span> authored{' '}
+          {pull?.pullId && (
+            <A
+              href={getProviderPullURL({
+                provider,
+                owner,
+                repo,
+                pullId: pull?.pullId,
+              })}
+              hook="provider-pr-link"
+              isExternal={true}
+            >
+              #{pull?.pullId}
+            </A>
+          )}
+        </span>
+        <CIStatusLabel ciPassed={pull?.head?.ciPassed} />
+        <span className="flex items-center">
+          <Icon name="branch" variant="developer" size="sm" />
+          {pull?.head?.branchName}
         </span>
       </p>
     </div>

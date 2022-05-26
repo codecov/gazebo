@@ -22,7 +22,7 @@ const pull = {
   head: {
     commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
     totals: {
-      coverage: 78.33,
+      percentCovered: 78.33,
     },
   },
   comparedTo: {
@@ -30,7 +30,7 @@ const pull = {
   },
   compareWithBase: {
     patchTotals: {
-      coverage: 0.9212,
+      percentCovered: 0.9212,
     },
     changeWithParent: 38.94,
   },
@@ -41,8 +41,8 @@ const base = pull?.comparedTo
 const compareWithBase = pull?.compareWithBase
 
 const succesfulExpectedData = {
-  headCoverage: head?.totals?.coverage,
-  patchCoverage: compareWithBase?.patchTotals?.coverage * 100,
+  headCoverage: head?.totals?.percentCovered,
+  patchCoverage: compareWithBase?.patchTotals?.percentCovered * 100,
   changeCoverage: compareWithBase?.changeWithParent,
   headCommit: head?.commitid,
   baseCommit: base?.commitid,

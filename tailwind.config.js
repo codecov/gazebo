@@ -2,6 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
   content: ['./src/**/*.js', './src/*.js', './public/*.html'],
+  plugins: [require('@tailwindcss/line-clamp')],
   theme: {
     container: {
       center: true,
@@ -112,7 +113,7 @@ module.exports = {
   variants: {
     extend: {
       textColor: ['disabled'],
-      margin: ['responsive', 'last'],
+      margin: ['responsive', 'first', 'last', 'first-letter'],
       opacity: ['disabled', 'hover'],
       cursor: ['disabled'],
       transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
@@ -120,7 +121,7 @@ module.exports = {
       borderStyle: ['first'],
       borderColor: ['first', 'disabled'],
       borderWidth: ['first'],
-      padding: ['responsive', 'last'],
+      padding: ['responsive', 'first', 'last'],
       backgroundColor: ['disabled'],
     },
   },

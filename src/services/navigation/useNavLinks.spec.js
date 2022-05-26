@@ -646,7 +646,7 @@ describe('useStaticNavLinks', () => {
   describe.each`
     link                       | outcome
     ${links.root}              | ${`${config.MARKETING_BASE_URL}`}
-    ${links.terms}             | ${`${config.MARKETING_BASE_URL}/terms`}
+    ${links.terms}             | ${`${config.MARKETING_BASE_URL}/terms-and-conditions`}
     ${links.privacy}           | ${`${config.MARKETING_BASE_URL}/privacy`}
     ${links.security}          | ${`${config.MARKETING_BASE_URL}/security`}
     ${links.gdpr}              | ${`${config.MARKETING_BASE_URL}/gdpr`}
@@ -660,6 +660,7 @@ describe('useStaticNavLinks', () => {
     ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
     ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
     ${links.flags}             | ${'https://docs.codecov.com/docs/flags'}
+    ${links.unexpectedChanges} | ${'https://docs.codecov.com/docs/unexpected-coverage-changes'}
     ${links.userAppManagePage} | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
     ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}

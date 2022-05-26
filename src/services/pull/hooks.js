@@ -16,9 +16,11 @@ export function usePull({ provider, owner, repo, pullId }) {
               }
               updatestamp
               head {
+                branchName
+                ciPassed
                 commitid
                 totals {
-                  coverage
+                  percentCovered
                 }
               }
               comparedTo {
@@ -26,9 +28,84 @@ export function usePull({ provider, owner, repo, pullId }) {
               }
               compareWithBase {
                 patchTotals {
-                  coverage
+                  percentCovered
                 }
                 changeWithParent
+              }
+              compareWithBase {
+                baseTotals {
+                  percentCovered
+                  fileCount
+                  lineCount
+                  hitsCount
+                  missesCount
+                  partialsCount
+                }
+                headTotals {
+                  percentCovered
+                  fileCount
+                  lineCount
+                  hitsCount
+                  missesCount
+                  partialsCount
+                }
+                fileComparisons {
+                  baseName
+                  headName
+                  isNewFile
+                  hasDiff
+                  hasChanges
+                  baseTotals {
+                    percentCovered
+                    lineCount
+                    hitsCount
+                    missesCount
+                    partialsCount
+                  }
+                  headTotals {
+                    percentCovered
+                    lineCount
+                    hitsCount
+                    missesCount
+                    partialsCount
+                  }
+                  patchTotals {
+                    percentCovered
+                    fileCount
+                    lineCount
+                    hitsCount
+                    missesCount
+                    partialsCount
+                  }
+                  segments {
+                    header
+                    lines {
+                      baseNumber
+                      headNumber
+                      baseCoverage
+                      headCoverage
+                      content
+                    }
+                  }
+                }
+              }
+              commits {
+                totalCount
+                pageInfo {
+                  hasNextPage
+                  startCursor
+                  hasPreviousPage
+                }
+                edges {
+                  node {
+                    commitid
+                    message
+                    createdAt
+                    author {
+                      username
+                    }
+                  }
+                }
               }
             }
           }

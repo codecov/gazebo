@@ -1,4 +1,3 @@
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 import { useContext } from 'react'
 
@@ -6,6 +5,7 @@ import { useRepos } from 'services/repos/hooks'
 import AppLink from 'shared/AppLink'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
+import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Progress from 'ui/Progress'
 import Table from 'ui/Table'
@@ -74,11 +74,7 @@ function transformRepoToTable({
     ),
     lastUpdated: (
       <span className="w-full text-right text-ds-gray-quinary">
-        {repo.latestCommitAt
-          ? formatDistanceToNow(new Date(repo.latestCommitAt), {
-              addSuffix: true,
-            })
-          : ''}
+        {repo.latestCommitAt ? formatTimeToNow(repo.latestCommitAt) : ''}
       </span>
     ),
     coverage:

@@ -64,7 +64,9 @@ describe('Usage', () => {
     })
 
     it('renders number of uploads', () => {
-      expect(screen.getByText(/250 of 250 uploads month/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/250 of 250 uploads - trailing 30 days/)
+      ).toBeInTheDocument()
     })
 
     it('renders progress bar', () => {

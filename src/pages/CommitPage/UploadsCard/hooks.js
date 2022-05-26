@@ -11,6 +11,7 @@ function humanReadableOverview(state, count) {
   if (state === UploadStateEnum.error) return 'errored'
   if (state === UploadStateEnum.uploaded) return `${plural(count)} pending`
   if (state === UploadStateEnum.processed) return 'successful'
+  if (state === UploadStateEnum.complete) return 'carried forward'
 }
 
 export function useUploads() {
@@ -37,12 +38,12 @@ export function useUploads() {
 
   useEffect(() => {
     const countedStates = countBy(uploads, (upload) => upload.state)
-    const string = Object.entries(countedStates)
+    const errorCount = Object.entries(countedStates)
       .map(
         ([state, count]) => `${count} ${humanReadableOverview(state, count)}`
       )
       .join(', ')
-    setUploadsOverview(string)
+    setUploadsOverview(errorCount)
   }, [uploads, uploadsProviderList])
 
   return {

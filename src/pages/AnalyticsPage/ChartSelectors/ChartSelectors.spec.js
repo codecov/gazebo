@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -7,11 +7,9 @@ import { useRepos } from 'services/repos/hooks'
 import ChartSelectors from './ChartSelectors'
 
 jest.mock('services/repos/hooks')
-jest.mock('ui/Datepicker', () => () => 'Datepicker')
 
-describe('AnalyticsPage', () => {
+describe('ChartSelectors', () => {
   let props
-  let wrapper
   function setup({ params, owner, active, sortItem, updateParams }) {
     const { repositories } = params
     useRepos.mockReturnValue({
@@ -26,7 +24,7 @@ describe('AnalyticsPage', () => {
       params,
       updateParams,
     }
-    wrapper = render(
+    render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
         <Route path="/analytics/:provider/:owner">
           <ChartSelectors {...props} />
@@ -37,6 +35,8 @@ describe('AnalyticsPage', () => {
 
   describe('when the owner exists', () => {
     beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2022-04-20'))
+
       setup({
         params: {
           search: 'Repo name 1',
@@ -72,9 +72,24 @@ describe('AnalyticsPage', () => {
         },
       })
     })
+    afterAll(() => {
+      jest.useRealTimers()
+    })
 
-    it('renders the datepicker', () => {
-      expect(screen.getByText(/Datepicker/)).toBeInTheDocument()
+    describe('changing the date updates the selected dates', () => {
+      it('assert the start date can be set', async () => {
+        expect(window.location.search).toBe('')
+
+        const picker = screen.getByRole('textbox')
+        fireEvent.click(picker)
+
+        const selectedDate = screen.getByRole('option', {
+          name: 'Choose Wednesday, March 23rd, 2022',
+        })
+        fireEvent.click(selectedDate)
+
+        await waitFor(() => expect(picker.value).toBe('03/23/2022 - '))
+      })
     })
 
     it('renders the MultiSelect', () => {
@@ -82,7 +97,7 @@ describe('AnalyticsPage', () => {
     })
 
     it('triggers the multiselect onChange when clicked', () => {
-      const button = wrapper.getByRole('button', {
+      const button = screen.getByRole('button', {
         name: 'Select repos to choose',
       })
       fireEvent.click(button)
@@ -93,12 +108,12 @@ describe('AnalyticsPage', () => {
     })
 
     it('clears filters when clear filters button is clicked', () => {
-      const button = wrapper.getByRole('button', { name: 'Clear filters' })
+      const button = screen.getByRole('button', { name: 'Clear filters' })
       fireEvent.click(button)
       expect(props.updateParams).toHaveBeenCalledWith({
-        endDate: '',
+        endDate: null,
         repositories: [],
-        startDate: '',
+        startDate: null,
       })
     })
   })

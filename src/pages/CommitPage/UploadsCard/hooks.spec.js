@@ -6,6 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import {
   commitEmptyUploads,
   commitErrored,
+  commitOneCarriedForward,
   commitOnePending,
   compareTotalsEmpty,
 } from 'services/commit/mocks'
@@ -52,14 +53,14 @@ describe('useUploads', () => {
         })
       })
 
-      it('returns a uploadsProviderList', () => {
-        hookData.waitFor(() => {
+      it('returns a uploadsProviderList', async () => {
+        await hookData.waitFor(() => {
           expect(hookData.result.current.uploadsProviderList).toEqual([])
         })
       })
 
-      it('returns a hasNoUploads', () => {
-        hookData.waitFor(() => {
+      it('returns a hasNoUploads', async () => {
+        await hookData.waitFor(() => {
           expect(hookData.result.current.hasNoUploads).toEqual(true)
         })
       })
@@ -76,7 +77,7 @@ describe('useUploads', () => {
       it('returns uploadsOverview', () => {
         hookData.waitFor(() => {
           expect(hookData.result.current.uploadsOverview).toEqual(
-            '2 errored, 3 are pending, 1 successful'
+            '2 errored, 3 are pending, 1 successful, 1 carried forward'
           )
         })
       })
@@ -114,6 +115,16 @@ describe('useUploads', () => {
                 jobCode: '1234',
                 provider: 'github actions',
                 state: 'PROCESSED',
+                updatedAt: '2020-08-25T16:36:25.859889+00:00',
+                uploadType: 'UPLOADED',
+              },
+              {
+                createdAt: '2020-08-25T16:36:25.820340+00:00',
+                errors: [],
+                flags: ['front-end'],
+                jobCode: '1234',
+                provider: 'github actions',
+                state: 'COMPLETE',
                 updatedAt: '2020-08-25T16:36:25.859889+00:00',
                 uploadType: 'CARRYFORWARDED',
               },
@@ -189,6 +200,35 @@ describe('useUploads', () => {
       it('returns a hasNoUploads', () => {
         hookData.waitFor(() => {
           expect(hookData.result.current.hasNoUploads).toEqual(false)
+        })
+      })
+    })
+  })
+
+  describe('handles carried forward', () => {
+    describe('commit with a carried forward flag', () => {
+      beforeEach(() => {
+        setup(commitOneCarriedForward)
+      })
+      afterEach(() => server.resetHandlers())
+      it('returns uploadsOverview', () => {
+        hookData.waitFor(() => {
+          expect(hookData.result.current.uploadsOverview).toEqual(
+            '1 carried forward'
+          )
+        })
+      })
+    })
+    describe('commit with out a carried forward flag', () => {
+      beforeEach(() => {
+        setup(commitOnePending)
+      })
+      afterEach(() => server.resetHandlers())
+      it('returns uploadsOverview', () => {
+        hookData.waitFor(() => {
+          expect(hookData.result.current.uploadsOverview).not.toContain(
+            '1 carried forward'
+          )
         })
       })
     })

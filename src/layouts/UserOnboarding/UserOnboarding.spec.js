@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import Cookie from 'js-cookie'
 
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
@@ -62,6 +63,18 @@ describe('UserOnboarding', () => {
     beforeEach(() => {
       setup(userNotOnboarded, false)
     })
+
+    it('doesnt render the onboarding modal', () => {
+      expect(screen.queryByText(/UserOnboardingModal/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe(`when the user is impersonating don't show the onboarding even if the user isnt onbored and the flag is true.`, () => {
+    beforeEach(() => {
+      Cookie.set('staff_user', 'chetney')
+      setup(userNotOnboarded, true)
+    })
+    afterEach(() => Cookie.remove('staff_user'))
 
     it('doesnt render the onboarding modal', () => {
       expect(screen.queryByText(/UserOnboardingModal/)).not.toBeInTheDocument()

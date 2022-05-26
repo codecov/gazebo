@@ -119,20 +119,27 @@ export function useCommit({
                 username
               }
               uploads {
-                  edges {
-                      node {
-                          state
-                          provider
-                          createdAt
-                          updatedAt
-                          flags
-                          jobCode
-                          downloadUrl
-                          ciUrl
-                          uploadType
-                          buildCode
+                edges {
+                  node {
+                    state
+                    provider
+                    createdAt
+                    updatedAt
+                    flags
+                    jobCode
+                    downloadUrl
+                    ciUrl
+                    uploadType
+                    buildCode
+                    errors {
+                      edges {
+                        node {
+                          errorCode
+                        }
                       }
+                    }
                   }
+                }
               }
               message
               ciPassed
