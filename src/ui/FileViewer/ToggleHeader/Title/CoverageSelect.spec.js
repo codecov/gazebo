@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { LINE_STATE } from 'shared/utils/fileviewerLines'
+import { LINE_STATE } from 'shared/utils/fileviewer'
 
 import CoverageSelect from './CoverageSelect'
 

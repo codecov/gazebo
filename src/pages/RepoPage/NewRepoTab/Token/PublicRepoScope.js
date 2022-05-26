@@ -21,7 +21,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
       </p>
       <p className="flex flex-row justify-center text-s mt-4">
         Codecov Token={' '}
-        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
+        <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5 mr-2">
           {token}
         </span>
         <CopyClipboard string={token} />

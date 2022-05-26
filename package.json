@@ -22,13 +22,12 @@
     "prop-types": "^15.8.1",
     "qs": "^6.10.1",
     "react": "^17.0.2",
-    "react-ace": "^9.5.0",
+    "react-ace": "^10.1.0",
     "react-datepicker": "^4.7.0",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.28.1",
-    "react-image": "^4.0.3",
     "react-modal": "^3.14.4",
-    "react-query": "^3.34.16",
+    "react-query": "3.39",
     "react-router-dom": "^5.2.1",
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
@@ -57,7 +56,7 @@
       "prettier --write"
     ],
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json"
+      "eslint --fix --no-ignore --max-warnings=0 -c .eslintrc.json"
     ]
   },
   "browserslist": {
@@ -97,12 +96,12 @@
     "husky": "^7.0.4",
     "jest-junit": "^13.0.0",
     "lint-staged": "^12.3.7",
-    "msw": "^0.39.2",
+    "msw": "^0.40.1",
     "postcss": "^8.4.12",
     "prettier": "^2.6.2",
     "react-scripts": "^5.0.1",
     "react-test-renderer": "^17.0.2",
-    "tailwindcss": "^3.0.23",
+    "tailwindcss": "^3.0.24",
     "webpack": "^5.70.0"
   },
   "engines": {

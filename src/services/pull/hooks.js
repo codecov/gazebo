@@ -69,6 +69,14 @@ export function usePull({ provider, owner, repo, pullId }) {
                     missesCount
                     partialsCount
                   }
+                  patchTotals {
+                    percentCovered
+                    fileCount
+                    lineCount
+                    hitsCount
+                    missesCount
+                    partialsCount
+                  }
                   segments {
                     header
                     lines {
