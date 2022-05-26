@@ -17,7 +17,11 @@ const getListItems = ({ organizations }) =>
     ),
   }))
 
-function OrganizationsList({ onSubmit, needHelp, setNeedHelp }) {
+function OrganizationsList({
+  onSubmit,
+  isHelpFindingOrg,
+  setIsHelpFindingOrg,
+}) {
   const { data: myContexts, refetch } = useMyContexts()
 
   const { currentUser, myOrganizations } = myContexts
@@ -41,7 +45,7 @@ function OrganizationsList({ onSubmit, needHelp, setNeedHelp }) {
 
   return (
     <div className="h-80">
-      {needHelp ? (
+      {isHelpFindingOrg ? (
         <div className="text-base w-[30rem]">
           <h2 className="font-semibold pb-2"> Enable org access</h2>
           <p>
@@ -61,7 +65,7 @@ function OrganizationsList({ onSubmit, needHelp, setNeedHelp }) {
               <button
                 className="align-bottom inline-flex items-center text-ds-blue"
                 onClick={() => {
-                  refetch().then(() => setNeedHelp(false))
+                  refetch().then(() => setIsHelpFindingOrg(false))
                 }}
               >
                 <Icon name="refresh" size="sm" variant="solid" />
@@ -88,8 +92,8 @@ function OrganizationsList({ onSubmit, needHelp, setNeedHelp }) {
 
 OrganizationsList.propTypes = {
   onSubmit: PropTypes.func.isRequired,
-  needHelp: PropTypes.bool,
-  setNeedHelp: PropTypes.func.isRequired,
+  isHelpFindingOrg: PropTypes.bool,
+  setIsHelpFindingOrg: PropTypes.func.isRequired,
 }
 
 export default OrganizationsList

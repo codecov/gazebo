@@ -31,7 +31,7 @@ export function useOnboardingTracking() {
         url: url + customPath,
       })
     },
-    helpFindOrg: () => {
+    helpFindingOrganization: () => {
       trackSegmentEvent({
         event: 'User Onboarding Help Finding Org Clicked',
         category: 'Onboarding',

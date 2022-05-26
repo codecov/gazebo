@@ -17,14 +17,16 @@ const loadingState = (
 )
 
 const getOrgStepProps = ({
-  needHelp,
+  isHelpFindingOrg,
   handleOrgSubmit,
-  setNeedHelp,
+  setIsHelpFindingOrg,
   onOnboardingSkip,
-  helpFindOrg,
+  helpFindingOrganization,
 }) => ({
-  title: needHelp ? 'Don’t see your organization?' : 'Select organization',
-  subtitle: needHelp ? (
+  title: isHelpFindingOrg
+    ? 'Don’t see your organization?'
+    : 'Select organization',
+  subtitle: isHelpFindingOrg ? (
     <span>
       Your organization may need to grant access&nbsp;
       <A
@@ -43,14 +45,14 @@ const getOrgStepProps = ({
     <Suspense fallback={loadingState}>
       <OrganizationsList
         onSubmit={handleOrgSubmit}
-        needHelp={needHelp}
-        setNeedHelp={setNeedHelp}
+        isHelpFindingOrg={isHelpFindingOrg}
+        setIsHelpFindingOrg={setIsHelpFindingOrg}
       />
     </Suspense>
   ),
-  footer: needHelp ? (
+  footer: isHelpFindingOrg ? (
     <div className="flex w-full justify-between">
-      <button onClick={() => setNeedHelp(false)}>Back</button>
+      <button onClick={() => setIsHelpFindingOrg(false)}>Back</button>
       <button onClick={onOnboardingSkip}>Skip &gt;</button>
     </div>
   ) : (
@@ -60,8 +62,8 @@ const getOrgStepProps = ({
         <button
           className="text-blue-400 pl-2"
           onClick={() => {
-            helpFindOrg()
-            setNeedHelp(true)
+            helpFindingOrganization()
+            setIsHelpFindingOrg(true)
           }}
         >
           Help finding org &gt;
@@ -73,11 +75,11 @@ const getOrgStepProps = ({
 })
 
 function usePerStepProp({ onSelect, onOnboardingSkip, currentUser }) {
-  const { helpFindOrg, selectOrganization, selectRepository } =
+  const { helpFindingOrganization, selectOrganization, selectRepository } =
     useOnboardingTracking()
 
   const [step, setStep] = useState(0)
-  const [needHelp, setNeedHelp] = useState(false)
+  const [isHelpFindingOrg, setIsHelpFindingOrg] = useState(false)
   const [selectedOrg, setSelectedOrg] = useState()
 
   const handleOrgSubmit = (org) => {
@@ -88,11 +90,11 @@ function usePerStepProp({ onSelect, onOnboardingSkip, currentUser }) {
 
   const propsPerStep = {
     0: getOrgStepProps({
-      needHelp,
+      isHelpFindingOrg,
       handleOrgSubmit,
-      setNeedHelp,
+      setIsHelpFindingOrg,
       onOnboardingSkip,
-      helpFindOrg,
+      helpFindingOrganization,
     }),
     1: {
       title: 'Which repo are working with today?',

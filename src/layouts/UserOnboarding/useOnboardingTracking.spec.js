@@ -69,10 +69,10 @@ describe('useOnboardingTracking', () => {
     })
   })
 
-  describe('helpFindOrg', () => {
+  describe('helpFindingOrganization', () => {
     beforeEach(() => {
       act(() => {
-        hookData.result.current.helpFindOrg()
+        hookData.result.current.helpFindingOrganization()
       })
     })
 

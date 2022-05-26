@@ -33,8 +33,8 @@ describe('OrganizationsList', () => {
   let container
   const onSubmit = jest.fn()
   const refetch = jest.fn()
-  const setNeedHelp = jest.fn()
-  function setup(needHelp) {
+  const setIsHelpFindingOrg = jest.fn()
+  function setup(isHelpFindingOrg) {
     useMyContexts.mockReturnValue({
       data: contextData,
       refetch: refetch,
@@ -44,8 +44,8 @@ describe('OrganizationsList', () => {
           <Route path="/:provider">
             <OrganizationsList
               onSubmit={onSubmit}
-              needHelp={needHelp}
-              setNeedHelp={setNeedHelp}
+              isHelpFindingOrg={isHelpFindingOrg}
+              setIsHelpFindingOrg={setIsHelpFindingOrg}
             />
           </Route>
         </MemoryRouter>
@@ -53,7 +53,7 @@ describe('OrganizationsList', () => {
     )
   }
 
-  describe('when rendered with needHelp false', () => {
+  describe('when rendered with isHelpFindingOrg false', () => {
     beforeEach(() => {
       setup()
     })
@@ -85,7 +85,7 @@ describe('OrganizationsList', () => {
     })
   })
 
-  describe('when rendered with needHelp true', () => {
+  describe('when rendered with isHelpFindingOrg true', () => {
     beforeEach(() => {
       setup(true)
     })
@@ -135,10 +135,12 @@ describe('OrganizationsList', () => {
       })
     })
 
-    it('refetch and setNeedHelp are called', async () => {
+    it('refetch and setIsHelpFindingOrg are called', async () => {
       screen.getByRole('button', /refresh list/).click()
       expect(refetch).toHaveBeenCalled()
-      await waitFor(() => expect(setNeedHelp).toHaveBeenCalledWith(false))
+      await waitFor(() =>
+        expect(setIsHelpFindingOrg).toHaveBeenCalledWith(false)
+      )
     })
   })
 })
