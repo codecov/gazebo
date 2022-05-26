@@ -96,7 +96,7 @@ function usePerStepProp({ onSelect, onOnboardingSkip, currentUser }) {
     }),
     1: {
       title: 'Which repo are working with today?',
-      body: (
+      body: selectedOrg && (
         <RepositoriesList
           organization={selectedOrg}
           onSubmit={(selectedRepo) => {
