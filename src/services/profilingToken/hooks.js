@@ -9,7 +9,7 @@ export function useRegenerateProfilingToken() {
   return useMutation(
     () => {
       const query = `
-        mutation($input: RegenerateProfilingTokenInput!) {
+        mutation regenerateProfilingToken($input: RegenerateProfilingTokenInput!) {
         regenerateProfilingToken(input: $input) {
             error {
               __typename

@@ -1,10 +1,8 @@
-import { renderHook } from '@testing-library/react-hooks'
-import { rest } from 'msw'
+import { renderHook, act } from '@testing-library/react-hooks'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { act } from 'react-test-renderer'
-
+import { graphql } from 'msw'
 import { useRegenerateProfilingToken } from './hooks'
 
 const data = {
@@ -33,10 +31,14 @@ const wrapper = ({ children }) => (
 describe('useRegenerateProfilingToken', () => {
   let hookData
 
+
   function setup() {
     server.use(
-      rest.patch('/graphql/gh/', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(data))
+      graphql.mutation('regenerateProfilingToken', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ data })
+        )
       })
     )
     hookData = renderHook(() => useRegenerateProfilingToken(), {
@@ -64,7 +66,7 @@ describe('useRegenerateProfilingToken', () => {
       })
     })
 
-    describe('When success', () => {
+    describe('When mutation is a success', () => {
       beforeEach(async () => {
         return act(async () => {
           hookData.result.current.mutate()
