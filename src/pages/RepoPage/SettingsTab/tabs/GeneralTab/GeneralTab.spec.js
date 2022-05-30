@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepo } from 'services/repo'
+import { useRepo, useUpdateRepo } from 'services/repo'
 
 import GeneralTab from './GeneralTab'
 
@@ -10,11 +10,17 @@ jest.mock('services/repo')
 const queryClient = new QueryClient()
 
 describe('GeneralTab', () => {
+  const mutate = jest.fn()
+
   function setup({ uploadToken, defaultBranch }) {
     useRepo.mockReturnValue({
       data: {
         repository: { uploadToken, defaultBranch },
       },
+    })
+    useUpdateRepo.mockReturnValue({
+      mutate,
+      data: { branch: 'random' },
     })
 
     render(

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
-import { useUpdateRepo } from 'services/repoUpdate'
+import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
@@ -18,7 +18,7 @@ function useUpdateDefaultBranch() {
         onError: () =>
           addToast({
             type: 'error',
-            text: 'Something went wrong',
+            text: 'We were unable to update the default branch for this repo',
           }),
       }
     )
@@ -43,7 +43,7 @@ function DefaultBranch({ defaultBranch }) {
         <p>Selection for branch context of data in coverage dashboard</p>
         <hr />
       </div>
-      <div className="flex flex-col border-2 border-gray-100 p-4 xl:w-4/5 2xl:w-3/5 gap-4">
+      <div className="flex flex-col border-2 border-ds-gray-primary p-4 xl:w-4/5 2xl:w-3/5 gap-4">
         <h2 className="font-semibold flex gap-1">
           <Icon name="branch" variant="developer" size="sm" />
           Branch Context
