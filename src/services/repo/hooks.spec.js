@@ -47,6 +47,7 @@ describe('useRepo', () => {
         private: true,
         uploadToken: 'token',
         profilingToken: 'token',
+        graphToken: 'token'
       },
     }
     const dataReturned = {
@@ -57,6 +58,7 @@ describe('useRepo', () => {
           private: true,
           uploadToken: 'token',
           profilingToken: 'token',
+          graphToken: 'token'
         },
       },
     }

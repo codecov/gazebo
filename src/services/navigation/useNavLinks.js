@@ -461,6 +461,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    graphAuthorization: {
+      text: 'Grpah Authorization',
+      path: () => 'https://docs.codecov.com/reference/authorization#about-graphs',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
 

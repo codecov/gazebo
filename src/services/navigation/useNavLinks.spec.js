@@ -663,7 +663,7 @@ describe('useNavLinks', () => {
         hookData.result.current.signUp.path({ pathname: 'random/path/name' })
       ).toBe(
         config.MARKETING_BASE_URL +
-          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+        '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
       )
     })
   })
@@ -729,6 +729,7 @@ describe('useStaticNavLinks', () => {
     ${links.codecovGithuhApp}  | ${'https://github.com/apps/codecov'}
     ${links.teamBot}           | ${'https://docs.codecov.com/docs/team-bot'}
     ${links.runtimeInsights}   | ${'https://docs.codecov.com/docs/runtime-insights'}
+    ${links.graphAuthorization}| ${'https://docs.codecov.com/reference/authorization#about-graphs'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)
