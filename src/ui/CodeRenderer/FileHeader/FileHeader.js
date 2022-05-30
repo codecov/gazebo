@@ -12,6 +12,7 @@ function CodeRendererCoverageHeader({ header, headName, coverage, fileLabel }) {
    * @param {String} headName title of the segment
    * @param {Array} coverage Key Value pairs of coverage and the label
    * @param {String} fileLabel a label for the whole file such as "New"
+   * @return {JSX} Renders the file path, patch, and coverage totals for the file.
    */
 
   return (
