@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const RegenerateProfilingTokenModel = ({
+const RegenerateProfilingTokenModal = ({
   closeModal,
   regenerateToken,
   isLoading,
@@ -43,10 +43,10 @@ const RegenerateProfilingTokenModel = ({
   />
 )
 
-RegenerateProfilingTokenModel.propTypes = {
+RegenerateProfilingTokenModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
   regenerateToken: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default RegenerateProfilingTokenModel
+export default RegenerateProfilingTokenModal

@@ -7,7 +7,7 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import TokenWrapper from 'ui/TokenWrapper'
 
-import RegenerateProfilingTokenModel from './RegenerateProfilingTokenModel'
+import RegenerateProfilingTokenModal from './RegenerateProfilingTokenModal'
 
 function useGenerateProfilingToken() {
   const addToast = useAddNotification()
@@ -68,7 +68,7 @@ function ImpactAnalysisToken({ profilingToken }) {
             Regenerate
           </Button>
           {showModal && (
-            <RegenerateProfilingTokenModel
+            <RegenerateProfilingTokenModal
               closeModal={() => setShowModal(false)}
               regenerateToken={regenerateToken}
               isLoading={isLoading}
