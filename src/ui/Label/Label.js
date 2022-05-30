@@ -2,7 +2,7 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 const baseClasses =
-  'text-xs px-1 py-2 border-solid border rounded border-box inline-block'
+  'text-xs px-1 py-1.5 border-solid border rounded border-box inline-block'
 
 const labelClasses = {
   default: 'border-current',

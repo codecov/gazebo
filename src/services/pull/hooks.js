@@ -53,6 +53,8 @@ export function usePull({ provider, owner, repo, pullId }) {
                   baseName
                   headName
                   isNewFile
+                  isRenamedFile
+                  isDeletedFile
                   hasDiff
                   hasChanges
                   baseTotals {
@@ -79,6 +81,7 @@ export function usePull({ provider, owner, repo, pullId }) {
                   }
                   segments {
                     header
+                    hasUnintendedChanges
                     lines {
                       baseNumber
                       headNumber
