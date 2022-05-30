@@ -39,7 +39,6 @@ const FileDiff = ({
   const headCoverage = headTotals?.percentCovered
   const changeCoverage = headCoverage - baseTotals?.percentCovered
   const patchCoverage = patchTotals?.percentCovered
-  const header = segments[0]?.header
   const fileLabel = setFileLabel({ isNewFile, isRenamedFile, isDeletedFile })
   const coverage = [
     { label: 'HEAD', value: headCoverage },
@@ -50,7 +49,6 @@ const FileDiff = ({
     <div>
       {/* Header */}
       <FileHeader
-        header={header}
         headName={headName}
         coverage={coverage}
         fileLabel={fileLabel}
@@ -60,11 +58,14 @@ const FileDiff = ({
         const content = segment.lines.map((line) => line.content).join('\n')
         return (
           <Fragment key={`${headName}-${segmentIndex}`}>
-            {segment?.hasUnintendedChanges && (
-              <CodeRendererInfoRow
-                type={CODE_RENDERER_INFO.UNEXPECTED_CHANGES}
-              />
-            )}
+            <CodeRendererInfoRow
+              patch={segment?.header}
+              type={
+                segment?.hasUnintendedChanges
+                  ? CODE_RENDERER_INFO.UNEXPECTED_CHANGES
+                  : CODE_RENDERER_INFO.EMPTY
+              }
+            />
             <CodeRenderer
               code={content}
               fileName={headName}

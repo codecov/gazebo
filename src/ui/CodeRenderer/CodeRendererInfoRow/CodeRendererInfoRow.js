@@ -14,16 +14,18 @@ const message = {
       </span>
     </div>
   ),
+  [CODE_RENDERER_INFO.EMPTY]: CODE_RENDERER_INFO.EMPTY,
 }
 
-function CodeRendererInfoRow({ type }) {
+function CodeRendererInfoRow({ type, patch }) {
   /**
    * Row to display information related to the code rendered
    * @param {String} type type of information to be shown
    */
 
   return (
-    <div className="bg-ds-gray-primary border-t p-1 border-r border-l border-solid border-ds-gray-tertiary text-xs text-ds-gray-quinary">
+    <div className="flex gap-2 bg-ds-gray-primary border-t px-4 py-1 border-r border-l border-solid border-ds-gray-tertiary text-xs text-ds-gray-quinary">
+      <span data-testid="patch">{patch}</span>
       {message[type]}
     </div>
   )
@@ -31,6 +33,7 @@ function CodeRendererInfoRow({ type }) {
 
 CodeRendererInfoRow.propTypes = {
   type: PropTypes.string,
+  patch: PropTypes.string,
 }
 
 export default CodeRendererInfoRow
