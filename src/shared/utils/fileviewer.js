@@ -36,6 +36,7 @@ export const CODE_RENDERER_TYPE = Object.freeze({
 
 export const CODE_RENDERER_INFO = Object.freeze({
   UNEXPECTED_CHANGES: 'UNEXPECTED_CHANGES',
+  EMPTY: '',
 })
 
 // Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
