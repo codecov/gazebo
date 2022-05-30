@@ -7,6 +7,7 @@ import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoBreadcrumb from './RepoBreadcrumb'
+import SettingsTab from './SettingsTab'
 
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
@@ -65,8 +66,8 @@ function RepoPage() {
               <PullsTab />
             </Route>
             <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
-            <Route path={`${path}/settings`} exact>
-              <h1>Settings</h1>
+            <Route path={`${path}/settings`}>
+              <SettingsTab />
             </Route>
             <Redirect
               from="/:provider/:owner/:repo/*"
