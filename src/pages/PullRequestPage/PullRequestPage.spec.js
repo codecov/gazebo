@@ -10,7 +10,6 @@ jest.mock('./Flags', () => () => 'Flags')
 jest.mock('./Commits', () => () => 'Commits')
 
 jest.mock('./subroute/Root', () => () => 'Root')
-jest.mock('./subroute/FullFile', () => () => 'FullFile')
 
 describe('PullRequestPage', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
@@ -60,21 +59,6 @@ describe('PullRequestPage', () => {
 
     it('rendered', () => {
       expect(screen.getByText(/Root/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('file view', () => {
-    beforeEach(async () => {
-      setup({
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
-      })
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-    })
-
-    it('rendered', () => {
-      expect(screen.getByText(/FullFile/i)).toBeInTheDocument()
     })
   })
 
