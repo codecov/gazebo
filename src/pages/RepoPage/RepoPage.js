@@ -70,10 +70,10 @@ function RepoPage() {
             <Route path={`${path}/settings`}>
               <SettingsTab />
             </Route>
-            <Route path={`${path}/tree/:path`} exact>
+            <Route path={`${path}/tree/:path+`} exact>
               <CoverageTab />
             </Route>
-            <Route path={`${path}/blob/:path`} exact>
+            <Route path={`${path}/blob/:path+`} exact>
               <CoverageTab />
             </Route>
             <Redirect
