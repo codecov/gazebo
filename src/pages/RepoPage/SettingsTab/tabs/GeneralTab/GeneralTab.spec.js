@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepo } from 'services/repo'
+import { useRepo, useUpdateRepo } from 'services/repo'
 
 import GeneralTab from './GeneralTab'
 
@@ -10,11 +10,17 @@ jest.mock('services/repo')
 const queryClient = new QueryClient()
 
 describe('GeneralTab', () => {
-  function setup({ uploadToken }) {
+  const mutate = jest.fn()
+
+  function setup({ uploadToken, defaultBranch }) {
     useRepo.mockReturnValue({
       data: {
-        repository: { uploadToken },
+        repository: { uploadToken, defaultBranch },
       },
+    })
+    useUpdateRepo.mockReturnValue({
+      mutate,
+      data: { branch: 'random' },
     })
 
     render(
@@ -51,6 +57,28 @@ describe('GeneralTab', () => {
 
     it('does not render Repository upload token compoenent', () => {
       const title = screen.queryByText(/Repository upload token/)
+      expect(title).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with defaultBranch', () => {
+    beforeEach(() => {
+      setup({ defaultBranch: 'master' })
+    })
+
+    it('renders Default Branch compoenent', () => {
+      const title = screen.getByText(/Default Branch/)
+      expect(title).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with no defaultBranch', () => {
+    beforeEach(() => {
+      setup({ defaultBranch: null })
+    })
+
+    it('does not render  Default Branch compoenent', () => {
+      const title = screen.queryByText(/Default Branch/)
       expect(title).not.toBeInTheDocument()
     })
   })
