@@ -11,19 +11,18 @@ import RegenerateProfilingTokenModel from './RegenerateProfilingTokenModel'
 
 function useGenerateProfilingToken() {
   const addToast = useAddNotification()
-  const { mutate, ...rest } = useRegenerateProfilingToken()
+  const { mutate, data, ...rest } = useRegenerateProfilingToken()
 
   async function regenerateToken() {
-    mutate({
-      onError: () =>
-        addToast({
-          type: 'error',
-          text: 'Something went wrong',
-        }),
-    })
+    mutate()
+    if (data?.data?.regenerateProfilingToken?.error) {
+      addToast({
+        type: 'error',
+        text: 'Something went wrong',
+      })
+    }
   }
-
-  return { regenerateToken, ...rest }
+  return { regenerateToken, data, ...rest }
 }
 
 function ImpactAnalysisToken({ profilingToken }) {

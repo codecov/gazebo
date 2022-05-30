@@ -18,7 +18,7 @@ describe('ImpactAnalysisToken', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
 
-  function setup(profilingToken = undefined) {
+  function setup({ profilingToken = undefined, error = null }) {
     useAddNotification.mockReturnValue(addNotification)
     useRegenerateProfilingToken.mockReturnValue({
       isLoading: false,
@@ -27,6 +27,7 @@ describe('ImpactAnalysisToken', () => {
         data: {
           regenerateProfilingToken: {
             profilingToken,
+            error
           },
         },
       },
@@ -45,7 +46,7 @@ describe('ImpactAnalysisToken', () => {
 
   describe('renders ImpactAnalysisToken componenet', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
     it('renders title', () => {
       const title = screen.getByText(/Impact analysis token/)
@@ -73,7 +74,7 @@ describe('ImpactAnalysisToken', () => {
 
   describe('when the user clicks on regenerate button', () => {
     beforeEach(() => {
-      setup()
+      setup({})
       act(() =>
         userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
       )
@@ -110,7 +111,7 @@ describe('ImpactAnalysisToken', () => {
 
   describe('when user clicks on Generate New Token button', () => {
     beforeEach(async () => {
-      setup('new token')
+      setup({ profilingToken: 'new token' })
       await act(async () => {
         await userEvent.click(
           screen.getByRole('button', { name: 'Regenerate' })
@@ -129,28 +130,27 @@ describe('ImpactAnalysisToken', () => {
     })
   })
 
-  // describe('when mutation is not successful', () => {
-  //     beforeEach(async () => {
-  //         setup('new token')
-  //         await act(async () => {
-  //             await userEvent.click(
-  //                 screen.getByRole('button', { name: 'Regenerate' })
-  //             )
-  //             userEvent.click(
-  //                 screen.getByRole('button', { name: 'Generate New Token' })
-  //             )
-  //             mutate.mock.calls[0][1].onError()
-  //         })
-  //     })
-  //     it('calls the mutation', () => {
-  //         expect(mutate).toHaveBeenCalled()
-  //     })
+  describe('when mutation is not successful', () => {
+    beforeEach(async () => {
+      setup({ profilingToken: 'new token', error: 'Authentication Error' })
+      await act(async () => {
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Regenerate' })
+        )
+        userEvent.click(
+          screen.getByRole('button', { name: 'Generate New Token' })
+        )
+      })
+    })
+    it('calls the mutation', () => {
+      expect(mutate).toHaveBeenCalled()
+    })
 
-  //     it('adds an error notification', () => {
-  //         expect(addNotification).toHaveBeenCalledWith({
-  //             type: 'error',
-  //             text: 'Something went wrong',
-  //         })
-  //     })
-  // })
+    it('adds an error notification', () => {
+      expect(addNotification).toHaveBeenCalledWith({
+        type: 'error',
+        text: 'Something went wrong',
+      })
+    })
+  })
 })
