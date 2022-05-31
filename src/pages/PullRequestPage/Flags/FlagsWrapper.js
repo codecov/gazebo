@@ -1,11 +1,15 @@
+import { Suspense } from 'react'
+
 import Flags from './Flags'
 import FlagsErrorBoundary from './FlagsErrorBoundary'
 
 function FlagsWrapper() {
   return (
-    <FlagsErrorBoundary>
-      <Flags />
-    </FlagsErrorBoundary>
+    <Suspense>
+      <FlagsErrorBoundary>
+        <Flags />
+      </FlagsErrorBoundary>
+    </Suspense>
   )
 }
 
