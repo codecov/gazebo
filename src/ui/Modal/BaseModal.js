@@ -31,7 +31,7 @@ function BaseModal({
         </div>
       )}
       {footer && (
-        <footer className="border-t flex justify-end rounded-b p-4 bg-ds-gray-primary">
+        <footer className="border-t flex justify-end rounded-b p-4 bg-ds-gray-primary mt-4">
           {footer}
         </footer>
       )}
@@ -43,7 +43,10 @@ BaseModal.propTypes = {
   hasCloseButton: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string,
+  subtitle: PropTypes.oneOfType([
+    PropTypes.element.isRequired,
+    PropTypes.string.isRequired,
+  ]),
   body: PropTypes.oneOfType([
     PropTypes.element.isRequired,
     PropTypes.string.isRequired,

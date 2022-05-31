@@ -20,6 +20,7 @@ const enabledIcons = [
   'speakerphone',
   'exclamation',
   'branch',
+  'refresh',
   'information-circle',
 ]
 

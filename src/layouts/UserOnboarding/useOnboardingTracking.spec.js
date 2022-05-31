@@ -12,6 +12,12 @@ import { useOnboardingTracking } from './useOnboardingTracking'
 jest.mock('services/tracking/segment')
 jest.mock('services/location/hooks')
 
+const user = {
+  trackingMetadata: {
+    ownerid: 4,
+  },
+}
+
 describe('useOnboardingTracking', () => {
   let hookData
 
@@ -63,12 +69,85 @@ describe('useOnboardingTracking', () => {
     })
   })
 
-  describe('completedOnboarding', () => {
-    const user = {
-      trackingMetadata: {
-        ownerid: 4,
-      },
+  describe('helpFindingOrganization', () => {
+    beforeEach(() => {
+      act(() => {
+        hookData.result.current.helpFindingOrganization()
+      })
+    })
+
+    it('calls segment event with specific information', () => {
+      expect(trackSegmentEvent).toHaveBeenCalledWith({
+        event: 'User Onboarding Help Finding Org Clicked',
+        category: 'Onboarding',
+      })
+    })
+  })
+
+  describe('skipOnboarding', () => {
+    beforeEach(() => {
+      act(() => {
+        hookData.result.current.skipOnboarding()
+      })
+    })
+
+    it('calls segment event with specific information', () => {
+      expect(trackSegmentEvent).toHaveBeenCalledWith({
+        event: 'User Onboarding Skipped',
+        category: 'Onboarding',
+      })
+    })
+  })
+
+  describe('selectOrganization', () => {
+    beforeEach(() => {
+      act(() => {
+        hookData.result.current.selectOrganization(user, 'codecov')
+      })
+    })
+
+    it('calls segment event with specific information', () => {
+      expect(trackSegmentEvent).toHaveBeenCalledWith({
+        event: 'User Onboarding Selected Org',
+        category: 'Onboarding',
+      })
+      expect(identifySegmentEvent).toHaveBeenCalledWith({
+        organization: 'codecov',
+        id: 4,
+      })
+    })
+  })
+
+  describe('selectRepository', () => {
+    const selectedRepo = {
+      name: 'opentelem-ruby',
+      active: false,
+      private: false,
+      coverage: null,
+      updatedAt: null,
+      latestCommitAt: null,
+      author: { username: 'codecov' },
     }
+
+    beforeEach(() => {
+      act(() => {
+        hookData.result.current.selectRepository(user, selectedRepo)
+      })
+    })
+
+    it('calls segment event with specific information', () => {
+      expect(trackSegmentEvent).toHaveBeenCalledWith({
+        event: 'User Onboarding Selected Repo',
+        category: 'Onboarding',
+      })
+      expect(identifySegmentEvent).toHaveBeenCalledWith({
+        repo: selectedRepo,
+        id: 4,
+      })
+    })
+  })
+
+  describe('completedOnboarding', () => {
     const data = {
       businessEmail: '',
       email: 'adrian@codecov.io',
