@@ -1,12 +1,11 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { graphql } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { rest } from 'msw'
 import { act } from 'react-test-renderer'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepo, useEraseRepoContent } from './hooks'
+import { useRepo, useUpdateRepo, useEraseRepoContent } from './hooks'
 
 const queryClient = new QueryClient()
 
@@ -161,6 +160,85 @@ describe('useEraseRepoContent', () => {
           await hookData.waitFor(() => hookData.result.current.isLoading)
           await hookData.waitFor(() => !hookData.result.current.isLoading)
         })
+      })
+
+      it('returns isSuccess true', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
+      })
+    })
+  })
+})
+
+const repoDetails = {
+  can_edit: true,
+  can_view: true,
+  latest_commit: {
+    report: {
+      files: [
+        {
+          name: 'src/App.js',
+          totals: {
+            files: 0,
+            lines: 13,
+            hits: 13,
+            misses: 0,
+            partials: 0,
+            coverage: 100.0,
+            branches: 0,
+            methods: 10,
+            sessions: 0,
+            complexity: 0.0,
+            complexity_total: 0.0,
+            complexity_ratio: 0,
+            diff: null,
+          },
+        },
+      ],
+      uploadToken: 'random',
+    },
+  },
+}
+
+describe('useUpdateRepo', () => {
+  let hookData
+
+  function setup() {
+    server.use(
+      rest.patch(`internal/github/codecov/repos/test/`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(repoDetails))
+      })
+    )
+    hookData = renderHook(() => useUpdateRepo(), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('returns isLoading false', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation', () => {
+      const data = { branch: 'dummy' }
+      beforeEach(() => {
+        hookData.result.current.mutate(data)
+        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
+      })
+
+      it('returns isLoading true', () => {
+        expect(hookData.result.current.isLoading).toBeTruthy()
+      })
+    })
+
+    describe('When success', () => {
+      beforeEach(async () => {
+        hookData.result.current.mutate({})
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns isSuccess true', () => {

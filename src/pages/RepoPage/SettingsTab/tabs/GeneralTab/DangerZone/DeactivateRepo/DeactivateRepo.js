@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 import { useContext, useState } from "react";
 
-import { useUpdateRepo } from "services/repoUpdate";
+import { useUpdateRepo } from "services/repo";
 import { useAddNotification } from 'services/toastNotification'
 import Button from "ui/Button";
 import Modal from 'ui/Modal'
 
-import { ActivationStatusContext } from '../Context'
+import { ActivationStatusContext } from '../../Context'
 
 const ActivationStatus = Object.freeze({
     DEACTIVATED: { TITLE: 'Activate repo', LABEL: 'Activate' },
