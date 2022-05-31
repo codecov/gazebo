@@ -370,6 +370,13 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    oauthEnabling: {
+      text: 'Approval for third party access',
+      path: () =>
+        'https://docs.github.com/en/organizations/restricting-access-to-your-organizations-data/enabling-oauth-app-access-restrictions-for-your-organization',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     userAppManagePage: {
       text: 'User App Manage/Access Page',
       path: () =>
