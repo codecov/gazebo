@@ -13,6 +13,8 @@ const proPlans = [
   'users-pr-inappy',
   'users-inappm',
   'users-inappy',
+  'users-enterprisey',
+  'users-enterprisem',
 ]
 
 function PaymentCard({ subscriptionDetail, provider, owner }) {
