@@ -101,6 +101,7 @@ export function usePull({ provider, owner, repo, pullId }) {
                 }
                 edges {
                   node {
+                    state
                     commitid
                     message
                     createdAt

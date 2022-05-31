@@ -34,11 +34,19 @@ const pull = {
     },
     changeWithParent: 38.94,
   },
+  commits: {
+    edges: [
+      { node: { state: 'error', commitid: 'abc' } },
+      { node: { state: 'processed', commitid: 'abc' } },
+      { node: { state: 'complete', commitid: 'abc' } },
+    ],
+  },
 }
 
 const head = pull?.head
 const base = pull?.comparedTo
 const compareWithBase = pull?.compareWithBase
+const commits = pull?.commits?.edges
 
 const succesfulExpectedData = {
   headCoverage: head?.totals?.percentCovered,
@@ -46,6 +54,7 @@ const succesfulExpectedData = {
   changeCoverage: compareWithBase?.changeWithParent,
   headCommit: head?.commitid,
   baseCommit: base?.commitid,
+  recentCommit: { state: 'error', commitid: 'abc' },
 }
 
 describe('usePullForCompareSummary', () => {
@@ -70,7 +79,12 @@ describe('usePullForCompareSummary', () => {
 
 describe('getPullDataForCompareSummary', () => {
   it('returns all values accordingly', () => {
-    const data = getPullDataForCompareSummary({ head, base, compareWithBase })
+    const data = getPullDataForCompareSummary({
+      head,
+      base,
+      compareWithBase,
+      commits,
+    })
     expect(data).toEqual(succesfulExpectedData)
   })
 
