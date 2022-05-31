@@ -9,27 +9,32 @@ import Progress from 'ui/Progress'
 import TotalsNumber from 'ui/TotalsNumber'
 
 function getTreeLocation(paths, location) {
+  console.log('here 3')
   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
 }
 
-function CodeRendererProgressHeader({ pathParams, fileCoverage, change }) {
+function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
   /**
    * Header component that shows progress bar for the Code Renderer component.
    * @param {[String]} treePaths path of file from root directory. Only used in standalone file viewer
    * @param {Float} fileCoverage total coverage of current file
    * @param {Float} change difference between head and base coverage. Only used in commmit based file viewer
    */
-  const paths = pathParams?.paths
-  const ref = pathParams?.ref
 
+  console.log('here 1')
+  const paths = path?.split('/')
+
+  console.log('here 2')
   const treePaths =
     paths &&
     paths.map((location) => ({
       pageName: 'treeView',
       text: location,
-      options: { tree: getTreeLocation(paths, location), ref: ref },
+      options: { tree: getTreeLocation(paths, location), ref: pathRef },
     }))
 
+  console.log('treepahts')
+  console.log(treePaths)
   return (
     <div
       className={`
@@ -39,7 +44,7 @@ function CodeRendererProgressHeader({ pathParams, fileCoverage, change }) {
     `}
     >
       <div className="flex flex-1 gap-1">
-        <Breadcrumb paths={treePaths && [...treePaths]} />
+        {treePaths && <Breadcrumb paths={[...treePaths]} />}
         {paths && (
           <CopyClipboard
             string={paths.join('/')}
@@ -57,12 +62,10 @@ function CodeRendererProgressHeader({ pathParams, fileCoverage, change }) {
 }
 
 CodeRendererProgressHeader.propTypes = {
-  pathParams: PropTypes.objectOf({
-    paths: PropTypes.array,
-    ref: PropTypes.string,
-  }),
   change: PropTypes.number,
   fileCoverage: PropTypes.number,
+  pathRef: PropTypes.string,
+  path: PropTypes.string,
 }
 
 export default CodeRendererProgressHeader

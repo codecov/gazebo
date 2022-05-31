@@ -105,7 +105,7 @@ function App() {
                 <CommitPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/:owner/:repo/blob/:ref/*" exact>
+            <Route path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
               <BaseLayout>
                 <FileViewPage />
               </BaseLayout>

@@ -18,7 +18,7 @@ function FileView() {
           ]}
         />
       </div>
-      <DefaultCodeRenderer title={'File Viewer'} />
+      <DefaultCodeRenderer title="File Viewer" />
     </div>
   )
 }

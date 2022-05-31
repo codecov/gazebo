@@ -24,7 +24,7 @@ function CoverageTab() {
               <h1>Root Tree Component after Clicked</h1>
             </Suspense>
           </Route>
-          <Route path="/:provider/:owner/:repo/blobs/:ref/*" exact>
+          <Route path="/:provider/:owner/:repo/blobs/:ref/:path+" exact>
             <Suspense fallback={Loader}>
               <FileView />
             </Suspense>

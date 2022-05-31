@@ -6,6 +6,7 @@ import NotFound from 'pages/NotFound'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
+import { getFilenameFromFilePath } from 'shared/utils/url'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
 import SingleLine from 'ui/CodeRenderer/SingleLine'
@@ -47,11 +48,8 @@ function useCoverageAndFlagsStates() {
 }
 
 function DefaultCodeRenderer({ title }) {
-  const { owner, repo, provider, ref, ...path } = useParams()
+  const { owner, repo, provider, ref, path } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  const paths = path[0].split('/')
-  const pathParams = { paths, ref }
-
   // *********** This is temporary code that will be here in the meantime *********** //
   const {
     partial,
@@ -73,7 +71,7 @@ function DefaultCodeRenderer({ title }) {
     repo,
     provider,
     commit: ref,
-    path: path[0],
+    path,
     selectedFlags,
   })
 
@@ -97,13 +95,14 @@ function DefaultCodeRenderer({ title }) {
       />
       <div>
         <CodeRendererProgressHeader
-          pathParams={pathParams} // This is only populated in standalone fileviewer
+          path={path} // This is only populated in standalone fileviewer
+          pathRef={ref} // This is only populated in standalone fileviewer
           fileCoverage={fileCoverage}
         />
         {content ? (
           <CodeRenderer
             code={content}
-            fileName={paths.slice(-1)[0]}
+            fileName={getFilenameFromFilePath(path)}
             rendererType={CODE_RENDERER_TYPE.SINGLE_LINE}
             LineComponent={({ i, line, getLineProps, getTokenProps }) => (
               <SingleLine

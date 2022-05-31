@@ -5,7 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
 
-import FileView from './FileView'
+import DefaultCodeRenderer from './DefaultCodeRenderer'
 
 jest.mock(
   'ui/FileViewer/ToggleHeader/ToggleHeader',
@@ -20,7 +20,7 @@ jest.mock('services/user')
 
 const queryClient = new QueryClient()
 
-describe('FileView', () => {
+describe('DefaultCodeRenderer', () => {
   function setup({ content, owner, coverage }) {
     useOwner.mockReturnValue({
       data: owner,
@@ -42,7 +42,7 @@ describe('FileView', () => {
       >
         <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
           <QueryClientProvider client={queryClient}>
-            <FileView />
+            <DefaultCodeRenderer />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>
@@ -74,10 +74,7 @@ describe('FileView', () => {
       setup({ content, owner, coverage })
     })
 
-    it('renders the Breadcrumbs, Fileviewer Header, Coderenderer Header, and Coderenderer', () => {
-      expect(screen.getByText(/criticalrole/)).toBeInTheDocument()
-      expect(screen.getByText(/mightynein/)).toBeInTheDocument()
-      expect(screen.getByText(/19236709182orym9234879/)).toBeInTheDocument()
+    it('renders the Fileviewer Header, Coderenderer Header, and Coderenderer', () => {
       expect(
         screen.getByText(/The Fileviewer Toggle Header/)
       ).toBeInTheDocument()
@@ -106,10 +103,7 @@ describe('FileView', () => {
       setup({ content, owner, coverage })
     })
 
-    it('renders the Breadcrumbs, Fileviewer Header, Coderenderer Header, and Coderenderer', () => {
-      expect(screen.getByText(/criticalrole/)).toBeInTheDocument()
-      expect(screen.getByText(/mightynein/)).toBeInTheDocument()
-      expect(screen.getByText(/19236709182orym9234879/)).toBeInTheDocument()
+    it('renders the Fileviewer Header, Coderenderer Header, and Coderenderer', () => {
       expect(
         screen.getByText(/The Fileviewer Toggle Header/)
       ).toBeInTheDocument()
