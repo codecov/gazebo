@@ -61,7 +61,9 @@ describe('CompareSummary', () => {
       setup({
         pullData: {
           ...pullData,
+          headCoverage: undefined,
           patchCoverage: undefined,
+          changeCoverage: undefined,
         },
       })
     })

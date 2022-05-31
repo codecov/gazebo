@@ -68,10 +68,10 @@ function compareCards({ headCommit, baseCommit }) {
   ]
 }
 
-function pendingCard({ patchCoverage }) {
+function pendingCard({ patchCoverage, headCoverage, changeCoverage }) {
   const card = []
 
-  if (!patchCoverage) {
+  if (!patchCoverage && !headCoverage && !changeCoverage) {
     card.push({
       name: 'pending',
       value: (
@@ -128,7 +128,7 @@ function CompareSummary() {
   const fields = [
     ...totalsCards({ headCoverage, headCommit, patchCoverage, changeCoverage }),
     ...compareCards({ headCommit, baseCommit }),
-    ...pendingCard({ patchCoverage }),
+    ...pendingCard({ patchCoverage, headCoverage, changeCoverage }),
     ...lastCommitErrorCard({ recentCommit }),
   ]
 
