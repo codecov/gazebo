@@ -15,8 +15,14 @@ function UpgradePlan({ provider, owner }) {
   const { data: plans } = usePlans(provider)
   const { billingAndUsers } = useNavLinks()
 
-  const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')
-  const proPlanYear = plans.find((plan) => plan.value === 'users-pr-inappy')
+  const proPlanMonth = plans.find(
+    (plan) =>
+      plan.value === 'users-pr-inappm' || plan.value === 'users-enterprisem'
+  )
+  const proPlanYear = plans.find(
+    (plan) =>
+      plan.value === 'users-pr-inappy' || plan.value === 'users-enterprisey'
+  )
 
   return (
     <>
