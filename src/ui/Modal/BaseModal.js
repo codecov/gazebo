@@ -31,7 +31,7 @@ function BaseModal({
         </div>
       )}
       {footer && (
-        <footer className="border-t flex justify-end rounded-b p-4 bg-ds-gray-primary">
+        <footer className="border-t flex justify-end rounded-b p-4 bg-ds-gray-primary mt-4">
           {footer}
         </footer>
       )}
