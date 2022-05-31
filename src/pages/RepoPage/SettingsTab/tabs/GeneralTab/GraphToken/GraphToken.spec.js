@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import GraphToken from './GrpahToken'
+import GraphToken from './GraphToken'
 
 jest.mock('services/branches')
-jest.mock('services/repoUpdate')
+jest.mock('services/repo')
 jest.mock('services/toastNotification')
 
 const queryClient = new QueryClient()

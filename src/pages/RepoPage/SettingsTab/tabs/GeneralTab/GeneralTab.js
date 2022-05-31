@@ -13,7 +13,6 @@ function GeneralTab() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
   const { uploadToken, defaultBranch, profilingToken, graphToken, active } = data?.repository
-  console.log(active)
 
   return (
     <div className="flex flex-col gap-6">

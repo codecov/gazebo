@@ -1,1 +1,1 @@
-export { default } from './GrpahToken'
+export { default } from './GraphToken'
