@@ -18,7 +18,10 @@ function CancelPlan({ provider, owner }) {
   const { billingAndUsers } = useNavLinks()
 
   const freePlan = plans.find((plan) => isFreePlan(plan.value))
-  const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')
+  const proPlanMonth = plans.find(
+    (plan) =>
+      plan.value === 'users-pr-inappm' || plan.value === 'users-enterprisem'
+  )
   const unavailableBenefits = difference(
     proPlanMonth.benefits,
     freePlan.benefits
