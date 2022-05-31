@@ -12,6 +12,7 @@ import { useOnboardingTracking } from './useOnboardingTracking'
 import UserOnboardingModal from './UserOnboardingModal'
 
 import { useRepos } from '../../services/repos'
+import { useFlags } from '../../shared/featureFlags'
 
 jest.mock('services/repos')
 jest.mock('./useOnboardingTracking.js')
@@ -19,6 +20,8 @@ jest.mock('services/user', () => ({
   ...jest.requireActual('services/user'), // import and retain the original functionalities
   useMyContexts: jest.fn(),
 }))
+jest.mock('shared/featureFlags')
+
 const orgsData = {
   currentUser: {
     username: 'Rabee-AbuBaker',
@@ -105,7 +108,7 @@ describe('UserOnboardingModal', () => {
   const selectOrganization = jest.fn()
   const selectRepository = jest.fn()
   const skipOnboarding = jest.fn()
-  function setup(currentUser = defaultCurrentUser) {
+  function setup(currentUser = defaultCurrentUser, flagValue = true) {
     server.use(
       graphql.mutation('OnboardUser', (req, res, ctx) => {
         const newUser = {
@@ -142,6 +145,9 @@ describe('UserOnboardingModal', () => {
       hasNextPage: true,
       isFetchingNextPage: false,
       isLoading: false,
+    })
+    useFlags.mockReturnValue({
+      onboardingOrganizationSelector: flagValue,
     })
     render(
       <QueryClientProvider client={queryClient}>
@@ -297,6 +303,23 @@ describe('UserOnboardingModal', () => {
             )
           )
         })
+      })
+    })
+  })
+  describe('when the feature flag is false', () => {
+    beforeEach(() => {
+      setup(defaultCurrentUser, false)
+    })
+
+    describe('after submitting the form', () => {
+      beforeEach(() => {
+        getCheckbox(/educational/i).click()
+        getCheckbox(/just starting to write tests/i).click()
+        return clickNext()
+      })
+      it('has the next button enabled', async () => {
+        await waitFor(() => expect(completedUserOnboarding).toHaveBeenCalled())
+        await waitFor(() => expect(mockHistoryReplace).not.toHaveBeenCalled())
       })
     })
   })

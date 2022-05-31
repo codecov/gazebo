@@ -7,8 +7,11 @@ import { useOnboardUser } from 'services/user'
 import { useOnboardingTracking } from './useOnboardingTracking'
 import UserOnboardingForm from './UserOnboardingForm'
 
+import { useFlags } from '../../shared/featureFlags'
+
 jest.mock('services/user')
 jest.mock('./useOnboardingTracking.js')
+jest.mock('shared/featureFlags')
 
 describe('UserOnboardingFrom', () => {
   const defaultCurrentUser = {
@@ -19,7 +22,7 @@ describe('UserOnboardingFrom', () => {
   let onFormSubmit = jest.fn()
   const secondPage = jest.fn()
 
-  function setup(currentUser = defaultCurrentUser) {
+  function setup(currentUser = defaultCurrentUser, flagValue = true) {
     mutate = jest.fn()
     useOnboardingTracking.mockReturnValue({
       startedOnboarding: jest.fn(),
@@ -30,6 +33,9 @@ describe('UserOnboardingFrom', () => {
       isLoading: false,
       mutate,
       onSuccess: jest.fn(),
+    })
+    useFlags.mockReturnValue({
+      onboardingOrganizationSelector: flagValue,
     })
     render(
       <UserOnboardingForm
@@ -320,6 +326,23 @@ describe('UserOnboardingFrom', () => {
 
     it('selects the checkbox "Other"', () => {
       expect(getCheckbox(/other/i)).toBeChecked()
+    })
+  })
+
+  describe('when feature flag is false', () => {
+    beforeEach(() => {
+      setup(defaultCurrentUser, false)
+      getCheckbox(/your organization/i).click()
+      getCheckbox(/just starting to write tests/i).click()
+      return clickNext()
+    })
+
+    it('shows button with submit text', () => {
+      expect(
+        screen.getByRole('button', {
+          name: /submit/i,
+        })
+      ).toBeInTheDocument()
     })
   })
 })

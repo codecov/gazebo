@@ -51,12 +51,12 @@ const getOrgStepProps = ({
     </Suspense>
   ),
   footer: isHelpFindingOrg ? (
-    <div className="flex w-full justify-between">
+    <div className="flex flex-1 justify-between">
       <button onClick={() => setIsHelpFindingOrg(false)}>Back</button>
       <button onClick={onOnboardingSkip}>Skip &gt;</button>
     </div>
   ) : (
-    <div className="flex w-full justify-between">
+    <div className="flex flex-1 justify-between">
       <span>
         Don’t see your org?
         <button

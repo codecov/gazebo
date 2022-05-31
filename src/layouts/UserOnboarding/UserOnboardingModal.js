@@ -9,6 +9,7 @@ import { useOnboardingTracking } from './useOnboardingTracking'
 import UserOnboardingForm from './UserOnboardingForm'
 
 import { useOnboardUser } from '../../services/user'
+import { useFlags } from '../../shared/featureFlags'
 
 function UserOnboardingModal({ currentUser }) {
   const { startOnboarding, completedOnboarding, skipOnboarding } =
@@ -16,11 +17,15 @@ function UserOnboardingModal({ currentUser }) {
   const history = useHistory()
   const { provider } = useParams()
 
+  const { onboardingOrganizationSelector } = useFlags({
+    onboardingOrganizationSelector: false,
+  })
+
   const [formData, setFormData] = useState(false)
   const [selectedOrg, setSelectedOrg] = useState()
   const [selectedRepo, setSelectedRepo] = useState()
 
-  const { mutate } = useOnboardUser({
+  const { mutate, isLoading } = useOnboardUser({
     onSuccess: (user, data) => {
       completedOnboarding(user, data)
       if (selectedOrg && selectedRepo) {
@@ -45,8 +50,8 @@ function UserOnboardingModal({ currentUser }) {
       isOpen
       onRequestClose={noop}
       onAfterOpen={startOnboarding}
-      className="h-screen w-screen flex items-center justify-center "
-      overlayClassName="fixed top-0 bottom-0 left-0 right-0 bg-ds-gray-octonary z-10"
+      className="h-screen w-screen flex items-center justify-center"
+      overlayClassName="fixed inset-0 bg-ds-gray-octonary z-10"
     >
       <div className="w-full h-full overflow-y-auto p-4 flex items-center justify-center">
         {Boolean(formData) ? (
@@ -64,7 +69,12 @@ function UserOnboardingModal({ currentUser }) {
         ) : (
           <UserOnboardingForm
             currentUser={currentUser}
-            onFormSubmit={(formData) => setFormData(formData)}
+            onFormSubmit={(formData) =>
+              onboardingOrganizationSelector
+                ? setFormData(formData)
+                : mutate(formData)
+            }
+            isSubmitting={isLoading}
           />
         )}
       </div>

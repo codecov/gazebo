@@ -1,15 +1,12 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-const getListClasses = ({ index }) =>
+const getListClasses = () =>
   cs(
     'flex text-left px-6 py-2',
     'hover:bg-ds-gray-primary',
     'transition duration-500',
-    'cursor-pointer',
-    {
-      'border-t border-gray-200': index !== 0,
-    }
+    'cursor-pointer'
   )
 
 function List({ items, onItemSelect, noBorder }) {
@@ -17,12 +14,15 @@ function List({ items, onItemSelect, noBorder }) {
     items &&
     items.length > 0 && (
       <ul
-        className={cs('w-full text-ds-gray-octonary', {
-          'border border-ds-gray-secondary': !noBorder,
-        })}
+        className={cs(
+          'w-full text-ds-gray-octonary divide-y divide-solid divide-gray-200',
+          {
+            'border border-ds-gray-secondary': !noBorder,
+          }
+        )}
       >
-        {items.map(({ name, value }, index) => (
-          <li key={name} className={getListClasses({ index, noBorder })}>
+        {items.map(({ name, value }) => (
+          <li key={name} className={getListClasses()}>
             <button
               className="w-full"
               onClick={() => onItemSelect && onItemSelect(name)}

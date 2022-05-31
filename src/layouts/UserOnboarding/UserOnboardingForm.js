@@ -12,11 +12,17 @@ import FormEmails from './FormEmails'
 import FormInformation from './FormInformation'
 import { useOnboardingTracking } from './useOnboardingTracking'
 
-function usePerStepProp({ currentUser, onFormSubmit }) {
+import { useFlags } from '../../shared/featureFlags'
+
+function usePerStepProp({ currentUser, onFormSubmit, isSubmitting }) {
   const form = useForm({
     reValidateMode: 'onSubmit',
     defaultValues: getInitialDataForm(currentUser),
     resolver: yupResolver(getSchema()),
+  })
+
+  const { onboardingOrganizationSelector } = useFlags({
+    onboardingOrganizationSelector: false,
   })
 
   const formData = form.watch()
@@ -62,9 +68,18 @@ function usePerStepProp({ currentUser, onFormSubmit }) {
       subtitle: 'Help us keep your contact information up to date',
       onSubmit,
       body: <FormEmails form={form} currentUser={currentUser} />,
-      footer: (
-        <Button variant="primary" type="submit" hook="user-onboarding-submit">
+      footer: onboardingOrganizationSelector ? (
+        <Button variant="primary" type="submit">
           Next
+        </Button>
+      ) : (
+        <Button
+          variant="primary"
+          isLoading={isSubmitting}
+          type="submit"
+          hook="user-onboarding-submit"
+        >
+          Submit
         </Button>
       ),
     },
@@ -72,10 +87,11 @@ function usePerStepProp({ currentUser, onFormSubmit }) {
   return propsPerStep[step]
 }
 
-function UserOnboardingForm({ currentUser, onFormSubmit }) {
+function UserOnboardingForm({ currentUser, onFormSubmit, isSubmitting }) {
   const { onSubmit, ...stepProps } = usePerStepProp({
     currentUser,
     onFormSubmit,
+    isSubmitting,
   })
 
   return (
@@ -90,6 +106,7 @@ UserOnboardingForm.propTypes = {
     email: PropTypes.string,
   }).isRequired,
   onFormSubmit: PropTypes.func,
+  isSubmitting: PropTypes.bool,
 }
 
 export default UserOnboardingForm

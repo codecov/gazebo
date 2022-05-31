@@ -88,7 +88,7 @@ function RepositoriesList({ organization, onSubmit }) {
               onItemSelect={handleRepoSelect}
               noBorder
             />
-            {data.repos?.length ? (
+            {data?.repos?.length ? (
               hasNextPage && (
                 <div className="w-full mt-4 flex justify-center">
                   <Button
