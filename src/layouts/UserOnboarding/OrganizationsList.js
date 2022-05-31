@@ -47,7 +47,7 @@ function OrganizationsList({
     <div className="h-80">
       {isHelpFindingOrg ? (
         <div className="text-base w-[30rem]">
-          <h2 className="font-semibold pb-2"> Enable org access</h2>
+          <h2 className="font-semibold pb-2">Enable org access</h2>
           <p>
             GitHub requires{' '}
             <A to={{ pageName: 'oauthEnabling' }}>
