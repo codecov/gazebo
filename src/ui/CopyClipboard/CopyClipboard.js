@@ -7,7 +7,7 @@ import Icon from 'ui/Icon'
 
 const copyIconClasses = {
   default: `text-ds-blue-darker`,
-  muted: `text-ds-grey-octinary`,
+  muted: `text-ds-grey-octonary`,
 }
 
 function CopyClipboard({ string, showLabel = false, variant = 'default' }) {
