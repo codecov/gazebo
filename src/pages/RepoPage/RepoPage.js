@@ -7,8 +7,10 @@ import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoBreadcrumb from './RepoBreadcrumb'
+import SettingsTab from './SettingsTab'
 
 const CommitsTab = lazy(() => import('./CommitsTab'))
+const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
 const PullsTab = lazy(() => import('./PullsTab'))
 
@@ -53,7 +55,7 @@ function RepoPage() {
         <Suspense fallback={Loader}>
           <Switch>
             <Route path={path} exact>
-              <h1>Overview</h1>
+              <CoverageTab />
             </Route>
             <Route path={`${path}/new`} exact>
               <NewRepoTab />
@@ -65,8 +67,14 @@ function RepoPage() {
               <PullsTab />
             </Route>
             <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
-            <Route path={`${path}/settings`} exact>
-              <h1>Settings</h1>
+            <Route path={`${path}/settings`}>
+              <SettingsTab />
+            </Route>
+            <Route path={`${path}/tree/:path+`} exact>
+              <CoverageTab />
+            </Route>
+            <Route path={`${path}/blob/:path+`} exact>
+              <CoverageTab />
             </Route>
             <Redirect
               from="/:provider/:owner/:repo/*"

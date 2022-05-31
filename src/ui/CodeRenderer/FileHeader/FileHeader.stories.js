@@ -1,6 +1,6 @@
-import CodeRendererCoverageHeader from './CodeRendererCoverageHeader'
+import FileHeader from './FileHeader'
 
-const Template = (args) => <CodeRendererCoverageHeader {...args} />
+const Template = (args) => <FileHeader {...args} />
 
 export const SimpleCoverageHeader = Template.bind({})
 SimpleCoverageHeader.args = {
@@ -21,6 +21,6 @@ CoverageHeaderWithoutValues.args = {
 }
 
 export default {
-  title: 'Components/CodeRendererCoverageHeader',
-  component: CodeRendererCoverageHeader,
+  title: 'Components/CodeRenderer/CoverageHeader',
+  component: FileHeader,
 }

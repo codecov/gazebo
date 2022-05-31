@@ -583,6 +583,66 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('general repo settings link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/settings'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.settingsGeneral.path()).toBe(
+        '/gh/RulaKhaled/test/settings'
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.settingsGeneral.path({ provider: 'bb' })
+      ).toBe('/bb/RulaKhaled/test/settings')
+      expect(
+        hookData.result.current.settingsGeneral.path({ repo: 'cat' })
+      ).toBe('/gh/RulaKhaled/cat/settings')
+    })
+  })
+
+  describe('repo yaml link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/settings/yaml'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.settingsYaml.path()).toBe(
+        '/gh/RulaKhaled/test/settings/yaml'
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.settingsYaml.path({ provider: 'bb' })
+      ).toBe('/bb/RulaKhaled/test/settings/yaml')
+      expect(hookData.result.current.settingsYaml.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/settings/yaml'
+      )
+    })
+  })
+
+  describe('badge repo settings link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/settings/badge'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.settingsBadge.path()).toBe(
+        '/gh/RulaKhaled/test/settings/badge'
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.settingsBadge.path({ provider: 'bb' })
+      ).toBe('/bb/RulaKhaled/test/settings/badge')
+      expect(hookData.result.current.settingsBadge.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/settings/badge'
+      )
+    })
+  })
+
   describe('signup forward the marketing link', () => {
     beforeEach(() => {
       Cookie.set(

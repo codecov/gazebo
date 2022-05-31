@@ -269,6 +269,39 @@ function useNavLinks() {
       isExternalLink: gazeboSettingsTab,
       text: 'Settings',
     },
+    settingsGeneral: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/settings`,
+      isExternalLink: gazeboSettingsTab,
+      text: 'General',
+    },
+    settingsYaml: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/settings/yaml`,
+      isExternalLink: gazeboSettingsTab,
+      text: 'Yaml',
+    },
+    settingsBadge: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/settings/badge`,
+      isExternalLink: gazeboSettingsTab,
+      text: 'Badge',
+    },
   }
 }
 
