@@ -9,7 +9,6 @@ import Progress from 'ui/Progress'
 import TotalsNumber from 'ui/TotalsNumber'
 
 function getTreeLocation(paths, location) {
-  console.log('here 3')
   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
 }
 
@@ -21,10 +20,7 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
    * @param {Float} change difference between head and base coverage. Only used in commmit based file viewer
    */
 
-  console.log('here 1')
   const paths = path?.split('/')
-
-  console.log('here 2')
   const treePaths =
     paths &&
     paths.map((location) => ({
@@ -33,8 +29,6 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
       options: { tree: getTreeLocation(paths, location), ref: pathRef },
     }))
 
-  console.log('treepahts')
-  console.log(treePaths)
   return (
     <div
       className={`

@@ -41,7 +41,6 @@ describe('CodeRendererProgressHeader', () => {
     it('renders progress, change and filepath', () => {
       const change = screen.getByText(/34.21%/)
       expect(change).toBeInTheDocument()
-      console.log('here')
       const headCoverage = screen.getByText(/39.28%/)
       expect(headCoverage).toBeInTheDocument()
       const filename = screen.getByText(/file.js/)
