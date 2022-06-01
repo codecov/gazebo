@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import GraphToken from './GrpahToken'
+import GraphToken from './GraphToken'
 
 const queryClient = new QueryClient()
 
