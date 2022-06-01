@@ -7,6 +7,7 @@ import 'ace-builds/src-noconflict/mode-yaml'
 import './codecov-theme.css'
 
 const YamlEditor = forwardRef(({ ...props }, ref) => {
+
   return (
     <AceEditor
       ref={ref}
