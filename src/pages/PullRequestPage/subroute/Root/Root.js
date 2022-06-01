@@ -48,7 +48,7 @@ const Root = () => {
         <div className="border-b border-ds-gray-secondary pb-4">
           <ToggleHeader
             flagData={null}
-            title={'Impacted Files'}
+            title="Impacted Files"
             coverageIsLoading={isLoading}
             lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
           />
