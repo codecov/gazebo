@@ -2,17 +2,18 @@ import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
+import { mapEdges } from 'shared/utils/graphql'
 
 export function getPullDataForCompareSummary({
   head,
   base,
   compareWithBase,
-  commits,
+  commits = [],
 }) {
-  let recentCommit = {}
-  if (commits?.length) {
-    const firstCommit = commits[0]?.node
-    recentCommit = {
+  let optionalKeys = {}
+  if (commits?.length > 0) {
+    const firstCommit = commits.shift()
+    optionalKeys = {
       recentCommit: firstCommit,
     }
   }
@@ -23,7 +24,7 @@ export function getPullDataForCompareSummary({
     changeCoverage: compareWithBase?.changeWithParent,
     headCommit: head?.commitid,
     baseCommit: base?.commitid,
-    ...recentCommit,
+    ...optionalKeys,
   }
 }
 
@@ -34,7 +35,7 @@ export function usePullForCompareSummary() {
   const head = pull?.head
   const base = pull?.comparedTo
   const compareWithBase = pull?.compareWithBase
-  const commits = pull?.commits?.edges
+  const commits = mapEdges(pull?.commits)
 
   return useMemo(
     () =>

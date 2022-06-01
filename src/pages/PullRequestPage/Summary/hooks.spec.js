@@ -46,7 +46,11 @@ const pull = {
 const head = pull?.head
 const base = pull?.comparedTo
 const compareWithBase = pull?.compareWithBase
-const commits = pull?.commits?.edges
+const commits = [
+  { state: 'error', commitid: 'abc' },
+  { state: 'processed', commitid: 'abc' },
+  { state: 'complete', commitid: 'abc' },
+]
 
 const succesfulExpectedData = {
   headCoverage: head?.totals?.percentCovered,
@@ -90,12 +94,8 @@ describe('getPullDataForCompareSummary', () => {
 
   it('returns undefined for undefined parameters', () => {
     const undefinedExpectedData = {
-      headCoverage: undefined,
       // TODO: Change this back to undefined; since we're multiplying by 100, this returns NaN type
       patchCoverage: NaN,
-      changeCoverage: undefined,
-      headCommit: undefined,
-      baseCommit: undefined,
     }
 
     const data = getPullDataForCompareSummary({
