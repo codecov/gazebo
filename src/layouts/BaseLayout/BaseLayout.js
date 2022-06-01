@@ -25,12 +25,14 @@ function BaseLayout({ children }) {
       <Suspense fallback={fullPageLoader}>
         <main className="container grow mt-4 mb-8 md:p-0">
           <ErrorBoundary sentryScopes={[['layout', 'base']]}>
-            <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
+            <NetworkErrorBoundary>
+              {children}
+              <UserOnboarding />
+            </NetworkErrorBoundary>
           </ErrorBoundary>
         </main>
       </Suspense>
       <Footer />
-      <UserOnboarding />
       <ToastNotifications />
     </>
   )

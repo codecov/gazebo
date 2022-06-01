@@ -1,86 +1,49 @@
-import { yupResolver } from '@hookform/resolvers/yup'
 import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
 import ReactModal from 'react-modal'
+import { useHistory, useParams } from 'react-router-dom'
 
-import { useOnboardUser } from 'services/user'
-import Button from 'ui/Button'
-import BaseModal from 'ui/Modal/BaseModal'
-
-import { getInitialDataForm, getSchema, shouldGoToEmailStep } from './config'
-import FormEmails from './FormEmails'
-import FormInformation from './FormInformation'
+import OrganizationSelector from './OrganizationSelector'
 import { useOnboardingTracking } from './useOnboardingTracking'
+import UserOnboardingForm from './UserOnboardingForm'
 
-function usePerStepProp({ currentUser }) {
-  const form = useForm({
-    reValidateMode: 'onSubmit',
-    defaultValues: getInitialDataForm(currentUser),
-    resolver: yupResolver(getSchema()),
+import { useOnboardUser } from '../../services/user'
+import { useFlags } from '../../shared/featureFlags'
+
+function UserOnboardingModal({ currentUser }) {
+  const { startOnboarding, completedOnboarding, skipOnboarding } =
+    useOnboardingTracking()
+  const history = useHistory()
+  const { provider } = useParams()
+
+  const { onboardingOrganizationSelector } = useFlags({
+    onboardingOrganizationSelector: false,
   })
-  const [step, setStep] = useState(0)
-  const formData = form.watch()
-  const { secondPage, completedOnboarding } = useOnboardingTracking()
+
+  const [formData, setFormData] = useState(false)
+  const [selectedOrg, setSelectedOrg] = useState()
+  const [selectedRepo, setSelectedRepo] = useState()
+
   const { mutate, isLoading } = useOnboardUser({
-    onSuccess: (user, data) => completedOnboarding(user, data),
+    onSuccess: (user, data) => {
+      completedOnboarding(user, data)
+      if (selectedOrg && selectedRepo) {
+        history.replace(
+          `/${provider}/${selectedOrg.username}/${selectedRepo.name}${
+            selectedRepo.active ? '' : '/new'
+          }`
+        )
+      }
+    },
     data: formData,
   })
 
-  const onSubmit = form.handleSubmit(() => {
-    if (step === 0 && shouldGoToEmailStep(formData)) {
-      secondPage()
-      setStep(1)
-      return
+  useEffect(() => {
+    if (Boolean(selectedRepo)) {
+      mutate(formData)
     }
-    mutate(formData)
-  })
-
-  const propsPerStep = {
-    0: {
-      onSubmit,
-      title: 'Welcome to Codecov',
-      subtitle:
-        'Let us know what best describes you and your workflow and we’ll get started',
-      body: <FormInformation form={form} />,
-      footer: (
-        <Button
-          type="submit"
-          variant="primary"
-          isLoading={isLoading}
-          disabled={
-            formData.goals.length === 0 || formData.typeProjects.length === 0
-          }
-          hook="user-onboarding-next-page"
-        >
-          Next
-        </Button>
-      ),
-    },
-    1: {
-      title: 'Your profile details',
-      subtitle: 'Help us keep your contact information up to date',
-      onSubmit,
-      body: <FormEmails form={form} currentUser={currentUser} />,
-      footer: (
-        <Button
-          variant="primary"
-          isLoading={isLoading}
-          type="submit"
-          hook="user-onboarding-submit"
-        >
-          Submit
-        </Button>
-      ),
-    },
-  }
-  return propsPerStep[step]
-}
-
-function UserOnboardingModal({ currentUser }) {
-  const { onSubmit, ...stepProps } = usePerStepProp({ currentUser })
-  const { startOnboarding } = useOnboardingTracking()
+  }, [selectedRepo, formData, mutate])
 
   return (
     <ReactModal
@@ -88,12 +51,32 @@ function UserOnboardingModal({ currentUser }) {
       onRequestClose={noop}
       onAfterOpen={startOnboarding}
       className="h-screen w-screen flex items-center justify-center"
-      overlayClassName="fixed top-0 bottom-0 left-0 right-0 bg-ds-gray-octonary z-10"
+      overlayClassName="fixed inset-0 bg-ds-gray-octonary z-10"
     >
       <div className="w-full h-full overflow-y-auto p-4 flex items-center justify-center">
-        <form className="sm:w-full md:w-2/3 lg:w-1/3 mt-8" onSubmit={onSubmit}>
-          <BaseModal hasCloseButton={false} onClose={noop} {...stepProps} />
-        </form>
+        {Boolean(formData) ? (
+          <OrganizationSelector
+            currentUser={currentUser}
+            onSelect={({ selectedOrg, selectedRepo }) => {
+              setSelectedOrg(selectedOrg)
+              setSelectedRepo(selectedRepo)
+            }}
+            onOnboardingSkip={() => {
+              skipOnboarding()
+              mutate(formData)
+            }}
+          />
+        ) : (
+          <UserOnboardingForm
+            currentUser={currentUser}
+            onFormSubmit={(formData) =>
+              onboardingOrganizationSelector
+                ? setFormData(formData)
+                : mutate(formData)
+            }
+            isSubmitting={isLoading}
+          />
+        )}
       </div>
     </ReactModal>
   )
