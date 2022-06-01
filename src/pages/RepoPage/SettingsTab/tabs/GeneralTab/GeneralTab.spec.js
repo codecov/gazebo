@@ -10,12 +10,11 @@ jest.mock('services/repo')
 const queryClient = new QueryClient()
 
 describe('GeneralTab', () => {
-  const mutate = jest.fn()
-
-  function setup({ uploadToken, defaultBranch }) {
+  function setup({ uploadToken, defaultBranch, profilingToken }) {
+    const mutate = jest.fn()
     useRepo.mockReturnValue({
       data: {
-        repository: { uploadToken, defaultBranch },
+        repository: { uploadToken, defaultBranch, profilingToken },
       },
     })
     useUpdateRepo.mockReturnValue({
@@ -79,6 +78,33 @@ describe('GeneralTab', () => {
 
     it('does not render  Default Branch compoenent', () => {
       const title = screen.queryByText(/Default Branch/)
+      expect(title).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with profilingToken', () => {
+    beforeEach(() => {
+      setup({ profilingToken: 'profiling' })
+    })
+
+    it('renders imapact anaylsis compoenent', () => {
+      const title = screen.getByText(/Impact analysis token/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders the expected token', () => {
+      const token = screen.getByText(/profiling/)
+      expect(token).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with no profilingToken', () => {
+    beforeEach(() => {
+      setup({ profilingToken: null })
+    })
+
+    it('does not render  Default Branch compoenent', () => {
+      const title = screen.queryByText(/Impact analysis token/)
       expect(title).not.toBeInTheDocument()
     })
   })
