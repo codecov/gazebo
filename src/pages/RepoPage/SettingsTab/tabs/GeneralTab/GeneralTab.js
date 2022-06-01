@@ -9,18 +9,17 @@ import RepoUploadToken from './RepoUploadToken'
 function GeneralTab() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
-  const { uploadToken, defaultBranch, profilingToken } = data?.repository
   return (
     <div className="flex flex-col gap-6">
-      {uploadToken && (
-        <RepoUploadToken uploadToken={uploadToken} />
+      {data?.repository?.uploadToken && (
+        <RepoUploadToken uploadToken={data?.repository?.uploadToken} />
       )}
-      {defaultBranch && (
-        <DefaultBranch defaultBranch={defaultBranch} />
+      {data?.repository?.defaultBranch && (
+        <DefaultBranch defaultBranch={data?.repository?.defaultBranch} />
       )}
-      {profilingToken && (
+      {data?.repository?.profilingToken && (
         <ImpactAnalysisToken
-          profilingToken={profilingToken}
+          profilingToken={data?.repository?.profilingToken}
         />
       )}
     </div>
