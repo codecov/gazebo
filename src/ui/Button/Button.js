@@ -6,12 +6,9 @@ import Spinner from 'ui/Spinner'
 
 const baseClass = `
   flex justify-center items-center gap-1
-  border-solid border
-  font-semibold rounded py-1 px-4 shadow
+  font-semibold rounded 
   transition-colors duration-150 motion-reduce:transition-none
-
   focus:outline-none focus:ring
-
   disabled:cursor-not-allowed 
 `
 const baseDisabledClasses = `disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary`
@@ -35,6 +32,10 @@ const variantClasses = {
     text-white bg-ds-pink border-ds-pink-tertiary
     hover:bg-ds-pink-tertiary
   `,
+  link: `
+    text-ds-blue-darker
+    hover:text-ds-blue-quinary
+  `,
 }
 
 const loadingVariantClasses = {
@@ -42,6 +43,7 @@ const loadingVariantClasses = {
   primary: `disabled:bg-ds-blue-darker disabled:bg-ds-blue-medium text-white disabled:border-ds-blue-quinary`,
   danger: `disabled:text-white disabled:border-ds-primary-red disabled:bg-ds-primary-red`,
   secondary: `disabled:text-white disabled:border-ds-pink-tertiary disabled:bg-ds-pink`,
+  link: `disabled:text-white`,
 }
 
 function pickVariant(variant, loading) {
@@ -62,7 +64,8 @@ function Button({
   const className = cs(
     baseClass,
     { [baseDisabledClasses]: !isLoading },
-    pickVariant(variant, isLoading)
+    pickVariant(variant, isLoading),
+    { 'border-solid border shadow py-1 px-4': variant !== 'link' }
   )
 
   const content = (
@@ -101,7 +104,13 @@ function Button({
 
 Button.propTypes = {
   to: PropTypes.shape(AppLink.propTypes),
-  variant: PropTypes.oneOf(['default', 'primary', 'danger', 'secondary']),
+  variant: PropTypes.oneOf([
+    'default',
+    'primary',
+    'danger',
+    'secondary',
+    'link',
+  ]),
   isLoading: PropTypes.bool,
   disabled: PropTypes.bool,
   hook: function (props, propName) {

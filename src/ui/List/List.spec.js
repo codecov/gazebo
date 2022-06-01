@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import List from '.'
 
@@ -42,20 +42,28 @@ describe('List', () => {
     expect(screen.getByText('Markup value')).toBeInTheDocument()
   })
 
-  it('calls onItemSelect prop when clicked', () => {
-    const items = [
-      {
-        name: 'firstItem',
-        value: 'Click me',
-      },
-    ]
-    setup({ items })
+  describe('when user selects an item', () => {
+    beforeEach(() => {
+      const items = [
+        {
+          name: 'firstItem',
+          value: 'Click me',
+          selected: true,
+        },
+      ]
+      setup({ items })
+      screen.getByText(/click me/i).click()
+    })
 
-    expect(container).not.toBeEmptyDOMElement()
-    const listItem = screen.getByText(/click me/i)
-    expect(listItem).toBeInTheDocument()
-    fireEvent.click(listItem)
-    expect(onItemSelect).toHaveBeenCalledTimes(1)
+    it('calls onItemSelect', () => {
+      expect(onItemSelect).toHaveBeenCalledTimes(1)
+    })
+
+    it('shows a border', () => {
+      expect(screen.queryByRole('listitem', /click me/i)).toHaveClass(
+        'border border-ds-blue-darker'
+      )
+    })
   })
 
   it('Renders without a border when noBorder is true', () => {

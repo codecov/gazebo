@@ -1,7 +1,24 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import { useMyContexts } from '../../services/user'
+
 import ContextSwitcher from '.'
+
+jest.mock('services/user')
+
+const contextData = {
+  currentUser: {
+    username: 'Rabee-AbuBaker',
+    avatarUrl: 'https://avatars0.githubusercontent.com/u/99655254?v=3&s=55',
+  },
+  myOrganizations: [
+    {
+      username: 'codecov-org',
+      avatarUrl: 'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+    },
+  ],
+}
 
 const defaultProps = {
   activeContext: 'dorianamouroux',
@@ -37,23 +54,24 @@ function fireClickAndMouseEvents(element) {
 }
 
 describe('ContextSwitcher', () => {
-  let wrapper, props
   function setup(over = {}) {
-    props = {
+    const props = {
       ...defaultProps,
       ...over,
     }
-    wrapper = render(<ContextSwitcher {...props} />, {
-      wrapper: (props) => (
-        <MemoryRouter initialEntries={['/gh']}>
-          <Switch>
-            <Route path="/:provider" exact>
-              {props.children}
-            </Route>
-          </Switch>
-        </MemoryRouter>
-      ),
+    useMyContexts.mockReturnValue({
+      data: contextData,
     })
+
+    render(
+      <MemoryRouter initialEntries={['/gh']}>
+        <Switch>
+          <Route path="/:provider" exact>
+            <ContextSwitcher {...props} />
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    )
   }
 
   describe('when rendered', () => {
@@ -71,10 +89,35 @@ describe('ContextSwitcher', () => {
     })
 
     it('renders the menu', () => {
-      const popover = wrapper.baseElement.querySelector(
-        '[data-reach-menu-popover]'
-      )
-      expect(popover).toBeVisible()
+      expect(screen.getByText('Switch context')).toBeVisible()
+    })
+
+    describe('when user clicks edit default', () => {
+      beforeEach(() => {
+        screen.getByText(/edit default/i).click()
+      })
+
+      it('shows modal and renders orgs', () => {
+        expect(
+          screen.getByText(/Select default organization/i)
+        ).toBeInTheDocument()
+        expect(screen.getByText(/codecov-org/i)).toBeInTheDocument()
+        expect(screen.getByText(/Rabee-AbuBaker/i)).toBeInTheDocument()
+        expect(screen.getByText(/Show all orgs and repos/i)).toBeInTheDocument()
+      })
+
+      describe('when user clicks cancel', () => {
+        beforeEach(() => {
+          screen.getByText(/cancel/i).click()
+        })
+
+        it('closes modal', () => {
+          expect(
+            screen.queryByText(/Select default organization/i)
+          ).not.toBeInTheDocument()
+          expect(screen.queryByText(/codecov-org/i)).not.toBeInTheDocument()
+        })
+      })
     })
   })
 

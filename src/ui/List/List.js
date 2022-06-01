@@ -1,12 +1,18 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-const getListClasses = () =>
+const getListClasses = ({ index, selected }) =>
   cs(
     'flex text-left px-6 py-2',
     'hover:bg-ds-gray-primary',
     'transition duration-500',
-    'cursor-pointer'
+    'cursor-pointer',
+    {
+      'border-t border-gray-200': index !== 0,
+    },
+    {
+      'border border-ds-blue-darker': selected,
+    }
   )
 
 function List({ items, onItemSelect, noBorder }) {
@@ -14,15 +20,12 @@ function List({ items, onItemSelect, noBorder }) {
     items &&
     items.length > 0 && (
       <ul
-        className={cs(
-          'w-full text-ds-gray-octonary divide-y divide-solid divide-gray-200',
-          {
-            'border border-ds-gray-secondary': !noBorder,
-          }
-        )}
+        className={cs('w-full text-ds-gray-octonary', {
+          'border border-ds-gray-secondary': !noBorder,
+        })}
       >
-        {items.map(({ name, value }) => (
-          <li key={name} className={getListClasses()}>
+        {items.map(({ name, value, selected }, index) => (
+          <li key={name} className={getListClasses({ index, selected })}>
             <button
               className="w-full"
               onClick={() => onItemSelect && onItemSelect(name)}
@@ -42,6 +45,7 @@ List.propTypes = {
       name: PropTypes.string.isRequired,
       value: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
         .isRequired,
+      selected: PropTypes.bool,
     })
   ),
   onItemSelect: PropTypes.func,

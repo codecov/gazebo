@@ -50,6 +50,36 @@ ListWithElements.args = {
   items: getListItems(),
 }
 
+export const ListWithSelectedItem = Template.bind({})
+
+const getItems = () => {
+  const listData = [
+    {
+      username: 'Rabee-AbuBaker',
+      avatarUrl: 'https://avatars0.githubusercontent.com/u/99655254?v=3&s=55',
+      selected: true,
+    },
+    {
+      username: 'codecov',
+      avatarUrl: 'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+    },
+  ]
+  return listData.map((org) => ({
+    name: org.username,
+    value: (
+      <div className="flex items-center py-2">
+        <Avatar user={org} bordered />
+        <div className="mx-2 text-base">{org.username}</div>
+      </div>
+    ),
+    selected: org.selected,
+  }))
+}
+
+ListWithSelectedItem.args = {
+  items: getItems(),
+}
+
 export default {
   title: 'Components/List',
   component: List,
