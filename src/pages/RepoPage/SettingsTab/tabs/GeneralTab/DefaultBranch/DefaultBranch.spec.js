@@ -4,13 +4,13 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
-import { useUpdateRepo } from 'services/repoUpdate'
+import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
 import DefaultBranch from './DefaultBranch'
 
 jest.mock('services/branches')
-jest.mock('services/repoUpdate')
+jest.mock('services/repo')
 jest.mock('services/toastNotification')
 
 const queryClient = new QueryClient()
@@ -124,7 +124,7 @@ describe('DefaultBranch', () => {
     it('adds an error notification', () => {
       expect(addNotification).toHaveBeenCalledWith({
         type: 'error',
-        text: 'Something went wrong',
+        text: 'We were unable to update the default branch for this repo',
       })
     })
   })

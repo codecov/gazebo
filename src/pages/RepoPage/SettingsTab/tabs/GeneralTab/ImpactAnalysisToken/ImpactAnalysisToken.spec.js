@@ -149,7 +149,7 @@ describe('ImpactAnalysisToken', () => {
     it('adds an error notification', () => {
       expect(addNotification).toHaveBeenCalledWith({
         type: 'error',
-        text: 'Something went wrong',
+        text: 'Authentication Error',
       })
     })
   })

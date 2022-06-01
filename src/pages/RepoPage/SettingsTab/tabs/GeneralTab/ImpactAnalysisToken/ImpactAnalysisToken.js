@@ -1,29 +1,12 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { useRegenerateProfilingToken } from 'services/profilingToken'
-import { useAddNotification } from 'services/toastNotification'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import TokenWrapper from 'ui/TokenWrapper'
 
 import RegenerateProfilingTokenModal from './RegenerateProfilingTokenModal'
-
-function useGenerateProfilingToken() {
-  const addToast = useAddNotification()
-  const { mutate, data, ...rest } = useRegenerateProfilingToken()
-
-  async function regenerateToken() {
-    mutate()
-    if (data?.data?.regenerateProfilingToken?.error) {
-      addToast({
-        type: 'error',
-        text: 'Something went wrong',
-      })
-    }
-  }
-  return { regenerateToken, data, ...rest }
-}
+import useGenerateProfilingToken from './useGenerateProfilingToken'
 
 function ImpactAnalysisToken({ profilingToken }) {
   const [showModal, setShowModal] = useState(false)
@@ -36,11 +19,9 @@ function ImpactAnalysisToken({ profilingToken }) {
       <div className="flex flex-col gap-2">
         <div className="flex gap-2">
           <h1 className="font-semibold text-lg">Impact analysis token</h1>
-          <div className="mt-1">
-            <p className="flex items-center font-semibold rounded px-4 text-white bg-ds-pink-tertiary">
-              BETA
-            </p>
-          </div>
+          <p className="flex items-center font-semibold rounded px-4 text-white bg-ds-pink-tertiary mt-1">
+            BETA
+          </p>
         </div>
         <p>
           Token is used for impact analysis feature only{' '}
