@@ -19,7 +19,7 @@ function totalsCards({
           <span>HEAD</span>
           {headCommit && (
             <span className="text-ds-gray-octonary">
-              {headCommit.substr(0, 7)}
+              {headCommit.slice(0, 7)}
             </span>
           )}
         </>
@@ -56,11 +56,11 @@ function compareCards({ headCommit, baseCommit }) {
           Coverage data based on{' '}
           <span className="uppercase font-medium">head</span>{' '}
           <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
-            {headCommit?.substr(0, 7)}
+            {headCommit?.slice(0, 7)}
           </A>{' '}
           compared to <span className="uppercase font-medium">base</span>{' '}
           <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
-            {baseCommit?.substr(0, 7)}
+            {baseCommit?.slice(0, 7)}
           </A>{' '}
         </p>
       ),
@@ -104,7 +104,7 @@ function lastCommitErrorCard({ recentCommit }) {
                 options: { commit: recentCommit?.commitid },
               }}
             >
-              {recentCommit?.commitid?.substr(0, 7)}
+              {recentCommit?.commitid?.slice(0, 7)}
             </A>
             . As a result, some of the information may not be accurate.
           </p>

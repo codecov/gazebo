@@ -132,10 +132,10 @@ describe('CompareSummary', () => {
       expect(sourceCardTitle).toBeInTheDocument()
       expect(screen.getByText(/Coverage data based on/i)).toBeInTheDocument()
       expect(
-        screen.getAllByText(pull.head.commitid.substr(0, 7))[1]
+        screen.getAllByText(pull.head.commitid.slice(0, 7))[1]
       ).toBeInTheDocument()
       expect(
-        screen.getByText(pull.comparedTo.commitid.substr(0, 7))
+        screen.getByText(pull.comparedTo.commitid.slice(0, 7))
       ).toBeInTheDocument()
     })
   })
