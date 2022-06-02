@@ -454,6 +454,8 @@ function useStaticNavLinks() {
     runtimeInsights: {
       text: 'Runtime Insights',
       path: () => 'https://docs.codecov.com/docs/runtime-insights',
+      isExternalLink: true,
+      openNewTab: true,
     },
     unexpectedChanges: {
       text: 'Unexpected Changes',
@@ -463,7 +465,8 @@ function useStaticNavLinks() {
     },
     graphAuthorization: {
       text: 'Grpah Authorization',
-      path: () => 'https://docs.codecov.com/reference/authorization#about-graphs',
+      path: () =>
+        'https://docs.codecov.com/reference/authorization#about-graphs',
       isExternalLink: true,
       openNewTab: true,
     },

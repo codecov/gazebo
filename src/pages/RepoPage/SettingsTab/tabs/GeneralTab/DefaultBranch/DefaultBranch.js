@@ -6,6 +6,7 @@ import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
+import TabSection from 'ui/TabSection'
 
 function useUpdateDefaultBranch() {
   const addToast = useAddNotification()
@@ -37,29 +38,28 @@ function DefaultBranch({ defaultBranch }) {
   const branch = data?.branch || defaultBranch
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-lg font-semibold">Default Branch</h1>
-        <p>Selection for branch context of data in coverage dashboard</p>
-        <hr />
-      </div>
-      <div className="flex flex-col border-2 border-ds-gray-primary p-4 xl:w-4/5 2xl:w-3/5 gap-4">
-        <h2 className="font-semibold flex gap-1">
-          <Icon name="branch" variant="developer" size="sm" />
-          Branch Context
-        </h2>
-        <div className="grid grid-cols-2">
-          <Select
-            variant="gray"
-            items={branchesNames}
-            onChange={(branch) => {
-              updateDefaultBranch(branch)
-            }}
-            value={branch}
-          />
-        </div>
-      </div>
-    </div>
+    <TabSection
+      title="Default Branch"
+      description="Selection for branch context of data in coverage dashboard"
+      content={
+        <>
+          <h2 className="font-semibold flex gap-1">
+            <Icon name="branch" variant="developer" size="sm" />
+            Branch Context
+          </h2>
+          <div className="grid grid-cols-2">
+            <Select
+              variant="gray"
+              items={branchesNames}
+              onChange={(branch) => {
+                updateDefaultBranch(branch)
+              }}
+              value={branch}
+            />
+          </div>
+        </>
+      }
+    />
   )
 }
 
