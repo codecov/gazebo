@@ -11,9 +11,8 @@ import useGenerateProfilingToken from './useGenerateProfilingToken'
 
 function ImpactAnalysisToken({ profilingToken }) {
   const [showModal, setShowModal] = useState(false)
-  const { regenerateToken, isLoading, data } = useGenerateProfilingToken()
-  const token =
-    data?.data?.regenerateProfilingToken?.profilingToken || profilingToken
+  const { regenerateToken, data, isLoading } = useGenerateProfilingToken()
+  const token = data?.regenerateProfilingToken?.profilingToken || profilingToken
 
   return (
     <SettingsDescriptor

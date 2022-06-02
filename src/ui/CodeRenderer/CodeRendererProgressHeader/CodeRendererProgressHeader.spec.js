@@ -1,15 +1,23 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 
 import CodeRendererProgressHeader from './CodeRendererProgressHeader'
 
 describe('CodeRendererProgressHeader', () => {
   function setup(props) {
-    render(<CodeRendererProgressHeader {...props} />)
+    render(<CodeRendererProgressHeader {...props} />, {
+      wrapper: MemoryRouter,
+    })
   }
 
   describe('when rendered with without treepaths', () => {
     beforeEach(() => {
-      setup({ treePaths: [], fileCoverage: 39.28, change: 34.21 })
+      setup({
+        path: undefined,
+        pathRef: undefined,
+        fileCoverage: 39.28,
+        change: 34.21,
+      })
     })
 
     it('renders progress percent and change percent', () => {
@@ -23,7 +31,8 @@ describe('CodeRendererProgressHeader', () => {
   describe('when rendered with treepaths', () => {
     beforeEach(() => {
       setup({
-        treePaths: [{ pageName: 'owner', text: 'owner' }],
+        path: 'path/to/file.js',
+        pathRef: 'main',
         fileCoverage: 39.28,
         change: 34.21,
       })
@@ -34,8 +43,10 @@ describe('CodeRendererProgressHeader', () => {
       expect(change).toBeInTheDocument()
       const headCoverage = screen.getByText(/39.28%/)
       expect(headCoverage).toBeInTheDocument()
-      const treePath = screen.getByText(/owner/)
-      expect(treePath).toBeInTheDocument()
+      const filename = screen.getByText(/file.js/)
+      expect(filename).toBeInTheDocument()
+      expect(screen.getByText(/path/)).toBeInTheDocument()
+      expect(screen.getByText(/to/)).toBeInTheDocument()
     })
   })
 })

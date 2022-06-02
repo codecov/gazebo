@@ -14,3 +14,7 @@ export function forwardMarketingTag(search) {
     'utm_department',
   ])
 }
+
+export function getFilenameFromFilePath(path) {
+  return path.split('/').pop()
+}

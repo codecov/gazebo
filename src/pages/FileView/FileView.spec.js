@@ -40,7 +40,7 @@ describe('FileView', () => {
           '/gh/criticalrole/mightynein/blob/19236709182orym9234879/folder/subfolder/file.js',
         ]}
       >
-        <Route path="/:provider/:owner/:repo/blob/:ref/*">
+        <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
           <QueryClientProvider client={queryClient}>
             <FileView />
           </QueryClientProvider>
