@@ -293,15 +293,13 @@ describe('ReposTable', () => {
     })
 
     it('renders the select the repo to have the right link', () => {
-      expect(screen.getByText('Select the repo').closest('a')).toHaveAttribute(
-        'href',
-        '/gh/+'
-      )
+      const link = screen.getByRole('link', { name: 'Select the repo' })
+      expect(link).toHaveAttribute('href', '/gh/+')
     })
 
     it('renders the quick start guide link', () => {
       const link = screen.getByRole('link', {
-        name: 'quick start guide.',
+        name: 'quick start guide. external-link.svg',
       })
       expect(link).toBeInTheDocument()
     })
