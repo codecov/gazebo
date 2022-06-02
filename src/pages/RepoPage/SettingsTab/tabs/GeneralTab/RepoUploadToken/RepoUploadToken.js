@@ -5,7 +5,7 @@ import { useAddNotification } from 'services/toastNotification'
 import { useRegenerateUploadToken } from 'services/uploadToken'
 import A from 'ui/A'
 import Button from 'ui/Button'
-import TabSection from 'ui/TabSection'
+import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
 import RegenerateTokenModal from './RegenerateTokenModal'
@@ -38,7 +38,7 @@ function RepoUploadToken({ uploadToken }) {
   const token = data?.uploadToken || uploadToken
 
   return (
-    <TabSection
+    <SettingsDescriptor
       title="Repository upload token"
       description={
         <span>

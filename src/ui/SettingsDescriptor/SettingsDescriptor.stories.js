@@ -1,16 +1,16 @@
-import TabSection from './TabSection'
+import SettingsDescriptor from './SettingsDescriptor'
 
-const Template = (args) => <TabSection {...args} />
+const Template = (args) => <SettingsDescriptor {...args} />
 
-export const BasicTabSectionUsing = Template.bind({})
-BasicTabSectionUsing.args = {
+export const BasicSettingsDescriptorUsing = Template.bind({})
+BasicSettingsDescriptorUsing.args = {
   title: 'Section Title',
   description: 'Section description',
   content: 'Section content',
 }
 
-export const TabSectionUsingNestedTags = Template.bind({})
-TabSectionUsingNestedTags.args = {
+export const SettingsDescriptorUsingNestedTags = Template.bind({})
+SettingsDescriptorUsingNestedTags.args = {
   title: 'Section 2',
   description: 'This section is using nested tags',
   content: (
@@ -25,6 +25,6 @@ TabSectionUsingNestedTags.args = {
 }
 
 export default {
-  title: 'Components/TabSection',
-  component: TabSection,
+  title: 'Components/SettingsDescriptor',
+  component: SettingsDescriptor,
 }

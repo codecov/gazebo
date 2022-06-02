@@ -23,8 +23,8 @@ function GeneralTab() {
       {repository?.profilingToken && (
         <ImpactAnalysisToken profilingToken={repository?.profilingToken} />
       )}
-      {data?.repository?.graphToken && (
-        <GraphToken graphToken={data?.repository?.graphToken} />
+      {repository?.graphToken && (
+        <GraphToken graphToken={repository?.graphToken} />
       )}
     </div>
   )

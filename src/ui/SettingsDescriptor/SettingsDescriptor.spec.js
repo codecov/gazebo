@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 
-import TabSection from './TabSection'
+import SettingsDescriptor from './SettingsDescriptor'
 
-describe('TabSection', () => {
+describe('SettingsDescriptor', () => {
   function setup() {
     render(
-      <TabSection
+      <SettingsDescriptor
         title="Section Title"
         description="Section description and -if exists- a link"
         content="Section content"

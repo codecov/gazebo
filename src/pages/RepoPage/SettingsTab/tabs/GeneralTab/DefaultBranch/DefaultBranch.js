@@ -6,7 +6,7 @@ import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
-import TabSection from 'ui/TabSection'
+import SettingsDescriptor from 'ui/SettingsDescriptor'
 
 function useUpdateDefaultBranch() {
   const addToast = useAddNotification()
@@ -38,7 +38,7 @@ function DefaultBranch({ defaultBranch }) {
   const branch = data?.branch || defaultBranch
 
   return (
-    <TabSection
+    <SettingsDescriptor
       title="Default Branch"
       description="Selection for branch context of data in coverage dashboard"
       content={

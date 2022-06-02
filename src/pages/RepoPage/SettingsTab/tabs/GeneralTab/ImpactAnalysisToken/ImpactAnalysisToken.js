@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import A from 'ui/A'
 import Button from 'ui/Button'
-import TabSection from 'ui/TabSection'
+import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
 import RegenerateProfilingTokenModal from './RegenerateProfilingTokenModal'
@@ -16,7 +16,7 @@ function ImpactAnalysisToken({ profilingToken }) {
     data?.data?.regenerateProfilingToken?.profilingToken || profilingToken
 
   return (
-    <TabSection
+    <SettingsDescriptor
       title={
         <div className="flex gap-2">
           <span>Impact analysis token</span>

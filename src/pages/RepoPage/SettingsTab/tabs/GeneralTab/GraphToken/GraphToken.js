@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 
 import A from 'ui/A'
-import TabSection from 'ui/TabSection'
+import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
 function GraphToken({ graphToken }) {
   return (
-    <TabSection
+    <SettingsDescriptor
       title="Repository graphing token"
       description={
         <span>

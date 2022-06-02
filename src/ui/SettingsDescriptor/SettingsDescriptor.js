@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-function TabSection({ title, description, content }) {
+function SettingsDescriptor({ title, description, content }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
@@ -15,7 +15,7 @@ function TabSection({ title, description, content }) {
   )
 }
 
-TabSection.propTypes = {
+SettingsDescriptor.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
   description: PropTypes.oneOfType([PropTypes.string, PropTypes.element])
     .isRequired,
@@ -23,4 +23,4 @@ TabSection.propTypes = {
     .isRequired,
 }
 
-export default TabSection
+export default SettingsDescriptor
