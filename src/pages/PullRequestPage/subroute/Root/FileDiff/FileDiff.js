@@ -8,7 +8,7 @@ import {
 } from 'shared/utils/fileviewer'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
-import CriticalFile from 'ui/CodeRenderer/CriticalFile'
+import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
 import FileHeader from 'ui/CodeRenderer/FileHeader'
 
@@ -56,7 +56,7 @@ const FileDiff = ({
         fileLabel={fileLabel}
       />
       {/* Critical File Label */}
-      {isCriticalFile ? <CriticalFile /> : null}
+      {isCriticalFile ? <CriticalFileLabel /> : null}
       {/* CodeRenderer */}
       {segments.map((segment, segmentIndex) => {
         const content = segment.lines.map((line) => line.content).join('\n')
