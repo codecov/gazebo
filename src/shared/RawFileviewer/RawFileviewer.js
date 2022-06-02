@@ -1,11 +1,12 @@
-import PropTypes from 'prop-types'
+import PropType from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import NotFound from 'pages/NotFound'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
+import { useOwner } from 'services/user'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { getFilenameFromFilePath } from 'shared/utils/url'
-import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
 import SingleLine from 'ui/CodeRenderer/SingleLine'
@@ -46,11 +47,11 @@ function useCoverageAndFlagsStates() {
   }
 }
 
-function CommitFileView({ diff }) {
-  const { owner, repo, provider, commit, path } = useParams()
-  const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
-  const fileName = getFilenameFromFilePath(path)
-
+// Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
+// component will affect both places
+function RawFileviewer({ title }) {
+  const { owner, repo, provider, ref, path } = useParams()
+  const { data: ownerData } = useOwner({ username: owner })
   // *********** This is temporary code that will be here in the meantime *********** //
   const {
     partial,
@@ -60,17 +61,18 @@ function CommitFileView({ diff }) {
     flagsState: { selectedFlags, setSelectedFlags },
   } = useCoverageAndFlagsStates()
 
+  // TODO: This hook needs revision/enhancement
   const {
-    isLoading: coverageIsLoading,
+    content,
+    flagNames,
     totals: fileCoverage,
     coverage: coverageData,
-    flagNames,
-    content,
+    isLoading: coverageIsLoading,
   } = useCommitBasedCoverageForFileViewer({
     owner,
     repo,
     provider,
-    commit,
+    commit: ref,
     path,
     selectedFlags,
   })
@@ -80,29 +82,13 @@ function CommitFileView({ diff }) {
     selectedFlags,
     setSelectedFlags,
   }
-
-  const showLines = {
-    showCovered: covered,
-    showPartial: partial,
-    showUncovered: uncovered,
-  }
   // *********** This is temporary code that will be here in the meantime *********** //
-
-  const title = (
-    <Breadcrumb
-      paths={[
-        {
-          pageName: 'commit',
-          text: 'Impacted files',
-          options: { commit: commit },
-        },
-        { pageName: 'path', text: fileName },
-      ]}
-    />
-  )
+  if (!ownerData) {
+    return <NotFound />
+  }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="border-t border-solid border-ds-gray-tertiary pt-6 flex flex-col gap-2">
       <ToggleHeader
         title={title}
         flagData={flagData}
@@ -111,20 +97,25 @@ function CommitFileView({ diff }) {
       />
       <div>
         <CodeRendererProgressHeader
+          path={path} // This is only populated in standalone fileviewer
+          pathRef={ref} // This is only populated in standalone fileviewer
           fileCoverage={fileCoverage}
-          change={change}
         />
         {content ? (
           <CodeRenderer
             code={content}
-            fileName={fileName}
+            fileName={getFilenameFromFilePath(path)}
             rendererType={CODE_RENDERER_TYPE.SINGLE_LINE}
             LineComponent={({ i, line, getLineProps, getTokenProps }) => (
               <SingleLine
-                key={i + 1}
+                key={i}
                 line={line}
                 number={i + 1}
-                showLines={showLines}
+                showLines={{
+                  showCovered: covered,
+                  showPartial: partial,
+                  showUncovered: uncovered,
+                }}
                 getLineProps={getLineProps}
                 getTokenProps={getTokenProps}
                 coverage={coverageData && coverageData[i + 1]}
@@ -139,15 +130,8 @@ function CommitFileView({ diff }) {
   )
 }
 
-CommitFileView.propTypes = {
-  diff: PropTypes.shape({
-    baseCoverage: PropTypes.shape({
-      coverage: PropTypes.number,
-    }),
-    headCoverage: PropTypes.shape({
-      coverage: PropTypes.number,
-    }),
-  }),
+RawFileviewer.propTypes = {
+  title: PropType.string,
 }
 
-export default CommitFileView
+export default RawFileviewer
