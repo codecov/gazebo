@@ -35,9 +35,6 @@ const variantClasses = {
     text-white bg-ds-pink border-ds-pink-tertiary
     hover:bg-ds-pink-tertiary
   `,
-  active: `text-ds-primary-green border-ds-primary-green
-  hover:text-white hover:bg-ds-primary-green
-  `
 }
 
 const loadingVariantClasses = {
@@ -45,7 +42,6 @@ const loadingVariantClasses = {
   primary: `disabled:bg-ds-blue-darker disabled:bg-ds-blue-medium text-white disabled:border-ds-blue-quinary`,
   danger: `disabled:text-white disabled:border-ds-primary-red disabled:bg-ds-primary-red`,
   secondary: `disabled:text-white disabled:border-ds-pink-tertiary disabled:bg-ds-pink`,
-  active: `disabled:text-white disabled:border-ds-primary-green disabled:bg-ds-primary-green`
 }
 
 function pickVariant(variant, loading) {
@@ -105,7 +101,7 @@ function Button({
 
 Button.propTypes = {
   to: PropTypes.shape(AppLink.propTypes),
-  variant: PropTypes.oneOf(['default', 'primary', 'danger', 'secondary', 'active']),
+  variant: PropTypes.oneOf(['default', 'primary', 'danger', 'secondary']),
   isLoading: PropTypes.bool,
   disabled: PropTypes.bool,
   hook: function (props, propName) {
