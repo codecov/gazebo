@@ -47,7 +47,9 @@ function useCoverageAndFlagsStates() {
   }
 }
 
-function DefaultCodeRenderer({ title }) {
+// Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
+// component will affect both places
+function RawFileviewer({ title }) {
   const { owner, repo, provider, ref, path } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   // *********** This is temporary code that will be here in the meantime *********** //
@@ -128,8 +130,8 @@ function DefaultCodeRenderer({ title }) {
   )
 }
 
-DefaultCodeRenderer.propTypes = {
+RawFileviewer.propTypes = {
   title: PropType.string,
 }
 
-export default DefaultCodeRenderer
+export default RawFileviewer

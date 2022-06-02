@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import Breadcrumb from 'ui/Breadcrumb'
 
-import DefaultCodeRenderer from './DefaultCodeRenderer'
+import RawFileviewer from '../../shared/RawFileviewer'
 
 function FileView() {
   const { owner, repo, ref } = useParams()
@@ -18,7 +18,7 @@ function FileView() {
           ]}
         />
       </div>
-      <DefaultCodeRenderer title="File Viewer" />
+      <RawFileviewer title="File Viewer" />
     </div>
   )
 }

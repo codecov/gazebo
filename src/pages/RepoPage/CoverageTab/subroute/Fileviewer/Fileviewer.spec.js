@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import FileView from './FileView'
+import FileView from './Fileviewer'
 
-jest.mock('pages/FileView/DefaultCodeRenderer', () => () => 'Coderenderer')
+jest.mock('shared/RawFileviewer', () => () => 'Coderenderer')
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities

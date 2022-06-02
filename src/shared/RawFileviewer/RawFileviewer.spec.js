@@ -5,7 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
 
-import DefaultCodeRenderer from './DefaultCodeRenderer'
+import RawFileviewer from './RawFileviewer'
 
 jest.mock(
   'ui/FileViewer/ToggleHeader/ToggleHeader',
@@ -20,7 +20,7 @@ jest.mock('services/user')
 
 const queryClient = new QueryClient()
 
-describe('DefaultCodeRenderer', () => {
+describe('RawFileviewer', () => {
   function setup({ content, owner, coverage }) {
     useOwner.mockReturnValue({
       data: owner,
@@ -42,7 +42,7 @@ describe('DefaultCodeRenderer', () => {
       >
         <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
           <QueryClientProvider client={queryClient}>
-            <DefaultCodeRenderer />
+            <RawFileviewer />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>

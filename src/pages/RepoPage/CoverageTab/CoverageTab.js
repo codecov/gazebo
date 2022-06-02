@@ -3,7 +3,7 @@ import { Route, Switch } from 'react-router-dom'
 
 import Spinner from 'ui/Spinner'
 
-const FileView = lazy(() => import('./subroute/FileView'))
+const Fileviewer = lazy(() => import('./subroute/Fileviewer'))
 
 function CoverageTab() {
   const Loader = (
@@ -26,7 +26,7 @@ function CoverageTab() {
           </Route>
           <Route path="/:provider/:owner/:repo/blobs/:ref/:path+" exact>
             <Suspense fallback={Loader}>
-              <FileView />
+              <Fileviewer />
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/" exact>
