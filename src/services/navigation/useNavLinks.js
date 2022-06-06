@@ -440,7 +440,7 @@ function useStaticNavLinks() {
       text: 'Uploader Integrity Check',
       openNewTab: true,
     },
-    codecovGithuhApp: {
+    codecovGithubApp: {
       path: () => 'https://github.com/apps/codecov',
       isExternalLink: true,
       text: 'Codecov Github App',
