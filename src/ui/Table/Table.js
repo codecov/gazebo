@@ -6,7 +6,8 @@ import { useFlexLayout, useSortBy, useTable } from 'react-table'
 import Icon from '../Icon'
 
 const TableClasses = {
-  headerCell: 'py-2 text-sm flex font-semibold px-3.5 text-ds-gray-quinary',
+  headerCell:
+    'py-2 text-sm flex font-semibold px-3.5 text-ds-gray-quinary gap-1 items-center',
   headerRow: 'text-left border-t border-b border-ds-black-secondary',
   tableRow: 'border-t border-ds-black-secondary',
   tableCell:
@@ -71,7 +72,8 @@ function Table({ data = [], columns = [], onSort }) {
                           column.getSortByToggleProps()
                         )}
                       >
-                        <span className="text-ds-blue-darker mr-1">
+                        {column.render('Header')}
+                        <span className="text-ds-blue-darker">
                           {column.isSorted ? (
                             <Icon
                               name={
@@ -83,7 +85,6 @@ function Table({ data = [], columns = [], onSort }) {
                             ''
                           )}
                         </span>
-                        {column.render('Header')}
                       </th>
                     )
                   })

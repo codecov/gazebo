@@ -121,5 +121,13 @@ describe('Table', () => {
       screen.getByText('Header 1').click()
       expect(onSort).toHaveBeenCalled()
     })
+
+    it('shows sorting icon', () => {
+      const onSort = jest.fn()
+      render(<Table data={data} columns={columns} onSort={onSort} />)
+      const header = screen.getByText('Header 1')
+      header.click()
+      expect(within(header).getByText('arrow-up.svg')).toBeInTheDocument()
+    })
   })
 })
