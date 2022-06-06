@@ -38,13 +38,6 @@ SecondaryButton.args = {
   disabled: false,
 }
 
-export const ActiveButton = Template.bind({})
-ActiveButton.args = {
-  children: 'Active button',
-  variant: 'active',
-  disabled: false,
-}
-
 export const MixedButton = Template.bind({})
 MixedButton.args = {
   children: (
