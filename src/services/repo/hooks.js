@@ -53,7 +53,11 @@ export function useEraseRepoContent() {
   const refactoredProvider = providerToName(provider).toLowerCase()
   return useMutation(
     () => {
-      const path = getPathEraseRepo({ provider: refactoredProvider, owner, repo })
+      const path = getPathEraseRepo({
+        provider: refactoredProvider,
+        owner,
+        repo,
+      })
 
       return Api.patch({
         provider: refactoredProvider,
@@ -67,7 +71,6 @@ export function useEraseRepoContent() {
     }
   )
 }
-
 
 //update repo hook
 function getRepoPath({ provider, owner, repo }) {
@@ -96,4 +99,3 @@ export function useUpdateRepo() {
     }
   )
 }
-

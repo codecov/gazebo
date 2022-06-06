@@ -4,10 +4,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import GraphToken from './GraphToken'
 
-jest.mock('services/branches')
-jest.mock('services/repo')
-jest.mock('services/toastNotification')
-
 const queryClient = new QueryClient()
 
 describe('DefaultBranch', () => {

@@ -12,27 +12,23 @@ import RepoUploadToken from './RepoUploadToken'
 function GeneralTab() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
-  const { uploadToken, defaultBranch, profilingToken, graphToken, active } = data?.repository
+  const repository = data?.repository
 
   return (
     <div className="flex flex-col gap-6">
-      {uploadToken && (
-        <RepoUploadToken uploadToken={uploadToken} />
+      {repository?.uploadToken && (
+        <RepoUploadToken uploadToken={repository?.uploadToken} />
       )}
-      {defaultBranch && (
-        <DefaultBranch defaultBranch={defaultBranch} />
+      {repository?.defaultBranch && (
+        <DefaultBranch defaultBranch={repository?.defaultBranch} />
       )}
-      {profilingToken && (
-        <ImpactAnalysisToken
-          profilingToken={profilingToken}
-        />
+      {repository?.profilingToken && (
+        <ImpactAnalysisToken profilingToken={repository?.profilingToken} />
       )}
-      {graphToken && (
-        <GraphToken
-          graphToken={graphToken}
-        />
+      {repository?.graphToken && (
+        <GraphToken graphToken={repository?.graphToken} />
       )}
-      <ActivationStatusContext.Provider value={active}>
+      <ActivationStatusContext.Provider value={repository?.active}>
         <DangerZone />
       </ActivationStatusContext.Provider>
     </div>

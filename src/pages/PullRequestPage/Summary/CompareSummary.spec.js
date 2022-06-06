@@ -56,9 +56,55 @@ describe('CompareSummary', () => {
     )
   }
 
-  describe('when rendered with valid fields', () => {
+  describe('Pending or no commits', () => {
     beforeEach(() => {
-      setup({ pullData })
+      setup({
+        pullData: {
+          ...pullData,
+          headCoverage: undefined,
+          patchCoverage: undefined,
+          changeCoverage: undefined,
+        },
+      })
+    })
+
+    it('renders a pending card', () => {
+      const card = screen.getByText('Why is there no coverage data?')
+      expect(card).toBeInTheDocument()
+    })
+  })
+
+  describe('Error render', () => {
+    beforeEach(() => {
+      setup({
+        pullData: {
+          ...pullData,
+          recentCommit: {
+            state: 'error',
+            commitid: 'abcdefghijklmnop',
+          },
+        },
+      })
+    })
+
+    it('renders a error card', () => {
+      const card = screen.getByText(
+        /There is an error processing the coverage reports with/i
+      )
+      expect(card).toBeInTheDocument()
+    })
+  })
+
+  describe('Successful render', () => {
+    beforeEach(() => {
+      setup({
+        pullData: {
+          ...pullData,
+          commits: {
+            edges: [{ node: { state: 'complete', commitid: 'abc' } }],
+          },
+        },
+      })
     })
 
     it('renders a card for every valid field', () => {
@@ -86,10 +132,10 @@ describe('CompareSummary', () => {
       expect(sourceCardTitle).toBeInTheDocument()
       expect(screen.getByText(/Coverage data based on/i)).toBeInTheDocument()
       expect(
-        screen.getAllByText(pull.head.commitid.substr(0, 7))[1]
+        screen.getAllByText(pull.head.commitid.slice(0, 7))[1]
       ).toBeInTheDocument()
       expect(
-        screen.getByText(pull.comparedTo.commitid.substr(0, 7))
+        screen.getByText(pull.comparedTo.commitid.slice(0, 7))
       ).toBeInTheDocument()
     })
   })

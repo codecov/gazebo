@@ -1,4 +1,4 @@
-import { act, render, screen } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -27,7 +27,7 @@ describe('ImpactAnalysisToken', () => {
         data: {
           regenerateProfilingToken: {
             profilingToken,
-            error
+            error,
           },
         },
       },
@@ -75,9 +75,7 @@ describe('ImpactAnalysisToken', () => {
   describe('when the user clicks on regenerate button', () => {
     beforeEach(() => {
       setup({})
-      act(() =>
-        userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      )
+      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
     })
 
     it('displays the regenerate profiling token modal', () => {
@@ -95,9 +93,7 @@ describe('ImpactAnalysisToken', () => {
 
     describe('when user clicks on Cancel button', () => {
       beforeEach(() => {
-        act(() =>
-          userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-        )
+        userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
       })
       it('does not call the mutation', () => {
         expect(mutate).not.toHaveBeenCalled()
@@ -112,14 +108,10 @@ describe('ImpactAnalysisToken', () => {
   describe('when user clicks on Generate New Token button', () => {
     beforeEach(async () => {
       setup({ profilingToken: 'new token' })
-      await act(async () => {
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Regenerate' })
-        )
-        userEvent.click(
-          screen.getByRole('button', { name: 'Generate New Token' })
-        )
-      })
+      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
+      userEvent.click(
+        screen.getByRole('button', { name: 'Generate New Token' })
+      )
     })
     it('calls the mutation', () => {
       expect(mutate).toHaveBeenCalled()
@@ -133,14 +125,10 @@ describe('ImpactAnalysisToken', () => {
   describe('when mutation is not successful', () => {
     beforeEach(async () => {
       setup({ profilingToken: 'new token', error: 'Authentication Error' })
-      await act(async () => {
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Regenerate' })
-        )
-        userEvent.click(
-          screen.getByRole('button', { name: 'Generate New Token' })
-        )
-      })
+      await userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
+      userEvent.click(
+        screen.getByRole('button', { name: 'Generate New Token' })
+      )
     })
     it('calls the mutation', () => {
       expect(mutate).toHaveBeenCalled()
@@ -149,7 +137,7 @@ describe('ImpactAnalysisToken', () => {
     it('adds an error notification', () => {
       expect(addNotification).toHaveBeenCalledWith({
         type: 'error',
-        text: 'Something went wrong',
+        text: 'Authentication Error',
       })
     })
   })

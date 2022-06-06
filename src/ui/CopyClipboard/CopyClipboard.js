@@ -7,7 +7,7 @@ import Icon from 'ui/Icon'
 
 const copyIconClasses = {
   default: `text-ds-blue-darker`,
-  muted: `text-ds-grey-octinary`,
+  muted: `text-ds-grey-octonary`,
 }
 
 function CopyClipboard({ string, showLabel = false, variant = 'default' }) {
@@ -43,9 +43,9 @@ function CopyClipboard({ string, showLabel = false, variant = 'default' }) {
 
       <span
         className={cs('cursor-pointer text-xs font-semibold', {
-          'text-ds-blue-darker': variant === 'default',
           [copyIconClass]: variant === 'muted',
           'sr-only': !showLabel,
+          'text-ds-blue-darker': variant === 'default',
         })}
       >
         copy

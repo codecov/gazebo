@@ -370,6 +370,13 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    oauthEnabling: {
+      text: 'Approval for third party access',
+      path: () =>
+        'https://docs.github.com/en/organizations/restricting-access-to-your-organizations-data/enabling-oauth-app-access-restrictions-for-your-organization',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     userAppManagePage: {
       text: 'User App Manage/Access Page',
       path: () =>
@@ -454,6 +461,8 @@ function useStaticNavLinks() {
     runtimeInsights: {
       text: 'Runtime Insights',
       path: () => 'https://docs.codecov.com/docs/runtime-insights',
+      isExternalLink: true,
+      openNewTab: true,
     },
     unexpectedChanges: {
       text: 'Unexpected Changes',
@@ -462,8 +471,9 @@ function useStaticNavLinks() {
       openNewTab: true,
     },
     graphAuthorization: {
-      text: 'Grpah Authorization',
-      path: () => 'https://docs.codecov.com/reference/authorization#about-graphs',
+      text: 'Graph Authorization',
+      path: () =>
+        'https://docs.codecov.com/reference/authorization#about-graphs',
       isExternalLink: true,
       openNewTab: true,
     },

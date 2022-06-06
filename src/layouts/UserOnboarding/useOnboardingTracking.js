@@ -31,6 +31,34 @@ export function useOnboardingTracking() {
         url: url + customPath,
       })
     },
+    helpFindingOrganization: () => {
+      trackSegmentEvent({
+        event: 'User Onboarding Help Finding Org Clicked',
+        category: 'Onboarding',
+      })
+    },
+    skipOnboarding: () => {
+      trackSegmentEvent({
+        event: 'User Onboarding Skipped',
+        category: 'Onboarding',
+      })
+    },
+    selectOrganization: (user, organization) => {
+      const id = user?.trackingMetadata?.ownerid
+      trackSegmentEvent({
+        event: 'User Onboarding Selected Org',
+        category: 'Onboarding',
+      })
+      identifySegmentEvent({ id, organization })
+    },
+    selectRepository: (user, repo) => {
+      const id = user?.trackingMetadata?.ownerid
+      trackSegmentEvent({
+        event: 'User Onboarding Selected Repo',
+        category: 'Onboarding',
+      })
+      identifySegmentEvent({ id, repo })
+    },
     completedOnboarding: (user, data) => {
       const id = user?.trackingMetadata?.ownerid
       trackSegmentEvent({

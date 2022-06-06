@@ -1,13 +1,18 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import List from '.'
 
 describe('List', () => {
   let container
+  const onItemSelect = jest.fn()
 
-  function setup({ items, onItemSelect }) {
+  function setup({ items, noBorder }) {
     ;({ container } = render(
-      <List items={items} onItemSelect={onItemSelect} />
+      <List
+        items={items}
+        onItemSelect={onItemSelect}
+        noBorder={Boolean(noBorder)}
+      />
     ))
   }
 
@@ -38,20 +43,31 @@ describe('List', () => {
   })
 
   it('calls onItemSelect prop when clicked', () => {
-    const handleItemSelect = jest.fn()
-
     const items = [
       {
         name: 'firstItem',
         value: 'Click me',
       },
     ]
-    setup({ items, onItemSelect: handleItemSelect })
+    setup({ items })
 
     expect(container).not.toBeEmptyDOMElement()
     const listItem = screen.getByText(/click me/i)
     expect(listItem).toBeInTheDocument()
     fireEvent.click(listItem)
-    expect(handleItemSelect).toHaveBeenCalledTimes(1)
+    expect(onItemSelect).toHaveBeenCalledTimes(1)
+  })
+
+  it('Renders without a border when noBorder is true', () => {
+    const items = [
+      {
+        name: 'firstItem',
+        value: 'Click me',
+      },
+    ]
+    setup({ items, noBorder: true })
+    expect(screen.getByRole('list')).not.toHaveClass(
+      'border border-ds-gray-secondary'
+    )
   })
 })

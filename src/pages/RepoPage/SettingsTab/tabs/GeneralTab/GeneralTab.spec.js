@@ -12,7 +12,6 @@ const queryClient = new QueryClient()
 describe('GeneralTab', () => {
   function setup({ uploadToken, defaultBranch, profilingToken, graphToken }) {
     const mutate = jest.fn()
-
     useRepo.mockReturnValue({
       data: {
         repository: { uploadToken, defaultBranch, profilingToken, graphToken },

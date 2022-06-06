@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
+import { getFilenameFromFilePath } from 'shared/utils/url'
 import Breadcrumb from 'ui/Breadcrumb'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
@@ -48,6 +49,7 @@ function useCoverageAndFlagsStates() {
 function CommitFileView({ diff }) {
   const { owner, repo, provider, commit, path } = useParams()
   const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
+  const fileName = getFilenameFromFilePath(path)
 
   // *********** This is temporary code that will be here in the meantime *********** //
   const {
@@ -94,7 +96,7 @@ function CommitFileView({ diff }) {
           text: 'Impacted files',
           options: { commit: commit },
         },
-        { pageName: 'path', text: path.split('/').pop() },
+        { pageName: 'path', text: fileName },
       ]}
     />
   )
@@ -109,14 +111,13 @@ function CommitFileView({ diff }) {
       />
       <div>
         <CodeRendererProgressHeader
-          treePaths={[]} // This is only populated in standalone fileviewer
           fileCoverage={fileCoverage}
           change={change}
         />
         {content ? (
           <CodeRenderer
             code={content}
-            fileName={path}
+            fileName={fileName}
             rendererType={CODE_RENDERER_TYPE.SINGLE_LINE}
             LineComponent={({ i, line, getLineProps, getTokenProps }) => (
               <SingleLine
