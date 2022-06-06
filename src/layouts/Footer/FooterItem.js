@@ -17,6 +17,6 @@ export function FooterItem({ text, to }) {
 }
 
 FooterItem.propTypes = {
-  text: PropType.string.isRequired,
+  text: PropType.string,
   to: PropType.shape({ pageName: PropType.string }),
 }
