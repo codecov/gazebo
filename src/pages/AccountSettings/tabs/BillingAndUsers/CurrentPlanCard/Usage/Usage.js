@@ -26,7 +26,7 @@ function Usage({ accountDetails, isBasicPlan }) {
   const progressAmount = (uploadsNumber * 100) / maxUploadNumber || 0 //sometimes we get null
   const isUsageExceeded = uploadsNumber >= maxUploadNumber
 
-  const variant = isUsageExceeded ? 'progressDanger' : 'progressNeutral'
+  const color = isUsageExceeded ? 'danger' : 'neutral'
 
   return (
     <div className="flex flex-col">
@@ -36,7 +36,7 @@ function Usage({ accountDetails, isBasicPlan }) {
         <div className="grid gap-4">
           <p>{uploadsNumber} of 250 uploads - trailing 30 days</p>
           <div>
-            <Progress amount={progressAmount} label={false} variant={variant} />
+            <Progress amount={progressAmount} color={color} />
           </div>
           {isUsageExceeded && (
             <div className="flex flex-col">

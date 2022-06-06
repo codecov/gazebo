@@ -21,7 +21,7 @@ export default {
   argTypes: {
     variant: {
       type: 'select',
-      options: ['default', 'progressNeutral', 'progressDanger'],
+      options: ['default', 'neutral', 'danger'],
     },
   },
 }
