@@ -21,6 +21,6 @@ SummaryFieldNoChildren.args = {
 }
 
 export default {
-  title: 'Components/SummaryField',
+  title: 'Components/Summary/SummaryField',
   component: SummaryField,
 }
