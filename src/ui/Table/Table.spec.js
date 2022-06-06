@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 
 import Table from './Table'
 
@@ -35,11 +35,9 @@ const columns = [
 ]
 
 describe('Table', () => {
-  let wrapper
-
   describe('render Table', () => {
     it('renders table', () => {
-      wrapper = render(<Table data={data} columns={columns} />)
+      render(<Table data={data} columns={columns} />)
       const table = screen.getByRole('table')
       expect(table).toBeInTheDocument()
     })
@@ -47,14 +45,15 @@ describe('Table', () => {
 
   describe('renders headers', () => {
     it('renders table headers', () => {
-      wrapper = render(<Table data={data} columns={columns} />)
+      render(<Table data={data} columns={columns} />)
       const headerRow = screen.getByTestId('header-row')
-      expect(headerRow.children.length).toBe(1)
-      let header = wrapper.getByText('Header 1')
+      expect(within(headerRow).getAllByRole('row').length).toBe(1)
+
+      let header = screen.getByText('Header 1')
       expect(header).toBeInTheDocument()
-      header = wrapper.getByText('Header 2')
+      header = screen.getByText('Header 2')
       expect(header).toBeInTheDocument()
-      header = wrapper.getByText('Header 3')
+      header = screen.getByText('Header 3')
       expect(header).toBeInTheDocument()
       expect(headerRow).toBeInTheDocument()
     })
@@ -62,24 +61,25 @@ describe('Table', () => {
 
   describe('renders body', () => {
     it('renders table cells', () => {
-      wrapper = render(<Table data={data} columns={columns} />)
+      render(<Table data={data} columns={columns} />)
       const bodyRow = screen.getByTestId('body-row')
-      expect(bodyRow.children.length).toBe(3)
-      let cell = wrapper.getByText('Row1Col1')
+      expect(within(bodyRow).getAllByRole('row').length).toBe(3)
+
+      let cell = screen.getByText('Row1Col1')
       expect(cell).toBeInTheDocument()
-      cell = wrapper.getByText('Row1Col2')
+      cell = screen.getByText('Row1Col2')
       expect(cell).toBeInTheDocument()
-      cell = wrapper.getByText('Row1Col2')
+      cell = screen.getByText('Row1Col2')
       expect(cell).toBeInTheDocument()
-      cell = wrapper.getByText('Row1Col3')
+      cell = screen.getByText('Row1Col3')
       expect(cell).toBeInTheDocument()
-      cell = wrapper.getByText('Row2Col3')
+      cell = screen.getByText('Row2Col3')
       expect(cell).toBeInTheDocument()
-      cell = wrapper.getByText('Row2Col3')
+      cell = screen.getByText('Row2Col3')
       expect(cell).toBeInTheDocument()
-      cell = wrapper.getByText('Row3Col1')
+      cell = screen.getByText('Row3Col1')
       expect(cell).toBeInTheDocument()
-      cell = wrapper.getByText('Row3Col2')
+      cell = screen.getByText('Row3Col2')
       expect(cell).toBeInTheDocument()
       expect(screen.getByRole('button')).toBeInTheDocument()
     })
@@ -104,13 +104,22 @@ describe('Table', () => {
           width: 'w-5/12',
         },
       ]
-      wrapper = render(<Table data={data} columns={_columns} />)
-      let cell = wrapper.getByText('Row1Col1')
+      render(<Table data={data} columns={_columns} />)
+      let cell = screen.getByText('Row1Col1')
       expect(cell.className).toMatch('w-1/12')
-      cell = wrapper.getByText('Row1Col2')
+      cell = screen.getByText('Row1Col2')
       expect(cell.className).toMatch('w-6/12')
-      cell = wrapper.getByText('Row1Col3')
+      cell = screen.getByText('Row1Col3')
       expect(cell.className).toMatch('w-5/12')
+    })
+  })
+
+  describe('when sorting is enabled and a header is clicked', () => {
+    it('onSort is called', async () => {
+      const onSort = jest.fn()
+      render(<Table data={data} columns={columns} onSort={onSort} />)
+      screen.getByText('Header 1').click()
+      expect(onSort).toHaveBeenCalled()
     })
   })
 })

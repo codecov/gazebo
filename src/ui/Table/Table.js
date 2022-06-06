@@ -1,7 +1,9 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import React from 'react'
-import { useFlexLayout, useTable } from 'react-table'
+import React, { useEffect } from 'react'
+import { useFlexLayout, useSortBy, useTable } from 'react-table'
+
+import Icon from '../Icon'
 
 const TableClasses = {
   headerCell: 'py-2 text-sm flex font-semibold px-3.5 text-ds-gray-quinary',
@@ -11,11 +13,32 @@ const TableClasses = {
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
 
-function Table({ data = [], columns = [] }) {
+function Table({ data = [], columns = [], onSort }) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns: _columns, data: _data }, useFlexLayout)
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    state: { sortBy },
+  } = useTable(
+    {
+      columns: _columns,
+      data: _data,
+      manualSortBy: true,
+      disableSortBy: !Boolean(onSort),
+    },
+    useFlexLayout,
+    useSortBy
+  )
+
+  useEffect(() => {
+    if (Boolean(onSort)) {
+      onSort(sortBy)
+    }
+  }, [onSort, sortBy])
 
   const columnsWidth = columns.reduce(
     (acc, current) => ({ ...acc, [current.accessor]: current.width }),
@@ -44,8 +67,22 @@ function Table({ data = [], columns = [] }) {
                           TableClasses.headerCell,
                           columnsWidth[column.id]
                         )}
-                        {...column.getHeaderProps()}
+                        {...column.getHeaderProps(
+                          column.getSortByToggleProps()
+                        )}
                       >
+                        <span className="text-ds-blue-darker mr-1">
+                          {column.isSorted ? (
+                            <Icon
+                              name={
+                                column.isSortedDesc ? 'arrow-down' : 'arrow-up'
+                              }
+                              size="sm"
+                            />
+                          ) : (
+                            ''
+                          )}
+                        </span>
                         {column.render('Header')}
                       </th>
                     )
@@ -97,6 +134,7 @@ function Table({ data = [], columns = [] }) {
 Table.propTypes = {
   data: PropTypes.array.isRequired,
   columns: PropTypes.array.isRequired,
+  onSort: PropTypes.func,
 }
 
 export default Table
