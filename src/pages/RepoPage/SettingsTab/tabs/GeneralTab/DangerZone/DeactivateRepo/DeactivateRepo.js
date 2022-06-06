@@ -1,10 +1,9 @@
 import { useContext, useState } from 'react'
 
-import { useUpdateRepo } from 'services/repo'
-import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
 
 import DeactivateRepoModal from './DeactiveRepoModal'
+import useRepoActivation from './useRepoActivation'
 
 import { ActivationStatusContext } from '../../Context'
 
@@ -12,31 +11,6 @@ const ActivationStatus = Object.freeze({
   DEACTIVATED: { TITLE: 'Repo has been deactivated', LABEL: 'Activate' },
   ACTIVATED: { TITLE: 'Deactivate repo', LABEL: 'Deactivate' },
 })
-
-function useRepoActivation() {
-  const addToast = useAddNotification()
-  const { mutate, ...rest } = useUpdateRepo()
-
-  async function activateOrDeactivateRepo(active) {
-    mutate(
-      {
-        active: !active,
-        activated: !active,
-      },
-      {
-        onError: () =>
-          addToast({
-            type: 'error',
-            text: `We were not able to ${
-              active ? 'deactivate' : 'activate'
-            } this repo`,
-          }),
-      }
-    )
-  }
-
-  return { activateOrDeactivateRepo, ...rest }
-}
 
 function DeactivateRepo() {
   const [showModal, setShowModal] = useState(false)
