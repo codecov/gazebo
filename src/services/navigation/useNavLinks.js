@@ -461,10 +461,19 @@ function useStaticNavLinks() {
     runtimeInsights: {
       text: 'Runtime Insights',
       path: () => 'https://docs.codecov.com/docs/runtime-insights',
+      isExternalLink: true,
+      openNewTab: true,
     },
     unexpectedChanges: {
       text: 'Unexpected Changes',
       path: () => 'https://docs.codecov.com/docs/unexpected-coverage-changes',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    graphAuthorization: {
+      text: 'Graph Authorization',
+      path: () =>
+        'https://docs.codecov.com/reference/authorization#about-graphs',
       isExternalLink: true,
       openNewTab: true,
     },

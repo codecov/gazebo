@@ -10,11 +10,11 @@ jest.mock('services/repo')
 const queryClient = new QueryClient()
 
 describe('GeneralTab', () => {
-  function setup({ uploadToken, defaultBranch, profilingToken }) {
+  function setup({ uploadToken, defaultBranch, profilingToken, graphToken }) {
     const mutate = jest.fn()
     useRepo.mockReturnValue({
       data: {
-        repository: { uploadToken, defaultBranch, profilingToken },
+        repository: { uploadToken, defaultBranch, profilingToken, graphToken },
       },
     })
     useUpdateRepo.mockReturnValue({
@@ -105,6 +105,33 @@ describe('GeneralTab', () => {
 
     it('does not render  Default Branch compoenent', () => {
       const title = screen.queryByText(/Impact analysis token/)
+      expect(title).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with graphToken', () => {
+    beforeEach(() => {
+      setup({ graphToken: 'random graph token' })
+    })
+
+    it('renders graphing token compoenent', () => {
+      const title = screen.getByText(/Repository graphing token/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders the expected token', () => {
+      const token = screen.getByText(/random graph token/)
+      expect(token).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with no graphToken', () => {
+    beforeEach(() => {
+      setup({ graphToken: null })
+    })
+
+    it('does not render graphing token compoenent', () => {
+      const title = screen.queryByText(/Repository graphing token/)
       expect(title).not.toBeInTheDocument()
     })
   })
