@@ -73,18 +73,18 @@ function Table({ data = [], columns = [], onSort }) {
                         )}
                       >
                         {column.render('Header')}
-                        <span className="text-ds-blue-darker">
-                          {column.isSorted ? (
+                        {column.isSorted ? (
+                          <span className="text-ds-blue-darker">
                             <Icon
                               name={
                                 column.isSortedDesc ? 'arrow-down' : 'arrow-up'
                               }
                               size="sm"
                             />
-                          ) : (
-                            ''
-                          )}
-                        </span>
+                          </span>
+                        ) : (
+                          ''
+                        )}
                       </th>
                     )
                   })
