@@ -1,15 +1,14 @@
 import PropType from 'prop-types'
 
-export function FooterItem({ text, path }) {
+import A from 'ui/A'
+
+export function FooterItem({ text, to }) {
   return (
-    <li className={`flex justify-center text-ds-gray-quinary`}>
-      {path ? (
-        <a
-          className="p-4 no-underline hover:underline hover:text-blue-400 text-ds-blue-darker"
-          href={path()}
-        >
+    <li className="flex justify-center text-ds-gray-quinary">
+      {to ? (
+        <A to={to} showExternalIcon={false}>
           {text}
-        </a>
+        </A>
       ) : (
         text
       )}
@@ -19,5 +18,5 @@ export function FooterItem({ text, path }) {
 
 FooterItem.propTypes = {
   text: PropType.string.isRequired,
-  path: PropType.func,
+  to: PropType.shape({ pageName: PropType.string }),
 }
