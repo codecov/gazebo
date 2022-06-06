@@ -1,4 +1,4 @@
-import { useLocation , useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
@@ -51,13 +51,17 @@ function DesktopMenu() {
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </A>
-        <A to={{ pageName: 'docs' }} variant="header">
+        <A to={{ pageName: 'docs' }} variant="header" showExternalIcon={false}>
           Docs
         </A>
-        <A to={{ pageName: 'support' }} variant="header">
+        <A
+          to={{ pageName: 'support' }}
+          variant="header"
+          showExternalIcon={false}
+        >
           Support
         </A>
-        <A to={{ pageName: 'blog' }} variant="header">
+        <A to={{ pageName: 'blog' }} variant="header" showExternalIcon={false}>
           Blog
         </A>
       </div>
