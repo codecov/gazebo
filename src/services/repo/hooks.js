@@ -14,6 +14,8 @@ function fetchRepoDetails({ provider, owner, repo }) {
           uploadToken
           defaultBranch
           yaml
+          profilingToken
+          graphToken
         }
       }
     }
@@ -67,4 +69,3 @@ export function useUpdateRepo() {
     }
   )
 }
-

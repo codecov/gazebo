@@ -25,7 +25,6 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-
 describe('useRepo', () => {
   afterEach(() => server.resetHandlers())
 
@@ -51,7 +50,9 @@ describe('useRepo', () => {
         defaultBranch: 'master',
         private: true,
         uploadToken: 'token',
-        yaml: 'yaml'
+        yaml: 'yaml',
+        profilingToken: 'token',
+        graphToken: 'token'
       },
     }
     const dataReturned = {
@@ -61,7 +62,9 @@ describe('useRepo', () => {
           defaultBranch: 'master',
           private: true,
           uploadToken: 'token',
-          yaml: 'yaml'
+          yaml: 'yaml',
+          profilingToken: 'token',
+          graphToken: 'token'
         },
       },
     }

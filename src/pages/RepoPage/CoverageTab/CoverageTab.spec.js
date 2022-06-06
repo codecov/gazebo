@@ -1,8 +1,10 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CoverageTab from './CoverageTab'
+
+jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
 
 describe('Coverage Tab', () => {
   function setup({ initialEntries }) {
@@ -11,7 +13,7 @@ describe('Coverage Tab', () => {
         <Route path="/:provider/:owner/:repo/tree/:path+">
           <CoverageTab />
         </Route>
-        <Route path="/:provider/:owner/:repo/blob/:path+">
+        <Route path="/:provider/:owner/:repo/blobs/:path+">
           <CoverageTab />
         </Route>
         <Route path="/:provider/:owner/:repo/" exact={true}>
@@ -32,7 +34,7 @@ describe('Coverage Tab', () => {
       expect(
         screen.queryByText(/Root Tree Component after Clicked/)
       ).not.toBeInTheDocument()
-      expect(screen.queryByText(/Fileviewer/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Fileviewer Component/)).not.toBeInTheDocument()
     })
   })
 
@@ -49,18 +51,23 @@ describe('Coverage Tab', () => {
       expect(
         screen.queryByText(/Root OG Tree Component/)
       ).not.toBeInTheDocument()
-      expect(screen.queryByText(/Fileviewer/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Fileviewer Component/)).not.toBeInTheDocument()
     })
   })
 
   describe('when rendered with blob route', () => {
-    beforeEach(() => {
-      setup({ initialEntries: ['/gh/test-org/test-repo/blob/123'] })
+    beforeEach(async () => {
+      setup({
+        initialEntries: ['/gh/test-org/test-repo/blobs/main/path/to/file.js'],
+      })
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
     })
 
     it('renders summary and root tree component', () => {
       expect(screen.getByText(/Summary Component/)).toBeInTheDocument()
-      expect(screen.getByText(/Fileviewer/)).toBeInTheDocument()
+      expect(screen.getByText(/Fileviewer Component/)).toBeInTheDocument()
       expect(
         screen.queryByText(/Root Tree Component after Clicked/)
       ).not.toBeInTheDocument()
