@@ -9,7 +9,7 @@ import DeactivateRepoModal from './DeactiveRepoModal'
 import { ActivationStatusContext } from '../../Context'
 
 const ActivationStatus = Object.freeze({
-  DEACTIVATED: { TITLE: 'Activate repo', LABEL: 'Activate' },
+  DEACTIVATED: { TITLE: 'Repo has been deactivated', LABEL: 'Activate' },
   ACTIVATED: { TITLE: 'Deactivate repo', LABEL: 'Deactivate' },
 })
 
