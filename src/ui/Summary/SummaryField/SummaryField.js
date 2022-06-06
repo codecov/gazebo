@@ -15,5 +15,4 @@ export default function SummaryField({ children, title }) {
 
 SummaryField.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
 }
