@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import { useRepo } from 'services/repo'
 import { NotFoundException } from 'shared/utils'
 import A from 'ui/A'
-import Icon from 'ui/Icon'
 
 import GithubConfig from './GithubConfig'
 import { useRedirectToVueOverview } from './hooks'
@@ -31,21 +30,9 @@ function NewRepoTab() {
 
       <p className="border-b border-ds-gray-tertiary pb-8 text-base">
         Codecov requires an upload in your test suite to get started. Using the{' '}
-        <A to={{ pageName: 'uploader' }} target="_blank">
-          Codecov Uploader
-        </A>
-        <span className="inline-block text-gray-500">
-          <Icon name="external-link" size="sm" />
-        </span>{' '}
-        and the repository upload token, upload your coverage reports to
-        Codecov. See our{' '}
-        <A to={{ pageName: 'docs' }} target="_blank">
-          {' '}
-          quick start guide{' '}
-        </A>
-        <span className="inline-block text-gray-500">
-          <Icon name="external-link" size="sm" />
-        </span>{' '}
+        <A to={{ pageName: 'uploader' }}>Codecov Uploader</A> and the repository
+        upload token, upload your coverage reports to Codecov. See our{' '}
+        <A to={{ pageName: 'docs' }}> quick start guide </A>
         and{' '}
         <A href={'https://docs.codecov.com/docs/codecov-tutorial'} isExternal>
           Codecov Tutorial
@@ -71,13 +58,7 @@ function NewRepoTab() {
 
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
-          Download the{' '}
-          <A to={{ pageName: 'uploader' }} target="_blank">
-            uploader{' '}
-          </A>
-          <span className="inline-block text-gray-500">
-            <Icon name="external-link" size="sm" />
-          </span>{' '}
+          Download the <A to={{ pageName: 'uploader' }}>uploader </A>
           and share your coverage reports with Codecov, by adding the the
           following commands to your CI pipeline:
         </p>
@@ -86,12 +67,9 @@ function NewRepoTab() {
 
         <p className="text-base">
           It is highly recommended to{' '}
-          <A to={{ pageName: 'integrityCheck' }} target="_blank">
+          <A to={{ pageName: 'integrityCheck' }}>
             integrity check the uploader
           </A>
-          <span className="inline-block text-gray-500">
-            <Icon name="external-link" size="sm" />
-          </span>
           .
         </p>
         <h2 className="font-semibold mt-8 text-base">

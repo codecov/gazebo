@@ -17,6 +17,7 @@ function RequestButton({ owner, provider }) {
   return isFreePlan(accountDetails?.plan?.value) ? (
     <Button
       to={{ pageName: 'demo' }}
+      showExternalIcon={false}
       variant="secondary"
       data-testid="request-demo"
       onClick={() =>
