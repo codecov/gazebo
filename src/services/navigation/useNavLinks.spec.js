@@ -10,6 +10,7 @@ describe('useNavLinks', () => {
   let hookData
 
   function setup(location) {
+<<<<<<< HEAD
     hookData = renderHook(() => useNavLinks(), {
       wrapper: ({ children }) => (
         <MemoryRouter initialEntries={location} initialIndex={0}>
@@ -24,6 +25,21 @@ describe('useNavLinks', () => {
         </MemoryRouter>
       ),
     })
+=======
+    const wrapper = ({ children }) => (
+      <MemoryRouter initialEntries={location} initialIndex={0}>
+        <Route path="/:provider">{children}</Route>
+        <Route path="/:provider/:owner">{children}</Route>
+        <Route path="/:provider/:owner/:repo">{children}</Route>
+        <Route path="/:provider/:owner/:repo/:id">{children}</Route>
+        <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
+          {children}
+        </Route>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+      </MemoryRouter>
+    )
+    hookData = renderHook(() => useNavLinks(), { wrapper })
+>>>>>>> update useNavLinks to support tree/ref
   }
 
   describe('provider link', () => {
@@ -464,6 +480,13 @@ describe('useNavLinks', () => {
         '/gl/doggo/sleep/tree/'
       )
     })
+    it('accepts a ref option', () => {
+      expect(
+        hookData.result.current.treeView.path({
+          ref: 'main',
+        })
+      ).toBe('/gl/doggo/watch/tree/main/')
+    })
     it('accepts a tree option', () => {
       expect(
         hookData.result.current.treeView.path({
@@ -661,7 +684,7 @@ describe('useNavLinks', () => {
         hookData.result.current.signUp.path({ pathname: 'random/path/name' })
       ).toBe(
         config.MARKETING_BASE_URL +
-        '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
       )
     })
   })
@@ -693,6 +716,11 @@ describe('useNavLinks', () => {
 })
 
 describe('useStaticNavLinks', () => {
+  const wrapper = ({ children }) => (
+    <MemoryRouter initialEntries={['/gh']} initialIndex={0}>
+      <Route path="/:provider">{children}</Route>
+    </MemoryRouter>
+  )
   const view = renderHook(() => useStaticNavLinks(), {
     wrapper: ({ children }) => (
       <MemoryRouter initialEntries={['/gh']} initialIndex={0}>
