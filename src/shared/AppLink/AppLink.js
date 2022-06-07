@@ -4,6 +4,7 @@ import { forwardRef } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
+import Icon from 'ui/Icon'
 
 function useLinkConfig(pageName) {
   const navLinks = useNavLinks()
@@ -47,7 +48,17 @@ function getComponentToRender(pageConfig, activeClassName) {
 }
 
 const AppLink = forwardRef(
-  ({ pageName, options, activeClassName, children, ...props }, ref) => {
+  (
+    {
+      pageName,
+      options,
+      activeClassName,
+      children,
+      showExternalIcon = true,
+      ...props
+    },
+    ref
+  ) => {
     const pageConfig = useLinkConfig(pageName)
     const Component = getComponentToRender(pageConfig, activeClassName)
     const completeProps = useCompleteProps(
@@ -70,6 +81,11 @@ const AppLink = forwardRef(
         ref={ref}
       >
         {defaultTo(children, pageConfig.text)}
+        {showExternalIcon && pageConfig.openNewTab && (
+          <span className="text-ds-gray-quinary">
+            <Icon size="sm" name="external-link" />
+          </span>
+        )}
       </Component>
     )
   }
@@ -84,6 +100,7 @@ AppLink.propTypes = {
   text: PropTypes.string,
   options: PropTypes.object,
   activeClassName: PropTypes.string,
+  showExternalIcon: PropTypes.bool,
 }
 
 export default AppLink

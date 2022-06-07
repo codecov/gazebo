@@ -50,9 +50,6 @@ describe('useRepo', () => {
         defaultBranch: 'master',
         private: true,
         uploadToken: 'token',
-        yaml: 'yaml',
-        profilingToken: 'token',
-        graphToken: 'token'
       },
     }
     const dataReturned = {
@@ -62,9 +59,6 @@ describe('useRepo', () => {
           defaultBranch: 'master',
           private: true,
           uploadToken: 'token',
-          yaml: 'yaml',
-          profilingToken: 'token',
-          graphToken: 'token'
         },
       },
     }

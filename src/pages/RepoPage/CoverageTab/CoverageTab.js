@@ -3,6 +3,8 @@ import { Route, Switch } from 'react-router-dom'
 
 import Spinner from 'ui/Spinner'
 
+import Summary from './Summary'
+
 const Fileviewer = lazy(() => import('./subroute/Fileviewer'))
 
 function CoverageTab() {
@@ -14,8 +16,7 @@ function CoverageTab() {
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
-      {/* Summary Component */}
-      <h1>Summary Component</h1>
+      <Summary />
       <div className="flex flex-1 flex-col gap-4">
         <Switch>
           <Route path="/:provider/:owner/:repo/tree/:path+" exact>

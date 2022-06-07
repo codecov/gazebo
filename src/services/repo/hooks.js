@@ -13,9 +13,6 @@ function fetchRepoDetails({ provider, owner, repo }) {
           private
           uploadToken
           defaultBranch
-          yaml
-          profilingToken
-          graphToken
         }
       }
     }

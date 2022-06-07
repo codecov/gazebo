@@ -5,6 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import CoverageTab from './CoverageTab'
 
 jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
+jest.mock('./Summary', () => () => 'Summary Component')
 
 describe('Coverage Tab', () => {
   function setup({ initialEntries }) {
