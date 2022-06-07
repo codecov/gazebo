@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Link, Route, Switch, useParams } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import Spinner from 'ui/Spinner'
 
@@ -8,7 +8,6 @@ import Summary from './Summary'
 const Fileviewer = lazy(() => import('./subroute/Fileviewer'))
 
 function CoverageTab() {
-  const { provider, owner, repo, branch, path } = useParams()
   const Loader = (
     <div className="flex items-center justify-center py-16">
       <Spinner />
@@ -22,28 +21,17 @@ function CoverageTab() {
         <Switch>
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
             <Suspense fallback={Loader}>
-              {/* Same Root Tree Component after being clicked for the 1st time */}
-              <h1>Root Tree Component after Clicked</h1>
-              <Link
-                to={`/${provider}/${owner}/${repo}/blobs/${branch}/${
-                  path || 'src/index.js'
-                }`}
-              >
-                Link
-              </Link>
+              {/* Tree Component after being clicked for the 1st time */}
+              <h1>Tree Component after Clicked including a folder location</h1>
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/tree/:branch" exact>
             <Suspense fallback={Loader}>
               {/* Same Root Tree Component after being clicked for the 1st time */}
-              <h1>Root Tree Component after Clicked</h1>
-              <Link
-                to={`/${provider}/${owner}/${repo}/blobs/${branch}/${
-                  path || 'src/index.js'
-                }`}
-              >
-                Link
-              </Link>
+              <h1>
+                Root Tree Component Branch switch, this is the root of the
+                projects source
+              </h1>
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/blobs/:ref/:path+" exact>
@@ -54,14 +42,7 @@ function CoverageTab() {
           <Route path="/:provider/:owner/:repo/" exact>
             <Suspense fallback={Loader}>
               {/* Root Tree Component */}
-              <h1>Root OG Tree Component</h1>
-              <Link
-                to={`/${provider}/${owner}/${repo}/tree/${branch || 'master'}${
-                  path ? `/${path}` : '/src/index.js'
-                }`}
-              >
-                Tree Link
-              </Link>
+              <h1>Root OG Tree Component on the default branch</h1>
             </Suspense>
           </Route>
         </Switch>
