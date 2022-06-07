@@ -1,6 +1,4 @@
-import { useParams } from 'react-router-dom'
-
-import { useRepo } from 'services/repo'
+import { useRepoSettings } from 'services/repo'
 
 import DefaultBranch from './DefaultBranch'
 import GraphToken from './GraphToken'
@@ -8,8 +6,7 @@ import ImpactAnalysisToken from './ImpactAnalysisToken'
 import RepoUploadToken from './RepoUploadToken'
 
 function GeneralTab() {
-  const { provider, owner, repo } = useParams()
-  const { data } = useRepo({ provider, owner, repo })
+  const { data } = useRepoSettings()
   const repository = data?.repository
 
   return (
