@@ -17,17 +17,40 @@ function CoverageTab() {
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       <Summary />
-      <div className="flex flex-1 flex-col gap-4">
+      <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Switch>
+          <Route
+            path="/:provider/:owner/:repo/branch/:branch/tree/:path+"
+            exact
+          >
+            <Suspense fallback={Loader}>
+              {/* Same Root Tree Component after being clicked for the 1st time */}
+              <h1>Root Tree Component after Clicked</h1>
+            </Suspense>
+          </Route>
           <Route path="/:provider/:owner/:repo/tree/:path+" exact>
             <Suspense fallback={Loader}>
               {/* Same Root Tree Component after being clicked for the 1st time */}
               <h1>Root Tree Component after Clicked</h1>
             </Suspense>
           </Route>
+          <Route
+            path="/:provider/:owner/:repo/branch/:branch/blobs/:ref/:path+"
+            exact
+          >
+            <Suspense fallback={Loader}>
+              <Fileviewer />
+            </Suspense>
+          </Route>
           <Route path="/:provider/:owner/:repo/blobs/:ref/:path+" exact>
             <Suspense fallback={Loader}>
               <Fileviewer />
+            </Suspense>
+          </Route>
+          <Route path="/:provider/:owner/:repo/branch/:branch" exact>
+            <Suspense fallback={Loader}>
+              {/* Root Tree Component */}
+              <h1>Root OG Tree Component</h1>
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/" exact>

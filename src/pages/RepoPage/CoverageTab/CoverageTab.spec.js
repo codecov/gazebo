@@ -11,6 +11,15 @@ describe('Coverage Tab', () => {
   function setup({ initialEntries }) {
     render(
       <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/branch/:branch/tree/:path+">
+          <CoverageTab />
+        </Route>
+        <Route path="/:provider/:owner/:repo/branch/:branch/blobs/:path+">
+          <CoverageTab />
+        </Route>
+        <Route path="/:provider/:owner/:repo/branch/:branch/" exact={true}>
+          <CoverageTab />
+        </Route>
         <Route path="/:provider/:owner/:repo/tree/:path+">
           <CoverageTab />
         </Route>
