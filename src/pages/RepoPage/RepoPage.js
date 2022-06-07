@@ -57,9 +57,6 @@ function RepoPage() {
             <Route path={path} exact>
               <CoverageTab />
             </Route>
-            <Route path={`${path}/branch/:branch`} exact>
-              <CoverageTab />
-            </Route>
             <Route path={`${path}/new`} exact>
               <NewRepoTab />
             </Route>
@@ -73,13 +70,10 @@ function RepoPage() {
             <Route path={`${path}/settings`}>
               <SettingsTab />
             </Route>
-            <Route path={`${path}/branch/:branch/tree/:path+`} exact>
+            <Route path={`${path}/tree/:branch/:path+`} exact>
               <CoverageTab />
             </Route>
-            <Route path={`${path}/tree/:path+`} exact>
-              <CoverageTab />
-            </Route>
-            <Route path={`${path}/branch/:branch/blobs/:ref/:path+`} exact>
+            <Route path={`${path}/tree/:branch`} exact>
               <CoverageTab />
             </Route>
             <Route path={`${path}/blobs/:ref/:path+`} exact>

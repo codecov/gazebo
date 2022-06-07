@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
@@ -9,38 +9,82 @@ const formatPath = (pathname) =>
     ? pathname.slice(0, pathname.length - 1)
     : pathname
 
-export function useCoverageTabRedirectLogic({ defaultBranch }) {
+export function useCoverageRedirect() {
   const location = useLocation()
-  const [redirectLocation, setRedirectLocation] = useState()
-  const { repo, branch } = useParams()
+  const { repo, branch, ref } = useParams()
+
+  const [newPath, setNewPath] = useState()
+  const [enableRedirection, setEnableRedirection] = useState(false)
+
+  const setNewPathHandler = (selection) => setNewPath(createPath(selection))
 
   const createPath = useCallback(
     ({ name }) => {
       const pathname = formatPath(location.pathname)
-      if (branch) {
+      if (pathname.includes('blobs')) {
+        if (ref) {
+          return pathname.replace(
+            `${repo}/blobs/${ref}`,
+            `${repo}/blobs/${name}`
+          )
+        }
+        return `${pathname}/blobs/${name}`
+      }
+      if (pathname.includes('tree') && branch) {
         return pathname.replace(
-          `${repo}/branch/${branch}`,
-          `${repo}/branch/${name}`
+          `${repo}/tree/${branch}`,
+          `${repo}/tree/${name}`
         )
       }
-      return `${pathname}/branch/${name}`
+      return `${pathname}/tree/${name}`
     },
-    [branch, location.pathname, repo]
+    [branch, location.pathname, ref, repo]
   )
 
-  useEffect(() => {
-    if (!branch) {
-      setRedirectLocation(createPath({ name: defaultBranch }))
+  useLayoutEffect(() => {
+    if (newPath) {
+      setEnableRedirection(true)
     }
-  }, [branch, createPath, defaultBranch])
-
-  const handleRedirect = (selected) => {
-    setRedirectLocation(createPath(selected))
-  }
+  }, [newPath])
 
   return {
-    redirectLocation,
-    handleRedirect,
+    setNewPath: setNewPathHandler,
+    newPath,
+    enableRedirection,
+  }
+}
+
+export function useBranchSelector(branches = [], defaultBranch) {
+  const [items, setItems] = useState([])
+  const [selection, setSelection] = useState()
+  const { branch, ref } = useParams()
+  const { setNewPath, newPath, enableRedirection } = useCoverageRedirect()
+
+  const onChangeHandler = (slection) => {
+    setNewPath(slection)
+  }
+
+  // Store cleaned up branches in state (else infinate rerenders)
+  useEffect(() => {
+    setItems(mapEdges(branches))
+  }, [branches, setItems])
+
+  // Set the current selected branch based on the branch/ref param or use the default branch
+  useEffect(() => {
+    const selectedBranch = branch || ref || defaultBranch
+    const [currentBranch] = items.filter((b) => b.name === selectedBranch)
+    setSelection(currentBranch || items[0]) // Found or fallback to the first result
+  }, [branch, defaultBranch, items, ref, setSelection])
+
+  return {
+    selection,
+    newPath,
+    enableRedirection,
+    branchSelectorProps: {
+      items,
+      value: selection,
+      onChange: onChangeHandler,
+    },
   }
 }
 
@@ -57,22 +101,18 @@ export function useSummary() {
     owner,
     branch,
   })
-  const { redirectLocation, handleRedirect } = useCoverageTabRedirectLogic({
-    defaultBranch: overview?.defaultBranch,
-  })
-
-  const branches = mapEdges(overview?.branches)
-  const [currentBranch] = branches?.filter((b) => b.name === branch)
+  const { selection, branchSelectorProps, newPath, enableRedirection } =
+    useBranchSelector(overview?.branches, overview?.defaultBranch)
 
   return {
     isLoading: isLoading && isLoadingRepoCoverage,
     data,
-    branches,
-    currenBranchSelected: currentBranch,
+    branchSelectorProps,
+    newPath,
+    enableRedirection,
+    currenBranchSelected: selection,
     defaultBranch: overview?.defaultBranch,
     privateRepo: overview?.private,
     coverage: overview?.coverage,
-    setNewLocation: handleRedirect,
-    conditionalRedirect: redirectLocation,
   }
 }

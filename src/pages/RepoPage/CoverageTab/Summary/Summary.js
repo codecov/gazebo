@@ -13,19 +13,14 @@ import { useSummary } from './hooks'
 const Summary = () => {
   const {
     coverage,
-    branches,
     data,
     defaultBranch,
     currenBranchSelected,
-    setNewLocation,
-    conditionalRedirect,
     privateRepo,
+    branchSelectorProps,
+    newPath,
+    enableRedirection,
   } = useSummary()
-
-  const handleOnSelect = (selected) => {
-    setNewLocation(selected)
-  }
-
   const setCrumbs = useSetCrumbs()
 
   useLayoutEffect(() => {
@@ -48,7 +43,7 @@ const Summary = () => {
 
   return (
     <>
-      {conditionalRedirect && <Redirect to={conditionalRedirect} />}
+      {enableRedirection && <Redirect to={newPath} />}
       <SummaryRoot>
         <SummaryField>
           <h3 className="text-ds-gray-octonary text-sm font-semibold flex gap-1 items-center">
@@ -59,10 +54,8 @@ const Summary = () => {
           </h3>
           <span className="text-sm min-w-[16rem]">
             <Select
+              {...branchSelectorProps}
               variant="gray"
-              items={branches}
-              onChange={handleOnSelect}
-              value={currenBranchSelected}
               renderItem={(item, { placeholder }) => (
                 <span>{item?.name || placeholder}</span>
               )}
