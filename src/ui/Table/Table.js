@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
 import { useFlexLayout, useSortBy, useTable } from 'react-table'
 
-import Icon from '../Icon'
+import Icon from 'ui/Icon'
 
 const TableClasses = {
   headerCell:
@@ -73,7 +73,7 @@ function Table({ data = [], columns = [], onSort }) {
                         )}
                       >
                         {column.render('Header')}
-                        {column.isSorted ? (
+                        {column.isSorted && (
                           <span className="text-ds-blue-darker">
                             <Icon
                               name={
@@ -82,8 +82,6 @@ function Table({ data = [], columns = [], onSort }) {
                               size="sm"
                             />
                           </span>
-                        ) : (
-                          ''
                         )}
                       </th>
                     )
