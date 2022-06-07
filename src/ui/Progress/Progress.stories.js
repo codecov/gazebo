@@ -8,6 +8,13 @@ Progress.args = {
   amount: 50,
 }
 
+export const ProgressTall = Template.bind({})
+
+ProgressTall.args = {
+  amount: 50,
+  variant: 'tall',
+}
+
 export const ProgressWithLabel = Template.bind({})
 
 ProgressWithLabel.args = {
@@ -19,9 +26,13 @@ export default {
   title: 'Components/Progress',
   component: ProgressComponent,
   argTypes: {
-    variant: {
+    color: {
       type: 'select',
       options: ['default', 'neutral', 'danger'],
+    },
+    variant: {
+      type: 'select',
+      options: ['default', 'tall'],
     },
   },
 }
