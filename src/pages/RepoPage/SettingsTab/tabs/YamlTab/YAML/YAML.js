@@ -1,9 +1,8 @@
+import PropTypes from 'prop-types'
+
 import YamlEditor from 'pages/AccountSettings/tabs/YAML/YamlEditor'
-import { useRepoSettings } from 'services/repo'
 
-function YAML() {
-  const { data } = useRepoSettings()
-
+function YAML({ yaml }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-col gap-4">
@@ -17,13 +16,13 @@ function YAML() {
         </div>
         <hr />
       </div>
-      <YamlEditor
-        value={data?.repository?.yaml}
-        readOnly
-        placeholder="Repo Yaml Configuration"
-      />
+      <YamlEditor value={yaml} readOnly placeholder="Repo Yaml Configuration" />
     </div>
   )
+}
+
+YAML.propTypes = {
+  yaml: PropTypes.string,
 }
 
 export default YAML
