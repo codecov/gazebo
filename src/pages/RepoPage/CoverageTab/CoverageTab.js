@@ -1,7 +1,11 @@
-import { Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import Spinner from 'ui/Spinner'
+
+import Summary from './Summary'
+
+const Fileviewer = lazy(() => import('./subroute/Fileviewer'))
 
 function CoverageTab() {
   const Loader = (
@@ -12,9 +16,8 @@ function CoverageTab() {
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
-      {/* Summary Component */}
-      <h1>Summary Component</h1>
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2 col-span-2">
+      <Summary />
+      <div className="flex flex-1 flex-col gap-4">
         <Switch>
           <Route path="/:provider/:owner/:repo/tree/:path+" exact>
             <Suspense fallback={Loader}>
@@ -22,10 +25,9 @@ function CoverageTab() {
               <h1>Root Tree Component after Clicked</h1>
             </Suspense>
           </Route>
-          <Route path="/:provider/:owner/:repo/blob/:path+" exact>
+          <Route path="/:provider/:owner/:repo/blobs/:ref/:path+" exact>
             <Suspense fallback={Loader}>
-              {/* Fileviewer Component */}
-              <h1>Fileviewer</h1>
+              <Fileviewer />
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/" exact>

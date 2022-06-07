@@ -25,7 +25,6 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-
 describe('useRepo', () => {
   afterEach(() => server.resetHandlers())
 
