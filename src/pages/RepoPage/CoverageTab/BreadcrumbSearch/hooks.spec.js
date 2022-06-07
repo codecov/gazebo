@@ -9,8 +9,8 @@ describe('useTreePaths', () => {
 
   describe('a path is provided', () => {
     const wrapper = ({ children }) => (
-      <MemoryRouter initialEntries={['/gh/owner/coolrepo/tree/src/tests']}>
-        <Route path="/:provider/:owner/:repo/tree/:path+">
+      <MemoryRouter initialEntries={['/gh/owner/coolrepo/tree/main/src/tests']}>
+        <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
           <div>{children}</div>
         </Route>
       </MemoryRouter>
@@ -27,17 +27,17 @@ describe('useTreePaths', () => {
     it('returns a list of objects', () => {
       expect(hookData.result.current.treePaths).toEqual([
         {
-          options: { tree: 'coolrepo' },
           pageName: 'treeView',
           text: 'coolrepo',
+          options: { ref: 'main' },
         },
         {
-          options: { tree: 'coolrepo/src' },
+          options: { tree: 'src', ref: 'main' },
           pageName: 'treeView',
           text: 'src',
         },
         {
-          options: { tree: 'coolrepo/src/tests' },
+          options: { tree: 'src/tests', ref: 'main' },
           pageName: 'treeView',
           text: 'tests',
         },
@@ -47,8 +47,8 @@ describe('useTreePaths', () => {
 
   describe('no path is given', () => {
     const wrapper = ({ children }) => (
-      <MemoryRouter initialEntries={['/gh/owner/coolrepo']}>
-        <Route path="/:provider/:owner/:repo/">
+      <MemoryRouter initialEntries={['/gh/owner/coolrepo/tree/main']}>
+        <Route path="/:provider/:owner/:repo/tree/:branch">
           <div>{children}</div>
         </Route>
       </MemoryRouter>
@@ -65,11 +65,9 @@ describe('useTreePaths', () => {
     it('returns a list of objects', () => {
       expect(hookData.result.current.treePaths).toEqual([
         {
-          options: {
-            tree: 'coolrepo',
-          },
           pageName: 'treeView',
           text: 'coolrepo',
+          options: { ref: 'main' },
         },
       ])
     })

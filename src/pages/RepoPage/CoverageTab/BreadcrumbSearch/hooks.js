@@ -8,17 +8,22 @@ function getTreeLocation(paths, location) {
 
 export function useTreePaths() {
   const urlParams = useParams()
+  const branch = urlParams?.branch
+  const filePaths = urlParams?.path?.split('/') ?? []
 
-  const path = urlParams?.path?.split('/') ?? []
-
-  const paths = [urlParams.repo, ...path]
-
-  const treePaths =
-    paths &&
-    paths.map((location) => ({
+  const paths =
+    filePaths &&
+    filePaths.map((location) => ({
       pageName: 'treeView',
       text: location,
-      options: { tree: getTreeLocation(paths, location) },
+      options: { tree: getTreeLocation(filePaths, location), ref: branch },
     }))
+
+  const repoPath = {
+    pageName: 'treeView',
+    text: urlParams?.repo,
+    options: { ref: branch },
+  }
+  const treePaths = [repoPath, ...paths]
   return { treePaths }
 }
