@@ -14,6 +14,9 @@ function fetchRepoSettingsDetails({ provider, owner, repo }) {
           profilingToken
           graphToken
           yaml
+          bot {
+            username
+          }
         }
       }
     }
