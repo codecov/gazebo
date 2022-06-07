@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoSettings } from 'services/repo'
-
 import YAML from './YAML'
 
 jest.mock('react-ace', () => (props) => <MockReactAce {...props} />)
@@ -23,15 +21,11 @@ MockReactAce.propTypes = {
 
 describe('YAML', () => {
   function setup() {
-    useRepoSettings.mockReturnValue({
-      data: { repository: { yaml: 'test: test' } },
-    })
-
     render(
       <MemoryRouter initialEntries={['/gh/codecov/codecov-client/yaml']}>
         <QueryClientProvider client={queryClient}>
           <Route path="/:provider/:owner/:repo/yaml">
-            <YAML />
+            <YAML yaml="test: test" />
           </Route>
         </QueryClientProvider>
       </MemoryRouter>
