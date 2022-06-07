@@ -8,6 +8,7 @@ import {
 } from 'shared/utils/fileviewer'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
+import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
 import FileHeader from 'ui/CodeRenderer/FileHeader'
 
@@ -28,6 +29,7 @@ const FileDiff = ({
   isNewFile,
   isRenamedFile,
   isDeletedFile,
+  isCriticalFile,
 }) => {
   const { covered, uncovered, partial } = lineCoverageStatesAndSetters
   const showLines = {
@@ -53,6 +55,8 @@ const FileDiff = ({
         coverage={coverage}
         fileLabel={fileLabel}
       />
+      {/* Critical File Label */}
+      {isCriticalFile ? <CriticalFileLabel /> : null}
       {/* CodeRenderer */}
       {segments.map((segment, segmentIndex) => {
         const content = segment.lines.map((line) => line.content).join('\n')
@@ -116,6 +120,7 @@ FileDiff.propTypes = {
   isNewFile: PropTypes.bool,
   isRenamedFile: PropTypes.bool,
   isDeletedFile: PropTypes.bool,
+  isCriticalFile: PropTypes.bool,
   headTotals: PropTypes.shape({
     percentCovered: PropTypes.number,
   }),
