@@ -116,7 +116,7 @@ describe('RepoPage', () => {
       })
     })
 
-    it('renders the covergae tab', () => {
+    it('renders the coverage tab', () => {
       const tab = screen.getByText(/Coverage/)
       expect(tab).toBeInTheDocument()
     })
@@ -135,7 +135,7 @@ describe('RepoPage', () => {
       })
     })
 
-    it('renders the covergae tab', () => {
+    it('renders the coverage tab', () => {
       const tab = screen.queryByText(/Coverage/)
       expect(tab).not.toBeInTheDocument()
     })
