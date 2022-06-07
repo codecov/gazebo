@@ -9,7 +9,6 @@ function fetchRepoOverviewInitial({ provider, owner, repo }) {
         repository(name:$repo){
           private
           defaultBranch
-          coverage
           branches {
             edges {
               node {

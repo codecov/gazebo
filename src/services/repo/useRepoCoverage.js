@@ -12,6 +12,8 @@ function fetchRepoBranchCoverage({ provider, owner, repo, branch }) {
             head {
               totals {
                 percentCovered
+                lineCount
+                hitsCount
               }
             }
           }
