@@ -370,6 +370,13 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    oauthEnabling: {
+      text: 'Approval for third party access',
+      path: () =>
+        'https://docs.github.com/en/organizations/restricting-access-to-your-organizations-data/enabling-oauth-app-access-restrictions-for-your-organization',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     userAppManagePage: {
       text: 'User App Manage/Access Page',
       path: () =>
@@ -433,7 +440,7 @@ function useStaticNavLinks() {
       text: 'Uploader Integrity Check',
       openNewTab: true,
     },
-    codecovGithuhApp: {
+    codecovGithubApp: {
       path: () => 'https://github.com/apps/codecov',
       isExternalLink: true,
       text: 'Codecov Github App',
@@ -451,9 +458,22 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    runtimeInsights: {
+      text: 'Runtime Insights',
+      path: () => 'https://docs.codecov.com/docs/runtime-insights',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     unexpectedChanges: {
       text: 'Unexpected Changes',
       path: () => 'https://docs.codecov.com/docs/unexpected-coverage-changes',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    graphAuthorization: {
+      text: 'Graph Authorization',
+      path: () =>
+        'https://docs.codecov.com/reference/authorization#about-graphs',
       isExternalLink: true,
       openNewTab: true,
     },

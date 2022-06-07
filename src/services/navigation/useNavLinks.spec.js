@@ -11,18 +11,16 @@ describe('useNavLinks', () => {
 
   function setup(location) {
     hookData = renderHook(() => useNavLinks(), {
-      wrapper: (props) => (
+      wrapper: ({ children }) => (
         <MemoryRouter initialEntries={location} initialIndex={0}>
-          <Route path="/:provider">{props.children}</Route>
-          <Route path="/:provider/:owner">{props.children}</Route>
-          <Route path="/:provider/:owner/:repo">{props.children}</Route>
-          <Route path="/:provider/:owner/:repo/:id">{props.children}</Route>
+          <Route path="/:provider">{children}</Route>
+          <Route path="/:provider/:owner">{children}</Route>
+          <Route path="/:provider/:owner/:repo">{children}</Route>
+          <Route path="/:provider/:owner/:repo/:id">{children}</Route>
           <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
-            {props.children}
+            {children}
           </Route>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">
-            {props.children}
-          </Route>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
         </MemoryRouter>
       ),
     })
@@ -663,7 +661,7 @@ describe('useNavLinks', () => {
         hookData.result.current.signUp.path({ pathname: 'random/path/name' })
       ).toBe(
         config.MARKETING_BASE_URL +
-          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+        '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
       )
     })
   })
@@ -696,9 +694,9 @@ describe('useNavLinks', () => {
 
 describe('useStaticNavLinks', () => {
   const view = renderHook(() => useStaticNavLinks(), {
-    wrapper: (props) => (
+    wrapper: ({ children }) => (
       <MemoryRouter initialEntries={['/gh']} initialIndex={0}>
-        <Route path="/:provider">{props.children}</Route>
+        <Route path="/:provider">{children}</Route>
       </MemoryRouter>
     ),
   })
@@ -726,8 +724,10 @@ describe('useStaticNavLinks', () => {
     ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}
     ${links.uploader}          | ${'https://docs.codecov.com/docs/codecov-uploader'}
     ${links.integrityCheck}    | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
-    ${links.codecovGithuhApp}  | ${'https://github.com/apps/codecov'}
+    ${links.codecovGithubApp}  | ${'https://github.com/apps/codecov'}
     ${links.teamBot}           | ${'https://docs.codecov.com/docs/team-bot'}
+    ${links.runtimeInsights}   | ${'https://docs.codecov.com/docs/runtime-insights'}
+    ${links.graphAuthorization}| ${'https://docs.codecov.com/reference/authorization#about-graphs'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

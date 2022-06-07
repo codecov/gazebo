@@ -99,6 +99,7 @@ export function useRepos({
   sortItem = orderingOptions[0],
   first = 20,
   repoNames,
+  ...options
 }) {
   const { provider } = useParams()
   const variables = {
@@ -118,6 +119,7 @@ export function useRepos({
     {
       getNextPageParam: (data) =>
         data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+      ...options,
     }
   )
   return {

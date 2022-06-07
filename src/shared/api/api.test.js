@@ -47,6 +47,20 @@ const server = setupServer(
       })
     )
   }),
+  graphql.query('CoverageForFile', (req, res, ctx) => {
+    const { ref } = req.variables
+    return res(
+      ctx.data({
+        owner: {
+          repository: {
+            commit: {
+              commitid: ref,
+            },
+          },
+        },
+      })
+    )
+  }),
   graphql.mutation('CreateTokenUnauthorized', (req, res, ctx) => {
     return res(
       ctx.data({
@@ -181,6 +195,46 @@ describe('when using a graphql request', () => {
       data: {
         me: 'Codecov',
       },
+    })
+  })
+
+  describe('when sending an encoded string', () => {
+    beforeEach(() => {
+      const query = `
+        query CoverageForFile($owner: String!, $repo: String!, $ref: String!) {
+          owner(username: $owner) {
+            repository(name: $repo){
+              commit(id: $ref) {
+                commitid
+              }
+            }
+          }
+        }
+      `
+      result = Api.graphql({
+        provider: 'gh',
+        query,
+        variables: {
+          owner: 'me',
+          repo: 'repo',
+          ref: 'encoded%2Fstring',
+        },
+      })
+      return result
+    })
+
+    it('returns a decoded string', () => {
+      return expect(result).resolves.toEqual({
+        data: {
+          owner: {
+            repository: {
+              commit: {
+                commitid: 'encoded/string',
+              },
+            },
+          },
+        },
+      })
     })
   })
 })
