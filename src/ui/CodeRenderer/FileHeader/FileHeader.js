@@ -20,7 +20,7 @@ function CodeRendererCoverageHeader({ header, headName, coverage, fileLabel }) {
       className={`
         flex flex-row flex-wrap items-center justify-between gap-2 sm:items-center
         bg-ds-gray-primary
-        border-t p-3 border-r border-l border-solid border-ds-gray-tertiary
+        border-t p-3 border-r border-l border-b border-solid border-ds-gray-tertiary
       `}
     >
       <div className="flex gap-1 text-ds-gray-quinary items-center">
