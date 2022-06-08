@@ -7,7 +7,7 @@ function CurrentRepoSettings({ botUsername, defaultBranch }) {
     <div className="flex flex-col gap-2">
       <h3 className="font-semibold">Current repository settings</h3>
       <p>
-        Current bot: {botUsername}{' '}
+        Current bot: {botUsername || 'none'}{' '}
         <A to={{ pageName: 'teamBot' }}>learn more</A>
       </p>
       <p>Current default branch: {defaultBranch}</p>
