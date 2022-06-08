@@ -28,7 +28,7 @@ describe('useDateFormatted and formatTimeToNow functions', () => {
 
     it('returns the date with the default format', () => {
       expect(hookData.result.current).toBe('September 8th 2020')
-      expect(formattedDate).toBe('over 1 year ago')
+      expect(formattedDate).toBe('almost 2 years ago')
     })
   })
 
@@ -39,7 +39,7 @@ describe('useDateFormatted and formatTimeToNow functions', () => {
 
     it('returns the date with the right format', () => {
       expect(hookData.result.current).toBe('September 2020')
-      expect(formattedDate).toBe('over 1 year ago')
+      expect(formattedDate).toBe('almost 2 years ago')
     })
   })
 
