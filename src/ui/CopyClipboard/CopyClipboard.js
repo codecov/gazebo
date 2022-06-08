@@ -10,13 +10,19 @@ const copyIconClasses = {
   muted: `text-ds-grey-octonary`,
 }
 
-function CopyClipboard({ string, showLabel = false, variant = 'default' }) {
+function CopyClipboard({
+  string,
+  showLabel = false,
+  variant = 'default',
+  onClick = () => {},
+}) {
   const [showSuccess, setShowSuccess] = useState(false)
 
   const copyIconClass = copyIconClasses[variant]
 
   function handleCopy() {
     setShowSuccess(copy(string))
+    onClick()
   }
 
   useEffect(() => {
@@ -58,6 +64,7 @@ CopyClipboard.propTypes = {
   string: PropTypes.string.isRequired,
   showLabel: PropTypes.bool,
   variant: PropTypes.oneOf(['default', 'muted']),
+  onClick: PropTypes.func,
 }
 
 export default CopyClipboard

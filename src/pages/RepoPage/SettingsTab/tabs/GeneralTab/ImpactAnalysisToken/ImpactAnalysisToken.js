@@ -1,6 +1,13 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+// import { useParams } from 'react-router-dom'
 
+// import {
+//   identifySegmentEvent,
+//   identifySegmentUser,
+//   trackSegmentEvent,
+// } from 'services/tracking/segment'
+import { useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
@@ -13,6 +20,8 @@ function ImpactAnalysisToken({ profilingToken }) {
   const [showModal, setShowModal] = useState(false)
   const { regenerateToken, data, isLoading } = useGenerateProfilingToken()
   const token = data?.regenerateProfilingToken?.profilingToken || profilingToken
+  const { data: user } = useUser()
+  // const { repo } = useParams()
 
   return (
     <SettingsDescriptor
@@ -40,7 +49,32 @@ function ImpactAnalysisToken({ profilingToken }) {
               you are uploading coverage reports to Codecov, you should be using
               the repository upload token above.
             </p>
-            <TokenWrapper token={token} />
+            <TokenWrapper
+              token={token}
+              onClick={() => {
+                const data = {
+                  id: user?.trackingMetadata?.ownerid,
+                  data: {
+                    event: 'Impact Analysis Profiling Token Copied',
+                    // eslint-disable-next-line camelcase
+                    user_ownerid: user?.trackingMetadata?.ownerid,
+                    // eslint-disable-next-line camelcase
+                    repo_ownerid: '',
+                  },
+                }
+                console.debug(data)
+                // identifySegmentEvent({
+                //   id: user?.trackingMetadata?.ownerid,
+                //   data: {
+                //     event: 'Impact Analysis Profiling Token Copied',
+                //     // eslint-disable-next-line camelcase
+                //     user_ownerid: user?.trackingMetadata?.ownerid,
+                //     // eslint-disable-next-line camelcase
+                //     repo_ownerid: '',
+                //   },
+                // })
+              }}
+            />
           </div>
           <div>
             <Button
