@@ -24,7 +24,7 @@ function CodeRendererInfoRow({ type, patch }) {
    */
 
   return (
-    <div className="flex gap-2 bg-ds-gray-primary border-t px-4 py-1 border-r border-l border-solid border-ds-gray-tertiary text-xs text-ds-gray-quinary">
+    <div className="flex gap-2 bg-ds-gray-primary px-4 py-1 border-r border-l border-solid border-ds-gray-tertiary text-xs text-ds-gray-quinary">
       <span data-testid="patch">{patch}</span>
       {message[type]}
     </div>
