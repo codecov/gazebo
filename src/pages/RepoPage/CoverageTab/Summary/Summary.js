@@ -30,9 +30,7 @@ const Summary = () => {
             <Select
               {...branchSelectorProps}
               variant="gray"
-              renderItem={(item, { placeholder }) => (
-                <span>{item?.name || placeholder}</span>
-              )}
+              renderItem={({ name }) => <span>{name}</span>}
             />
           </span>
 
