@@ -24,6 +24,8 @@ const enabledIcons = [
   'information-circle',
   'arrow-up',
   'arrow-down',
+  'branch',
+  'exclamation-circle',
 ]
 
 console.log('Generating Icons import')

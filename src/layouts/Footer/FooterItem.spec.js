@@ -1,18 +1,25 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { FooterItem } from './FooterItem'
 
 describe('FooterItem', () => {
   function setup(props) {
-    render(<FooterItem {...props} />)
+    render(
+      <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+        <Route path="/:provider/:owner/:repo">
+          <FooterItem {...props} />{' '}
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('pass a "path" prop', () => {
     const text = 'Doggo 🐕'
-    const path = () => '/outside'
+    const to = { pageName: 'terms' }
 
     beforeEach(() => {
-      setup({ text, path })
+      setup({ text, to })
     })
 
     it('renders a link', () => {
