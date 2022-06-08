@@ -9,7 +9,7 @@ describe('BreadcrumbSearch', () => {
     render(
       <MemoryRouter initialEntries={entries}>
         <Route path={path}>
-          <BreadcrumbSearch />
+          <BreadcrumbSearch searchValue="" setSearchValue={() => null} />
         </Route>
       </MemoryRouter>
     )
@@ -37,7 +37,9 @@ describe('BreadcrumbSearch', () => {
     })
 
     it('renders the search', () => {
-      const searchMsg = screen.getByText('Search Goes Here')
+      const searchMsg = screen.getByRole('textbox', {
+        name: 'Search for files',
+      })
       expect(searchMsg).toBeInTheDocument()
     })
   })
