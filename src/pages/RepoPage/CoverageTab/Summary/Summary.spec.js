@@ -1,25 +1,33 @@
-import { useLocation } from 'react-router-dom'
-
-import { repoPageRender, screen } from 'pages/RepoPage/repo-jest-setup'
-// import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSummary } from './hooks'
 import Summary from './Summary'
 
 jest.mock('./hooks')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(),
-}))
 
 describe('Summary', () => {
   const mockOnChange = jest.fn()
   function setup({ useSummaryData }) {
     useSummary.mockReturnValue(useSummaryData)
-    repoPageRender({
-      renderRoot: () => <Summary />,
-      initialEntries: ['/gh/criticalrole/mightynein'],
-    })
+
+    render(
+      <MemoryRouter initialEntries={['/gh/test/critical-role']}>
+        <Route path="/:provider/:owner/:repo">
+          <Summary />
+        </Route>
+        {/* 
+          Route to render the current location to reduce complextity to track
+          the current location
+        */}
+        <Route
+          path="*"
+          render={({ location }) => {
+            return location.pathname
+          }}
+        />
+      </MemoryRouter>
+    )
   }
 
   describe('with populated data', () => {
@@ -92,7 +100,11 @@ describe('Summary', () => {
     })
   })
 
-  xdescribe('handles branch selector redirect', () => {
+  /*
+    I don't love this test but I coundn't think of a good way to test
+    the select user interaction and the location change correctly.
+  */
+  describe('uses a contidtional Redriect', () => {
     beforeEach(() => {
       const selectedBranch = {
         name: 'something-else',
@@ -106,29 +118,21 @@ describe('Summary', () => {
           isLoading: false,
           data: {},
           branchSelectorProps: {
-            items: [{ name: 'critical-role' }, selectedBranch],
+            items: [selectedBranch],
             onChange: mockOnChange,
-            value: {
-              name: 'something-else',
-              head: {
-                commitid: 'abs890dasf809',
-              },
-            },
+            value: selectedBranch,
           },
-          newPath: undefined,
-          enableRedirection: false,
+          newPath: '/some/new/location',
+          enableRedirection: true,
           currenBranchSelected: selectedBranch,
           defaultBranch: 'main',
           privateRepo: false,
         },
       })
-      // screen.debug()
-      // userEvent.click(screen.findByText(/something-else/))
-      // userEvent.click(screen.findByText(/critical-role/))
     })
 
-    it('triggered a new location', () => {
-      expect(useLocation).toBeCalledWith({})
+    it('updates the location', async () => {
+      expect(screen.getByText(/some\/new\/location/)).toBeInTheDocument()
     })
   })
 })
