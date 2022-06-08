@@ -22,6 +22,8 @@ const enabledIcons = [
   'branch',
   'refresh',
   'information-circle',
+  'branch',
+  'exclamation-circle',
 ]
 
 console.log('Generating Icons import')
