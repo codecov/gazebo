@@ -111,8 +111,8 @@ describe('useSummary', () => {
       expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
     })
 
-    it('passed down the currenBranchSelected', () => {
-      expect(hookData.result.current.currenBranchSelected).toEqual({
+    it('passed down the currentBranchSelected', () => {
+      expect(hookData.result.current.currentBranchSelected).toEqual({
         name: 'my branch',
         head: { commitid: '1234' },
       })

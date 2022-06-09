@@ -11,7 +11,7 @@ import { useSummary } from './hooks'
 const Summary = () => {
   const {
     data,
-    currenBranchSelected,
+    currentBranchSelected,
     branchSelectorProps,
     newPath,
     isRedirectionEnabled,
@@ -36,16 +36,16 @@ const Summary = () => {
             />
           </span>
 
-          {currenBranchSelected?.head?.commitid && (
+          {currentBranchSelected?.head?.commitid && (
             <p className="text-xs">
               <span className="font-bold">Source:</span> latest commit{' '}
               <A
                 to={{
                   pageName: 'commit',
-                  options: { commit: currenBranchSelected?.head?.commitid },
+                  options: { commit: currentBranchSelected?.head?.commitid },
                 }}
               >
-                {currenBranchSelected?.head?.commitid.slice(0, 7)}
+                {currentBranchSelected?.head?.commitid.slice(0, 7)}
               </A>
             </p>
           )}

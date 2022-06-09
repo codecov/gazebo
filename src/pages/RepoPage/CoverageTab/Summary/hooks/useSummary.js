@@ -26,7 +26,7 @@ export function useSummary() {
     branchSelectorProps,
     newPath,
     isRedirectionEnabled,
-    currenBranchSelected: selection,
+    currentBranchSelected: selection,
     defaultBranch: overview?.defaultBranch,
     privateRepo: overview?.private,
   }
