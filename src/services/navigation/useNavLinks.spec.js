@@ -464,6 +464,13 @@ describe('useNavLinks', () => {
         '/gl/doggo/sleep/tree/'
       )
     })
+    it('accepts a ref option', () => {
+      expect(
+        hookData.result.current.treeView.path({
+          ref: 'main',
+        })
+      ).toBe('/gl/doggo/watch/tree/main/')
+    })
     it('accepts a tree option', () => {
       expect(
         hookData.result.current.treeView.path({

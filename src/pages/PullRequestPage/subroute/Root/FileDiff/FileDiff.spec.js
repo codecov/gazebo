@@ -130,4 +130,23 @@ describe('FileDiff', () => {
       expect(screen.getByText(/Deleted/i)).toBeInTheDocument()
     })
   })
+
+  describe('a critical file', () => {
+    beforeEach(() => {
+      setup({
+        headName: 'main.ts',
+        isNewFile: true,
+        isCriticalFile: true,
+        segments: [],
+        lineCoverageStatesAndSetters: {
+          covered: true,
+          uncovered: true,
+          partial: true,
+        },
+      })
+    })
+    it('renders a critical file label', () => {
+      expect(screen.getByText(/Critical File/i)).toBeInTheDocument()
+    })
+  })
 })
