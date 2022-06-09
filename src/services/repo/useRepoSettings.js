@@ -13,6 +13,7 @@ function fetchRepoSettingsDetails({ provider, owner, repo }) {
           defaultBranch
           profilingToken
           graphToken
+          yaml
         }
       }
     }
