@@ -100,6 +100,49 @@ describe('Summary', () => {
     })
   })
 
+  describe('branch coverage', () => {
+    beforeEach(() => {
+      const selectedBranch = {
+        name: 'something-else',
+        head: {
+          commitid: 'abs890dasf809',
+        },
+      }
+
+      setup({
+        useSummaryData: {
+          isLoading: false,
+          data: {
+            head: {
+              totals: { percentCovered: 60.4, hitsCount: 54, lineCount: 753 },
+            },
+          },
+          branchSelectorProps: {
+            items: [{ name: 'critical-role' }, selectedBranch],
+            onChange: mockOnChange,
+            value: {
+              name: 'something-else',
+              head: {
+                commitid: 'abs890dasf809',
+              },
+            },
+          },
+          newPath: undefined,
+          enableRedirection: false,
+          currenBranchSelected: selectedBranch,
+          defaultBranch: 'main',
+          privateRepo: false,
+        },
+      })
+    })
+
+    it('renders the branch coverage', () => {
+      expect(screen.getByText('60.40%')).toBeInTheDocument()
+    })
+    it('renders the lines covered', () => {
+      expect(screen.getByText('54 of 753 lines covered')).toBeInTheDocument()
+    })
+  })
   /*
     I don't love this test but I coundn't think of a good way to test
     the select user interaction and the location change correctly.
@@ -131,7 +174,7 @@ describe('Summary', () => {
       })
     })
 
-    it('updates the location', async () => {
+    it('updates the location', () => {
       expect(screen.getByText(/some\/new\/location/)).toBeInTheDocument()
     })
   })

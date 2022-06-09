@@ -2,6 +2,7 @@ import { Redirect } from 'react-router-dom'
 
 import A from 'ui/A'
 import Icon from 'ui/Icon'
+import Progress from 'ui/Progress'
 import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
@@ -9,6 +10,7 @@ import { useSummary } from './hooks'
 
 const Summary = () => {
   const {
+    data,
     currenBranchSelected,
     branchSelectorProps,
     newPath,
@@ -48,6 +50,22 @@ const Summary = () => {
             </p>
           )}
         </SummaryField>
+        {data?.head?.totals?.percentCovered && (
+          <SummaryField>
+            <h3 className="text-ds-gray-octonary text-sm font-semibold  min-w-[16rem]">
+              Branch Coverage
+            </h3>
+            <Progress
+              label
+              amount={data?.head?.totals?.percentCovered}
+              variant="tall"
+            />
+            <p className="text-xs">
+              {data?.head?.totals?.hitsCount} of {data?.head?.totals?.lineCount}{' '}
+              lines covered
+            </p>
+          </SummaryField>
+        )}
       </SummaryRoot>
     </>
   )

@@ -5,20 +5,20 @@ import { useRepoCoverage, useRepoOverview } from 'services/repo'
 import { useBranchSelector } from './useBranchSelector'
 
 export function useSummary() {
-  const { repo, owner, provider, branch } = useParams()
+  const { repo, owner, provider } = useParams()
   const { data: overview, isLoading } = useRepoOverview({
     provider,
     repo,
     owner,
   })
+  const { selection, branchSelectorProps, newPath, enableRedirection } =
+    useBranchSelector(overview?.branches, overview?.defaultBranch)
   const { data, isLoading: isLoadingRepoCoverage } = useRepoCoverage({
     provider,
     repo,
     owner,
-    branch,
+    branch: selection?.name,
   })
-  const { selection, branchSelectorProps, newPath, enableRedirection } =
-    useBranchSelector(overview?.branches, overview?.defaultBranch)
 
   return {
     isLoading: isLoading && isLoadingRepoCoverage,
