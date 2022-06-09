@@ -1,8 +1,7 @@
-const { renderHook } = require('@testing-library/react-hooks')
-const { Route } = require('react-router-dom')
-const { MemoryRouter } = require('react-router-dom')
+import { renderHook } from '@testing-library/react-hooks'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-const { useTreePaths } = require('./hooks')
+import { useTreePaths } from './hooks'
 
 describe('useTreePaths', () => {
   let hookData

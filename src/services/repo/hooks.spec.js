@@ -4,7 +4,17 @@ import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepo, useUpdateRepo } from './hooks'
+import { useEraseRepoContent, useRepo, useUpdateRepo } from './hooks'
+
+const queryClient = new QueryClient()
+
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/test']}>
+    <Route path="/:provider/:owner/:repo">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
 
 const server = setupServer()
 
@@ -15,15 +25,6 @@ afterAll(() => server.close())
 const provider = 'gh'
 const owner = 'RulaKhaled'
 const repo = 'test'
-
-const queryClient = new QueryClient()
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
-    <Route path="/:provider/:owner/:repo">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
 
 describe('useRepo', () => {
   afterEach(() => server.resetHandlers())
@@ -109,6 +110,57 @@ describe('useRepo', () => {
   })
 })
 
+describe('useEraseRepoContent', () => {
+  let hookData
+
+  function setup() {
+    server.use(
+      rest.patch(
+        `internal/github/codecov/repos/test/erase/`,
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json())
+        }
+      )
+    )
+    hookData = renderHook(() => useEraseRepoContent(), {
+      wrapper,
+    })
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('returns isLoading false', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation', () => {
+      beforeEach(() => {
+        hookData.result.current.mutate()
+        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
+      })
+
+      it('returns isLoading true', () => {
+        expect(hookData.result.current.isLoading).toBeTruthy()
+      })
+    })
+
+    describe('When success', () => {
+      beforeEach(async () => {
+        hookData.result.current.mutate({})
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
+      })
+
+      it('returns isSuccess true', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
+      })
+    })
+  })
+})
+
 const repoDetails = {
   can_edit: true,
   can_view: true,
@@ -144,7 +196,7 @@ describe('useUpdateRepo', () => {
 
   function setup() {
     server.use(
-      rest.patch(`internal/github/codecov/repos/gazebo/`, (req, res, ctx) => {
+      rest.patch(`internal/github/codecov/repos/test/`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(repoDetails))
       })
     )
