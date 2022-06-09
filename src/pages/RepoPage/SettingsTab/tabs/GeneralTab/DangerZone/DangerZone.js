@@ -3,7 +3,7 @@ import SettingsDescriptor from 'ui/SettingsDescriptor'
 import DeactivateRepo from './DeactivateRepo'
 import EraseRepoContent from './EraseRepoContent'
 
-function DanerZone() {
+function DangerZone() {
   return (
     <SettingsDescriptor
       title="Danger Zone"
@@ -18,4 +18,4 @@ function DanerZone() {
   )
 }
 
-export default DanerZone
+export default DangerZone
