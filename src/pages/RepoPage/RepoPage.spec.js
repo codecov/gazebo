@@ -10,6 +10,9 @@ jest.mock('services/repo/hooks')
 jest.mock('services/commits')
 jest.mock('services/branches')
 
+// This component is too complex for an integration test imo
+jest.mock('./CoverageTab/Summary', () => () => 'Summary')
+
 const commits = [
   {
     message: 'test',
