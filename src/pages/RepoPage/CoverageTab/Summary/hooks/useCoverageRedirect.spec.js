@@ -20,7 +20,7 @@ describe('useCoverageRedirect', () => {
   }
 
   describe.each`
-    desc                                                         | startingLocation                             | branchSelection   | branch       | ref          | expectedNewPath                                  | enableRedirection
+    desc                                                         | startingLocation                             | branchSelection   | branch       | ref          | expectedNewPath                                  | isRedirectionEnabled
     ${`from root`}                                               | ${`critical-role/c3`}                        | ${'chetney'}      | ${undefined} | ${undefined} | ${'critical-role/c3/tree/chetney'}               | ${true}
     ${`from root (manual extra /)`}                              | ${`critical-role/c3/`}                       | ${'chetney'}      | ${undefined} | ${undefined} | ${'critical-role/c3/tree/chetney'}               | ${true}
     ${`from a file view`}                                        | ${`critical-role/c3/blobs/chetney/foo/bar`}  | ${'blood-hunter'} | ${undefined} | ${'chetney'} | ${'critical-role/c3/blobs/blood-hunter/foo/bar'} | ${true}
@@ -39,7 +39,7 @@ describe('useCoverageRedirect', () => {
       ref,
       branch,
       expectedNewPath,
-      enableRedirection,
+      isRedirectionEnabled,
     }) => {
       const [owner, repo] = startingLocation.split('/')
       beforeEach(() => {
@@ -58,8 +58,8 @@ describe('useCoverageRedirect', () => {
           expect(hookData.result.current.newPath).toEqual(undefined)
         })
 
-        it('enableRedirection starts false', () => {
-          expect(hookData.result.current.enableRedirection).toBeFalsy()
+        it('isRedirectionEnabled starts false', () => {
+          expect(hookData.result.current.isRedirectionEnabled).toBeFalsy()
         })
 
         describe('on setNewPath fired', () => {
@@ -73,9 +73,9 @@ describe('useCoverageRedirect', () => {
             expect(hookData.result.current.newPath).toBe(expectedNewPath)
           })
 
-          it('enableRedirection is enabled', () => {
-            expect(hookData.result.current.enableRedirection).toBe(
-              enableRedirection
+          it('isRedirectionEnabled is enabled', () => {
+            expect(hookData.result.current.isRedirectionEnabled).toBe(
+              isRedirectionEnabled
             )
           })
         })

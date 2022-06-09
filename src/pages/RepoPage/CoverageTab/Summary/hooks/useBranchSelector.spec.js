@@ -18,7 +18,7 @@ describe('useBranchSelector', () => {
     useCoverageRedirect.mockReturnValue({
       setNewPath: mockSetNewPath,
       newPath: 'test/test',
-      enableRedirection: true,
+      isRedirectionEnabled: true,
     })
     useParams.mockReturnValue(useParamsValue)
 
@@ -48,8 +48,8 @@ describe('useBranchSelector', () => {
       expect(hookData.result.current.newPath).toEqual('test/test')
     })
 
-    it('passed down the enableRedirection', () => {
-      expect(hookData.result.current.enableRedirection).toEqual(true)
+    it('passed down the isRedirectionEnabled', () => {
+      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
     })
 
     it('triggers setNewPath correctly', () => {
@@ -109,8 +109,8 @@ describe('useBranchSelector', () => {
       expect(hookData.result.current.newPath).toEqual('test/test')
     })
 
-    it('passed down the enableRedirection', () => {
-      expect(hookData.result.current.enableRedirection).toEqual(true)
+    it('passed down the isRedirectionEnabled', () => {
+      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
     })
 
     it('triggers setNewPath correctly', () => {
@@ -170,8 +170,8 @@ describe('useBranchSelector', () => {
       expect(hookData.result.current.newPath).toEqual('test/test')
     })
 
-    it('passed down the enableRedirection', () => {
-      expect(hookData.result.current.enableRedirection).toEqual(true)
+    it('passed down the isRedirectionEnabled', () => {
+      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
     })
 
     it('triggers setNewPath correctly', () => {

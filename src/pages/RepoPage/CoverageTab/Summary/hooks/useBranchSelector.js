@@ -9,7 +9,7 @@ export function useBranchSelector(branches, defaultBranch) {
   const [items, setItems] = useState([])
   const [selection, setSelection] = useState()
   const { branch, ref } = useParams()
-  const { setNewPath, newPath, enableRedirection } = useCoverageRedirect()
+  const { setNewPath, newPath, isRedirectionEnabled } = useCoverageRedirect()
 
   const onChangeHandler = (slection) => {
     setNewPath(slection)
@@ -30,7 +30,7 @@ export function useBranchSelector(branches, defaultBranch) {
   return {
     selection,
     newPath,
-    enableRedirection,
+    isRedirectionEnabled,
     branchSelectorProps: {
       items,
       value: selection,

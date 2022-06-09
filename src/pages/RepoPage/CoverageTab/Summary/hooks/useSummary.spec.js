@@ -29,7 +29,7 @@ describe('useSummary', () => {
       selection: { name: 'my branch', head: { commitid: '1234' } },
       branchSelectorProps: { someProps: 1 },
       newPath: 'test/test/',
-      enableRedirection: true,
+      isRedirectionEnabled: true,
     })
 
     hookData = renderHook(() => useSummary(), { wrapper })
@@ -107,8 +107,8 @@ describe('useSummary', () => {
       expect(hookData.result.current.newPath).toEqual('test/test/')
     })
 
-    it('passed down the enableRedirection status', () => {
-      expect(hookData.result.current.enableRedirection).toEqual(true)
+    it('passed down the isRedirectionEnabled status', () => {
+      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
     })
 
     it('passed down the currenBranchSelected', () => {

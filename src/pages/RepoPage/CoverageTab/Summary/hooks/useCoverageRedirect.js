@@ -50,7 +50,7 @@ export function useCoverageRedirect() {
   const { repo, branch, ref, owner } = useParams()
 
   const [newPath, setNewPath] = useState()
-  const [enableRedirection, setEnableRedirection] = useState(false)
+  const [isRedirectionEnabled, setisRedirectionEnabled] = useState(false)
 
   /**
    *
@@ -70,13 +70,13 @@ export function useCoverageRedirect() {
 
   useLayoutEffect(() => {
     if (newPath) {
-      setEnableRedirection(true)
+      setisRedirectionEnabled(true)
     }
   }, [newPath])
 
   return {
     setNewPath: setNewPathHandler,
     newPath,
-    enableRedirection,
+    isRedirectionEnabled,
   }
 }

@@ -14,12 +14,12 @@ const Summary = () => {
     currenBranchSelected,
     branchSelectorProps,
     newPath,
-    enableRedirection,
+    isRedirectionEnabled,
   } = useSummary()
 
   return (
     <>
-      {enableRedirection && <Redirect to={newPath} />}
+      {isRedirectionEnabled && <Redirect to={newPath} />}
       <SummaryRoot>
         <SummaryField>
           <h3 className="text-ds-gray-octonary text-sm font-semibold flex gap-1 items-center">
