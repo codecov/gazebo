@@ -2,10 +2,9 @@ import { renderHook } from '@testing-library/react-hooks'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { act } from 'react-test-renderer'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepo, useUpdateRepo, useEraseRepoContent } from './hooks'
+import { useEraseRepoContent, useRepo, useUpdateRepo } from './hooks'
 
 const queryClient = new QueryClient()
 
@@ -52,9 +51,6 @@ describe('useRepo', () => {
         defaultBranch: 'master',
         private: true,
         uploadToken: 'token',
-        profilingToken: 'token',
-        graphToken: 'token',
-        active: true
       },
     }
     const dataReturned = {
@@ -64,9 +60,6 @@ describe('useRepo', () => {
           defaultBranch: 'master',
           private: true,
           uploadToken: 'token',
-          profilingToken: 'token',
-          graphToken: 'token',
-          active: true
         },
       },
     }
@@ -115,7 +108,6 @@ describe('useRepo', () => {
   })
 })
 
-
 describe('useEraseRepoContent', () => {
   let hookData
 
@@ -155,11 +147,9 @@ describe('useEraseRepoContent', () => {
 
     describe('When success', () => {
       beforeEach(async () => {
-        return act(async () => {
-          hookData.result.current.mutate({})
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
-        })
+        hookData.result.current.mutate({})
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns isSuccess true', () => {

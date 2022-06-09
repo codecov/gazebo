@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { providerToName } from 'shared/utils/provider'
+import A from 'ui/A'
 import Banner from 'ui/Banner'
-import Icon from 'ui/Icon'
 
 const GithubConfigBanner = ({ privateRepo }) => {
   const { provider } = useParams()
@@ -20,31 +20,16 @@ const GithubConfigBanner = ({ privateRepo }) => {
       >
         <p>
           The best way to integrate with Codecov.io is to{' '}
-          <a
-            data-testid="codecovGithuhApp-link"
-            rel="noreferrer"
-            target="_blank"
-            href="https://github.com/apps/codecov"
-            className="text-ds-blue"
+          <A
+            data-testid="codecovGithubApp-link"
+            to={{ pageName: 'codecovGithubApp' }}
           >
             Install Codecov&apos;s GitHub App
-          </a>
-          <span className="inline-block text-gray-500">
-            <Icon name="external-link" size="sm" />
-          </span>
+          </A>
           . Once installed, you are done! You do not need to set a{' '}
-          <a
-            data-testid="teamBot-link"
-            rel="noreferrer"
-            target="_blank"
-            href="https://docs.codecov.com/docs/team-bot"
-            className="text-ds-blue"
-          >
+          <A data-testid="teamBot-link" to={{ pageName: 'teamBot' }}>
             Team Bot
-          </a>
-          <span className="inline-block text-gray-500">
-            <Icon name="external-link" size="sm" />
-          </span>{' '}
+          </A>
           because Codecov will use the integration to post statuses and
           comments.
         </p>

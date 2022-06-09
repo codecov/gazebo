@@ -8,7 +8,6 @@ import Root from './Root'
 
 jest.mock('services/pull')
 
-// Not final data.
 const mockPullData = {
   isLoading: false,
   data: {
@@ -424,6 +423,81 @@ const mockPullData = {
   },
 }
 
+const mockPullDataNoFiles = {
+  isLoading: false,
+  data: {
+    pullId: 5,
+    title: 'Calculator 3',
+    state: 'OPEN',
+    author: {
+      username: 'terry-codecov',
+    },
+    updatestamp: '2022-02-15T20:45:43.438415',
+    head: {
+      commitid: '22e5019e06d2c707681666c05e550d39028d9760',
+      totals: {
+        percentCovered: 77.14,
+      },
+    },
+    comparedTo: {
+      commitid: '58422498718eec4e1c249e31724c08c44bfca56e',
+    },
+    compareWithBase: {
+      patchTotals: {
+        percentCovered: 0.7692308,
+      },
+      changeWithParent: -0.64,
+      baseTotals: {
+        percentCovered: 77.77778,
+        fileCount: 1,
+        lineCount: 9,
+        hitsCount: 7,
+        missesCount: 2,
+        partialsCount: 0,
+      },
+      headTotals: {
+        percentCovered: 77.14286,
+        fileCount: 2,
+        lineCount: 35,
+        hitsCount: 27,
+        missesCount: 8,
+        partialsCount: 0,
+      },
+      fileComparisons: [],
+    },
+    commits: {
+      totalCount: 2,
+      pageInfo: {
+        hasNextPage: false,
+        startCursor: 'MjAyMi0wMi0xNSAyMDo0NDozNi4xMzA5NTJ8MTk=',
+        hasPreviousPage: false,
+      },
+      edges: [
+        {
+          node: {
+            commitid: '96c47d090c98e970d5813339ffb1dec8c6fa52fa',
+            message: 'calc mode',
+            createdAt: '2022-02-15T20:44:11',
+            author: {
+              username: 'terry-codecov',
+            },
+          },
+        },
+        {
+          node: {
+            commitid: '22e5019e06d2c707681666c05e550d39028d9760',
+            message: 'Drop testing subtract',
+            createdAt: '2022-02-15T20:45:24',
+            author: {
+              username: 'terry-codecov',
+            },
+          },
+        },
+      ],
+    },
+  },
+}
+
 describe('Root', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
     render(
@@ -443,6 +517,22 @@ describe('Root', () => {
     })
     it('renders the name of a impacted file', () => {
       expect(screen.getByText(/src\/calculator.ts/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('No file changes', () => {
+    beforeEach(() => {
+      usePull.mockReturnValue(mockPullDataNoFiles)
+
+      setup({})
+    })
+
+    it('renders without file changes', () => {
+      expect(
+        screen.getByText(
+          /Everything is accounted for! No changes detected that need to be reviewed./
+        )
+      ).toBeInTheDocument()
     })
   })
 })
