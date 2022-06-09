@@ -1,1 +1,1 @@
-export { default } from './YamlTab';
+export { default } from './YamlTab'

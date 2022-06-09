@@ -2,7 +2,11 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoSettings, useUpdateRepo } from 'services/repo'
+import {
+  useEraseRepoContent,
+  useRepoSettings,
+  useUpdateRepo,
+} from 'services/repo'
 
 import GeneralTab from './GeneralTab'
 
@@ -20,6 +24,10 @@ describe('GeneralTab', () => {
     useUpdateRepo.mockReturnValue({
       mutate,
       data: { branch: 'random' },
+    })
+
+    useEraseRepoContent.mockReturnValue({
+      mutate,
     })
 
     render(
