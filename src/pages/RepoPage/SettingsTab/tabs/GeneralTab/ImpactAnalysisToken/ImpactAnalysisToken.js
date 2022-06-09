@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
-// import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 // import {
 //   identifySegmentEvent,
@@ -21,7 +21,7 @@ function ImpactAnalysisToken({ profilingToken }) {
   const { regenerateToken, data, isLoading } = useGenerateProfilingToken()
   const token = data?.regenerateProfilingToken?.profilingToken || profilingToken
   const { data: user } = useUser()
-  // const { repo } = useParams()
+  const { owner, repo } = useParams()
 
   return (
     <SettingsDescriptor
@@ -59,7 +59,7 @@ function ImpactAnalysisToken({ profilingToken }) {
                     // eslint-disable-next-line camelcase
                     user_ownerid: user?.trackingMetadata?.ownerid,
                     // eslint-disable-next-line camelcase
-                    repo_ownerid: '',
+                    repo_owner_slug: `${owner}/${repo}`,
                   },
                 }
                 console.debug(data)
