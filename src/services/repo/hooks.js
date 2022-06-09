@@ -39,6 +39,36 @@ export function useRepo({ provider, owner, repo }) {
   })
 }
 
+//erase repo content hook
+function getPathEraseRepo({ provider, owner, repo }) {
+  return `/${provider}/${owner}/repos/${repo}/erase/`
+}
+
+export function useEraseRepoContent() {
+  const { provider, owner, repo } = useParams()
+  const queryClient = useQueryClient()
+  const refactoredProvider = providerToName(provider).toLowerCase()
+  return useMutation(
+    () => {
+      const path = getPathEraseRepo({
+        provider: refactoredProvider,
+        owner,
+        repo,
+      })
+
+      return Api.patch({
+        provider: refactoredProvider,
+        path,
+      })
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('GetRepo')
+      },
+    }
+  )
+}
+
 //update repo hook
 function getRepoPath({ provider, owner, repo }) {
   return `/${provider}/${owner}/repos/${repo}/`

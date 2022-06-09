@@ -1,5 +1,7 @@
 import { useRepoSettings } from 'services/repo'
 
+import { ActivationStatusContext } from './Context'
+import DangerZone from './DangerZone'
 import DefaultBranch from './DefaultBranch'
 import GraphToken from './GraphToken'
 import ImpactAnalysisToken from './ImpactAnalysisToken'
@@ -23,6 +25,9 @@ function GeneralTab() {
       {repository?.graphToken && (
         <GraphToken graphToken={repository?.graphToken} />
       )}
+      <ActivationStatusContext.Provider value={repository?.active}>
+        <DangerZone />
+      </ActivationStatusContext.Provider>
     </div>
   )
 }
