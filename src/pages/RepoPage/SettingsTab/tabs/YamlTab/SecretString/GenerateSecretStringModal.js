@@ -17,7 +17,7 @@ const GenerateSecretStringModal = ({
     },
   })
 
-  const value = watch('value', '')
+  const value = watch('string', '')
   const submit = async () => {
     await generateSecretString({ value })
     await closeModal()
@@ -34,7 +34,7 @@ const GenerateSecretStringModal = ({
           <p>Please type the information you would like encrypted:</p>
           <TextInput
             value={value}
-            {...register('value', { required: true })}
+            {...register('string', { required: true })}
             placeholder="Secret String"
             autoFocus
           />

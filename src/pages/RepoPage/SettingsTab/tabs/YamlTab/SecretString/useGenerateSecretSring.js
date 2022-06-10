@@ -1,4 +1,4 @@
-import { useEncodeString } from 'services/repo/useEncodeString'
+import { useEncodeString } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
 export default function useGenerateSecretString() {
@@ -12,7 +12,7 @@ export default function useGenerateSecretString() {
         onError: () =>
           addToast({
             type: 'error',
-            text: 'Something went wrong',
+            text: 'We were unable to generate the secret string',
           }),
       }
     )
