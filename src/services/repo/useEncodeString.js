@@ -5,7 +5,7 @@ import Api from 'shared/api'
 import { providerToName } from 'shared/utils'
 
 function getEncodeStringPath({ provider, owner, repo }) {
-  return `/${provider}/${owner}/repos/${repo}/encode`
+  return `/${provider}/${owner}/repos/${repo}/encode/`
 }
 
 function encodeString({ provider, owner, repo, value }) {
