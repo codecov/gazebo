@@ -65,7 +65,7 @@ describe('SecretString', () => {
 
   describe('when the user clicks on Create New Secret String button', () => {
     beforeEach(() => {
-      setup()
+      setup('test')
       userEvent.click(
         screen.getByRole('button', { name: 'Create New Secret String' })
       )

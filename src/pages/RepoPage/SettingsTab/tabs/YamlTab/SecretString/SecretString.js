@@ -41,7 +41,7 @@ function SecretString() {
                 showCopyModal={() => setShowCopyModal(true)}
               />
             )}
-            {showCopyModal && (
+            {showCopyModal && value && (
               <CopySecretStringModal
                 closeModal={() => setShowCopyModal(false)}
                 isLoading={isLoading}
