@@ -7,8 +7,8 @@ function fetchRepoOverviewInitial({ provider, owner, repo }) {
     query GetRepoOverview($name: String!, $repo: String!) {
       owner(username:$name){
         repository(name:$repo){
+          private
           defaultBranch
-          coverage
           branches {
             edges {
               node {

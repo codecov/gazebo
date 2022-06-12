@@ -44,6 +44,8 @@ describe('useRepoCoverage', () => {
               head: {
                 totals: {
                   percentCovered: 70.44,
+                  lineCount: 90,
+                  hitsCount: 80,
                 },
               },
             },
@@ -68,6 +70,8 @@ describe('useRepoCoverage', () => {
             head: {
               totals: {
                 percentCovered: 70.44,
+                lineCount: 90,
+                hitsCount: 80,
               },
             },
           })

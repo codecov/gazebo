@@ -4,9 +4,11 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
-import { useSummary } from './hooks'
+import { useBranchSelector } from './useBranchSelector'
+import { useSummary } from './useSummary'
 
 jest.mock('services/repo')
+jest.mock('./useBranchSelector')
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -23,6 +25,12 @@ describe('useSummary', () => {
   function setup({ useRepoOverviewMock = {}, useRepoCoverageMock = {} }) {
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
     useRepoCoverage.mockReturnValue(useRepoCoverageMock)
+    useBranchSelector.mockReturnValue({
+      selection: { name: 'my branch', head: { commitid: '1234' } },
+      branchSelectorProps: { someProps: 1 },
+      newPath: 'test/test/',
+      isRedirectionEnabled: true,
+    })
 
     hookData = renderHook(() => useSummary(), { wrapper })
   }
@@ -45,7 +53,6 @@ describe('useSummary', () => {
       setup({
         useRepoOverviewMock: {
           data: {
-            coverage: 70.4,
             defaultBranch: 'c3',
             branches: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
           },
@@ -65,8 +72,8 @@ describe('useSummary', () => {
       setup({
         useRepoOverviewMock: {
           data: {
-            coverage: 70.4,
             defaultBranch: 'c3',
+            private: true,
             branches: {
               edges: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
             },
@@ -90,19 +97,33 @@ describe('useSummary', () => {
       expect(hookData.result.current.data).toEqual({ show: 'Critical Role' })
     })
 
-    it('handles the list of branches', () => {
-      expect(hookData.result.current.branches).toEqual([
-        { name: 'fcg' },
-        { name: 'imogen' },
-      ])
+    it('passed down branch selector props', () => {
+      expect(hookData.result.current.branchSelectorProps).toEqual({
+        someProps: 1,
+      })
     })
 
-    it('provides the defaultBranch', () => {
+    it('passed down the newPath', () => {
+      expect(hookData.result.current.newPath).toEqual('test/test/')
+    })
+
+    it('passed down the isRedirectionEnabled status', () => {
+      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
+    })
+
+    it('passed down the currentBranchSelected', () => {
+      expect(hookData.result.current.currentBranchSelected).toEqual({
+        name: 'my branch',
+        head: { commitid: '1234' },
+      })
+    })
+
+    it('passed down the defaultBranch', () => {
       expect(hookData.result.current.defaultBranch).toEqual('c3')
     })
 
-    it('provides the repo coverage', () => {
-      expect(hookData.result.current.coverage).toEqual(70.4)
+    it('passed down the privateRepo', () => {
+      expect(hookData.result.current.privateRepo).toEqual(true)
     })
   })
 })
