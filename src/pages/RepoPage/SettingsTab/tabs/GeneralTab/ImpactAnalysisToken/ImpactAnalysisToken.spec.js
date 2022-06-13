@@ -1,4 +1,4 @@
-import { render, screen } from 'custom-testing-library'
+import { act, render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -6,9 +6,23 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRegenerateProfilingToken } from 'services/profilingToken'
 import { useAddNotification } from 'services/toastNotification'
+import * as Segment from 'services/tracking/segment'
+import { useUser } from 'services/user'
 
 import ImpactAnalysisToken from './ImpactAnalysisToken'
 
+const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
+
+const userServices = { useUser }
+jest.spyOn(userServices, 'useUser').mockImplementation(() => ({
+  user: {
+    trackingMetadata: {
+      ownerid: 1,
+    },
+  },
+}))
+
+jest.mock('copy-to-clipboard', () => () => true)
 jest.mock('services/profilingToken')
 jest.mock('services/toastNotification')
 
@@ -64,7 +78,6 @@ describe('ImpactAnalysisToken', () => {
       const token = screen.getByText(/old token/)
       expect(token).toBeInTheDocument()
     })
-
     it('renders regenerate button', () => {
       expect(
         screen.getByRole('button', { name: 'Regenerate' })
@@ -105,13 +118,37 @@ describe('ImpactAnalysisToken', () => {
     })
   })
 
+  describe('when the user clicks on the copy button', () => {
+    beforeEach(() => {
+      setup({})
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /copy/i,
+        })
+      )
+    })
+
+    it('calls the trackSegmentEvent', () => {
+      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
+      expect(trackSegmentSpy).toHaveBeenCalledWith({
+        data: {
+          event: 'Impact Analysis Profiling Token Copied',
+          owner_slug: 'codecov',
+          repo_slug: 'codecov-client',
+          user_ownerid: {},
+        },
+        id: {},
+      })
+    })
+  })
+
   describe('when user clicks on Generate New Token button', () => {
     beforeEach(async () => {
       setup({ profilingToken: 'new token' })
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      userEvent.click(
-        screen.getByRole('button', { name: 'Generate New Token' })
-      )
+      await act(async () => {
+        await screen.getByRole('button', { name: 'Regenerate' }).click()
+        screen.getByRole('button', { name: 'Generate New Token' }).click()
+      })
     })
     it('calls the mutation', () => {
       expect(mutate).toHaveBeenCalled()
@@ -125,12 +162,13 @@ describe('ImpactAnalysisToken', () => {
   describe('when mutation is not successful', () => {
     beforeEach(async () => {
       setup({ profilingToken: 'new token', error: 'Authentication Error' })
-      await userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      userEvent.click(
-        screen.getByRole('button', { name: 'Generate New Token' })
-      )
+      await act(async () => {
+        await screen.getByRole('button', { name: 'Regenerate' }).click()
+        screen.getByRole('button', { name: 'Generate New Token' }).click()
+      })
     })
-    it('calls the mutation', () => {
+
+    it('calls the mutation', async () => {
       expect(mutate).toHaveBeenCalled()
     })
 

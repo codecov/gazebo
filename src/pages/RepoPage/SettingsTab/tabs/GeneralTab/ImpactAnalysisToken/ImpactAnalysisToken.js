@@ -2,12 +2,9 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-// import {
-//   identifySegmentEvent,
-//   identifySegmentUser,
-//   trackSegmentEvent,
-// } from 'services/tracking/segment'
+import { trackSegmentEvent } from 'services/tracking/segment'
 import { useUser } from 'services/user'
+import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
@@ -52,27 +49,17 @@ function ImpactAnalysisToken({ profilingToken }) {
             <TokenWrapper
               token={token}
               onClick={() => {
-                const data = {
-                  id: user?.trackingMetadata?.ownerid,
-                  data: {
-                    event: 'Impact Analysis Profiling Token Copied',
-                    // eslint-disable-next-line camelcase
-                    user_ownerid: user?.trackingMetadata?.ownerid,
-                    // eslint-disable-next-line camelcase
-                    repo_owner_slug: `${owner}/${repo}`,
-                  },
-                }
-                console.debug(data)
-                // identifySegmentEvent({
-                //   id: user?.trackingMetadata?.ownerid,
-                //   data: {
-                //     event: 'Impact Analysis Profiling Token Copied',
-                //     // eslint-disable-next-line camelcase
-                //     user_ownerid: user?.trackingMetadata?.ownerid,
-                //     // eslint-disable-next-line camelcase
-                //     repo_ownerid: '',
-                //   },
-                // })
+                trackSegmentEvent(
+                  snakeifyKeys({
+                    id: user?.trackingMetadata?.ownerid,
+                    data: {
+                      event: 'Impact Analysis Profiling Token Copied',
+                      userOwnerid: user?.trackingMetadata?.ownerid,
+                      ownerSlug: owner,
+                      repoSlug: repo,
+                    },
+                  })
+                )
               }}
             />
           </div>
