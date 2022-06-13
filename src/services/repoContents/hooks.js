@@ -9,13 +9,14 @@ function fetchRepoContents({ provider, owner, repo, branch, path }) {
         username
         repository(name:$repo){
           branch(name:$branch){
-            name
-            files(path:$path){
+          head {
+            pathContents(path:$path){
               name
               filePath
               percentCovered
               type
             }
+           }
           }
         }
       }
@@ -32,7 +33,7 @@ function fetchRepoContents({ provider, owner, repo, branch, path }) {
       path,
     },
   }).then((res) => {
-    return res?.data?.owner?.repository?.branch?.files
+    return res?.data?.owner?.repository?.branch?.head?.pathContents
   })
 }
 

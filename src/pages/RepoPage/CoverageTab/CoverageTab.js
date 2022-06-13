@@ -5,7 +5,7 @@ import Spinner from 'ui/Spinner'
 
 import Summary from './Summary'
 
-const Fileviewer = lazy(() => import('./subroute/Fileviewer'))
+const FileViewer = lazy(() => import('./subroute/Fileviewer'))
 const RepoContentsTable = lazy(() => import('./subroute/RepoContents'))
 
 function CoverageTab() {
@@ -32,7 +32,7 @@ function CoverageTab() {
           </Route>
           <Route path="/:provider/:owner/:repo/blobs/:ref/:path+" exact>
             <Suspense fallback={Loader}>
-              <Fileviewer />
+              <FileViewer />
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/" exact>

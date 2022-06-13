@@ -28,15 +28,16 @@ const dataReturned = {
     username: 'Rabee-AbuBaker',
     repository: {
       branch: {
-        name: 'main',
-        files: [
-          {
-            name: 'flag1',
-            filePath: null,
-            percentCovered: 100.0,
-            type: 'dir',
-          },
-        ],
+        head: {
+          pathContents: [
+            {
+              name: 'flag1',
+              filePath: null,
+              percentCovered: 100.0,
+              type: 'dir',
+            },
+          ],
+        },
       },
     },
   },

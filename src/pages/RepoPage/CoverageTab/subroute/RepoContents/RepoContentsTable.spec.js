@@ -1,11 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useRepoOverview } from 'services/repo'
 import { useRepoContents } from 'services/repoContents/hooks'
 
 import RepoContentsTable from './RepoContentsTable'
 
 jest.mock('services/repoContents/hooks')
+jest.mock('services/repo')
 
 const repoContents = [
   {
@@ -22,16 +24,25 @@ const repoContents = [
   },
 ]
 
+const useRepoOverviewMock = {
+  data: {
+    defaultBranch: 'main',
+    private: true,
+  },
+  isLoading: false,
+}
+
 describe('RepoContentsTable', () => {
   function setup({ isLoading = false, data = repoContents } = {}) {
     useRepoContents.mockReturnValue({
       data,
       isLoading,
     })
+    useRepoOverview.mockReturnValue(useRepoOverviewMock)
 
     render(
-      <MemoryRouter initialEntries={['/gh']}>
-        <Route path="/:provider">
+      <MemoryRouter initialEntries={['/gh/Rabee-AbuBaker/another-test']}>
+        <Route path="/:provider/:owner/:repo/">
           <RepoContentsTable />
         </Route>
       </MemoryRouter>
@@ -52,9 +63,23 @@ describe('RepoContentsTable', () => {
       expect(screen.getByText(/92.78%/)).toBeInTheDocument()
       expect(screen.getByText(/62.53%/)).toBeInTheDocument()
     })
+
+    it('renders corresponding links', () => {
+      const directory = screen.getByText('flag2')
+      expect(directory).toHaveAttribute(
+        'href',
+        '/gh/Rabee-AbuBaker/another-test/tree/main/flag2'
+      )
+
+      const file = screen.getByText('app.js')
+      expect(file).toHaveAttribute(
+        'href',
+        '/gh/Rabee-AbuBaker/another-test/blobs/main/src/app.js'
+      )
+    })
   })
 
-  describe('when impacted files are in pending state', () => {
+  describe('when loading', () => {
     beforeEach(() => {
       setup({ isLoading: true })
     })
