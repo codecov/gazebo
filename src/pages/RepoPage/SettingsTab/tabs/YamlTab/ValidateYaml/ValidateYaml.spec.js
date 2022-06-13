@@ -17,7 +17,7 @@ describe('ValidateYaml', () => {
     })
     it('renders body', () => {
       const p = screen.getByText(
-        /Use this shell scrip to post your yaml to Codecov to be checked for syntax and layout issues/
+        /Use this shell script to post your yaml to Codecov to be checked for syntax and layout issues./
       )
       expect(p).toBeInTheDocument()
     })
