@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { blobsString, treeString } from 'pages/RepoPage/pathMatchersHooks'
@@ -74,6 +74,12 @@ export function useCoverageRedirect() {
       setIsRedirectionEnabled(true)
     }
   }, [newPath])
+
+  // reset on path change
+  useEffect(() => {
+    setIsRedirectionEnabled(false)
+    setNewPath()
+  }, [location.pathname])
 
   return {
     setNewPath: setNewPathHandler,
