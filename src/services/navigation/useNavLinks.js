@@ -204,6 +204,28 @@ function useNavLinks() {
       isExternalLink: true,
       text: 'Tree View',
     },
+    fileViewer: {
+      path: (
+        { provider = p, owner = o, repo = r, branch, path } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/blobs/${branch}/${path}`,
+      isExternalLink: false,
+      text: 'File Viewer',
+    },
+    repoContentsTree: {
+      path: (
+        { provider = p, owner = o, repo = r, path, branch } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/tree/${branch}/${path}`,
+      isExternalLink: false,
+      text: 'Repo Contents Tree',
+    },
     new: {
       path: (
         { provider = p, owner = o, repo = r } = {

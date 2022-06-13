@@ -6,6 +6,7 @@ import Spinner from 'ui/Spinner'
 import Summary from './Summary'
 
 const Fileviewer = lazy(() => import('./subroute/Fileviewer'))
+const RepoContentsTable = lazy(() => import('./subroute/RepoContents'))
 
 function CoverageTab() {
   const Loader = (
@@ -21,17 +22,12 @@ function CoverageTab() {
         <Switch>
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
             <Suspense fallback={Loader}>
-              {/* Tree Component after being clicked for the 1st time */}
-              <h1>Tree Component after Clicked including a folder location</h1>
+              <RepoContentsTable />
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/tree/:branch" exact>
             <Suspense fallback={Loader}>
-              {/* Same Root Tree Component after being clicked for the 1st time */}
-              <h1>
-                Root Tree Component Branch switch, this is the root of the
-                projects source
-              </h1>
+              <RepoContentsTable />
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/blobs/:ref/:path+" exact>
@@ -41,8 +37,7 @@ function CoverageTab() {
           </Route>
           <Route path="/:provider/:owner/:repo/" exact>
             <Suspense fallback={Loader}>
-              {/* Root Tree Component */}
-              <h1>Root OG Tree Component on the default branch</h1>
+              <RepoContentsTable />
             </Suspense>
           </Route>
         </Switch>
