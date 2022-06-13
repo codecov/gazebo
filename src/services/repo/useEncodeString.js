@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation } from 'react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
@@ -20,13 +20,7 @@ function encodeString({ provider, owner, repo, value }) {
 
 export function useEncodeString() {
   const { provider, owner, repo } = useParams()
-  const queryClient = useQueryClient()
-  return useMutation(
-    ({ value }) => encodeString({ provider, owner, repo, value }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('GetRepo')
-      },
-    }
+  return useMutation(({ value }) =>
+    encodeString({ provider, owner, repo, value })
   )
 }
