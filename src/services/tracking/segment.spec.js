@@ -225,7 +225,7 @@ describe('useSegmentPage', () => {
 
 describe('trackSegmentEvent', () => {
   function setup(event, label, category) {
-    trackSegmentEvent({ event, label, category })
+    trackSegmentEvent({ event, data: { label, category } })
   }
 
   describe('when event is defined', () => {
