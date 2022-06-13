@@ -5,7 +5,7 @@ import CopyClipboard from 'ui/CopyClipboard'
 const TokenWrapper = ({ token }) => {
   return (
     <div className="flex flex-row gap-1">
-      <pre className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto">
+      <pre className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto whitespace-pre-line">
         {token}
       </pre>
       <CopyClipboard string={token} showLabel />
