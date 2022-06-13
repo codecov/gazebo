@@ -536,42 +536,77 @@ describe('useAutoActivate', () => {
   let hookData
   let onSuccess = jest.fn()
 
-  function setup() {
-    const opts = {
-      onSuccess,
-    }
-    server.use(
-      rest.patch(
-        `/internal/${provider}/${owner}/account-details/`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}))
-        }
+  describe('options is set', () => {
+    function setup() {
+      const opts = {
+        onSuccess,
+      }
+      server.use(
+        rest.patch(
+          `/internal/${provider}/${owner}/account-details/`,
+          (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json({}))
+          }
+        )
       )
-    )
-    hookData = renderHook(() => useAutoActivate({ provider, owner, opts }), {
-      wrapper,
-    })
-  }
+      hookData = renderHook(() => useAutoActivate({ provider, owner, opts }), {
+        wrapper,
+      })
+    }
 
-  describe('when called', () => {
-    beforeEach(() => {
-      setup()
-      return waitFor(() => {
-        hookData.result.current.mutate(true)
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+    describe('when called', () => {
+      beforeEach(() => {
+        setup()
+        return waitFor(() => {
+          hookData.result.current.mutate(true)
+          return hookData.waitFor(() => hookData.result.current.isSuccess)
+        })
+      })
+
+      it('opts are passed through to react-query', () => {
+        expect(onSuccess).toHaveBeenCalledTimes(1)
+      })
+
+      it('accountDetails cache unchanged', () => {
+        expect(queryClient.isFetching('accountDetails')).toBe(0)
+      })
+
+      it('users cache unchanged', () => {
+        expect(queryClient.isFetching('users')).toBe(0)
       })
     })
+  })
+  describe('opts is not set', () => {
+    function setup() {
+      server.use(
+        rest.patch(
+          `/internal/${provider}/${owner}/account-details/`,
+          (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json({}))
+          }
+        )
+      )
+      hookData = renderHook(() => useAutoActivate({ provider, owner }), {
+        wrapper,
+      })
+    }
 
-    it('opts are passed through to react-query', () => {
-      expect(onSuccess).toHaveBeenCalledTimes(1)
-    })
+    describe('when called', () => {
+      beforeEach(() => {
+        setup()
+        return waitFor(() => {
+          hookData.result.current.mutate(true)
+          return hookData.waitFor(() => hookData.result.current.isSuccess)
+        })
+      })
 
-    it('accountDetails cache unchanged', () => {
-      expect(queryClient.isFetching('accountDetails')).toBe(0)
-    })
+      it('accountDetails cache unchanged', () => {
+        expect(queryClient.isFetching('accountDetails')).toBe(0)
+      })
 
-    it('users cache unchanged', () => {
-      expect(queryClient.isFetching('users')).toBe(0)
+      it('users cache unchanged', () => {
+        expect(queryClient.isFetching('users')).toBe(0)
+      })
     })
   })
 })
