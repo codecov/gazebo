@@ -18,7 +18,7 @@ function CoverageTab() {
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       <Summary />
-      <div className="flex flex-1 flex-col gap-4">
+      <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Switch>
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
             <Suspense fallback={Loader}>
