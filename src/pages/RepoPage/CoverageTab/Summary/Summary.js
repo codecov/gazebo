@@ -1,5 +1,7 @@
+import { useLayoutEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 
+import { useSetCrumbs } from 'pages/RepoPage/context'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
@@ -15,7 +17,24 @@ const Summary = () => {
     branchSelectorProps,
     newPath,
     isRedirectionEnabled,
+    privateRepo,
   } = useSummary()
+  const setCrumbs = useSetCrumbs()
+
+  useLayoutEffect(() => {
+    setCrumbs([
+      {
+        pageName: '',
+        readOnly: true,
+        children: (
+          <span className="flex items-center gap-1">
+            <Icon name="branch" variant="developer" size="sm" />
+            {currentBranchSelected?.name}
+          </span>
+        ),
+      },
+    ])
+  }, [currentBranchSelected?.name, setCrumbs, privateRepo])
 
   return (
     <>
