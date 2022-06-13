@@ -1,11 +1,8 @@
 import { useCallback, useLayoutEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import {
-  blobsString,
-  formatPath,
-  treeString,
-} from 'pages/RepoPage/pathMatchersHooks'
+import { blobsString, treeString } from 'pages/RepoPage/pathMatchersHooks'
+import { formatPathPrefix } from 'shared/utils/url'
 
 const handleBlobs = ({ pathname, owner, repo, ref, newRef }) => {
   if (owner && repo && pathname.includes('blobs') && ref) {
@@ -66,7 +63,7 @@ export function useCoverageRedirect() {
 
   const createPathCb = useCallback(
     ({ name }) => {
-      const pathname = formatPath(location.pathname)
+      const pathname = formatPathPrefix(location.pathname)
       return createPath({ pathname, owner, repo, ref, branch, name })
     },
     [location.pathname, branch, ref, repo, owner]
