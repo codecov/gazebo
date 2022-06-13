@@ -60,5 +60,10 @@ describe('YamlTab', () => {
       expect(p1).toBeInTheDocument()
       expect(p2).toBeInTheDocument()
     })
+
+    it('renders ValidateYaml compoenent', () => {
+      const title = screen.getByText(/Validate the yaml/)
+      expect(title).toBeInTheDocument()
+    })
   })
 })
