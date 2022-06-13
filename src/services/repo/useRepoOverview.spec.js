@@ -41,7 +41,6 @@ describe('useRepoOverview', () => {
         owner: {
           repository: {
             defaultBranch: 'main',
-            coverage: 70.44,
             branches: {
               edges: [
                 { node: { name: 'test', head: { commitid: '1234567' } } },
@@ -66,7 +65,6 @@ describe('useRepoOverview', () => {
         await hookData.waitFor(() =>
           expect(hookData.result.current.data).toEqual({
             defaultBranch: 'main',
-            coverage: 70.44,
             branches: {
               edges: [
                 { node: { name: 'test', head: { commitid: '1234567' } } },
