@@ -1,6 +1,7 @@
 import { useRepoSettings } from 'services/repo'
 
 import CurrentRepoSettings from './CurrentRepoSettings'
+import ValidateYaml from './ValidateYaml'
 import YAML from './YAML'
 
 function YamlTab() {
@@ -16,6 +17,7 @@ function YamlTab() {
           defaultBranch={repository?.defaultBranch}
         />
         <hr />
+        <ValidateYaml />
       </div>
     </div>
   )
