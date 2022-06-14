@@ -25,7 +25,7 @@ function Badges({ graphToken, defaultBranch }) {
   return (
     <SettingsDescriptor
       title="Codecov badge"
-      description="A live icon that can embed within your code and it provides quick insight into your project’s percentage of code coverage"
+      description="A live icon that can be embedded within your code that provides a quick insight into your project’s percentage of code coverage."
       content={
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
@@ -47,7 +47,7 @@ function Badges({ graphToken, defaultBranch }) {
 }
 
 Badges.propTypes = {
-  defaultBranch: PropTypes.string.isRequired,
+  defaultBranch: PropTypes.string,
   graphToken: PropTypes.string.isRequired,
 }
 

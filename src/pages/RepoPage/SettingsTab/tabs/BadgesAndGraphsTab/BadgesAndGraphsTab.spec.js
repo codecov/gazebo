@@ -30,7 +30,7 @@ describe('BadgesAndGraphsTab', () => {
 
   describe('when rendered with graphToken', () => {
     beforeEach(() => {
-      setup({ graphToken: 'random' })
+      setup({ graphToken: 'WIO9JXFGE3' })
     })
 
     it('renders badges compoenent', () => {

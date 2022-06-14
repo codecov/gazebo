@@ -14,7 +14,7 @@ describe('Badges', () => {
       >
         <QueryClientProvider client={queryClient}>
           <Route path="/:provider/:owner/:repo/settings/badge">
-            <Badges graphToken="random" defaultBranch="master" />
+            <Badges graphToken="WIO9JXFGE" defaultBranch="master" />
           </Route>
         </QueryClientProvider>
       </MemoryRouter>
@@ -31,7 +31,7 @@ describe('Badges', () => {
     })
     it('renders body', () => {
       const p = screen.getByText(
-        /A live icon that can embed within your code and it provides quick insight into your project’s percentage of code coverage/
+        /A live icon that can be embedded within your code that provides a quick insight into your project’s percentage of code coverage./
       )
       expect(p).toBeInTheDocument()
     })
