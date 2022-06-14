@@ -8,18 +8,12 @@ import Progress from 'ui/Progress'
 import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
-import { useSummary } from './hooks'
+import { useCoverageRedirect, useSummary } from './hooks'
 
 const Summary = () => {
-  const {
-    data,
-    currentBranchSelected,
-    branchSelectorProps,
-    newPath,
-    isRedirectionEnabled,
-    privateRepo,
-  } = useSummary()
   const setCrumbs = useSetCrumbs()
+  const { data, currentBranchSelected, branchSelectorProps } = useSummary()
+  const { setNewPath, state: redirectState } = useCoverageRedirect()
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -34,11 +28,18 @@ const Summary = () => {
         ),
       },
     ])
-  }, [currentBranchSelected?.name, setCrumbs, privateRepo])
+  }, [currentBranchSelected?.name, setCrumbs])
+
+  const onChangeHandler = ({ name }) => {
+    setNewPath(name)
+  }
 
   return (
     <>
-      {isRedirectionEnabled && <Redirect to={newPath} />}
+      {redirectState?.newPath}
+      {redirectState?.isRedirectionEnabled && (
+        <Redirect to={redirectState?.newPath} />
+      )}
       <SummaryRoot>
         <SummaryField>
           <h3 className="text-ds-gray-octonary text-sm font-semibold flex gap-1 items-center">
@@ -50,6 +51,7 @@ const Summary = () => {
           <span className="text-sm min-w-[16rem]">
             <Select
               {...branchSelectorProps}
+              onChange={onChangeHandler}
               variant="gray"
               renderItem={(item) => <span>{item?.name}</span>}
             />

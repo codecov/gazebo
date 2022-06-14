@@ -44,22 +44,6 @@ describe('useBranchSelector', () => {
       expect(hookData.result.current.selection).toEqual({ name: 'imogen' })
     })
 
-    it('passed down the newPath', () => {
-      expect(hookData.result.current.newPath).toEqual('test/test')
-    })
-
-    it('passed down the isRedirectionEnabled', () => {
-      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
-    })
-
-    it('triggers setNewPath correctly', () => {
-      hookData.result.current.branchSelectorProps.onChange({
-        test: '1234',
-      })
-
-      expect(mockSetNewPath).toHaveBeenCalledWith({ test: '1234' })
-    })
-
     it('sets the branchSelectorProps items correctly', () => {
       expect(hookData.result.current.branchSelectorProps.items).toEqual([
         { name: 'fcg' },
@@ -105,22 +89,6 @@ describe('useBranchSelector', () => {
       expect(hookData.result.current.selection).toEqual({ name: 'fcg' })
     })
 
-    it('passed down the newPath', () => {
-      expect(hookData.result.current.newPath).toEqual('test/test')
-    })
-
-    it('passed down the isRedirectionEnabled', () => {
-      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
-    })
-
-    it('triggers setNewPath correctly', () => {
-      hookData.result.current.branchSelectorProps.onChange({
-        test: '1234',
-      })
-
-      expect(mockSetNewPath).toHaveBeenCalledWith({ test: '1234' })
-    })
-
     it('sets the branchSelectorProps items correctly', () => {
       expect(hookData.result.current.branchSelectorProps.items).toEqual([
         { name: 'fcg' },
@@ -164,22 +132,6 @@ describe('useBranchSelector', () => {
 
     it('sets the selected branch', () => {
       expect(hookData.result.current.selection).toEqual({ name: 'fcg' })
-    })
-
-    it('passed down the newPath', () => {
-      expect(hookData.result.current.newPath).toEqual('test/test')
-    })
-
-    it('passed down the isRedirectionEnabled', () => {
-      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
-    })
-
-    it('triggers setNewPath correctly', () => {
-      hookData.result.current.branchSelectorProps.onChange({
-        test: '1234',
-      })
-
-      expect(mockSetNewPath).toHaveBeenCalledWith({ test: '1234' })
     })
 
     it('sets the branchSelectorProps items correctly', () => {

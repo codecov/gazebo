@@ -1,89 +1,62 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { useCallback, useLayoutEffect, useReducer } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { blobsString, treeString } from 'pages/RepoPage/pathMatchersHooks'
 import { formatPathPrefix } from 'shared/utils/url'
 
-const handleBlobs = ({ pathname, owner, repo, ref, newRef }) => {
-  if (owner && repo && pathname.includes('blobs') && ref) {
-    return pathname.replace(
-      `${blobsString({ owner, repo })}/${ref}`,
-      `${blobsString({ owner, repo })}/${newRef}`
-    )
-  }
-  return
+import { createPath } from '../utils/paths'
+
+const initState = {
+  newPath: undefined,
+  isRedirectionEnabled: false,
 }
 
-const handleTree = ({ pathname, owner, repo, branch, newBranch }) => {
-  if (owner && repo && pathname.includes('tree') && branch) {
-    return pathname.replace(
-      `${treeString({ owner, repo })}/${branch}`,
-      `${treeString({ owner, repo })}/${newBranch}`
-    )
-  }
-  return
-}
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'redirect':
+      const { path, ...payload } = action.payload
+      const pathname = formatPathPrefix(path)
+      const newPath = createPath({ pathname, ...payload })
 
-const handleRootLocation = ({ pathname, owner, repo, newBranch }) => {
-  if (pathname.includes(`${owner}/${repo}`) && newBranch) {
-    return pathname.replace(
-      `${owner}/${repo}`,
-      `${treeString({ owner, repo })}/${newBranch}`
-    )
+      return {
+        isRedirectionEnabled: !!newPath,
+        newPath,
+      }
+    default:
+      return initState
   }
-  return
-}
-
-function createPath({ pathname, owner, repo, ref, branch, name }) {
-  let newPath
-  newPath = handleBlobs({ pathname, owner, repo, ref, newRef: name })
-  if (!newPath) {
-    newPath = handleTree({ pathname, owner, repo, branch, newBranch: name })
-  }
-  if (!newPath) {
-    newPath = handleRootLocation({ pathname, owner, repo, newBranch: name })
-  }
-  return newPath
 }
 
 export function useCoverageRedirect() {
   const location = useLocation()
   const { repo, branch, ref, owner } = useParams()
+  const [state, dispatch] = useReducer(reducer, initState)
 
-  const [newPath, setNewPath] = useState()
-  const [isRedirectionEnabled, setIsRedirectionEnabled] = useState(false)
-
-  /**
-   *
-   * @param {{name: String}} selection
-   */
-  const setNewPathHandler = (selection) => {
-    setNewPath(createPathCb(selection))
-  }
-
-  const createPathCb = useCallback(
-    ({ name }) => {
-      const pathname = formatPathPrefix(location.pathname)
-      return createPath({ pathname, owner, repo, ref, branch, name })
+  const setNewPath = useCallback(
+    (newBranch) => {
+      dispatch({
+        type: 'redirect',
+        payload: {
+          path: location.pathname,
+          owner,
+          repo,
+          ref,
+          branch,
+          name: newBranch,
+        },
+      })
     },
-    [location.pathname, branch, ref, repo, owner]
+    [location.pathname, owner, repo, ref, branch]
   )
 
+  // On route change reset
   useLayoutEffect(() => {
-    if (newPath) {
-      setIsRedirectionEnabled(true)
-    }
-  }, [newPath])
-
-  // reset on path change
-  useEffect(() => {
-    setIsRedirectionEnabled(false)
-    setNewPath()
+    dispatch({
+      type: 'init',
+    })
   }, [location.pathname])
 
   return {
-    setNewPath: setNewPathHandler,
-    newPath,
-    isRedirectionEnabled,
+    setNewPath,
+    state,
   }
 }

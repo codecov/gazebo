@@ -20,16 +20,16 @@ describe('useCoverageRedirect', () => {
   }
 
   describe.each`
-    desc                                                         | startingLocation                             | branchSelection   | branch       | ref          | expectedNewPath                                  | isRedirectionEnabled
-    ${`from root`}                                               | ${`critical-role/c3`}                        | ${'chetney'}      | ${undefined} | ${undefined} | ${'critical-role/c3/tree/chetney'}               | ${true}
-    ${`from root (manual extra /)`}                              | ${`critical-role/c3/`}                       | ${'chetney'}      | ${undefined} | ${undefined} | ${'critical-role/c3/tree/chetney'}               | ${true}
-    ${`from a file view`}                                        | ${`critical-role/c3/blobs/chetney/foo/bar`}  | ${'blood-hunter'} | ${undefined} | ${'chetney'} | ${'critical-role/c3/blobs/blood-hunter/foo/bar'} | ${true}
-    ${`from a file view (manual extra /)`}                       | ${`critical-role/c3/blobs/chetney/foo/bar/`} | ${'blood-hunter'} | ${undefined} | ${'chetney'} | ${'critical-role/c3/blobs/blood-hunter/foo/bar'} | ${true}
-    ${`from a tree view`}                                        | ${`critical-role/c3/tree/laudna/foo/bar`}    | ${'chetney'}      | ${'laudna'}  | ${undefined} | ${'critical-role/c3/tree/chetney/foo/bar'}       | ${true}
-    ${`from a tree view (manual extra /)`}                       | ${`critical-role/c3/tree/laudna/foo/bar/`}   | ${'chetney'}      | ${'laudna'}  | ${undefined} | ${'critical-role/c3/tree/chetney/foo/bar'}       | ${true}
-    ${`fails if no new branch selected`}                         | ${`critical-role`}                           | ${undefined}      | ${undefined} | ${`wizard`}  | ${undefined}                                     | ${false}
-    ${`fails if no params and no new selection`}                 | ${`critical-role/c3`}                        | ${undefined}      | ${undefined} | ${undefined} | ${undefined}                                     | ${false}
-    ${`fails if startingLocation doesnt match org/repo pattern`} | ${`critical-role`}                           | ${'fcg'}          | ${undefined} | ${undefined} | ${undefined}                                     | ${false}
+    desc                                                          | startingLocation                             | branchSelection   | branch       | ref          | expectedNewPath                                  | isRedirectionEnabled
+    ${`from root`}                                                | ${`critical-role/c3`}                        | ${'chetney'}      | ${undefined} | ${undefined} | ${'critical-role/c3/tree/chetney'}               | ${true}
+    ${`from root (manual extra /)`}                               | ${`critical-role/c3/`}                       | ${'chetney'}      | ${undefined} | ${undefined} | ${'critical-role/c3/tree/chetney'}               | ${true}
+    ${`from a file view`}                                         | ${`critical-role/c3/blobs/chetney/foo/bar`}  | ${'blood-hunter'} | ${undefined} | ${'chetney'} | ${'critical-role/c3/blobs/blood-hunter/foo/bar'} | ${true}
+    ${`from a file view (manual extra /)`}                        | ${`critical-role/c3/blobs/chetney/foo/bar/`} | ${'blood-hunter'} | ${undefined} | ${'chetney'} | ${'critical-role/c3/blobs/blood-hunter/foo/bar'} | ${true}
+    ${`from a tree view`}                                         | ${`critical-role/c3/tree/laudna/foo/bar`}    | ${'chetney'}      | ${'laudna'}  | ${undefined} | ${'critical-role/c3/tree/chetney/foo/bar'}       | ${true}
+    ${`from a tree view (manual extra /)`}                        | ${`critical-role/c3/tree/laudna/foo/bar/`}   | ${'chetney'}      | ${'laudna'}  | ${undefined} | ${'critical-role/c3/tree/chetney/foo/bar'}       | ${true}
+    ${`fails if no new branch selected`}                          | ${`critical-role`}                           | ${undefined}      | ${undefined} | ${`wizard`}  | ${null}                                          | ${false}
+    ${`fails if no params and no new selection`}                  | ${`critical-role/c3`}                        | ${undefined}      | ${undefined} | ${undefined} | ${null}                                          | ${false}
+    ${`fails if startingLocation doesn't match org/repo pattern`} | ${`critical-role`}                           | ${'fcg'}          | ${undefined} | ${undefined} | ${null}                                          | ${false}
   `(
     `redirects`,
     ({
@@ -53,28 +53,29 @@ describe('useCoverageRedirect', () => {
           startingLocation,
         })
       })
+
       describe(`${desc}`, () => {
         it('starts with no new path', () => {
-          expect(hookData.result.current.newPath).toEqual(undefined)
+          expect(hookData.result.current.state.newPath).toEqual(undefined)
         })
 
         it('isRedirectionEnabled starts false', () => {
-          expect(hookData.result.current.isRedirectionEnabled).toBeFalsy()
+          expect(hookData.result.current.state.isRedirectionEnabled).toBeFalsy()
         })
 
         describe('on setNewPath fired', () => {
           beforeEach(() => {
             act(() => {
-              hookData.result.current.setNewPath({ name: branchSelection })
+              hookData.result.current.setNewPath(branchSelection)
             })
           })
 
           it('A newPath is set', () => {
-            expect(hookData.result.current.newPath).toBe(expectedNewPath)
+            expect(hookData.result.current.state.newPath).toBe(expectedNewPath)
           })
 
           it('isRedirectionEnabled is enabled', () => {
-            expect(hookData.result.current.isRedirectionEnabled).toBe(
+            expect(hookData.result.current.state.isRedirectionEnabled).toBe(
               isRedirectionEnabled
             )
           })
