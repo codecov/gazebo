@@ -1,15 +1,28 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useLocationParams } from 'services/navigation'
 
 import CoverageTab from './CoverageTab'
 
 jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
 jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
 jest.mock('./Summary', () => () => 'Summary Component')
+jest.mock('services/navigation', () => ({
+  ...jest.requireActual('services/navigation'),
+  useLocationParams: jest.fn(),
+}))
 
 describe('Coverage Tab', () => {
+  const mockUpdateParams = jest.fn()
   function setup({ initialEntries }) {
+    useLocationParams.mockReturnValue({
+      params: { search: '' },
+      updateParams: mockUpdateParams,
+    })
+
     render(
       <MemoryRouter initialEntries={initialEntries}>
         <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
@@ -91,6 +104,28 @@ describe('Coverage Tab', () => {
       expect(
         screen.queryByText(/RepoContents Component/)
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('update search params after typing', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+      setup({ initialEntries: ['/gh/test-org/test-repo/tree/master/src'] })
+      const searchInput = screen.getByRole('textbox', {
+        name: 'Search for files',
+      })
+      userEvent.type(searchInput, 'file.js')
+    })
+
+    describe('after waiting for debounce', () => {
+      beforeEach(() => {
+        jest.advanceTimersByTime(600)
+      })
+
+      it('calls setSearchValue', () => {
+        expect(mockUpdateParams).toHaveBeenCalled()
+        expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
+      })
     })
   })
 })
