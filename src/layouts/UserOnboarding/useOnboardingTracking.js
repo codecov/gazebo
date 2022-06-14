@@ -14,7 +14,9 @@ export function useOnboardingTracking() {
     startOnboarding: () => {
       trackSegmentEvent({
         event: 'User Started Onboarding',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
       const customPath = '/onboarding/1'
       pageSegmentEvent({
@@ -34,20 +36,26 @@ export function useOnboardingTracking() {
     helpFindingOrganization: () => {
       trackSegmentEvent({
         event: 'User Onboarding Help Finding Org Clicked',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
     },
     skipOnboarding: () => {
       trackSegmentEvent({
         event: 'User Onboarding Skipped',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
     },
     selectOrganization: (user, organization) => {
       const id = user?.trackingMetadata?.ownerid
       trackSegmentEvent({
         event: 'User Onboarding Selected Org',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
       identifySegmentEvent({ id, organization })
     },
@@ -55,7 +63,9 @@ export function useOnboardingTracking() {
       const id = user?.trackingMetadata?.ownerid
       trackSegmentEvent({
         event: 'User Onboarding Selected Repo',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
       identifySegmentEvent({ id, repo })
     },
@@ -63,7 +73,9 @@ export function useOnboardingTracking() {
       const id = user?.trackingMetadata?.ownerid
       trackSegmentEvent({
         event: 'User Completed Onboarding',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
 
       // Changing arrays to semicolon delimiting strings for analytics purposes

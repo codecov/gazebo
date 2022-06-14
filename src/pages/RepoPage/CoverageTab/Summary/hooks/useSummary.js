@@ -18,6 +18,7 @@ export function useSummary() {
     repo,
     owner,
     branch: selection?.name,
+    options: { enabled: !!selection?.name },
   })
 
   return {
