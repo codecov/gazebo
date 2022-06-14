@@ -1,6 +1,7 @@
 import { useRepoSettings } from 'services/repo'
 
 import Badges from './Badges/Badges'
+import Graphs from './Graphs'
 
 function BadgesAndGraphsTab() {
   const { data } = useRepoSettings()
@@ -14,6 +15,7 @@ function BadgesAndGraphsTab() {
           defaultBranch={repository?.defaultBranch}
         />
       )}
+      {repository?.graphToken && <Graphs graphToken={repository?.graphToken} />}
     </div>
   )
 }

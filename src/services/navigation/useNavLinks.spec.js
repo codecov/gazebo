@@ -735,6 +735,7 @@ describe('useStaticNavLinks', () => {
     ${links.teamBot}            | ${'https://docs.codecov.com/docs/team-bot'}
     ${links.runtimeInsights}    | ${'https://docs.codecov.com/docs/runtime-insights'}
     ${links.graphAuthorization} | ${'https://docs.codecov.com/reference/authorization#about-graphs'}
+    ${links.graphsSunburst}     | ${'https://docs.codecov.com/reference/sunburst'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

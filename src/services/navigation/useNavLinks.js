@@ -480,6 +480,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    graphsSunburst: {
+      text: 'Graphs Sunburst',
+      path: () => 'https://docs.codecov.com/reference/sunburst',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
 
