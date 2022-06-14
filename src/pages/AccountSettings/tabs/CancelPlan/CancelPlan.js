@@ -4,6 +4,7 @@ import PropType from 'prop-types'
 import Card from 'old_ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
+import { useFlags } from 'shared/featureFlags'
 import { isFreePlan } from 'shared/utils/billing'
 
 import DowngradeToFree from './DowngradeToFree'
@@ -18,10 +19,17 @@ function CancelPlan({ provider, owner }) {
   const { billingAndUsers } = useNavLinks()
 
   const freePlan = plans.find((plan) => isFreePlan(plan.value))
-  const proPlanMonth = plans.find(
-    (plan) =>
-      plan.value === 'users-pr-inappm' || plan.value === 'users-enterprisem'
-  )
+  const { enterpriseCloudPlanSupport } = useFlags({
+    enterpriseCloudPlanSupport: true,
+  })
+
+  const proPlanMonth = enterpriseCloudPlanSupport
+    ? plans.find(
+        (plan) =>
+          plan.value === 'users-pr-inappm' || plan.value === 'users-enterprisem'
+      )
+    : plans.find((plan) => plan.value === 'users-pr-inappm')
+
   const unavailableBenefits = difference(
     proPlanMonth.benefits,
     freePlan.benefits
