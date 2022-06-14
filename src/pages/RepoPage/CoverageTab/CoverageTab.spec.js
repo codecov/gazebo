@@ -109,7 +109,6 @@ describe('Coverage Tab', () => {
 
   describe('update search params after typing', () => {
     beforeEach(() => {
-      jest.useFakeTimers()
       setup({ initialEntries: ['/gh/test-org/test-repo/tree/master/src'] })
       const searchInput = screen.getByRole('textbox', {
         name: 'Search for files',
@@ -118,13 +117,11 @@ describe('Coverage Tab', () => {
     })
 
     describe('after waiting for debounce', () => {
-      beforeEach(() => {
-        jest.advanceTimersByTime(600)
-      })
-
-      it('calls setSearchValue', () => {
-        expect(mockUpdateParams).toHaveBeenCalled()
-        expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
+      it('calls setSearchValue', async () => {
+        await waitFor(() => expect(mockUpdateParams).toHaveBeenCalled())
+        await waitFor(() =>
+          expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
+        )
       })
     })
   })
