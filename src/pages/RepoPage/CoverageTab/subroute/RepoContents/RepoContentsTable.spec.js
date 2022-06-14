@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useRepoOverview } from 'services/repo'
 import { useRepoContents } from 'services/repoContents/hooks'
@@ -8,6 +8,10 @@ import RepoContentsTable from './RepoContentsTable'
 
 jest.mock('services/repoContents/hooks')
 jest.mock('services/repo')
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest.fn(() => {}),
+}))
 
 const repoContents = [
   {
@@ -18,7 +22,7 @@ const repoContents = [
   },
   {
     name: 'app.js',
-    filepath: 'src',
+    filepath: '',
     percentCovered: 62.53,
     type: 'file',
   },
@@ -26,19 +30,31 @@ const repoContents = [
 
 const useRepoOverviewMock = {
   data: {
-    defaultBranch: 'main',
+    defaultBranch: 'default-branch',
     private: true,
   },
   isLoading: false,
 }
 
 describe('RepoContentsTable', () => {
-  function setup({ isLoading = false, data = repoContents } = {}) {
+  function setup({
+    isLoading = false,
+    data = repoContents,
+    branch,
+    path,
+  } = {}) {
     useRepoContents.mockReturnValue({
       data,
       isLoading,
     })
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
+    useParams.mockReturnValue({
+      owner: 'Rabee-AbuBaker',
+      provider: 'gh',
+      repo: 'another-test',
+      branch: branch,
+      path: path || '',
+    })
 
     render(
       <MemoryRouter initialEntries={['/gh/Rabee-AbuBaker/another-test']}>
@@ -68,7 +84,27 @@ describe('RepoContentsTable', () => {
       const directory = screen.getByText('flag2')
       expect(directory).toHaveAttribute(
         'href',
-        '/gh/Rabee-AbuBaker/another-test/tree/main/flag2'
+        '/gh/Rabee-AbuBaker/another-test/tree/default-branch/flag2'
+      )
+
+      const file = screen.getByText('app.js')
+      expect(file).toHaveAttribute(
+        'href',
+        '/gh/Rabee-AbuBaker/another-test/blobs/default-branch/app.js'
+      )
+    })
+  })
+
+  describe('when the url has branch and path params', () => {
+    beforeEach(() => {
+      setup({ branch: 'main', path: 'src' })
+    })
+
+    it('renders corresponding links correctly', () => {
+      const directory = screen.getByText('flag2')
+      expect(directory).toHaveAttribute(
+        'href',
+        '/gh/Rabee-AbuBaker/another-test/tree/main/src/flag2'
       )
 
       const file = screen.getByText('app.js')

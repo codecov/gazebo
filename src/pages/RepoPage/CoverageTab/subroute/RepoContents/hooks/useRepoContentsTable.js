@@ -7,9 +7,9 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 
-function createTable({ tableData, branch }) {
+function createTable({ tableData, branch, path }) {
   return tableData?.length > 0
-    ? tableData.map(({ name, percentCovered, type, filepath }) => ({
+    ? tableData.map(({ name, percentCovered, type }) => ({
         name: (
           <div className="flex gap-2 text-ds-gray-quinary">
             <Icon name={type === 'dir' ? 'folder' : 'document'} size="md" />
@@ -18,7 +18,7 @@ function createTable({ tableData, branch }) {
                 pageName: `${type === 'dir' ? 'treeView' : 'fileViewer'}`,
                 options: {
                   ref: branch,
-                  tree: Boolean(filepath) ? `${filepath}/${name}` : name,
+                  tree: Boolean(path) ? `${path}/${name}` : name,
                 },
               }}
             >
@@ -74,8 +74,12 @@ export function useRepoContentsTable() {
 
   const data = useMemo(
     () =>
-      createTable({ tableData: repoContents, branch: branch || defaultBranch }),
-    [repoContents, branch, defaultBranch]
+      createTable({
+        tableData: repoContents,
+        branch: branch || defaultBranch,
+        path,
+      }),
+    [repoContents, branch, defaultBranch, path]
   )
 
   // TODO: Enable sorting
