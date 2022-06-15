@@ -8,7 +8,7 @@ import SearchField from './SearchField'
 function BreadcrumbSearch({ searchValue, setSearchValue }) {
   const { treePaths } = useTreePaths()
   return (
-    <div className="flex justify-between border-b border-ds-gray-tertiary py-6">
+    <div className="flex justify-between pt-4">
       <Breadcrumb paths={[...treePaths]} />
       <SearchField searchValue={searchValue} setSearchValue={setSearchValue} />
     </div>
