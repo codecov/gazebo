@@ -8,6 +8,30 @@ Progress.args = {
   amount: 50,
 }
 
+export const ProgressZero = Template.bind({})
+
+ProgressZero.args = {
+  amount: 0,
+}
+
+export const ProgressNaN = Template.bind({})
+
+ProgressNaN.args = {
+  amount: NaN,
+}
+
+export const ProgressNull = Template.bind({})
+
+ProgressNull.args = {
+  amount: null,
+}
+
+export const ProgressUndefined = Template.bind({})
+
+ProgressUndefined.args = {
+  amount: undefined,
+}
+
 export const ProgressTall = Template.bind({})
 
 ProgressTall.args = {
@@ -19,6 +43,13 @@ export const ProgressWithLabel = Template.bind({})
 
 ProgressWithLabel.args = {
   amount: 50,
+  label: true,
+}
+
+export const ProgressInvalidWithLabel = Template.bind({})
+
+ProgressInvalidWithLabel.args = {
+  amount: 0,
   label: true,
 }
 

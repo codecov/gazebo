@@ -1,6 +1,7 @@
 import { useRepoSettings } from 'services/repo'
 
 import CurrentRepoSettings from './CurrentRepoSettings'
+import SecretString from './SecretString'
 import ValidateYaml from './ValidateYaml'
 import YAML from './YAML'
 
@@ -19,6 +20,7 @@ function YamlTab() {
         <hr />
         <ValidateYaml />
       </div>
+      <SecretString />
     </div>
   )
 }
