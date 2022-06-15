@@ -23,8 +23,10 @@ function RequestButton({ owner, provider }) {
       onClick={() =>
         trackSegmentEvent({
           event: 'clicked button',
-          label: 'request demo',
-          category: 'header cta',
+          data: {
+            label: 'request demo',
+            category: 'header cta',
+          },
         })
       }
     >
