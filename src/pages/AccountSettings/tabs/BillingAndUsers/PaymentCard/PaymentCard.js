@@ -7,17 +7,18 @@ import { subscriptionDetailType } from 'services/account'
 
 import CardInformation from './CardInformation'
 import CreditCardForm from './CreditCardForm'
+import { useEnterpriseCloudPlanSupport } from './hooks'
 
-const proPlans = [
+const defaultProPlans = [
   'users-pr-inappm',
   'users-pr-inappy',
   'users-inappm',
   'users-inappy',
-  'users-enterprisey',
-  'users-enterprisem',
 ]
-
 function PaymentCard({ subscriptionDetail, provider, owner }) {
+  const { plans: proPlans } = useEnterpriseCloudPlanSupport({
+    plans: defaultProPlans,
+  })
   const isPayingCustomer = proPlans.includes(subscriptionDetail?.plan?.value)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const card = subscriptionDetail?.defaultPaymentMethod?.card
