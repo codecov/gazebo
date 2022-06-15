@@ -8,9 +8,12 @@ function fetchRepoBranchCoverage({ provider, owner, repo, branch }) {
       owner(username:$name){
         repository(name:$repo){
           branch(name:$branch) {
+            name
             head {
               totals {
                 percentCovered
+                lineCount
+                hitsCount
               }
             }
           }
@@ -30,8 +33,18 @@ function fetchRepoBranchCoverage({ provider, owner, repo, branch }) {
   }).then((res) => res?.data?.owner?.repository?.branch || {})
 }
 
-export function useRepoCoverage({ provider, owner, repo, branch }) {
-  return useQuery(['coverage', provider, owner, repo, branch], () => {
-    return fetchRepoBranchCoverage({ provider, owner, repo, branch })
-  })
+export function useRepoCoverage({
+  provider,
+  owner,
+  repo,
+  branch,
+  options = {},
+}) {
+  return useQuery(
+    ['coverage', provider, owner, repo, branch],
+    () => {
+      return fetchRepoBranchCoverage({ provider, owner, repo, branch })
+    },
+    options
+  )
 }

@@ -47,6 +47,10 @@ describe('useRepoSettings', () => {
             uploadToken: 'token',
             profilingToken: 'token',
             graphToken: 'token',
+            yaml: 'yaml',
+            bot: {
+              username: 'test',
+            },
           },
         },
       })
@@ -71,6 +75,10 @@ describe('useRepoSettings', () => {
               uploadToken: 'token',
               profilingToken: 'token',
               graphToken: 'token',
+              yaml: 'yaml',
+              bot: {
+                username: 'test',
+              },
             },
           })
         )

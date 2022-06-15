@@ -6,6 +6,7 @@ import { useCommits } from 'services/commits'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
+import { useMatchBlobsPath, useMatchTreePath } from './pathMatchersHooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
 
@@ -19,6 +20,8 @@ const path = '/:provider/:owner/:repo'
 function RepoPage() {
   const { provider, owner, repo } = useParams()
   const { data } = useCommits({ provider, owner, repo })
+  const matchTree = useMatchTreePath()
+  const matchBlobs = useMatchBlobsPath()
 
   const repoHasCommits = data?.commits?.length > 0
 
@@ -38,7 +41,7 @@ function RepoPage() {
               {
                 pageName: 'overview',
                 children: 'Coverage',
-                exact: true,
+                exact: !matchTree && !matchBlobs,
               },
               {
                 pageName: 'commits',
@@ -57,6 +60,7 @@ function RepoPage() {
             <Route path={path} exact>
               <CoverageTab />
             </Route>
+            {/* TODO: Move to it's own layout */}
             <Route path={`${path}/new`} exact>
               <NewRepoTab />
             </Route>
@@ -70,7 +74,10 @@ function RepoPage() {
             <Route path={`${path}/settings`}>
               <SettingsTab />
             </Route>
-            <Route path={`${path}/tree/:path+`} exact>
+            <Route path={`${path}/tree/:branch/:path+`} exact>
+              <CoverageTab />
+            </Route>
+            <Route path={`${path}/tree/:branch`} exact>
               <CoverageTab />
             </Route>
             <Route path={`${path}/blobs/:ref/:path+`} exact>

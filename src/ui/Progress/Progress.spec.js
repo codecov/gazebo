@@ -25,7 +25,7 @@ describe('Progress', () => {
 
     it('renders the expected color', () => {
       const bar = screen.getByTestId('org-progress-bar')
-      expect(bar).toHaveClass('bg-ds-primary-green')
+      expect(bar).toHaveClass('h-full bg-ds-primary-green')
     })
   })
 
@@ -44,12 +44,12 @@ describe('Progress', () => {
     })
   })
 
-  describe('using the progressNeutral variant', () => {
+  describe('using the neutral color', () => {
     beforeEach(() => {
       setup({
         amount: 80,
         label: false,
-        variant: 'progressNeutral',
+        color: 'neutral',
       })
     })
 
@@ -60,16 +60,16 @@ describe('Progress', () => {
 
     it('renders the expected color', () => {
       const bar = screen.getByTestId('org-progress-bar')
-      expect(bar).toHaveClass('bg-ds-gray-senary')
+      expect(bar).toHaveClass('h-full bg-ds-gray-senary')
     })
   })
 
-  describe('using the progressDanger variant', () => {
+  describe('using the danger color', () => {
     beforeEach(() => {
       setup({
         amount: 250,
         label: false,
-        variant: 'progressDanger',
+        color: 'danger',
       })
     })
 
@@ -80,7 +80,7 @@ describe('Progress', () => {
 
     it('renders the expected color', () => {
       const bar = screen.getByTestId('org-progress-bar')
-      expect(bar).toHaveClass('bg-ds-primary-red')
+      expect(bar).toHaveClass('h-full bg-ds-primary-red')
     })
   })
 })

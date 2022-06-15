@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { trackSegmentEvent } from 'services/tracking/segment'
+import { useUser } from 'services/user'
+import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
@@ -13,6 +17,8 @@ function ImpactAnalysisToken({ profilingToken }) {
   const [showModal, setShowModal] = useState(false)
   const { regenerateToken, data, isLoading } = useGenerateProfilingToken()
   const token = data?.regenerateProfilingToken?.profilingToken || profilingToken
+  const { data: user } = useUser()
+  const { owner, repo } = useParams()
 
   return (
     <SettingsDescriptor
@@ -40,7 +46,22 @@ function ImpactAnalysisToken({ profilingToken }) {
               you are uploading coverage reports to Codecov, you should be using
               the repository upload token above.
             </p>
-            <TokenWrapper token={token} />
+            <TokenWrapper
+              token={token}
+              onClick={() => {
+                trackSegmentEvent(
+                  snakeifyKeys({
+                    id: user?.trackingMetadata?.ownerid,
+                    data: {
+                      event: 'Impact Analysis Profiling Token Copied',
+                      userOwnerid: user?.trackingMetadata?.ownerid,
+                      ownerSlug: owner,
+                      repoSlug: repo,
+                    },
+                  })
+                )
+              }}
+            />
           </div>
           <div>
             <Button

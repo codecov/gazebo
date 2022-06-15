@@ -464,6 +464,13 @@ describe('useNavLinks', () => {
         '/gl/doggo/sleep/tree/'
       )
     })
+    it('accepts a ref option', () => {
+      expect(
+        hookData.result.current.treeView.path({
+          ref: 'main',
+        })
+      ).toBe('/gl/doggo/watch/tree/main/')
+    })
     it('accepts a tree option', () => {
       expect(
         hookData.result.current.treeView.path({
@@ -661,7 +668,7 @@ describe('useNavLinks', () => {
         hookData.result.current.signUp.path({ pathname: 'random/path/name' })
       ).toBe(
         config.MARKETING_BASE_URL +
-        '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
+          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
       )
     })
   })
@@ -702,32 +709,32 @@ describe('useStaticNavLinks', () => {
   })
   const links = view.result.current
   describe.each`
-    link                       | outcome
-    ${links.root}              | ${`${config.MARKETING_BASE_URL}`}
-    ${links.terms}             | ${`${config.MARKETING_BASE_URL}/terms-and-conditions`}
-    ${links.privacy}           | ${`${config.MARKETING_BASE_URL}/privacy`}
-    ${links.security}          | ${`${config.MARKETING_BASE_URL}/security`}
-    ${links.gdpr}              | ${`${config.MARKETING_BASE_URL}/gdpr`}
-    ${links.pricing}           | ${`${config.MARKETING_BASE_URL}/pricing`}
-    ${links.support}           | ${`https://codecov.freshdesk.com/support/home`}
-    ${links.docs}              | ${`https://docs.codecov.io/`}
-    ${links.enterprise}        | ${`${config.MARKETING_BASE_URL}/self-hosted`}
-    ${links.githubMarketplace} | ${`https://github.com/marketplace/codecov`}
-    ${links.freshdesk}         | ${`https://codecov.freshdesk.com/support/home`}
-    ${links.freeTrial}         | ${`${config.MARKETING_BASE_URL}/trial`}
-    ${links.demo}              | ${`${config.MARKETING_BASE_URL}/demo`}
-    ${links.oauthTroubleshoot} | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
-    ${links.flags}             | ${'https://docs.codecov.com/docs/flags'}
-    ${links.unexpectedChanges} | ${'https://docs.codecov.com/docs/unexpected-coverage-changes'}
-    ${links.userAppManagePage} | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
-    ${links.blog}              | ${`${config.MARKETING_BASE_URL}/blog`}
-    ${links.sales}             | ${`${config.MARKETING_BASE_URL}/sales`}
-    ${links.uploader}          | ${'https://docs.codecov.com/docs/codecov-uploader'}
-    ${links.integrityCheck}    | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
-    ${links.codecovGithubApp}  | ${'https://github.com/apps/codecov'}
-    ${links.teamBot}           | ${'https://docs.codecov.com/docs/team-bot'}
-    ${links.runtimeInsights}   | ${'https://docs.codecov.com/docs/runtime-insights'}
-    ${links.graphAuthorization}| ${'https://docs.codecov.com/reference/authorization#about-graphs'}
+    link                        | outcome
+    ${links.root}               | ${`${config.MARKETING_BASE_URL}`}
+    ${links.terms}              | ${`${config.MARKETING_BASE_URL}/terms-and-conditions`}
+    ${links.privacy}            | ${`${config.MARKETING_BASE_URL}/privacy`}
+    ${links.security}           | ${`${config.MARKETING_BASE_URL}/security`}
+    ${links.gdpr}               | ${`${config.MARKETING_BASE_URL}/gdpr`}
+    ${links.pricing}            | ${`${config.MARKETING_BASE_URL}/pricing`}
+    ${links.support}            | ${`https://codecov.freshdesk.com/support/home`}
+    ${links.docs}               | ${`https://docs.codecov.io/`}
+    ${links.enterprise}         | ${`${config.MARKETING_BASE_URL}/self-hosted`}
+    ${links.githubMarketplace}  | ${`https://github.com/marketplace/codecov`}
+    ${links.freshdesk}          | ${`https://codecov.freshdesk.com/support/home`}
+    ${links.freeTrial}          | ${`${config.MARKETING_BASE_URL}/trial`}
+    ${links.demo}               | ${`${config.MARKETING_BASE_URL}/demo`}
+    ${links.oauthTroubleshoot}  | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
+    ${links.flags}              | ${'https://docs.codecov.com/docs/flags'}
+    ${links.unexpectedChanges}  | ${'https://docs.codecov.com/docs/unexpected-coverage-changes'}
+    ${links.userAppManagePage}  | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
+    ${links.blog}               | ${`${config.MARKETING_BASE_URL}/blog`}
+    ${links.sales}              | ${`${config.MARKETING_BASE_URL}/sales`}
+    ${links.uploader}           | ${'https://docs.codecov.com/docs/codecov-uploader'}
+    ${links.integrityCheck}     | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
+    ${links.codecovGithubApp}   | ${'https://github.com/apps/codecov'}
+    ${links.teamBot}            | ${'https://docs.codecov.com/docs/team-bot'}
+    ${links.runtimeInsights}    | ${'https://docs.codecov.com/docs/runtime-insights'}
+    ${links.graphAuthorization} | ${'https://docs.codecov.com/reference/authorization#about-graphs'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

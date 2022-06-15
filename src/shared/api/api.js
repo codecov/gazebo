@@ -2,7 +2,9 @@ import get from 'lodash/get'
 
 import config from 'config'
 
-import { camelizeKeys, generatePath, getHeaders } from './helpers'
+import { camelizeKeys } from 'shared/utils/camelizeKeys'
+
+import { generatePath, getHeaders } from './helpers'
 
 function _fetch({
   path,

@@ -193,8 +193,10 @@ function useNavLinks() {
           repo: r,
         }
       ) => {
-        if (!tree || !ref) {
+        if (!tree && !ref) {
           return `/${provider}/${owner}/${repo}/tree/`
+        } else if (!tree) {
+          return `/${provider}/${owner}/${repo}/tree/${ref}/`
         } else {
           return `/${provider}/${owner}/${repo}/tree/${ref}/${tree}`
         }

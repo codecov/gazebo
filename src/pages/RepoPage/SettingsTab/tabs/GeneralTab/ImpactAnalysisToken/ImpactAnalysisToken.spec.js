@@ -6,9 +6,23 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRegenerateProfilingToken } from 'services/profilingToken'
 import { useAddNotification } from 'services/toastNotification'
+import * as Segment from 'services/tracking/segment'
+import { useUser } from 'services/user'
 
 import ImpactAnalysisToken from './ImpactAnalysisToken'
 
+const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
+
+const userServices = { useUser }
+jest.spyOn(userServices, 'useUser').mockImplementation(() => ({
+  user: {
+    trackingMetadata: {
+      ownerid: 1,
+    },
+  },
+}))
+
+jest.mock('copy-to-clipboard', () => () => true)
 jest.mock('services/profilingToken')
 jest.mock('services/toastNotification')
 
@@ -27,7 +41,7 @@ describe('ImpactAnalysisToken', () => {
         data: {
           regenerateProfilingToken: {
             profilingToken,
-            error
+            error,
           },
         },
       },
@@ -64,7 +78,6 @@ describe('ImpactAnalysisToken', () => {
       const token = screen.getByText(/old token/)
       expect(token).toBeInTheDocument()
     })
-
     it('renders regenerate button', () => {
       expect(
         screen.getByRole('button', { name: 'Regenerate' })
@@ -75,9 +88,7 @@ describe('ImpactAnalysisToken', () => {
   describe('when the user clicks on regenerate button', () => {
     beforeEach(() => {
       setup({})
-      act(() =>
-        userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      )
+      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
     })
 
     it('displays the regenerate profiling token modal', () => {
@@ -95,9 +106,7 @@ describe('ImpactAnalysisToken', () => {
 
     describe('when user clicks on Cancel button', () => {
       beforeEach(() => {
-        act(() =>
-          userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-        )
+        userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
       })
       it('does not call the mutation', () => {
         expect(mutate).not.toHaveBeenCalled()
@@ -109,16 +118,36 @@ describe('ImpactAnalysisToken', () => {
     })
   })
 
+  describe('when the user clicks on the copy button', () => {
+    beforeEach(() => {
+      setup({})
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /copy/i,
+        })
+      )
+    })
+
+    it('calls the trackSegmentEvent', () => {
+      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
+      expect(trackSegmentSpy).toHaveBeenCalledWith({
+        data: {
+          event: 'Impact Analysis Profiling Token Copied',
+          owner_slug: 'codecov',
+          repo_slug: 'codecov-client',
+          user_ownerid: {},
+        },
+        id: {},
+      })
+    })
+  })
+
   describe('when user clicks on Generate New Token button', () => {
     beforeEach(async () => {
       setup({ profilingToken: 'new token' })
       await act(async () => {
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Regenerate' })
-        )
-        userEvent.click(
-          screen.getByRole('button', { name: 'Generate New Token' })
-        )
+        await screen.getByRole('button', { name: 'Regenerate' }).click()
+        screen.getByRole('button', { name: 'Generate New Token' }).click()
       })
     })
     it('calls the mutation', () => {
@@ -134,15 +163,12 @@ describe('ImpactAnalysisToken', () => {
     beforeEach(async () => {
       setup({ profilingToken: 'new token', error: 'Authentication Error' })
       await act(async () => {
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Regenerate' })
-        )
-        userEvent.click(
-          screen.getByRole('button', { name: 'Generate New Token' })
-        )
+        await screen.getByRole('button', { name: 'Regenerate' }).click()
+        screen.getByRole('button', { name: 'Generate New Token' }).click()
       })
     })
-    it('calls the mutation', () => {
+
+    it('calls the mutation', async () => {
       expect(mutate).toHaveBeenCalled()
     })
 
