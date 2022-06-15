@@ -27,7 +27,7 @@ function Badges({ graphToken, defaultBranch }) {
       title="Codecov badge"
       description="A live icon that can be embedded within your code that provides a quick insight into your project’s percentage of code coverage."
       content={
-        <div className="flex flex-col gap-4">
+        <>
           <div className="flex flex-col gap-2">
             <h2 className="font-semibold">Markdown</h2>
             <TokenWrapper token={BadgesEnum.MARKDOWN} />
@@ -40,7 +40,7 @@ function Badges({ graphToken, defaultBranch }) {
             <h2 className="font-semibold">RST</h2>
             <TokenWrapper token={BadgesEnum.RST} />
           </div>
-        </div>
+        </>
       }
     />
   )
