@@ -4,10 +4,10 @@ import PropType from 'prop-types'
 import Card from 'old_ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
-import { useFlags } from 'shared/featureFlags'
 import { isFreePlan } from 'shared/utils/billing'
 
 import DowngradeToFree from './DowngradeToFree'
+import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
 
 import BackLink from '../../shared/BackLink'
@@ -18,17 +18,8 @@ function CancelPlan({ provider, owner }) {
   const { data: plans } = usePlans(provider)
   const { billingAndUsers } = useNavLinks()
 
+  const { proPlanMonth } = useProPlanMonth({ plans })
   const freePlan = plans.find((plan) => isFreePlan(plan.value))
-  const { enterpriseCloudPlanSupport } = useFlags({
-    enterpriseCloudPlanSupport: true,
-  })
-
-  const proPlanMonth = enterpriseCloudPlanSupport
-    ? plans.find(
-        (plan) =>
-          plan.value === 'users-pr-inappm' || plan.value === 'users-enterprisem'
-      )
-    : plans.find((plan) => plan.value === 'users-pr-inappm')
 
   const unavailableBenefits = difference(
     proPlanMonth.benefits,
