@@ -25,18 +25,22 @@ function CoverageTab() {
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       <Summary />
-      <BreadcrumbSearch
-        searchValue={params.search}
-        setSearchValue={(search) => updateParams({ search })}
-      />
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Switch>
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
+            <BreadcrumbSearch
+              searchValue={params.search}
+              setSearchValue={(search) => updateParams({ search })}
+            />
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/tree/:branch" exact>
+            <BreadcrumbSearch
+              searchValue={params.search}
+              setSearchValue={(search) => updateParams({ search })}
+            />
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
@@ -47,6 +51,10 @@ function CoverageTab() {
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/" exact>
+            <BreadcrumbSearch
+              searchValue={params.search}
+              setSearchValue={(search) => updateParams({ search })}
+            />
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
