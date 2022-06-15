@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useUser } from 'services/user'
 
 import SideMenuSettings from './SideMenuSettings'
 import YamlTab from './tabs/YamlTab'
@@ -17,6 +18,9 @@ const tabLoading = (
 )
 
 function SettingsTab() {
+  const { data: currentUser } = useUser()
+  if (!currentUser) return <NotFound />
+
   return (
     <SidebarLayout sidebar={<SideMenuSettings />}>
       <Suspense fallback={tabLoading}>
