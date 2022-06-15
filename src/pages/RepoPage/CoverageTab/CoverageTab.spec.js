@@ -107,22 +107,24 @@ describe('Coverage Tab', () => {
     })
   })
 
-  describe('update search params after typing', () => {
+  describe.each([
+    '/gh/test-org/test-repo/',
+    '/gh/test-org/test-repo/tree/main',
+    '/gh/test-org/test-repo/tree/master/src',
+  ])('update search params after typing on route %s', (entries) => {
     beforeEach(() => {
-      setup({ initialEntries: ['/gh/test-org/test-repo/tree/master/src'] })
+      setup({ initialEntries: [entries] })
       const searchInput = screen.getByRole('textbox', {
         name: 'Search for files',
       })
       userEvent.type(searchInput, 'file.js')
     })
 
-    describe('after waiting for debounce', () => {
-      it('calls setSearchValue', async () => {
-        await waitFor(() => expect(mockUpdateParams).toHaveBeenCalled())
-        await waitFor(() =>
-          expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
-        )
-      })
+    it('calls setSearchValue', async () => {
+      await waitFor(() => expect(mockUpdateParams).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
+      )
     })
   })
 })
