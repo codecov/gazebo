@@ -10,7 +10,7 @@ describe('GraphCard', () => {
       <GraphCard
         title="Graph Title"
         description="Graph description and -if exists- a link"
-        svg="token to be copied"
+        link="link to be copied"
         src={icicle}
       />
     )
@@ -29,7 +29,7 @@ describe('GraphCard', () => {
       ).toBeInTheDocument()
     })
     it('renders truncated token', () => {
-      expect(screen.getByText(/token to be cop.../)).toBeInTheDocument()
+      expect(screen.getByText(/link to be cop.../)).toBeInTheDocument()
       expect(screen.getByText(/clipboard-copy.svg/)).toBeInTheDocument()
     })
     it('renders expected img', () => {
