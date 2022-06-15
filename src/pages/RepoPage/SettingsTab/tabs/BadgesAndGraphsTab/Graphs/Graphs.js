@@ -6,7 +6,7 @@ import TokenWrapper from 'ui/TokenWrapper'
 
 import URLEmbed from './URLEmbed'
 
-function Graphs({ graphToken }) {
+function Graphs({ graphToken, defaultBranch }) {
   return (
     <div className="flex flex-col gap-5">
       <SettingsDescriptor
@@ -22,13 +22,14 @@ function Graphs({ graphToken }) {
           </>
         }
       />
-      <URLEmbed graphToken={graphToken} />
+      <URLEmbed graphToken={graphToken} defaultBranch={defaultBranch} />
     </div>
   )
 }
 
 Graphs.propTypes = {
   graphToken: PropTypes.string.isRequired,
+  defaultBranch: PropTypes.string,
 }
 
 export default Graphs

@@ -33,8 +33,13 @@ describe('BadgesAndGraphsTab', () => {
       setup({ graphToken: 'random' })
     })
 
-    it('renders badges compoenent', () => {
+    it('renders badges component', () => {
       const title = screen.getByText(/Codecov badge/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders graphs component', () => {
+      const title = screen.getByText(/Graphs/)
       expect(title).toBeInTheDocument()
     })
   })
@@ -44,8 +49,13 @@ describe('BadgesAndGraphsTab', () => {
       setup({ graphToken: null })
     })
 
-    it('does not render badges compoenent', () => {
+    it('does not render badges component', () => {
       const title = screen.queryByText(/Codecov badge/)
+      expect(title).not.toBeInTheDocument()
+    })
+
+    it('does not render graphs component', () => {
+      const title = screen.queryByText(/Graphs/)
       expect(title).not.toBeInTheDocument()
     })
   })

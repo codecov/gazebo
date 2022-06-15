@@ -17,8 +17,7 @@ function SettingsDescriptor({ title, description, content }) {
 
 SettingsDescriptor.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
-  description: PropTypes.oneOfType([PropTypes.string, PropTypes.element])
-    .isRequired,
+  description: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   content: PropTypes.oneOfType([PropTypes.string, PropTypes.element])
     .isRequired,
 }
