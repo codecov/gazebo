@@ -33,8 +33,18 @@ function fetchRepoBranchCoverage({ provider, owner, repo, branch }) {
   }).then((res) => res?.data?.owner?.repository?.branch || {})
 }
 
-export function useRepoCoverage({ provider, owner, repo, branch }) {
-  return useQuery(['coverage', provider, owner, repo, branch], () => {
-    return fetchRepoBranchCoverage({ provider, owner, repo, branch })
-  })
+export function useRepoCoverage({
+  provider,
+  owner,
+  repo,
+  branch,
+  options = {},
+}) {
+  return useQuery(
+    ['coverage', provider, owner, repo, branch],
+    () => {
+      return fetchRepoBranchCoverage({ provider, owner, repo, branch })
+    },
+    options
+  )
 }

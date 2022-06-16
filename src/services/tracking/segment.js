@@ -83,13 +83,12 @@ export function useSegmentPage() {
   }, [location.pathname])
 }
 
-export function trackSegmentEvent({ event, label = null, category }) {
+export function trackSegmentEvent({ event, data }) {
   return (
     event &&
     window?.analytics?.track(event, {
-      label,
-      category,
       value: 1,
+      ...data,
     })
   )
 }
