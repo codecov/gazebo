@@ -314,7 +314,7 @@ function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
       isExternalLink: gazeboSettingsTab,
-      text: 'Badges & graphs',
+      text: 'Badges & Graphs',
     },
   }
 }
