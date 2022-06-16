@@ -231,5 +231,29 @@ function getPlans() {
         'Priorty Support',
       ],
     },
+    {
+      marketingName: 'Pro Team',
+      value: 'users-enterprisem',
+      billingRate: 'monthly',
+      baseUnitPrice: 12,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    },
+    {
+      marketingName: 'Pro Team',
+      value: 'users-enterprisey',
+      billingRate: 'annually',
+      baseUnitPrice: 10,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    },
   ]
 }
