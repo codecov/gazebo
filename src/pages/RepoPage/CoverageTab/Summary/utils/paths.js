@@ -24,8 +24,7 @@ const handleRootLocation = ({ pathname, owner, repo, name }) => {
 
 export function createPath({ pathname, owner, repo, ref, branch, name }) {
   const conditionalReplace = conditionalPathnameReplacement(pathname)
-  let newPath
-  newPath = conditionalReplace({
+  let newPath = conditionalReplace({
     pathToMatch: newFileviewString({ owner, repo }),
     oldParam: ref,
     newParam: name,
