@@ -12,14 +12,14 @@ function URLEmbed({ graphToken, defaultBranch }) {
       <h3 className="font-semibold">Embed via URL</h3>
       <p>Use the URL of the svg to embed a graph of your repository page.</p>
       <div className="grid grid-cols-3 gap-2">
-        {Object.keys(GraphsDetailsEnum).map((graph) => {
+        {Object.values(GraphsDetailsEnum).map((graph) => {
           return (
             <GraphCard
-              key={GraphsDetailsEnum[graph].TITLE}
-              title={GraphsDetailsEnum[graph].TITLE}
-              description={GraphsDetailsEnum[graph].DESCRIPTION}
-              link={GraphsDetailsEnum[graph].LINK}
-              src={GraphsDetailsEnum[graph].SRC}
+              key={graph.TITLE}
+              title={graph.TITLE}
+              description={graph.DESCRIPTION}
+              link={graph.LINK}
+              src={graph.SRC}
             />
           )
         })}
