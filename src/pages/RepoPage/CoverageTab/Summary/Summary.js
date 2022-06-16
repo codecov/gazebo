@@ -13,7 +13,7 @@ import { useCoverageRedirect, useSummary } from './hooks'
 const Summary = () => {
   const setCrumbs = useSetCrumbs()
   const { data, currentBranchSelected, branchSelectorProps } = useSummary()
-  const { setNewPath, state: redirectState } = useCoverageRedirect()
+  const { setNewPath, redirectState } = useCoverageRedirect()
 
   useLayoutEffect(() => {
     setCrumbs([

@@ -57,6 +57,6 @@ export function useCoverageRedirect() {
 
   return {
     setNewPath,
-    state,
+    redirectState: state,
   }
 }

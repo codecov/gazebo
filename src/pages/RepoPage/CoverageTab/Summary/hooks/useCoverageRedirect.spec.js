@@ -56,11 +56,15 @@ describe('useCoverageRedirect', () => {
 
       describe(`${desc}`, () => {
         it('starts with no new path', () => {
-          expect(hookData.result.current.state.newPath).toEqual(undefined)
+          expect(hookData.result.current.redirectState.newPath).toEqual(
+            undefined
+          )
         })
 
         it('isRedirectionEnabled starts false', () => {
-          expect(hookData.result.current.state.isRedirectionEnabled).toBeFalsy()
+          expect(
+            hookData.result.current.redirectState.isRedirectionEnabled
+          ).toBeFalsy()
         })
 
         describe('on setNewPath fired', () => {
@@ -71,13 +75,15 @@ describe('useCoverageRedirect', () => {
           })
 
           it('A newPath is set', () => {
-            expect(hookData.result.current.state.newPath).toBe(expectedNewPath)
+            expect(hookData.result.current.redirectState.newPath).toBe(
+              expectedNewPath
+            )
           })
 
           it('isRedirectionEnabled is enabled', () => {
-            expect(hookData.result.current.state.isRedirectionEnabled).toBe(
-              isRedirectionEnabled
-            )
+            expect(
+              hookData.result.current.redirectState.isRedirectionEnabled
+            ).toBe(isRedirectionEnabled)
           })
         })
       })

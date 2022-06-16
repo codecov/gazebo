@@ -2,9 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { useParams } from 'react-router-dom'
 
 import { useBranchSelector } from './useBranchSelector'
-import { useCoverageRedirect } from './useCoverageRedirect'
 
-jest.mock('./useCoverageRedirect')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
@@ -12,14 +10,8 @@ jest.mock('react-router-dom', () => ({
 
 describe('useBranchSelector', () => {
   let hookData
-  let mockSetNewPath = jest.fn()
 
   function setup({ branches, defaultBranch, useParamsValue = {} }) {
-    useCoverageRedirect.mockReturnValue({
-      setNewPath: mockSetNewPath,
-      newPath: 'test/test',
-      isRedirectionEnabled: true,
-    })
     useParams.mockReturnValue(useParamsValue)
 
     hookData = renderHook(() => useBranchSelector(branches, defaultBranch))

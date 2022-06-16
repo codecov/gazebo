@@ -11,7 +11,7 @@ describe('Summary', () => {
   const mockOnChange = jest.fn()
   const mockSetNewPath = jest.fn()
   const mockUseCoverageRedirectData = {
-    state: {
+    redirectState: {
       isRedirectionEnabled: false,
       newPath: undefined,
     },
@@ -165,7 +165,10 @@ describe('Summary', () => {
 
       setup({
         useCoverageRedirectData: {
-          state: { newPath: '/some/new/location', isRedirectionEnabled: true },
+          redirectState: {
+            newPath: '/some/new/location',
+            isRedirectionEnabled: true,
+          },
           setNewPath: mockSetNewPath,
         },
         useSummaryData: {
@@ -199,7 +202,10 @@ describe('Summary', () => {
 
       setup({
         useCoverageRedirectData: {
-          state: { newPath: '/some/new/location', isRedirectionEnabled: true },
+          redirectState: {
+            newPath: '/some/new/location',
+            isRedirectionEnabled: true,
+          },
           setNewPath: mockSetNewPath,
         },
         useSummaryData: {
