@@ -18,8 +18,7 @@ const tabLoading = (
 )
 
 function SettingsTab() {
-  const { data: currentUser } = useUser()
-  if (!currentUser) return <NotFound />
+  useUser()
 
   return (
     <SidebarLayout sidebar={<SideMenuSettings />}>

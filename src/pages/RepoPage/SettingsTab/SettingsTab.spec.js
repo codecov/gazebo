@@ -49,20 +49,5 @@ describe('AccountSettings', () => {
       expect(screen.getByRole('link', { name: /Yaml/ })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: /Badge/ })).toBeInTheDocument()
     })
-
-    it('renders 404 not found', () => {
-      expect(screen.getByText('Error 404')).toBeInTheDocument()
-    })
-  })
-
-  describe('Render with Unauthorized user', () => {
-    beforeEach(() => {
-      useUser.mockReturnValue({ data: null })
-      setup({ url: '/gh/codecov/codecov-client/settings' })
-    })
-
-    it('renders error', () => {
-      expect(screen.getByText('Error 404')).toBeInTheDocument()
-    })
   })
 })
