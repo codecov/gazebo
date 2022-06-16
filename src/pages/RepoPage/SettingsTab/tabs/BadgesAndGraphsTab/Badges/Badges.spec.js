@@ -31,7 +31,7 @@ describe('Badges', () => {
     })
     it('renders body', () => {
       const p = screen.getByText(
-        /A live icon that can embed within your code and it provides quick insight into your project’s percentage of code coverage/
+        /A live icon that you can embed in code, such as in a README.md, to provide quick insight into your project's code coverage percentage./
       )
       expect(p).toBeInTheDocument()
     })

@@ -4,15 +4,13 @@ import Badges from './Badges/Badges'
 
 function BadgesAndGraphsTab() {
   const { data } = useRepoSettings()
-  const repository = data?.repository
+  const graphToken = data?.repository?.graphToken
+  const defaultBranch = data?.repository?.defaultBranch
 
   return (
     <div className="flex flex-col gap-4">
-      {repository?.graphToken && (
-        <Badges
-          graphToken={repository?.graphToken}
-          defaultBranch={repository?.defaultBranch}
-        />
+      {graphToken && (
+        <Badges graphToken={graphToken} defaultBranch={defaultBranch} />
       )}
     </div>
   )
