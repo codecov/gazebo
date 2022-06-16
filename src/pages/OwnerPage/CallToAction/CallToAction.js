@@ -26,8 +26,10 @@ function CallToAction({ provider, owner }) {
             onClick={() =>
               trackSegmentEvent({
                 event: 'clicked button',
-                label: 'upgrade plan',
-                category: 'repo list cta',
+                data: {
+                  label: 'upgrade plan',
+                  category: 'repo list cta',
+                },
               })
             }
           >
@@ -44,8 +46,10 @@ function CallToAction({ provider, owner }) {
             onClick={() =>
               trackSegmentEvent({
                 event: 'clicked button',
-                label: 'request free trial',
-                category: 'repo list cta',
+                data: {
+                  label: 'request free trial',
+                  category: 'repo list cta',
+                },
               })
             }
           >

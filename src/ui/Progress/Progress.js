@@ -20,22 +20,20 @@ function Progress({ amount, label, color = 'default', variant = 'default' }) {
 
   return (
     <div className="w-full items-center flex gap-4">
-      {amountInNumber && (
+      <div
+        className={cs('flex-1 bg-ds-gray-secondary', variantClasses[variant])}
+      >
         <div
-          className={cs('flex-1 bg-ds-gray-secondary', variantClasses[variant])}
-        >
-          <div
-            data-testid="org-progress-bar"
-            className={cs('h-full', progressClasses[color])}
-            style={{ width: `${amountInNumber}%` }}
-          />
-        </div>
-      )}
+          data-testid="org-progress-bar"
+          className={cs('h-full', progressClasses[color])}
+          style={{ width: `${amountInNumber}%` }}
+        />
+      </div>
 
       {label && (
         <div
           className={cs({
-            'flex-1 flex justify-end': !amountInNumber,
+            'flex-none flex justify-end': !amountInNumber,
           })}
         >
           <TotalsNumber
@@ -51,7 +49,7 @@ function Progress({ amount, label, color = 'default', variant = 'default' }) {
 }
 
 Progress.propTypes = {
-  amount: PropTypes.number.isRequired,
+  amount: PropTypes.number,
   label: PropTypes.bool,
   variant: PropTypes.oneOf(['default', 'tall']),
   color: PropTypes.oneOf(['default', 'neutral', 'danger']),

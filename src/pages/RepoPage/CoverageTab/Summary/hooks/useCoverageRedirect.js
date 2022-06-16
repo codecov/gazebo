@@ -1,46 +1,47 @@
-import { useCallback, useLayoutEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-const formatPath = (pathname) =>
-  pathname.charAt(pathname.length - 1) === '/'
-    ? pathname.slice(0, pathname.length - 1)
-    : pathname
+import { blobsString, treeString } from 'pages/RepoPage/pathMatchersHooks'
+import { formatPathPrefix } from 'shared/utils/url'
 
-const handleBlobs = ({ pathname, owner, repo, ref, name }) => {
+const handleBlobs = ({ pathname, owner, repo, ref, newRef }) => {
   if (owner && repo && pathname.includes('blobs') && ref) {
     return pathname.replace(
-      `${owner}/${repo}/blobs/${ref}`,
-      `${owner}/${repo}/blobs/${name}`
+      `${blobsString({ owner, repo })}/${ref}`,
+      `${blobsString({ owner, repo })}/${newRef}`
     )
   }
   return
 }
 
-const handleTree = ({ pathname, owner, repo, branch, name }) => {
+const handleTree = ({ pathname, owner, repo, branch, newBranch }) => {
   if (owner && repo && pathname.includes('tree') && branch) {
     return pathname.replace(
-      `${owner}/${repo}/tree/${branch}`,
-      `${owner}/${repo}/tree/${name}`
+      `${treeString({ owner, repo })}/${branch}`,
+      `${treeString({ owner, repo })}/${newBranch}`
     )
   }
   return
 }
 
-const handleRootLocation = ({ pathname, owner, repo, name }) => {
-  if (pathname.includes(`${owner}/${repo}`) && name) {
-    return `${pathname}/tree/${name}`
+const handleRootLocation = ({ pathname, owner, repo, newBranch }) => {
+  if (pathname.includes(`${owner}/${repo}`) && newBranch) {
+    return pathname.replace(
+      `${owner}/${repo}`,
+      `${treeString({ owner, repo })}/${newBranch}`
+    )
   }
   return
 }
 
 function createPath({ pathname, owner, repo, ref, branch, name }) {
   let newPath
-  newPath = handleBlobs({ pathname, owner, repo, ref, name })
+  newPath = handleBlobs({ pathname, owner, repo, ref, newRef: name })
   if (!newPath) {
-    newPath = handleTree({ pathname, owner, repo, branch, name })
+    newPath = handleTree({ pathname, owner, repo, branch, newBranch: name })
   }
   if (!newPath) {
-    newPath = handleRootLocation({ pathname, owner, repo, name })
+    newPath = handleRootLocation({ pathname, owner, repo, newBranch: name })
   }
   return newPath
 }
@@ -50,7 +51,7 @@ export function useCoverageRedirect() {
   const { repo, branch, ref, owner } = useParams()
 
   const [newPath, setNewPath] = useState()
-  const [isRedirectionEnabled, setisRedirectionEnabled] = useState(false)
+  const [isRedirectionEnabled, setIsRedirectionEnabled] = useState(false)
 
   /**
    *
@@ -62,7 +63,7 @@ export function useCoverageRedirect() {
 
   const createPathCb = useCallback(
     ({ name }) => {
-      const pathname = formatPath(location.pathname)
+      const pathname = formatPathPrefix(location.pathname)
       return createPath({ pathname, owner, repo, ref, branch, name })
     },
     [location.pathname, branch, ref, repo, owner]
@@ -70,9 +71,15 @@ export function useCoverageRedirect() {
 
   useLayoutEffect(() => {
     if (newPath) {
-      setisRedirectionEnabled(true)
+      setIsRedirectionEnabled(true)
     }
   }, [newPath])
+
+  // reset on path change
+  useEffect(() => {
+    setIsRedirectionEnabled(false)
+    setNewPath()
+  }, [location.pathname])
 
   return {
     setNewPath: setNewPathHandler,
