@@ -14,7 +14,7 @@ describe('Badges', () => {
       >
         <QueryClientProvider client={queryClient}>
           <Route path="/:provider/:owner/:repo/settings/badge">
-            <Badges graphToken="random" defaultBranch="master" />
+            <Badges graphToken="WIO9JXFGE" defaultBranch="master" />
           </Route>
         </QueryClientProvider>
       </MemoryRouter>
