@@ -5,6 +5,7 @@ import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
 
 import SideMenuSettings from './SideMenuSettings'
+import BadgesAndGraphsTab from './tabs/BadgesAndGraphsTab'
 import YamlTab from './tabs/YamlTab'
 
 const NotFound = lazy(() => import('../../NotFound'))
@@ -28,7 +29,7 @@ function SettingsTab() {
             <YamlTab />
           </Route>
           <Route path="/:provider/:owner/:repo/settings/badge" exact>
-            <>badge tab</>
+            <BadgesAndGraphsTab />
           </Route>
           <Route path="/:provider/:owner/:repo/settings/*">
             <NotFound />
