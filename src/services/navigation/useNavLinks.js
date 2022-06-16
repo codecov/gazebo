@@ -309,11 +309,12 @@ function useNavLinks() {
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
+
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
       isExternalLink: gazeboSettingsTab,
-      text: 'Badge',
+      text: 'Badges & graphs',
     },
   }
 }
