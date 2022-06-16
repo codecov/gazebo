@@ -42,7 +42,9 @@ describe('useOnboardingTracking', () => {
 
     it('calls segment event with specific information', () => {
       expect(trackSegmentEvent).toHaveBeenCalledWith({
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
         event: 'User Started Onboarding',
       })
       expect(pageSegmentEvent).toHaveBeenCalledWith({
@@ -79,7 +81,9 @@ describe('useOnboardingTracking', () => {
     it('calls segment event with specific information', () => {
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Help Finding Org Clicked',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
     })
   })
@@ -94,7 +98,9 @@ describe('useOnboardingTracking', () => {
     it('calls segment event with specific information', () => {
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Skipped',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
     })
   })
@@ -109,7 +115,9 @@ describe('useOnboardingTracking', () => {
     it('calls segment event with specific information', () => {
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Selected Org',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
       expect(identifySegmentEvent).toHaveBeenCalledWith({
         organization: 'codecov',
@@ -138,7 +146,9 @@ describe('useOnboardingTracking', () => {
     it('calls segment event with specific information', () => {
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Selected Repo',
-        category: 'Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
       expect(identifySegmentEvent).toHaveBeenCalledWith({
         repo: selectedRepo,
@@ -163,8 +173,10 @@ describe('useOnboardingTracking', () => {
 
     it('calls segment event with specific information', () => {
       expect(trackSegmentEvent).toHaveBeenCalledWith({
-        category: 'Onboarding',
         event: 'User Completed Onboarding',
+        data: {
+          category: 'Onboarding',
+        },
       })
       expect(identifySegmentEvent).toHaveBeenCalledWith({
         data: {

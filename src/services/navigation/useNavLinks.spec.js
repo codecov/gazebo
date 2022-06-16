@@ -490,6 +490,52 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('fileViewer link', () => {
+    beforeAll(() => {
+      setup(['/gh/Rabee-AbuBaker/another-test/blobs/main/index.js'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(
+        hookData.result.current.fileViewer.path({
+          ref: 'main',
+          tree: 'index.js',
+        })
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/main/index.js')
+    })
+
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.fileViewer.path({
+          provider: 'bb',
+          ref: 'main',
+          tree: 'index.js',
+        })
+      ).toBe('/bb/Rabee-AbuBaker/another-test/blobs/main/index.js')
+      expect(
+        hookData.result.current.fileViewer.path({
+          owner: 'cat',
+          ref: 'main',
+          tree: 'index.js',
+        })
+      ).toBe('/gh/cat/another-test/blobs/main/index.js')
+
+      expect(
+        hookData.result.current.fileViewer.path({
+          ref: 'main',
+          tree: 'flags1/mafs.js',
+        })
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/main/flags1/mafs.js')
+
+      expect(
+        hookData.result.current.fileViewer.path({
+          ref: 'test-br',
+          tree: 'index.js',
+        })
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/test-br/index.js')
+    })
+  })
+
   describe('repo overview link', () => {
     beforeAll(() => {
       setup(['/gh/RulaKhaled/test'])

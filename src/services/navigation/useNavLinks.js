@@ -204,6 +204,17 @@ function useNavLinks() {
       isExternalLink: true,
       text: 'Tree View',
     },
+    fileViewer: {
+      path: (
+        { provider = p, owner = o, repo = r, ref, tree } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/blobs/${ref}/${tree}`,
+      isExternalLink: false,
+      text: 'File Viewer',
+    },
     new: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -303,7 +314,7 @@ function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
       isExternalLink: gazeboSettingsTab,
-      text: 'Badges & graphs',
+      text: 'Badges & Graphs',
     },
   }
 }

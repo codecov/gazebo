@@ -5,8 +5,8 @@ import Graphs from './Graphs'
 
 function BadgesAndGraphsTab() {
   const { data } = useRepoSettings()
-  const defaultBranch = data?.repository?.defaultBranch
   const graphToken = data?.repository?.graphToken
+  const defaultBranch = data?.repository?.defaultBranch
 
   return (
     <div className="flex flex-col gap-4">

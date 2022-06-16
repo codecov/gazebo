@@ -2,7 +2,7 @@ import Cookie from 'js-cookie'
 
 import config from 'config'
 
-import { generatePath, getHeaders, snakeifyKeys } from './helpers'
+import { generatePath, getHeaders } from './helpers'
 
 describe('generatePath', () => {
   it('generates a path without a query', () => {
@@ -18,21 +18,6 @@ describe('generatePath', () => {
     expect(
       generatePath({ path: '/epic', query: { rocket: 'league', fort: 'nite' } })
     ).toStrictEqual(`${config.API_URL}/internal/epic?rocket=league&fort=nite`)
-  })
-})
-
-describe('snakeifyKeys', () => {
-  it('converts an object from CamelCast to SnakeCase', () => {
-    expect(snakeifyKeys({ fooBar: 1, bizBaz: 3 })).toStrictEqual({
-      foo_bar: 1,
-      biz_baz: 3,
-    })
-  })
-
-  it('else passes through', () => {
-    expect(snakeifyKeys([1, 2, 3])).toStrictEqual([1, 2, 3])
-    expect(snakeifyKeys(1)).toStrictEqual(1)
-    expect(snakeifyKeys('test')).toStrictEqual('test')
   })
 })
 
