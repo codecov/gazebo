@@ -314,7 +314,7 @@ function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
       isExternalLink: gazeboSettingsTab,
-      text: 'Badges & graphs',
+      text: 'Badges & Graphs',
     },
   }
 }
@@ -488,6 +488,12 @@ function useStaticNavLinks() {
       text: 'Graph Authorization',
       path: () =>
         'https://docs.codecov.com/reference/authorization#about-graphs',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    graphsSunburst: {
+      text: 'Graphs Sunburst',
+      path: () => 'https://docs.codecov.com/reference/sunburst',
       isExternalLink: true,
       openNewTab: true,
     },
