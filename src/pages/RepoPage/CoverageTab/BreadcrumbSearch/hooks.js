@@ -7,9 +7,8 @@ function getTreeLocation(paths, location) {
 }
 
 export function useTreePaths() {
-  const urlParams = useParams()
-  const branch = urlParams?.branch
-  const filePaths = urlParams?.path?.split('/') ?? []
+  const { branch, path, repo } = useParams()
+  const filePaths = path?.split('/') ?? []
 
   const paths =
     filePaths &&
@@ -21,7 +20,7 @@ export function useTreePaths() {
 
   const repoPath = {
     pageName: 'treeView',
-    text: urlParams?.repo,
+    text: repo,
     options: { ref: branch },
   }
   const treePaths = [repoPath, ...paths]

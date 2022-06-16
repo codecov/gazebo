@@ -97,3 +97,56 @@ export function useUpdateRepo() {
     }
   )
 }
+
+// Repo contents hook
+function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
+  const query = `
+    query BranchFiles($name: String!, $repo: String!, $branch: String!, $path: String!, $filters: PathContentsFilters!) {
+        owner(username:$name){
+        username
+        repository(name:$repo){
+          branch(name:$branch){
+          head {
+            pathContents(path:$path, filters:$filters){
+              name
+              filePath
+              percentCovered
+              type
+            }
+           }
+          }
+        }
+      }
+     } 
+   `
+  return Api.graphql({
+    provider,
+    repo,
+    query,
+    variables: {
+      name: owner,
+      repo,
+      branch,
+      path,
+      filters,
+    },
+  }).then((res) => {
+    return res?.data?.owner?.repository?.branch?.head?.pathContents
+  })
+}
+
+export function useRepoContents({
+  provider,
+  owner,
+  repo,
+  branch,
+  path,
+  filters,
+}) {
+  return useQuery(
+    [provider, owner, repo, branch, path, filters, 'BranchFiles'],
+    () => {
+      return fetchRepoContents({ provider, owner, repo, branch, path, filters })
+    }
+  )
+}
