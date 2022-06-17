@@ -47,7 +47,11 @@ function getTableData(data) {
         headCoverage && baseCoverage && headCoverage - baseCoverage
 
       return {
-        col1: <h2 key={name}>{name}</h2>,
+        col1: (
+          <h2 key={name} className="break-words w-24">
+            java_dms_region_config_service
+          </h2>
+        ),
         col2: (
           <div className="w-full flex justify-end">
             <TotalsNumber value={headCoverage} plain light />
