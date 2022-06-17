@@ -49,7 +49,7 @@ function getTableData(data) {
       return {
         col1: (
           <h2 key={name} className="break-words w-24">
-            java_dms_region_config_service
+            {name}
           </h2>
         ),
         col2: (
