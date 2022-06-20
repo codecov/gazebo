@@ -64,10 +64,10 @@ const sortingParameter = {
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
-    ...(sortBy[0] && {
+    ...(sortBy && {
       ordering: {
-        direction: sortBy[0].desc ? 'DESC' : 'ASC',
-        parameter: sortingParameter[sortBy[0]?.id],
+        direction: sortBy?.desc ? 'DESC' : 'ASC',
+        parameter: sortingParameter[sortBy?.id],
       },
     }),
   }
@@ -93,7 +93,7 @@ function useRepoContentsTable() {
     repo,
     branch: branch || defaultBranch,
     path: path || '',
-    filters: getQueryFilters({ params, sortBy }),
+    filters: getQueryFilters({ params, sortBy: sortBy[0] }),
   })
 
   const data = useMemo(
