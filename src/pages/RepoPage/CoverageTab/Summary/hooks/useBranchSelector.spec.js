@@ -2,9 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { useParams } from 'react-router-dom'
 
 import { useBranchSelector } from './useBranchSelector'
-import { useCoverageRedirect } from './useCoverageRedirect'
 
-jest.mock('./useCoverageRedirect')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
@@ -12,14 +10,8 @@ jest.mock('react-router-dom', () => ({
 
 describe('useBranchSelector', () => {
   let hookData
-  let mockSetNewPath = jest.fn()
 
   function setup({ branches, defaultBranch, useParamsValue = {} }) {
-    useCoverageRedirect.mockReturnValue({
-      setNewPath: mockSetNewPath,
-      newPath: 'test/test',
-      isRedirectionEnabled: true,
-    })
     useParams.mockReturnValue(useParamsValue)
 
     hookData = renderHook(() => useBranchSelector(branches, defaultBranch))
@@ -42,22 +34,6 @@ describe('useBranchSelector', () => {
 
     it('sets the selected branch', () => {
       expect(hookData.result.current.selection).toEqual({ name: 'imogen' })
-    })
-
-    it('passed down the newPath', () => {
-      expect(hookData.result.current.newPath).toEqual('test/test')
-    })
-
-    it('passed down the isRedirectionEnabled', () => {
-      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
-    })
-
-    it('triggers setNewPath correctly', () => {
-      hookData.result.current.branchSelectorProps.onChange({
-        test: '1234',
-      })
-
-      expect(mockSetNewPath).toHaveBeenCalledWith({ test: '1234' })
     })
 
     it('sets the branchSelectorProps items correctly', () => {
@@ -105,22 +81,6 @@ describe('useBranchSelector', () => {
       expect(hookData.result.current.selection).toEqual({ name: 'fcg' })
     })
 
-    it('passed down the newPath', () => {
-      expect(hookData.result.current.newPath).toEqual('test/test')
-    })
-
-    it('passed down the isRedirectionEnabled', () => {
-      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
-    })
-
-    it('triggers setNewPath correctly', () => {
-      hookData.result.current.branchSelectorProps.onChange({
-        test: '1234',
-      })
-
-      expect(mockSetNewPath).toHaveBeenCalledWith({ test: '1234' })
-    })
-
     it('sets the branchSelectorProps items correctly', () => {
       expect(hookData.result.current.branchSelectorProps.items).toEqual([
         { name: 'fcg' },
@@ -164,22 +124,6 @@ describe('useBranchSelector', () => {
 
     it('sets the selected branch', () => {
       expect(hookData.result.current.selection).toEqual({ name: 'fcg' })
-    })
-
-    it('passed down the newPath', () => {
-      expect(hookData.result.current.newPath).toEqual('test/test')
-    })
-
-    it('passed down the isRedirectionEnabled', () => {
-      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
-    })
-
-    it('triggers setNewPath correctly', () => {
-      hookData.result.current.branchSelectorProps.onChange({
-        test: '1234',
-      })
-
-      expect(mockSetNewPath).toHaveBeenCalledWith({ test: '1234' })
     })
 
     it('sets the branchSelectorProps items correctly', () => {

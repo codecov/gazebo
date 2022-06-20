@@ -24,6 +24,8 @@ const enabledIcons = [
   'information-circle',
   'arrow-up',
   'arrow-down',
+  'folder',
+  'document',
   'branch',
   'exclamation-circle',
 ]

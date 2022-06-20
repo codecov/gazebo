@@ -13,7 +13,7 @@ jest.mock('services/branches')
 jest.mock('services/user')
 
 // This component is too complex for an integration test imo
-jest.mock('./CoverageTab/Summary', () => () => 'Summary')
+jest.mock('./CoverageTab', () => () => 'CoverageTab')
 
 const commits = [
   {
@@ -128,7 +128,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the coverage tab', () => {
-      const tab = screen.getByText(/Coverage/)
+      const tab = screen.getByText('Coverage')
       expect(tab).toBeInTheDocument()
     })
     it('renders the commits tab', () => {
@@ -147,7 +147,7 @@ describe('RepoPage', () => {
     })
 
     it('renders the coverage tab', () => {
-      const tab = screen.queryByText(/Coverage/)
+      const tab = screen.queryByText('Coverage')
       expect(tab).not.toBeInTheDocument()
     })
     it('renders the commits tab', () => {
