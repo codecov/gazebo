@@ -1,10 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useOwner } from 'services/user'
+
 import SettingsTab from './SettingsTab'
 
-describe('AccountSettings', () => {
-  function setup({ url }) {
+jest.mock('services/user')
+
+describe('SettingsTab', () => {
+  function setup({ url, isCurrentUserPartOfOrg = true }) {
+    useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
+
     render(
       <MemoryRouter initialEntries={[url]}>
         <Route path="/:provider/:owner/:repo/settings">
@@ -36,8 +42,17 @@ describe('AccountSettings', () => {
       expect(screen.getByRole('link', { name: /Yaml/ })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: /Badge/ })).toBeInTheDocument()
     })
+  })
 
-    it('renders 404 not found', () => {
+  describe('Render with user not part of org', () => {
+    beforeEach(() => {
+      setup({
+        url: '/gh/codecov/codecov-client/settings',
+        isCurrentUserPartOfOrg: false,
+      })
+    })
+
+    it('renders 404', () => {
       expect(screen.getByText('Error 404')).toBeInTheDocument()
     })
   })
