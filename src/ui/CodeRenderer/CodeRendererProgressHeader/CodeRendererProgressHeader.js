@@ -1,16 +1,16 @@
-import dropRight from 'lodash/dropRight'
-import indexOf from 'lodash/indexOf'
+// import dropRight from 'lodash/dropRight'
+// import indexOf from 'lodash/indexOf'
 import isFinite from 'lodash/isFinite'
 import PropTypes from 'prop-types'
 
-import Breadcrumb from 'ui/Breadcrumb'
+import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 import Progress from 'ui/Progress'
 import TotalsNumber from 'ui/TotalsNumber'
 
-function getTreeLocation(paths, location) {
-  return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
-}
+// function getTreeLocation(paths, location) {
+//   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
+// }
 
 function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
   /**
@@ -21,13 +21,13 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
    */
 
   const paths = path?.split('/')
-  const treePaths =
-    paths &&
-    paths.map((location) => ({
-      pageName: 'treeView',
-      text: location,
-      options: { tree: getTreeLocation(paths, location), ref: pathRef },
-    }))
+  // const treePaths =
+  //   paths &&
+  //   paths.map((location) => ({
+  //     pageName: 'treeView',
+  //     text: location,
+  //     options: { tree: getTreeLocation(paths, location), ref: pathRef },
+  //   }))
 
   return (
     <div
@@ -38,7 +38,9 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
     `}
     >
       <div className="flex flex-1 gap-1">
-        {treePaths && <Breadcrumb paths={[...treePaths]} />}
+        <A href={`#${paths.join('/')}`} variant="fileViewHeader">
+          {paths.join('/')}
+        </A>
         {paths && (
           <CopyClipboard
             string={paths.join('/')}

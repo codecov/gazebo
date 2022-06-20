@@ -17,6 +17,7 @@ const variantClasses = {
   link: `text-ds-blue-darker`,
   code: `font-mono text-ds-blue-darker`,
   cardLink: `text-ds-grey-octinary font-semibold truncate`,
+  fileViewHeader: `text-ds-grey-octinary`,
 }
 
 function _adjustPathForGLSubgroups(path) {
