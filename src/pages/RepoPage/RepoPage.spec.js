@@ -255,18 +255,6 @@ describe('RepoPage', () => {
       })
     })
 
-    it('renders the coverage tab', () => {
-      const tab = screen.getByText(/Coverage/)
-      expect(tab).toBeInTheDocument()
-    })
-    it('renders the commits tab', () => {
-      const tab = screen.getByText(/Commits/)
-      expect(tab).toBeInTheDocument()
-    })
-    it('renders the pulls tab', () => {
-      const tab = screen.getByText(/Pulls/)
-      expect(tab).toBeInTheDocument()
-    })
     it('does not render the settings tab', () => {
       const tab = screen.queryByText(/Settings/)
       expect(tab).not.toBeInTheDocument()
