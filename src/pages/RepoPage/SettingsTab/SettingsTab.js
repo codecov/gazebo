@@ -1,9 +1,9 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useParams } from 'react-router-dom'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
-import { useUser } from 'services/user'
+import { useOwner } from 'services/user'
 
 import SideMenuSettings from './SideMenuSettings'
 import YamlTab from './tabs/YamlTab'
@@ -18,7 +18,11 @@ const tabLoading = (
 )
 
 function SettingsTab() {
-  useUser()
+  const { owner } = useParams()
+  const { data: currentOwner } = useOwner({ username: owner })
+  const { isCurrentUserPartOfOrg } = currentOwner
+
+  if (!isCurrentUserPartOfOrg) return <NotFound />
 
   return (
     <SidebarLayout sidebar={<SideMenuSettings />}>

@@ -1,30 +1,20 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
-import { useUser } from 'services/user'
+import { useOwner } from 'services/user'
 
 import SettingsTab from './SettingsTab'
 
-const loggedInUser = {
-  user: {
-    username: 'RulaKhaled',
-    avatarUrl: '',
-  },
-}
-
-jest.spyOn(console, 'error').mockImplementation()
 jest.mock('services/user')
 
 describe('SettingsTab', () => {
-  function setup(url, ErrorRender) {
+  function setup({ url, isCurrentUserPartOfOrg = true }) {
+    useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
+
     render(
       <MemoryRouter initialEntries={[url]}>
         <Route path="/:provider/:owner/:repo/settings">
-          <NetworkErrorBoundary>
-            <SettingsTab />
-            <ErrorRender />
-          </NetworkErrorBoundary>
+          <SettingsTab />
         </Route>
       </MemoryRouter>
     )
@@ -32,8 +22,7 @@ describe('SettingsTab', () => {
 
   describe('Render for a repo', () => {
     beforeEach(() => {
-      useUser.mockReturnValue({ data: loggedInUser })
-      setup('/gh/codecov/codecov-client/settings', () => null)
+      setup({ url: '/gh/codecov/codecov-client/settings' })
     })
 
     it('renders the right links', () => {
@@ -45,8 +34,7 @@ describe('SettingsTab', () => {
 
   describe('Render with an uknown path', () => {
     beforeEach(() => {
-      useUser.mockReturnValue({ data: loggedInUser })
-      setup('/gh/codecov/codecov-client/settings/random', () => null)
+      setup({ url: '/gh/codecov/codecov-client/settings/random' })
     })
 
     it('renders the right links', () => {
@@ -56,23 +44,16 @@ describe('SettingsTab', () => {
     })
   })
 
-  function ErrorRender() {
-    throw Object.assign({
-      status: 401,
-      data: {
-        detail: 'Unauthenticated',
-      },
-    })
-  }
-
-  describe('Render with Unauthenticated user', () => {
+  describe('Render with user not part of org', () => {
     beforeEach(() => {
-      useUser.mockReturnValue({ data: undefined })
-      setup('/gh/codecov/codecov-client/settings', ErrorRender)
+      setup({
+        url: '/gh/codecov/codecov-client/settings',
+        isCurrentUserPartOfOrg: false,
+      })
     })
 
-    it('renders 401', () => {
-      expect(screen.getByText('Error 401')).toBeInTheDocument()
+    it('renders 404', () => {
+      expect(screen.getByText('Error 404')).toBeInTheDocument()
     })
   })
 })
