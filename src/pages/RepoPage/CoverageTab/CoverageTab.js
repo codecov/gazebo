@@ -4,9 +4,9 @@ import { Route, Switch } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import Spinner from 'ui/Spinner'
 
-import CoverageBreadcrumb from './CoverageBreadcrumb'
-import CoverageHeaderWrapper from './CoverageHeaderWrapper'
-import CoverageSearchField from './CoverageSearchField'
+import ContentsTableHeader from './ContentsTableHeader'
+import FileBreadcrumb from './FileBreadcrumb'
+import SearchField from './SearchField'
 import Summary from './Summary'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
@@ -30,25 +30,25 @@ function CoverageTab() {
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Switch>
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
-            <CoverageHeaderWrapper>
-              <CoverageBreadcrumb />
-              <CoverageSearchField
-                searchValue={params.search}
+            <ContentsTableHeader>
+              <FileBreadcrumb />
+              <SearchField
+                searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />
-            </CoverageHeaderWrapper>
+            </ContentsTableHeader>
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/tree/:branch" exact>
-            <CoverageHeaderWrapper>
-              <CoverageBreadcrumb />
-              <CoverageSearchField
-                searchValue={params.search}
+            <ContentsTableHeader>
+              <FileBreadcrumb />
+              <SearchField
+                searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />
-            </CoverageHeaderWrapper>
+            </ContentsTableHeader>
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
@@ -59,13 +59,13 @@ function CoverageTab() {
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/" exact>
-            <CoverageHeaderWrapper>
-              <CoverageBreadcrumb />
-              <CoverageSearchField
-                searchValue={params.search}
+            <ContentsTableHeader>
+              <FileBreadcrumb />
+              <SearchField
+                searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />
-            </CoverageHeaderWrapper>
+            </ContentsTableHeader>
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
