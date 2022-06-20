@@ -2,14 +2,14 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CoverageBreadcrumb from './CoverageBreadcrumb'
+import FileBreadcrumb from './FileBreadcrumb'
 
-describe('CoverageBreadcrumb', () => {
+describe('FileBreadcrumb', () => {
   function setup({ entries, path }) {
     render(
       <MemoryRouter initialEntries={entries}>
         <Route path={path}>
-          <CoverageBreadcrumb />
+          <FileBreadcrumb />
         </Route>
       </MemoryRouter>
     )
