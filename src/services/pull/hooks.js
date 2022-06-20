@@ -55,6 +55,7 @@ export function usePull({ provider, owner, repo, pullId }) {
                   isNewFile
                   isRenamedFile
                   isDeletedFile
+                  isCriticalFile
                   hasDiff
                   hasChanges
                   baseTotals {

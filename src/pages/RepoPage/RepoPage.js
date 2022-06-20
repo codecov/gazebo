@@ -3,10 +3,11 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useCommits } from 'services/commits'
+import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
-import { useMatchBlobsPath, useMatchTreePath } from './pathMatchersHooks'
+import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
 
@@ -19,6 +20,10 @@ const path = '/:provider/:owner/:repo'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
+
+  const { data: currentOwner } = useOwner({ username: owner })
+  const { isCurrentUserPartOfOrg } = currentOwner
+
   const { data } = useCommits({ provider, owner, repo })
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
@@ -43,15 +48,9 @@ function RepoPage() {
                 children: 'Coverage',
                 exact: !matchTree && !matchBlobs,
               },
-              {
-                pageName: 'commits',
-              },
-              {
-                pageName: 'pulls',
-              },
-              {
-                pageName: 'settings',
-              },
+              { pageName: 'commits' },
+              { pageName: 'pulls' },
+              ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
             ]}
           />
         )}

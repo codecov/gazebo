@@ -5,6 +5,8 @@ export const Plans = Object.freeze({
   USERS_INAPPY: 'users-inappy',
   USERS_PR_INAPPM: 'users-pr-inappm',
   USERS_PR_INAPPY: 'users-pr-inappy',
+  USERS_ENTERPRISEM: 'users-enterprisem',
+  USERS_ENTERPRISEY: 'users-enterprisey',
 })
 
 export function isFreePlan(plan) {

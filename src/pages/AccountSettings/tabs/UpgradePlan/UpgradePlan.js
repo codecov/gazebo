@@ -4,6 +4,7 @@ import Card from 'old_ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 
+import { useProPlans } from './hooks'
 import parasolImg from './parasol.png'
 import UpgradePlanForm from './UpgradePlanForm'
 
@@ -14,9 +15,7 @@ function UpgradePlan({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = usePlans(provider)
   const { billingAndUsers } = useNavLinks()
-
-  const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')
-  const proPlanYear = plans.find((plan) => plan.value === 'users-pr-inappy')
+  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
 
   return (
     <>

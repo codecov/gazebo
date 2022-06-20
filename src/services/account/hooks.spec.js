@@ -1,6 +1,6 @@
 import { useStripe } from '@stripe/react-stripe-js'
 import { waitFor } from '@testing-library/react'
-import { act, renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react-hooks'
 import Cookie from 'js-cookie'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -241,7 +241,7 @@ describe('useCancelPlan', () => {
 
     describe('when calling the mutation', () => {
       beforeEach(() => {
-        return act(() => {
+        return waitFor(() => {
           hookData.result.current.mutate()
           return hookData.waitFor(
             () => hookData.result.current.status !== 'idle'
@@ -262,7 +262,7 @@ describe('useCancelPlan', () => {
 
     describe('when calling the mutation', () => {
       beforeEach(() => {
-        return act(() => {
+        return waitFor(() => {
           hookData.result.current.mutate()
           return hookData.waitFor(
             () => hookData.result.current.status !== 'idle'
@@ -319,7 +319,7 @@ describe('useUpgradePlan', () => {
             }
           )
         )
-        return act(async () => {
+        return waitFor(async () => {
           hookData.result.current.mutate({
             seats: 12,
             newPlan: {
@@ -357,7 +357,7 @@ describe('useUpgradePlan', () => {
             }
           )
         )
-        return act(() => {
+        return waitFor(() => {
           hookData.result.current.mutate({
             seats: 12,
             newPlan: {
@@ -419,7 +419,7 @@ describe('useUpdateCard', () => {
             }
           )
         )
-        return act(() => {
+        return waitFor(() => {
           hookData.result.current.mutate(card)
           return hookData.waitFor(() => hookData.result.current.isLoading)
         })
@@ -437,7 +437,7 @@ describe('useUpdateCard', () => {
           message: 'not good',
         }
         beforeEach(() => {
-          return act(() => {
+          return waitFor(() => {
             const spy = jest.spyOn(console, 'error')
             spy.mockImplementation(jest.fn())
             resolver({ error })
@@ -452,7 +452,7 @@ describe('useUpdateCard', () => {
 
       describe('when payment method is good', () => {
         beforeEach(() => {
-          return act(() => {
+          return waitFor(() => {
             resolver({
               paymentMethod: {
                 id: 1,
@@ -498,7 +498,7 @@ describe('useEraseAccount', () => {
 
     describe('when calling the mutation', () => {
       beforeEach(() => {
-        return act(() => {
+        return waitFor(() => {
           hookData.result.current.mutate()
           return hookData.waitFor(
             () => hookData.result.current.status !== 'idle'
@@ -512,7 +512,7 @@ describe('useEraseAccount', () => {
 
       describe('when success', () => {
         beforeEach(() => {
-          return act(async () => {
+          return waitFor(async () => {
             await hookData.waitFor(
               () => hookData.result.current.status !== 'idle'
             )
@@ -536,42 +536,77 @@ describe('useAutoActivate', () => {
   let hookData
   let onSuccess = jest.fn()
 
-  function setup() {
-    const opts = {
-      onSuccess,
-    }
-    server.use(
-      rest.patch(
-        `/internal/${provider}/${owner}/account-details/`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}))
-        }
+  describe('options is set', () => {
+    function setup() {
+      const opts = {
+        onSuccess,
+      }
+      server.use(
+        rest.patch(
+          `/internal/${provider}/${owner}/account-details/`,
+          (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json({}))
+          }
+        )
       )
-    )
-    hookData = renderHook(() => useAutoActivate({ provider, owner, opts }), {
-      wrapper,
-    })
-  }
+      hookData = renderHook(() => useAutoActivate({ provider, owner, opts }), {
+        wrapper,
+      })
+    }
 
-  describe('when called', () => {
-    beforeEach(() => {
-      setup()
-      return act(() => {
-        hookData.result.current.mutate(true)
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+    describe('when called', () => {
+      beforeEach(() => {
+        setup()
+        return waitFor(() => {
+          hookData.result.current.mutate(true)
+          return hookData.waitFor(() => hookData.result.current.isSuccess)
+        })
+      })
+
+      it('opts are passed through to react-query', () => {
+        expect(onSuccess).toHaveBeenCalledTimes(1)
+      })
+
+      it('accountDetails cache unchanged', () => {
+        expect(queryClient.isFetching('accountDetails')).toBe(0)
+      })
+
+      it('users cache unchanged', () => {
+        expect(queryClient.isFetching('users')).toBe(0)
       })
     })
+  })
+  describe('opts is not set', () => {
+    function setup() {
+      server.use(
+        rest.patch(
+          `/internal/${provider}/${owner}/account-details/`,
+          (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json({}))
+          }
+        )
+      )
+      hookData = renderHook(() => useAutoActivate({ provider, owner }), {
+        wrapper,
+      })
+    }
 
-    it('opts are passed through to react-query', () => {
-      expect(onSuccess).toHaveBeenCalledTimes(1)
-    })
+    describe('when called', () => {
+      beforeEach(() => {
+        setup()
+        return waitFor(() => {
+          hookData.result.current.mutate(true)
+          return hookData.waitFor(() => hookData.result.current.isSuccess)
+        })
+      })
 
-    it('accountDetails cache unchanged', () => {
-      expect(queryClient.isFetching('accountDetails')).toBe(0)
-    })
+      it('accountDetails cache unchanged', () => {
+        expect(queryClient.isFetching('accountDetails')).toBe(0)
+      })
 
-    it('users cache unchanged', () => {
-      expect(queryClient.isFetching('users')).toBe(0)
+      it('users cache unchanged', () => {
+        expect(queryClient.isFetching('users')).toBe(0)
+      })
     })
   })
 })
@@ -604,6 +639,30 @@ function getPlans() {
     {
       marketingName: 'Pro Team',
       value: 'users-pr-inappy',
+      billingRate: 'annually',
+      baseUnitPrice: 10,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    },
+    {
+      marketingName: 'Pro Team',
+      value: 'users-enterprisem',
+      billingRate: 'monthly',
+      baseUnitPrice: 12,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    },
+    {
+      marketingName: 'Pro Team',
+      value: 'users-enterprisey',
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [

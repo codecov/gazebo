@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoSettings } from 'services/repo'
+import { useEncodeString, useRepoSettings } from 'services/repo'
 
 import YamlTab from './YamlTab'
 
@@ -18,6 +18,12 @@ describe('YamlTab', () => {
           defaultBranch: 'test default branch',
           bot: { username: 'Rula' },
         },
+      },
+    })
+
+    useEncodeString.mockReturnValue({
+      data: {
+        value: '',
       },
     })
 
