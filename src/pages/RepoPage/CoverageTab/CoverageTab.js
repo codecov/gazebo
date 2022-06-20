@@ -4,7 +4,9 @@ import { Route, Switch } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import Spinner from 'ui/Spinner'
 
-import BreadcrumbSearch from './BreadcrumbSearch'
+import CoverageBreadcrumb from './CoverageBreadcrumb'
+import CoverageHeaderWrapper from './CoverageHeaderWrapper'
+import CoverageSearchField from './CoverageSearchField'
 import Summary from './Summary'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
@@ -28,19 +30,25 @@ function CoverageTab() {
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Switch>
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
-            <BreadcrumbSearch
-              searchValue={params.search}
-              setSearchValue={(search) => updateParams({ search })}
-            />
+            <CoverageHeaderWrapper>
+              <CoverageBreadcrumb />
+              <CoverageSearchField
+                searchValue={params.search}
+                setSearchValue={(search) => updateParams({ search })}
+              />
+            </CoverageHeaderWrapper>
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/tree/:branch" exact>
-            <BreadcrumbSearch
-              searchValue={params.search}
-              setSearchValue={(search) => updateParams({ search })}
-            />
+            <CoverageHeaderWrapper>
+              <CoverageBreadcrumb />
+              <CoverageSearchField
+                searchValue={params.search}
+                setSearchValue={(search) => updateParams({ search })}
+              />
+            </CoverageHeaderWrapper>
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
@@ -51,10 +59,13 @@ function CoverageTab() {
             </Suspense>
           </Route>
           <Route path="/:provider/:owner/:repo/" exact>
-            <BreadcrumbSearch
-              searchValue={params.search}
-              setSearchValue={(search) => updateParams({ search })}
-            />
+            <CoverageHeaderWrapper>
+              <CoverageBreadcrumb />
+              <CoverageSearchField
+                searchValue={params.search}
+                setSearchValue={(search) => updateParams({ search })}
+              />
+            </CoverageHeaderWrapper>
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
