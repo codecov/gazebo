@@ -11,8 +11,10 @@ export function useSummary() {
     repo,
     owner,
   })
-  const { selection, branchSelectorProps, newPath, isRedirectionEnabled } =
-    useBranchSelector(overview?.branches, overview?.defaultBranch)
+  const { selection, branchSelectorProps } = useBranchSelector(
+    overview?.branches,
+    overview?.defaultBranch
+  )
   const { data, isLoading: isLoadingRepoCoverage } = useRepoCoverage({
     provider,
     repo,
@@ -25,8 +27,6 @@ export function useSummary() {
     isLoading: isLoading && isLoadingRepoCoverage,
     data,
     branchSelectorProps,
-    newPath,
-    isRedirectionEnabled,
     currentBranchSelected: selection,
     defaultBranch: overview?.defaultBranch,
     privateRepo: overview?.private,

@@ -1,15 +1,25 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useSummary } from './hooks'
+import { useCoverageRedirect, useSummary } from './hooks'
 import Summary from './Summary'
 
 jest.mock('./hooks')
 
 describe('Summary', () => {
   const mockOnChange = jest.fn()
-  function setup({ useSummaryData }) {
+  const mockSetNewPath = jest.fn()
+  const mockUseCoverageRedirectData = {
+    redirectState: {
+      isRedirectionEnabled: false,
+      newPath: undefined,
+    },
+    setNewPath: mockSetNewPath,
+  }
+  function setup({ useSummaryData, useCoverageRedirectData }) {
     useSummary.mockReturnValue(useSummaryData)
+    useCoverageRedirect.mockReturnValue(useCoverageRedirectData)
 
     render(
       <MemoryRouter initialEntries={['/gh/test/critical-role']}>
@@ -17,7 +27,7 @@ describe('Summary', () => {
           <Summary />
         </Route>
         {/* 
-          Route to render the current location to reduce complextity to track
+          Route to render the current location to reduce complexity to track
           the current location
         */}
         <Route
@@ -40,6 +50,7 @@ describe('Summary', () => {
       }
 
       setup({
+        useCoverageRedirectData: mockUseCoverageRedirectData,
         useSummaryData: {
           isLoading: false,
           data: {},
@@ -53,8 +64,6 @@ describe('Summary', () => {
               },
             },
           },
-          newPath: undefined,
-          isRedirectionEnabled: false,
           currentBranchSelected: selectedBranch,
           defaultBranch: 'main',
           privateRepo: false,
@@ -74,16 +83,15 @@ describe('Summary', () => {
   describe('before data has resolved', () => {
     beforeEach(() => {
       setup({
+        useCoverageRedirectData: mockUseCoverageRedirectData,
         useSummaryData: {
           isLoading: false,
           data: {},
           branchSelectorProps: {
-            items: [],
+            items: [{}],
             onChange: mockOnChange,
             value: {},
           },
-          newPath: undefined,
-          isRedirectionEnabled: false,
           currentBranchSelected: undefined,
           defaultBranch: 'main',
           privateRepo: false,
@@ -110,6 +118,7 @@ describe('Summary', () => {
       }
 
       setup({
+        useCoverageRedirectData: mockUseCoverageRedirectData,
         useSummaryData: {
           isLoading: false,
           data: {
@@ -127,8 +136,6 @@ describe('Summary', () => {
               },
             },
           },
-          newPath: undefined,
-          isRedirectionEnabled: false,
           currentBranchSelected: selectedBranch,
           defaultBranch: 'main',
           privateRepo: false,
@@ -144,10 +151,10 @@ describe('Summary', () => {
     })
   })
   /*
-    I don't love this test but I coundn't think of a good way to test
+    I don't love this test but I couldn't think of a good way to test
     the select user interaction and the location change correctly.
   */
-  describe('uses a contidtional Redriect', () => {
+  describe('uses a conditional Redirect', () => {
     beforeEach(() => {
       const selectedBranch = {
         name: 'something-else',
@@ -157,6 +164,13 @@ describe('Summary', () => {
       }
 
       setup({
+        useCoverageRedirectData: {
+          redirectState: {
+            newPath: '/some/new/location',
+            isRedirectionEnabled: true,
+          },
+          setNewPath: mockSetNewPath,
+        },
         useSummaryData: {
           isLoading: false,
           data: {},
@@ -165,8 +179,6 @@ describe('Summary', () => {
             onChange: mockOnChange,
             value: selectedBranch,
           },
-          newPath: '/some/new/location',
-          isRedirectionEnabled: true,
           currentBranchSelected: selectedBranch,
           defaultBranch: 'main',
           privateRepo: false,
@@ -176,6 +188,52 @@ describe('Summary', () => {
 
     it('updates the location', () => {
       expect(screen.getByText(/some\/new\/location/)).toBeInTheDocument()
+    })
+  })
+
+  describe('fires the setNewPath on branch selection', () => {
+    beforeEach(() => {
+      const selectedBranch = {
+        name: 'something-else',
+        head: {
+          commitid: 'abs890dasf809',
+        },
+      }
+
+      setup({
+        useCoverageRedirectData: {
+          redirectState: {
+            newPath: '/some/new/location',
+            isRedirectionEnabled: true,
+          },
+          setNewPath: mockSetNewPath,
+        },
+        useSummaryData: {
+          isLoading: false,
+          data: {},
+          branchSelectorProps: {
+            items: [
+              { name: 'foo', head: { commitid: '1234' } },
+              selectedBranch,
+            ],
+            onChange: mockOnChange,
+            value: selectedBranch,
+          },
+          currentBranchSelected: selectedBranch,
+          defaultBranch: 'main',
+          privateRepo: false,
+        },
+      })
+    })
+    beforeEach(() => {
+      // open select
+      userEvent.click(screen.getByRole('button', { name: /something-else/i }))
+      // pick foo branch
+      userEvent.click(screen.getByRole('option', { name: /foo/ }))
+    })
+
+    it('updates the location', () => {
+      expect(mockSetNewPath).toHaveBeenCalled()
     })
   })
 })

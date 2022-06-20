@@ -309,11 +309,12 @@ function useNavLinks() {
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
+
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
       isExternalLink: gazeboSettingsTab,
-      text: 'Badge',
+      text: 'Badges & Graphs',
     },
   }
 }
@@ -487,6 +488,12 @@ function useStaticNavLinks() {
       text: 'Graph Authorization',
       path: () =>
         'https://docs.codecov.com/reference/authorization#about-graphs',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    graphsSunburst: {
+      text: 'Graphs Sunburst',
+      path: () => 'https://docs.codecov.com/reference/sunburst',
       isExternalLink: true,
       openNewTab: true,
     },

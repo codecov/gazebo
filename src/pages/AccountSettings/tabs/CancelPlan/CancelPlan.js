@@ -7,6 +7,7 @@ import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
 
 import DowngradeToFree from './DowngradeToFree'
+import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
 
 import BackLink from '../../shared/BackLink'
@@ -17,8 +18,9 @@ function CancelPlan({ provider, owner }) {
   const { data: plans } = usePlans(provider)
   const { billingAndUsers } = useNavLinks()
 
+  const { proPlanMonth } = useProPlanMonth({ plans })
   const freePlan = plans.find((plan) => isFreePlan(plan.value))
-  const proPlanMonth = plans.find((plan) => plan.value === 'users-pr-inappm')
+
   const unavailableBenefits = difference(
     proPlanMonth.benefits,
     freePlan.benefits
