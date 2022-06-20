@@ -1,6 +1,7 @@
 import { useBranches } from 'services/branches'
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo/hooks'
+import { useOwner } from 'services/user'
 
 import { fireEvent, repoPageRender, screen, waitFor } from './repo-jest-setup'
 
@@ -9,6 +10,7 @@ import RepoPage from '.'
 jest.mock('services/repo/hooks')
 jest.mock('services/commits')
 jest.mock('services/branches')
+jest.mock('services/user')
 
 // This component is too complex for an integration test imo
 jest.mock('./CoverageTab/Summary', () => () => 'Summary')
@@ -50,10 +52,16 @@ const branches = [
 ]
 
 describe('RepoPage', () => {
-  function setup({ repository, commits = [], initialEntries }) {
+  function setup({
+    repository,
+    commits = [],
+    initialEntries,
+    isCurrentUserPartOfOrg = true,
+  }) {
     useRepo.mockReturnValue({ data: { repository } })
     useCommits.mockReturnValue({ data: { commits } })
     useBranches.mockReturnValue({ data: branches })
+    useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
 
     // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.
     if (initialEntries) {
@@ -233,6 +241,35 @@ describe('RepoPage', () => {
     it('renders the name of the branch in the breadcrumb', () => {
       const branch = screen.getAllByText(/test1/)
       expect(branch.length).toEqual(2)
+    })
+  })
+
+  describe('when rendered with user not part of org', () => {
+    beforeEach(() => {
+      setup({
+        repository: {
+          private: false,
+        },
+        commits,
+        isCurrentUserPartOfOrg: false,
+      })
+    })
+
+    it('renders the coverage tab', () => {
+      const tab = screen.getByText(/Coverage/)
+      expect(tab).toBeInTheDocument()
+    })
+    it('renders the commits tab', () => {
+      const tab = screen.getByText(/Commits/)
+      expect(tab).toBeInTheDocument()
+    })
+    it('renders the pulls tab', () => {
+      const tab = screen.getByText(/Pulls/)
+      expect(tab).toBeInTheDocument()
+    })
+    it('does not render the settings tab', () => {
+      const tab = screen.queryByText(/Settings/)
+      expect(tab).not.toBeInTheDocument()
     })
   })
 })
