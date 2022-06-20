@@ -14,11 +14,7 @@ const loggedInUser = {
 }
 
 jest.spyOn(console, 'error').mockImplementation()
-
-jest.mock('services/user', () => ({
-  ...jest.requireActual('services/user'), // import and retain the original functionalities
-  useUser: jest.fn(),
-}))
+jest.mock('services/user')
 
 describe('SettingsTab', () => {
   function setup(url, ErrorRender) {
@@ -60,17 +56,17 @@ describe('SettingsTab', () => {
     })
   })
 
+  function ErrorRender() {
+    throw Object.assign({
+      status: 401,
+      data: {
+        detail: 'Unauthenticated',
+      },
+    })
+  }
+
   describe('Render with Unauthenticated user', () => {
     beforeEach(() => {
-      function ErrorRender() {
-        //mocking error promise reject within then promise handle
-        throw Object.assign({
-          status: 401,
-          data: {
-            detail: 'Unauthenticated',
-          },
-        })
-      }
       useUser.mockReturnValue({ data: undefined })
       setup('/gh/codecov/codecov-client/settings', ErrorRender)
     })
