@@ -42,38 +42,16 @@ function RepoPage() {
         <RepoBreadcrumb />
         {repoHasCommits && (
           <TabNavigation
-            tabs={
-              isCurrentUserPartOfOrg
-                ? [
-                    {
-                      pageName: 'overview',
-                      children: 'Coverage',
-                      exact: !matchTree && !matchBlobs,
-                    },
-                    {
-                      pageName: 'commits',
-                    },
-                    {
-                      pageName: 'pulls',
-                    },
-                    {
-                      pageName: 'settings',
-                    },
-                  ]
-                : [
-                    {
-                      pageName: 'overview',
-                      children: 'Coverage',
-                      exact: !matchTree && !matchBlobs,
-                    },
-                    {
-                      pageName: 'commits',
-                    },
-                    {
-                      pageName: 'pulls',
-                    },
-                  ]
-            }
+            tabs={[
+              {
+                pageName: 'overview',
+                children: 'Coverage',
+                exact: !matchTree && !matchBlobs,
+              },
+              { pageName: 'commits' },
+              { pageName: 'pulls' },
+              ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
+            ]}
           />
         )}
         <Suspense fallback={Loader}>
