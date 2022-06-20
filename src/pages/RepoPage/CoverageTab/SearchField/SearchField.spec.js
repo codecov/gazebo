@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import CoverageSearchField from './CoverageSearchField'
+import SearchField from './SearchField'
 
-describe('CoverageSearchField', () => {
+describe('SearchField', () => {
   let props
 
   function setup(over = {}) {
@@ -11,7 +11,7 @@ describe('CoverageSearchField', () => {
       searchValue: '',
       setSearchValue: jest.fn(),
     }
-    render(<CoverageSearchField {...props} />)
+    render(<SearchField {...props} />)
   }
 
   beforeEach(() => {
