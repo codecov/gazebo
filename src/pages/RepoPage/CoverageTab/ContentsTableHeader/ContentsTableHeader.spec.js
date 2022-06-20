@@ -2,16 +2,16 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CoverageHeaderWrapper from './CoverageHeaderWrapper'
+import ContentsTableHeader from './ContentsTableHeader'
 
-describe('BreadcrumbSearch', () => {
+describe('ContentsTableHeader', () => {
   function setup({ entries, path }) {
     render(
       <MemoryRouter initialEntries={entries}>
         <Route path={path}>
-          <CoverageHeaderWrapper>
+          <ContentsTableHeader>
             <p>Hello World</p>
-          </CoverageHeaderWrapper>
+          </ContentsTableHeader>
         </Route>
       </MemoryRouter>
     )
