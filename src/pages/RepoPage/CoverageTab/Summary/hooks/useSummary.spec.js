@@ -103,14 +103,6 @@ describe('useSummary', () => {
       })
     })
 
-    it('passed down the newPath', () => {
-      expect(hookData.result.current.newPath).toEqual('test/test/')
-    })
-
-    it('passed down the isRedirectionEnabled status', () => {
-      expect(hookData.result.current.isRedirectionEnabled).toEqual(true)
-    })
-
     it('passed down the currentBranchSelected', () => {
       expect(hookData.result.current.currentBranchSelected).toEqual({
         name: 'my branch',
