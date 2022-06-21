@@ -83,7 +83,14 @@ A.propTypes = {
       )
     }
   },
-  variant: PropTypes.oneOf(['default', 'header', 'link', 'code', 'cardLink']),
+  variant: PropTypes.oneOf([
+    'default',
+    'header',
+    'link',
+    'code',
+    'cardLink',
+    'fileViewHeader',
+  ]),
   isExternal: PropTypes.bool,
 }
 
