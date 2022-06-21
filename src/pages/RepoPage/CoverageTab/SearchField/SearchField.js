@@ -4,7 +4,7 @@ import { useDebounce } from 'react-use'
 
 import TextInput from 'ui/TextInput'
 
-function SearchField({ searchValue, setSearchValue }) {
+function CoverageSearchField({ searchValue, setSearchValue }) {
   const [search, setSearch] = useState(searchValue)
 
   useDebounce(
@@ -24,9 +24,9 @@ function SearchField({ searchValue, setSearchValue }) {
   )
 }
 
-SearchField.propTypes = {
+CoverageSearchField.propTypes = {
   searchValue: PropTypes.string.isRequired,
   setSearchValue: PropTypes.func.isRequired,
 }
 
-export default SearchField
+export default CoverageSearchField
