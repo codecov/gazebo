@@ -1,8 +1,9 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useParams } from 'react-router-dom'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useOwner } from 'services/user'
 
 import SideMenuSettings from './SideMenuSettings'
 import BadgesAndGraphsTab from './tabs/BadgesAndGraphsTab'
@@ -18,6 +19,12 @@ const tabLoading = (
 )
 
 function SettingsTab() {
+  const { owner } = useParams()
+  const { data: currentOwner } = useOwner({ username: owner })
+  const { isCurrentUserPartOfOrg } = currentOwner
+
+  if (!isCurrentUserPartOfOrg) return <NotFound />
+
   return (
     <SidebarLayout sidebar={<SideMenuSettings />}>
       <Suspense fallback={tabLoading}>
