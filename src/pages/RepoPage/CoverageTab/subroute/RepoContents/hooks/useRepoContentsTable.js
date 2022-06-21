@@ -56,17 +56,22 @@ const defaultQueryParams = {
   search: '',
 }
 
-const sortingParameter = {
+const sortingParameter = Object.freeze({
   name: 'NAME',
   coverage: 'COVERAGE',
-}
+})
+
+const sortingDirection = Object.freeze({
+  desc: 'DESC',
+  asc: 'ASC',
+})
 
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
     ...(sortBy && {
       ordering: {
-        direction: sortBy?.desc ? 'DESC' : 'ASC',
+        direction: sortBy?.desc ? sortingDirection.desc : sortingDirection.asc,
         parameter: sortingParameter[sortBy?.id],
       },
     }),
