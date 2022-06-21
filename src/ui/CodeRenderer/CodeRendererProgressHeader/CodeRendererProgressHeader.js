@@ -44,12 +44,7 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
     >
       <div className="flex flex-1 gap-1">
         {unifyFileViewers ? (
-          <A
-            id={`#${path}`}
-            href={`#${path}`}
-            hook="file-viewer"
-            variant="fileViewHeader"
-          >
+          <A href={`#${path}`} hook="file-viewer" variant="fileViewHeader">
             {path}
           </A>
         ) : (

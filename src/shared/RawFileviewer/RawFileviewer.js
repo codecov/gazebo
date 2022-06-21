@@ -95,7 +95,10 @@ function RawFileviewer({ title }) {
         coverageIsLoading={coverageIsLoading}
         lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
       />
-      <div>
+      {
+        // TODO: add class for style changes with target:<style>
+      }
+      <div id={path}>
         <CodeRendererProgressHeader
           path={path} // This is only populated in standalone fileviewer
           pathRef={ref} // This is only populated in standalone fileviewer
