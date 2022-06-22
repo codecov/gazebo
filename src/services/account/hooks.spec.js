@@ -1,4 +1,5 @@
 import { useStripe } from '@stripe/react-stripe-js'
+import "@testing-library/jest-dom";
 import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import Cookie from 'js-cookie'

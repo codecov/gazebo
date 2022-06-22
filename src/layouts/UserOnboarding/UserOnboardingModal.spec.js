@@ -1,5 +1,7 @@
 import { act, render, screen, waitFor } from 'custom-testing-library'
 
+import "@testing-library/jest-dom";
+
 import { fireEvent } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'

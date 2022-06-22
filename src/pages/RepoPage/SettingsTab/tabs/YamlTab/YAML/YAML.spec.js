@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import { render, screen, waitFor } from '@testing-library/react'
 import PropTypes from 'prop-types'
 import { QueryClient, QueryClientProvider } from 'react-query'

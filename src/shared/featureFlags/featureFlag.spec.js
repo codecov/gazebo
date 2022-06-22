@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 /* eslint-disable no-restricted-imports */
 import { render, screen } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'

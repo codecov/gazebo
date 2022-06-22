@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 

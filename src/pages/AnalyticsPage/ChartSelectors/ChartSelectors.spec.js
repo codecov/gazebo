@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'

@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import { render, screen, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'

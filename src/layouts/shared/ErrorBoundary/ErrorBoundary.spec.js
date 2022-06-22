@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/browser'
+import "@testing-library/jest-dom";
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 

@@ -1,5 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 
+import "@testing-library/jest-dom";
+
 import { act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
