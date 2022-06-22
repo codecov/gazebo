@@ -201,7 +201,7 @@ function useNavLinks() {
           return `/${provider}/${owner}/${repo}/tree/${ref}/${tree}`
         }
       },
-      isExternalLink: true,
+      isExternalLink: false,
       text: 'Tree View',
     },
     fileViewer: {
