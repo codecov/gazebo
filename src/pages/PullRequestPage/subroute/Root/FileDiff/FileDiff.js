@@ -56,7 +56,7 @@ const FileDiff = ({
         fileLabel={fileLabel}
       />
       {/* Critical File Label */}
-      {isCriticalFile ? <CriticalFileLabel variant="borderBottom" /> : null}
+      {isCriticalFile ?? <CriticalFileLabel variant="borderBottom" />}
       {/* CodeRenderer */}
       {segments.map((segment, segmentIndex) => {
         const content = segment.lines.map((line) => line.content).join('\n')
