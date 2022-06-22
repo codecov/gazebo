@@ -73,7 +73,6 @@ describe('CodeRendererProgressHeader', () => {
     it('renders anchor tag', () => {
       const link = screen.getByRole('link', { name: 'path/to/file.js' })
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('id', '#path/to/file.js')
       expect(link).toHaveAttribute('href', '#path/to/file.js')
     })
   })
