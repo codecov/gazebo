@@ -2,14 +2,14 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import BreadcrumbSearch from './BreadcrumbSearch'
+import FileBreadcrumb from './FileBreadcrumb'
 
-describe('BreadcrumbSearch', () => {
+describe('FileBreadcrumb', () => {
   function setup({ entries, path }) {
     render(
       <MemoryRouter initialEntries={entries}>
         <Route path={path}>
-          <BreadcrumbSearch searchValue="" setSearchValue={() => null} />
+          <FileBreadcrumb />
         </Route>
       </MemoryRouter>
     )
@@ -34,13 +34,6 @@ describe('BreadcrumbSearch', () => {
 
       const tests = screen.getByText('tests')
       expect(tests).toBeInTheDocument()
-    })
-
-    it('renders the search', () => {
-      const searchMsg = screen.getByRole('textbox', {
-        name: 'Search for files',
-      })
-      expect(searchMsg).toBeInTheDocument()
     })
   })
 })

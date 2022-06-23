@@ -1,9 +1,35 @@
+import cs from 'classnames'
+import PropTypes from 'prop-types'
+
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-function CriticalFileLabel() {
+const baseClass = `
+  pointer-events-auto
+  flex
+  flex-row
+  gap-1
+  bg-ds-gray-primary
+  px-3
+  py-1
+  items-center
+  border-r
+  border-l
+  border-solid
+  border-ds-gray-tertiary
+`
+
+const variantClasses = {
+  default: ``,
+  borderBottom: `border-b`,
+  borderTop: `border-t`,
+}
+
+function CriticalFileLabel({ variant = 'default' }) {
+  const className = cs(baseClass, variantClasses[variant])
+
   return (
-    <div className="pointer-events-autoflex gap-1 bg-ds-gray-primary px-4 py-1 items-center border-r border-l border-b border-solid border-ds-gray-tertiary">
+    <div className={className}>
       <div className="text-warning-500">
         <Icon name="exclamation-circle" size="sm" variant="outline" />
       </div>
@@ -21,6 +47,10 @@ function CriticalFileLabel() {
       </p>
     </div>
   )
+}
+
+CriticalFileLabel.propTypes = {
+  variant: PropTypes.oneOf(['default', 'borderBottom', 'borderTop']),
 }
 
 export default CriticalFileLabel

@@ -96,7 +96,7 @@ function createTable({ tableData = [] }) {
           <TotalsNumber value={change} showChange data-testid="change-value" />
         </div>
       ) : (
-        <span className="text-ds-gray-quinary text-sm whitespace-nowrap -ml-14 lg:-ml-12">
+        <span className="text-ds-gray-quinary text-sm ml-4">
           No data available
         </span>
       ),
