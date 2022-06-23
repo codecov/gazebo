@@ -37,7 +37,7 @@ jobs:
           name: Run tests
           command: |
             TESTFILES=$(circleci tests glob "src/**/*.spec.js" "src/**/*.test.js" | circleci tests split --split-by=timings)
-            CI=true npm run test:ci -- --maxWorkers=3 $TESTFILES
+            CI=true npm run test:ci -- --detectOpenHandles --forceExit  $TESTFILES
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
       - store_test_results:
