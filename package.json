@@ -41,7 +41,7 @@
     "test": "react-scripts test",
     "test:mutation": "npx stryker run",
     "sentry": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && react-scripts build && node scripts/sentry.js",
-    "test:ci": "react-scripts test --collectCoverage --reporters=default --reporters=jest-junit",
+    "test:ci": "react-scripts test --collectCoverage --reporters=default --reporters=jest-junit --bail",
     "eject": "react-scripts eject",
     "lint": "npx eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
     "storybook": "start-storybook -p 6006 -s public --no-dll",
