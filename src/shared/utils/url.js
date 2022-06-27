@@ -24,6 +24,6 @@ export function getFilenameFromFilePath(path) {
   return path.split('/').pop()
 }
 
-export function getFilesNamesFromFilePath(path) {
+export function getFilePathParts(path) {
   return path?.split('/') ?? []
 }

@@ -2,7 +2,7 @@ import dropRight from 'lodash/dropRight'
 import indexOf from 'lodash/indexOf'
 import { useParams } from 'react-router-dom'
 
-import { getFilesNamesFromFilePath } from 'shared/utils/url'
+import { getFilePathParts } from 'shared/utils/url'
 
 function getTreeLocation(paths, location) {
   return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
@@ -10,7 +10,7 @@ function getTreeLocation(paths, location) {
 
 export function useTreePaths() {
   const { branch, path, repo } = useParams()
-  const filePaths = getFilesNamesFromFilePath(path)
+  const filePaths = getFilePathParts(path)
 
   const paths =
     filePaths &&

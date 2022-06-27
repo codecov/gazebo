@@ -1,4 +1,4 @@
-import { forwardMarketingTag, getFilesNamesFromFilePath } from './url'
+import { forwardMarketingTag, getFilePathParts } from './url'
 
 describe('forwardMarketingTag', () => {
   it('returns an object containing the specified utm parameters only', () => {
@@ -22,7 +22,7 @@ describe('forwardMarketingTag', () => {
 describe('getFilesNamesFromFilePath', () => {
   it('returns an array containing files names', () => {
     const path = 'src/ui/shared/services'
-    expect(getFilesNamesFromFilePath(path)).toStrictEqual([
+    expect(getFilePathParts(path)).toStrictEqual([
       'src',
       'ui',
       'shared',
@@ -31,6 +31,6 @@ describe('getFilesNamesFromFilePath', () => {
   })
 
   it('returns an empty array if path is not present', () => {
-    expect(getFilesNamesFromFilePath()).toStrictEqual([])
+    expect(getFilePathParts()).toStrictEqual([])
   })
 })
