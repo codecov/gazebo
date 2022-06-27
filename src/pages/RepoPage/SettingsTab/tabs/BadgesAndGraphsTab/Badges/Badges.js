@@ -12,7 +12,7 @@ const useBadges = ({ graphToken, defaultBranch }) => {
 
   const BadgesEnum = Object.freeze({
     MARKDOWN: `[![codecov](${fullPath})](${repoPath})`,
-    HTML: `<a href="${repoPath}" > \n <img scr="${fullPath}"/> \n </a>`,
+    HTML: `<a href="${repoPath}" > \n <img src="${fullPath}"/> \n </a>`,
     RST: `.. image:: ${fullPath} \n :target: ${repoPath}`,
   })
 
