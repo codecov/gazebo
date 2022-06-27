@@ -23,3 +23,7 @@ export function forwardMarketingTag(search) {
 export function getFilenameFromFilePath(path) {
   return path.split('/').pop()
 }
+
+export function getFilesNamesFromFilePath(path) {
+  return path?.split('/') ?? []
+}
