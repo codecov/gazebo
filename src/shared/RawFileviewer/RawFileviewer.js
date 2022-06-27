@@ -98,7 +98,7 @@ function RawFileviewer({ title }) {
       {
         // TODO: add class for style changes with target:<style>
       }
-      <div id={path} className="target:border-2 border-ds-pink">
+      <div id={path} className="target:border-4 border-ds-blue-selected">
         <CodeRendererProgressHeader
           path={path} // This is only populated in standalone fileviewer
           pathRef={ref} // This is only populated in standalone fileviewer
