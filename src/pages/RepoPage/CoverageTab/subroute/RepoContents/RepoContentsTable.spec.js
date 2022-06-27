@@ -16,13 +16,13 @@ const repoContents = [
     name: 'flag2',
     filepath: '',
     percentCovered: 92.78,
-    type: 'dir',
+    __typename: 'PathContentDir',
   },
   {
     name: 'app.js',
     filepath: '',
     percentCovered: 62.53,
-    type: 'file',
+    __typename: 'PathContentFile',
   },
 ]
 

@@ -10,14 +10,19 @@ import Progress from 'ui/Progress'
 
 function createTable({ tableData, branch, path, isSearching }) {
   return tableData?.length > 0
-    ? tableData.map(({ name, percentCovered, type, filePath }) => ({
+    ? tableData.map(({ name, percentCovered, __typename, filePath }) => ({
         name: (
           <div className="flex flex-col gap-1 text-ds-gray-quinary">
             <div className="flex gap-2">
-              <Icon name={type === 'dir' ? 'folder' : 'document'} size="md" />
+              <Icon
+                name={__typename === 'PathContentDir' ? 'folder' : 'document'}
+                size="md"
+              />
               <A
                 to={{
-                  pageName: `${type === 'dir' ? 'treeView' : 'fileViewer'}`,
+                  pageName: `${
+                    __typename === 'PathContentDir' ? 'treeView' : 'fileViewer'
+                  }`,
                   options: {
                     ref: branch,
                     tree: Boolean(path) ? `${path}/${name}` : name,

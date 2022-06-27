@@ -24,7 +24,7 @@ const repoContentsMock = {
       name: 'flag2',
       filepath: '',
       percentCovered: 92.78,
-      type: 'dir',
+      __typename: 'PathContentDir',
     },
   ],
   isLoading: false,

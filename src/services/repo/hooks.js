@@ -108,10 +108,13 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
           branch(name:$branch){
           head {
             pathContents(path:$path, filters:$filters){
+              __typename
               name
-              filePath
+              path
               percentCovered
-              type
+              ... on PathContentFile {
+              isCriticalFile
+            }
             }
            }
           }
@@ -119,6 +122,7 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
       }
      } 
    `
+
   return Api.graphql({
     provider,
     repo,
