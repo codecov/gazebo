@@ -51,9 +51,9 @@ function ImpactAnalysisToken({ profilingToken }) {
               onClick={() => {
                 trackSegmentEvent(
                   snakeifyKeys({
-                    id: user?.trackingMetadata?.ownerid,
+                    event: 'Impact Analysis Profiling Token Copied',
                     data: {
-                      event: 'Impact Analysis Profiling Token Copied',
+                      id: user?.trackingMetadata?.ownerid,
                       userOwnerid: user?.trackingMetadata?.ownerid,
                       ownerSlug: owner,
                       repoSlug: repo,
