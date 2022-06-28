@@ -19,7 +19,7 @@ function createTable({ tableData, branch, path, isSearching }) {
           path: filePath,
           isCriticalFile,
         }) => ({
-          files:
+          name:
             __typename === 'PathContentDir' ? (
               <DirEntry branch={branch} name={name} path={path} />
             ) : (
@@ -41,7 +41,7 @@ function createTable({ tableData, branch, path, isSearching }) {
 const headers = [
   {
     Header: 'Files',
-    accessor: 'files',
+    accessor: 'name',
     width: 'w-9/12 min-w-min',
   },
   {
