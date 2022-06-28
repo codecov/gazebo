@@ -131,13 +131,13 @@ describe('ImpactAnalysisToken', () => {
     it('calls the trackSegmentEvent', () => {
       expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
       expect(trackSegmentSpy).toHaveBeenCalledWith({
+        event: 'Impact Analysis Profiling Token Copied',
         data: {
-          event: 'Impact Analysis Profiling Token Copied',
           owner_slug: 'codecov',
           repo_slug: 'codecov-client',
           user_ownerid: {},
+          id: {},
         },
-        id: {},
       })
     })
   })
