@@ -16,7 +16,7 @@ function CurrentPlanCard({ accountDetails }) {
   return (
     <Card className="px-12 py-10 pb-4 mb-4">
       <h3 className="text-lg text-pink-500 font-bold">{plan.marketingName}</h3>
-      <PlanPricing plan={plan} />
+      <PlanPricing value={plan?.value} baseUnitPrice={plan?.baseUnitPrice} />
       <div className="mt-8 text-sm border-gray-200">
         <BenefitList
           iconName="check"
