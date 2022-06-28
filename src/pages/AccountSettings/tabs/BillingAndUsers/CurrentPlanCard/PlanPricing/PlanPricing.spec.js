@@ -4,14 +4,7 @@ import PlanPricing from './PlanPricing'
 
 describe('PlanPricing', () => {
   function setup(value) {
-    const plan = {
-      baseUnitPrice: 12,
-      benefits: [],
-      marketingName: 'Plan Name',
-      quantity: 5,
-      value,
-    }
-    render(<PlanPricing plan={plan} />)
+    render(<PlanPricing value={value} baseUnitPrice={12} />)
   }
 
   describe('user is on a free plan', () => {
