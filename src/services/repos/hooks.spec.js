@@ -80,7 +80,6 @@ describe('useRepos', () => {
               username: 'febg',
             },
             viewableRepositories: {
-              totalCount: 80,
               edges: req.variables.after
                 ? [
                     {
@@ -114,7 +113,6 @@ describe('useRepos', () => {
           owner: {
             username: 'codecov',
             repositories: {
-              totalCount: 80,
               edges: [
                 {
                   node: repo1,
