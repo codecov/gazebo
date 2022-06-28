@@ -4,6 +4,7 @@ import isFinite from 'lodash/isFinite'
 import PropTypes from 'prop-types'
 
 import { useFlags } from 'shared/featureFlags'
+import { getFilePathParts } from 'shared/utils/url'
 import A from 'ui/A'
 import Breadcrumb from 'ui/Breadcrumb'
 import CopyClipboard from 'ui/CopyClipboard'
@@ -25,7 +26,7 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
     unifyFileViewers: true,
   })
 
-  const treePaths = path?.split('/')?.map((location) => ({
+  const treePaths = getFilePathParts(path)?.map((location) => ({
     pageName: 'treeView',
     text: location,
     options: {
