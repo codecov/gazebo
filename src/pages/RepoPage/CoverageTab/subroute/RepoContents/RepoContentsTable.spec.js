@@ -1,12 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useRepoOverview } from 'services/repo'
-import { useRepoContents } from 'services/repoContents/hooks'
+import { useRepoContents, useRepoOverview } from 'services/repo'
 
 import RepoContentsTable from './RepoContentsTable'
 
-jest.mock('services/repoContents/hooks')
 jest.mock('services/repo')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -18,13 +16,13 @@ const repoContents = [
     name: 'flag2',
     filepath: '',
     percentCovered: 92.78,
-    type: 'dir',
+    __typename: 'PathContentDir',
   },
   {
     name: 'app.js',
     filepath: '',
     percentCovered: 62.53,
-    type: 'file',
+    __typename: 'PathContentFile',
   },
 ]
 
