@@ -4,7 +4,12 @@ import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useEraseRepoContent, useRepo, useUpdateRepo } from './hooks'
+import {
+  useEraseRepoContent,
+  useRepo,
+  useRepoContents,
+  useUpdateRepo,
+} from './hooks'
 
 const queryClient = new QueryClient()
 
@@ -235,6 +240,81 @@ describe('useUpdateRepo', () => {
 
       it('returns isSuccess true', () => {
         expect(hookData.result.current.isSuccess).toBeTruthy()
+      })
+    })
+  })
+})
+
+describe('useRepoContents', () => {
+  const dataReturned = {
+    owner: {
+      username: 'Rabee-AbuBaker',
+      repository: {
+        branch: {
+          head: {
+            pathContents: [
+              {
+                name: 'flag1',
+                filePath: null,
+                percentCovered: 100.0,
+                type: 'dir',
+              },
+            ],
+          },
+        },
+      },
+    },
+  }
+
+  let hookData
+
+  function setup() {
+    server.use(
+      graphql.query('BranchFiles', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(dataReturned))
+      })
+    )
+
+    hookData = renderHook(
+      () =>
+        useRepoContents({
+          provider: 'gh',
+          owner: 'Rabee-AbuBaker',
+          repo: 'another-test',
+          branch: 'main',
+          path: '',
+        }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('when called', () => {
+    const expectedResponse = [
+      {
+        name: 'flag1',
+        filePath: null,
+        percentCovered: 100.0,
+        type: 'dir',
+      },
+    ]
+
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders isLoading true', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual(expectedResponse)
       })
     })
   })
