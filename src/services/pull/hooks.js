@@ -94,7 +94,6 @@ export function usePull({ provider, owner, repo, pullId }) {
                 }
               }
               commits {
-                totalCount
                 pageInfo {
                   hasNextPage
                   startCursor
