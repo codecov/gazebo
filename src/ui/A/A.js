@@ -17,6 +17,7 @@ const variantClasses = {
   link: `text-ds-blue-darker`,
   code: `font-mono text-ds-blue-darker`,
   cardLink: `text-ds-grey-octinary font-semibold truncate`,
+  greyOctinary: `text-ds-grey-octinary`,
 }
 
 function _adjustPathForGLSubgroups(path) {
@@ -82,7 +83,14 @@ A.propTypes = {
       )
     }
   },
-  variant: PropTypes.oneOf(['default', 'header', 'link', 'code', 'cardLink']),
+  variant: PropTypes.oneOf([
+    'default',
+    'header',
+    'link',
+    'code',
+    'cardLink',
+    'fileViewHeader',
+  ]),
   isExternal: PropTypes.bool,
 }
 

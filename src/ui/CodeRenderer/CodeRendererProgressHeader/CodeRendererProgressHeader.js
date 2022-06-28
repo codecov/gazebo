@@ -3,6 +3,9 @@ import indexOf from 'lodash/indexOf'
 import isFinite from 'lodash/isFinite'
 import PropTypes from 'prop-types'
 
+import { useFlags } from 'shared/featureFlags'
+import { getFilePathParts } from 'shared/utils/url'
+import A from 'ui/A'
 import Breadcrumb from 'ui/Breadcrumb'
 import CopyClipboard from 'ui/CopyClipboard'
 import Progress from 'ui/Progress'
@@ -19,15 +22,18 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
    * @param {Float} fileCoverage total coverage of current file
    * @param {Float} change difference between head and base coverage. Only used in commmit based file viewer
    */
+  const { unifyFileViewers } = useFlags({
+    unifyFileViewers: true,
+  })
 
-  const paths = path?.split('/')
-  const treePaths =
-    paths &&
-    paths.map((location) => ({
-      pageName: 'treeView',
-      text: location,
-      options: { tree: getTreeLocation(paths, location), ref: pathRef },
-    }))
+  const treePaths = getFilePathParts(path)?.map((location) => ({
+    pageName: 'treeView',
+    text: location,
+    options: {
+      tree: getTreeLocation(path?.split('/'), location),
+      ref: pathRef,
+    },
+  }))
 
   return (
     <div
@@ -38,13 +44,16 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
     `}
     >
       <div className="flex flex-1 gap-1">
-        {treePaths && <Breadcrumb paths={[...treePaths]} />}
-        {paths && (
-          <CopyClipboard
-            string={paths.join('/')}
-            showLabel={false}
-            variant="muted"
-          />
+        {/* TODO: remove after coverage tab full release */}
+        {unifyFileViewers ? (
+          <A href={`#${path}`} hook="file-viewer" variant="greyOctinary">
+            {path}
+          </A>
+        ) : (
+          treePaths && <Breadcrumb paths={[...treePaths]} />
+        )}
+        {path && (
+          <CopyClipboard string={path} showLabel={false} variant="muted" />
         )}
       </div>
       <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
