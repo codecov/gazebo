@@ -391,7 +391,6 @@ const mockPullData = {
       ],
     },
     commits: {
-      totalCount: 2,
       pageInfo: {
         hasNextPage: false,
         startCursor: 'MjAyMi0wMi0xNSAyMDo0NDozNi4xMzA5NTJ8MTk=',
@@ -466,7 +465,6 @@ const mockPullDataNoFiles = {
       fileComparisons: [],
     },
     commits: {
-      totalCount: 2,
       pageInfo: {
         hasNextPage: false,
         startCursor: 'MjAyMi0wMi0xNSAyMDo0NDozNi4xMzA5NTJ8MTk=',
