@@ -1,5 +1,5 @@
 import { accountDetailsPropType } from 'services/account'
-import { isFreePlan } from 'shared/utils/billing'
+import { isEnterprisePlan, isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A'
 
 import ActionsBilling from '../ActionsBilling'
@@ -7,10 +7,7 @@ import ActionsBilling from '../ActionsBilling'
 function PlanControls({ accountDetails }) {
   const plan = accountDetails.rootOrganization?.plan ?? accountDetails.plan
 
-  if (
-    plan.value === 'users-enterprisem' ||
-    plan.value === 'users-enterprisey'
-  ) {
+  if (isEnterprisePlan(plan?.value)) {
     return (
       <div className="items-center mt-1 text-ds-gray-quinary">
         To change or cancel your plan please contact{' '}
@@ -23,7 +20,7 @@ function PlanControls({ accountDetails }) {
     <div className="flex flex-col items-center mt-1">
       <ActionsBilling
         accountDetails={accountDetails}
-        isFreePlan={isFreePlan(plan.value)}
+        isFreePlan={isFreePlan(plan?.value)}
       />
     </div>
   )
