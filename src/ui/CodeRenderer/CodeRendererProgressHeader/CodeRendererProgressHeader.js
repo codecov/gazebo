@@ -44,6 +44,7 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
     `}
     >
       <div className="flex flex-1 gap-1">
+        {/* TODO: remove after coverage tab full release */}
         {unifyFileViewers ? (
           <A href={`#${path}`} hook="file-viewer" variant="greyOctinary">
             {path}
