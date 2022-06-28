@@ -49,7 +49,6 @@ function ImpactAnalysisToken({ profilingToken }) {
             <TokenWrapper
               token={token}
               onClick={() => {
-                console.debug('event')
                 trackSegmentEvent(
                   snakeifyKeys({
                     event: 'Impact Analysis Profiling Token Copied',
