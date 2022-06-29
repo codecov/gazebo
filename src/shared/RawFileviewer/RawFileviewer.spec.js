@@ -21,7 +21,7 @@ jest.mock('services/user')
 const queryClient = new QueryClient()
 
 describe('RawFileviewer', () => {
-  function setup({ content, owner, coverage }) {
+  function setup({ content, owner, coverage, isCriticalFile }) {
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -32,6 +32,7 @@ describe('RawFileviewer', () => {
       coverage,
       flagNames: ['flagOne', 'flagTwo'],
       content,
+      isCriticalFile,
     })
 
     render(
@@ -71,7 +72,8 @@ describe('RawFileviewer', () => {
         17: 'M',
         21: 'H',
       }
-      setup({ content, owner, coverage })
+      const isCriticalFile = false
+      setup({ content, owner, coverage, isCriticalFile })
     })
 
     it('renders the Fileviewer Header, Coderenderer Header, and Coderenderer', () => {
@@ -91,6 +93,49 @@ describe('RawFileviewer', () => {
     })
   })
 
+  describe('when the file is labeled critical', () => {
+    beforeEach(() => {
+      const content =
+        'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};'
+      const owner = {
+        username: 'criticalrole',
+        isCurrentUserPartOfOrg: true,
+      }
+      const coverage = {
+        1: 'H',
+        2: 'H',
+        5: 'H',
+        6: 'H',
+        9: 'H',
+        10: 'H',
+        13: 'M',
+        14: 'P',
+        15: 'M',
+        16: 'M',
+        17: 'M',
+        21: 'H',
+      }
+      const isCriticalFile = true
+      setup({ content, owner, coverage, isCriticalFile })
+    })
+
+    it('renders the Fileviewer Header, CriticalFileLable, Coderenderer Header, and Coderenderer', () => {
+      expect(
+        screen.getByText(/The Fileviewer Toggle Header/)
+      ).toBeInTheDocument()
+      expect(screen.getByText(/critical file/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/The Progress Header for Coderenderer/)
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          /There was a problem getting the source code from your provider./
+        )
+      ).not.toBeInTheDocument()
+      const allTestIds = screen.getAllByTestId('fv-single-line')
+      expect(allTestIds.length).toEqual(21)
+    })
+  })
   describe('when there is no coverage data to be shown', () => {
     beforeEach(() => {
       const content =
@@ -100,7 +145,8 @@ describe('RawFileviewer', () => {
         isCurrentUserPartOfOrg: true,
       }
       const coverage = null
-      setup({ content, owner, coverage })
+      const isCriticalFile = false
+      setup({ content, owner, coverage, isCriticalFile })
     })
 
     it('renders the Fileviewer Header, Coderenderer Header, and Coderenderer', () => {

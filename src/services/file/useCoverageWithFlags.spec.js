@@ -97,6 +97,7 @@ describe('useCoverageWithFlags', () => {
           .keyBy('line')
           .mapValues('coverage')
           .value(),
+        isCriticalFile: false,
       })
     })
   })

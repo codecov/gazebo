@@ -9,6 +9,7 @@ import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { getFilenameFromFilePath } from 'shared/utils/url'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
+import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import SingleLine from 'ui/CodeRenderer/SingleLine'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
@@ -68,6 +69,7 @@ function RawFileviewer({ title }) {
     totals: fileCoverage,
     coverage: coverageData,
     isLoading: coverageIsLoading,
+    isCriticalFile,
   } = useCommitBasedCoverageForFileViewer({
     owner,
     repo,
@@ -101,6 +103,7 @@ function RawFileviewer({ title }) {
           pathRef={ref} // This is only populated in standalone fileviewer
           fileCoverage={fileCoverage}
         />
+        {!!isCriticalFile && <CriticalFileLabel variant="borderTop" />}
         {content ? (
           <CodeRenderer
             code={content}

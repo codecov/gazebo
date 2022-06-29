@@ -41,6 +41,7 @@ export function useCommitBasedCoverageForFileViewer({
       totals: data?.totals,
       flagNames: data?.flagNames,
       content: data?.content,
+      isCriticalFile: !!data?.isCriticalFile,
       isLoading: false,
     }
   }
@@ -51,5 +52,6 @@ export function useCommitBasedCoverageForFileViewer({
     isLoading: queryPerFlag.isLoading,
     flagNames: data?.flagNames,
     content: data?.content,
+    isCriticalFile: !!data?.isCriticalFile,
   }
 }
