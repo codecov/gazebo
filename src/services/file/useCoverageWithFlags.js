@@ -14,6 +14,7 @@ export function useCoverageWithFlags(
       repository(name: $repo){
         commit(id: $ref) {
           coverageFile(path: $path, flags: $flags) {
+            isCriticalFile
             coverage {
               line
               coverage
@@ -36,6 +37,7 @@ export function useCoverageWithFlags(
   fragment CoverageForFile on Commit {
     commitid
     coverageFile(path: $path) {
+      isCriticalFile
       coverage {
         line
         coverage
