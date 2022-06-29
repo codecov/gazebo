@@ -49,6 +49,7 @@ describe('useFileWithMainCoverage', () => {
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             flagNames: ['a', 'b'],
             coverageFile: {
+              isCriticalFile: true,
               content:
                 'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
               coverage: [
@@ -111,6 +112,7 @@ describe('useFileWithMainCoverage', () => {
             head: {
               commitid: '98a8b5f3ed2553d1b08ea02b2a0c3a1c1e001cf2',
               coverageFile: {
+                isCriticalFile: true,
                 content:
                   'def uncovered_if(var=True):\n    if var:\n      return False\n    else:\n      return True\n\n\ndef fully_covered():\n    # Added a change here\n    return True\n\ndef uncovered():\n    return True\n\n',
                 coverage: [
@@ -163,6 +165,7 @@ describe('useFileWithMainCoverage', () => {
         ...data.owner.repository.branch.head.coverageFile,
         totals: 0,
         flagNames: [],
+        isCriticalFile: true,
         coverage: _.chain(
           data.owner.repository.branch.head.coverageFile.coverage
         )

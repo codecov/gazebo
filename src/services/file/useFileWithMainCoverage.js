@@ -26,6 +26,7 @@ export function useFileWithMainCoverage({ provider, owner, repo, ref, path }) {
       commitid
       flagNames
       coverageFile(path: $path) {
+        isCriticalFile
         content
         coverage {
           line
