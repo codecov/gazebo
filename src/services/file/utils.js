@@ -10,10 +10,12 @@ export function extractCoverageFromResponse(res) {
   const lineWithCoverage = keyBy(coverageFile.coverage, 'line')
   const fileCoverage = mapValues(lineWithCoverage, 'coverage')
   const coverageTotal = coverageFile.totals?.coverage
+
   return {
     content: coverageFile.content,
     coverage: fileCoverage,
     totals: isNaN(coverageTotal) ? 0 : coverageTotal,
     flagNames: coverageSource?.flagNames ?? [],
+    isCriticalFile: !!coverageFile?.isCriticalFile,
   }
 }
