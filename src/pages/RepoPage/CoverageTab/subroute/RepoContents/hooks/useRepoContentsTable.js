@@ -4,43 +4,37 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
-import A from 'ui/A'
-import Icon from 'ui/Icon'
-import Progress from 'ui/Progress'
+
+import CoverageEntry from '../TableEntries/CoverageEntry'
+import DirEntry from '../TableEntries/DirEntry'
+import FileEntry from '../TableEntries/FileEntry'
 
 function createTable({ tableData, branch, path, isSearching }) {
   return tableData?.length > 0
-    ? tableData.map(({ name, percentCovered, __typename, filePath }) => ({
-        name: (
-          <div className="flex flex-col gap-1 text-ds-gray-quinary">
-            <div className="flex gap-2">
-              <Icon
-                name={__typename === 'PathContentDir' ? 'folder' : 'document'}
-                size="md"
+    ? tableData.map(
+        ({
+          name,
+          percentCovered,
+          __typename,
+          path: filePath,
+          isCriticalFile,
+        }) => ({
+          name:
+            __typename === 'PathContentDir' ? (
+              <DirEntry branch={branch} name={name} path={path} />
+            ) : (
+              <FileEntry
+                branch={branch}
+                filePath={filePath}
+                isCriticalFile={isCriticalFile}
+                isSearching={isSearching}
+                name={name}
+                path={path}
               />
-              <A
-                to={{
-                  pageName: `${
-                    __typename === 'PathContentDir' ? 'treeView' : 'fileViewer'
-                  }`,
-                  options: {
-                    ref: branch,
-                    tree: Boolean(path) ? `${path}/${name}` : name,
-                  },
-                }}
-              >
-                {name}
-              </A>
-            </div>
-            {isSearching && <span className="text-xs pl-1"> {filePath} </span>}
-          </div>
-        ),
-        coverage: (
-          <div className="flex flex-1 gap-2 items-center">
-            <Progress amount={percentCovered} label />
-          </div>
-        ),
-      }))
+            ),
+          coverage: <CoverageEntry percentCovered={percentCovered} />,
+        })
+      )
     : []
 }
 

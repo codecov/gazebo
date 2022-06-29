@@ -14,14 +14,15 @@ jest.mock('react-router-dom', () => ({
 const repoContents = [
   {
     name: 'flag2',
-    filepath: '',
+    path: '',
     percentCovered: 92.78,
     __typename: 'PathContentDir',
   },
   {
     name: 'app.js',
-    filepath: '',
+    path: '',
     percentCovered: 62.53,
+    isCriticalFile: false,
     __typename: 'PathContentFile',
   },
 ]

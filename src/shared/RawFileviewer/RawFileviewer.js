@@ -97,7 +97,7 @@ function RawFileviewer({ title }) {
         coverageIsLoading={coverageIsLoading}
         lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
       />
-      <div>
+      <div id={path} className="target:ring">
         <CodeRendererProgressHeader
           path={path} // This is only populated in standalone fileviewer
           pathRef={ref} // This is only populated in standalone fileviewer

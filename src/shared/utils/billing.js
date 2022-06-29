@@ -9,6 +9,16 @@ export const Plans = Object.freeze({
   USERS_ENTERPRISEY: 'users-enterprisey',
 })
 
+export const EnterprisePlans = Object.freeze({
+  USERS_ENTERPRISEM: 'users-enterprisem',
+  USERS_ENTERPRISEY: 'users-enterprisey',
+})
+
+export function isEnterprisePlan(plan) {
+  if (typeof plan !== 'string') return false
+  return Object.values(EnterprisePlans).includes(plan)
+}
+
 export function isFreePlan(plan) {
   if (typeof plan !== 'string') return false
   if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true

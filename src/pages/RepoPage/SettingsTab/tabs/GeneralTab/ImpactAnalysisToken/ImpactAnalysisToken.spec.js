@@ -13,15 +13,7 @@ import ImpactAnalysisToken from './ImpactAnalysisToken'
 
 const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 
-const userServices = { useUser }
-jest.spyOn(userServices, 'useUser').mockImplementation(() => ({
-  user: {
-    trackingMetadata: {
-      ownerid: 1,
-    },
-  },
-}))
-
+jest.mock('services/user')
 jest.mock('copy-to-clipboard', () => () => true)
 jest.mock('services/profilingToken')
 jest.mock('services/toastNotification')
@@ -34,6 +26,13 @@ describe('ImpactAnalysisToken', () => {
 
   function setup({ profilingToken = undefined, error = null }) {
     useAddNotification.mockReturnValue(addNotification)
+    useUser.mockReturnValue({
+      data: {
+        trackingMetadata: {
+          ownerid: 1,
+        },
+      },
+    })
     useRegenerateProfilingToken.mockReturnValue({
       isLoading: false,
       mutate,
@@ -131,13 +130,13 @@ describe('ImpactAnalysisToken', () => {
     it('calls the trackSegmentEvent', () => {
       expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
       expect(trackSegmentSpy).toHaveBeenCalledWith({
+        event: 'Impact Analysis Profiling Token Copied',
         data: {
-          event: 'Impact Analysis Profiling Token Copied',
           owner_slug: 'codecov',
           repo_slug: 'codecov-client',
-          user_ownerid: {},
+          user_ownerid: 1,
+          id: 1,
         },
-        id: {},
       })
     })
   })
