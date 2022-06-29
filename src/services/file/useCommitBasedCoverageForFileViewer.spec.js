@@ -73,6 +73,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
         isLoading: false,
         totals: 53.43,
         flagNames: selectedFlags,
+        isCriticalFile: false,
       }
       const coverageWithFlags = null
       setup({ mainCoverageData, coverageWithFlags, selectedFlags })
@@ -100,6 +101,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
         isLoading: false,
         totals: 23.43,
         flagNames: selectedFlags,
+        isCriticalFile: false,
       }
       coverageWithFlags = {
         content:
@@ -116,6 +118,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
         isLoading: false,
         totals: 13.63,
         flagNames: selectedFlags,
+        isCriticalFile: false,
       }
       setup({ mainCoverageData, coverageWithFlags, selectedFlags })
       return hookData.waitFor(() => hookData.result.current.isSuccess)
