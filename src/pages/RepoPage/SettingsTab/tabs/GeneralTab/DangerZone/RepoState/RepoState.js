@@ -16,18 +16,23 @@ const ActivationStatus = Object.freeze({
 
 function RepoState() {
   const { owner, repo, provider } = useParams()
-  const { data: repoData, refetch } = useRepo({
+  const { refetch } = useRepo({
     provider,
     owner,
     repo,
   })
 
   const [showModal, setShowModal] = useState(false)
-  const { toggleRepoState, isLoading } = useRepoActivation()
-  const active = useContext(ActivationStatusContext)
-  const activated = Boolean(repoData?.repository?.activated)
-    ? repoData.repository.activated
-    : active
+  const {
+    toggleRepoState,
+    isLoading,
+    data: updatedRepoData,
+  } = useRepoActivation()
+
+  const repoActivationStatus = useContext(ActivationStatusContext)
+  const activated = updatedRepoData?.activated
+    ? updatedRepoData?.activated
+    : repoActivationStatus
 
   const handleRepoStateToggle = async (state) => {
     await toggleRepoState(state)

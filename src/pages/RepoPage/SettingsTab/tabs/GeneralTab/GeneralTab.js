@@ -25,7 +25,7 @@ function GeneralTab() {
       {repository?.graphToken && (
         <GraphToken graphToken={repository?.graphToken} />
       )}
-      <ActivationStatusContext.Provider value={repository?.active}>
+      <ActivationStatusContext.Provider value={repository?.activated}>
         <DangerZone />
       </ActivationStatusContext.Provider>
     </div>

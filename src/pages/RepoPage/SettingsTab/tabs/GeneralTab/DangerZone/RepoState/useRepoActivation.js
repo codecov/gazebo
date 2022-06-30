@@ -5,17 +5,17 @@ export default function useRepoActivation() {
   const addToast = useAddNotification()
   const { mutate, ...rest } = useUpdateRepo()
 
-  async function toggleRepoState(active) {
+  async function toggleRepoState(activated) {
     mutate(
       {
-        activated: !active,
+        activated: !activated,
       },
       {
         onError: () =>
           addToast({
             type: 'error',
             text: `We were not able to ${
-              active ? 'deactivate' : 'activate'
+              activated ? 'deactivate' : 'activate'
             } this repo`,
           }),
       }

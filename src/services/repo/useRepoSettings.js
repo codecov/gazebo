@@ -9,6 +9,7 @@ function fetchRepoSettingsDetails({ provider, owner, repo }) {
       owner(username:$name){
         repository(name:$repo){
           private
+          activated
           uploadToken
           defaultBranch
           profilingToken

@@ -2,45 +2,45 @@ import { render, screen } from 'custom-testing-library'
 
 import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepo, useUpdateRepo } from 'services/repo'
+import { useRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
 import RepoState from './RepoState'
+import useRepoActivation from './useRepoActivation'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(() => {}),
-}))
+import { ActivationStatusContext } from '../../Context'
+
 jest.mock('services/repo')
 jest.mock('services/toastNotification')
+jest.mock('./useRepoActivation')
 
 describe('RepoState', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
   const refetch = jest.fn()
+  const toggleRepoState = jest.fn()
 
-  function setup(activated = false) {
-    useParams.mockReturnValue({
-      owner: 'Rabee-AbuBaker',
-      provider: 'gh',
-      repo: 'another-test',
-    })
+  function setup(activated = false, newDataActivated = false) {
     useRepo.mockReturnValue({
-      data: { repository: { activated } },
       refetch,
     })
 
     useAddNotification.mockReturnValue(addNotification)
-    useUpdateRepo.mockReturnValue({
-      isLoading: false,
-      mutate,
+    useRepoActivation.mockReturnValue({
+      toggleRepoState,
+      data: {
+        activated: newDataActivated,
+      },
     })
+
     render(
       <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
         <Route path="/:provider/:owner/:repo/settings">
-          <RepoState />
+          <ActivationStatusContext.Provider value={activated}>
+            <RepoState />
+          </ActivationStatusContext.Provider>
         </Route>
       </MemoryRouter>
     )
@@ -69,10 +69,10 @@ describe('RepoState', () => {
     })
 
     it('calls the mutation', () => {
-      expect(mutate).toHaveBeenCalled()
+      expect(toggleRepoState).toHaveBeenCalled()
     })
 
-    it('calls repo refetch', async () => {
+    it('calls getRepo refetch', async () => {
       await waitFor(() => expect(refetch).toHaveBeenCalled())
     })
   })
@@ -82,7 +82,7 @@ describe('RepoState', () => {
       setup(true)
     })
 
-    it('displays deactive button', () => {
+    it('displays deactivate button', () => {
       expect(
         screen.getByRole('button', { name: 'Deactivate' })
       ).toBeInTheDocument()
@@ -125,54 +125,24 @@ describe('RepoState', () => {
       })
 
       describe('when user clicks on Deactivate button', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           userEvent.click(
             screen.getByRole('button', { name: 'Deactivate repo' })
           )
         })
         it('calls the mutation', () => {
-          expect(mutate).toHaveBeenCalled()
+          expect(toggleRepoState).toHaveBeenCalled()
         })
       })
     })
   })
 
-  describe('when activate mutation is not successful', () => {
-    beforeEach(async () => {
-      setup()
-      await userEvent.click(screen.getByRole('button', { name: 'Activate' }))
-      mutate.mock.calls[0][1].onError()
+  describe('when data is returned from mutation hook', () => {
+    beforeEach(() => {
+      setup(false, true)
     })
-    it('calls the mutation', () => {
-      expect(mutate).toHaveBeenCalled()
-    })
-
-    it('adds an error notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'error',
-        text: 'We were not able to activate this repo',
-      })
-    })
-  })
-
-  describe('when deactivate mutation is not successful', () => {
-    beforeEach(async () => {
-      setup(true)
-      await userEvent.click(screen.getByRole('button', { name: 'Deactivate' }))
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Deactivate repo' })
-      )
-      mutate.mock.calls[0][1].onError()
-    })
-    it('calls the mutation', () => {
-      expect(mutate).toHaveBeenCalled()
-    })
-
-    it('adds an error notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'error',
-        text: 'We were not able to deactivate this repo',
-      })
+    it('populates the value based on new data', () => {
+      expect(screen.getByText(/Deactivate repo/)).toBeInTheDocument()
     })
   })
 })
