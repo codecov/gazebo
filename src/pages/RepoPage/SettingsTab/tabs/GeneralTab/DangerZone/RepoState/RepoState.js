@@ -1,5 +1,7 @@
 import { useContext, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { useRepo } from 'services/repo'
 import Button from 'ui/Button'
 
 import DeactivateRepoModal from './DeactiveRepoModal'
@@ -12,11 +14,27 @@ const ActivationStatus = Object.freeze({
   ACTIVATED: { TITLE: 'Deactivate repo', LABEL: 'Deactivate' },
 })
 
-function DeactivateRepo() {
+function RepoState() {
+  const { owner, repo, provider } = useParams()
+  const { data: repoData, refetch } = useRepo({
+    provider,
+    owner,
+    repo,
+  })
+
   const [showModal, setShowModal] = useState(false)
-  const { activateOrDeactivateRepo, isLoading, data } = useRepoActivation()
+  const { toggleRepoState, isLoading } = useRepoActivation()
   const active = useContext(ActivationStatusContext)
-  const activated = data?.active !== undefined ? data.active : active
+  const activated = Boolean(repoData?.repository?.activated)
+    ? repoData.repository.activated
+    : active
+
+  const handleRepoStateToggle = async (state) => {
+    await toggleRepoState(state)
+    setTimeout(() => {
+      refetch()
+    }, 100)
+  }
 
   return activated ? (
     <div className="flex">
@@ -36,7 +54,7 @@ function DeactivateRepo() {
         {showModal && (
           <DeactivateRepoModal
             closeModal={() => setShowModal(false)}
-            deactivateRepo={activateOrDeactivateRepo}
+            deactivateRepo={handleRepoStateToggle}
             isLoading={isLoading}
             activated={activated}
           />
@@ -52,7 +70,7 @@ function DeactivateRepo() {
         <Button
           variant="primary"
           hook="update-repo"
-          onClick={() => activateOrDeactivateRepo(activated)}
+          onClick={() => handleRepoStateToggle(activated)}
           disabled={isLoading}
         >
           {ActivationStatus.DEACTIVATED.LABEL}
@@ -62,4 +80,4 @@ function DeactivateRepo() {
   )
 }
 
-export default DeactivateRepo
+export default RepoState

@@ -5,10 +5,9 @@ export default function useRepoActivation() {
   const addToast = useAddNotification()
   const { mutate, ...rest } = useUpdateRepo()
 
-  async function activateOrDeactivateRepo(active) {
+  async function toggleRepoState(active) {
     mutate(
       {
-        active: !active,
         activated: !active,
       },
       {
@@ -23,5 +22,5 @@ export default function useRepoActivation() {
     )
   }
 
-  return { activateOrDeactivateRepo, ...rest }
+  return { toggleRepoState, ...rest }
 }

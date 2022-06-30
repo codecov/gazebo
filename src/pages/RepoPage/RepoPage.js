@@ -3,6 +3,7 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useCommits } from 'services/commits'
+import { useRepo } from 'services/repo'
 import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -18,8 +19,28 @@ const PullsTab = lazy(() => import('./PullsTab'))
 
 const path = '/:provider/:owner/:repo'
 
+const getRepoTabs = ({
+  matchTree,
+  matchBlobs,
+  isRepoActivated,
+  isCurrentUserPartOfOrg,
+}) => [
+  {
+    pageName: 'overview',
+    children: 'Coverage',
+    exact: !matchTree && !matchBlobs,
+  },
+  ...(isRepoActivated ? [{ pageName: 'commits' }, { pageName: 'pulls' }] : []),
+  ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
+]
+
 function RepoPage() {
   const { provider, owner, repo } = useParams()
+  const { data: repoData } = useRepo({
+    provider,
+    owner,
+    repo,
+  })
 
   const { data: currentOwner } = useOwner({ username: owner })
   const { isCurrentUserPartOfOrg } = currentOwner
@@ -29,7 +50,6 @@ function RepoPage() {
   const matchBlobs = useMatchBlobsPath()
 
   const repoHasCommits = data?.commits?.length > 0
-
   const Loader = (
     <div className="flex-1 flex items-center justify-center mt-16">
       <LogoSpinner />
@@ -38,20 +58,16 @@ function RepoPage() {
 
   return (
     <RepoBreadcrumbProvider>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 h-full">
         <RepoBreadcrumb />
         {repoHasCommits && (
           <TabNavigation
-            tabs={[
-              {
-                pageName: 'overview',
-                children: 'Coverage',
-                exact: !matchTree && !matchBlobs,
-              },
-              { pageName: 'commits' },
-              { pageName: 'pulls' },
-              ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
-            ]}
+            tabs={getRepoTabs({
+              matchTree,
+              matchBlobs,
+              isRepoActivated: repoData?.repository?.activated,
+              isCurrentUserPartOfOrg,
+            })}
           />
         )}
         <Suspense fallback={Loader}>

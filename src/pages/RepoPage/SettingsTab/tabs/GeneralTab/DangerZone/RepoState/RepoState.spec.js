@@ -1,43 +1,52 @@
 import { render, screen } from 'custom-testing-library'
 
+import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useRepo, useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
-import DeactivateRepo from './DeactivateRepo'
+import RepoState from './RepoState'
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest.fn(() => {}),
+}))
 jest.mock('services/repo')
 jest.mock('services/toastNotification')
 
-describe('DeactivateRepo', () => {
+describe('RepoState', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
+  const refetch = jest.fn()
 
-  function setup(active = false) {
+  function setup(activated = false) {
+    useParams.mockReturnValue({
+      owner: 'Rabee-AbuBaker',
+      provider: 'gh',
+      repo: 'another-test',
+    })
+    useRepo.mockReturnValue({
+      data: { repository: { activated } },
+      refetch,
+    })
+
     useAddNotification.mockReturnValue(addNotification)
     useUpdateRepo.mockReturnValue({
       isLoading: false,
       mutate,
-      data: {
-        active,
-      },
     })
-    useRepo.mockReturnValue({
-      repository: { active },
-    })
-
     render(
       <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
         <Route path="/:provider/:owner/:repo/settings">
-          <DeactivateRepo />
+          <RepoState />
         </Route>
       </MemoryRouter>
     )
   }
 
-  describe('renders DeactivateRepo componenet', () => {
+  describe('renders DeactivateRepo component', () => {
     beforeEach(() => {
       setup()
     })
@@ -61,6 +70,10 @@ describe('DeactivateRepo', () => {
 
     it('calls the mutation', () => {
       expect(mutate).toHaveBeenCalled()
+    })
+
+    it('calls repo refetch', async () => {
+      await waitFor(() => expect(refetch).toHaveBeenCalled())
     })
   })
 
