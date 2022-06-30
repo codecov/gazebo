@@ -72,7 +72,11 @@ function NewRepoTab() {
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
           Download the{' '}
-          <A to={{ pageName: 'uploader' }} onClick={handleOnClick}>
+          <A
+            to={{ pageName: 'uploader' }}
+            data-testid="uploader"
+            onClick={handleOnClick}
+          >
             uploader{' '}
           </A>
           and share your coverage reports with Codecov, by adding the the

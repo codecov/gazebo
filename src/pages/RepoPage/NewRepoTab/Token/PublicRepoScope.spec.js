@@ -1,17 +1,19 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
+import * as Segment from 'services/tracking/segment'
 import { useUser } from 'services/user'
 
 import PublicRepoScope from './PublicRepoScope'
 
+const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
+
 jest.mock('services/user')
 
 const loggedInUser = {
-  user: {
-    username: 'Loquacious Seelie',
-    trackingMetadata: {
-      ownerid: 98765,
-    },
+  username: 'Loquacious Seelie',
+  trackingMetadata: {
+    ownerid: 98765,
   },
 }
 
@@ -68,6 +70,27 @@ describe('PublicRepoScope', () => {
         'href',
         'https://github.com/codecov/codecov-action#usage'
       )
+    })
+  })
+  describe('when the user clicks on the uploader link', () => {
+    beforeEach(() => {
+      setup({
+        token: '0414a776-c670-4fc2-b04d-eeedc0d665c0',
+        isCurrentUserPartOfOrg: true,
+      })
+      userEvent.click(screen.getByTestId('clipboard'))
+    })
+
+    it('calls the trackSegmentEvent', () => {
+      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
+      expect(trackSegmentSpy).toHaveBeenCalledWith({
+        event: 'User Onboarding Copied CI Token',
+        data: {
+          category: 'Onboarding',
+          userId: 98765,
+          tokenHash: 'c0d665c0',
+        },
+      })
     })
   })
 })

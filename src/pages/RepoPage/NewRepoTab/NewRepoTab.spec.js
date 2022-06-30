@@ -1,5 +1,8 @@
+import userEvent from '@testing-library/user-event'
+
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
+import * as Segment from 'services/tracking/segment'
 import { useUser } from 'services/user'
 import { NotFoundException } from 'shared/utils'
 
@@ -7,8 +10,9 @@ import { repoPageRender, screen } from '../repo-jest-setup'
 
 import NewRepoTab from '.'
 
-jest.mock('shared/utils/exceptions')
+const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 
+jest.mock('shared/utils/exceptions')
 jest.mock('services/repo/hooks')
 jest.mock('services/commits/hooks')
 jest.mock('services/user')
@@ -18,11 +22,9 @@ describe('New Repo Tab', () => {
   let originalLocation
 
   const loggedInUser = {
-    user: {
-      username: 'Nydas Okiro',
-      trackingMetadata: {
-        ownerid: 98765,
-      },
+    username: 'Nydas Okiro',
+    trackingMetadata: {
+      ownerid: 98765,
     },
   }
 
@@ -165,6 +167,29 @@ describe('New Repo Tab', () => {
 
     it('location replace was called (redirected)', () => {
       expect(window.location.replace).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('when the user clicks on the uploader link', () => {
+    beforeEach(() => {
+      setup({
+        repoData: {
+          isCurrentUserPartOfOrg: true,
+          repository: { private: false },
+        },
+      })
+      userEvent.click(screen.getByTestId('uploader'))
+    })
+
+    it('calls the trackSegmentEvent', () => {
+      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
+      expect(trackSegmentSpy).toHaveBeenCalledWith({
+        event: 'User Onboarding Download Uploader Clicked',
+        data: {
+          category: 'Onboarding',
+          userId: 98765,
+        },
+      })
     })
   })
 })
