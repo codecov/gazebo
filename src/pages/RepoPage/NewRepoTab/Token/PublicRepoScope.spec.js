@@ -1,9 +1,23 @@
 import { render, screen } from '@testing-library/react'
 
+import { useUser } from 'services/user'
+
 import PublicRepoScope from './PublicRepoScope'
+
+jest.mock('services/user')
+
+const loggedInUser = {
+  user: {
+    username: 'Loquacious Seelie',
+    trackingMetadata: {
+      ownerid: 98765,
+    },
+  },
+}
 
 describe('PublicRepoScope', () => {
   function setup(props) {
+    useUser.mockReturnValue({ data: loggedInUser })
     render(<PublicRepoScope {...props} />)
   }
   describe('part of org', () => {

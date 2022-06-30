@@ -1,5 +1,6 @@
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
+import { useUser } from 'services/user'
 import { NotFoundException } from 'shared/utils'
 
 import { repoPageRender, screen } from '../repo-jest-setup'
@@ -10,10 +11,20 @@ jest.mock('shared/utils/exceptions')
 
 jest.mock('services/repo/hooks')
 jest.mock('services/commits/hooks')
+jest.mock('services/user')
 
 describe('New Repo Tab', () => {
   let mockError
   let originalLocation
+
+  const loggedInUser = {
+    user: {
+      username: 'Nydas Okiro',
+      trackingMetadata: {
+        ownerid: 98765,
+      },
+    },
+  }
 
   beforeAll(() => {
     originalLocation = global.window.location
@@ -31,6 +42,7 @@ describe('New Repo Tab', () => {
   function setup({ repoData, commitsData = [] }) {
     useRepo.mockReturnValue({ data: repoData })
     useCommits.mockReturnValue({ data: commitsData })
+    useUser.mockReturnValue({ data: loggedInUser })
 
     mockError = jest.fn()
     const spy = jest.spyOn(console, 'error')

@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom'
 
 import { useRepo } from 'services/repo'
+import { trackSegmentEvent } from 'services/tracking/segment'
+import { useUser } from 'services/user'
 import { NotFoundException } from 'shared/utils'
 import A from 'ui/A'
 
@@ -12,6 +14,7 @@ import Token from './Token'
 function NewRepoTab() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
+  const { data: user } = useUser()
 
   if (!data?.isCurrentUserPartOfOrg && data?.repository?.private)
     throw new NotFoundException()
@@ -21,6 +24,16 @@ function NewRepoTab() {
       !data?.isCurrentUserPartOfOrg && !data?.repository?.private,
     missingUploadToken: !data?.repository?.uploadToken,
   })
+
+  function handleOnClick() {
+    trackSegmentEvent({
+      event: 'User Onboarding Download Uploader Clicked',
+      data: {
+        category: 'Onboarding',
+        userId: user?.trackingMetadata?.ownerid,
+      },
+    })
+  }
 
   return (
     <div className="mx-auto w-4/5 md:w-3/5 lg:w-2/5 mt-6">
@@ -58,7 +71,10 @@ function NewRepoTab() {
 
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
-          Download the <A to={{ pageName: 'uploader' }}>uploader </A>
+          Download the{' '}
+          <A to={{ pageName: 'uploader' }} onClick={handleOnClick}>
+            uploader{' '}
+          </A>
           and share your coverage reports with Codecov, by adding the the
           following commands to your CI pipeline:
         </p>

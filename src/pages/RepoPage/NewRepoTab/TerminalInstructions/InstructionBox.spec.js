@@ -1,10 +1,24 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { useUser } from 'services/user'
+
 import InstructionBox from '.'
+
+jest.mock('services/user')
+
+const loggedInUser = {
+  user: {
+    username: "Patia Por'co",
+    trackingMetadata: {
+      ownerid: 12345,
+    },
+  },
+}
 
 describe('InstructionBox', () => {
   function setup() {
+    useUser.mockReturnValue({ data: loggedInUser })
     render(<InstructionBox />)
   }
 

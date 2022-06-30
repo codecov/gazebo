@@ -1,9 +1,23 @@
 import { render, screen } from '@testing-library/react'
 
+import { useUser } from 'services/user'
+
 import Token from './Token'
+
+const loggedInUser = {
+  user: {
+    username: 'Zerxus Illerez',
+    trackingMetadata: {
+      ownerid: 12345,
+    },
+  },
+}
+
+jest.mock('services/user')
 
 describe('Token', () => {
   function setup(props) {
+    useUser.mockReturnValue({ data: loggedInUser })
     render(<Token {...props} />)
   }
   describe('private scope', () => {
