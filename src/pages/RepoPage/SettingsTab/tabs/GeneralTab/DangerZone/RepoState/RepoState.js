@@ -19,10 +19,6 @@ function RepoState() {
 
   const activated = repository?.activated
 
-  const handleRepoStateToggle = (state) => {
-    toggleRepoState(state)
-  }
-
   return activated ? (
     <div className="flex">
       <div className="flex flex-col flex-1 gap-1">
@@ -41,7 +37,7 @@ function RepoState() {
         {showModal && (
           <DeactivateRepoModal
             closeModal={() => setShowModal(false)}
-            deactivateRepo={handleRepoStateToggle}
+            deactivateRepo={toggleRepoState}
             isLoading={isLoading}
             activated={activated}
           />
@@ -57,7 +53,7 @@ function RepoState() {
         <Button
           variant="primary"
           hook="update-repo"
-          onClick={() => handleRepoStateToggle(activated)}
+          onClick={() => toggleRepoState(activated)}
           disabled={isLoading}
         >
           {ActivationStatus.DEACTIVATED.LABEL}
