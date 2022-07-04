@@ -345,6 +345,10 @@ function useNavLinks() {
       isExternalLink: gazeboSettingsTab,
       text: 'Badges & Graphs',
     },
+    feedback: {
+      path: ({ provider = p } = { provider: p }) => `/${provider}/feedback`,
+      isExternalLink: false,
+    },
   }
 }
 

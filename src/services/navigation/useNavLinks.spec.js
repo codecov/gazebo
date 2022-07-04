@@ -821,6 +821,16 @@ describe('useNavLinks', () => {
       )
     })
   })
+
+  describe('feedback', () => {
+    beforeAll(() => {
+      setup(['/gh/feedback'])
+    })
+
+    it('returns the correct url', () => {
+      expect(hookData.result.current.feedback.path()).toBe('/gh/feedback')
+    })
+  })
 })
 
 describe('useStaticNavLinks', () => {
