@@ -1,12 +1,11 @@
 import cs from 'classnames'
 import { useState } from 'react'
 
-import { trackSegmentEvent } from 'services/tracking/segment'
-import { useUser } from 'services/user'
+import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import CopyClipboard from 'ui/CopyClipboard'
 
 export default function InstructionBox() {
-  const { data: user } = useUser()
+  const { terminalUploaderCommandClicked } = useOnboardingTracking()
 
   const systemsEnum = {
     LINUX: 'Linux',
@@ -32,16 +31,6 @@ export default function InstructionBox() {
     e.preventDefault()
     const { name } = e.target
     setCurSystem(name)
-  }
-
-  function handleClipboardClick() {
-    trackSegmentEvent({
-      event: 'User Onboarding Terminal Uploader Command Clicked',
-      data: {
-        category: 'Onboarding',
-        userId: user?.trackingMetadata?.ownerid,
-      },
-    })
   }
 
   return (
@@ -91,7 +80,7 @@ export default function InstructionBox() {
                 ? "$ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\\codecov.exe"
                 : `curl -Os https://uploader.codecov.io/latest/${systemsMapper[curSystem]}/codecov chmod +x codecov ./codecov`
             }
-            onClick={handleClipboardClick}
+            onClick={terminalUploaderCommandClicked}
           />
         </span>
       </div>

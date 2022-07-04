@@ -1,24 +1,11 @@
 import PropTypes from 'prop-types'
 
-import { trackSegmentEvent } from 'services/tracking/segment'
-import { useUser } from 'services/user'
+import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
 const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
-  // TODO: create an app context where trackingmetadata is shared within the app
-  const { data: user } = useUser()
-
-  function handleClipboardClick() {
-    trackSegmentEvent({
-      event: 'User Onboarding Copied CI Token',
-      data: {
-        category: 'Onboarding',
-        userId: user?.trackingMetadata?.ownerid,
-        tokenHash: token.slice(token.length - 8),
-      },
-    })
-  }
+  const { copiedCIToken } = useOnboardingTracking()
 
   return isCurrentUserPartOfOrg ? (
     <>
@@ -40,7 +27,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
         <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5 mr-2">
           {token}
         </span>
-        <CopyClipboard string={token} onClick={handleClipboardClick} />
+        <CopyClipboard string={token} onClick={() => copiedCIToken(token)} />
       </p>
     </>
   ) : (

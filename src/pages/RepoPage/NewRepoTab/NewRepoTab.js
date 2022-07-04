@@ -1,8 +1,7 @@
 import { useParams } from 'react-router-dom'
 
+import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import { useRepo } from 'services/repo'
-import { trackSegmentEvent } from 'services/tracking/segment'
-import { useUser } from 'services/user'
 import { NotFoundException } from 'shared/utils'
 import A from 'ui/A'
 
@@ -14,7 +13,7 @@ import Token from './Token'
 function NewRepoTab() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
-  const { data: user } = useUser()
+  const { downloadUploaderClicked } = useOnboardingTracking()
 
   if (!data?.isCurrentUserPartOfOrg && data?.repository?.private)
     throw new NotFoundException()
@@ -24,16 +23,6 @@ function NewRepoTab() {
       !data?.isCurrentUserPartOfOrg && !data?.repository?.private,
     missingUploadToken: !data?.repository?.uploadToken,
   })
-
-  function handleOnClick() {
-    trackSegmentEvent({
-      event: 'User Onboarding Download Uploader Clicked',
-      data: {
-        category: 'Onboarding',
-        userId: user?.trackingMetadata?.ownerid,
-      },
-    })
-  }
 
   return (
     <div className="mx-auto w-4/5 md:w-3/5 lg:w-2/5 mt-6">
@@ -75,7 +64,7 @@ function NewRepoTab() {
           <A
             to={{ pageName: 'uploader' }}
             data-testid="uploader"
-            onClick={handleOnClick}
+            onClick={downloadUploaderClicked}
           >
             uploader{' '}
           </A>

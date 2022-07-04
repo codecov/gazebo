@@ -6,13 +6,16 @@ import {
   pageSegmentEvent,
   trackSegmentEvent,
 } from 'services/tracking/segment'
+import { useUser } from 'services/user'
 
 import { useOnboardingTracking } from './useOnboardingTracking'
 
 jest.mock('services/tracking/segment')
 jest.mock('services/location/hooks')
+jest.mock('services/user')
 
 const user = {
+  username: 'Laerryn Coramar-Seelie',
   trackingMetadata: {
     ownerid: 4,
   },
@@ -26,6 +29,7 @@ describe('useOnboardingTracking', () => {
   }
 
   beforeEach(() => {
+    useUser.mockReturnValue({ data: user })
     useOnboardingLocation.mockReturnValue({
       path: '/campaign/three/rocks',
       url: 'www.criticalrole.com/campaign/three/rocks',
@@ -187,6 +191,62 @@ describe('useOnboardingTracking', () => {
           typeProjects: 'EDUCATIONAL',
         },
         id: 4,
+      })
+    })
+  })
+
+  describe('downloadUploaderClicked', () => {
+    beforeEach(() => {
+      act(() => {
+        hookData.result.current.downloadUploaderClicked()
+      })
+    })
+
+    it('calls segment event with specific information', () => {
+      expect(trackSegmentEvent).toHaveBeenCalledWith({
+        event: 'User Onboarding Download Uploader Clicked',
+        data: {
+          category: 'Onboarding',
+          userId: user.trackingMetadata.ownerid,
+        },
+      })
+    })
+  })
+
+  describe('copiedCIToken', () => {
+    beforeEach(() => {
+      const token = 'c8859fa7-9449-45ba-9210-69c12034f097'
+      act(() => {
+        hookData.result.current.copiedCIToken(token)
+      })
+    })
+
+    it('calls segment event with specific information', () => {
+      expect(trackSegmentEvent).toHaveBeenCalledWith({
+        event: 'User Onboarding Copied CI Token',
+        data: {
+          category: 'Onboarding',
+          userId: user.trackingMetadata.ownerid,
+          tokenHash: '2034f097',
+        },
+      })
+    })
+  })
+
+  describe('terminalUploaderCommandClicked', () => {
+    beforeEach(() => {
+      act(() => {
+        hookData.result.current.terminalUploaderCommandClicked()
+      })
+    })
+
+    it('calls segment event with specific information', () => {
+      expect(trackSegmentEvent).toHaveBeenCalledWith({
+        event: 'User Onboarding Terminal Uploader Command Clicked',
+        data: {
+          category: 'Onboarding',
+          userId: user.trackingMetadata.ownerid,
+        },
       })
     })
   })
