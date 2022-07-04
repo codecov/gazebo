@@ -1,7 +1,7 @@
 import mapKeys from 'lodash/mapKeys'
 
 const defaultConfig = {
-  API_URL: '',
+  API_URL: 'https://stage-api.codecov.dev',
   STRIPE_KEY: '',
   IS_ENTERPRISE: false,
   SENTRY_ENVIRONMENT: 'staging',
@@ -17,7 +17,7 @@ function removeReactAppPrefix(obj) {
 const config = {
   ...defaultConfig,
   ...removeReactAppPrefix(process.env),
-  ...window.configEnv,
+  // ...window.configEnv,
 }
 
 export default config

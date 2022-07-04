@@ -31,6 +31,9 @@ const server = setupServer(
     const hasTokenType = Boolean(req.headers.get('token-type'))
     return res(ctx.status(hasTokenType ? 200 : 401), ctx.json(rawUserData))
   }),
+  rest.get('/upload/test', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.text('presigned-url'))
+  }),
   rest.post('/internal/test', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(req.body))
   }),
@@ -123,25 +126,18 @@ describe('when calling an endpoint with a token', () => {
   })
 })
 
-describe('when using a post request', () => {
-  const body = {
-    test: 'foo',
-    camel_case: 'snakeCase',
-  }
+describe('when using a get request with upload path', () => {
   beforeEach(() => {
-    return Api.post({
-      path: '/test',
-      body,
-    }).then((data) => {
+    return Api.get(
+      { path: '/test', provider: 'gh' },
+      { useUploadPath: true }
+    ).then((data) => {
       result = data
     })
   })
 
-  it('returns the data, and transform to camelCase', () => {
-    expect(result).toEqual({
-      test: 'foo',
-      camelCase: 'snakeCase',
-    })
+  it('returns data as text', () => {
+    expect(result).toEqual('presigned-url')
   })
 })
 

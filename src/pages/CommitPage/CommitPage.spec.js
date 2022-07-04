@@ -1,20 +1,24 @@
-import { render, screen, waitFor } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
 import { useFileWithMainCoverage } from 'services/file'
+import { useUploadPresignedUrl } from 'services/uploadPresignedUrl'
 
 import CommitPage from './CommitPage'
 
 jest.mock('services/commit')
 jest.mock('services/file')
+jest.mock('services/uploadPresignedUrl')
 jest.mock('./Header/Header.js', () => () => 'The Header')
 jest.mock('./subroute/CommitFileView.js', () => () => 'The Commit File View')
 jest.mock(
   './Summary/CommitDetailsSummary.js',
   () => () => 'Commit Details Summary'
 )
+const queryClient = new QueryClient()
 
 const dataReturned = {
   commit: {
@@ -92,13 +96,18 @@ describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
     useFileWithMainCoverage.mockReturnValue(fileData)
+    useUploadPresignedUrl.mockReturnValue({
+      data: '/archive/v4/raw/2022-06-23/..',
+    })
 
     render(
-      <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-        <Route path="/:provider/:owner/:repo/commit/:commit">
-          <CommitPage />
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            <CommitPage />
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
   }
 
@@ -159,6 +168,9 @@ describe('CommitPage', () => {
   describe('Commits Table', () => {
     function setup(data) {
       useCommit.mockReturnValue(data)
+      useUploadPresignedUrl.mockReturnValue({
+        data: '/archive/v4/raw/2022-06-23/..',
+      })
 
       render(
         <MemoryRouter
@@ -212,6 +224,9 @@ describe('CommitPage', () => {
 
   describe('FileViewer', () => {
     function setup(data) {
+      useUploadPresignedUrl.mockReturnValue({
+        data: '/archive/v4/raw/2022-06-23/..',
+      })
       useCommit.mockReturnValue(data)
       useFileWithMainCoverage.mockReturnValue({
         data: fileData,
@@ -235,9 +250,7 @@ describe('CommitPage', () => {
 
       it('the impacted file', () => {
         expect(screen.getByTestId('spinner')).toBeInTheDocument()
-        waitFor(() => {
-          expect(screen.getByText(/index.js/)).toBeInTheDocument()
-        })
+        expect(screen.getByText(/index.js/)).toBeInTheDocument()
       })
     })
 

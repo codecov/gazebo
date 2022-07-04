@@ -19,6 +19,12 @@ describe('generatePath', () => {
       generatePath({ path: '/epic', query: { rocket: 'league', fort: 'nite' } })
     ).toStrictEqual(`${config.API_URL}/internal/epic?rocket=league&fort=nite`)
   })
+
+  it('generates a upload report path when use useUploadPath', () => {
+    expect(generatePath({ path: '/epic', useUploadPath: true })).toStrictEqual(
+      `${config.API_URL}/upload/epic`
+    )
+  })
 })
 
 describe('getHeaders', () => {

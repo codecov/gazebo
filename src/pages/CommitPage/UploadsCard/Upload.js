@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 
-import config from 'config'
-
+import { useUploadPresignedUrl } from 'services/uploadPresignedUrl'
 import {
   ErrorCodeEnum,
   UploadStateEnum,
@@ -24,6 +23,7 @@ const Upload = ({
   state,
 }) => {
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
+  const { data: url } = useUploadPresignedUrl({ pathUrl: downloadUrl })
 
   return (
     <div className="py-2 px-4 flex flex-col gap-1">
@@ -57,12 +57,7 @@ const Upload = ({
           )}
         </div>
         {downloadUrl && (
-          <A
-            href={`${config.API_URL}${downloadUrl}`}
-            hook="download report"
-            download
-            isExternal
-          >
+          <A href={url} isExternal hook="get-presigned-url">
             Download
           </A>
         )}

@@ -1,14 +1,26 @@
 import { fireEvent, render, screen } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
+
 import { useUploads } from './hooks'
 import UploadsCard from './UploadsCard'
 
+const queryClient = new QueryClient()
 jest.mock('./hooks')
 
 describe('UploadsCard', () => {
   function setup(mockUploads) {
     useUploads.mockReturnValue(mockUploads)
-    render(<UploadsCard />)
+    render(
+      <MemoryRouter initialEntries={['/gh/codecov/test']}>
+        <Route path="/:provider/:owner/:repo">
+          <QueryClientProvider client={queryClient}>
+            <UploadsCard />
+          </QueryClientProvider>
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('renders', () => {

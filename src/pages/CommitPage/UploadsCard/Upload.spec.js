@@ -1,12 +1,24 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { formatTimeToNow } from 'shared/utils/dates'
 
 import Upload from './Upload'
 
+const queryClient = new QueryClient()
+
 describe('UploadsCard', () => {
   function setup(props) {
-    render(<Upload {...props} />)
+    render(
+      <MemoryRouter initialEntries={['/gh/codecov/test']}>
+        <Route path="/:provider/:owner/:repo">
+          <QueryClientProvider client={queryClient}>
+            <Upload {...props} />
+          </QueryClientProvider>
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('renders', () => {
@@ -35,10 +47,9 @@ describe('UploadsCard', () => {
       expect(screen.getByText(createDate)).toBeInTheDocument()
     })
     it('renders a download link', () => {
-      expect(screen.getByRole('link', { name: /Download/ })).toHaveAttribute(
-        'href',
-        'download.com'
-      )
+      expect(
+        screen.getByRole('link', { name: /1234 external-link.svg/ })
+      ).toHaveAttribute('href')
     })
 
     it('renders carry-forward text', () => {
