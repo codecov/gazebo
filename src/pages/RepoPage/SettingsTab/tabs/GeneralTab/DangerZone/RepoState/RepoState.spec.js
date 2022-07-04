@@ -1,46 +1,39 @@
 import { render, screen } from 'custom-testing-library'
 
-import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepo } from 'services/repo'
+import { useRepoSettings, useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
 import RepoState from './RepoState'
-import useRepoActivation from './useRepoActivation'
-
-import { ActivationStatusContext } from '../../Context'
 
 jest.mock('services/repo')
 jest.mock('services/toastNotification')
-jest.mock('./useRepoActivation')
 
 describe('RepoState', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
-  const refetch = jest.fn()
-  const toggleRepoState = jest.fn()
 
   function setup(activated = false, newDataActivated = false) {
-    useRepo.mockReturnValue({
-      refetch,
-    })
-
-    useAddNotification.mockReturnValue(addNotification)
-    useRepoActivation.mockReturnValue({
-      toggleRepoState,
+    useRepoSettings.mockReturnValue({
       data: {
-        activated: newDataActivated,
+        repository: {
+          activated: activated,
+        },
       },
+    })
+    useAddNotification.mockReturnValue(addNotification)
+
+    useUpdateRepo.mockReturnValue({
+      isLoading: false,
+      mutate,
     })
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
         <Route path="/:provider/:owner/:repo/settings">
-          <ActivationStatusContext.Provider value={activated}>
-            <RepoState />
-          </ActivationStatusContext.Provider>
+          <RepoState />
         </Route>
       </MemoryRouter>
     )
@@ -69,11 +62,7 @@ describe('RepoState', () => {
     })
 
     it('calls the mutation', () => {
-      expect(toggleRepoState).toHaveBeenCalled()
-    })
-
-    it('calls getRepo refetch', async () => {
-      await waitFor(() => expect(refetch).toHaveBeenCalled())
+      expect(mutate).toHaveBeenCalled()
     })
   })
 
@@ -131,18 +120,48 @@ describe('RepoState', () => {
           )
         })
         it('calls the mutation', () => {
-          expect(toggleRepoState).toHaveBeenCalled()
+          expect(mutate).toHaveBeenCalled()
         })
       })
     })
   })
 
-  describe('when data is returned from mutation hook', () => {
-    beforeEach(() => {
-      setup(false, true)
+  describe('when activate mutation is not successful', () => {
+    beforeEach(async () => {
+      setup()
+      await userEvent.click(screen.getByRole('button', { name: 'Activate' }))
+      mutate.mock.calls[0][1].onError()
     })
-    it('populates the value based on new data', () => {
-      expect(screen.getByText(/Deactivate repo/)).toBeInTheDocument()
+    it('calls the mutation', () => {
+      expect(mutate).toHaveBeenCalled()
+    })
+
+    it('adds an error notification', () => {
+      expect(addNotification).toHaveBeenCalledWith({
+        type: 'error',
+        text: 'We were not able to activate this repo',
+      })
+    })
+  })
+
+  describe('when deactivate mutation is not successful', () => {
+    beforeEach(async () => {
+      setup(true)
+      await userEvent.click(screen.getByRole('button', { name: 'Deactivate' }))
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Deactivate repo' })
+      )
+      mutate.mock.calls[0][1].onError()
+    })
+    it('calls the mutation', () => {
+      expect(mutate).toHaveBeenCalled()
+    })
+
+    it('adds an error notification', () => {
+      expect(addNotification).toHaveBeenCalledWith({
+        type: 'error',
+        text: 'We were not able to deactivate this repo',
+      })
     })
   })
 })

@@ -1,13 +1,10 @@
-import { useContext, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useState } from 'react'
 
-import { useRepo } from 'services/repo'
+import { useRepoSettings } from 'services/repo'
 import Button from 'ui/Button'
 
 import DeactivateRepoModal from './DeactiveRepoModal'
 import useRepoActivation from './useRepoActivation'
-
-import { ActivationStatusContext } from '../../Context'
 
 const ActivationStatus = Object.freeze({
   DEACTIVATED: { TITLE: 'Repo has been deactivated', LABEL: 'Activate' },
@@ -15,30 +12,15 @@ const ActivationStatus = Object.freeze({
 })
 
 function RepoState() {
-  const { owner, repo, provider } = useParams()
-  const { refetch } = useRepo({
-    provider,
-    owner,
-    repo,
-  })
-
+  const { data } = useRepoSettings()
+  const repository = data?.repository
   const [showModal, setShowModal] = useState(false)
-  const {
-    toggleRepoState,
-    isLoading,
-    data: updatedRepoData,
-  } = useRepoActivation()
+  const { toggleRepoState, isLoading } = useRepoActivation()
 
-  const repoActivationStatus = useContext(ActivationStatusContext)
-  const activated = updatedRepoData?.activated
-    ? updatedRepoData?.activated
-    : repoActivationStatus
+  const activated = repository?.activated
 
-  const handleRepoStateToggle = async (state) => {
-    await toggleRepoState(state)
-    setTimeout(() => {
-      refetch()
-    }, 100)
+  const handleRepoStateToggle = (state) => {
+    toggleRepoState(state)
   }
 
   return activated ? (

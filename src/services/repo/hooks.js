@@ -36,7 +36,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
 }
 
 export function useRepo({ provider, owner, repo }) {
-  return useQuery([provider, owner, repo], () => {
+  return useQuery(['GetRepo', provider, owner, repo], () => {
     return fetchRepoDetails({ provider, owner, repo })
   })
 }
@@ -94,6 +94,7 @@ export function useUpdateRepo() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('GetRepo')
+        queryClient.invalidateQueries('GetRepoSettings')
       },
     }
   )
