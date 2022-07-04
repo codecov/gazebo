@@ -57,7 +57,7 @@ const Upload = ({
           )}
         </div>
         {downloadUrl && (
-          <A href={url} isExternal hook="get-presigned-url">
+          <A href={url} isExternal hook="get-presigned-url" download>
             Download
           </A>
         )}
