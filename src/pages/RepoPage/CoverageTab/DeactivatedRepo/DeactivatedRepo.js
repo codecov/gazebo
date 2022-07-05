@@ -3,7 +3,9 @@ import { useParams } from 'react-router-dom'
 import { useOwner } from 'services/user'
 import A from 'ui/A'
 
-function DisabledRepo() {
+import deactivatedRepo from './assets/deactivatedRepo.svg'
+
+function DeactivatedRepo() {
   const { owner } = useParams()
   const { data: currentOwner } = useOwner({ username: owner })
   const { isCurrentUserPartOfOrg } = currentOwner
@@ -12,6 +14,11 @@ function DisabledRepo() {
   return (
     <div className="flex items-center justify-center flex-col h-full text-ds-gray-octonary">
       <div className="flex flex-col text-center justify-center max-w-lg gap-2">
+        <img
+          alt="Repo deactivated illustration"
+          className="mx-auto mb-8"
+          src={deactivatedRepo}
+        />
         <span className="text-3xl"> This repo has been deactivated </span>
         <span className="text-base">
           {isCurrentUserPartOfOrg ? (
@@ -29,4 +36,4 @@ function DisabledRepo() {
   )
 }
 
-export default DisabledRepo
+export default DeactivatedRepo

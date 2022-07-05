@@ -6,7 +6,7 @@ import { useRepo } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
 import ContentsTableHeader from './ContentsTableHeader'
-import DisabledRepo from './DisabledRepo'
+import DeactivatedRepo from './DeactivatedRepo'
 import FileBreadcrumb from './FileBreadcrumb'
 import SearchField from './SearchField'
 import Summary from './Summary'
@@ -85,7 +85,7 @@ function CoverageTab() {
       </div>
     </div>
   ) : (
-    <DisabledRepo />
+    <DeactivatedRepo />
   )
 }
 

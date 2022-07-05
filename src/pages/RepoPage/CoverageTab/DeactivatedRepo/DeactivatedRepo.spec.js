@@ -4,11 +4,11 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
 
-import DisabledRepo from './DisabledRepo'
+import DeactivatedRepo from './DeactivatedRepo'
 
 jest.mock('services/user')
 
-describe('DisabledRepo', () => {
+describe('DeactivatedRepo', () => {
   function setup(isPartOfRepo = true) {
     useOwner.mockReturnValue({
       data: {
@@ -19,7 +19,7 @@ describe('DisabledRepo', () => {
     render(
       <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
         <Route path="/:provider/:owner/:repo">
-          <DisabledRepo />
+          <DeactivatedRepo />
         </Route>
       </MemoryRouter>
     )
