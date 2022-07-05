@@ -48,6 +48,7 @@ function CopyClipboard({
       )}
 
       <span
+        data-testid="clipboard"
         className={cs('cursor-pointer text-xs font-semibold', {
           [copyIconClass]: variant === 'muted',
           'sr-only': !showLabel,
