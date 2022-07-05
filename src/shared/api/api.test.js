@@ -26,13 +26,15 @@ const userData = {
   ],
 }
 
+const mockedPresignedUrl = {presignedUrl: "http://minio:9000/archive/v4/raw/2022-06-23/942173DE95CBF167C5683F40B7DB34C0/ee3ecad424e67419d6c4531540f1ef5df045ff12/919ccc6d-7972-4895-b289-f2d569683a17.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=codecov-default-key%2F20220705%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220705T101702Z&X-Amz-Expires=10&X-Amz-SignedHeaders=host&X-Amz-Signature=8846492d85f62187493cbff3631ec7f0ccf2d355f768eecf294f0572cf758e4c"}
+
 const server = setupServer(
   rest.get('/internal/test', (req, res, ctx) => {
     const hasTokenType = Boolean(req.headers.get('token-type'))
     return res(ctx.status(hasTokenType ? 200 : 401), ctx.json(rawUserData))
   }),
-  rest.get('/upload/test', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.text('presigned-url'))
+  rest.get('/upload', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(mockedPresignedUrl))
   }),
   rest.post('/internal/test', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json(req.body))
@@ -129,7 +131,7 @@ describe('when calling an endpoint with a token', () => {
 describe('when using a get request with upload path', () => {
   beforeEach(() => {
     return Api.get(
-      { path: '/test', provider: 'gh' },
+      { path: '/upload', provider: 'gh' },
       { useUploadPath: true }
     ).then((data) => {
       result = data
@@ -137,7 +139,7 @@ describe('when using a get request with upload path', () => {
   })
 
   it('returns data as text', () => {
-    expect(result).toEqual('presigned-url')
+    expect(result).toEqual(mockedPresignedUrl)
   })
 })
 

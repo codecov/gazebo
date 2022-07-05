@@ -21,8 +21,8 @@ describe('generatePath', () => {
   })
 
   it('generates a upload report path when use useUploadPath', () => {
-    expect(generatePath({ path: '/epic', useUploadPath: true })).toStrictEqual(
-      `${config.API_URL}/upload/epic`
+    expect(generatePath({ path: '/upload', useUploadPath: true })).toStrictEqual(
+      `${config.API_URL}/upload`
     )
   })
 })

@@ -23,7 +23,8 @@ const Upload = ({
   state,
 }) => {
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
-  const { data: url } = useUploadPresignedUrl({ pathUrl: downloadUrl })
+  const { data } = useUploadPresignedUrl({ path :downloadUrl })
+  const presignedGetUrl = data?.presignedUrl
 
   return (
     <div className="py-2 px-4 flex flex-col gap-1">
@@ -56,8 +57,8 @@ const Upload = ({
             <span className="text-ds-gray-quinary text-xs">carry-forward</span>
           )}
         </div>
-        {downloadUrl && (
-          <A href={url} isExternal hook="get-presigned-url" download>
+        {presignedGetUrl && (
+          <A href={presignedGetUrl} isExternal hook="get-presigned-url" download>
             Download
           </A>
         )}

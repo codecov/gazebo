@@ -15,7 +15,7 @@ export const ProviderCookieKeyMapping = {
 
 export function generatePath({ path, query, useUploadPath = false }) {
   const baseUrl = useUploadPath
-    ? `${config.API_URL}/upload`
+    ? config.API_URL
     : `${config.API_URL}/internal`
   const queryString = qs.stringify(snakeifyKeys(query), {
     arrayFormat: 'repeat',

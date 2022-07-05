@@ -17,10 +17,8 @@ function _fetch({
 }) {
   const uri = generatePath({ path, query, useUploadPath })
   const headers = {
-    Accept: useUploadPath ? 'text/plain' : 'application/json',
-    'Content-Type': useUploadPath
-      ? 'text/plain'
-      : 'application/json; charset=utf-8',
+    Accept: 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
     ...getHeaders(provider),
     ...extraHeaders,
   }
@@ -33,7 +31,7 @@ function _fetch({
   }).then(async (res) => {
     let data = null
     try {
-      data = useUploadPath ? await res.text() : camelizeKeys(await res.json())
+      data =  camelizeKeys(await res.json())
     } catch {
       // nothing to do, body can be empty
     }

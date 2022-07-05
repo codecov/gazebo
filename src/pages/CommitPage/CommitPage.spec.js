@@ -92,13 +92,13 @@ const fileData = {
   flagNames: [],
 }
 
+const mockedPresignedUrl = {presignedUrl: "http://minio:9000/archive/v4/raw/2022-06-23/942173DE95CBF167C5683F40B7DB34C0/ee3ecad424e67419d6c4531540f1ef5df045ff12/919ccc6d-7972-4895-b289-f2d569683a17.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=codecov-default-key%2F20220705%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220705T101702Z&X-Amz-Expires=10&X-Amz-SignedHeaders=host&X-Amz-Signature=8846492d85f62187493cbff3631ec7f0ccf2d355f768eecf294f0572cf758e4c"}
+
 describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
     useFileWithMainCoverage.mockReturnValue(fileData)
-    useUploadPresignedUrl.mockReturnValue({
-      data: '/archive/v4/raw/2022-06-23/..',
-    })
+    useUploadPresignedUrl.mockReturnValue(mockedPresignedUrl)
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -250,7 +250,7 @@ describe('CommitPage', () => {
 
       it('the impacted file', () => {
         expect(screen.getByTestId('spinner')).toBeInTheDocument()
-         waitFor(()=>expect(screen.getByText(/index.js/)).toBeInTheDocument()) 
+         waitFor(()=> expect(screen.getByText(/index.js/)).toBeInTheDocument()) 
       })
     })
 
