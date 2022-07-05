@@ -3,46 +3,92 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/core": "^7.16.0",
     "@hookform/resolvers": "^2.8.5",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^6.13.2",
     "@stripe/react-stripe-js": "^1.7.2",
     "@stripe/stripe-js": "^1.25.0",
+    "@svgr/webpack": "^5.5.0",
     "@tailwindcss/line-clamp": "^0.4.0",
+    "babel-jest": "^27.4.2",
+    "babel-loader": "^8.2.3",
+    "babel-plugin-named-asset-import": "^0.3.8",
+    "babel-preset-react-app": "^10.0.1",
+    "bfj": "^7.0.2",
+    "browserslist": "^4.18.1",
+    "camelcase": "^6.2.1",
+    "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "classnames": "^2.3.1",
+    "css-loader": "^6.5.1",
+    "css-minimizer-webpack-plugin": "^3.2.0",
     "date-fns": "^2.28.0",
     "date-fns-tz": "^1.3.4",
     "dompurify": "^2.3.8",
+    "dotenv": "^10.0.0",
+    "dotenv-expand": "^5.1.0",
     "downshift": "^6.1.7",
+    "eslint": "^8.3.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-webpack-plugin": "^3.1.1",
+    "file-loader": "^6.2.0",
+    "fs-extra": "^10.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.4.3",
+    "jest-resolve": "^27.4.2",
+    "jest-watch-typeahead": "^1.0.0",
     "js-cookie": "^3.0.1",
     "launchdarkly-react-client-sdk": "^2.25.1",
     "lodash": "^4.17.21",
+    "mini-css-extract-plugin": "^2.4.5",
     "pluralize": "^8.0.0",
+    "postcss": "^8.4.4",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-loader": "^6.2.1",
+    "postcss-normalize": "^10.0.1",
+    "postcss-preset-env": "^7.0.1",
     "prism-react-renderer": "^1.3.1",
+    "prompts": "^2.4.2",
     "prop-types": "^15.8.1",
     "qs": "^6.10.1",
     "react": "^17.0.2",
     "react-ace": "^10.1.0",
+    "react-app-polyfill": "^3.0.0",
     "react-datepicker": "^4.7.0",
+    "react-dev-utils": "^12.0.1",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.28.1",
     "react-modal": "^3.14.4",
     "react-query": "3.39",
+    "react-refresh": "^0.11.0",
     "react-router-dom": "^5.2.1",
     "react-table": "^7.7.0",
     "react-use": "^17.2.4",
+    "resolve": "^1.20.0",
+    "resolve-url-loader": "^4.0.0",
+    "sass-loader": "^12.3.0",
+    "semver": "^7.3.5",
+    "source-map-loader": "^3.0.0",
+    "style-loader": "^3.3.1",
+    "tailwindcss": "^3.0.2",
+    "terser-webpack-plugin": "^5.2.5",
     "victory": "^36.3.1",
     "web-vitals": "^2.1.4",
+    "webpack": "^5.64.4",
+    "webpack-dev-server": "^4.6.0",
+    "webpack-manifest-plugin": "^4.0.2",
+    "workbox-webpack-plugin": "^6.4.1",
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && react-scripts build",
-    "test": "react-scripts test",
+    "start": "node scripts/start.js",
+    "build": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && node scripts/build.js",
+    "test": "node scripts/test.js",
     "test:mutation": "npx stryker run",
-    "sentry": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && react-scripts build && node scripts/sentry.js",
-    "test:ci": "react-scripts test --collectCoverage --reporters=default --reporters=jest-junit",
-    "eject": "react-scripts eject",
+    "sentry": "export REACT_APP_SENTRY_RELEASE=\"$(git rev-parse --short HEAD)\" && node scripts/build.js && node scripts/sentry.js",
+    "test:ci": "node scripts/test.js --collectCoverage --reporters=default --reporters=jest-junit",
     "lint": "npx eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
     "storybook": "start-storybook -p 6006 -s public --no-dll",
     "build-storybook": "build-storybook -s public --no-dll",
@@ -99,7 +145,6 @@
     "msw": "^0.40.1",
     "postcss": "^8.4.12",
     "prettier": "^2.6.2",
-    "react-scripts": "^5.0.1",
     "react-test-renderer": "^17.0.2",
     "tailwindcss": "^3.0.24",
     "webpack": "^5.70.0"
@@ -108,11 +153,66 @@
     "node": "16.14.2"
   },
   "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!d3)/"
-    ]
+    ],
+    "modulePaths": [
+      "/Users/ts/dev/gazebo/src"
+    ],
+    "moduleNameMapper": {
+      "^react-native$": "react-native-web",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ],
+    "resetMocks": true
   },
   "msw": {
     "workerDirectory": "public"
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
   }
 }
