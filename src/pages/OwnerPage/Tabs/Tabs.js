@@ -17,6 +17,9 @@ function Tabs({ provider, owner }) {
           children: 'Analytics',
         },
         {
+          pageName: 'billingTab',
+        },
+        {
           pageName: 'accountAdmin',
           children: 'Settings',
         },

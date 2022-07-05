@@ -100,6 +100,12 @@ function useNavLinks() {
         `/account/${provider}/${owner}`,
       isExternalLink: false,
     },
+    billingTab: {
+      text: 'Billing',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/billing/${provider}/${owner}`,
+      isExternalLink: false,
+    },
     accountAdmin: {
       text: 'Admin',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>

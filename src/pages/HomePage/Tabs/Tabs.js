@@ -18,6 +18,12 @@ function Tabs({ currentUsername }) {
           },
         },
         {
+          pageName: 'billingTab',
+          options: {
+            owner: currentUsername,
+          },
+        },
+        {
           pageName: 'accountAdmin',
           children: 'Settings',
           options: {

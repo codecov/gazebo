@@ -30,5 +30,13 @@ describe('Tabs', () => {
         })
       ).toHaveAttribute('href', '/account/gh/lewis')
     })
+
+    it('renders link to billing', () => {
+      expect(
+        screen.getByRole('link', {
+          name: /billing/i,
+        })
+      ).toHaveAttribute('href', '/billing/gh/lewis')
+    })
   })
 })

@@ -18,6 +18,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage/RepoPage'))
+const BillingPage = lazy(() => import('./pages/BillingPage/BillingPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +57,11 @@ function App() {
             <Route path="/analytics/:provider/:owner/" exact>
               <BaseLayout>
                 <AnalyticsPage />
+              </BaseLayout>
+            </Route>
+            <Route path="/billing/:provider/:owner/" exact>
+              <BaseLayout>
+                <BillingPage />
               </BaseLayout>
             </Route>
             <Route path="/:provider/+" exact>

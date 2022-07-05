@@ -12,7 +12,9 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        { pageName: 'billingTab' },
+        {
+          pageName: 'billingTab',
+        },
         {
           pageName: 'accountAdmin',
           children: 'Settings',

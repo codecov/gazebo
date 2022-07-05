@@ -29,5 +29,13 @@ describe('Tabs', () => {
         })
       ).toHaveAttribute('href', '/account/gh/codecov')
     })
+
+    it('renders link to billing', () => {
+      expect(
+        screen.getByRole('link', {
+          name: /billing/i,
+        })
+      ).toHaveAttribute('href', '/billing/gh/codecov')
+    })
   })
 })
