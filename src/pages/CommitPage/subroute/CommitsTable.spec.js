@@ -59,6 +59,7 @@ describe('CommitsTable', () => {
       expect(noData).toBeInTheDocument()
     })
   })
+
   describe('when all data is missing', () => {
     beforeEach(() => {
       setup([
@@ -113,6 +114,7 @@ describe('CommitsTable', () => {
       expect(dash).toBeInTheDocument()
     })
   })
+
   describe('when no changes', () => {
     beforeEach(() => {
       setup()
@@ -125,6 +127,7 @@ describe('CommitsTable', () => {
       expect(coverage).toBeInTheDocument()
     })
   })
+
   describe('when impacted files are in pending state', () => {
     beforeEach(() => {
       setup([], 'pending')
