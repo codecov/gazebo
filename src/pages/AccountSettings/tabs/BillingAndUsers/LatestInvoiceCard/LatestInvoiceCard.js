@@ -5,6 +5,7 @@ import Card from 'old_ui/Card'
 import { invoicePropType } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 import A from 'ui/A'
+import Icon from 'ui/Icon'
 
 import invoiceImg from './invoice.svg'
 
@@ -34,7 +35,7 @@ function LatestInvoiceCard({ invoice }) {
         </div>
       </div>
       <A to={{ pageName: 'invoiceTab' }} variant="semibold">
-        See all invoices {'>'}
+        See all invoices <Icon name="chevronRight" size="sm" variant="solid" />
       </A>
     </Card>
   )
