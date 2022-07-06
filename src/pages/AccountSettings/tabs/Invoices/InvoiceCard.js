@@ -3,7 +3,6 @@ import { format, fromUnixTime } from 'date-fns'
 
 import Card from 'old_ui/Card'
 import { invoicePropType } from 'services/account'
-import { useNavLinks } from 'services/navigation'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
@@ -16,8 +15,6 @@ const statusToColor = {
 }
 
 function InvoiceCard({ invoice }) {
-  const { invoiceDetail } = useNavLinks()
-
   return (
     <Card className="px-4 py-6 mt-4 flex text-sm items-center justify-between">
       <div>
@@ -29,8 +26,14 @@ function InvoiceCard({ invoice }) {
           <span className="capitalize">{invoice.status}</span>
         </span>
         <A
-          href={invoiceDetail.path({ id: invoice.id }) + '?print'}
+          to={{
+            pageName: 'invoiceDetail',
+            options: {
+              id: invoice.id,
+            },
+          }}
           variant="semibold"
+          download
         >
           <Icon name="download" variant="solid" size="sm" />
           Download
