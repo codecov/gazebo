@@ -61,7 +61,7 @@ function RepoPage() {
             <Route path={path} exact>
               <CoverageTab />
             </Route>
-            {/* TODO: Move to i t's own layout */}
+            {/* TODO: Move to it's own layout */}
             <Route path={`${path}/new`} exact>
               <NewRepoTab />
             </Route>
