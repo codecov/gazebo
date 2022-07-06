@@ -7,7 +7,7 @@ import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
-import FlagsTab from './FlagsTab/FlagsTab'
+import FlagsTab from './FlagsTab'
 import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
