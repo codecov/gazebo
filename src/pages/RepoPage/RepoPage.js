@@ -7,6 +7,7 @@ import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
+import FlagsTab from './FlagsTab/FlagsTab'
 import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
@@ -48,6 +49,7 @@ function RepoPage() {
                 children: 'Coverage',
                 exact: !matchTree && !matchBlobs,
               },
+              { pageName: 'flagsTab' },
               { pageName: 'commits' },
               { pageName: 'pulls' },
               ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
@@ -59,9 +61,12 @@ function RepoPage() {
             <Route path={path} exact>
               <CoverageTab />
             </Route>
-            {/* TODO: Move to it's own layout */}
+            {/* TODO: Move to i t's own layout */}
             <Route path={`${path}/new`} exact>
               <NewRepoTab />
+            </Route>
+            <Route path={`${path}/flags`} exact>
+              <FlagsTab />
             </Route>
             <Route path={`${path}/commits`} exact>
               <CommitsTab />
