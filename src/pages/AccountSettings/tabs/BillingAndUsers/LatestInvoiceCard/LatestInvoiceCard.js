@@ -1,16 +1,15 @@
 import { format, fromUnixTime } from 'date-fns'
-import { Link } from 'react-router-dom'
 
 import AppLink from 'old_ui/AppLink'
-import Button from 'old_ui/Button'
 import Card from 'old_ui/Card'
 import { invoicePropType } from 'services/account'
 import { useNavLinks } from 'services/navigation'
+import A from 'ui/A'
 
 import invoiceImg from './invoice.svg'
 
 function LatestInvoiceCard({ invoice }) {
-  const { invoiceDetail, invoiceTab } = useNavLinks()
+  const { invoiceDetail } = useNavLinks()
   if (!invoice || !invoice.dueDate || !invoice.created) return null
   return (
     <Card className="p-6 mb-4">
@@ -34,15 +33,9 @@ function LatestInvoiceCard({ invoice }) {
           </div>
         </div>
       </div>
-      <Button
-        color="pink"
-        variant="outline"
-        to={invoiceTab.path()}
-        useRouter={!invoiceTab.isExternalLink}
-        Component={Link}
-      >
-        See all invoices
-      </Button>
+      <A to={{ pageName: 'invoiceTab' }} variant="semibold">
+        See all invoices {'>'}
+      </A>
     </Card>
   )
 }
