@@ -44,11 +44,4 @@ describe('Sparkline', () => {
       )
     })
   })
-  describe('sparkline works with custom data selector', () => {
-    setup({
-      datum: [0, 2, 1, 3, null, 3, 5, undefined],
-      description: 'Table caption',
-      dataTemplate: (d) => `# of oranges ${d}`,
-    })
-  })
 })
