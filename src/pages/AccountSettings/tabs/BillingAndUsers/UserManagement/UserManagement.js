@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 
 import Button from 'old_ui/Button'
 import Card from 'old_ui/Card'
-import Toggle from 'old_ui/Toggle'
 import User from 'old_ui/User'
 import { useAccountDetails, useAutoActivate } from 'services/account'
 import {
@@ -18,6 +17,7 @@ import { getOwnerImg } from 'shared/utils'
 import { isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A'
 import Modal from 'ui/Modal'
+import Toggle from 'ui/Toggle'
 
 import { FormControls } from './FormControls'
 import { FormPaginate } from './FormPaginate'
@@ -27,7 +27,6 @@ const UserManagementClasses = {
   cardHeader: 'flex justify-between items-center pb-4',
   activateUsers:
     'flex items-center py-2 px-4 shadow rounded-full text-blue-500',
-  activateUsersText: 'mr-2',
   title: 'text-2xl font-bold',
   results: 'shadow divide-y divide-gray-200 divide-solid p-6',
   userTable: 'grid grid-cols-5 lg:gap-2 my-6',
@@ -163,11 +162,9 @@ function UserManagement({ provider, owner }) {
           <h2 className={UserManagementClasses.title}>Users</h2>
           <span className={UserManagementClasses.activateUsers}>
             <Toggle
-              showLabel={true}
               onClick={() => autoActivate(!accountDetails?.planAutoActivate)}
               value={accountDetails?.planAutoActivate}
               label="Auto activate users"
-              labelClass={UserManagementClasses.activateUsersText}
             />
           </span>
         </div>
@@ -187,12 +184,9 @@ function UserManagement({ provider, owner }) {
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Toggle
-                    showLabel={true}
                     label={user.activated ? 'Activated' : 'Not yet activated'}
                     value={user.activated}
-                    onClick={() => {
-                      handleActivate(user)
-                    }}
+                    onClick={() => handleActivate(user)}
                   />
                 </div>
               </div>

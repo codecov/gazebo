@@ -2,40 +2,32 @@ import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 
-function checkClass(show, classes) {
-  if (show) {
-    return cs('cursor-pointer', classes)
-  }
-  return 'sr-only'
-}
+import Icon from 'ui/Icon'
 
 const ToggleClasses = {
   button:
     'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-50',
   circle:
     'pointer-events-none translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200',
-  label: checkClass,
 }
 
-function Toggle({
-  label,
-  showLabel = false,
-  labelClass,
-  value = false,
-  ...props
-}) {
+function Toggle({ label, value = false, onClick }) {
   const ID = uniqueId('toggle')
   return (
-    <>
+    <div onClick={onClick} className="flex gap-2">
+      {label && (
+        <label htmlFor={ID} className="cursor-pointer">
+          {label}
+        </label>
+      )}
       <button
         id={ID}
         className={cs(ToggleClasses.button, {
-          'bg-blue-400': value,
-          'bg-gray-200': !value,
+          'bg-ds-blue-darker': value,
+          'bg-ds-gray-quinary': !value,
         })}
         aria-pressed="false"
         type="button"
-        {...props}
       >
         <span
           data-testid="switch"
@@ -44,23 +36,25 @@ function Toggle({
             'translate-x-5': value,
             'translate-x-0': !value,
           })}
-        ></span>
+        >
+          <div
+            className={cs({
+              'text-ds-blue-darker': value,
+              'text-ds-gray-quinary': !value,
+            })}
+          >
+            <Icon name={value ? 'check' : 'x'} variant="solid" size="default" />
+          </div>
+        </span>
       </button>
-      <label
-        htmlFor={ID}
-        className={ToggleClasses.label(showLabel, labelClass)}
-      >
-        {label}
-      </label>
-    </>
+    </div>
   )
 }
 
 Toggle.propTypes = {
   value: PropTypes.bool.isRequired,
-  label: PropTypes.string.isRequired,
-  labelClass: PropTypes.string,
-  showLabel: PropTypes.bool,
+  label: PropTypes.string,
+  onClick: PropTypes.func,
 }
 
 export default Toggle

@@ -10,6 +10,7 @@ const IconClasses = {
   sm: 'w-4 h-4',
   md: 'w-6 h-6',
   lg: 'w-16 h-16',
+  default: '',
 }
 
 const IconCollection = {
@@ -28,7 +29,7 @@ Icon.propTypes = {
   /* To add more icons, update /scripts/icons.js and run "npm run generate-icons"*/
   name: PropType.string.isRequired,
   variant: PropType.oneOf(['outline', 'solid', 'developer']),
-  size: PropType.oneOf(['sm', 'md', 'lg']),
+  size: PropType.oneOf(['sm', 'md', 'lg', 'default']),
 }
 
 export default Icon

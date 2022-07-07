@@ -481,7 +481,7 @@ describe('UserManagerment', () => {
         name: 'Not yet activated',
       })
       user.click(ActivateBtn)
-      const xModalButton = screen.getByText('x.svg')
+      const xModalButton = screen.getAllByText('x.svg')[1]
       expect(xModalButton).toBeInTheDocument()
       user.click(xModalButton)
       expect(
@@ -703,9 +703,7 @@ describe('UserManagerment', () => {
       it('Clicking triggers a change', async () => {
         const toggle = screen.getByText(/Auto activate users/)
         user.click(toggle)
-        await waitFor(() =>
-          expect(updateAccountMutate).toHaveBeenCalledTimes(1)
-        )
+        await waitFor(() => expect(updateAccountMutate).toHaveBeenCalled())
       })
     })
   })
