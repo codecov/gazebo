@@ -41,7 +41,7 @@ SparklineWithMissingDataBeginning.args = {
   dataTemplate: (d) => `Foo ${d}%`,
 }
 
-const createTestDataWMissingEnding = Array(7)
+const createTestDataWMissingEnding = Array(20)
   .fill()
   .map((_, i) => (i < 18 ? Math.random() * range - range / 2 : null))
 
@@ -54,7 +54,7 @@ SparklineWithMissingDataEnding.args = {
 
 const createTestDataComplex = Array(10)
   .fill()
-  .map((_, i) => ({ value: Math.random() * range - range / 2, foo: 'bar' }))
+  .map((_) => ({ value: Math.random() * range - range / 2, foo: 'bar' }))
 
 export const SparklineWithComplexData = Template.bind({})
 SparklineWithComplexData.args = {
