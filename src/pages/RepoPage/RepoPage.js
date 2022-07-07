@@ -11,6 +11,8 @@ import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
 
+import { useFlags } from '../../shared/featureFlags'
+
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
@@ -22,6 +24,9 @@ const path = '/:provider/:owner/:repo'
 function RepoPage() {
   const { provider, owner, repo } = useParams()
 
+  const { gazeboFlagsTab } = useFlags({
+    gazeboFlagsTab: false,
+  })
   const { data: currentOwner } = useOwner({ username: owner })
   const { isCurrentUserPartOfOrg } = currentOwner
 
@@ -49,7 +54,7 @@ function RepoPage() {
                 children: 'Coverage',
                 exact: !matchTree && !matchBlobs,
               },
-              { pageName: 'flagsTab' },
+              ...(gazeboFlagsTab ? [{ pageName: 'flagsTab' }] : []),
               { pageName: 'commits' },
               { pageName: 'pulls' },
               ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
