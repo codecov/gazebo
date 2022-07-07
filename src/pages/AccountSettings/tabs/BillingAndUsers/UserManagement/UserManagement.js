@@ -32,7 +32,7 @@ const UserManagementClasses = {
   results: 'shadow divide-y divide-gray-200 divide-solid p-6',
   userTable: 'grid grid-cols-5 lg:gap-2 my-6',
   user: 'col-span-4',
-  ctaWrapper: 'flex items-center justify-end',
+  ctaWrapper: 'flex items-center justify-end gap-2',
   cta: 'w-full truncate',
 }
 
@@ -186,17 +186,15 @@ function UserManagement({ provider, owner }) {
                   pills={createPills(user)}
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
-                  <Button
-                    data-cy={`activate-${user.username}`}
-                    className={UserManagementClasses.cta}
-                    color={user.activated ? 'red' : 'blue'}
-                    variant={user.activated ? 'outline' : 'normal'}
+                  <label>
+                    {user.activated ? 'Activated' : 'Not yet activated'}
+                  </label>
+                  <Toggle
+                    value={user.activated}
                     onClick={() => {
                       handleActivate(user)
                     }}
-                  >
-                    {user.activated ? 'Deactivate' : 'Activate'}
-                  </Button>
+                  />
                 </div>
               </div>
             ))}
@@ -219,3 +217,5 @@ UserManagement.propTypes = {
 }
 
 export default UserManagement
+//might need to create ur own toggle to support true false or just add the icons to the existing toggle
+//api for the number of activated users?
