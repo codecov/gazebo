@@ -13,9 +13,9 @@ function _fetch({
   body,
   provider = 'gh',
   extraHeaders = {},
-  useUploadPath,
+  isUploadPath,
 }) {
-  const uri = generatePath({ path, query, useUploadPath })
+  const uri = generatePath({ path, query, isUploadPath })
   const headers = {
     Accept: 'application/json',
     'Content-Type': 'application/json; charset=utf-8',
@@ -31,7 +31,7 @@ function _fetch({
   }).then(async (res) => {
     let data = null
     try {
-      data =  camelizeKeys(await res.json())
+      data = camelizeKeys(await res.json())
     } catch {
       // nothing to do, body can be empty
     }
@@ -46,11 +46,10 @@ function _fetch({
 }
 
 function prefillMethod(method) {
-  return (config, useUploadPath) =>
+  return (config) =>
     _fetch({
       ...config,
       method,
-      useUploadPath,
     })
 }
 

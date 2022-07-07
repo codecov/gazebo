@@ -20,8 +20,8 @@ describe('generatePath', () => {
     ).toStrictEqual(`${config.API_URL}/internal/epic?rocket=league&fort=nite`)
   })
 
-  it('generates a upload report path when use useUploadPath', () => {
-    expect(generatePath({ path: '/upload', useUploadPath: true })).toStrictEqual(
+  it('generates a upload report path when use isUploadPath', () => {
+    expect(generatePath({ path: '/upload', isUploadPath: true })).toStrictEqual(
       `${config.API_URL}/upload`
     )
   })

@@ -7,6 +7,8 @@ const defaultConfig = {
   SENTRY_ENVIRONMENT: 'staging',
 }
 
+const INTERNAL_API = `${defaultConfig.API_URL}/internal`
+
 function removeReactAppPrefix(obj) {
   // in .env file, the variable must start with REACT_APP_
   // to be injected in the application, so we remove that
@@ -16,6 +18,7 @@ function removeReactAppPrefix(obj) {
 
 const config = {
   ...defaultConfig,
+  INTERNAL_API,
   ...removeReactAppPrefix(process.env),
   ...window.configEnv,
 }

@@ -13,10 +13,8 @@ export const ProviderCookieKeyMapping = {
   bitbucket: 'bitbucket-token',
 }
 
-export function generatePath({ path, query, useUploadPath = false }) {
-  const baseUrl = useUploadPath
-    ? config.API_URL
-    : `${config.API_URL}/internal`
+export function generatePath({ path, query, isUploadPath = false }) {
+  const baseUrl = isUploadPath ? config.API_URL : config.INTERNAL_API
   const queryString = qs.stringify(snakeifyKeys(query), {
     arrayFormat: 'repeat',
   })
