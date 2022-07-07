@@ -7,13 +7,11 @@ import { useMemo } from 'react'
 
 import './sparkline.css'
 
-const selectFn = (data) => data
-
 const Sparkline = ({
   datum,
   description,
-  datumDescriptor,
-  select = selectFn,
+  datumDescriptor = (data) => data,
+  select = (data) => data,
 }) => {
   const data = useMemo(
     () =>
@@ -21,15 +19,27 @@ const Sparkline = ({
         const nextEntry = datum[index + 1]
         const previousPoint = prev[prev.length - 1]
 
-        if (nextEntry?.value === 'undefined') {
-          return prev
-        }
         return [
           ...prev,
           {
+            /* 
+              Save the data points original selected value 
+            */
             value: select(curr),
+            /* 
+              Start is the value or the previous end point to connect
+              a line when no data is present.
+              Used to draw a line from point a to b
+            */
             start: select(curr) ? select(curr) : previousPoint?.end,
+            /* 
+              End is the next entire's value.
+              Used to draw a line from point a to b
+            */
             end: select(nextEntry),
+            /* 
+              Sets the rendering mode of the line.
+            */
             mode: !isFinite(select(curr)) ? 'empty' : 'normal',
           },
         ]
@@ -39,15 +49,12 @@ const Sparkline = ({
   const domain = extent(data.map(({ value }) => value))
   const yScale = scaleLinear().domain(domain).range([0, 1])
 
-  if (!datum) {
-    return <p>No Data</p>
-  }
-
   return (
     <table className="flex-1 flex">
       <caption className="sr-only">{description}</caption>
       <tbody className="flex flex-row flex-1">
         {data.map(({ start, end, mode, value }) => {
+          // Inline styles are not performant but because this is memoized it should be ok.
           const properties = {
             '--start': start ? yScale(start) : 0.5, // Fallback to the center
             '--size': end ? yScale(end) : 0.5, // Fallback to the center
@@ -62,9 +69,7 @@ const Sparkline = ({
                 style={properties}
                 data-mode={mode}
               >
-                <span className="sr-only">
-                  {datumDescriptor} {value}%
-                </span>
+                <span className="sr-only">{datumDescriptor(value)}</span>
               </td>
             </tr>
           )
@@ -78,7 +83,7 @@ Sparkline.propTypes = {
   datum: PropTypes.array,
   select: PropTypes.func,
   description: PropTypes.string.isRequired,
-  datumDescriptor: PropTypes.string.isRequired,
+  datumDescriptor: PropTypes.func.isRequired,
 }
 
 export default Sparkline
