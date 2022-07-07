@@ -10,7 +10,7 @@ import './sparkline.css'
 const Sparkline = ({
   datum,
   description,
-  datumDescriptor = (data) => data,
+  dataTemplate,
   select = (data) => data,
 }) => {
   const data = useMemo(
@@ -62,14 +62,14 @@ const Sparkline = ({
           return (
             <tr
               className="relative flex-1 justify-start flex flex-row"
-              key={uniqueId(datumDescriptor + description)}
+              key={uniqueId(dataTemplate + description)}
             >
               <td
-                className="line absolute inset-0 flex flex-1 before:content-[''] before:absolute before:inset-0"
+                className="line p-0 absolute inset-0 flex flex-1 before:content-[''] before:absolute before:inset-0"
                 style={properties}
                 data-mode={mode}
               >
-                <span className="sr-only">{datumDescriptor(value)}</span>
+                <span className="sr-only">{dataTemplate(value)}</span>
               </td>
             </tr>
           )
@@ -83,7 +83,7 @@ Sparkline.propTypes = {
   datum: PropTypes.array,
   select: PropTypes.func,
   description: PropTypes.string.isRequired,
-  datumDescriptor: PropTypes.func.isRequired,
+  dataTemplate: PropTypes.func.isRequired,
 }
 
 export default Sparkline

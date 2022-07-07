@@ -12,7 +12,7 @@ describe('Sparkline', () => {
       setup({
         datum: [0, 2, 1, 3, null, 3, 5, undefined],
         description: 'Table caption',
-        datumDescriptor: (d) => `# of oranges ${d}`,
+        dataTemplate: (d) => `# of oranges ${d}`,
       })
     })
 
@@ -42,6 +42,13 @@ describe('Sparkline', () => {
         'data-mode',
         'empty'
       )
+    })
+  })
+  describe('sparkline works with custom data selector', () => {
+    setup({
+      datum: [0, 2, 1, 3, null, 3, 5, undefined],
+      description: 'Table caption',
+      dataTemplate: (d) => `# of oranges ${d}`,
     })
   })
 })

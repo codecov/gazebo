@@ -16,7 +16,7 @@ export const NormalSparkline = Template.bind({})
 NormalSparkline.args = {
   datum: createTestData,
   description: 'storybook sparkline',
-  datumDescriptor: (d) => `Foo ${d}%`,
+  dataTemplate: (d) => `Foo ${d}%`,
 }
 
 const createTestDataWMissing = Array(30)
@@ -27,7 +27,7 @@ export const SparklineWithMissingData = Template.bind({})
 SparklineWithMissingData.args = {
   datum: createTestDataWMissing,
   description: 'storybook sparkline',
-  datumDescriptor: (d) => `Foo ${d}%`,
+  dataTemplate: (d) => `Foo ${d}%`,
 }
 
 const createTestDataWMissingBeginning = Array(7)
@@ -38,7 +38,7 @@ export const SparklineWithMissingDataBeginning = Template.bind({})
 SparklineWithMissingDataBeginning.args = {
   datum: createTestDataWMissingBeginning,
   description: 'storybook sparkline',
-  datumDescriptor: (d) => `Foo ${d}%`,
+  dataTemplate: (d) => `Foo ${d}%`,
 }
 
 const createTestDataWMissingEnding = Array(7)
@@ -49,7 +49,7 @@ export const SparklineWithMissingDataEnding = Template.bind({})
 SparklineWithMissingDataEnding.args = {
   datum: createTestDataWMissingEnding,
   description: 'storybook sparkline',
-  datumDescriptor: (d) => `Foo ${d}%`,
+  dataTemplate: (d) => `Foo ${d}%`,
 }
 
 const createTestDataComplex = Array(10)
@@ -61,7 +61,7 @@ SparklineWithComplexData.args = {
   datum: createTestDataComplex,
   select: (d) => d?.value,
   description: 'storybook sparkline',
-  datumDescriptor: (d) => `Foo ${d}%`,
+  dataTemplate: (d) => `Foo ${d}%`,
 }
 
 export default {
