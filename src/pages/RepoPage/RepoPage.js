@@ -7,7 +7,6 @@ import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
-import FlagsTab from './FlagsTab'
 import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
@@ -16,6 +15,7 @@ const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
 const PullsTab = lazy(() => import('./PullsTab'))
+const FlagsTab = lazy(() => import('./FlagsTab'))
 
 const path = '/:provider/:owner/:repo'
 
