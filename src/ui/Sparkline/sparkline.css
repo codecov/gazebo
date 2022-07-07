@@ -14,18 +14,11 @@ td {
   );
 }
 
-.line:not([data-mode='normal'])::before {
+.line[data-mode='empty']::before {
   background: linear-gradient(
     90deg,
     transparent 50%,
     theme('colors.ds.gray.quaternary') 50%
   );
   background-size: var(--dot-size) var(--dot-size);
-
-  clip-path: polygon(
-    0 calc(100% * (1 - var(--start, var(--size)))),
-    100% calc(100% * (1 - var(--size))),
-    100% calc(100% * (1 - var(--size)) - var(--line-size)),
-    0 calc(100% * (1 - var(--start, var(--size))) - var(--line-size))
-  );
 }
