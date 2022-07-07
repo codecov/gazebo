@@ -6,6 +6,25 @@ const Template = (args) => (
     <Sparkline {...args} />
   </div>
 )
+const ManyTemplate = (args) => {
+  const range = 200
+  const largeDataSetWithReusedData = Array(50)
+    .fill()
+    .map(() => Math.random() * range)
+  return (
+    <>
+      {Array(50)
+        .fill()
+        .map((_, i) => {
+          return (
+            <div key={`short-${i}`} className="w-[100%] h-[20px] flex">
+              <Sparkline {...args} datum={largeDataSetWithReusedData} />
+            </div>
+          )
+        })}
+    </>
+  )
+}
 
 const range = 200
 const createTestData = Array(20)
@@ -62,6 +81,12 @@ SparklineWithComplexData.args = {
   select: (d) => d?.value,
   description: 'storybook sparkline',
   dataTemplate: (d) => `Foo ${d}%`,
+}
+
+export const ManySparklines = ManyTemplate.bind({})
+ManySparklines.args = {
+  description: 'storybook sparkline',
+  dataTemplate: (d) => `${d}%`,
 }
 
 export default {

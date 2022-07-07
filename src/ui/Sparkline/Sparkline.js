@@ -46,8 +46,11 @@ const Sparkline = ({
       }, []),
     [datum, select]
   )
-  const domain = extent(data.map(({ value }) => value))
-  const yScale = scaleLinear().domain(domain).range([0, 1])
+  const [lowerDomain, upperDomain] = extent(data.map(({ value }) => value))
+  const yPadding = upperDomain / 10
+  const yScale = scaleLinear()
+    .domain([lowerDomain - yPadding, upperDomain + yPadding])
+    .range([0, 1])
 
   return (
     <table className="flex-1 flex">
