@@ -38,7 +38,7 @@ function Invoices({ provider, owner }) {
         textLink={billingAndUsers.text}
       />
       {years.map((year) => (
-        <div className="mt-8" key={year}>
+        <div className="mt-8 lg:w-3/4" key={year}>
           <h2 className="text-center text-xl bold">{year}</h2>
           {groupedInvoices[year].map((invoice) => (
             <InvoiceCard
