@@ -2,6 +2,8 @@ import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 
+import Icon from 'ui/Icon'
+
 function checkClass(show, classes) {
   if (show) {
     return cs('cursor-pointer', classes)
@@ -27,11 +29,17 @@ function Toggle({
   const ID = uniqueId('toggle')
   return (
     <>
+      <label
+        htmlFor={ID}
+        className={ToggleClasses.label(showLabel, labelClass)}
+      >
+        {label}
+      </label>
       <button
         id={ID}
         className={cs(ToggleClasses.button, {
-          'bg-blue-400': value,
-          'bg-gray-200': !value,
+          'bg-ds-blue-darker': value,
+          'bg-ds-gray-quinary': !value,
         })}
         aria-pressed="false"
         type="button"
@@ -44,14 +52,17 @@ function Toggle({
             'translate-x-5': value,
             'translate-x-0': !value,
           })}
-        ></span>
+        >
+          <div
+            className={cs({
+              'text-ds-blue-darker': value,
+              'text-ds-gray-quinary': !value,
+            })}
+          >
+            <Icon name={value ? 'check' : 'x'} variant="solid" size="small" />
+          </div>
+        </span>
       </button>
-      <label
-        htmlFor={ID}
-        className={ToggleClasses.label(showLabel, labelClass)}
-      >
-        {label}
-      </label>
     </>
   )
 }
