@@ -39,7 +39,7 @@ describe('UpgradePlanPage', () => {
     })
 
     it('renders a cancel plan link', () => {
-      const cancelLink = screen.getByTestId('cancel-plan')
+      const cancelLink = screen.getByText('Cancel plan')
       expect(cancelLink).toBeInTheDocument()
     })
   })
