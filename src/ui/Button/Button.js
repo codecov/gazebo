@@ -101,6 +101,7 @@ function Button({
       className={className}
       data-cy={hook}
       data-marketing={hook}
+      data-testid={hook}
     >
       {content}
     </button>

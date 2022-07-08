@@ -45,14 +45,15 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
             No credit card set. Please contact support if you think it’s an
             error or set it yourself.
           </p>
-          <Button
-            hook="open-modal"
-            variant="primary"
-            onClick={() => setIsFormOpen(true)}
-            className="self-start"
-          >
-            Set card
-          </Button>
+          <div className="flex self-start">
+            <Button
+              hook="open-modal"
+              variant="primary"
+              onClick={() => setIsFormOpen(true)}
+            >
+              Set card
+            </Button>
+          </div>
         </div>
       )}
     </Card>

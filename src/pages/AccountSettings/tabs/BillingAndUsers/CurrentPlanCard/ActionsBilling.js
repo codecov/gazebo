@@ -40,7 +40,7 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
             }}
             variant="primary"
           >
-            Manage billing in GitHub
+            View Billing
           </Button>
         </div>
       </div>

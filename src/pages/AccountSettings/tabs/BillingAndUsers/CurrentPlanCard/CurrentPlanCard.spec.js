@@ -58,11 +58,11 @@ describe('CurrentPlanCard', () => {
       expect(screen.getByText(/\$12/)).toBeInTheDocument()
     })
 
-    it('renders the link to Cancel', () => {
-      expect(
-        screen.getByRole('link', { name: /Cancel Plan/ })
-      ).toBeInTheDocument()
-    })
+    // it('renders the link to Cancel', () => {
+    //   expect(
+    //     screen.getByRole('link', { name: /Cancel Plan/ })
+    //   ).toBeInTheDocument()
+    // })
 
     it('shows the help message', () => {
       expect(screen.getByText(/Need help?/)).toBeInTheDocument()

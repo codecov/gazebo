@@ -32,10 +32,12 @@ function LatestInvoiceCard({ invoice }) {
             </div>
           </div>
         </div>
-        <A to={{ pageName: 'invoiceTab' }} variant="semibold">
-          See all invoices{' '}
-          <Icon name="chevronRight" size="sm" variant="solid" />
-        </A>
+        <div className="flex self-start">
+          <A to={{ pageName: 'invoiceTab' }} variant="semibold">
+            See all invoices{' '}
+            <Icon name="chevronRight" size="sm" variant="solid" />
+          </A>
+        </div>
       </div>
     </Card>
   )

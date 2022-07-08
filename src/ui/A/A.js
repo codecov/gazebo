@@ -61,6 +61,7 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
       className={className}
       data-cy={hook}
       data-marketing={hook}
+      data-testid={hook}
       target={isExternal && 'blank'}
     >
       {children}

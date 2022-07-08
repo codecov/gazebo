@@ -59,7 +59,11 @@ function UpgradePlan({ provider, owner }) {
               *${proPlanMonth.baseUnitPrice} per user / month if paid monthly
             </p>
             {shouldRenderCancelLink(accountDetails, plan) && (
-              <A to={{ pageName: 'cancelPlan' }} variant="grayQuinary">
+              <A
+                to={{ pageName: 'cancelPlan' }}
+                variant="grayQuinary"
+                hook="cancel-plan"
+              >
                 Cancel plan{' '}
                 <Icon name="chevronRight" size="sm" variant="solid" />
               </A>

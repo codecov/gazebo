@@ -66,9 +66,11 @@ function CardInformation({ subscriptionDetail, openForm, card }) {
           <span className="text-ds-gray-octonary">{nextBilling}</span>.
         </p>
       )}
-      <A variant="semibold" onClick={openForm}>
-        Edit card <Icon name="chevronRight" size="sm" variant="solid" />
-      </A>
+      <div className="flex self-start">
+        <A variant="semibold" onClick={openForm} hook="edit-card">
+          Edit card <Icon name="chevronRight" size="sm" variant="solid" />
+        </A>
+      </div>
     </div>
   )
 }

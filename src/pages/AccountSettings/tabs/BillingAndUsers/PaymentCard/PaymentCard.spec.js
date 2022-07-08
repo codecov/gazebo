@@ -106,7 +106,7 @@ describe('PaymentCard', () => {
           mutate: () => null,
           isLoading: false,
         })
-        userEvent.click(screen.getByRole('button', { name: /set card/i }))
+        userEvent.click(screen.getByTestId('open-modal'))
       })
 
       it('doesnt render the card anymore', () => {
@@ -115,7 +115,7 @@ describe('PaymentCard', () => {
 
       it('renders the form', () => {
         expect(
-          screen.getByRole('button', { name: /save/i })
+          screen.getByRole('button', { name: /update/i })
         ).toBeInTheDocument()
       })
     })
@@ -161,7 +161,7 @@ describe('PaymentCard', () => {
         isLoading: false,
       })
       setup(subscriptionDetail)
-      userEvent.click(screen.getByRole('button', { name: /edit card/i }))
+      userEvent.click(screen.getByTestId('edit-card'))
     })
 
     it('doesnt render the card anymore', () => {
@@ -169,12 +169,14 @@ describe('PaymentCard', () => {
     })
 
     it('renders the form', () => {
-      expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /update/i })
+      ).toBeInTheDocument()
     })
 
     describe('when submitting', () => {
       beforeEach(() => {
-        userEvent.click(screen.queryByRole('button', { name: /save/i }))
+        userEvent.click(screen.queryByRole('button', { name: /update/i }))
       })
 
       it('calls the service to update the card', () => {
@@ -204,7 +206,7 @@ describe('PaymentCard', () => {
         error: { data: { detail: randomError } },
       })
       setup(subscriptionDetail)
-      userEvent.click(screen.getByRole('button', { name: /edit card/i }))
+      userEvent.click(screen.getByTestId('edit-card'))
     })
 
     it('renders the error', () => {
@@ -216,11 +218,11 @@ describe('PaymentCard', () => {
     beforeEach(() => {
       useUpdateCard.mockReturnValue({ mutate: jest.fn(), isLoading: true })
       setup(subscriptionDetail)
-      userEvent.click(screen.getByRole('button', { name: /edit card/i }))
+      userEvent.click(screen.getByTestId('edit-card'))
     })
 
     it('has the error and save button disabled', () => {
-      expect(screen.queryByRole('button', { name: /save/i })).toBeDisabled()
+      expect(screen.queryByRole('button', { name: /update/i })).toBeDisabled()
       expect(screen.queryByRole('button', { name: /cancel/i })).toBeDisabled()
     })
   })
