@@ -17,12 +17,10 @@ function PlanControls({ accountDetails }) {
   }
 
   return (
-    <div className="flex flex-col items-center mt-1">
-      <ActionsBilling
-        accountDetails={accountDetails}
-        isFreePlan={isFreePlan(plan?.value)}
-      />
-    </div>
+    <ActionsBilling
+      accountDetails={accountDetails}
+      isFreePlan={isFreePlan(plan?.value)}
+    />
   )
 }
 

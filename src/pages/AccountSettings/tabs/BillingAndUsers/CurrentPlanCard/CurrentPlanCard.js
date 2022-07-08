@@ -1,6 +1,6 @@
-import Card from 'old_ui/Card'
 import { accountDetailsPropType } from 'services/account'
 import A from 'ui/A'
+import Card from 'ui/Card'
 
 import PlanControls from './PlanControls'
 import PlanPricing from './PlanPricing'
@@ -14,28 +14,32 @@ function CurrentPlanCard({ accountDetails }) {
   const isBasicPlan = plan.value === 'users-basic'
 
   return (
-    <Card className="px-12 py-10 pb-4 mb-4">
-      <h3 className="text-lg text-pink-500 font-bold">{plan.marketingName}</h3>
-      <PlanPricing value={plan?.value} baseUnitPrice={plan?.baseUnitPrice} />
-      <div className="mt-8 text-sm border-gray-200">
+    // Wdyt about this? Gives the flexibility to put the color you want, but makes the UI component umpredictable. Alternative is to create a headerVariant class and add a 'secondary' variant there
+    <Card
+      header={<h3 className="text-ds-pink-quinary">{plan.marketingName}</h3>}
+    >
+      <div className="flex flex-col gap-6">
+        <PlanPricing value={plan?.value} baseUnitPrice={plan?.baseUnitPrice} />
         <BenefitList
           iconName="check"
-          iconColor="text-pink-500"
+          iconColor="text-ds-pink-quinary"
           benefits={plan.benefits}
         />
-      </div>
-      <hr className="my-6" />
-      <Usage accountDetails={accountDetails} isBasicPlan={isBasicPlan} />
-      {accountDetails?.scheduleDetail?.scheduledPhase && (
-        <ScheduledPlanDetails
-          scheduledPhase={accountDetails?.scheduleDetail?.scheduledPhase}
-        />
-      )}
-      <PlanControls accountDetails={accountDetails} />
-      <hr className="my-6" />
-      <div className="mt-6 text-ds-gray-quinary">
-        <span className="font-semibold">Need help?</span> Connect with our sales
-        team today at <A to={{ pageName: 'sales' }}>sales@codecov.io</A>
+        {/* TODO: Left a note in the Card component to implement a variant that creates <hr />'s after any component */}
+        <hr />
+        <Usage accountDetails={accountDetails} isBasicPlan={isBasicPlan} />
+        <hr />
+        {accountDetails?.scheduleDetail?.scheduledPhase && (
+          <ScheduledPlanDetails
+            scheduledPhase={accountDetails?.scheduleDetail?.scheduledPhase}
+          />
+        )}
+        <PlanControls accountDetails={accountDetails} />
+        <hr />
+        <div className="text-ds-gray-quinary">
+          <span className="font-semibold">Need help?</span> Connect with our
+          sales team today at <A to={{ pageName: 'sales' }}>sales@codecov.io</A>
+        </div>
       </div>
     </Card>
   )

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import Button from 'old_ui/Button'
-import Card from 'old_ui/Card'
 import { subscriptionDetailType } from 'services/account'
+import Button from 'ui/Button'
+import Card from 'ui/Card'
 
 import CardInformation from './CardInformation'
 import CreditCardForm from './CreditCardForm'
@@ -26,8 +26,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
   if (!card && !isPayingCustomer) return null
 
   return (
-    <Card className="p-6 mb-4">
-      <h2 className="text-lg">Creditcard information</h2>
+    <Card header="Method of payment">
       {isFormOpen ? (
         <CreditCardForm
           provider={provider}
@@ -41,15 +40,20 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
           openForm={() => setIsFormOpen(true)}
         />
       ) : (
-        <>
-          <p className="my-4 text-gray-500">
+        <div className="text-ds-gray-quinary flex flex-col gap-4">
+          <p>
             No credit card set. Please contact support if you think it’s an
             error or set it yourself.
           </p>
-          <Button hook="open-modal" onClick={() => setIsFormOpen(true)}>
+          <Button
+            hook="open-modal"
+            variant="primary"
+            onClick={() => setIsFormOpen(true)}
+            className="self-start"
+          >
             Set card
           </Button>
-        </>
+        </div>
       )}
     </Card>
   )

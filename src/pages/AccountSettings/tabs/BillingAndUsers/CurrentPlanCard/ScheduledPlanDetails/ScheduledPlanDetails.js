@@ -16,7 +16,7 @@ function ScheduledPlanDetails({ scheduledPhase }) {
       <span>Start Date: {scheduleStart}</span>
       <span className="capitalize">Plan: {plan}</span>
       <span>Seats: {quantity}</span>
-      <hr className="my-6" />
+      <hr />
     </div>
   )
 }

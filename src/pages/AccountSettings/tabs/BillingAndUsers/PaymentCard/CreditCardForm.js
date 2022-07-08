@@ -8,9 +8,9 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import Button from 'old_ui/Button'
-import LogoSpinner from 'old_ui/LogoSpinner'
 import { useUpdateCard } from 'services/account'
+import Button from 'ui/Button'
+import Spinner from 'ui/Spinner'
 
 function useIsFormReady() {
   // Stripe fields takes a couple of second to appear
@@ -53,51 +53,57 @@ function CreditCardForm({ closeForm, provider, owner }) {
     })
   }
 
-  const inputClass = 'bg-gray-100 py-3 px-4 rounded-full '
+  const inputClass = 'bg-ds-gray-primary py-3 px-4 rounded-full '
   const resetError = error && reset
 
   return (
     <form onSubmit={submit} className="mt-4" aria-label="form">
-      <div className={cs({ hidden: !isReady })}>
-        <CardNumberElement
-          onChange={resetError}
-          className={inputClass}
-          onReady={() => setFieldReady('number')}
-        />
-        <div className="flex mt-2">
-          <CardExpiryElement
+      <div className={cs('flex flex-col gap-5', { hidden: !isReady })}>
+        <div className="flex flex-col gap-2">
+          <CardNumberElement
             onChange={resetError}
-            className={cs(inputClass, 'w-1/2 mr-2')}
-            onReady={() => setFieldReady('expiry')}
+            className={inputClass}
+            onReady={() => setFieldReady('number')}
           />
-          <CardCvcElement
-            onChange={resetError}
-            className={cs(inputClass, 'w-1/2 ml-2')}
-            onReady={() => setFieldReady('cvc')}
-          />
+          <div className="flex gap-2">
+            <CardExpiryElement
+              onChange={resetError}
+              className={cs(inputClass, 'w-1/2 mr-2')}
+              onReady={() => setFieldReady('expiry')}
+            />
+            <CardCvcElement
+              onChange={resetError}
+              className={cs(inputClass, 'w-1/2 ml-2')}
+              onReady={() => setFieldReady('cvc')}
+            />
+          </div>
+          {error && (
+            <p className="bg-ds-error-quinary text-ds-error-nonary p-3 mt-4 rounded-md">
+              {error.data.detail}
+            </p>
+          )}
         </div>
-        {error && (
-          <p className="bg-error-500 text-error-900 p-3 mt-4 rounded-md">
-            {error.data.detail}
-          </p>
-        )}
-        <div className="flex justify-between mt-4">
+        <div className="flex gap-1">
+          <Button
+            hook="update-payment"
+            type="submit"
+            variant="primary"
+            disabled={isLoading}
+          >
+            Update
+          </Button>
           <Button
             type="button"
-            color="gray"
-            variant="outline"
+            variant="plain"
             disabled={isLoading}
             onClick={closeForm}
           >
             Cancel
           </Button>
-          <Button color="pink" type="submit" disabled={isLoading}>
-            Save
-          </Button>
         </div>
       </div>
-      <div className={cs('mt-8', { hidden: isReady })}>
-        <LogoSpinner size={50} />
+      <div className={cs('flex justify-center mt-8', { hidden: isReady })}>
+        <Spinner />
       </div>
     </form>
   )

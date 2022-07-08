@@ -1,8 +1,9 @@
 import { format, fromUnixTime } from 'date-fns'
 import PropTypes from 'prop-types'
 
-import Button from 'old_ui/Button'
 import { subscriptionDetailType } from 'services/account'
+import A from 'ui/A'
+import Icon from 'ui/Icon'
 
 import amexLogo from './assets/amex.png'
 import discoverLogo from './assets/discover.jpg'
@@ -46,29 +47,29 @@ function CardInformation({ subscriptionDetail, openForm, card }) {
   const nextBilling = getNextBilling(subscriptionDetail)
 
   return (
-    <>
-      <div className="flex mt-6">
-        <div className="w-12 mr-6">
-          <img className="w-full" alt="credit card logo" src={typeCard.logo} />
-        </div>
-        <div>
+    <div className="flex flex-col gap-5">
+      <div className="flex gap-4">
+        {/* Idk what I think about hardcoding this, thoughts? */}
+        <img className="w-12 h-4" alt="credit card logo" src={typeCard.logo} />
+        <div className="flex flex-col">
           <b className="tracking-widest">
             ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card.last4}
           </b>
-          <p className="text-gray-500">
+          <p className="text-ds-gray-quinary">
             {typeCard.name} - Expires {card.expMonth}/{card.expYear}
           </p>
         </div>
       </div>
       {nextBilling && (
-        <p className="text-gray-500 my-4 text-sm">
-          Next billing on <span className="text-gray-900">{nextBilling}</span>.
+        <p className="text-ds-gray-quinary text-sm">
+          Next billing on{' '}
+          <span className="text-ds-gray-octonary">{nextBilling}</span>.
         </p>
       )}
-      <Button color="pink" variant="outline" onClick={openForm}>
-        Edit card
-      </Button>
-    </>
+      <A variant="semibold" onClick={openForm}>
+        Edit card <Icon name="chevronRight" size="sm" variant="solid" />
+      </A>
+    </div>
   )
 }
 

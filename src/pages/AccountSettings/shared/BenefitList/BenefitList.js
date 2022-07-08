@@ -3,17 +3,16 @@ import PropType from 'prop-types'
 import Icon from 'old_ui/Icon'
 
 function BenefitList({ benefits, iconName, iconColor }) {
-  const iconClassName = `bg-gray-200 rounded-full list-item-type mr-3`
+  const iconClassName = `bg-ds-gray-secondary rounded-full list-item-type`
   return (
-    <ul>
+    <ul className="flex flex-col gap-5">
       {benefits.map((benefit) => (
         <li
           key={benefit}
-          className="flex items-center mb-5 text-gray-500 last:mb-0"
+          className="flex items-center gap-2 text-ds-gray-quinary last:mb-0"
         >
-          <div className={iconClassName}>
-            <Icon name={iconName} color={iconColor} />
-          </div>
+          {/* // TODO: Figure a way to create custom icons w/ new icon component */}
+          <Icon name={iconName} color={iconColor} className={iconClassName} />
           {benefit}
         </li>
       ))}

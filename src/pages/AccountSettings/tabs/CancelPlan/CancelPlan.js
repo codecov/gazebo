@@ -1,10 +1,10 @@
 import difference from 'lodash/difference'
 import PropType from 'prop-types'
 
-import Card from 'old_ui/Card'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
+import Card from 'ui/Card'
 
 import DowngradeToFree from './DowngradeToFree'
 import { useProPlanMonth } from './hooks'
@@ -33,30 +33,30 @@ function CancelPlan({ provider, owner }) {
         useRouter={!billingAndUsers.isExternalLink}
         textLink={billingAndUsers.text}
       />
-      <article className="grid grid-cols-12 gap-8 mt-10">
-        <div className="col-span-7">
-          <Card className="border border-codecov-red px-12 py-10">
-            <h2 className="text-2xl text-codecov-red bold mb-4">
-              Downgrading to Free
-            </h2>
-            <hr className="border-gray-200" />
-            <p className="pt-6 pb-4 text-gray-500">
-              Note that, when downgrading to free the following features will
-              become unavailable:
-            </p>
-            <BenefitList
-              benefits={unavailableBenefits}
-              iconColor="text-codecov-red"
-              iconName="times"
-            />
-            <hr className="border-gray-200 mt-6" />
-            <p className="text-gray-500 mt-4">
-              You currently have {accountDetails.activatedUserCount} active
-              users. On downgrade, all users will be automatically deactivated.
-              You will need to manually reactivate up to five users or ensure
-              auto activate is enabled in your plan settings.
-            </p>
-            <div className="text-center mt-4">
+      <div className="flex gap-8">
+        <div className="flex basis-3/5">
+          <Card variant="cancel">
+            <div className="flex flex-col gap-4 text-ds-gray-quinary">
+              <h2 className="text-2xl text-codecov-red bold">
+                Downgrading to Free
+              </h2>
+              <hr />
+              <p>
+                Note that, when downgrading to free the following features will
+                become unavailable:
+              </p>
+              <BenefitList
+                benefits={unavailableBenefits}
+                iconColor="text-codecov-red"
+                iconName="times"
+              />
+              <hr />
+              <p>
+                You currently have {accountDetails.activatedUserCount} active
+                users. On downgrade, all users will be automatically
+                deactivated. You will need to manually reactivate up to five
+                users or ensure auto activate is enabled in your plan settings.
+              </p>
               <DowngradeToFree
                 accountDetails={accountDetails}
                 provider={provider}
@@ -65,23 +65,24 @@ function CancelPlan({ provider, owner }) {
             </div>
           </Card>
         </div>
-        <div className="col-span-5">
-          <Card className="flex flex-col items-center px-12 py-10">
+        {/* TODO: Do we need this for the final iteration */}
+        <div className="flex basis-2/5">
+          <Card variant="large">
             <div className="-mt-16 mb-4">
               <img src={umbrellaImg} alt="closed umbrella illustration" />
             </div>
-            <h3 className="text-2xl text-pink-500 bold">
+            <h3 className="text-2xl text-ds-pink-quinary bold">
               {freePlan.marketingName}
             </h3>
             <h2 className="text-5xl bold mb-8">Free</h2>
             <BenefitList
               benefits={freePlan.benefits}
               iconName="check"
-              iconColor="text-pink-500"
+              iconColor="text-ds-pink-quinary"
             />
           </Card>
         </div>
-      </article>
+      </div>
     </>
   )
 }

@@ -3,11 +3,11 @@ import PropType from 'prop-types'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import Button from 'old_ui/Button'
 import Modal from 'old_ui/Modal'
 import { accountDetailsPropType, useCancelPlan } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import { isFreePlan } from 'shared/utils/billing'
+import Button from 'ui/Button'
 
 import useBarecancel from './barecancel'
 
@@ -57,12 +57,22 @@ function DowngradeToFree({ accountDetails, provider, owner }) {
   return (
     <>
       <Button
-        color="red"
+        variant="danger"
         onClick={() => setIsModalOpen(true)}
         disabled={isDisabled}
       >
-        {isAlreadyFreeUser ? 'Already free user' : 'Downgrade to Free'}
+        {isAlreadyFreeUser ? 'Already free user' : 'Downgrade to Free Plan'}
       </Button>
+      {/* TODO: Add this when merging to the new page; this will go to a non-existent route */}
+      {/* <Button
+        type="button"
+        variant="plain"
+        disabled={isLoading}
+        onClick={closeForm}
+      >
+        Cancel
+      </Button> */}
+      {/* TODO: Change this to new modal UI + Ask for designs here*/}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
