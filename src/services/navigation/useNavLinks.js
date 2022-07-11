@@ -346,7 +346,23 @@ function useNavLinks() {
       text: 'Badges & Graphs',
     },
     feedback: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}/feedback`,
+      text: 'Feedback',
+      path: ({ provider = p, ref } = { provider: p, ref: null }) => {
+        if (ref) {
+          return `/${provider}/feedback?ref=${encodeURIComponent(ref)}`
+        }
+        return `/${provider}/feedback`
+      },
+      isExternalLink: false,
+    },
+    prevLink: {
+      text: 'Back',
+      path: ({ provider = p, ref } = { provider: p, ref: null }) => {
+        if (ref) {
+          return decodeURIComponent(ref)
+        }
+        return `/${provider}`
+      },
       isExternalLink: false,
     },
   }
