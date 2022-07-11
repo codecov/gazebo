@@ -29,6 +29,7 @@ const enabledIcons = [
   'branch',
   'exclamation-circle',
   'ban',
+  'chevron-left',
 ]
 
 console.log('Generating Icons import')
