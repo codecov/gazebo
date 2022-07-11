@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
-import { useMyContexts } from 'services/user'
+import { useMyContexts, useUser } from 'services/user'
 
 import OrganizationSelector from './OrganizationSelector'
 
@@ -74,6 +74,13 @@ const reposData = {
   ],
 }
 
+const loggedInUser = {
+  username: 'Cerrit Agrupnin',
+  trackingMetadata: {
+    ownerid: 1638,
+  },
+}
+
 describe('OrganizationSelector', () => {
   let container
   const onSelect = jest.fn()
@@ -83,6 +90,7 @@ describe('OrganizationSelector', () => {
     email: 'user@gmail.com',
   }
   function setup() {
+    useUser.mockReturnValue({ data: loggedInUser })
     useMyContexts.mockReturnValue({
       data: contextData,
       refetch: refetch,

@@ -556,6 +556,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('repo flags tab link', () => {
+    beforeAll(() => {
+      setup(['/gh/codecov/gazebo/flags'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.flagsTab.path()).toBe(
+        '/gh/codecov/gazebo/flags'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.flagsTab.path({ provider: 'bb' })).toBe(
+        '/bb/codecov/gazebo/flags'
+      )
+      expect(hookData.result.current.flagsTab.path({ owner: 'cat' })).toBe(
+        '/gh/cat/gazebo/flags'
+      )
+    })
+  })
+
   describe('repo branches link', () => {
     beforeAll(() => {
       setup(['/gh/RulaKhaled/test/branches'])

@@ -14,6 +14,7 @@ jest.mock('services/user')
 
 // This component is too complex for an integration test imo
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
+jest.mock('./FlagsTab', () => () => 'FlagsTab')
 
 const commits = [
   {
