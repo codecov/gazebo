@@ -7,6 +7,9 @@ import { useMemo } from 'react'
 
 import './sparkline.css'
 
+const HORIZONTAL_PADDING = 10
+const FALLBACK_LINE_POS = 0.5 // Value between 0-1
+
 const Sparkline = ({
   datum,
   description,
@@ -47,7 +50,7 @@ const Sparkline = ({
     [datum, select]
   )
   const [lowerDomain, upperDomain] = extent(data.map(({ value }) => value))
-  const yPadding = upperDomain / 10
+  const yPadding = upperDomain / HORIZONTAL_PADDING
   const yScale = scaleLinear()
     .domain([lowerDomain - yPadding, upperDomain + yPadding])
     .range([0, 1])
@@ -59,8 +62,8 @@ const Sparkline = ({
         {data.map(({ start, end, mode, value }) => {
           // Inline styles are not performant but because this is memoized it should be ok.
           const properties = {
-            '--start': start ? yScale(start) : 0.5, // Fallback to the center
-            '--size': end ? yScale(end) : 0.5, // Fallback to the center
+            '--start': start ? yScale(start).toFixed(2) : FALLBACK_LINE_POS,
+            '--size': end ? yScale(end).toFixed(2) : FALLBACK_LINE_POS,
           }
           return (
             <tr
