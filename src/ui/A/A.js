@@ -15,6 +15,7 @@ const variantClasses = {
   default: `text-ds-blue`,
   header: `font-semibold text-ds-gray-secondary`,
   link: `text-ds-blue-darker`,
+  semibold: 'text-ds-blue-darker font-semibold',
   code: `font-mono text-ds-blue-darker`,
   cardLink: `text-ds-grey-octinary font-semibold truncate`,
   greyOctinary: `text-ds-grey-octinary`,
@@ -90,6 +91,7 @@ A.propTypes = {
     'code',
     'cardLink',
     'fileViewHeader',
+    'semibold',
   ]),
   isExternal: PropTypes.bool,
 }

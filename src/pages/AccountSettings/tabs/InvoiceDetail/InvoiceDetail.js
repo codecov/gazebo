@@ -2,11 +2,12 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 import qs from 'qs'
 import { useEffect } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
-import Button from 'old_ui/Button'
 import { useAccountDetails, useInvoice } from 'services/account'
 import { useNavLinks } from 'services/navigation'
+import A from 'ui/A'
+import Icon from 'ui/Icon'
 
 import InvoiceFooter from './sections/InvoiceFooter'
 import InvoiceHeader from './sections/InvoiceHeader'
@@ -40,7 +41,7 @@ function InvoiceDetail({ provider, owner }) {
   const { id } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: invoice } = useInvoice({ provider, owner, id })
-  const { invoiceTab } = useNavLinks()
+  const { invoiceTab, invoiceDetail } = useNavLinks()
 
   usePrintPage()
 
@@ -72,18 +73,22 @@ function InvoiceDetail({ provider, owner }) {
           <InvoiceFooter invoice={invoice} accountDetails={accountDetails} />
         </div>
       </div>
-      <div className="my-8">
-        <Button
-          to={invoiceTab.path()}
-          useRouter={!invoiceTab.isExternalLink}
-          Component={Link}
-          variant="outline"
+      <div className="my-8 flex gap-5">
+        <A
+          href={invoiceDetail.path({ id: invoice.id })}
+          variant="semibold"
+          download
         >
-          Back to invoices
-        </Button>
-        <Button className="ml-4" onClick={window.print}>
+          <Icon name="download" variant="solid" size="sm" />
+          Download
+        </A>
+        <A
+          href={invoiceDetail.path({ id: invoice.id }) + '?print'}
+          variant="semibold"
+        >
+          <Icon name="printer" variant="solid" size="sm" />
           Print
-        </Button>
+        </A>
       </div>
     </>
   )
