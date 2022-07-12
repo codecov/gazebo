@@ -44,7 +44,7 @@ function BillingAndUsers({ provider, owner }) {
               )}
             </div>
             {/* TODO: this component will change a bit, so I'll leave this as is */}
-            <div className="flex-1">
+            <div className="flex-1 mt-4 sm:mt-0">
               <UserManagement provider={provider} owner={owner} />
             </div>
           </>

@@ -50,8 +50,12 @@ function CardInformation({ subscriptionDetail, openForm, card }) {
     <div className="flex flex-col gap-5">
       <div className="flex gap-4">
         {/* Idk what I think about hardcoding this, thoughts? */}
-        <img className="w-12 h-4" alt="credit card logo" src={typeCard?.logo} />
-        <div className="flex flex-col">
+        <img
+          className="w-16 h-auto self-center"
+          alt="credit card logo"
+          src={typeCard?.logo}
+        />
+        <div className="flex flex-col self-center">
           <b className="tracking-widest">
             ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card?.last4}
           </b>
