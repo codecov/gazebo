@@ -15,32 +15,42 @@ import RepoTitleLink from './RepoTitleLink'
 
 const tableActive = [
   {
-    Header: 'Name',
-    accessor: 'title',
+    id: 'title',
+    header: 'Name',
+    accessorKey: 'title',
     width: 'w-7/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">Last Updated</span>,
-    accessor: 'lastUpdated',
+    id: 'lastUpdated',
+    header: <span className="w-full text-right">Last Updated</span>,
+    accessorKey: 'lastUpdated',
     width: 'w-2/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-sm text-right">Test Coverage</span>,
-    accessor: 'coverage',
+    id: 'coverage',
+    header: <span className="w-full text-sm text-right">Test Coverage</span>,
+    accessorKey: 'coverage',
     width: 'w-3/12',
+    cell: (info) => info.getValue(),
   },
 ]
 
 const tableInactive = [
   {
-    Header: 'Name',
-    accessor: 'title',
+    id: 'title',
+    header: 'Name',
+    accessorKey: 'title',
     width: 'w-9/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: '',
-    accessor: 'notEnabled',
+    id: 'notEnabled',
+    header: '',
+    accessorKey: 'notEnabled',
     width: 'w-3/12',
+    cell: (info) => info.getValue(),
   },
 ]
 
@@ -58,6 +68,9 @@ function transformRepoToTable({
         title: (
           <span className="text-sm">{searchValue && 'no results found'}</span>
         ),
+        lastUpdated: null,
+        coverage: null,
+        notEnabled: null,
       },
     ]
   }

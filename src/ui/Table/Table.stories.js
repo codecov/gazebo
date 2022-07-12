@@ -28,19 +28,25 @@ Table.args = {
   ],
   columns: [
     {
-      Header: 'Header 1',
-      accessor: 'col1',
+      id: 'col1',
+      header: 'Header 1',
+      accessorKey: 'col1',
       width: 'w-2/5',
+      cell: (info) => info.getValue(),
     },
     {
-      Header: 'Header 2',
-      accessor: 'col2',
+      id: 'col2',
+      header: 'Header 2',
+      accessorKey: 'col2',
       width: 'w-2/5',
+      cell: (info) => info.getValue(),
     },
     {
-      Header: 'Header 1',
-      accessor: 'col3',
+      id: 'col3',
+      header: 'Header 1',
+      accessorKey: 'col3',
       width: 'w-1/5',
+      cell: (info) => info.getValue(),
     },
   ],
 }
@@ -52,12 +58,12 @@ TableWithButton.args = {
     {
       col1: 'Hello',
       col2: 'World',
-      col3: undefined,
+      col3: null,
     },
     {
       col1: 'react-table',
       col2: 'rocks',
-      col3: undefined,
+      col3: null,
     },
     {
       col1: 'whatever',
@@ -67,16 +73,22 @@ TableWithButton.args = {
   ],
   columns: [
     {
-      Header: 'Header 1',
-      accessor: 'col1',
+      id: 'col1',
+      header: 'Header 1',
+      accessorKey: 'col1',
+      cell: (info) => info.getValue(),
     },
     {
-      Header: 'Header 2',
-      accessor: 'col2',
+      id: 'col2',
+      header: 'Header 2',
+      accessorKey: 'col2',
+      cell: (info) => info.getValue(),
     },
     {
-      Header: '',
-      accessor: 'col3',
+      id: 'col3',
+      header: '',
+      accessorKey: 'col3',
+      cell: (info) => info.getValue(),
     },
   ],
 }
