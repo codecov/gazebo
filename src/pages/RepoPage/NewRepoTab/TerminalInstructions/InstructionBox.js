@@ -1,9 +1,12 @@
 import cs from 'classnames'
 import { useState } from 'react'
 
+import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import CopyClipboard from 'ui/CopyClipboard'
 
 export default function InstructionBox() {
+  const { terminalUploaderCommandClicked } = useOnboardingTracking()
+
   const systemsEnum = {
     LINUX: 'Linux',
     ALPINE: 'Alpine Linux',
@@ -77,6 +80,7 @@ export default function InstructionBox() {
                 ? "$ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\\codecov.exe"
                 : `curl -Os https://uploader.codecov.io/latest/${systemsMapper[curSystem]}/codecov chmod +x codecov ./codecov`
             }
+            onClick={terminalUploaderCommandClicked}
           />
         </span>
       </div>

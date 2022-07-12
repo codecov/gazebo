@@ -6,35 +6,43 @@ import Table from 'ui/Table'
 
 const tableColumns = [
   {
-    Header: 'Name',
-    accessor: 'col1',
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
     width: 'w-2/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: 'Token',
-    accessor: 'col2',
+    id: 'lastFour',
+    header: 'Token',
+    accessorKey: 'lastFour',
     width: 'w-2/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: 'Last access',
-    accessor: 'col3',
+    id: 'lastSeen',
+    header: 'Last access',
+    accessorKey: 'lastSeen',
     width: 'w-7/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: '',
-    accessor: 'col4',
+    id: 'revokeBtn',
+    header: '',
+    accessorKey: 'revokeBtn',
     width: 'w-1/6',
+    cell: (info) => info.getValue(),
   },
 ]
 
 function TokensTable({ tokens, onRevoke }) {
   const dataTable = tokens.map((t) => ({
-    col1: t.name,
-    col2: (
+    name: t.name,
+    lastFour: (
       <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">{`xxxx ${t.lastFour}`}</p>
     ),
-    col3: t.lastseen ? formatTimeToNow(t.lastseen) : '-',
-    col4: (
+    lastSeen: t.lastseen ? formatTimeToNow(t.lastseen) : '-',
+    revokeBtn: (
       <Button
         hook="revoke-sesson"
         onClick={() => onRevoke(t.sessionid)}

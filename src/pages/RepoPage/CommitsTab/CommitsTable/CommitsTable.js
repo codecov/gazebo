@@ -10,39 +10,53 @@ import Title from './Title'
 
 const headers = [
   {
-    Header: 'Name',
-    accessor: 'title',
+    id: 'title',
+    header: 'Name',
+    accessorKey: 'title',
     width: 'w-6/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">CI status</span>,
-    accessor: 'ciStatus',
+    id: 'ciStatus',
+    header: <span className="w-full text-right">CI status</span>,
+    accessorKey: 'ciStatus',
     width: 'w-2/12 lg:w-3/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: (
+    id: 'coverage',
+    header: (
       <span className="w-full text-right">
         Coverage <span className="hidden lg:inline-block">%</span>
       </span>
     ),
-    accessor: 'coverage',
+    accessorKey: 'coverage',
     width: 'w-2/12 lg:w-3/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">Patch %</span>,
-    accessor: 'patch',
+    id: 'patch',
+    header: <span className="w-full text-right">Patch %</span>,
+    accessorKey: 'patch',
     width: 'w-1/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">Change</span>,
-    accessor: 'change',
+    id: 'change',
+    header: <span className="w-full text-right">Change</span>,
+    accessorKey: 'change',
     width: 'w-1/12',
+    cell: (info) => info.getValue(),
   },
 ]
 
 const handleOnNull = () => {
   return {
     title: <span className="text-sm">we can&apos;t find this commit</span>,
+    ciStatus: null,
+    coverage: null,
+    patch: null,
+    change: null,
   }
 }
 
@@ -52,6 +66,10 @@ function transformPullToTable(commits) {
     return [
       {
         title: <span className="text-sm">no results found</span>,
+        ciStatus: null,
+        coverage: null,
+        patch: null,
+        change: null,
       },
     ]
   }

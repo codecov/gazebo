@@ -1,10 +1,25 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import * as Segment from 'services/tracking/segment'
+import { useUser } from 'services/user'
+
 import InstructionBox from '.'
+
+const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
+
+jest.mock('services/user')
+
+const loggedInUser = {
+  username: "Patia Por'co",
+  trackingMetadata: {
+    ownerid: 12345,
+  },
+}
 
 describe('InstructionBox', () => {
   function setup() {
+    useUser.mockReturnValue({ data: loggedInUser })
     render(<InstructionBox />)
   }
 
@@ -101,6 +116,24 @@ describe('InstructionBox', () => {
         /curl -Os https:\/\/uploader.codecov.io\/latest\/macos\/codecov/
       )
       expect(instruction).toBeInTheDocument()
+    })
+  })
+
+  describe('when the user clicks on the clipboard copy link', () => {
+    beforeEach(() => {
+      setup()
+      userEvent.click(screen.getByTestId('clipboard'))
+    })
+
+    it('calls the trackSegmentEvent', () => {
+      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
+      expect(trackSegmentSpy).toHaveBeenCalledWith({
+        event: 'User Onboarding Terminal Uploader Command Clicked',
+        data: {
+          category: 'Onboarding',
+          userId: 12345,
+        },
+      })
     })
   })
 })
