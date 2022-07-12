@@ -6,32 +6,9 @@ import {
 } from '@stripe/react-stripe-js'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import { useState } from 'react'
 
 import { useUpdateCard } from 'services/account'
 import Button from 'ui/Button'
-import Spinner from 'ui/Spinner'
-
-function useIsFormReady() {
-  // Stripe fields takes a couple of second to appear
-  // so we wait for all of them to be ready before displaying
-  // the form; and we show a spinner in the mean time
-  const [fields, setFields] = useState({
-    number: false,
-    expiry: false,
-    cvc: false,
-  })
-  const isReady = Object.values(fields).every(Boolean)
-
-  function setFieldReady(name) {
-    setFields((prevState) => ({
-      ...prevState,
-      [name]: true,
-    }))
-  }
-
-  return [isReady, setFieldReady]
-}
 
 function CreditCardForm({ closeForm, provider, owner }) {
   const elements = useElements()
@@ -44,7 +21,6 @@ function CreditCardForm({ closeForm, provider, owner }) {
     provider,
     owner,
   })
-  const [isReady, setFieldReady] = useIsFormReady()
 
   function submit(e) {
     e.preventDefault()
@@ -58,28 +34,22 @@ function CreditCardForm({ closeForm, provider, owner }) {
 
   return (
     <form onSubmit={submit} className="mt-4" aria-label="form">
-      <div className={cs('flex flex-col gap-5', { hidden: !isReady })}>
+      <div className={cs('flex flex-col gap-5')}>
         <div className="flex flex-col gap-2">
-          <CardNumberElement
-            onChange={resetError}
-            className={inputClass}
-            onReady={() => setFieldReady('number')}
-          />
+          <CardNumberElement onChange={resetError} className={inputClass} />
           <div className="flex gap-2">
             <CardExpiryElement
               onChange={resetError}
               className={cs(inputClass, 'w-1/2 mr-2')}
-              onReady={() => setFieldReady('expiry')}
             />
             <CardCvcElement
               onChange={resetError}
               className={cs(inputClass, 'w-1/2 ml-2')}
-              onReady={() => setFieldReady('cvc')}
             />
           </div>
           {error && (
             <p className="bg-ds-error-quinary text-ds-error-nonary p-3 mt-4 rounded-md">
-              {error.data.detail}
+              {error?.data?.detail}
             </p>
           )}
         </div>
@@ -94,6 +64,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
           </Button>
           <Button
             type="button"
+            hook="cancel-payment"
             variant="plain"
             disabled={isLoading}
             onClick={closeForm}
@@ -101,9 +72,6 @@ function CreditCardForm({ closeForm, provider, owner }) {
             Cancel
           </Button>
         </div>
-      </div>
-      <div className={cs('flex justify-center mt-8', { hidden: isReady })}>
-        <Spinner />
       </div>
     </form>
   )

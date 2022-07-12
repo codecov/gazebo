@@ -10,20 +10,20 @@ import Usage from './Usage'
 import BenefitList from '../../../shared/BenefitList'
 
 function CurrentPlanCard({ accountDetails }) {
-  const plan = accountDetails.rootOrganization?.plan ?? accountDetails.plan
-  const isBasicPlan = plan.value === 'users-basic'
+  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const isBasicPlan = plan?.value === 'users-basic'
 
   return (
     // Wdyt about this? Gives the flexibility to put the color you want, but makes the UI component umpredictable. Alternative is to create a headerVariant class and add a 'secondary' variant there
     <Card
-      header={<h3 className="text-ds-pink-quinary">{plan.marketingName}</h3>}
+      header={<h3 className="text-ds-pink-quinary">{plan?.marketingName}</h3>}
     >
       <div className="flex flex-col gap-6">
         <PlanPricing value={plan?.value} baseUnitPrice={plan?.baseUnitPrice} />
         <BenefitList
           iconName="check"
           iconColor="text-ds-pink-quinary"
-          benefits={plan.benefits}
+          benefits={plan?.benefits}
         />
         {/* TODO: Left a note in the Card component to implement a variant that creates <hr />'s after any component */}
         <hr />

@@ -19,19 +19,19 @@ function CancelPlan({ provider, owner }) {
   const { billingAndUsers } = useNavLinks()
 
   const { proPlanMonth } = useProPlanMonth({ plans })
-  const freePlan = plans.find((plan) => isFreePlan(plan.value))
+  const freePlan = plans.find((plan) => isFreePlan(plan?.value))
 
   const unavailableBenefits = difference(
-    proPlanMonth.benefits,
-    freePlan.benefits
+    proPlanMonth?.benefits,
+    freePlan?.benefits
   )
 
   return (
     <>
       <BackLink
         to={billingAndUsers.path()}
-        useRouter={!billingAndUsers.isExternalLink}
-        textLink={billingAndUsers.text}
+        useRouter={!billingAndUsers?.isExternalLink}
+        textLink={billingAndUsers?.text}
       />
       <div className="flex gap-8">
         <div className="flex basis-3/5">
@@ -52,7 +52,7 @@ function CancelPlan({ provider, owner }) {
               />
               <hr />
               <p>
-                You currently have {accountDetails.activatedUserCount} active
+                You currently have {accountDetails?.activatedUserCount} active
                 users. On downgrade, all users will be automatically
                 deactivated. You will need to manually reactivate up to five
                 users or ensure auto activate is enabled in your plan settings.
@@ -72,11 +72,11 @@ function CancelPlan({ provider, owner }) {
               <img src={umbrellaImg} alt="closed umbrella illustration" />
             </div>
             <h3 className="text-2xl text-ds-pink-quinary bold">
-              {freePlan.marketingName}
+              {freePlan?.marketingName}
             </h3>
             <h2 className="text-5xl bold mb-8">Free</h2>
             <BenefitList
-              benefits={freePlan.benefits}
+              benefits={freePlan?.benefits}
               iconName="check"
               iconColor="text-ds-pink-quinary"
             />

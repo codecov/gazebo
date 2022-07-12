@@ -19,7 +19,7 @@ function shouldRenderCancelLink(accountDetails, plan) {
   if (isFreePlan(plan?.value)) return false
 
   // plan is already set for cancellation
-  if (accountDetails.subscriptionDetail?.cancelAtPeriodEnd) return false
+  if (accountDetails?.subscriptionDetail?.cancelAtPeriodEnd) return false
 
   return true
 }
@@ -30,14 +30,14 @@ function UpgradePlan({ provider, owner }) {
   const { billingAndUsers } = useNavLinks()
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
 
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails.plan
+  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
 
   return (
     <>
       <BackLink
         to={billingAndUsers.path()}
-        useRouter={!billingAndUsers.isExternalLink}
-        textLink={billingAndUsers.text}
+        useRouter={!billingAndUsers?.isExternalLink}
+        textLink={billingAndUsers?.text}
       />
       {/* TODO: Refactor this layout to be it's own reusable component (also used in CurrentPlanCard and the CancelPlan card) */}
       <div className="flex gap-8">
@@ -47,16 +47,16 @@ function UpgradePlan({ provider, owner }) {
               <img src={parasolImg} alt="parasol" />
             </div>
             <h3 className="text-2xl text-ds-pink-quinary bold">
-              {proPlanYear.marketingName}
+              {proPlanYear?.marketingName}
             </h3>
-            <h2 className="text-5xl bold">${proPlanYear.baseUnitPrice}*</h2>
+            <h2 className="text-5xl bold">${proPlanYear?.baseUnitPrice}*</h2>
             <BenefitList
-              benefits={proPlanYear.benefits}
+              benefits={proPlanYear?.benefits}
               iconName="check"
               iconColor="text-ds-pink-quinary"
             />
             <p className="text-ds-gray-quaternary">
-              *${proPlanMonth.baseUnitPrice} per user / month if paid monthly
+              *${proPlanMonth?.baseUnitPrice} per user / month if paid monthly
             </p>
             {shouldRenderCancelLink(accountDetails, plan) && (
               <A

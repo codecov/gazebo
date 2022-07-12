@@ -13,19 +13,19 @@ import UserManagement from './UserManagement'
 function BillingAndUsers({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const shouldRenderBillingDetails = [
-    accountDetails.planProvider !== 'github',
-    !accountDetails.rootOrganization,
+    accountDetails?.planProvider !== 'github',
+    !accountDetails?.rootOrganization,
   ].every(Boolean)
 
   return (
     <>
       {/* TODO: Will also leave these for later as I'm not sure where they'll belong */}
       <InfoMessageCancellation
-        subscriptionDetail={accountDetails.subscriptionDetail}
+        subscriptionDetail={accountDetails?.subscriptionDetail}
       />
       <InfoMessageStripeCallback />
       <div className="block md:flex flex-wrap justify-between">
-        {accountDetails.plan ? (
+        {accountDetails?.plan ? (
           <>
             {/* TODO: Look into this line below after this is migrated to the 'plan' page as UserManagement will be in its own tab */}
             <div className="sm:mr-4 sm:flex-initial flex-1 max-w-sm gap-4 flex flex-col gap-4">
@@ -33,12 +33,12 @@ function BillingAndUsers({ provider, owner }) {
               {shouldRenderBillingDetails && (
                 <>
                   <PaymentCard
-                    subscriptionDetail={accountDetails.subscriptionDetail}
+                    subscriptionDetail={accountDetails?.subscriptionDetail}
                     provider={provider}
                     owner={owner}
                   />
                   <LatestInvoiceCard
-                    invoice={accountDetails.subscriptionDetail?.latestInvoice}
+                    invoice={accountDetails?.subscriptionDetail?.latestInvoice}
                   />
                 </>
               )}

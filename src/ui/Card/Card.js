@@ -12,22 +12,7 @@ const variantClasses = {
   cancel: 'border border-codecov-red px-12 py-10',
 }
 
-// className="px-12 py-10 pb-4 mb-4"> - Large
-// className="p-6 mb-4" - small
-// className="p-6 mb-4" - small
-// className="p-6 mb-4" - small
-
-// className="w-1/2 p-8"
-// className="p-10 text-codecov-red"
-// className="p-10 text-color-900 md:w-1/2 md:mr-8"
-// className="border border-codecov-red px-12 py-10"
-// className="p-10" (X2)
-// className="p-10 mt-8"
-// className="grow max-w-xl mr-4 px-12 py-10 pb-4"
-// className="shadow divide-y divide-gray-200 divide-solid p-6"
-// className="p-4 mt-4 flex text-sm items-center"
-// className="flex flex-col items-center px-12 py-10"
-
+// TODO: enhance as per https://github.com/codecov/gazebo/pull/1433#discussion_r918864691
 function Card({ children, header, footer, variant = 'default' }) {
   return (
     <article className={variantClasses[variant]}>
@@ -41,7 +26,7 @@ function Card({ children, header, footer, variant = 'default' }) {
 Card.propTypes = {
   header: PropTypes.node,
   footer: PropTypes.node,
-  variant: PropTypes.string,
+  variant: PropTypes.oneOf(['default', 'large', 'cancel']),
 }
 
 export default Card

@@ -8,7 +8,7 @@ import Icon from 'ui/Icon'
 import invoiceImg from './invoice.svg'
 
 function LatestInvoiceCard({ invoice }) {
-  if (!invoice || !invoice.dueDate || !invoice.created) return null
+  if (!invoice || !invoice?.dueDate || !invoice?.created) return null
   return (
     <Card header="Invoices">
       <div className="flex flex-col gap-5">
@@ -20,11 +20,11 @@ function LatestInvoiceCard({ invoice }) {
             </div>
             <div className="text-ds-gray-quaternary">
               <span className="italic">
-                Due date {format(fromUnixTime(invoice.dueDate), 'do MMM')} - $
-                {(invoice.total / 100).toFixed(2)}{' '}
+                Due date {format(fromUnixTime(invoice?.dueDate), 'do MMM')} - $
+                {(invoice?.total / 100).toFixed(2)}{' '}
               </span>
               <A
-                to={{ pageName: 'invoiceDetail', options: { id: invoice.id } }}
+                to={{ pageName: 'invoiceDetail', options: { id: invoice?.id } }}
                 isExternal={false}
               >
                 View

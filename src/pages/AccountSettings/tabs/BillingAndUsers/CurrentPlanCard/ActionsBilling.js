@@ -5,7 +5,7 @@ import { accountDetailsPropType } from 'services/account'
 import Button from 'ui/Button'
 
 function ActionsBilling({ accountDetails, isFreePlan }) {
-  if (accountDetails.planProvider === 'github') {
+  if (accountDetails?.planProvider === 'github') {
     return (
       <div className="border-ds-gray-secondary flex flex-col gap-4">
         <hr />
@@ -24,23 +24,23 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
     )
   }
 
-  if (accountDetails.rootOrganization?.username) {
+  if (accountDetails?.rootOrganization?.username) {
     return (
       <div className="flex flex-col gap-4">
         <hr />
         <p className="text-sm">
           This subgroup’s billing is managed by{' '}
-          {accountDetails.rootOrganization.username}.
+          {accountDetails?.rootOrganization?.username}.
         </p>
         <div className="flex self-start">
           <Button
             to={{
               pageName: 'billingAndUsers',
-              options: { owner: accountDetails.rootOrganization.username },
+              options: { owner: accountDetails?.rootOrganization.username },
             }}
             variant="primary"
           >
-            View Billing
+            view billing
           </Button>
         </div>
       </div>

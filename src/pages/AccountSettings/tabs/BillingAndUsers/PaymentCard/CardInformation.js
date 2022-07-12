@@ -43,20 +43,20 @@ function getNextBilling(subscriptionDetail) {
 }
 
 function CardInformation({ subscriptionDetail, openForm, card }) {
-  const typeCard = cardBrand[card.brand] ?? cardBrand.fallback
+  const typeCard = cardBrand[card?.brand] ?? cardBrand?.fallback
   const nextBilling = getNextBilling(subscriptionDetail)
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex gap-4">
         {/* Idk what I think about hardcoding this, thoughts? */}
-        <img className="w-12 h-4" alt="credit card logo" src={typeCard.logo} />
+        <img className="w-12 h-4" alt="credit card logo" src={typeCard?.logo} />
         <div className="flex flex-col">
           <b className="tracking-widest">
-            ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card.last4}
+            ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card?.last4}
           </b>
           <p className="text-ds-gray-quinary">
-            {typeCard.name} - Expires {card.expMonth}/{card.expYear}
+            {typeCard?.name} - Expires {card?.expMonth}/{card?.expYear}
           </p>
         </div>
       </div>

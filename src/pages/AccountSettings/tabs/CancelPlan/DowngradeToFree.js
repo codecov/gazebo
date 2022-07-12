@@ -12,7 +12,7 @@ import Button from 'ui/Button'
 import useBarecancel from './barecancel'
 
 function getEndPeriod(accountDetails) {
-  const unixPeriodEnd = accountDetails.subscriptionDetail?.currentPeriodEnd
+  const unixPeriodEnd = accountDetails?.subscriptionDetail?.currentPeriodEnd
   return (
     unixPeriodEnd &&
     format(fromUnixTime(unixPeriodEnd), 'MMMM do yyyy, h:m aaaa')
@@ -43,12 +43,12 @@ function useCancelSubmit({ provider, owner }) {
 function DowngradeToFree({ accountDetails, provider, owner }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { cancelPlan, isLoading } = useCancelSubmit({ provider, owner })
-  const isAlreadyFreeUser = isFreePlan(accountDetails.plan?.value)
+  const isAlreadyFreeUser = isFreePlan(accountDetails?.plan?.value)
   const isDisabled = [
     // disable button if
     isLoading, // request in fly
     isAlreadyFreeUser, // user is a free user
-    accountDetails.subscriptionDetail?.cancelAtPeriodEnd, // the subscription is already getting cancelled
+    accountDetails?.subscriptionDetail?.cancelAtPeriodEnd, // the subscription is already getting cancelled
   ].some(Boolean)
   const periodEnd = getEndPeriod(accountDetails)
 

@@ -6,7 +6,7 @@ function BenefitList({ benefits, iconName, iconColor }) {
   const iconClassName = `bg-ds-gray-secondary rounded-full list-item-type`
   return (
     <ul className="flex flex-col gap-5">
-      {benefits.map((benefit) => (
+      {benefits?.map((benefit) => (
         <li
           key={benefit}
           className="flex items-center gap-2 text-ds-gray-quinary last:mb-0"

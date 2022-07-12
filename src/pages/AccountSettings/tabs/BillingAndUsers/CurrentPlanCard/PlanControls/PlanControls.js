@@ -5,7 +5,7 @@ import A from 'ui/A'
 import ActionsBilling from '../ActionsBilling'
 
 function PlanControls({ accountDetails }) {
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails.plan
+  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
 
   if (isEnterprisePlan(plan?.value)) {
     return (
