@@ -701,7 +701,7 @@ describe('UserManagerment', () => {
       })
 
       it('Clicking triggers a change', async () => {
-        const toggle = screen.getByText(/Auto activate users/)
+        const toggle = screen.getByText(/Auto-activate members/)
         user.click(toggle)
         await waitFor(() => expect(updateAccountMutate).toHaveBeenCalled())
       })
@@ -744,7 +744,7 @@ describe('UserManagerment', () => {
     })
 
     it('Does not render Auto activate users Toggle', async () => {
-      const toggle = screen.queryByText(/Auto activate users/)
+      const toggle = screen.queryByText(/Auto-activate members/)
       expect(toggle).not.toBeInTheDocument()
     })
   })
@@ -810,6 +810,24 @@ describe('UserManagerment', () => {
       })
       user.click(ActivateBtn)
       expect(mutateMock).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  xdescribe('renders missing members banner', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders the header', () => {
+      expect(screen.getByText('Don’t see a member?')).toBeInTheDocument()
+    })
+
+    it('renders the body', () => {
+      expect(
+        screen.getByText(
+          'It may be because they haven’t logged into Codecov yet. Please make sure they log into Codecov first'
+        )
+      ).toBeInTheDocument()
     })
   })
 })
