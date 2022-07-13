@@ -15,12 +15,12 @@ describe('Toggle', () => {
       setup({ value: true })
     })
 
-    it('renders the blue', () => {
+    it('renders active state', () => {
       const button = screen.getByRole('button')
       expect(button).toHaveClass('bg-ds-blue-darker')
     })
 
-    it('Slides circle to the right', () => {
+    it('Slides circle to the left', () => {
       const button = screen.getByTestId('switch')
       expect(button).toHaveClass('translate-x-5')
     })
@@ -31,7 +31,7 @@ describe('Toggle', () => {
       setup({ value: false })
     })
 
-    it('renders the blue', () => {
+    it('renders inactive state', () => {
       const button = screen.getByRole('button')
       expect(button).toHaveClass('bg-ds-gray-quinary')
     })

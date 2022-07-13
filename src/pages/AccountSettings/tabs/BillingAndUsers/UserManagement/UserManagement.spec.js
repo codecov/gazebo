@@ -629,7 +629,7 @@ describe('UserManagerment', () => {
       expect(DeactivateBtn).toBeInTheDocument()
     })
 
-    it('Switching the toggle activates a user', async () => {
+    it('Switching the toggle deactivates a user', async () => {
       const ActivateBtn = screen.getByRole('button', {
         name: 'Activated',
       })
