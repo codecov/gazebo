@@ -8,9 +8,9 @@ import * as svgSolid from './svg/solid'
 
 const IconClasses = {
   sm: 'w-4 h-4',
+  flex: 'w-5 h-5',
   md: 'w-6 h-6',
   lg: 'w-16 h-16',
-  default: '',
 }
 
 const IconCollection = {
@@ -29,7 +29,7 @@ Icon.propTypes = {
   /* To add more icons, update /scripts/icons.js and run "npm run generate-icons"*/
   name: PropType.string.isRequired,
   variant: PropType.oneOf(['outline', 'solid', 'developer']),
-  size: PropType.oneOf(['sm', 'md', 'lg', 'default']),
+  size: PropType.oneOf(['sm', 'md', 'lg', 'flex']),
 }
 
 export default Icon
