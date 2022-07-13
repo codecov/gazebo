@@ -15,7 +15,6 @@ function useNavLinks() {
     gazeboPullsTab,
     gazeboSettingsTab,
     gazeboOverviewTab,
-    gazeboFlagsTab,
   } = useFlags({
     gazeboRepoTabs: false,
     gazeboPullRequestPage: false,
@@ -23,7 +22,6 @@ function useNavLinks() {
     gazeboPullsTab: false,
     gazeboSettingsTab: false,
     gazeboOverviewTab: false,
-    gazeboFlagsTab: false,
   })
 
   const utmCookie = Cookie.get('utmParams')
@@ -247,7 +245,7 @@ function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/flags`,
-      isExternalLink: gazeboFlagsTab,
+      isExternalLink: false,
       text: 'Flags',
     },
     branches: {

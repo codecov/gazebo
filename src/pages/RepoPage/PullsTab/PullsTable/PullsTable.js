@@ -10,33 +10,41 @@ import { PullRequestType } from '../types'
 
 const headers = [
   {
-    Header: 'Name',
-    accessor: 'title',
+    id: 'title',
+    header: 'Name',
+    accessorKey: 'title',
     width: 'w-6/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: (
+    id: 'coverage',
+    header: (
       <span className="w-full text-right">
         Coverage on <span className="font-light">HEAD</span>
       </span>
     ),
-    accessor: 'coverage',
+    accessorKey: 'coverage',
     width: 'w-3/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: (
+    id: 'change',
+    header: (
       <span className="w-full text-sm text-right">
         Change from <span className="font-light">BASE</span>
       </span>
     ),
-    accessor: 'change',
+    accessorKey: 'change',
     width: 'w-3/12',
+    cell: (info) => info.getValue(),
   },
 ]
 
 const handleOnNull = () => {
   return {
     title: <span className="text-sm">we can&apos;t find this pull</span>,
+    coverage: null,
+    change: null,
   }
 }
 
@@ -46,6 +54,8 @@ function transformPullToTable(pulls) {
     return [
       {
         title: <span className="text-sm">no results found</span>,
+        coverage: null,
+        change: null,
       },
     ]
   }

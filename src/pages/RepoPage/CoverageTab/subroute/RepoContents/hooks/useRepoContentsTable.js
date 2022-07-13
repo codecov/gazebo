@@ -9,7 +9,7 @@ import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
 
-function createTable({ tableData, branch, path, isSearching }) {
+function createTableData({ tableData, branch, path, isSearching }) {
   return tableData?.length > 0
     ? tableData.map(
         ({
@@ -40,13 +40,21 @@ function createTable({ tableData, branch, path, isSearching }) {
 
 const headers = [
   {
-    Header: 'Files',
-    accessor: 'name',
+    id: 'name',
+    header: 'Files',
+    accessorKey: 'name',
+    cell: (info) => info.getValue(),
     width: 'w-9/12 min-w-min',
   },
   {
-    Header: <span className="w-full text-right">file coverage %</span>,
-    accessor: 'coverage',
+    id: 'coverage',
+    header: (
+      <span className="flex flex-row-reverse grow text-right">
+        file coverage %
+      </span>
+    ),
+    accessorKey: 'coverage',
+    cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
   },
 ]
@@ -102,7 +110,7 @@ function useRepoContentsTable() {
 
   const data = useMemo(
     () =>
-      createTable({
+      createTableData({
         tableData: repoContents,
         branch: branch || defaultBranch,
         path,

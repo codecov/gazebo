@@ -1,88 +1,91 @@
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import React, { useEffect } from 'react'
-import { useFlexLayout, useSortBy, useTable } from 'react-table'
+import React, { useEffect, useState } from 'react'
 
 import Icon from 'ui/Icon'
 
 const TableClasses = {
   headerCell:
     'py-2 text-sm flex font-semibold px-3.5 text-ds-gray-quinary gap-1 items-center',
-  headerRow: 'text-left border-t border-b border-ds-black-secondary',
-  tableRow: 'border-t border-ds-black-secondary',
+  headerRow:
+    'flex flex-row text-left border-t border-b border-ds-black-secondary',
+  tableRow: 'flex flex-row border-t border-ds-black-secondary',
   tableCell:
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
 
-function Table({ data = [], columns = [], onSort }) {
+function Table({ data, columns, onSort }) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    state: { sortBy },
-  } = useTable(
-    {
-      columns: _columns,
-      data: _data,
-      manualSortBy: true,
-      disableSortBy: !Boolean(onSort),
+  const [sorting, setSorting] = useState([])
+
+  const table = useReactTable({
+    data: _data,
+    columns: _columns,
+    state: {
+      sorting,
     },
-    useFlexLayout,
-    useSortBy
-  )
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+  })
 
   useEffect(() => {
-    if (Boolean(onSort)) {
-      onSort(sortBy)
+    if (!!onSort) {
+      onSort(sorting)
     }
-  }, [onSort, sortBy])
+  }, [onSort, sorting])
 
   const columnsWidth = columns.reduce(
-    (acc, current) => ({ ...acc, [current.accessor]: current.width }),
+    (acc, current) => ({ ...acc, [current.accessorKey]: current.width }),
     {}
   )
 
   return (
     <div className="text-ds-gray-quaternary overflow-x-auto">
-      <table className="w-full mx-4 sm:mx-0" {...getTableProps()}>
+      <table className="flex flex-col mx-4 sm:mx-0">
         <thead data-testid="header-row">
           {
             // Loop over the header rows
-            headerGroups.map((headerGroup, key) => (
-              <tr
-                key={key}
-                className={TableClasses.headerRow}
-                {...headerGroup.getHeaderGroupProps()}
-              >
+            table.getHeaderGroups().map((headerGroup, key) => (
+              <tr key={key} className={TableClasses.headerRow}>
                 {
                   // Loop over the headers in each row
-                  headerGroup.headers.map((column, key) => {
+                  headerGroup.headers.map((header, key) => {
                     return (
                       <th
                         key={key}
                         className={cs(
                           TableClasses.headerCell,
-                          columnsWidth[column.id]
-                        )}
-                        {...column.getHeaderProps(
-                          column.getSortByToggleProps()
+                          columnsWidth[header.id]
                         )}
                       >
-                        {column.render('Header')}
-                        {column.isSorted && (
-                          <span className="text-ds-blue-darker">
-                            <Icon
-                              name={
-                                column.isSortedDesc ? 'arrow-down' : 'arrow-up'
+                        <div
+                          {...(!!onSort && {
+                            className:
+                              'flex flex-row grow gap-1 items-center cursor-pointer select-none',
+                            onClick: header.column.getToggleSortingHandler(),
+                          })}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getIsSorted() && (
+                            <span className="text-ds-blue-darker">
+                              {
+                                {
+                                  asc: <Icon name="arrow-up" size="sm" />,
+                                  desc: <Icon name="arrow-down" size="sm" />,
+                                }[header.column.getIsSorted()]
                               }
-                              size="sm"
-                            />
-                          </span>
-                        )}
+                            </span>
+                          )}
+                        </div>
                       </th>
                     )
                   })
@@ -92,30 +95,27 @@ function Table({ data = [], columns = [], onSort }) {
           }
         </thead>
         {/* Apply the table body props */}
-        <tbody data-testid="body-row" {...getTableBodyProps()}>
+        <tbody data-testid="body-row">
           {
             // Loop over the table rows
-            rows.map((row, key) => {
-              prepareRow(row)
+            table.getRowModel().rows.map((row) => {
               return (
-                <tr
-                  key={key}
-                  className={TableClasses.tableRow}
-                  {...row.getRowProps()}
-                >
+                <tr key={row.id} className={TableClasses.tableRow}>
                   {
                     // Loop over the rows cells
-                    row.cells.map((cell, key) => {
+                    row.getVisibleCells().map((cell) => {
                       return (
                         <td
-                          key={key}
+                          key={cell.id}
                           className={cs(
                             TableClasses.tableCell,
-                            columnsWidth[cell.column.id]
+                            columnsWidth[cell.column.columnDef.accessorKey]
                           )}
-                          {...cell.getCellProps()}
                         >
-                          {cell.render('Cell')}
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
                         </td>
                       )
                     })

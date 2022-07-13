@@ -11,24 +11,32 @@ import Card from '../Card'
 
 const tableColumns = [
   {
-    Header: <span>Name</span>,
-    accessor: 'col1',
+    id: 'name',
+    header: <span>Name</span>,
+    accessorKey: 'name',
     width: 'w-4/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">HEAD %</span>,
-    accessor: 'col2',
+    id: 'headCoverage',
+    header: <span className="w-full text-right">HEAD %</span>,
+    accessorKey: 'headCoverage',
     width: 'w-3/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">Patch %</span>,
-    accessor: 'col3',
+    id: 'patchCoverage',
+    header: <span className="w-full text-right">Patch %</span>,
+    accessorKey: 'patchCoverage',
     width: 'w-3/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">+/-</span>,
-    accessor: 'col4',
+    id: 'changeCoverage',
+    header: <span className="w-full text-right">+/-</span>,
+    accessorKey: 'changeCoverage',
     width: 'w-3/12',
+    cell: (info) => info.getValue(),
   },
 ]
 
@@ -47,22 +55,22 @@ function getTableData(data) {
         headCoverage && baseCoverage && headCoverage - baseCoverage
 
       return {
-        col1: (
+        name: (
           <h2 key={name} className="break-words w-24">
             {name}
           </h2>
         ),
-        col2: (
+        headCoverage: (
           <div className="w-full flex justify-end">
             <TotalsNumber value={headCoverage} plain light />
           </div>
         ),
-        col3: (
+        patchCoverage: (
           <div className="w-full flex justify-end">
             <TotalsNumber value={patchCoverage} plain light />
           </div>
         ),
-        col4: (
+        changeCoverage: (
           <div className="w-full flex justify-end">
             <TotalsNumber
               value={changeCoverage}
