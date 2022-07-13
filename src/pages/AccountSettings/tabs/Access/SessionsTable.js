@@ -6,37 +6,45 @@ import Table from 'ui/Table'
 
 const tableColumns = [
   {
-    Header: 'IP',
-    accessor: 'col1',
+    id: 'ip',
+    header: 'IP',
+    accessorKey: 'ip',
     width: 'w-3/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: 'Last Seen',
-    accessor: 'col2',
+    id: 'lastSeen',
+    header: 'Last Seen',
+    accessorKey: 'lastSeen',
     width: 'w-2/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: 'User Agent',
-    accessor: 'col3',
+    id: 'userAgent',
+    header: 'User Agent',
+    accessorKey: 'userAgent',
     width: 'w-6/12',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: '',
-    accessor: 'col4',
+    id: 'revokeBtn',
+    header: '',
+    accessorKey: 'revokeBtn',
     width: 'w-1/6',
+    cell: (info) => info.getValue(),
   },
 ]
 
 function SessionsTable({ sessions, onRevoke }) {
   const dataTable = sessions.map((s) => ({
-    col1: (
+    ip: (
       <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">
         {s.ip}
       </p>
     ),
-    col2: s.lastseen ? formatTimeToNow(s.lastseen) : '-',
-    col3: s.useragent,
-    col4: (
+    lastSeen: s.lastseen ? formatTimeToNow(s.lastseen) : '-',
+    userAgent: s.useragent,
+    revokeBtn: (
       <Button
         hook="revoke-session"
         onClick={() => onRevoke(s.sessionid)}

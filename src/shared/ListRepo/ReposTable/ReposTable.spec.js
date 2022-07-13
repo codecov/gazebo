@@ -53,6 +53,7 @@ describe('ReposTable', () => {
         repos: [
           {
             private: false,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -63,6 +64,7 @@ describe('ReposTable', () => {
           },
           {
             private: true,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -73,6 +75,7 @@ describe('ReposTable', () => {
           },
           {
             private: true,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -144,6 +147,7 @@ describe('ReposTable', () => {
         repos: [
           {
             private: false,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -154,6 +158,7 @@ describe('ReposTable', () => {
           },
           {
             private: true,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -164,6 +169,7 @@ describe('ReposTable', () => {
           },
           {
             private: true,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -229,6 +235,7 @@ describe('ReposTable', () => {
         repos: [
           {
             private: false,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -239,6 +246,7 @@ describe('ReposTable', () => {
           },
           {
             private: true,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -249,6 +257,7 @@ describe('ReposTable', () => {
           },
           {
             private: true,
+            activated: true,
             author: {
               username: 'owner1',
             },
@@ -332,6 +341,7 @@ describe('ReposTable', () => {
         repos: [
           {
             private: false,
+            activated: true,
             author: {
               username: 'owner1',
             },
