@@ -49,7 +49,6 @@ function CardInformation({ subscriptionDetail, openForm, card }) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex gap-4">
-        {/* Idk what I think about hardcoding this, thoughts? */}
         <img
           className="w-16 h-auto self-center"
           alt="credit card logo"

@@ -36,11 +36,11 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
           <Button
             to={{
               pageName: 'billingAndUsers',
-              options: { owner: accountDetails?.rootOrganization.username },
+              options: { owner: accountDetails?.rootOrganization?.username },
             }}
             variant="primary"
           >
-            view billing
+            View Billing
           </Button>
         </div>
       </div>
