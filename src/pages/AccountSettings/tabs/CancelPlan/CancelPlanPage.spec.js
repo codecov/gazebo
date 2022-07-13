@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useAccountDetails, useCancelPlan, usePlans } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 
-import CancelPlan from './CancelPlan'
+import CancelPlan from './CancelPlanPage'
 
 jest.mock('services/account/hooks')
 jest.mock('services/toastNotification')
@@ -17,7 +17,7 @@ const owner = 'codecov'
 const proPlan = {
   marketingName: 'Pro Team',
   baseUnitPrice: 12,
-  benefits: ['Configureable # of users', 'Unlimited repos'],
+  benefits: ['Configurable # of users', 'Unlimited repos'],
   quantity: 5,
   value: 'users-inappm',
 }
@@ -57,10 +57,10 @@ describe('CancelPlan', () => {
     })
     useCancelPlan.mockReturnValue({ mutate, isLoading: false })
     const { unmount } = render(
-      <MemoryRouter initialEntries={['/my/initial/route']}>
+      <MemoryRouter initialEntries={['/account/gh/codecov/billing/cancel']}>
         <CancelPlan provider={provider} owner={owner} />
         <Route
-          path="*"
+          path="/account/:owner/:provider/*"
           render={({ location }) => {
             testLocation = location
             return null
@@ -88,7 +88,7 @@ describe('CancelPlan', () => {
     })
 
     it('loads the baremetrics script', () => {
-      expect(window.barecancel.created).toBeTruthy()
+      expect(screen.getByTestId('baremetrics-script')).toBeInTheDocument()
     })
   })
 
@@ -109,10 +109,8 @@ describe('CancelPlan', () => {
         userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
       })
 
-      it('closes the modal', () => {
-        expect(
-          screen.queryByText(/Are you sure you want to cancel your plan?/)
-        ).not.toBeInTheDocument()
+      it('Sends the user to the billing and management page', () => {
+        expect(testLocation.pathname).toEqual('/account/gh/codecov/billing')
       })
     })
 
@@ -167,7 +165,7 @@ describe('CancelPlan', () => {
     it('adds an error notification', () => {
       expect(addNotification).toHaveBeenCalledWith({
         type: 'error',
-        text: 'Something went wrong',
+        text: 'Something went wrong, we were unable to cancel your plan. Please reach out to support.',
       })
     })
   })
@@ -213,10 +211,10 @@ function getPlans() {
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
-        'Priorty Support',
+        'Priority Support',
       ],
     },
     {
@@ -225,10 +223,10 @@ function getPlans() {
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
-        'Priorty Support',
+        'Priority Support',
       ],
     },
     {
@@ -237,10 +235,10 @@ function getPlans() {
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
-        'Priorty Support',
+        'Priority Support',
       ],
     },
     {
@@ -249,10 +247,10 @@ function getPlans() {
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
-        'Priorty Support',
+        'Priority Support',
       ],
     },
   ]

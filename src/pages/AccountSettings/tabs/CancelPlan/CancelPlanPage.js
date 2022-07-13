@@ -2,16 +2,15 @@ import difference from 'lodash/difference'
 import PropType from 'prop-types'
 
 import Card from 'old_ui/Card'
+import BackLink from 'pages/AccountSettings/shared/BackLink'
+import BenefitList from 'pages/AccountSettings/shared/BenefitList'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
 
-import DowngradeToFree from './DowngradeToFree'
+import CancelCard from './CancelButton'
 import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
-
-import BackLink from '../../shared/BackLink'
-import BenefitList from '../../shared/BenefitList'
 
 function CancelPlan({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -56,13 +55,20 @@ function CancelPlan({ provider, owner }) {
               You will need to manually reactivate up to five users or ensure
               auto activate is enabled in your plan settings.
             </p>
-            <div className="text-center mt-4">
-              <DowngradeToFree
-                accountDetails={accountDetails}
-                provider={provider}
-                owner={owner}
-              />
-            </div>
+
+            <CancelCard
+              customerId={accountDetails?.subscriptionDetail?.customer}
+              planCost={accountDetails?.plan?.value}
+              upComingCancelation={
+                accountDetails.subscriptionDetail?.cancelAtPeriodEnd
+              }
+              currentPeriodEnd={
+                accountDetails.subscriptionDetail?.currentPeriodEnd
+              }
+              accountDetails={accountDetails}
+              provider={provider}
+              owner={owner}
+            />
           </Card>
         </div>
         <div className="col-span-5">
