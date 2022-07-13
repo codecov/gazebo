@@ -35,14 +35,18 @@ const useRepoOverviewMock = {
 
 const headers = [
   {
-    Header: 'Files',
-    accessor: 'name',
+    id: 'name',
+    header: 'Files',
+    accessorKey: 'name',
     width: 'w-9/12 min-w-min',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">file coverage %</span>,
-    accessor: 'coverage',
+    id: 'coverage',
+    header: <span className="w-full text-right">file coverage %</span>,
+    accessorKey: 'coverage',
     width: 'w-3/12 min-w-min',
+    cell: (info) => info.getValue(),
   },
 ]
 
@@ -121,12 +125,14 @@ describe('RepoContentsTableMocked', () => {
     it('calls handleSort', async () => {
       screen.getByText(/Files/).click()
       await waitFor(() =>
-        expect(handleSort).toHaveBeenCalledWith([{ desc: false, id: 'name' }])
+        expect(handleSort).toHaveBeenLastCalledWith([
+          { desc: true, id: 'name' },
+        ])
       )
       screen.getByText(/file coverage/).click()
       await waitFor(() =>
-        expect(handleSort).toHaveBeenCalledWith([
-          { desc: false, id: 'coverage' },
+        expect(handleSort).toHaveBeenLastCalledWith([
+          { desc: true, id: 'coverage' },
         ])
       )
     })

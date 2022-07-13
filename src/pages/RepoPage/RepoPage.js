@@ -11,16 +11,22 @@ import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
 
+import { useFlags } from '../../shared/featureFlags'
+
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
 const PullsTab = lazy(() => import('./PullsTab'))
+const FlagsTab = lazy(() => import('./FlagsTab'))
 
 const path = '/:provider/:owner/:repo'
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
 
+  const { gazeboFlagsTab } = useFlags({
+    gazeboFlagsTab: false,
+  })
   const { data: currentOwner } = useOwner({ username: owner })
   const { isCurrentUserPartOfOrg } = currentOwner
 
@@ -48,6 +54,7 @@ function RepoPage() {
                 children: 'Coverage',
                 exact: !matchTree && !matchBlobs,
               },
+              ...(gazeboFlagsTab ? [{ pageName: 'flagsTab' }] : []),
               { pageName: 'commits' },
               { pageName: 'pulls' },
               ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
@@ -62,6 +69,9 @@ function RepoPage() {
             {/* TODO: Move to it's own layout */}
             <Route path={`${path}/new`} exact>
               <NewRepoTab />
+            </Route>
+            <Route path={`${path}/flags`} exact>
+              <FlagsTab />
             </Route>
             <Route path={`${path}/commits`} exact>
               <CommitsTab />

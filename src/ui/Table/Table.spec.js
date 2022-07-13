@@ -21,16 +21,19 @@ const data = [
 ]
 const columns = [
   {
-    Header: 'Header 1',
-    accessor: 'col1',
+    header: 'Header 1',
+    accessorKey: 'col1',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: 'Header 2',
-    accessor: 'col2',
+    header: 'Header 2',
+    accessorKey: 'col2',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: 'Header 3',
-    accessor: 'col3',
+    header: 'Header 3',
+    accessorKey: 'col3',
+    cell: (info) => info.getValue(),
   },
 ]
 
@@ -89,19 +92,22 @@ describe('Table', () => {
     it('renders table with full variant', () => {
       const _columns = [
         {
-          Header: 'Header 1',
-          accessor: 'col1',
+          header: 'Header 1',
+          accessorKey: 'col1',
           width: 'w-1/12',
+          cell: (info) => info.getValue(),
         },
         {
-          Header: 'Header 2',
-          accessor: 'col2',
+          header: 'Header 2',
+          accessorKey: 'col2',
           width: 'w-6/12',
+          cell: (info) => info.getValue(),
         },
         {
-          Header: 'Header 3',
-          accessor: 'col3',
+          header: 'Header 3',
+          accessorKey: 'col3',
           width: 'w-5/12',
+          cell: (info) => info.getValue(),
         },
       ]
       render(<Table data={data} columns={_columns} />)
@@ -128,6 +134,11 @@ describe('Table', () => {
       const header = screen.getByText('Header 1')
       header.click()
       expect(within(header).getByText('arrow-up.svg')).toBeInTheDocument()
+      header.click()
+      expect(within(header).getByText('arrow-down.svg')).toBeInTheDocument()
+      header.click()
+      expect(within(header).queryByText('arrow-up.svg')).toBeNull()
+      expect(within(header).queryByText('arrow-down.svg')).toBeNull()
     })
   })
 })
