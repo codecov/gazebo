@@ -11,6 +11,7 @@ describe('RepoTitleLink', () => {
       username: 'owner1',
     },
     private: true,
+    activated: true,
   }
 
   function setup(props) {
@@ -62,6 +63,28 @@ describe('RepoTitleLink', () => {
 
     it('doesnt render the private tag', () => {
       expect(screen.queryByText(/Private/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the repository is deactivated', () => {
+    beforeEach(() => {
+      setup({
+        repo: {
+          ...repo,
+          private: false,
+          activated: false,
+        },
+        showRepoOwner: false,
+        pageName: 'repo',
+      })
+    })
+
+    it('renders the title', () => {
+      expect(screen.getByText(/repo1/)).toBeInTheDocument()
+    })
+
+    it('renders the deactivated tag', () => {
+      expect(screen.getByText(/Deactivated/)).toBeInTheDocument()
     })
   })
 

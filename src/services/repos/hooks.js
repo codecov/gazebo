@@ -10,6 +10,7 @@ const repositoryFragment = `
   fragment RepoForList on Repository {
     name
     active
+    activated
     private
     coverage
     updatedAt
