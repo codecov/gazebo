@@ -154,7 +154,9 @@ function UserManagement({ provider, owner }) {
         activatedUserCount={accountDetails?.activatedUserCount}
         planQuantity={accountDetails?.plan?.quantity}
       />
-      {planAutoActivate && <AutoActivate planAutoActivate={planAutoActivate} />}
+      {planAutoActivate !== undefined && (
+        <AutoActivate planAutoActivate={planAutoActivate} />
+      )}
       <Banner title="Don’t see a member?">
         <p className="font-light">
           It may be because they haven’t logged into Codecov yet. Please make
