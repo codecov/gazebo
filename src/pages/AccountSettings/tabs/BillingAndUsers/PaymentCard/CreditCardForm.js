@@ -29,7 +29,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
     })
   }
 
-  const inputClass = 'bg-ds-gray-primary py-3 px-4 rounded-full '
+  const inputClass = 'bg-ds-gray-primary py-3 px-4 rounded '
   const resetError = error && reset
 
   return (
