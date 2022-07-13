@@ -37,6 +37,11 @@ describe('UpgradePlanPage', () => {
       const title = screen.getAllByText(/Pro Team/)[0]
       expect(title).toBeInTheDocument()
     })
+
+    it('renders a cancel plan link', () => {
+      const cancelLink = screen.getByText('Cancel plan')
+      expect(cancelLink).toBeInTheDocument()
+    })
   })
 })
 

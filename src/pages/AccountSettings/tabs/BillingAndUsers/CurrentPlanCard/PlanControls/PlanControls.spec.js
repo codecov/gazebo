@@ -25,18 +25,6 @@ describe('PlanPricing', () => {
     })
   }
 
-  describe('user is not on an enterprise plan', () => {
-    beforeEach(() => {
-      setup('users-pr-inappm')
-    })
-
-    it('renders link to cancel plan', () => {
-      expect(
-        screen.getByRole('link', { name: 'Cancel Plan' })
-      ).toBeInTheDocument()
-    })
-  })
-
   describe('user is on an enterprise plan', () => {
     describe('user is on a monthly plan', () => {
       beforeEach(() => {
