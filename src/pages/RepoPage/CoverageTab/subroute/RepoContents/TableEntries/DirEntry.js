@@ -25,7 +25,7 @@ function DirEntry({ branch, name, path }) {
 DirEntry.propTypes = {
   branch: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired,
+  path: PropTypes.string,
 }
 
 export default DirEntry

@@ -12,6 +12,8 @@ import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
 
+import { useFlags } from '../../shared/featureFlags'
+
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
@@ -20,22 +22,33 @@ const FlagsTab = lazy(() => import('./FlagsTab'))
 
 const path = '/:provider/:owner/:repo'
 
+const shouldShowFlagsTab = ({ gazeboFlagsTab, isRepoActivated }) =>
+  gazeboFlagsTab && isRepoActivated
+
 const getRepoTabs = ({
   matchTree,
   matchBlobs,
   isRepoActivated,
   isCurrentUserPartOfOrg,
+  gazeboFlagsTab,
 }) => [
   {
     pageName: 'overview',
     children: 'Coverage',
     exact: !matchTree && !matchBlobs,
   },
-  ...(isRepoActivated
-    ? [{ pageName: 'flagsTab' }, { pageName: 'commits' }, { pageName: 'pulls' }]
+  ...(shouldShowFlagsTab({ gazeboFlagsTab, isRepoActivated })
+    ? [{ pageName: 'flagsTab' }]
     : []),
+  ...(isRepoActivated ? [{ pageName: 'commits' }, { pageName: 'pulls' }] : []),
   ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
 ]
+
+const Loader = (
+  <div className="flex-1 flex items-center justify-center mt-16">
+    <LogoSpinner />
+  </div>
+)
 
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -43,6 +56,10 @@ function RepoPage() {
     provider,
     owner,
     repo,
+  })
+
+  const { gazeboFlagsTab } = useFlags({
+    gazeboFlagsTab: false,
   })
 
   const { data: currentOwner } = useOwner({ username: owner })
@@ -53,11 +70,6 @@ function RepoPage() {
   const matchBlobs = useMatchBlobsPath()
 
   const repoHasCommits = data?.commits?.length > 0
-  const Loader = (
-    <div className="flex-1 flex items-center justify-center mt-16">
-      <LogoSpinner />
-    </div>
-  )
 
   return (
     <RepoBreadcrumbProvider>
@@ -70,6 +82,7 @@ function RepoPage() {
               matchBlobs,
               isRepoActivated: repoData?.repository?.activated,
               isCurrentUserPartOfOrg,
+              gazeboFlagsTab,
             })}
           />
         )}
