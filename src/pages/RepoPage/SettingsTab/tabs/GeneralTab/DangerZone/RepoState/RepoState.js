@@ -1,22 +1,23 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
+import { useRepoSettings } from 'services/repo'
 import Button from 'ui/Button'
 
 import DeactivateRepoModal from './DeactiveRepoModal'
 import useRepoActivation from './useRepoActivation'
-
-import { ActivationStatusContext } from '../../Context'
 
 const ActivationStatus = Object.freeze({
   DEACTIVATED: { TITLE: 'Repo has been deactivated', LABEL: 'Activate' },
   ACTIVATED: { TITLE: 'Deactivate repo', LABEL: 'Deactivate' },
 })
 
-function DeactivateRepo() {
+function RepoState() {
+  const { data } = useRepoSettings()
+  const repository = data?.repository
   const [showModal, setShowModal] = useState(false)
-  const { activateOrDeactivateRepo, isLoading, data } = useRepoActivation()
-  const active = useContext(ActivationStatusContext)
-  const activated = data?.active !== undefined ? data.active : active
+  const { toggleRepoState, isLoading } = useRepoActivation()
+
+  const activated = repository?.activated
 
   return activated ? (
     <div className="flex">
@@ -36,7 +37,7 @@ function DeactivateRepo() {
         {showModal && (
           <DeactivateRepoModal
             closeModal={() => setShowModal(false)}
-            deactivateRepo={activateOrDeactivateRepo}
+            deactivateRepo={toggleRepoState}
             isLoading={isLoading}
             activated={activated}
           />
@@ -52,7 +53,7 @@ function DeactivateRepo() {
         <Button
           variant="primary"
           hook="update-repo"
-          onClick={() => activateOrDeactivateRepo(activated)}
+          onClick={() => toggleRepoState(activated)}
           disabled={isLoading}
         >
           {ActivationStatus.DEACTIVATED.LABEL}
@@ -62,4 +63,4 @@ function DeactivateRepo() {
   )
 }
 
-export default DeactivateRepo
+export default RepoState
