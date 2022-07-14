@@ -64,7 +64,7 @@ function App() {
                 <AnalyticsPage />
               </BaseLayout>
             </Route>
-            <Route path="/:provider/feedback" exact>
+            <Route path="/:provider/feedback">
               <BaseLayout>
                 <FeedbackPage />
               </BaseLayout>
