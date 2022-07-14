@@ -16,7 +16,7 @@ function MemberActivation({ activatedUserCount, planQuantity }) {
           avaialbe seats{' '}
           <span className="text-xs">
             <A to={{ pageName: 'upgradePlan' }} variant="semibold">
-              Change plan
+              change plan
             </A>
           </span>
         </p>
