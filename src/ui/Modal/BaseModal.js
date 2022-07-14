@@ -16,7 +16,7 @@ function BaseModal({
         <h2 className="font-semibold text-3xl">{title}</h2>
         {hasCloseButton && (
           <span
-            className="cursor-pointer fill-current text-ds-gray-septenary"
+            className="cursor-pointer fill-current text-ds-gray-octonary"
             onClick={onClose}
             aria-label="Close"
           >

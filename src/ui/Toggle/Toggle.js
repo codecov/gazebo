@@ -14,7 +14,7 @@ const ToggleClasses = {
 function Toggle({ label, value = false, onClick }) {
   const ID = uniqueId('toggle')
   return (
-    <div onClick={onClick} className="flex gap-2">
+    <div onClick={onClick} className="flex gap-1.5 items-center">
       {label && (
         <label htmlFor={ID} className="cursor-pointer">
           {label}
@@ -43,7 +43,7 @@ function Toggle({ label, value = false, onClick }) {
               'text-ds-gray-quinary': !value,
             })}
           >
-            <Icon name={value ? 'check' : 'x'} variant="solid" size="default" />
+            <Icon name={value ? 'check' : 'x'} variant="solid" size="flex" />
           </div>
         </span>
       </button>
