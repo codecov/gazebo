@@ -3,41 +3,43 @@ import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepo, useUpdateRepo } from 'services/repo'
+import { useRepoSettings, useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
-import DeactivateRepo from './DeactivateRepo'
+import RepoState from './RepoState'
 
 jest.mock('services/repo')
 jest.mock('services/toastNotification')
 
-describe('DeactivateRepo', () => {
+describe('RepoState', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
 
-  function setup(active = false) {
+  function setup(activated = false, newDataActivated = false) {
+    useRepoSettings.mockReturnValue({
+      data: {
+        repository: {
+          activated: activated,
+        },
+      },
+    })
     useAddNotification.mockReturnValue(addNotification)
+
     useUpdateRepo.mockReturnValue({
       isLoading: false,
       mutate,
-      data: {
-        active,
-      },
-    })
-    useRepo.mockReturnValue({
-      repository: { active },
     })
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
         <Route path="/:provider/:owner/:repo/settings">
-          <DeactivateRepo />
+          <RepoState />
         </Route>
       </MemoryRouter>
     )
   }
 
-  describe('renders DeactivateRepo componenet', () => {
+  describe('renders DeactivateRepo component', () => {
     beforeEach(() => {
       setup()
     })
@@ -69,7 +71,7 @@ describe('DeactivateRepo', () => {
       setup(true)
     })
 
-    it('displays deactive button', () => {
+    it('displays deactivate button', () => {
       expect(
         screen.getByRole('button', { name: 'Deactivate' })
       ).toBeInTheDocument()
@@ -112,7 +114,7 @@ describe('DeactivateRepo', () => {
       })
 
       describe('when user clicks on Deactivate button', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           userEvent.click(
             screen.getByRole('button', { name: 'Deactivate repo' })
           )
