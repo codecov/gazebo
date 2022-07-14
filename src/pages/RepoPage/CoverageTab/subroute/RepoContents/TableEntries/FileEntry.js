@@ -40,10 +40,10 @@ function FileEntry({
 FileEntry.propTypes = {
   branch: PropTypes.string.isRequired,
   filePath: PropTypes.string.isRequired,
-  isCriticalFile: PropTypes.bool.isRequired,
+  isCriticalFile: PropTypes.bool,
   isSearching: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired,
+  path: PropTypes.string,
 }
 
 export default FileEntry

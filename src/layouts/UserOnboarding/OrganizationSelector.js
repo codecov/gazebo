@@ -97,7 +97,7 @@ function usePerStepProp({ onSelect, onOnboardingSkip, currentUser }) {
       helpFindingOrganization,
     }),
     1: {
-      title: 'Which repo are working with today?',
+      title: 'Which repo are you working with today?',
       body: selectedOrg && (
         <RepositoriesList
           organization={selectedOrg}
