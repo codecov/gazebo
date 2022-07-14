@@ -35,13 +35,15 @@ describe('TruncatedMessage', () => {
     })
 
     it('has scrollWidth of 500', () => {
-      expect(screen.getByTestId('truncate-message')).toHaveProperty(
+      expect(screen.getByTestId('truncate-message-pre')).toHaveProperty(
         'scrollWidth',
         500
       )
     })
     it('adds line-clamp-1 class to truncate message pre tag', () => {
-      expect(screen.getByTestId('truncate-message')).toHaveClass('line-clamp-1')
+      expect(screen.getByTestId('truncate-message-pre')).toHaveClass(
+        'line-clamp-1'
+      )
     })
 
     it('renders the expand button', () => {

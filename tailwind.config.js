@@ -19,6 +19,7 @@ module.exports = {
             DEFAULT: '#F01F7A',
             secondary: '#FF4A89',
             tertiary: '#D10D62',
+            quinary: '#F01F7A',
           },
           blue: {
             DEFAULT: '#0088E9',
@@ -37,8 +38,8 @@ module.exports = {
             quaternary: '#999FA7',
             quinary: '#68737E',
             senary: '#394754',
-            septenary: '#222F3D',
-            octonary: '#0E1B29',
+            octonary: '#222F3D',
+            nonary: '#0E1B29',
           },
           primary: {
             green: '#27B340',
@@ -50,6 +51,10 @@ module.exports = {
             covered: '#DEFFE8',
             uncovered: '#FFEDF0',
             partial: '#FFF9D8',
+          },
+          error: {
+            quinary: '#FF9B9B',
+            nonary: '#590808',
           },
         },
         codecov: {

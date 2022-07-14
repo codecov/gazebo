@@ -1,25 +1,32 @@
 import PropTypes from 'prop-types'
 
-const styles = {
-  card: 'border border-ds-gray-secondary rounded',
-  header: 'border-b border-ds-gray-secondary p-4',
-  body: 'p-4',
+const baseStyles = {
+  header: 'text-2xl bold mb-4',
   footer: 'border-t border-ds-gray-secondary p-4',
 }
 
-function Card({ children, header, footer }) {
+// TODO: Make a card variant that creates a divisor bw entries, see Card from PullRequestPage
+const variantClasses = {
+  default: 'border border-ds-gray-secondary rounded p-6',
+  large: 'border border-ds-gray-secondary rounded p-12',
+  cancel: 'border border-codecov-red px-12 py-10',
+}
+
+// TODO: enhance as per https://github.com/codecov/gazebo/pull/1433#discussion_r918864691
+function Card({ children, header, footer, variant = 'default' }) {
   return (
-    <div className={styles.card}>
-      {header && <div className={styles.header}>{header}</div>}
-      <div className={styles.body}>{children}</div>
-      {footer && <div className={styles.footer}>{footer}</div>}
-    </div>
+    <article className={variantClasses[variant]}>
+      {header && <div className={baseStyles.header}>{header}</div>}
+      {children}
+      {footer && <div className={baseStyles.footer}>{footer}</div>}
+    </article>
   )
 }
 
 Card.propTypes = {
   header: PropTypes.node,
   footer: PropTypes.node,
+  variant: PropTypes.oneOf(['default', 'large', 'cancel']),
 }
 
 export default Card
