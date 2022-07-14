@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { Canny, CannyLoader } from './cannyUtils'
+import Canny from './Canny'
+import CannyLoader from './CannyLoader'
 
 const errorFunc = (e) => !e
+
 function CannyWidget({ basePath, boardToken, ssoToken }) {
   const [error, setError] = useState(false)
   const [isLoaded, setLoaded] = useState(false)
@@ -21,6 +23,7 @@ function CannyWidget({ basePath, boardToken, ssoToken }) {
         refCanny.current = await loader.load()
         setLoaded(true)
       } catch (err) {
+        console.debug('PLEASE ERROR')
         setError(errorFunc)
       }
     })()

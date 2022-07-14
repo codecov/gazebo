@@ -8,6 +8,33 @@ import CannyWidget from './CannyWidget'
 
 jest.mock('services/user')
 
+jest.mock('./Canny', () => {
+  return jest.fn().mockImplementation(() => {
+    return { render: jest.fn() }
+  })
+})
+
+jest.mock('./CannyLoader', () => {
+  return jest
+    .fn()
+    .mockImplementationOnce(() => {
+      return {
+        load: jest
+          .fn()
+          .mockImplementation(
+            () => new Promise((resolve, reject) => resolve())
+          ),
+      }
+    })
+    .mockImplementationOnce(() => {
+      return {
+        load: jest
+          .fn()
+          .mockImplementation(() => new Promise((resolve, reject) => reject())),
+      }
+    })
+})
+
 const user = {
   cannySSOToken: 'token',
 }
@@ -27,24 +54,9 @@ describe('FeedbackPage', () => {
   describe('renders', () => {
     describe('successfully loads script', () => {
       beforeAll(() => {
-        jest.mock('./cannyUtils', () => {
-          return {
-            CannyLoader: jest.fn().mockImplementation(() => ({
-              load: () => new Promise((resolve) => resolve()),
-            })),
-            Canny: jest.fn().mockImplementation(() => ({
-              render: () => true,
-            })),
-          }
-        })
-
         act(() => {
           setup()
         })
-      })
-
-      afterAll(() => {
-        jest.unmock('./cannyUtils')
       })
 
       it('adds the canny div', async () => {
@@ -57,48 +69,17 @@ describe('FeedbackPage', () => {
     })
 
     describe('failing loads script', () => {
-      beforeAll(() => {
-        jest.mock('./cannyUtils', () => {
-          return {
-            CannyLoader: jest.fn().mockImplementation(() => ({
-              load: () => Promise.reject(),
-            })),
-            Canny: jest.fn().mockImplementation(() => ({
-              render: () => true,
-            })),
-          }
-        })
-        setup()
-      })
+      it('adds the canny div', () => {
+        let error
+        try {
+          act(() => {
+            setup()
+          })
+        } catch (e) {
+          error = e
+        }
 
-      afterAll(() => {
-        jest.unmock('./cannyUtils')
-      })
-
-      it('adds the canny div', async () => {
-        // await expect(
-        //   render(
-        //     <MemoryRouter initialEntries={['/gh/feedback']}>
-        //       <Route path="/:provider/feedback">
-        //         <CannyWidget />
-        //       </Route>
-        //     </MemoryRouter>
-        //   )
-        // ).toThrow('')
-
-        await waitFor(
-          () =>
-            expect(
-              render(
-                <MemoryRouter initialEntries={['/gh/feedback']}>
-                  <Route path="/:provider/feedback">
-                    <CannyWidget />
-                  </Route>
-                </MemoryRouter>
-              )
-            ).toThrow(new Error('')),
-          { interval: 100 }
-        )
+        expect(error.message).toBe('Unable to load Canny scripts')
       })
     })
   })
