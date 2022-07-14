@@ -1,18 +1,4 @@
-export class Canny {
-  canny
-
-  constructor(canny) {
-    this.canny = canny
-  }
-
-  async render(options) {
-    if (this.canny) {
-      this.canny('render', options)
-    }
-  }
-}
-
-export class CannyLoader {
+export default class CannyLoader {
   get Canny() {
     return window.Canny
   }

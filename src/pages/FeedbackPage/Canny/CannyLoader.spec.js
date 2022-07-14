@@ -1,12 +1,4 @@
-import { Canny, CannyLoader } from './cannyUtils'
-
-describe('Canny', () => {
-  const canny = new Canny({})
-
-  it('defines render()', () => {
-    expect(typeof canny.render).toBe('function')
-  })
-})
+import CannyLoader from './CannyLoader'
 
 describe('CannyLoader', () => {
   const cannyLoader = new CannyLoader()
