@@ -7,9 +7,33 @@ import { useUser } from 'services/user'
 import FeedbackPage from './FeedbackPage'
 
 jest.mock('services/user')
-jest.mock('../../layouts/shared/ErrorBoundary', () => ({ children }) => (
-  <>{children}</>
-))
+
+jest.mock('./Canny/Canny', () => {
+  return jest.fn().mockImplementation(() => {
+    return { render: jest.fn() }
+  })
+})
+
+jest.mock('./Canny/CannyLoader', () => {
+  return jest
+    .fn()
+    .mockImplementationOnce(() => {
+      return {
+        load: jest
+          .fn()
+          .mockImplementation(
+            () => new Promise((resolve, reject) => resolve())
+          ),
+      }
+    })
+    .mockImplementationOnce(() => {
+      return {
+        load: jest
+          .fn()
+          .mockImplementation(() => new Promise((resolve, reject) => reject())),
+      }
+    })
+})
 
 const user = {
   cannySSOToken: 'token',
@@ -27,34 +51,32 @@ describe('FeedbackPage', () => {
     )
   }
 
-  afterEach(() => {
-    jest.restoreAllMocks()
-  })
-
   describe('renders', () => {
-    beforeAll(() => {
-      jest.mock('./Canny/cannyUtils', () => {
-        return {
-          CannyLoader: jest.fn().mockImplementation(() => ({
-            load: () => new Promise((resolve) => resolve()),
-          })),
-          Canny: jest.fn().mockImplementation(() => ({
-            render: () => true,
-          })),
-        }
+    describe('successfully loads scripts', () => {
+      beforeAll(() => {
+        setup()
       })
-      setup()
+
+      it('adds the canny div', async () => {
+        const element = screen.getByTestId('canny-div')
+
+        await waitFor(() => {
+          expect(element).toBeInTheDocument()
+        })
+      })
     })
 
-    afterAll(() => {
-      jest.unmock('./Canny/cannyUtils')
-    })
+    describe('does not load scripts successfully', () => {
+      beforeAll(() => {
+        setup()
+      })
 
-    it('adds the canny div', async () => {
-      const element = screen.getByTestId('canny-div')
+      it('adds the canny div', async () => {
+        const element = screen.getByText(/There's been an error/i)
 
-      await waitFor(() => {
-        expect(element).toBeInTheDocument()
+        await waitFor(() => {
+          expect(element).toBeInTheDocument()
+        })
       })
     })
   })
