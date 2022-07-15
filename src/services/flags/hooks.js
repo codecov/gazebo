@@ -1,31 +1,45 @@
 import { useQuery } from 'react-query'
 
 import Api from 'shared/api'
-import { providerToName } from 'shared/utils'
 
-function getFlagsPath({ provider, owner, repo }) {
-  return `/${providerToName(
-    provider
-  ).toLowerCase()}/${owner}/repos/${repo}/compare/flags`
-}
-
-function fetchFlagsCoverage({ provider, owner, repo, query }) {
-  const path = getFlagsPath({ provider, owner, repo })
-  return Api.get({ path, provider, query })
-}
-
-export function useFlagsForComparePage({
-  provider,
-  owner,
-  repo,
-  query,
-  opts = {},
-}) {
-  return useQuery(
-    ['compare', 'flags', provider, owner, repo, query],
-    () => {
-      return fetchFlagsCoverage({ provider, owner, repo, query })
-    },
-    opts
-  )
+export function useFlagsForComparePage({ provider, owner, repo, pullId }) {
+  const query = `
+    query FlagComparisons($owner: String!, $repo: String!, $pullId: Int!) {
+        owner(username: $owner) {
+          repository(name: $repo) {
+            pull(id: $pullId) {
+              compareWithBase {
+                flagComparisons {
+                  name
+                  patchTotals {
+                    percentCovered
+                  }
+                  headTotals {
+                    percentCovered
+                  }
+                  baseTotals {
+                    percentCovered
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+  return useQuery(['flagComparisons', provider, owner, repo, pullId], () => {
+    return Api.graphql({
+      provider,
+      query,
+      variables: {
+        provider,
+        owner,
+        repo,
+        pullId: parseInt(pullId, 10),
+      },
+    }).then(
+      (res) =>
+        res?.data?.owner?.repository?.pull?.compareWithBase?.flagComparisons
+    )
+  })
 }
