@@ -7,23 +7,12 @@ import ControlGroup from 'old_ui/ControlGroup'
 import Icon from 'old_ui/Icon'
 import Select from 'old_ui/Select'
 import TextInput from 'old_ui/TextInput'
-import { ApiFilterEnum } from 'services/navigation'
 
-const AdminItems = [
-  { label: 'Everyone', value: ApiFilterEnum.none },
-  { label: 'Admins', value: ApiFilterEnum.true },
-  { label: 'Collaborators', value: ApiFilterEnum.false },
-]
-
-const ActivatedItems = [
-  { label: 'All users', value: ApiFilterEnum.none },
-  { label: 'Active users', value: ApiFilterEnum.true },
-  { label: 'In-active users', value: ApiFilterEnum.false },
-]
+import { ActivatedItems, AdminItems, OrderItems } from './enums'
 
 const FormClasses = {
   search:
-    'flex-none md:w-1/2 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
+    'flex-none w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
   firstFilter: 'flex-1 md:w-1/4 rounded-tl-md rounded-bl-md',
   filter: 'flex-1 md:w-1/4',
@@ -82,46 +71,68 @@ export function FormControls({ onChange, current, defaultValues }) {
     <form onSubmit={handleSubmit}>
       <Card>
         <ControlGroup>
-          <Controller
-            name="activated"
-            control={control}
-            render={() => (
-              <Select
-                ariaName="activated"
-                className={FormClasses.firstFilter}
-                control={control}
-                items={ActivatedItems}
-                renderSelected={SelectedItem}
-                renderItem={Item}
-                value={ActivatedItems.find(
-                  ({ value }) => value === current?.activated
-                )}
-                onChange={({ value }) => {
-                  onChange({ activated: value })
-                }}
-              />
-            )}
-          />
-          <Controller
-            name="isAdmin"
-            control={control}
-            render={() => (
-              <Select
-                ariaName="isAdmin"
-                className={FormClasses.filter}
-                control={control}
-                items={AdminItems}
-                renderSelected={SelectedItem}
-                renderItem={Item}
-                value={AdminItems.find(
-                  ({ value }) => value === current?.isAdmin
-                )}
-                onChange={({ value }) => {
-                  onChange({ isAdmin: value })
-                }}
-              />
-            )}
-          />
+          <div className="flex w-full">
+            <Controller
+              name="activated"
+              control={control}
+              render={() => (
+                <Select
+                  ariaName="activated"
+                  className={FormClasses.firstFilter}
+                  control={control}
+                  items={ActivatedItems}
+                  renderSelected={SelectedItem}
+                  renderItem={Item}
+                  value={ActivatedItems.find(
+                    ({ value }) => value === current?.activated
+                  )}
+                  onChange={({ value }) => {
+                    onChange({ activated: value })
+                  }}
+                />
+              )}
+            />
+            <Controller
+              name="isAdmin"
+              control={control}
+              render={() => (
+                <Select
+                  ariaName="isAdmin"
+                  className={FormClasses.filter}
+                  control={control}
+                  items={AdminItems}
+                  renderSelected={SelectedItem}
+                  renderItem={Item}
+                  value={AdminItems.find(
+                    ({ value }) => value === current?.isAdmin
+                  )}
+                  onChange={({ value }) => {
+                    onChange({ isAdmin: value })
+                  }}
+                />
+              )}
+            />
+            <Controller
+              name="ordering"
+              control={control}
+              render={() => (
+                <Select
+                  ariaName="ordering"
+                  className={FormClasses.filter}
+                  control={control}
+                  items={OrderItems}
+                  renderSelected={SelectedItem}
+                  renderItem={Item}
+                  value={OrderItems.find(
+                    ({ value }) => value === current?.ordering
+                  )}
+                  onChange={({ value }) => {
+                    onChange({ ordering: value })
+                  }}
+                />
+              )}
+            />
+          </div>
           <TextInput
             variant="light"
             aria-label="search users"

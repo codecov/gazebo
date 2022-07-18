@@ -16,6 +16,7 @@ import { useUser } from 'services/user'
 import { useUpdateUser, useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 import { isFreePlan } from 'shared/utils/billing'
+import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Modal from 'ui/Modal'
 
@@ -49,11 +50,12 @@ function useActivateUser({ provider, owner }) {
   return { activate, ...rest }
 }
 
-function createPills({ isAdmin, email, student }) {
+function createPills({ isAdmin, email, student, lastPullTimestamp }) {
   return [
     isAdmin ? { label: 'Admin', highlight: true } : null,
     email,
     student ? 'Student' : null,
+    lastPullTimestamp && `last PR: ${formatTimeToNow(lastPullTimestamp)}`,
   ]
 }
 
@@ -61,7 +63,7 @@ function useUsersData({ provider, owner }) {
   const { params, updateParams } = useLocationParams({
     activated: ApiFilterEnum.none, // Default to no filter on activated
     isAdmin: ApiFilterEnum.none, // Default to no filter on isAdmin
-    ordering: 'name', // Default sort is A-Z Name
+    ordering: 'last_pull_timestamp', // Default sort is A-Z Name
     search: '', // Default to no seach on initial load
     page: 1, // Default to first page
     pageSize: 50, // Default page size
@@ -155,7 +157,7 @@ function UserManagement({ provider, owner }) {
           search: params.search,
           activated: ApiFilterEnum.none,
           isAdmin: ApiFilterEnum.none,
-          ordering: 'name',
+          ordering: 'last_pull_timestamp',
         }}
       />
       <Card className={UserManagementClasses.results}>
