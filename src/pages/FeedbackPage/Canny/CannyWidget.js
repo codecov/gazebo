@@ -23,7 +23,6 @@ function CannyWidget({ basePath, boardToken, ssoToken }) {
         refCanny.current = await loader.load()
         setLoaded(true)
       } catch (err) {
-        console.debug('PLEASE ERROR')
         setError(errorFunc)
       }
     })()
