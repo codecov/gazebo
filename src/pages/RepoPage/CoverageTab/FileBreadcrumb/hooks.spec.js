@@ -71,4 +71,46 @@ describe('useTreePaths', () => {
       ])
     })
   })
+
+  describe('viewing a file', () => {
+    describe('a path is provided', () => {
+      const wrapper = ({ children }) => (
+        <MemoryRouter
+          initialEntries={['/gh/owner/coolrepo/tree/main/src/file.js']}
+        >
+          <Route path="/:provider/:owner/:repo/tree/:ref/:path+">
+            <div>{children}</div>
+          </Route>
+        </MemoryRouter>
+      )
+      function setup() {
+        hookData = renderHook(() => useTreePaths(), { wrapper })
+      }
+
+      beforeEach(() => {
+        setup()
+        return hookData.waitFor(() => hookData.result)
+      })
+
+      it('returns a list of objects', () => {
+        expect(hookData.result.current.treePaths).toEqual([
+          {
+            pageName: 'treeView',
+            text: 'coolrepo',
+            options: { ref: 'main' },
+          },
+          {
+            options: { tree: 'src', ref: 'main' },
+            pageName: 'treeView',
+            text: 'src',
+          },
+          {
+            options: { tree: 'src/file.js', ref: 'main' },
+            pageName: 'treeView',
+            text: 'file.js',
+          },
+        ])
+      })
+    })
+  })
 })
