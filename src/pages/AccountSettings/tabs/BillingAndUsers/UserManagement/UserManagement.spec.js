@@ -46,7 +46,7 @@ const updateAccount = {
 const defaultQuery = {
   activated: '',
   isAdmin: '',
-  ordering: 'name',
+  ordering: '-last_pull_timestamp',
   search: '',
   page: 1,
   pageSize: 50,
@@ -196,6 +196,37 @@ describe('UserManagerment', () => {
     })
   })
 
+  describe('has last pull timestamp', () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2022-07-18 15:18:17.290'))
+
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          totalPages: 1,
+          results: [
+            {
+              username: 'dazzle',
+              email: 'dazzle@dota.com',
+              lastPullTimestamp: '2022-06-17 15:18:17.290',
+            },
+          ],
+        },
+      }
+      setup({ mockUseUsersValue })
+    })
+    it('renders an email', () => {
+      const placeholder = screen.getByText(/dazzle$/)
+      expect(placeholder).toBeInTheDocument()
+
+      const studentLabel = screen.getByText(/dazzle@dota.com/)
+      expect(studentLabel).toBeInTheDocument()
+
+      const lastPullTimestamp = screen.getByText(/last PR: about 1 month ago/)
+      expect(lastPullTimestamp).toBeInTheDocument()
+    })
+  })
+
   describe('Filter by Activated', () => {
     describe.each([
       [/All users/, defaultQuery],
@@ -272,6 +303,54 @@ describe('UserManagerment', () => {
           provider: 'gh',
           query: expected,
         })
+      })
+    })
+  })
+
+  describe('Order by last_pull_timestamp', () => {
+    beforeEach(() => {
+      setup({})
+    })
+
+    it('Renders ordering select with the default selection', () => {
+      const OrderSelect = screen.getByRole('button', { name: 'ordering' })
+      expect(OrderSelect).toBeInTheDocument()
+      expect(screen.getByText('Newest PR')).toBeInTheDocument()
+    })
+
+    it('Handles options selection', () => {
+      const SortSelect = screen.getByRole('button', { name: 'ordering' })
+      user.click(SortSelect)
+      const asc = screen.getByRole('option', { name: 'Oldest PR' })
+      expect(asc).toBeInTheDocument()
+      user.click(asc)
+      expect(
+        screen.queryByRole('option', { name: 'Oldest PR' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('Makes the correct query to the api: Oldest PR', () => {
+      expect(useUsers).toHaveBeenLastCalledWith({
+        owner: 'radient',
+        provider: 'gh',
+        query: defaultQuery,
+      })
+
+      const SortSelect = screen.getByRole('button', { name: 'ordering' })
+      user.click(SortSelect)
+      user.click(screen.getByRole('option', { name: 'Oldest PR' }))
+
+      expect(useUsers).toHaveBeenLastCalledWith({
+        owner: 'radient',
+        provider: 'gh',
+        query: {
+          activated: '',
+          isAdmin: '',
+          ordering: 'last_pull_timestamp',
+          page: 1,
+          pageSize: 50,
+          search: '',
+        },
       })
     })
   })
