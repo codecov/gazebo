@@ -48,7 +48,6 @@ describe('useFlagsRepoTable', () => {
   it('returns data accordingly', () => {
     setup({ repoData: repoFlagsMock })
     expect(hookData.result.current.data).toEqual(flagsData)
-    expect(hookData.result.current.headers.length).toEqual(3)
     expect(hookData.result.current.isLoading).toEqual(false)
     expect(hookData.result.current.hasNextPage).toEqual(true)
     expect(hookData.result.current.isFetchingNextPage).toEqual(false)

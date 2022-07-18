@@ -7,6 +7,38 @@ import Table from 'ui/Table'
 
 import useRepoFlagsTable from './hooks'
 
+const headers = [
+  {
+    id: 'name',
+    header: 'Flags',
+    accessorKey: 'name',
+    cell: (info) => info.getValue(),
+    width: 'w-6/12 min-w-min',
+  },
+  {
+    id: 'coverage',
+    header: (
+      <span className="flex flex-row-reverse grow text-right">
+        file coverage %
+      </span>
+    ),
+    accessorKey: 'coverage',
+    cell: (info) => info.getValue(),
+    width: 'w-3/12 min-w-min',
+  },
+  {
+    id: 'trend',
+    header: (
+      <span className="flex flex-row-reverse grow text-right">
+        trend last year
+      </span>
+    ),
+    accessorKey: 'trend',
+    cell: (info) => info.getValue(),
+    width: 'w-3/12 min-w-min',
+  },
+]
+
 function createTableData({ tableData }) {
   return tableData?.length > 0
     ? tableData.map(({ node }) => ({
@@ -33,14 +65,8 @@ function createTableData({ tableData }) {
 }
 
 function FlagsTable() {
-  const {
-    data,
-    headers,
-    isLoading,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useRepoFlagsTable()
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useRepoFlagsTable()
 
   const tableData = useMemo(
     () =>
