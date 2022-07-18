@@ -4,12 +4,16 @@ import { MemoryRouter, Route, useParams } from 'react-router-dom'
 import { useRepoContents, useRepoOverview } from 'services/repo'
 
 import RepoContentsTable from './RepoContentsTable'
+import { usePrefetchDirEntry } from './TableEntries/hooks/usePrefetchDirEntry'
+import { usePrefetchFileEntry } from './TableEntries/hooks/usePrefetchFileEntry'
 
 jest.mock('services/repo')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(() => {}),
 }))
+jest.mock('./TableEntries/hooks/usePrefetchDirEntry')
+jest.mock('./TableEntries/hooks/usePrefetchFileEntry')
 
 const repoContents = [
   {
@@ -54,6 +58,8 @@ describe('RepoContentsTable', () => {
       branch: branch,
       path: path || '',
     })
+    usePrefetchDirEntry.mockReturnValue({ runPrefetch: jest.fn() })
+    usePrefetchFileEntry.mockReturnValue({ runPrefetch: jest.fn() })
 
     render(
       <MemoryRouter initialEntries={['/gh/Rabee-AbuBaker/another-test']}>
