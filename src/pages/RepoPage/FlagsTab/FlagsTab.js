@@ -3,6 +3,8 @@ import { Route } from 'react-router-dom'
 
 import Spinner from 'ui/Spinner'
 
+import FlagsTable from './subroute/FlagsTable/FlagsTable'
+
 function FlagsTab() {
   const Loader = (
     <div className="flex items-center justify-center py-16">
@@ -15,8 +17,7 @@ function FlagsTab() {
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Route path="/:provider/:owner/:repo/flags" exact>
           <Suspense fallback={Loader}>
-            {/*Flags table*/}
-            <h1>Flags table</h1>
+            <FlagsTable />
           </Suspense>
         </Route>
       </div>
