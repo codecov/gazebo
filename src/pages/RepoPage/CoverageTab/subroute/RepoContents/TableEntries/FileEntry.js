@@ -19,7 +19,10 @@ function FileEntry({
   })
   return (
     <>
-      <div className="flex gap-2" onMouseEnter={() => runPrefetch()}>
+      <div
+        className="flex gap-2"
+        onMouseEnter={async () => await runPrefetch()}
+      >
         <Icon name="document" size="md" />
         <A
           to={{

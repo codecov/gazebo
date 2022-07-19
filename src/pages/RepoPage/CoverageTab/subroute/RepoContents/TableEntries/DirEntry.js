@@ -8,7 +8,7 @@ import { usePrefetchDirEntry } from './hooks/usePrefetchDirEntry'
 function DirEntry({ branch, name, path, filters }) {
   const { runPrefetch } = usePrefetchDirEntry({ branch, path, filters })
   return (
-    <div className="flex gap-2" onMouseEnter={() => runPrefetch()}>
+    <div className="flex gap-2" onMouseEnter={async () => await runPrefetch()}>
       <Icon name="folder" size="md" />
       <A
         to={{

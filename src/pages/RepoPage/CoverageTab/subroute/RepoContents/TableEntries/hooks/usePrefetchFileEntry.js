@@ -48,7 +48,7 @@ export function usePrefetchFileEntry({ branch, path, options = {} }) {
   const queryClient = useQueryClient()
 
   const runPrefetch = async () => {
-    queryClient.prefetchQuery(
+    await queryClient.prefetchQuery(
       ['commit', provider, owner, repo, branch, path],
       () => {
         return Api.graphql({
