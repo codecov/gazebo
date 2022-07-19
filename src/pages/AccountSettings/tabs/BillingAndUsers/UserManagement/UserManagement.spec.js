@@ -46,7 +46,7 @@ const updateAccount = {
 const defaultQuery = {
   activated: '',
   isAdmin: '',
-  ordering: '-last_pull_timestamp',
+  ordering: '-name',
   search: '',
   page: 1,
   pageSize: 50,
@@ -307,7 +307,7 @@ describe('UserManagerment', () => {
     })
   })
 
-  describe('Order by last_pull_timestamp', () => {
+  describe('Ordering', () => {
     beforeEach(() => {
       setup({})
     })
@@ -315,7 +315,7 @@ describe('UserManagerment', () => {
     it('Renders ordering select with the default selection', () => {
       const OrderSelect = screen.getByRole('button', { name: 'ordering' })
       expect(OrderSelect).toBeInTheDocument()
-      expect(screen.getByText('Newest PR')).toBeInTheDocument()
+      expect(screen.getByText('Name A-Z')).toBeInTheDocument()
     })
 
     it('Handles options selection', () => {

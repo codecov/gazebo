@@ -15,4 +15,6 @@ export const ActivatedItems = [
 export const OrderItems = [
   { value: 'last_pull_timestamp', label: 'Oldest PR' },
   { value: '-last_pull_timestamp', label: 'Newest PR' },
+  { value: 'name', label: 'Name Z-A' },
+  { value: '-name', label: 'Name A-Z' },
 ]

@@ -63,7 +63,7 @@ function useUsersData({ provider, owner }) {
   const { params, updateParams } = useLocationParams({
     activated: ApiFilterEnum.none, // Default to no filter on activated
     isAdmin: ApiFilterEnum.none, // Default to no filter on isAdmin
-    ordering: '-last_pull_timestamp', // Default sort is A-Z Name
+    ordering: '-name', // Default sort is A-Z Name
     search: '', // Default to no seach on initial load
     page: 1, // Default to first page
     pageSize: 50, // Default page size
@@ -157,7 +157,7 @@ function UserManagement({ provider, owner }) {
           search: params.search,
           activated: ApiFilterEnum.none,
           isAdmin: ApiFilterEnum.none,
-          ordering: '-last_pull_timestamp',
+          ordering: '-name',
         }}
       />
       <Card className={UserManagementClasses.results}>
