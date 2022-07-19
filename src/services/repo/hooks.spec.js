@@ -3,6 +3,7 @@ import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { act } from 'react-test-renderer'
 
 import {
   useActivateFlagMeasurements,
@@ -406,9 +407,10 @@ describe('useActivateFlagMeasurements', () => {
     })
 
     describe('when calling the mutation', () => {
-      const data = { value: 'dummy' }
       beforeEach(() => {
-        hookData.result.current.mutate(data)
+        act(() => {
+          hookData.result.current.mutate({ provider, owner, repo })
+        })
         return hookData.waitFor(() => hookData.result.current.status !== 'idle')
       })
 
@@ -419,8 +421,9 @@ describe('useActivateFlagMeasurements', () => {
 
     describe('When success', () => {
       beforeEach(async () => {
-        const data = { value: 'dummy' }
-        hookData.result.current.mutate(data)
+        act(() => {
+          hookData.result.current.mutate({ provider, owner, repo })
+        })
         await hookData.waitFor(() => hookData.result.current.isLoading)
         await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
