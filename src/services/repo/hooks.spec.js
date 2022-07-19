@@ -145,7 +145,7 @@ describe('useEraseRepoContent', () => {
 
     describe('when calling the mutation', () => {
       beforeEach(() => {
-        hookData.result.current.mutate()
+        hookData.result.current.mutate(null)
         return hookData.waitFor(() => hookData.result.current.status !== 'idle')
       })
 
@@ -156,7 +156,7 @@ describe('useEraseRepoContent', () => {
 
     describe('When success', () => {
       beforeEach(async () => {
-        hookData.result.current.mutate({})
+        hookData.result.current.mutate(null)
         await hookData.waitFor(() => hookData.result.current.isLoading)
         await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
@@ -385,7 +385,7 @@ describe('useActivateFlagMeasurements', () => {
   function setup() {
     server.use(
       graphql.query('activateFlagsMeasurements', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(null))
+        return res(ctx.status(200), ctx.data({}))
       })
     )
     hookData = renderHook(
@@ -406,8 +406,9 @@ describe('useActivateFlagMeasurements', () => {
     })
 
     describe('when calling the mutation', () => {
+      const data = { value: 'dummy' }
       beforeEach(() => {
-        hookData.result.current.mutate()
+        hookData.result.current.mutate(data)
         return hookData.waitFor(() => hookData.result.current.status !== 'idle')
       })
 
@@ -418,8 +419,10 @@ describe('useActivateFlagMeasurements', () => {
 
     describe('When success', () => {
       beforeEach(async () => {
-        hookData.result.current.mutate({})
-        await hookData.waitFor(() => hookData.result.current.isSuccess)
+        const data = { value: 'dummy' }
+        hookData.result.current.mutate(data)
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns isSuccess true', () => {
