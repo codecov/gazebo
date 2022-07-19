@@ -1,7 +1,8 @@
+import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClient, QueryClientProvider, setLogger } from 'react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { usePrefetchFileEntry } from './usePrefetchFileEntry'
@@ -11,12 +12,25 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }))
 
-const queryClient = new QueryClient()
+setLogger({
+  log: console.log,
+  warn: console.warn,
+  error: () => {},
+})
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      cacheTime: Infinity,
+    },
+  },
+})
 const wrapper = ({ children }) => (
   <MemoryRouter
     initialEntries={['/gh/codecov/test-repo/tree/main/src/file.js']}
   >
-    <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+    <Route path="/:provider/:owner/:repo/tree/:branch/:path">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </Route>
   </MemoryRouter>
@@ -83,11 +97,9 @@ describe('usePrefetchFileEntry', () => {
     })
 
     server.use(
-      server.use(
-        graphql.query('CoverageForFile', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data(mockData))
-        })
-      )
+      graphql.query('CoverageForFile', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockData))
+      })
     )
 
     hookData = renderHook(
@@ -106,17 +118,23 @@ describe('usePrefetchFileEntry', () => {
   })
 
   it('queries the api', async () => {
-    hookData.result.current.runPrefetch()
+    await hookData.result.current.runPrefetch()
 
-    expect(
-      queryClient.getQueryData([
-        'commit',
-        'gh',
-        'codecov',
-        'test-repo',
-        'main',
-        'src/file.js',
-      ])
-    ).toBeUndefined()
+    await waitFor(() => queryClient.getQueryState().isFetching)
+
+    expect(queryClient.getQueryState().data.content).toBe(
+      mockData.owner.repository.commit.coverageFile.content
+    )
+    expect(queryClient.getQueryState().data.coverage).toStrictEqual({
+      1: 1,
+      2: 1,
+      4: 1,
+      5: 1,
+      7: 1,
+      8: 1,
+    })
+    expect(queryClient.getQueryState().data.flagNames).toStrictEqual(['a', 'b'])
+    expect(queryClient.getQueryState().data.isCriticalFile).toBe(true)
+    expect(queryClient.getQueryState().data.totals).toBe(0)
   })
 })

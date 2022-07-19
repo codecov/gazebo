@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -58,11 +59,9 @@ describe('usePrefetchFileEntry', () => {
     })
 
     server.use(
-      server.use(
-        graphql.query('BranchFiles', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data(mockData))
-        })
-      )
+      graphql.query('BranchFiles', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockData))
+      })
     )
 
     hookData = renderHook(
@@ -81,18 +80,16 @@ describe('usePrefetchFileEntry', () => {
   })
 
   it('queries the api', async () => {
-    await hookData.waitFor(() => hookData.result.current.runPrefetch())
+    await hookData.result.current.runPrefetch()
+    await waitFor(() => queryClient.getQueryState().isFetching)
 
-    expect(
-      queryClient.getQueryData([
-        'BranchFiles',
-        'gh',
-        'codecov',
-        'test-repo',
-        'main',
-        'src',
-        {},
-      ])
-    ).toBeUndefined()
+    expect(queryClient.getQueryState().data).toStrictEqual([
+      {
+        __typename: 'PathContentDir',
+        name: 'src',
+        path: null,
+        percentCovered: 0,
+      },
+    ])
   })
 })
