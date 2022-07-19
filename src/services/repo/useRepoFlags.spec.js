@@ -56,6 +56,30 @@ const initialData = [
   },
 ]
 
+const expectedInitialData = [
+  {
+    name: 'flag1',
+    percentCovered: 93.26,
+    measurements: [
+      { timestamp: '2022-01-03T00:00:00+00:00', avg: 91.74637512820512 },
+      { timestamp: '2022-01-10T00:00:00+00:00', avg: 91.85559083333332 },
+      { timestamp: '2022-02-14T00:00:00+00:00', avg: 91.95588104166666 },
+      { timestamp: '2022-02-21T00:00:00+00:00', avg: 91.96796811111112 },
+    ],
+  },
+  {
+    name: 'flag2',
+    percentCovered: 92.72,
+    measurements: [
+      { timestamp: '2022-05-02T00:00:00+00:00', avg: 92.44361365466449 },
+      { timestamp: '2022-05-09T00:00:00+00:00', avg: 92.55269245333334 },
+      { timestamp: '2022-05-16T00:00:00+00:00', avg: 92.84718477040816 },
+      { timestamp: '2022-05-23T00:00:00+00:00', avg: 92.91016116666667 },
+      { timestamp: '2022-05-30T00:00:00+00:00', avg: 92.92690138723546 },
+    ],
+  },
+]
+
 const nextPageData = [
   {
     node: {
@@ -69,6 +93,20 @@ const nextPageData = [
         { timestamp: '2022-06-27T00:00:00+00:00', avg: 93.26297761904759 },
       ],
     },
+  },
+]
+
+const expectedNextPageData = [
+  {
+    name: 'flag3',
+    percentCovered: 92.95,
+    measurements: [
+      { timestamp: '2022-05-30T00:00:00+00:00', avg: 92.92690138723546 },
+      { timestamp: '2022-06-06T00:00:00+00:00', avg: 92.99535449712643 },
+      { timestamp: '2022-06-13T00:00:00+00:00', avg: 93.13587893358877 },
+      { timestamp: '2022-06-20T00:00:00+00:00', avg: 93.04877792892155 },
+      { timestamp: '2022-06-27T00:00:00+00:00', avg: 93.26297761904759 },
+    ],
   },
 ]
 
@@ -121,7 +159,7 @@ describe('FlagMeasurements', () => {
       })
 
       it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(initialData)
+        expect(hookData.result.current.data).toEqual(expectedInitialData)
       })
     })
   })
@@ -137,8 +175,8 @@ describe('FlagMeasurements', () => {
 
     it('returns prev and next page flags data', () => {
       expect(hookData.result.current.data).toEqual([
-        ...initialData,
-        ...nextPageData,
+        ...expectedInitialData,
+        ...expectedNextPageData,
       ])
     })
   })

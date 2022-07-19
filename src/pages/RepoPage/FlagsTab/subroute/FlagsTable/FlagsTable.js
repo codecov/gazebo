@@ -41,23 +41,23 @@ const headers = [
 
 function createTableData({ tableData }) {
   return tableData?.length > 0
-    ? tableData.map(({ node }) => ({
+    ? tableData.map(({ name, percentCovered, measurements }) => ({
         name: (
           <>
             <div className="flex gap-2">
-              <span>{node.name}</span>
+              <span>{name}</span>
             </div>
           </>
         ),
         coverage: (
           <div className="flex flex-1 gap-2 items-center">
-            <Progress amount={node.percentCovered} label />
+            <Progress amount={percentCovered} label />
           </div>
         ),
         //TODO: Implement trend component
         trend: (
           <div className="flex flex-1 gap-2 items-center">
-            <span> {node.name} trend data </span>
+            <span> {name} trend data </span>
           </div>
         ),
       }))

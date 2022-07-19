@@ -8,18 +8,14 @@ jest.mock('./hooks')
 
 const flagsData = [
   {
-    node: {
-      name: 'flag1',
-      percentCovered: 93.26,
-      measurements: [],
-    },
+    name: 'flag1',
+    percentCovered: 93.26,
+    measurements: [],
   },
   {
-    node: {
-      name: 'flag2',
-      percentCovered: 91.74,
-      measurements: [],
-    },
+    name: 'flag2',
+    percentCovered: 91.74,
+    measurements: [],
   },
 ]
 

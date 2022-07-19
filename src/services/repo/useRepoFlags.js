@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
 
+import { mapEdges } from '../../shared/utils/graphql'
+
 function fetchRepoFlags({
   provider,
   owner: name,
@@ -64,7 +66,7 @@ function fetchRepoFlags({
     const { flags } = res?.data?.owner?.repository
 
     return {
-      flags: flags?.edges,
+      flags: mapEdges(flags),
       pageInfo: flags?.pageInfo,
     }
   })
