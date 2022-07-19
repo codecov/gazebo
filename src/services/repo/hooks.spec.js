@@ -411,23 +411,25 @@ describe('useActivateFlagMeasurements', () => {
         act(() => {
           hookData.result.current.mutate({ provider, owner, repo })
         })
+        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
       })
 
-      it('returns isLoading true', async () => {
-        await hookData.waitFor(() => hookData.result.current.status !== 'idle')
+      it('returns isLoading true', () => {
         expect(hookData.result.current.isLoading).toBeTruthy()
       })
     })
 
     // describe('When success', () => {
-    //   beforeEach(() => {
+    //   beforeEach(async () => {
     //     act(() => {
-    //       hookData.result.current.mutate({ provider, owner, repo })
-    //     })
+    //       hookData.result.current.mutate({provider, owner, repo});
+    //     });
+    //     await hookData.waitFor(() => hookData.result.current.isLoading)
+    //     await hookData.waitFor(() => !hookData.result.current.isLoading)
     //   })
 
-    //   it('returns isSuccess true', async () => {
-    //     await hookData.waitFor(() => hookData.result.current.isSuccess)
+    //   it('returns isSuccess true', () => {
+    //     expect(hookData.result.current.isSuccess).toBeTruthy()
     //   })
     // })
   })
