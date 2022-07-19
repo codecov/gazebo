@@ -52,21 +52,7 @@ describe('FlagsBanner', () => {
       setup({})
     })
 
-    it('renders header and table components', () => {
-      expect(
-        screen.queryByText(
-          'You need to enable Flag analytics to see coverage data'
-        )
-      ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when there are active flag measurements', () => {
-    beforeEach(() => {
-      setup({ data: { flagsMeasurementsActive: true } })
-    })
-
-    it('renders header and table components', () => {
+    it('does not renders banner content', () => {
       expect(
         screen.queryByText(
           'You need to enable Flag analytics to see coverage data'
@@ -106,6 +92,48 @@ describe('FlagsBanner', () => {
           owner: 'codecov',
         })
       })
+    })
+  })
+
+  describe('when there are active flag measurements but not backfilled datasets', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          flagsMeasurementsActive: true,
+          flagsMeasurementsBackfilled: false,
+        },
+      })
+    })
+
+    it('renders header and table components', () => {
+      expect(screen.getByText('Pulling historical data')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'We are pulling in all of your historical flags data, this can sometimes take awhile. This page will update once complete, feel free to navigate away in the meantime.'
+        )
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when repo datasets are both active and backfilled', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          flagsMeasurementsActive: true,
+          flagsMeasurementsBackfilled: true,
+        },
+      })
+    })
+
+    it('renders header and table components', () => {
+      expect(
+        screen.queryByText('Pulling historical data')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          'You need to enable Flag analytics to see coverage data'
+        )
+      ).not.toBeInTheDocument()
     })
   })
 })

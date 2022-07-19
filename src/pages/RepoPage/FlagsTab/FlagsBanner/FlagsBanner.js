@@ -67,13 +67,11 @@ function SyncingBanner() {
         </div>
       }
     >
-      <div className="flex flex-col gap-4">
-        <p>
-          We are pulling in all of your historical flags data, this can
-          sometimes take awhile. This page will update once complete, feel free
-          to navigate away in the meantime.
-        </p>
-      </div>
+      <p>
+        We are pulling in all of your historical flags data, this can sometimes
+        take awhile. This page will update once complete, feel free to navigate
+        away in the meantime.
+      </p>
     </Banner>
   )
 }
