@@ -1,4 +1,5 @@
-import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
+import isEmpty from 'lodash/isEmpty'
+import { useParams } from 'react-router-dom'
 
 import {
   useActivateFlagMeasurements,
@@ -8,12 +9,24 @@ import Banner from 'ui/Banner'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
-function BackfillBanner() {
+function FlagsBanner() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepoBackfilled({ provider, owner, repo })
+
+  if (isEmpty(data)) return null
+
+  return !data?.flagsMeasurementsActive ? (
+    <BackfillBanner />
+  ) : data?.flagsMeasurementsActive && !data?.flagsMeasurementsBackfilled ? (
+    <SyncingBanner />
+  ) : null
+}
+
+function BackfillBanner() {
+  const { provider, owner, repo } = useParams()
   const { mutate } = useActivateFlagMeasurements({ provider, owner, repo })
 
-  return data && !data?.flagsMeasurementsActive ? (
+  return (
     <Banner
       variant="plain"
       title={
@@ -40,7 +53,29 @@ function BackfillBanner() {
         </div>
       </div>
     </Banner>
-  ) : null
+  )
 }
 
-export default BackfillBanner
+function SyncingBanner() {
+  return (
+    <Banner
+      variant="plain"
+      title={
+        <div className="flex gap-2 items-center">
+          <Icon name="information-circle" />
+          <h2>Pulling historical data</h2>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-4">
+        <p>
+          We are pulling in all of your historical flags data, this can
+          sometimes take awhile. This page will update once complete, feel free
+          to navigate away in the meantime.
+        </p>
+      </div>
+    </Banner>
+  )
+}
+
+export default FlagsBanner

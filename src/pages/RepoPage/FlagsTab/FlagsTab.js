@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom'
 
 import Spinner from 'ui/Spinner'
 
-import BackfillBanner from './BackfillBanner'
+import FlagsBanner from './FlagsBanner'
 
 function FlagsTab() {
   const Loader = (
@@ -14,7 +14,7 @@ function FlagsTab() {
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       <h1>Flags Header Component</h1>
-      <BackfillBanner />
+      <FlagsBanner />
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Route path="/:provider/:owner/:repo/flags" exact>
           <Suspense fallback={Loader}>

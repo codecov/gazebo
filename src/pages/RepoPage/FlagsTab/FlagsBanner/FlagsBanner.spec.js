@@ -9,7 +9,7 @@ import {
   useRepoBackfilled,
 } from 'services/repo/hooks'
 
-import BackfillBanner from './BackfillBanner'
+import FlagsBanner from './FlagsBanner'
 
 jest.mock('services/repo/hooks')
 jest.mock('react-router-dom', () => ({
@@ -25,7 +25,7 @@ const queryClient = new QueryClient({
   },
 })
 
-describe('BackfillBanner', () => {
+describe('FlagsBanner', () => {
   const mutate = jest.fn()
   function setup(data) {
     useParams.mockReturnValue({
@@ -40,7 +40,7 @@ describe('BackfillBanner', () => {
       <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
         <Route path="/:provider/:owner/:repo/flags" exact={true}>
           <QueryClientProvider client={queryClient}>
-            <BackfillBanner />
+            <FlagsBanner />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>

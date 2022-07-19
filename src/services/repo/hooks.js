@@ -183,7 +183,7 @@ function fetchRepoBackfilledContents({ provider, owner, repo }) {
 }
 
 export function useRepoBackfilled({ provider, owner, repo }) {
-  return useQuery([provider, owner, repo, 'BackfillFlagMemberships'], () => {
+  return useQuery(['BackfillFlagMemberships', provider, owner, repo], () => {
     return fetchRepoBackfilledContents({ provider, owner, repo })
   })
 }
@@ -193,7 +193,7 @@ export function useActivateFlagMeasurements({ provider, owner, repo }) {
   return useMutation(
     () => {
       const query = `
-        mutation activateFlagsMeasurements($input: ActivateFlagsMeasurementsInput!) {
+        mutation ActivateFlagsMeasurements($input: ActivateFlagsMeasurementsInput!) {
           activateFlagsMeasurements(input: $input) {
             error {
               __typename
@@ -212,10 +212,10 @@ export function useActivateFlagMeasurements({ provider, owner, repo }) {
     {
       onSuccess: () => {
         queryClient.invalidateQueries([
+          'BackfillFlagMemberships',
           provider,
           owner,
           repo,
-          'BackfillFlagMemberships',
         ])
       },
     }

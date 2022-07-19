@@ -3,7 +3,6 @@ import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { act } from 'react-test-renderer'
 
 import {
   useActivateFlagMeasurements,
@@ -385,12 +384,17 @@ describe('useActivateFlagMeasurements', () => {
 
   function setup() {
     server.use(
-      graphql.query('activateFlagsMeasurements', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.mutation('ActivateFlagsMeasurements', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data())
       })
     )
     hookData = renderHook(
-      () => useActivateFlagMeasurements({ provider, owner, repo }),
+      () =>
+        useActivateFlagMeasurements({
+          provider: 'gh',
+          owner: 'dancer',
+          repo: 'bassuras',
+        }),
       {
         wrapper,
       }
@@ -407,11 +411,9 @@ describe('useActivateFlagMeasurements', () => {
     })
 
     describe('when calling the mutation', () => {
-      beforeEach(() => {
-        act(() => {
-          hookData.result.current.mutate({ provider, owner, repo })
-        })
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
+      beforeEach(async () => {
+        hookData.result.current.mutate({ provider, owner, repo })
+        await hookData.waitFor(() => hookData.result.current.status !== 'idle')
       })
 
       it('returns isLoading true', () => {
@@ -419,18 +421,15 @@ describe('useActivateFlagMeasurements', () => {
       })
     })
 
-    // describe('When success', () => {
-    //   beforeEach(async () => {
-    //     act(() => {
-    //       hookData.result.current.mutate({provider, owner, repo});
-    //     });
-    //     await hookData.waitFor(() => hookData.result.current.isLoading)
-    //     await hookData.waitFor(() => !hookData.result.current.isLoading)
-    //   })
+    describe('When success', () => {
+      beforeEach(async () => {
+        hookData.result.current.mutate()
+        await hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
 
-    //   it('returns isSuccess true', () => {
-    //     expect(hookData.result.current.isSuccess).toBeTruthy()
-    //   })
-    // })
+      it('returns expected output', () => {
+        expect(hookData.result.current.data).toEqual({})
+      })
+    })
   })
 })
