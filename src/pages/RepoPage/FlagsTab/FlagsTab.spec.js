@@ -4,6 +4,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FlagsTab from './FlagsTab'
 
+jest.mock('./subroute/FlagsTable/FlagsTable', () => () => 'Flags table')
+
 describe('Flags Tab', () => {
   function setup() {
     render(

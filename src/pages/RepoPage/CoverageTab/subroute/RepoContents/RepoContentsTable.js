@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types'
-
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
@@ -29,10 +27,6 @@ function RepoContentsTable() {
       )}
     </>
   )
-}
-
-RepoContentsTable.propTypes = {
-  state: PropTypes.string,
 }
 
 export default RepoContentsTable
