@@ -5,8 +5,10 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
+  useActivateFlagMeasurements,
   useEraseRepoContent,
   useRepo,
+  useRepoBackfilled,
   useRepoContents,
   useUpdateRepo,
 } from './hooks'
@@ -315,6 +317,114 @@ describe('useRepoContents', () => {
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual(expectedResponse)
+      })
+    })
+  })
+})
+
+describe('useRepoBackfilled', () => {
+  const dataReturned = {
+    owner: {
+      repository: {
+        flagsMeasurementsActive: true,
+        flagsMeasurementsBackfilled: true,
+      },
+    },
+  }
+
+  let hookData
+
+  function setup() {
+    server.use(
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(dataReturned))
+      })
+    )
+
+    hookData = renderHook(
+      () =>
+        useRepoBackfilled({
+          provider: 'gh',
+          owner: 'Rabee-AbuBaker',
+          repo: 'another-test',
+        }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders isLoading true', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the data', () => {
+        const expectedResponse = {
+          flagsMeasurementsActive: true,
+          flagsMeasurementsBackfilled: true,
+        }
+        expect(hookData.result.current.data).toEqual(expectedResponse)
+      })
+    })
+  })
+})
+
+describe('useActivateFlagMeasurements', () => {
+  let hookData
+
+  function setup() {
+    server.use(
+      graphql.query('activateFlagsMeasurements', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(null))
+      })
+    )
+    hookData = renderHook(
+      () => useActivateFlagMeasurements({ provider, owner, repo }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('returns isLoading false', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
+
+    describe('when calling the mutation', () => {
+      beforeEach(() => {
+        hookData.result.current.mutate()
+        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
+      })
+
+      it('returns isLoading true', () => {
+        expect(hookData.result.current.isLoading).toBeTruthy()
+      })
+    })
+
+    describe('When success', () => {
+      beforeEach(async () => {
+        hookData.result.current.mutate({})
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
+      })
+
+      it('returns isSuccess true', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
       })
     })
   })
