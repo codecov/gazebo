@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom'
 import Spinner from 'ui/Spinner'
 
 import FlagsBanner from './FlagsBanner'
+import FlagsTable from './subroute/FlagsTable/FlagsTable'
 
 function FlagsTab() {
   const Loader = (
@@ -19,7 +20,7 @@ function FlagsTab() {
         <Route path="/:provider/:owner/:repo/flags" exact>
           <Suspense fallback={Loader}>
             {/* TODO: For whoever makes this table, you should add a "opts: {enabled: flagsMeasurementsBackfilled}"; you can get this from the "useRepoBackfilled" hook*/}
-            <h1>Flags table</h1>
+            <FlagsTable />
           </Suspense>
         </Route>
       </div>

@@ -4,7 +4,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FlagsTab from './FlagsTab'
 
-jest.mock('./BackfillBanner/BackfillBanner.js', () => () => 'Backfill Banner')
+jest.mock('./FlagsBanner/FlagsBanner.js', () => () => 'Flags Banner')
+jest.mock('./subroute/FlagsTable/FlagsTable', () => () => 'Flags table')
 
 describe('Flags Tab', () => {
   function setup() {
@@ -25,7 +26,7 @@ describe('Flags Tab', () => {
     it('renders header and table components', () => {
       expect(screen.getByText(/Flags Header Component/)).toBeInTheDocument()
       expect(screen.getByText(/Flags table/)).toBeInTheDocument()
-      expect(screen.getByText(/Backfill Banner/)).toBeInTheDocument()
+      expect(screen.getByText(/Flags Banner/)).toBeInTheDocument()
     })
   })
 })
