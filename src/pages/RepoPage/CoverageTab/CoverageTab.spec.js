@@ -1,43 +1,70 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
+import { useRepo } from 'services/repo'
 
 import CoverageTab from './CoverageTab'
 
 jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
 jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
 jest.mock('./Summary', () => () => 'Summary Component')
+jest.mock('./DeactivatedRepo', () => () => 'Disabled Repo Component')
+jest.mock('services/repo')
+
 jest.mock('services/navigation', () => ({
   ...jest.requireActual('services/navigation'),
   useLocationParams: jest.fn(),
 }))
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest.fn(() => {}),
+}))
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 
 describe('Coverage Tab', () => {
   const mockUpdateParams = jest.fn()
-  function setup({ initialEntries }) {
+  function setup({ initialEntries, repoActivated = true }) {
+    useParams.mockReturnValue({
+      owner: 'Rabee-AbuBaker',
+      provider: 'gh',
+      repo: 'another-test',
+    })
+    useRepo.mockReturnValue({
+      data: { repository: { activated: repoActivated } },
+    })
     useLocationParams.mockReturnValue({
       params: { search: '' },
       updateParams: mockUpdateParams,
     })
 
     render(
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
-          <CoverageTab />
-        </Route>
-        <Route path="/:provider/:owner/:repo/tree/:branch" exact>
-          <CoverageTab />
-        </Route>
-        <Route path="/:provider/:owner/:repo/blobs/:ref/:path+">
-          <CoverageTab />
-        </Route>
-        <Route path="/:provider/:owner/:repo/" exact={true}>
-          <CoverageTab />
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
+            <CoverageTab />
+          </Route>
+          <Route path="/:provider/:owner/:repo/tree/:branch" exact>
+            <CoverageTab />
+          </Route>
+          <Route path="/:provider/:owner/:repo/blobs/:ref/:path+">
+            <CoverageTab />
+          </Route>
+          <Route path="/:provider/:owner/:repo/" exact={true}>
+            <CoverageTab />
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
   }
 
@@ -125,6 +152,19 @@ describe('Coverage Tab', () => {
       await waitFor(() =>
         expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
       )
+    })
+  })
+
+  describe('when repo is disabled', () => {
+    beforeEach(() => {
+      setup({
+        initialEntries: ['/gh/test-org/test-repo/'],
+        repoActivated: false,
+      })
+    })
+
+    it('renders Disabled Repo component', () => {
+      expect(screen.getByText(/Disabled Repo Component/)).toBeInTheDocument()
     })
   })
 })

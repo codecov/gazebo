@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types'
 
+import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
 const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
+  const { copiedCIToken } = useOnboardingTracking()
+
   return isCurrentUserPartOfOrg ? (
     <>
       <p className="text-base">
@@ -24,7 +27,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
         <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5 mr-2">
           {token}
         </span>
-        <CopyClipboard string={token} />
+        <CopyClipboard string={token} onClick={() => copiedCIToken(token)} />
       </p>
     </>
   ) : (

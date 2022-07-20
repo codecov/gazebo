@@ -32,7 +32,7 @@ function TruncatedMessage({ message }) {
     <div>
       <pre
         ref={msgRef}
-        data-testid="truncate-message"
+        data-testid="truncate-message-pre"
         className={cs(
           'text-lg font-semibold break-all whitespace-pre-wrap inline font-sans',
           {

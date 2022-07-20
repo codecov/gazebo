@@ -5,12 +5,15 @@ import { useOwner } from 'services/user'
 
 import { fireEvent, repoPageRender, screen, waitFor } from './repo-jest-setup'
 
+import { useFlags } from '../../shared/featureFlags'
+
 import RepoPage from '.'
 
 jest.mock('services/repo/hooks')
 jest.mock('services/commits')
 jest.mock('services/branches')
 jest.mock('services/user')
+jest.mock('shared/featureFlags')
 
 // This component is too complex for an integration test imo
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
@@ -57,11 +60,15 @@ describe('RepoPage', () => {
     commits = [],
     initialEntries,
     isCurrentUserPartOfOrg = true,
+    flagValue = false,
   }) {
     useRepo.mockReturnValue({ data: { repository } })
     useCommits.mockReturnValue({ data: { commits } })
     useBranches.mockReturnValue({ data: branches })
     useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
+    useFlags.mockReturnValue({
+      gazeboFlagsTab: flagValue,
+    })
 
     // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.
     if (initialEntries) {
@@ -78,7 +85,9 @@ describe('RepoPage', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ repository: { private: false, defaultBranch: 'main' } })
+      setup({
+        repository: { private: false, defaultBranch: 'main', activated: true },
+      })
     })
 
     it('renders the title with the owner name', () => {
@@ -122,6 +131,7 @@ describe('RepoPage', () => {
       setup({
         repository: {
           private: true,
+          activated: true,
         },
         commits,
       })
@@ -142,6 +152,7 @@ describe('RepoPage', () => {
       setup({
         repository: {
           private: true,
+          activated: true,
         },
       })
     })
@@ -162,6 +173,7 @@ describe('RepoPage', () => {
         repository: {
           private: true,
           defaultBranch: 'main',
+          activated: true,
         },
         path: 'commits',
         commits,
@@ -193,6 +205,7 @@ describe('RepoPage', () => {
         repository: {
           private: true,
           defaultBranch: 'main',
+          activated: true,
         },
         path: 'commits',
         commits,
@@ -215,12 +228,13 @@ describe('RepoPage', () => {
     })
   })
 
-  describe('when seelct a branch of the selector in the commits page', () => {
+  describe('when a branch is selected in the commits page', () => {
     beforeEach(async () => {
       setup({
         repository: {
           private: true,
           defaultBranch: 'main',
+          activated: true,
         },
         path: 'commits',
         commits,
@@ -249,6 +263,7 @@ describe('RepoPage', () => {
       setup({
         repository: {
           private: false,
+          activated: true,
         },
         commits,
         isCurrentUserPartOfOrg: false,
@@ -256,8 +271,52 @@ describe('RepoPage', () => {
     })
 
     it('does not render the settings tab', () => {
-      const tab = screen.queryByText(/Settings/)
-      expect(tab).not.toBeInTheDocument()
+      expect(screen.queryByText(/Settings/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with a disabled repo', () => {
+    beforeEach(() => {
+      setup({
+        repository: {
+          private: true,
+          activated: false,
+        },
+        commits,
+      })
+    })
+
+    it('renders coverage tab', () => {
+      expect(screen.getByText('Coverage')).toBeInTheDocument()
+    })
+
+    it('renders settings tab', () => {
+      expect(screen.getByText('Settings')).toBeInTheDocument()
+    })
+
+    it('does not render commits tab', () => {
+      expect(screen.queryByText(/Commits/)).not.toBeInTheDocument()
+    })
+
+    it('does not render pulls tab', () => {
+      expect(screen.queryByText(/pulls/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the repo is activated and the flags feature flag is true', () => {
+    beforeEach(() => {
+      setup({
+        repository: {
+          private: true,
+          activated: true,
+        },
+        commits,
+        flagValue: true,
+      })
+    })
+
+    it('renders coverage tab', () => {
+      expect(screen.getByText('Flags')).toBeInTheDocument()
     })
   })
 })

@@ -11,6 +11,8 @@ import {
 import GeneralTab from './GeneralTab'
 
 jest.mock('services/repo')
+jest.mock('./DangerZone/RepoState', () => () => 'RepoState')
+
 const queryClient = new QueryClient()
 
 describe('GeneralTab', () => {

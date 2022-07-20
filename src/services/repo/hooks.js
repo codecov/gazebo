@@ -14,6 +14,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
           uploadToken
           defaultBranch
           yaml
+          activated
         }
       }
     }
@@ -35,7 +36,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
 }
 
 export function useRepo({ provider, owner, repo }) {
-  return useQuery([provider, owner, repo], () => {
+  return useQuery(['GetRepo', provider, owner, repo], () => {
     return fetchRepoDetails({ provider, owner, repo })
   })
 }
@@ -93,6 +94,7 @@ export function useUpdateRepo() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('GetRepo')
+        queryClient.invalidateQueries('GetRepoSettings')
       },
     }
   )
@@ -125,7 +127,6 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
 
   return Api.graphql({
     provider,
-    repo,
     query,
     variables: {
       name: owner,

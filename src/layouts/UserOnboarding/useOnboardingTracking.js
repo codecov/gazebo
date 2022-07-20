@@ -6,9 +6,12 @@ import {
   pageSegmentEvent,
   trackSegmentEvent,
 } from 'services/tracking/segment'
+import { useUser } from 'services/user'
 
 export function useOnboardingTracking() {
   const { path, url } = useOnboardingLocation()
+  // TODO: create an app context where trackingmetadata is shared within the app
+  const { data: user } = useUser()
 
   return {
     startOnboarding: () => {
@@ -85,6 +88,34 @@ export function useOnboardingTracking() {
         }
       }
       identifySegmentEvent({ id, data })
+    },
+    downloadUploaderClicked: () => {
+      trackSegmentEvent({
+        event: 'User Onboarding Download Uploader Clicked',
+        data: {
+          category: 'Onboarding',
+          userId: user?.trackingMetadata?.ownerid,
+        },
+      })
+    },
+    copiedCIToken: (token) => {
+      trackSegmentEvent({
+        event: 'User Onboarding Copied CI Token',
+        data: {
+          category: 'Onboarding',
+          userId: user?.trackingMetadata?.ownerid,
+          tokenHash: token.slice(token.length - 8),
+        },
+      })
+    },
+    terminalUploaderCommandClicked: () => {
+      trackSegmentEvent({
+        event: 'User Onboarding Terminal Uploader Command Clicked',
+        data: {
+          category: 'Onboarding',
+          userId: user?.trackingMetadata?.ownerid,
+        },
+      })
     },
   }
 }

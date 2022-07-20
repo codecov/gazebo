@@ -243,6 +243,17 @@ function useNavLinks() {
       isExternalLink: gazeboOverviewTab,
       text: 'Overview',
     },
+    flagsTab: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/flags`,
+      isExternalLink: false,
+      text: 'Flags',
+    },
     branches: {
       path: (
         { provider = p, owner = o, repo = r } = {

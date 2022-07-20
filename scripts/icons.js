@@ -28,6 +28,7 @@ const enabledIcons = [
   'document',
   'branch',
   'exclamation-circle',
+  'ban',
 ]
 
 console.log('Generating Icons import')

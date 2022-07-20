@@ -31,32 +31,44 @@ const getFileData = (row, commit) => {
 
 const table = [
   {
-    Header: 'Name',
-    accessor: 'name',
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
     width: 'w-7/12 min-w-min',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: (
+    id: 'coverage',
+    header: (
       <span className="w-full text-right">
         <span className="font-mono">HEAD</span> file coverage %
       </span>
     ),
-    accessor: 'coverage',
+    accessorKey: 'coverage',
     width: 'w-3/12 min-w-min',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-sm text-right">Patch %</span>,
-    accessor: 'patch',
+    id: 'patch',
+    header: <span className="w-full text-sm text-right">Patch %</span>,
+    accessorKey: 'patch',
     width: 'w-28 min-w-min',
+    cell: (info) => info.getValue(),
   },
   {
-    Header: <span className="w-full text-right">Change</span>,
-    accessor: 'change',
+    id: 'change',
+    header: <span className="w-full text-right">Change</span>,
+    accessorKey: 'change',
     width: 'w-28 min-w-min',
+    cell: (info) => info.getValue(),
   },
 ]
 
-function createTable({ tableData = [] }) {
+function createTable({ tableData }) {
+  if (tableData.length <= 0) {
+    return [{ name: null, coverage: null, patch: null, change: null }]
+  }
+
   return tableData.map((row) => {
     const { headName, headCoverage, hasData, change, commit, patchCoverage } =
       row
@@ -121,9 +133,10 @@ function CommitsTable({ data = [], commit, state }) {
 
   return (
     <>
-      <Table data={tableContent} columns={table} />
-      {data?.length === 0 && (
+      {data?.length === 0 ? (
         <p className="mx-4">No Files covered by tests were changed</p>
+      ) : (
+        <Table data={tableContent} columns={table} />
       )}
     </>
   )
