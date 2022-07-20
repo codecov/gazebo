@@ -15,7 +15,7 @@ import {
 import { useUser } from 'services/user'
 import { useUpdateUser, useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
-import { isFreePlan } from 'shared/utils/billing'
+import { isEnterprisePlan, isFreePlan } from 'shared/utils/billing'
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Modal from 'ui/Modal'
@@ -50,12 +50,20 @@ function useActivateUser({ provider, owner }) {
   return { activate, ...rest }
 }
 
-function createPills({ isAdmin, email, student, lastPullTimestamp }) {
+function createPills({
+  isAdmin,
+  email,
+  student,
+  lastPullTimestamp,
+  isEnterprise,
+}) {
   return [
     isAdmin ? { label: 'Admin', highlight: true } : null,
     email,
     student ? 'Student' : null,
-    lastPullTimestamp && `last PR: ${formatTimeToNow(lastPullTimestamp)}`,
+    isEnterprise && lastPullTimestamp
+      ? `last PR: ${formatTimeToNow(lastPullTimestamp)}`
+      : null,
   ]
 }
 
@@ -99,6 +107,7 @@ function UserManagement({ provider, owner }) {
   const { upgradePlan } = useNavLinks()
   const [isOpen, setIsOpen] = useState(false)
   const maxActivatedUsers = 5
+  const isEnterprise = isEnterprisePlan(accountDetails?.plan?.value) || false
 
   const handleActivate = (user) => {
     if (
@@ -153,6 +162,7 @@ function UserManagement({ provider, owner }) {
       <FormControls
         current={params}
         onChange={updateParams}
+        isEnterprisePlan={isEnterprise}
         defaultValues={{
           search: params.search,
           activated: ApiFilterEnum.none,
@@ -185,7 +195,7 @@ function UserManagement({ provider, owner }) {
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
-                  pills={createPills(user)}
+                  pills={createPills({ ...user, isEnterprise })}
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Button

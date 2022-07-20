@@ -33,6 +33,16 @@ const account = {
   },
 }
 
+const enterpriseAccountDetails = {
+  data: {
+    planAutoActivate: true,
+    activatedUserCount: 1,
+    plan: {
+      value: 'users-enterprisey',
+    },
+  },
+}
+
 const updateUserMutate = jest.fn()
 const updateUser = {
   mutate: updateUserMutate,
@@ -69,6 +79,8 @@ describe('UserManagerment', () => {
     mockUseAutoActivate = updateAccount,
     isAdmin,
   }) {
+    // console.error(mockUseAccountDetails, '======')
+
     useUpdateUser.mockReturnValue(mockUseUpdateUserValue)
     useAccountDetails.mockReturnValue(mockUseAccountDetails)
     useAutoActivate.mockReturnValue(mockUseAutoActivate)
@@ -196,7 +208,7 @@ describe('UserManagerment', () => {
     })
   })
 
-  describe('has last pull timestamp', () => {
+  describe('Enterprise plan shows members last pull timestamp', () => {
     beforeEach(() => {
       jest.useFakeTimers().setSystemTime(new Date('2022-07-18 15:18:17.290'))
 
@@ -213,7 +225,10 @@ describe('UserManagerment', () => {
           ],
         },
       }
-      setup({ mockUseUsersValue })
+      setup({
+        mockUseUsersValue,
+        mockUseAccountDetails: enterpriseAccountDetails,
+      })
     })
     it('renders an email', () => {
       const placeholder = screen.getByText(/dazzle$/)
@@ -307,9 +322,9 @@ describe('UserManagerment', () => {
     })
   })
 
-  describe('Ordering', () => {
+  describe('Enterprise plan shows ordering select', () => {
     beforeEach(() => {
-      setup({})
+      setup({ mockUseAccountDetails: enterpriseAccountDetails })
     })
 
     it('Renders ordering select with the default selection', () => {
@@ -352,6 +367,35 @@ describe('UserManagerment', () => {
           search: '',
         },
       })
+    })
+  })
+
+  describe('Ordering select and last PR pill are hidden for any plan but enterprise', () => {
+    beforeEach(() => {
+      const mockUseUsersValue = {
+        isSuccess: true,
+        data: {
+          totalPages: 1,
+          results: [
+            {
+              username: 'dazzle',
+              email: 'dazzle@dota.com',
+              lastPullTimestamp: '2022-06-17 15:18:17.290',
+            },
+          ],
+        },
+      }
+      setup({ mockUseUsersValue })
+    })
+
+    it('Does not render ordering select', () => {
+      const OrderSelect = screen.queryByRole('button', { name: 'ordering' })
+      expect(OrderSelect).not.toBeInTheDocument()
+    })
+
+    it('Does not render last pr pill', () => {
+      const lastPullTimestamp = screen.queryByText(/last PR: about 1 month ago/)
+      expect(lastPullTimestamp).not.toBeInTheDocument()
     })
   })
 

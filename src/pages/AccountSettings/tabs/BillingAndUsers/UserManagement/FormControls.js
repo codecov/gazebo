@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -11,8 +12,7 @@ import TextInput from 'old_ui/TextInput'
 import { ActivatedItems, AdminItems, OrderItems } from './enums'
 
 const FormClasses = {
-  search:
-    'flex-none w-full border-t md:border-t-0 border-solid border-gray-200 py-2 w-1/4',
+  search: 'flex-none border-t md:border-t-0 border-solid border-gray-200 py-2',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
   firstFilter: 'flex-1 md:w-1/4 rounded-tl-md rounded-bl-md',
   filter: 'flex-1 md:w-1/4',
@@ -49,7 +49,12 @@ Item.propTypes = {
   label: PropTypes.string.isRequired,
 }
 
-export function FormControls({ onChange, current, defaultValues }) {
+export function FormControls({
+  onChange,
+  current,
+  defaultValues,
+  isEnterprisePlan,
+}) {
   const { register, control } = useForm({
     defaultValues,
   })
@@ -111,30 +116,35 @@ export function FormControls({ onChange, current, defaultValues }) {
               />
             )}
           />
-          <Controller
-            name="ordering"
-            control={control}
-            render={() => (
-              <Select
-                ariaName="ordering"
-                className={FormClasses.filter}
-                control={control}
-                items={OrderItems}
-                renderSelected={SelectedItem}
-                renderItem={Item}
-                value={OrderItems.find(
-                  ({ value }) => value === current?.ordering
-                )}
-                onChange={({ value }) => {
-                  onChange({ ordering: value })
-                }}
-              />
-            )}
-          />
+          {isEnterprisePlan && (
+            <Controller
+              name="ordering"
+              control={control}
+              render={() => (
+                <Select
+                  ariaName="ordering"
+                  className={FormClasses.filter}
+                  control={control}
+                  items={OrderItems}
+                  renderSelected={SelectedItem}
+                  renderItem={Item}
+                  value={OrderItems.find(
+                    ({ value }) => value === current?.ordering
+                  )}
+                  onChange={({ value }) => {
+                    onChange({ ordering: value })
+                  }}
+                />
+              )}
+            />
+          )}
           <TextInput
             variant="light"
             aria-label="search users"
-            className={FormClasses.search}
+            className={cs(FormClasses.search, {
+              'w-1/4': isEnterprisePlan,
+              'w-2/4': !isEnterprisePlan,
+            })}
             name="search"
             {...register('search')}
             placeholder="Search"
@@ -160,4 +170,5 @@ FormControls.propTypes = {
   onChange: PropTypes.func.isRequired,
   defaultValues: PropTypes.object.isRequired,
   current: PropTypes.object.isRequired,
+  isEnterprisePlan: PropTypes.bool,
 }
