@@ -11,6 +11,8 @@ import {
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
+import BannerContent from 'ui/Banner/BannerContent'
+import BannerHeading from 'ui/Banner/BannerHeading'
 import CIStatusLabel from 'ui/CIStatus'
 import Icon from 'ui/Icon'
 
@@ -51,35 +53,36 @@ function Header() {
   return (
     <div className="border-b border-ds-gray-secondary pb-4">
       <div className="mb-4">
-        <Banner
-          title={
+        <Banner>
+          <BannerHeading>
             <div className="flex justify-center gap-2">
               <Icon name="speakerphone" />
               <h2>Updating our web app</h2>
             </div>
-          }
-        >
-          <p>
-            We’ve been making changes to the web experience and this page is a
-            new look. If you prefer, you can{' '}
-            <A
-              to={{ pageName: 'legacyUI' }}
-              options={{ pathname: uri }}
-              onClick={() => setSelectedOldUI(true)}
-            >
-              switch back to the previous user interface
-            </A>
-            . Also, we would love to hear your feedback! Let us know what you
-            think in{' '}
-            <A
-              hook="feedback"
-              href={providerFeedback(provider)}
-              isExternal={true}
-            >
-              this issue
-            </A>
-            .
-          </p>
+          </BannerHeading>
+          <BannerContent>
+            <p>
+              We’ve been making changes to the web experience and this page is a
+              new look. If you prefer, you can{' '}
+              <A
+                to={{ pageName: 'legacyUI' }}
+                options={{ pathname: uri }}
+                onClick={() => setSelectedOldUI(true)}
+              >
+                switch back to the previous user interface
+              </A>
+              . Also, we would love to hear your feedback! Let us know what you
+              think in{' '}
+              <A
+                hook="feedback"
+                href={providerFeedback(provider)}
+                isExternal={true}
+              >
+                this issue
+              </A>
+              .
+            </p>
+          </BannerContent>
         </Banner>
       </div>
       {message && <TruncatedMessage message={message} />}
