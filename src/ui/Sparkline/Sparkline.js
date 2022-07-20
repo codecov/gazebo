@@ -15,6 +15,7 @@ const Sparkline = ({
   description,
   dataTemplate,
   select = (data) => data,
+  lineSize = 1,
 }) => {
   const data = useMemo(
     () =>
@@ -55,8 +56,12 @@ const Sparkline = ({
     .domain([lowerDomain - yPadding, upperDomain + yPadding])
     .range([0, 1])
 
+  const tableCssProperties = {
+    ...(lineSize && { '--line-size': `${lineSize}px` }),
+  }
+
   return (
-    <table className="flex-1 flex">
+    <table style={tableCssProperties} className="flex-1 flex">
       <caption className="sr-only">{description}</caption>
       <tbody className="flex flex-row flex-1">
         {data.map(({ start, end, mode, value }) => {
@@ -65,6 +70,7 @@ const Sparkline = ({
             '--start': start ? yScale(start).toFixed(2) : FALLBACK_LINE_POS,
             '--size': end ? yScale(end).toFixed(2) : FALLBACK_LINE_POS,
           }
+          console.log(properties)
           return (
             <tr
               className="relative flex-1 justify-start flex flex-row"
@@ -90,6 +96,7 @@ Sparkline.propTypes = {
   select: PropTypes.func,
   description: PropTypes.string.isRequired,
   dataTemplate: PropTypes.func.isRequired,
+  lineSize: PropTypes.number,
 }
 
 export default Sparkline
