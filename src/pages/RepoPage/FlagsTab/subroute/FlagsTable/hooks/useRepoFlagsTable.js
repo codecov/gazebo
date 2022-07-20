@@ -1,5 +1,4 @@
 import { format } from 'date-fns'
-import isEqual from 'lodash/isEqual'
 import { useCallback, useState } from 'react'
 
 import { useRepoFlags } from 'services/repo/useRepoFlags'
@@ -24,7 +23,7 @@ function useRepoContentsTable() {
   const handleSort = useCallback(
     (tableSortBy) => {
       const tableSortByDirection = getSortByDirection(tableSortBy)
-      if (!isEqual(sortBy, tableSortByDirection)) {
+      if (sortBy !== tableSortByDirection) {
         setSortBy(tableSortByDirection)
       }
     },
