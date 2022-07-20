@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FlagsTable from './FlagsTable'
@@ -21,6 +21,7 @@ const flagsData = [
 
 describe('RepoContentsTable', () => {
   const fetchNextPage = jest.fn()
+  const handleSort = jest.fn()
 
   function setup({
     isLoading = false,
@@ -30,6 +31,7 @@ describe('RepoContentsTable', () => {
     useRepoFlagsTable.mockReturnValue({
       data,
       isLoading,
+      handleSort,
       hasNextPage,
       fetchNextPage: fetchNextPage,
       isFetchingNextPage: false,
@@ -106,6 +108,27 @@ describe('RepoContentsTable', () => {
     it('fires next page button click', () => {
       screen.getByText(/Load More/).click()
       expect(fetchNextPage).toHaveBeenCalled()
+    })
+  })
+
+  describe('when sorting', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('calls handleSort', async () => {
+      screen.getByText(/Flags/).click()
+      await waitFor(() =>
+        expect(handleSort).toHaveBeenLastCalledWith([
+          { desc: true, id: 'name' },
+        ])
+      )
+      screen.getByText(/Flags/).click()
+      await waitFor(() =>
+        expect(handleSort).toHaveBeenLastCalledWith([
+          { desc: false, id: 'name' },
+        ])
+      )
     })
   })
 })
