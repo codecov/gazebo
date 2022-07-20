@@ -59,9 +59,9 @@ describe('usePrefetchFileEntry', () => {
     })
 
     server.use(
-      graphql.query('BranchFiles', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockData))
-      })
+      graphql.query('BranchFiles', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockData))
+      )
     )
 
     hookData = renderHook(

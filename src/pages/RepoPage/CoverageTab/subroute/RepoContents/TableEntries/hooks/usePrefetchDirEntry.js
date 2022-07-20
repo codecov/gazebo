@@ -36,11 +36,11 @@ export function usePrefetchDirEntry({ branch, path, filters }) {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
 
-  const runPrefetch = async () => {
+  const runPrefetch = async () =>
     await queryClient.prefetchQuery(
       ['BranchFiles', provider, owner, repo, branch, path, filters],
-      () => {
-        return Api.graphql({
+      () =>
+        Api.graphql({
           provider,
           repo,
           query,
@@ -53,13 +53,11 @@ export function usePrefetchDirEntry({ branch, path, filters }) {
           },
         }).then(
           (res) => res?.data?.owner?.repository?.branch?.head?.pathContents
-        )
-      },
+        ),
       {
         staleTime: 10000,
       }
     )
-  }
 
   return { runPrefetch }
 }

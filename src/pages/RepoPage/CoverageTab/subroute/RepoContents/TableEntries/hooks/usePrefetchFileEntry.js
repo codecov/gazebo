@@ -47,11 +47,11 @@ export function usePrefetchFileEntry({ branch, path, options = {} }) {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
 
-  const runPrefetch = async () => {
+  const runPrefetch = async () =>
     await queryClient.prefetchQuery(
       ['commit', provider, owner, repo, branch, path],
-      () => {
-        return Api.graphql({
+      () =>
+        Api.graphql({
           provider,
           query,
           variables: {
@@ -61,13 +61,11 @@ export function usePrefetchFileEntry({ branch, path, options = {} }) {
             ref: branch,
             path,
           },
-        }).then(extractCoverageFromResponse)
-      },
+        }).then(extractCoverageFromResponse),
       {
         staleTime: 10000,
       }
     )
-  }
 
   return { runPrefetch }
 }

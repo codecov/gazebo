@@ -97,9 +97,9 @@ describe('usePrefetchFileEntry', () => {
     })
 
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockData))
-      })
+      graphql.query('CoverageForFile', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockData))
+      )
     )
 
     hookData = renderHook(
