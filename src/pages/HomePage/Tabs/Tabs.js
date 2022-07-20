@@ -1,8 +1,13 @@
 import PropTypes from 'prop-types'
+import { useFlags } from 'shared/featureFlags'
 
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs({ currentUsername }) {
+  const { gazeboBillingsTab } = useFlags({
+    gazeboBillingsTab: false,
+  })
+
   return (
     <TabNavigation
       tabs={[
@@ -17,12 +22,14 @@ function Tabs({ currentUsername }) {
             owner: currentUsername,
           },
         },
-        {
+        ...(gazeboBillingsTab ?
+           [ {
           pageName: 'billingTab',
           options: {
             owner: currentUsername,
           },
-        },
+        },] : []),
+  
         {
           pageName: 'accountAdmin',
           children: 'Settings',

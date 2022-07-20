@@ -1,6 +1,11 @@
+import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
+  const { gazeboBillingsTab } = useFlags({
+    gazeboBillingsTab: false,
+  })
+
   return (
     <TabNavigation
       tabs={[
@@ -12,9 +17,7 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        {
-          pageName: 'billingTab',
-        },
+        ...(gazeboBillingsTab ? [{ pageName: 'billingTab' }] : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',
