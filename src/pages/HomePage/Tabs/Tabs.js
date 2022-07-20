@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
-import { useFlags } from 'shared/featureFlags'
 
+import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs({ currentUsername }) {
@@ -22,14 +22,17 @@ function Tabs({ currentUsername }) {
             owner: currentUsername,
           },
         },
-        ...(gazeboBillingsTab ?
-           [ {
-          pageName: 'billingTab',
-          options: {
-            owner: currentUsername,
-          },
-        },] : []),
-  
+        ...(gazeboBillingsTab
+          ? [
+              {
+                pageName: 'billingTab',
+                options: {
+                  owner: currentUsername,
+                },
+              },
+            ]
+          : []),
+
         {
           pageName: 'accountAdmin',
           children: 'Settings',
