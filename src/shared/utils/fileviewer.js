@@ -16,10 +16,10 @@ export const classNamePerLineState = {
   [LINE_STATE.COVERED]:
     'bg-ds-coverage-covered border-ds-primary-green border-r-2',
   [LINE_STATE.UNCOVERED]:
-    'bg-ds-coverage-uncovered border-ds-primary-red border-r-2',
+    'text-[#E1B3BA] bg-ds-coverage-uncovered border-ds-primary-red border-r-2 pattern-dots',
   [LINE_STATE.BLANK]: 'border-ds-gray-tertiary border-r',
   [LINE_STATE.PARTIAL]:
-    'bg-ds-coverage-partial border-ds-primary-yellow border-r-2',
+    'text-[#E8DFB2] bg-ds-coverage-partial border-ds-primary-yellow border-r-2 pattern-grid',
 }
 
 export const lineStateToLabel = {
