@@ -9,7 +9,7 @@ const getSortByDirection = (sortBy) =>
     ? SortingDirection.DESC
     : SortingDirection.ASC
 
-function useRepoContentsTable() {
+function useRepoFlagsTable() {
   const [sortBy, setSortBy] = useState(SortingDirection.ASC)
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRepoFlags({
@@ -40,4 +40,4 @@ function useRepoContentsTable() {
   }
 }
 
-export default useRepoContentsTable
+export default useRepoFlagsTable

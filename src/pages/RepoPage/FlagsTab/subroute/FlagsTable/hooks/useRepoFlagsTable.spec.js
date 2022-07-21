@@ -39,7 +39,7 @@ const emptyRepoFlagsMock = {
   data: [],
 }
 
-describe('useFlagsRepoTable', () => {
+describe('useRepoFlagsTable', () => {
   let hookData
   function setup({ repoData }) {
     useRepoFlags.mockReturnValue(repoData)
