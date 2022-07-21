@@ -46,7 +46,7 @@ function DiffLine({
           classNamePerLineState[baseLineState]
         )}
       >
-        {baseNumber}
+        <span className="text-black">{baseNumber}</span>
       </td>
       <td
         aria-label={lineStateToLabel[headLineState]}
@@ -55,7 +55,7 @@ function DiffLine({
           classNamePerLineState[headLineState]
         )}
       >
-        {headNumber}
+        <span className="text-black">{headNumber}</span>
       </td>
       <td
         data-testid="affected-lines"
