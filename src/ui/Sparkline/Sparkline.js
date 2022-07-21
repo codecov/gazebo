@@ -57,7 +57,7 @@ const Sparkline = ({
     .range([0, 1])
 
   const tableCssProperties = {
-    ...(lineSize && { '--line-size': `${lineSize}px` }),
+    '--line-width': `${lineSize}px`,
   }
 
   return (
@@ -70,7 +70,6 @@ const Sparkline = ({
             '--start': start ? yScale(start).toFixed(2) : FALLBACK_LINE_POS,
             '--size': end ? yScale(end).toFixed(2) : FALLBACK_LINE_POS,
           }
-          console.log(properties)
           return (
             <tr
               className="relative flex-1 justify-start flex flex-row"

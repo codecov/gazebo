@@ -1,5 +1,4 @@
 td {
-  --line-width: var(--line-size, 1px);
   --dot-size: 4px;
 }
 
