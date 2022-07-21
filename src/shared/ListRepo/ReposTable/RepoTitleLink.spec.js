@@ -66,7 +66,7 @@ describe('RepoTitleLink', () => {
     })
   })
 
-  describe('when the repository is deactivated', () => {
+  describe('when the repository is not activated', () => {
     beforeEach(() => {
       setup({
         repo: {
@@ -84,7 +84,7 @@ describe('RepoTitleLink', () => {
     })
 
     it('renders the deactivated tag', () => {
-      expect(screen.getByText(/Deactivated/)).toBeInTheDocument()
+      expect(screen.getByText(/Not Activated/)).toBeInTheDocument()
     })
   })
 
