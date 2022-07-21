@@ -40,7 +40,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName }) {
         </span>
       </AppLink>
       {isRepoPrivate && <Badge>Private</Badge>}
-      {!activated && <Badge>Deactivated</Badge>}
+      {!activated && <Badge>Not Activated</Badge>}
     </div>
   )
 }
