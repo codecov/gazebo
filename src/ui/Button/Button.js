@@ -43,6 +43,24 @@ const variantClasses = {
 
     hover:text-ds-gray-octonary
   `,
+  github: `
+    border border-solid border-github
+    bg-github hover:bg-white
+    text-white hover:text-github
+    transition-colors duration-75 ease-in
+  `,
+  gitlab: `
+    border border-solid border-gitlab
+    bg-gitlab hover:bg-white
+    text-white hover:text-gitlab
+    transition-colors duration-75 ease-in
+  `,
+  bitbucket: `
+    border border-solid border-bitbucket
+    bg-bitbucket hover:bg-white
+    text-white hover:text-bitbucket
+    transition-colors duration-75 ease-in
+  `,
 }
 
 const loadingVariantClasses = {
@@ -116,6 +134,9 @@ Button.propTypes = {
     'danger',
     'secondary',
     'plain',
+    'github',
+    'gitlab',
+    'bitbucket',
   ]),
   isLoading: PropTypes.bool,
   disabled: PropTypes.bool,
