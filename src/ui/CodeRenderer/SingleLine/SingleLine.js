@@ -27,7 +27,7 @@ function SingleLine({
           classNamePerLineState[lineState]
         )}
       >
-        {number}
+        <span className="text-black">{number}</span>
       </td>
       <td className="pl-2 break-all">
         {line.map((token, key) => (
