@@ -2,7 +2,7 @@ import { format } from 'date-fns'
 import { useCallback, useState } from 'react'
 
 import { useRepoFlags } from 'services/repo/useRepoFlags'
-import { SortingDirection } from 'ui/Table/constans'
+import { SortingDirection } from 'ui/Table/constants'
 
 const getSortByDirection = (sortBy) =>
   sortBy.length > 0 && sortBy[0].desc

@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
-import { SortingDirection } from 'ui/Table/constans'
+import { SortingDirection } from 'ui/Table/constants'
 
 import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
