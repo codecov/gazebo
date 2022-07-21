@@ -85,7 +85,7 @@ describe('useRepoFlagsTable', () => {
       )
     })
 
-    it('calls useRepoContents with desc value when the array is empty', async () => {
+    it('calls useRepoContents with asc value when the array is empty', async () => {
       act(() => {
         hookData.result.current.handleSort([])
       })
