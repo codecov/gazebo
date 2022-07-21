@@ -49,7 +49,7 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
 
   return (
     <div className="flex self-start">
-      <Button to={{ pageName: 'upgradePlan' }} variant="primary">
+      <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
         {isFreePlan ? 'Upgrade plan' : 'Change plan'}
       </Button>
     </div>

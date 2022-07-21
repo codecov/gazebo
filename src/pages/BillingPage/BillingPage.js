@@ -13,6 +13,7 @@ import { BillingBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
 import Tabs from './Tabs'
+import UpgradePlan from './UpgradePlan'
 
 const stripePromise = loadStripe(config.STRIPE_KEY)
 const path = '/billing/:provider/:owner'
@@ -40,8 +41,8 @@ function BillingPage() {
               <Route path={path} exact>
                 <CurrentOrgPlan />
               </Route>
-              <Route path={`${path}/plan`} exact>
-                plan work
+              <Route path={`${path}/upgrade`} exact>
+                <UpgradePlan/>
               </Route>
               <Redirect
                 from="/billing/:provider/:owner/*"
