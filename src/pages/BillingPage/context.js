@@ -8,7 +8,7 @@ import {
 } from 'react'
 
 const base =[{ pageName: 'billingTab', text: 'Current org plan' }]
-const BillingBreadcrumbContext = createContext(base)
+const BillingBreadcrumbContext = createContext([])
 const BillingBreadcrumbSettersContext = createContext({
   addBreadcrumb: noop,
 })

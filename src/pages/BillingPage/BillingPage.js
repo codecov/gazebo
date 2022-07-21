@@ -25,9 +25,8 @@ function BillingPage() {
     <div className="flex flex-col gap-4">
       <Header owner={ownerData} />
       <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
-      <BillingBreadcrumb />
-
       <BillingBreadcrumbProvider>
+         <BillingBreadcrumb />
         <Suspense fallback={Loader}>
           <Switch>
             <Route path={path} exact>
