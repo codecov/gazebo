@@ -106,6 +106,9 @@ module.exports = {
           500: '#A3D9FF',
           900: '#013B65',
         },
+        github: '#333333',
+        gitlab: '#FC6D26',
+        bitbucket: '#0052CC',
       },
       boxShadow: {
         card: '0 7px 20px 0 rgba(34,47,61,0.05)',
