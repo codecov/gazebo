@@ -73,6 +73,7 @@ describe('RepoTitleLink', () => {
           ...repo,
           private: false,
           activated: false,
+          active: true,
         },
         showRepoOwner: false,
         pageName: 'repo',
