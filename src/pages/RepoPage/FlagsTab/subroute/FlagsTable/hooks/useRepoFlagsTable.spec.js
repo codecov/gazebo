@@ -1,5 +1,6 @@
 import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
+import { format } from 'date-fns'
 import { act } from 'react-test-renderer'
 
 import { useRepoFlags } from 'services/repo/useRepoFlags'
@@ -76,7 +77,7 @@ describe('useRepoFlagsTable', () => {
       await waitFor(() =>
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2022-01-01',
-          beforeDate: '2022-07-20',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
           filters: {},
           interval: 'INTERVAL_7_DAY',
           orderingDirection: 'DESC',
@@ -92,7 +93,7 @@ describe('useRepoFlagsTable', () => {
       await waitFor(() =>
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2022-01-01',
-          beforeDate: '2022-07-20',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
           filters: {},
           interval: 'INTERVAL_7_DAY',
           orderingDirection: 'ASC',
@@ -108,7 +109,7 @@ describe('useRepoFlagsTable', () => {
       await waitFor(() =>
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2022-01-01',
-          beforeDate: '2022-07-20',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
           filters: {},
           interval: 'INTERVAL_7_DAY',
           orderingDirection: 'ASC',
