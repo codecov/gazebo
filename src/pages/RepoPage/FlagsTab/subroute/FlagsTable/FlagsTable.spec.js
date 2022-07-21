@@ -10,12 +10,14 @@ const flagsData = [
   {
     name: 'flag1',
     percentCovered: 93.26,
-    measurements: [],
+    percentChange: -1.56,
+    measurements: [{ avg: 51.78 }, { avg: 93.356 }],
   },
   {
     name: 'flag2',
     percentCovered: 91.74,
-    measurements: [],
+    percentChange: null,
+    measurements: [{ avg: null }, { avg: null }],
   },
 ]
 
@@ -65,9 +67,11 @@ describe('RepoContentsTable', () => {
       expect(screen.getByText(/91.74%/)).toBeInTheDocument()
     })
 
-    it('renders flags trend', () => {
-      expect(screen.getByText(/flag1 trend data/)).toBeInTheDocument()
-      expect(screen.getByText(/flag2 trend data/)).toBeInTheDocument()
+    it('renders flags sparkline with change', () => {
+      expect(screen.getByText(/Flag flag1 trend sparkline/)).toBeInTheDocument()
+      expect(screen.getByText(/-1.56/)).toBeInTheDocument()
+      expect(screen.getByText(/Flag flag2 trend sparkline/)).toBeInTheDocument()
+      expect(screen.getByText('No Data')).toBeInTheDocument()
     })
   })
 
