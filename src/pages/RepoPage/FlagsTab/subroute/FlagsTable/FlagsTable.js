@@ -6,6 +6,7 @@ import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
 import useRepoFlagsTable from './hooks'
+import TableSparkline from './TableEntries/TableSparkline'
 
 const headers = [
   {
@@ -43,26 +44,23 @@ const headers = [
 
 function createTableData({ tableData }) {
   return tableData?.length > 0
-    ? tableData.map(({ name, percentCovered, measurements }) => ({
-        name: (
-          <>
-            <div className="flex gap-2">
-              <span>{name}</span>
+    ? tableData.map(
+        ({ name, percentCovered, percentChange, measurements }) => ({
+          name: <span>{name}</span>,
+          coverage: (
+            <div className="flex flex-1 gap-2 items-center">
+              <Progress amount={percentCovered} label />
             </div>
-          </>
-        ),
-        coverage: (
-          <div className="flex flex-1 gap-2 items-center">
-            <Progress amount={percentCovered} label />
-          </div>
-        ),
-        //TODO: Implement trend component
-        trend: (
-          <div className="flex flex-1 gap-2 items-center">
-            <span> {name} trend data </span>
-          </div>
-        ),
-      }))
+          ),
+          trend: (
+            <TableSparkline
+              measurements={measurements}
+              change={percentChange}
+              name={name}
+            />
+          ),
+        })
+      )
     : []
 }
 
