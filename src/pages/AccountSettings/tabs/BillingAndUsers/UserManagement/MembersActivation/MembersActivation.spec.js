@@ -36,17 +36,13 @@ describe('Members Activation', () => {
       })
     )
       it('Displays number of activated users', () => {
-        const usersNumber = screen.getByText('5')
-        const p = screen.getByText(/active members of/)
-        expect(p).toBeInTheDocument()
-        expect(usersNumber).toBeInTheDocument()
+        expect(screen.getByText(/active members of/)).toBeInTheDocument()
+        expect(screen.getByText('5')).toBeInTheDocument()
       })
 
     it('Displays number of plan quantity', () => {
-      const p = screen.getByText(/avaialbe seats/)
-      const planQuantity = screen.getByText('9')
-      expect(planQuantity).toBeInTheDocument()
-      expect(p).toBeInTheDocument()
+      expect(screen.getByText('9')).toBeInTheDocument()
+      expect(screen.getByText(/avaialbe seats/)).toBeInTheDocument()
     })
 
     it('Renders change plan link', () => {
