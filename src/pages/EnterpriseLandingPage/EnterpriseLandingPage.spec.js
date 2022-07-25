@@ -11,9 +11,9 @@ jest.mock('./hooks')
 
 const mockData = {
   data: {
-    github: [{ hostingOption: 'EXTERNAL' }],
-    gitlab: [{ hostingOption: 'EXTERNAL' }],
-    bitbucket: [{ hostingOption: 'EXTERNAL' }],
+    github: ['EXTERNAL'],
+    gitlab: ['EXTERNAL'],
+    bitbucket: ['EXTERNAL'],
   },
 }
 

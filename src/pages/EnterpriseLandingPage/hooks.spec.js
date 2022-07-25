@@ -25,30 +25,9 @@ afterAll(() => server.close())
 
 const mockData = {
   loginProviders: {
-    github: [
-      {
-        hostingOption: 'EXTERNAL',
-      },
-      {
-        hostingOption: 'SELF_HOSTED',
-      },
-    ],
-    gitlab: [
-      {
-        hostingOption: 'EXTERNAL',
-      },
-      {
-        hostingOption: 'SELF_HOSTED',
-      },
-    ],
-    bitbucket: [
-      {
-        hostingOption: 'EXTERNAL',
-      },
-      {
-        hostingOption: 'SELF_HOSTED',
-      },
-    ],
+    github: ['EXTERNAL', 'SELF_HOSTED'],
+    gitlab: ['EXTERNAL', 'SELF_HOSTED'],
+    bitbucket: ['EXTERNAL', 'SELF_HOSTED'],
   },
 }
 

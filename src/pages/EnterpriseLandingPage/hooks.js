@@ -6,15 +6,9 @@ const fetchServiceProviders = () => {
   const query = `
     query GetServiceProviders {
       loginProviders {
-        github {
-          hostingOption
-        }
-        gitlab {
-          hostingOption
-        }
-        bitbucket {
-          hostingOption
-        }
+        github
+        gitlab
+        bitbucket
       }
     }
   `

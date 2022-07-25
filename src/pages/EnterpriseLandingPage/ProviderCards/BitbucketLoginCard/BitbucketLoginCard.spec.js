@@ -16,10 +16,7 @@ describe('BitbucketLoginCard', () => {
 
   describe('when system is configured with Bitbucket', () => {
     beforeEach(() => {
-      const data = [
-        { hostingOption: 'EXTERNAL' },
-        { hostingOption: 'SELF_HOSTED' },
-      ]
+      const data = ['EXTERNAL', 'SELF_HOSTED']
       setup(data)
     })
 

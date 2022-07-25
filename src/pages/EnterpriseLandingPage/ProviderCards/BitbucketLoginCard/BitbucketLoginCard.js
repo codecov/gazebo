@@ -18,24 +18,21 @@ function BitbucketLoginCard({ bitbucket }) {
           <h2 className="text-2xl">Bitbucket</h2>
         </div>
         <div className="flex flex-col gap-2">
-          {bitbucket.map(({ hostingOption }, i) =>
-            hostingOption === 'EXTERNAL' ? (
-              <Button
-                key={i}
-                to={{ pageName: 'signIn', options: { provider: 'bb' } }}
-                variant="bitbucket"
-              >
-                Login via Bitbucket
-              </Button>
-            ) : (
-              <Button
-                key={i}
-                to={{ pageName: 'signIn', options: { provider: 'bbs' } }}
-                variant="bitbucket"
-              >
-                Login via Bitbucket Server
-              </Button>
-            )
+          {bitbucket.includes('EXTERNAL') && (
+            <Button
+              to={{ pageName: 'signIn', options: { provider: 'bb' } }}
+              variant="bitbucket"
+            >
+              Login via Bitbucket
+            </Button>
+          )}
+          {bitbucket.includes('SELF_HOSTED') && (
+            <Button
+              to={{ pageName: 'signIn', options: { provider: 'bbs' } }}
+              variant="bitbucket"
+            >
+              Login via Bitbucket Server
+            </Button>
           )}
         </div>
       </div>

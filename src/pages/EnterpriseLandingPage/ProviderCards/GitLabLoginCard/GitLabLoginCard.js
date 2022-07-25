@@ -18,24 +18,21 @@ function GitLabLoginCard({ gitlab }) {
           <h2 className="text-2xl">GitLab</h2>
         </div>
         <div className="flex flex-col gap-2 w-64">
-          {gitlab.map(({ hostingOption }, i) =>
-            hostingOption === 'EXTERNAL' ? (
-              <Button
-                key={i}
-                to={{ pageName: 'signIn', options: { provider: 'gl' } }}
-                variant="gitlab"
-              >
-                Login via GitLab
-              </Button>
-            ) : (
-              <Button
-                key={i}
-                to={{ pageName: 'signIn', options: { provider: 'gle' } }}
-                variant="gitlab"
-              >
-                Login via GitLab CE/EE
-              </Button>
-            )
+          {gitlab.includes('EXTERNAL') && (
+            <Button
+              to={{ pageName: 'signIn', options: { provider: 'gl' } }}
+              variant="gitlab"
+            >
+              Login via GitLab
+            </Button>
+          )}
+          {gitlab.includes('SELF_HOSTED') && (
+            <Button
+              to={{ pageName: 'signIn', options: { provider: 'gle' } }}
+              variant="gitlab"
+            >
+              Login via GitLab CE/EE
+            </Button>
           )}
         </div>
       </div>

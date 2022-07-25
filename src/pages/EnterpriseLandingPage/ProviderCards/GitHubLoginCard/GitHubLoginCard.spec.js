@@ -16,10 +16,7 @@ describe('GitHubLoginCard', () => {
 
   describe('when system is configured with GitHub', () => {
     beforeEach(() => {
-      const data = [
-        { hostingOption: 'EXTERNAL' },
-        { hostingOption: 'SELF_HOSTED' },
-      ]
+      const data = ['EXTERNAL', 'SELF_HOSTED']
       setup(data)
     })
 

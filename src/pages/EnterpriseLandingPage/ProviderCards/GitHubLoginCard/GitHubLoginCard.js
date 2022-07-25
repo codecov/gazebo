@@ -18,24 +18,21 @@ function GitHubLoginCard({ github }) {
           <h2 className="text-2xl">GitHub</h2>
         </div>
         <div className="flex flex-col gap-2">
-          {github.map(({ hostingOption }, i) =>
-            hostingOption === 'EXTERNAL' ? (
-              <Button
-                key={i}
-                to={{ pageName: 'signIn', options: { provider: 'gh' } }}
-                variant="github"
-              >
-                Login via GitHub
-              </Button>
-            ) : (
-              <Button
-                key={i}
-                to={{ pageName: 'signIn', options: { provider: 'ghe' } }}
-                variant="github"
-              >
-                Login via GitHub Enterprise
-              </Button>
-            )
+          {github.includes('EXTERNAL') && (
+            <Button
+              to={{ pageName: 'signIn', options: { provider: 'gh' } }}
+              variant="github"
+            >
+              Login via GitHub
+            </Button>
+          )}
+          {github.includes('SELF_HOSTED') && (
+            <Button
+              to={{ pageName: 'signIn', options: { provider: 'ghe' } }}
+              variant="github"
+            >
+              Login via GitHub Enterprise
+            </Button>
           )}
         </div>
       </div>
