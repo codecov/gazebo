@@ -12,4 +12,4 @@ function BillingBreadcrumb() {
   )
 }
 
-export default BillingBreadcrumb;
+export default BillingBreadcrumb

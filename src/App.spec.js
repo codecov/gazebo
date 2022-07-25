@@ -1,9 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react'
 
-import App from './App'
 import { useFlags } from 'shared/featureFlags'
 
+import App from './App'
+
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
+jest.mock('./pages/BillingPage/BillingPage', () => () => 'BillingPage')
 jest.mock('react-query/devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
 }))
@@ -36,7 +38,7 @@ describe('App', () => {
     })
   })
 
-  describe('',()=>{
+  describe('rendering billing page', () => {
     beforeEach(() => {
       window.history.pushState({}, 'Test page', '/billing/gh/codecov/')
       setup()
@@ -49,7 +51,7 @@ describe('App', () => {
 
     it('renders billing page', () => {
       return waitFor(() => {
-        const page = screen.getByText(/Current org plan/i)
+        const page = screen.getByText(/BillingPage/i)
         expect(page).toBeInTheDocument()
       })
     })
