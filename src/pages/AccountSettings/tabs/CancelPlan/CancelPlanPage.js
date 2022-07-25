@@ -13,7 +13,7 @@ import umbrellaImg from './umbrella.svg'
 import BackLink from '../../shared/BackLink'
 import BenefitList from '../../shared/BenefitList'
 
-function CancelPlan({ provider, owner }) {
+function CancelPlanPage({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = usePlans(provider)
   const { billingAndUsers } = useNavLinks()
@@ -87,9 +87,9 @@ function CancelPlan({ provider, owner }) {
   )
 }
 
-CancelPlan.propTypes = {
+CancelPlanPage.propTypes = {
   provider: PropType.string.isRequired,
   owner: PropType.string.isRequired,
 }
 
-export default CancelPlan
+export default CancelPlanPage

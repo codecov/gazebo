@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useAccountDetails, useCancelPlan, usePlans } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 
-import CancelPlan from './CancelPlan'
+import CancelPlanPage from './CancelPlanPage'
 
 jest.mock('services/account/hooks')
 jest.mock('services/toastNotification')
@@ -58,7 +58,7 @@ describe('CancelPlan', () => {
     useCancelPlan.mockReturnValue({ mutate, isLoading: false })
     const { unmount } = render(
       <MemoryRouter initialEntries={['/my/initial/route']}>
-        <CancelPlan provider={provider} owner={owner} />
+        <CancelPlanPage provider={provider} owner={owner} />
         <Route
           path="*"
           render={({ location }) => {
