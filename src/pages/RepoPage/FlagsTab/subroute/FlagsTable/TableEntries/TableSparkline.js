@@ -12,7 +12,7 @@ function TableSparkline({ measurements, change, name }) {
   const noData = isDataEmpty({ measurements })
 
   return (
-    <div className="w-full flex gap-3">
+    <div className="flex-grow flex gap-3">
       <Sparkline
         description={`Flag ${name} trend sparkline`}
         dataTemplate={(d) => (d ? `${d}%` : 'No Data Available')}

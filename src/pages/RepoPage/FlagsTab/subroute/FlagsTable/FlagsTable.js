@@ -44,13 +44,7 @@ function createTableData({ tableData }) {
   return tableData?.length > 0
     ? tableData.map(
         ({ name, percentCovered, percentChange, measurements }) => ({
-          name: (
-            <>
-              <div className="flex gap-2">
-                <span>{name}</span>
-              </div>
-            </>
-          ),
+          name: <span>{name}</span>,
           coverage: (
             <div className="flex flex-1 gap-2 items-center">
               <Progress amount={percentCovered} label />
