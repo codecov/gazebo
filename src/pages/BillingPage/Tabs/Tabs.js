@@ -5,7 +5,7 @@ function Tabs() {
   const { gazeboBillingsTab } = useFlags({
     gazeboBillingsTab: false,
   })
-  
+
   return (
     <TabNavigation
       tabs={[
