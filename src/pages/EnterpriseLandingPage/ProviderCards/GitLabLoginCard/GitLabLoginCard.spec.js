@@ -30,7 +30,7 @@ describe('GitLabLoginCard', () => {
     })
 
     it('renders self hosted login link', () => {
-      const element = screen.getByRole('link', { name: 'Gitlab CE/EE' })
+      const element = screen.getByRole('link', { name: 'GitLab CE/EE' })
       expect(element).toBeInTheDocument()
       expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gle`)
     })
