@@ -20,3 +20,14 @@ tbody tr:last-child td {
 .style .token.string {
   @apply bg-transparent;
 }
+
+.pattern-grid {
+  background-image: linear-gradient(currentColor 1px, transparent 1px),
+    linear-gradient(to right, currentColor 1px, transparent 1px);
+  background-size: 11px 11px;
+}
+
+.pattern-dots {
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: calc(10 * 1px) calc(10 * 1px);
+}

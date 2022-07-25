@@ -1,28 +1,37 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useOwner } from 'services/user'
 
 import Header from './Header'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
+jest.mock('services/user')
+
+const queryClient = new QueryClient()
 
 describe('Header', () => {
-  function setup(props = {}) {
+  function setup() {
+    useOwner.mockReturnValue({
+      owner: {
+        username: 'dwight',
+      },
+    })
     render(
-      <MemoryRouter initialEntries={['/billings/gh/codecov']}>
-        <Route path="/billings/:provider/:owner">
-          <Header {...props} />
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/billings/gh/codecov']}>
+          <Route path="/billings/:provider/:owner">
+            <Header />
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
   }
 
   describe('render', () => {
     beforeEach(() => {
-      setup({
-        owner: {
-          username: 'dwight',
-        },
-      })
+      setup()
     })
 
     it('renders the context switcher', () => {

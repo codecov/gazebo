@@ -1,17 +1,18 @@
-import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
+import { useOwner } from 'services/user'
 
-function Header({ owner }) {
+function Header() {
+  const { owner } = useParams()
+  const { data: ownerData } = useOwner({ username: owner })
+
   return (
-    <MyContextSwitcher pageName="billingTab" activeContext={owner.username} />
+    <MyContextSwitcher
+      pageName="billingTab"
+      activeContext={ownerData?.username}
+    />
   )
-}
-
-Header.propTypes = {
-  owner: PropTypes.shape({
-    username: PropTypes.string.isRequired,
-  }).isRequired,
 }
 
 export default Header
