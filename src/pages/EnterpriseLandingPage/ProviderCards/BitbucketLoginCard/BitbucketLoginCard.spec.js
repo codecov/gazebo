@@ -24,13 +24,15 @@ describe('BitbucketLoginCard', () => {
     })
 
     it('renders external login button', () => {
-      const element = screen.getByRole('link', { name: 'Bitbucket' })
+      const element = screen.getByRole('link', { name: 'Login via Bitbucket' })
       expect(element).toBeInTheDocument()
       expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/bb`)
     })
 
     it('renders self hosted login link', () => {
-      const element = screen.getByRole('link', { name: 'Bitbucket Server' })
+      const element = screen.getByRole('link', {
+        name: 'Login via Bitbucket Server',
+      })
       expect(element).toBeInTheDocument()
       expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/bbs`)
     })

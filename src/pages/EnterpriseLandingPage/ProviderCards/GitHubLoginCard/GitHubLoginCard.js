@@ -25,7 +25,7 @@ function GitHubLoginCard({ github }) {
                 to={{ pageName: 'signIn', options: { provider: 'gh' } }}
                 variant="github"
               >
-                GitHub
+                Login via GitHub
               </Button>
             ) : (
               <Button
@@ -33,7 +33,7 @@ function GitHubLoginCard({ github }) {
                 to={{ pageName: 'signIn', options: { provider: 'ghe' } }}
                 variant="github"
               >
-                GitHub Enterprise
+                Login via GitHub Enterprise
               </Button>
             )
           )}

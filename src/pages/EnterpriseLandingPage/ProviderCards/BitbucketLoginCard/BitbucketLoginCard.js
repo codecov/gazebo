@@ -25,7 +25,7 @@ function BitbucketLoginCard({ bitbucket }) {
                 to={{ pageName: 'signIn', options: { provider: 'bb' } }}
                 variant="bitbucket"
               >
-                Bitbucket
+                Login via Bitbucket
               </Button>
             ) : (
               <Button
@@ -33,7 +33,7 @@ function BitbucketLoginCard({ bitbucket }) {
                 to={{ pageName: 'signIn', options: { provider: 'bbs' } }}
                 variant="bitbucket"
               >
-                Bitbucket Server
+                Login via Bitbucket Server
               </Button>
             )
           )}

@@ -25,7 +25,7 @@ function GitLabLoginCard({ gitlab }) {
                 to={{ pageName: 'signIn', options: { provider: 'gl' } }}
                 variant="gitlab"
               >
-                GitLab
+                Login via GitLab
               </Button>
             ) : (
               <Button
@@ -33,7 +33,7 @@ function GitLabLoginCard({ gitlab }) {
                 to={{ pageName: 'signIn', options: { provider: 'gle' } }}
                 variant="gitlab"
               >
-                GitLab CE/EE
+                Login via GitLab CE/EE
               </Button>
             )
           )}

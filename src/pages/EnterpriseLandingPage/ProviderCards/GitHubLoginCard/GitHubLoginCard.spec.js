@@ -24,13 +24,15 @@ describe('GitHubLoginCard', () => {
     })
 
     it('renders external login button', () => {
-      const element = screen.getByRole('link', { name: 'GitHub' })
+      const element = screen.getByRole('link', { name: 'Login via GitHub' })
       expect(element).toBeInTheDocument()
       expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gh`)
     })
 
     it('renders self hosted login link', () => {
-      const element = screen.getByRole('link', { name: 'GitHub Enterprise' })
+      const element = screen.getByRole('link', {
+        name: 'Login via GitHub Enterprise',
+      })
       expect(element).toBeInTheDocument()
       expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/ghe`)
     })

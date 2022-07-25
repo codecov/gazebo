@@ -24,13 +24,15 @@ describe('GitLabLoginCard', () => {
     })
 
     it('renders external login button', () => {
-      const element = screen.getByRole('link', { name: 'GitLab' })
+      const element = screen.getByRole('link', { name: 'Login via GitLab' })
       expect(element).toBeInTheDocument()
       expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gl`)
     })
 
     it('renders self hosted login link', () => {
-      const element = screen.getByRole('link', { name: 'GitLab CE/EE' })
+      const element = screen.getByRole('link', {
+        name: 'Login via GitLab CE/EE',
+      })
       expect(element).toBeInTheDocument()
       expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gle`)
     })
