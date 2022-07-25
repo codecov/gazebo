@@ -1,5 +1,4 @@
 td {
-  --line-size: 2px;
   --dot-size: 4px;
 }
 
@@ -9,8 +8,8 @@ td {
   clip-path: polygon(
     0 calc(100% * (1 - var(--start, var(--size)))),
     100% calc(100% * (1 - var(--size))),
-    100% calc(100% * (1 - var(--size)) - var(--line-size)),
-    0 calc(100% * (1 - var(--start, var(--size))) - var(--line-size))
+    100% calc(100% * (1 - var(--size)) - var(--line-width)),
+    0 calc(100% * (1 - var(--start, var(--size))) - var(--line-width))
   );
 }
 

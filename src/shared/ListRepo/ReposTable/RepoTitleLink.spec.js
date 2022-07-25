@@ -12,6 +12,7 @@ describe('RepoTitleLink', () => {
     },
     private: true,
     activated: true,
+    active: true,
   }
 
   function setup(props) {
@@ -66,7 +67,7 @@ describe('RepoTitleLink', () => {
     })
   })
 
-  describe('when the repository is deactivated', () => {
+  describe('when the repository is deactivated and active is true', () => {
     beforeEach(() => {
       setup({
         repo: {
@@ -85,6 +86,29 @@ describe('RepoTitleLink', () => {
 
     it('renders the deactivated tag', () => {
       expect(screen.getByText(/Deactivated/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when the repository is deactivated and active is false', () => {
+    beforeEach(() => {
+      setup({
+        repo: {
+          ...repo,
+          private: false,
+          activated: false,
+          active: false,
+        },
+        showRepoOwner: false,
+        pageName: 'repo',
+      })
+    })
+
+    it('renders the title', () => {
+      expect(screen.getByText(/repo1/)).toBeInTheDocument()
+    })
+
+    it('does not render the deactivated tag', () => {
+      expect(screen.queryByText(/Deactivated/)).not.toBeInTheDocument()
     })
   })
 

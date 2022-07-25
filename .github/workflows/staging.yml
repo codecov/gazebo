@@ -53,3 +53,11 @@ jobs:
           DEPLOY_ENV: staging
         run: |-
           make push
+
+      - name: Run Frontend Docker Build
+        uses: mvasigh/dispatch-action@1.1.6
+        with:
+          token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+          repo: codecov-frontend-docker
+          owner: codecov
+          event_type: staging_build
