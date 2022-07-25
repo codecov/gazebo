@@ -6,6 +6,7 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import BaseLayout from 'layouts/BaseLayout'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
+import { useFlags } from 'shared/featureFlags'
 
 // Not lazy loading because the page is very small and is accessed often
 
@@ -18,6 +19,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage/RepoPage'))
+const BillingPage = lazy(() => import('./pages/BillingPage/BillingPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +33,10 @@ const queryClient = new QueryClient({
 
 function App() {
   useUTM()
+  const { gazeboBillingsTab } = useFlags({
+    gazeboBillingsTab: false,
+  })
+  
 
   return (
     <ToastNotificationProvider>
@@ -58,6 +64,11 @@ function App() {
                 <AnalyticsPage />
               </BaseLayout>
             </Route>
+           {gazeboBillingsTab && <Route path="/billing/:provider/:owner/" exact>
+              <BaseLayout>
+                <BillingPage />
+              </BaseLayout>
+            </Route>}
             <Route path="/:provider/+" exact>
               <BaseLayout>
                 <HomePage />

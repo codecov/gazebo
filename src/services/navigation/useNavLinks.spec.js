@@ -159,6 +159,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('billing', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.billingTab.path()).toBe(
+        `/billing/gl/doggo`
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.billingTab.path({ provider: 'bb' })).toBe(
+        `/billing/bb/doggo`
+      )
+      expect(hookData.result.current.billingTab.path({ owner: 'cat' })).toBe(
+        `/billing/gl/cat`
+      )
+    })
+  })
+
   describe('repo link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])

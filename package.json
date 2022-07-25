@@ -45,7 +45,7 @@
     "test:ci": "react-scripts test --collectCoverage --reporters=default --reporters=jest-junit",
     "eject": "react-scripts eject",
     "lint": "npx eslint --fix --no-ignore --max-warnings=-1 -c .eslintrc.json 'src/**/*.{js,jsx,ts,tsx,json}'",
-    "storybook": "start-storybook -p 6006 -s public --no-dll",
+    "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic --exit-zero-on-changes -ci",
     "format-staged": "npx prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'",
@@ -115,5 +115,9 @@
   },
   "msw": {
     "workerDirectory": "public"
+  },
+  "volta": {
+    "node": "16.14.2",
+    "npm": "8.5.0"
   }
 }

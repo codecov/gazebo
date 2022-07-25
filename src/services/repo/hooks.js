@@ -127,7 +127,6 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
 
   return Api.graphql({
     provider,
-    repo,
     query,
     variables: {
       name: owner,
