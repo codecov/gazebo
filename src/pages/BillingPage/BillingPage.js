@@ -29,8 +29,8 @@ function BillingPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Header owner={ownerData} />
-      <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
+      <Header />
+      {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
       <Elements stripe={stripePromise}>
         <BillingBreadcrumbProvider>
           <BillingBreadcrumb />
