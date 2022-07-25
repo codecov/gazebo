@@ -4,7 +4,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useFlags } from 'shared/featureFlags'
 
 import Tabs from './Tabs'
-
 jest.mock('shared/featureFlags')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
