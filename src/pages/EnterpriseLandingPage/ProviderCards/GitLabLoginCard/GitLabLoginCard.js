@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { providerImage, providerToName } from 'shared/utils/provider'
 import Button from 'ui/Button'
 
-function GitLabLoginCard({ gitlab }) {
+function GitLabLoginCard({ providers }) {
   const provider = 'gl'
 
   return (
@@ -18,7 +18,7 @@ function GitLabLoginCard({ gitlab }) {
           <h2 className="text-2xl">GitLab</h2>
         </div>
         <div className="flex flex-col gap-2 w-64">
-          {gitlab.includes('EXTERNAL') && (
+          {providers.includes('GITLAB') && (
             <Button
               to={{ pageName: 'signIn', options: { provider: 'gl' } }}
               variant="gitlab"
@@ -26,7 +26,7 @@ function GitLabLoginCard({ gitlab }) {
               Login via GitLab
             </Button>
           )}
-          {gitlab.includes('SELF_HOSTED') && (
+          {providers.includes('GITLAB_ENTERPRISE') && (
             <Button
               to={{ pageName: 'signIn', options: { provider: 'gle' } }}
               variant="gitlab"
@@ -41,7 +41,7 @@ function GitLabLoginCard({ gitlab }) {
 }
 
 GitLabLoginCard.propTypes = {
-  gitlab: PropTypes.array,
+  providers: PropTypes.array,
 }
 
 export default GitLabLoginCard

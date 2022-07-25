@@ -11,12 +11,12 @@ jest.mock('react-router-dom', () => ({
 
 describe('BitbucketLoginCard', () => {
   function setup(data) {
-    render(<BitbucketLoginCard bitbucket={data} />)
+    render(<BitbucketLoginCard providers={data} />)
   }
 
   describe('when system is configured with Bitbucket', () => {
     beforeEach(() => {
-      const data = ['EXTERNAL', 'SELF_HOSTED']
+      const data = ['BITBUCKET', 'BITBUCKET_SERVER']
       setup(data)
     })
 

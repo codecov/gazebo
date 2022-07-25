@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { providerImage, providerToName } from 'shared/utils/provider'
 import Button from 'ui/Button'
 
-function BitbucketLoginCard({ bitbucket }) {
+function BitbucketLoginCard({ providers }) {
   const provider = 'bb'
 
   return (
@@ -18,7 +18,7 @@ function BitbucketLoginCard({ bitbucket }) {
           <h2 className="text-2xl">Bitbucket</h2>
         </div>
         <div className="flex flex-col gap-2">
-          {bitbucket.includes('EXTERNAL') && (
+          {providers.includes('BITBUCKET') && (
             <Button
               to={{ pageName: 'signIn', options: { provider: 'bb' } }}
               variant="bitbucket"
@@ -26,7 +26,7 @@ function BitbucketLoginCard({ bitbucket }) {
               Login via Bitbucket
             </Button>
           )}
-          {bitbucket.includes('SELF_HOSTED') && (
+          {providers.includes('BITBUCKET_SERVER') && (
             <Button
               to={{ pageName: 'signIn', options: { provider: 'bbs' } }}
               variant="bitbucket"
@@ -41,7 +41,7 @@ function BitbucketLoginCard({ bitbucket }) {
 }
 
 BitbucketLoginCard.propTypes = {
-  bitbucket: PropTypes.array,
+  providers: PropTypes.array,
 }
 
 export default BitbucketLoginCard

@@ -10,11 +10,14 @@ jest.mock('react-router-dom', () => ({
 jest.mock('./hooks')
 
 const mockData = {
-  data: {
-    github: ['EXTERNAL'],
-    gitlab: ['EXTERNAL'],
-    bitbucket: ['EXTERNAL'],
-  },
+  data: [
+    'GITHUB',
+    'GITHUB_ENTERPRISE',
+    'GITLAB',
+    'GITLAB_ENTERPRISE',
+    'BITBUCKET',
+    'BITBUCKET_SERVER',
+  ],
 }
 
 describe('EnterpriseLandingPage', () => {
@@ -43,7 +46,7 @@ describe('EnterpriseLandingPage', () => {
 
   describe('when no systems are configured', () => {
     beforeEach(() => {
-      useServiceProviders.mockReturnValue({})
+      useServiceProviders.mockReturnValue({ data: [] })
       setup()
     })
     it('displays github login button', () => {

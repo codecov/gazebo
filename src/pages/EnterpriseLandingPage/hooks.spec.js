@@ -24,11 +24,14 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 const mockData = {
-  loginProviders: {
-    github: ['EXTERNAL', 'SELF_HOSTED'],
-    gitlab: ['EXTERNAL', 'SELF_HOSTED'],
-    bitbucket: ['EXTERNAL', 'SELF_HOSTED'],
-  },
+  loginProviders: [
+    'GITHUB',
+    'GITHUB_ENTERPRISE',
+    'GITLAB',
+    'GITLAB_ENTERPRISE',
+    'BITBUCKET',
+    'BITBUCKET_SERVER',
+  ],
 }
 
 describe('useServiceProviders', () => {
@@ -50,10 +53,6 @@ describe('useServiceProviders', () => {
   it('returns data', async () => {
     await hookData.waitFor(() => hookData.result.current.isSuccess)
 
-    expect(hookData.result.current.data).toStrictEqual({
-      github: mockData.loginProviders.github,
-      gitlab: mockData.loginProviders.gitlab,
-      bitbucket: mockData.loginProviders.bitbucket,
-    })
+    expect(hookData.result.current.data).toStrictEqual(mockData.loginProviders)
   })
 })

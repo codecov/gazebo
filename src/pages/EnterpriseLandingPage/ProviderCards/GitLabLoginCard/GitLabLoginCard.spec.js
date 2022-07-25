@@ -11,12 +11,12 @@ jest.mock('react-router-dom', () => ({
 
 describe('GitLabLoginCard', () => {
   function setup(data) {
-    render(<GitLabLoginCard gitlab={data} />)
+    render(<GitLabLoginCard providers={data} />)
   }
 
   describe('when system is configured with GitLab', () => {
     beforeEach(() => {
-      const data = ['EXTERNAL', 'SELF_HOSTED']
+      const data = ['GITLAB', 'GITLAB_ENTERPRISE']
       setup(data)
     })
 
