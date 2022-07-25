@@ -5,8 +5,10 @@ import { LINE_STATE } from 'shared/utils/fileviewer'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]: 'bg-ds-coverage-covered border-ds-primary-green',
-  [LINE_STATE.UNCOVERED]: 'bg-ds-coverage-uncovered border-ds-primary-red',
-  [LINE_STATE.PARTIAL]: 'bg-ds-coverage-partial border-ds-primary-yellow',
+  [LINE_STATE.UNCOVERED]:
+    'text-[#E1B3BA] bg-ds-coverage-uncovered border-ds-primary-red pattern-dots',
+  [LINE_STATE.PARTIAL]:
+    'text-[#E8DFB2] bg-ds-coverage-partial border-ds-primary-yellow pattern-grid',
 }
 
 function CoverageSelect({ coverage, checked, onChange }) {
@@ -29,7 +31,7 @@ function CoverageSelect({ coverage, checked, onChange }) {
           classNamePerLineState[coverage]
         )}
       >
-        {coverage.toLowerCase()}
+        <span className="text-black">{coverage.toLowerCase()}</span>
       </label>
     </div>
   )
