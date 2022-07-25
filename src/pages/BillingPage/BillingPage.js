@@ -4,7 +4,7 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
 
-import BillingBreadcrumb from './BillingBreadcumb'
+import BillingBreadcrumb from './BillingBreadcrumb'
 import { BillingBreadcrumbProvider } from './context'
 import Header from './Header'
 import Tabs from './Tabs'
