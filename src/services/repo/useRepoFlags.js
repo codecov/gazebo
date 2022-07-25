@@ -39,7 +39,6 @@ function fetchRepoFlags({
                 name
                 percentCovered
                 measurements(interval: $interval, after: $afterDate, before: $beforeDate) {
-                  timestamp
                   avg
                 }
               }

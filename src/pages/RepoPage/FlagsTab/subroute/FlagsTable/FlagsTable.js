@@ -25,6 +25,7 @@ const headers = [
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
+    enableSorting: false,
   },
   {
     id: 'trend',
@@ -36,6 +37,7 @@ const headers = [
     accessorKey: 'trend',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
+    enableSorting: false,
   },
 ]
 
@@ -65,8 +67,14 @@ function createTableData({ tableData }) {
 }
 
 function FlagsTable() {
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useRepoFlagsTable()
+  const {
+    data,
+    isLoading,
+    handleSort,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useRepoFlagsTable()
 
   const tableData = useMemo(
     () =>
@@ -86,7 +94,7 @@ function FlagsTable() {
 
   return (
     <>
-      <Table data={tableData} columns={headers} />
+      <Table data={tableData} columns={headers} onSort={handleSort} />
       {tableData?.length === 0 && (
         <p className="flex justify-center flex-1">
           {/*TODO: Check different table state messages with AJ*/}
