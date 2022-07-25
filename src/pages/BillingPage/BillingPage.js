@@ -32,7 +32,7 @@ function BillingPage() {
             <Route path={path} exact>
               current org plan
             </Route>
-            <Route path={`${path}/plan`} exact>
+            <Route path={`${path}/upgrade`} exact>
               plan work
             </Route>
             <Redirect
