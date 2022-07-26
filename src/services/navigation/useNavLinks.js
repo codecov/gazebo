@@ -106,6 +106,18 @@ function useNavLinks() {
         `/billing/${provider}/${owner}`,
       isExternalLink: false,
     },
+    upgradeOrgPlan: {
+      text: 'Upgrade Plan',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/billing/${provider}/${owner}/upgrade`,
+      isExternalLink: false,
+    },
+    cancelOrgPlan: {
+      text: 'Cancel Plan',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/billing/${provider}/${owner}/cancel`,
+      isExternalLink: false,
+    },
     accountAdmin: {
       text: 'Admin',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
