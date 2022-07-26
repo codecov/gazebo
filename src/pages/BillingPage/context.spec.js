@@ -22,9 +22,9 @@ const TestComponent = () => {
 describe('Billing breadcrumb context', () => {
   function setup() {
     render(
-    <BillingBreadcrumbProvider>
-    <TestComponent />
-    </BillingBreadcrumbProvider>
+      <BillingBreadcrumbProvider>
+        <TestComponent />
+      </BillingBreadcrumbProvider>
     )
   }
 

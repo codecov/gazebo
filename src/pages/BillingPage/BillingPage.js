@@ -8,7 +8,7 @@ import config from 'config'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
 
-import BillingBreadcrumb from './BillingBreadcumb'
+import BillingBreadcrumb from './BillingBreadcrumb'
 import { BillingBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
