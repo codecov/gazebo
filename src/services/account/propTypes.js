@@ -30,5 +30,6 @@ export const subscriptionDetailType = PropType.shape({
 export const accountDetailsPropType = PropType.shape({
   plan: planPropType,
   activatedUserCount: PropType.number.isRequired,
+  planAutoActivate: PropType.bool,
   subscriptionDetail: subscriptionDetailType,
 })

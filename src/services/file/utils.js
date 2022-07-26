@@ -7,12 +7,12 @@ export function extractCoverageFromResponse(res) {
   const coverageSource = commit || branch
   const coverageFile = coverageSource?.coverageFile
   if (!coverageFile) return null
-  const lineWithCoverage = keyBy(coverageFile.coverage, 'line')
+  const lineWithCoverage = keyBy(coverageFile?.coverage, 'line')
   const fileCoverage = mapValues(lineWithCoverage, 'coverage')
-  const coverageTotal = coverageFile.totals?.coverage
+  const coverageTotal = coverageFile?.totals?.coverage
 
   return {
-    content: coverageFile.content,
+    content: coverageFile?.content,
     coverage: fileCoverage,
     totals: isNaN(coverageTotal) ? 0 : coverageTotal,
     flagNames: coverageSource?.flagNames ?? [],
