@@ -12,7 +12,7 @@ jest.mock('../CallToAction', () => () => 'CallToAction')
 describe('Tabs', () => {
   function setup(props = {}) {
     useFlags.mockReturnValue({
-      gazeboBillingsTab: true,
+      gazeboPlanTab: true,
     })
 
     render(
@@ -37,12 +37,12 @@ describe('Tabs', () => {
       ).toHaveAttribute('href', '/account/gh/codecov')
     })
 
-    it('renders link to billing', () => {
+    it('renders link to plan', () => {
       expect(
         screen.getByRole('link', {
-          name: /billing/i,
+          name: /plan/i,
         })
-      ).toHaveAttribute('href', '/billing/gh/codecov')
+      ).toHaveAttribute('href', '/plan/gh/codecov')
     })
   })
 })

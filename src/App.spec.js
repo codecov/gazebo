@@ -5,7 +5,7 @@ import { useFlags } from 'shared/featureFlags'
 import App from './App'
 
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
-jest.mock('./pages/BillingPage/BillingPage', () => () => 'BillingPage')
+jest.mock('./pages/PlanPage/PlanPage', () => () => 'PlanPage')
 jest.mock('react-query/devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
 }))
@@ -14,7 +14,7 @@ jest.mock('shared/featureFlags')
 describe('App', () => {
   function setup() {
     useFlags.mockReturnValue({
-      gazeboBillingsTab: true,
+      gazeboPlanTab: true,
     })
     render(<App />)
   }
@@ -38,9 +38,9 @@ describe('App', () => {
     })
   })
 
-  describe('rendering billing page', () => {
+  describe('rendering plan page', () => {
     beforeEach(() => {
-      window.history.pushState({}, 'Test page', '/billing/gh/codecov/')
+      window.history.pushState({}, 'Test page', '/plan/gh/codecov/')
       setup()
     })
 
@@ -49,9 +49,9 @@ describe('App', () => {
       expect(loading).toBeInTheDocument()
     })
 
-    it('renders billing page', () => {
+    it('renders plan page', () => {
       return waitFor(() => {
-        const page = screen.getByText(/BillingPage/i)
+        const page = screen.getByText(/PlanPage/i)
         expect(page).toBeInTheDocument()
       })
     })
