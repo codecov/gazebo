@@ -16,7 +16,7 @@ const Loader = (
   </div>
 )
 
-const areFlagsSyncing = ({
+const getIsRepoBackfilling = ({
   flagsMeasurementsActive,
   flagsMeasurementsBackfilled,
 }) => flagsMeasurementsActive && !flagsMeasurementsBackfilled
@@ -28,7 +28,7 @@ function FlagsTab() {
 
   const { flagsMeasurementsActive, flagsMeasurementsBackfilled } = data
 
-  const isBackfillingTimeseries = areFlagsSyncing({
+  const isRepoBackfilling = getIsRepoBackfilling({
     flagsMeasurementsActive,
     flagsMeasurementsBackfilled,
   })
@@ -39,7 +39,7 @@ function FlagsTab() {
         <>
           <h1>Flags Header Component</h1>
           {!flagsMeasurementsActive && <TriggerSyncBanner />}
-          {isBackfillingTimeseries && <SyncingBanner />}
+          {isRepoBackfilling && <SyncingBanner />}
           {/*TODO: Show blurred image instead of the table when backfill is running or not active*/}
           <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
             <Route path="/:provider/:owner/:repo/flags" exact>
