@@ -6,8 +6,8 @@ import TabNavigation from 'ui/TabNavigation'
 import CallToAction from '../CallToAction'
 
 function Tabs({ provider, owner }) {
-  const { gazeboBillingsTab } = useFlags({
-    gazeboBillingsTab: false,
+  const { gazeboPlanTab } = useFlags({
+    gazeboPlanTab: false,
   })
 
   return (
@@ -21,7 +21,7 @@ function Tabs({ provider, owner }) {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(gazeboBillingsTab ? [{ pageName: 'billingTab' }] : []),
+        ...(gazeboPlanTab ? [{ pageName: 'planTab' }] : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',

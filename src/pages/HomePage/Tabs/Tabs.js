@@ -4,8 +4,8 @@ import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs({ currentUsername }) {
-  const { gazeboBillingsTab } = useFlags({
-    gazeboBillingsTab: false,
+  const { gazeboPlanTab } = useFlags({
+    gazeboPlanTab: false,
   })
 
   return (
@@ -22,10 +22,10 @@ function Tabs({ currentUsername }) {
             owner: currentUsername,
           },
         },
-        ...(gazeboBillingsTab
+        ...(gazeboPlanTab
           ? [
               {
-                pageName: 'billingTab',
+                pageName: 'planTab',
                 options: {
                   owner: currentUsername,
                 },

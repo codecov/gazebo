@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
 
-import BillingPage from './BillingPage'
+import PlanPage from './PlanPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
@@ -19,16 +19,16 @@ const queryClient = new QueryClient({
   },
 })
 
-describe('BillingPage', () => {
+describe('PlanPage', () => {
   function setup({ owner = null }) {
     useOwner.mockReturnValue({
       data: owner,
     })
     render(
-      <MemoryRouter initialEntries={['/billing/gh/codecov']}>
-        <Route path="/billing/:provider/:owner">
+      <MemoryRouter initialEntries={['/plan/gh/codecov']}>
+        <Route path="/plan/:provider/:owner">
           <QueryClientProvider client={queryClient}>
-            <BillingPage />
+          <PlanPage />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>

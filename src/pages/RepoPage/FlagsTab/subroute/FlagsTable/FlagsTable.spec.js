@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FlagsTable from './FlagsTable'
@@ -10,17 +10,20 @@ const flagsData = [
   {
     name: 'flag1',
     percentCovered: 93.26,
-    measurements: [],
+    percentChange: -1.56,
+    measurements: [{ avg: 51.78 }, { avg: 93.356 }],
   },
   {
     name: 'flag2',
     percentCovered: 91.74,
-    measurements: [],
+    percentChange: null,
+    measurements: [{ avg: null }, { avg: null }],
   },
 ]
 
 describe('RepoContentsTable', () => {
   const fetchNextPage = jest.fn()
+  const handleSort = jest.fn()
 
   function setup({
     isLoading = false,
@@ -30,6 +33,7 @@ describe('RepoContentsTable', () => {
     useRepoFlagsTable.mockReturnValue({
       data,
       isLoading,
+      handleSort,
       hasNextPage,
       fetchNextPage: fetchNextPage,
       isFetchingNextPage: false,
@@ -65,9 +69,11 @@ describe('RepoContentsTable', () => {
       expect(screen.getByText(/91.74%/)).toBeInTheDocument()
     })
 
-    it('renders flags trend', () => {
-      expect(screen.getByText(/flag1 trend data/)).toBeInTheDocument()
-      expect(screen.getByText(/flag2 trend data/)).toBeInTheDocument()
+    it('renders flags sparkline with change', () => {
+      expect(screen.getByText(/Flag flag1 trend sparkline/)).toBeInTheDocument()
+      expect(screen.getByText(/-1.56/)).toBeInTheDocument()
+      expect(screen.getByText(/Flag flag2 trend sparkline/)).toBeInTheDocument()
+      expect(screen.getByText('No Data')).toBeInTheDocument()
     })
   })
 
@@ -106,6 +112,27 @@ describe('RepoContentsTable', () => {
     it('fires next page button click', () => {
       screen.getByText(/Load More/).click()
       expect(fetchNextPage).toHaveBeenCalled()
+    })
+  })
+
+  describe('when sorting', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('calls handleSort', async () => {
+      screen.getByText(/Flags/).click()
+      await waitFor(() =>
+        expect(handleSort).toHaveBeenLastCalledWith([
+          { desc: true, id: 'name' },
+        ])
+      )
+      screen.getByText(/Flags/).click()
+      await waitFor(() =>
+        expect(handleSort).toHaveBeenLastCalledWith([
+          { desc: false, id: 'name' },
+        ])
+      )
     })
   })
 })

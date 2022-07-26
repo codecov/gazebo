@@ -8,14 +8,14 @@ import config from 'config'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
 
-import BillingBreadcrumb from './BillingBreadcumb'
-import { BillingBreadcrumbProvider } from './context'
+import { PlanBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
+import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
 
 const stripePromise = loadStripe(config.STRIPE_KEY)
-const path = '/billing/:provider/:owner'
+const path = '/plan/:provider/:owner'
 
 const Loader = (
   <div className="flex-1 flex items-center justify-center mt-16">
@@ -23,7 +23,7 @@ const Loader = (
   </div>
 )
 
-function BillingPage() {
+function PlanPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
@@ -32,8 +32,8 @@ function BillingPage() {
       <Header />
       {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
       <Elements stripe={stripePromise}>
-        <BillingBreadcrumbProvider>
-          <BillingBreadcrumb />
+        <PlanBreadcrumbProvider>
+          <PlanBreadcrumb />
           <hr className="w-4/5" />
           <Suspense fallback={Loader}>
             <Switch>
@@ -49,10 +49,10 @@ function BillingPage() {
               />
             </Switch>
           </Suspense>
-        </BillingBreadcrumbProvider>
+        </PlanBreadcrumbProvider>
       </Elements>
     </div>
   )
 }
 
-export default BillingPage
+export default PlanPage
