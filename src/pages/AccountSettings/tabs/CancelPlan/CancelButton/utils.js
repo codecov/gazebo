@@ -9,14 +9,19 @@ export function getEndPeriod(unixPeriodEnd) {
 
 export function loadBaremetrics() {
   return new Promise((resolve) => {
+    console.log('hello here')
     if (window.barecancel && window.barecancel.created) return resolve()
+    // Might not be needed
+    window.barecancel = { created: true }
 
     const script = document.createElement('script')
     script.src =
       'https://baremetrics-barecancel.baremetrics.com/js/application.js'
-    script.async = !0
+    script.async = true
     script.dataset.testid = 'baremetrics-script'
-    document.body.appendChild(script)
+    // Next 2 Might not be needed, instead document.body.appendChild(script)
+    const createdScript = document.getElementsByTagName('script')[0]
+    createdScript.parentNode.insertBefore(script, createdScript)
     script.onload = () => {
       window.barecancel.created = true
       resolve()

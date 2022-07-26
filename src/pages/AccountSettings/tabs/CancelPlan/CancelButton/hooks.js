@@ -13,10 +13,10 @@ export function useBarecancel({ customerId, callbackSend }) {
   const [wasBlocked, setWasBlocked] = useState(!window?.barecancel?.params)
 
   useEffect(() => {
-    console.log('here1')
-    console.log(config)
+    // console.log('here1')
+    // console.log(config)
     const configureBarecancel = () => {
-      console.log('hello here?')
+      // console.log('hello here?')
       window.barecancel.params = {
         /* eslint-disable camelcase */
         access_token_id: config.BAREMETRICS_TOKEN,
@@ -28,6 +28,7 @@ export function useBarecancel({ customerId, callbackSend }) {
           memoizedSuccess()
         },
         callback_error: (error) => {
+          console.log('callback_error fired')
           // You can also catch any errors that happen when sending the cancellation event to Baremetrics.
           // For example, if Baremetrics returns that the customer does not have an active subscription.
           console.error(error)
@@ -44,6 +45,7 @@ export function useBarecancel({ customerId, callbackSend }) {
 }
 
 export function useCancel({ customerId }, options = {}) {
+  console.log('in useCancel')
   const addToast = useAddNotification()
   const { provider, owner } = useParams()
   const { mutate, isLoading } = useCancelPlan({ provider, owner })
@@ -54,6 +56,9 @@ export function useCancel({ customerId }, options = {}) {
 
   function cancelPlan() {
     mutate(null, {
+      onSuccess: () => {
+        console.log('cancel plan success')
+      },
       onError: () =>
         addToast({
           type: 'error',

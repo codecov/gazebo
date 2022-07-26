@@ -22,7 +22,7 @@ function CancelButton({
     { customerId },
     {
       onSuccess: () => {
-        console.log('canceled from the maing page')
+        console.log('canceled from the main page')
         sendUserToBilling()
       },
     }
@@ -38,6 +38,7 @@ function CancelButton({
   const periodEnd = getEndPeriod(currentPeriodEnd)
 
   function completeCancelation() {
+    console.log('baremetrics blocked', baremetricsBlocked)
     if (baremetricsBlocked) {
       cancelPlan()
     }
@@ -50,6 +51,7 @@ function CancelButton({
   return (
     <div>
       <Button
+        hook="downgrade-button"
         variant="danger"
         onClick={() => setIsModalOpen(true)}
         disabled={isDisabled}
@@ -72,15 +74,17 @@ function CancelButton({
         </ul>
         <div className="flex justify-between mt-6">
           <Button
-            variant="outline"
+            hook="close-button"
+            variant="plain"
             onClick={() => setIsModalOpen(false)}
             disabled={isDisabled}
           >
             Close
           </Button>
           <Button
-            color="red"
             id="barecancel-trigger"
+            variant="danger"
+            hook="continue-cancelation-button"
             disabled={isDisabled}
             onClick={completeCancelation}
           >

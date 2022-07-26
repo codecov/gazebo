@@ -248,6 +248,7 @@ function UpgradePlanForm({
       )}
       <hr />
       <Button
+        hook="update-plan"
         data-cy="update"
         disabled={!isValid}
         type="submit"

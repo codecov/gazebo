@@ -8,7 +8,7 @@ import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
 import Card from 'ui/Card'
 
-import CancelButton from './CancelButton'
+import CancelCard from './CancelButton'
 import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
 
@@ -61,7 +61,7 @@ function CancelPlanPage({ provider, owner }) {
                 provider={provider}
                 owner={owner}
               /> */}
-              <CancelButton
+              <CancelCard
                 customerId={accountDetails?.subscriptionDetail?.customer}
                 planCost={accountDetails?.plan?.value}
                 upComingCancelation={
