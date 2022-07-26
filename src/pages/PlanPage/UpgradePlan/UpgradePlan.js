@@ -1,6 +1,5 @@
-import PropType from 'prop-types'
 import { useLayoutEffect } from 'react'
-import {useParams} from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, usePlans } from 'services/account'
 import { isFreePlan } from 'shared/utils/billing'
@@ -30,12 +29,10 @@ function UpgradePlan() {
   const setCrumbs = useSetCrumbs()
 
   useLayoutEffect(() => {
-    setCrumbs(
-      {
-        pageName: 'upgradeOrgPlan',
-        text: 'Manage Plan'
-      }
-    )
+    setCrumbs({
+      pageName: 'upgradeOrgPlan',
+      text: 'Manage Plan',
+    })
   }, [setCrumbs])
 
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -67,7 +64,7 @@ function UpgradePlan() {
             </p>
             {shouldRenderCancelLink(accountDetails, plan) && (
               <A
-                to={{ pageName: 'cancelPlan' }}
+                to={{ pageName: 'cancelOrgPlan' }}
                 variant="grayQuinary"
                 hook="cancel-plan"
               >
@@ -89,11 +86,6 @@ function UpgradePlan() {
       </div>
     </>
   )
-}
-
-UpgradePlan.propTypes = {
-  provider: PropType.string.isRequired,
-  owner: PropType.string.isRequired,
 }
 
 export default UpgradePlan

@@ -8,6 +8,7 @@ import config from 'config'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
 
+import CancelPlan from './CancelPlan'
 import { PlanBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
@@ -42,7 +43,10 @@ function PlanPage() {
                 <CurrentOrgPlan />
               </Route>
               <Route path={`${path}/upgrade`} exact>
-                <UpgradePlan/>
+                <UpgradePlan />
+              </Route>
+              <Route path={`${path}/cancel`} exact>
+                <CancelPlan />
               </Route>
               <Redirect
                 from="/billing/:provider/:owner/*"
