@@ -134,7 +134,7 @@ function RawFileviewer({ title }) {
 }
 
 RawFileviewer.propTypes = {
-  title: PropType.string,
+  title: PropType.oneOfType([PropType.string, PropType.object]),
 }
 
 export default RawFileviewer
