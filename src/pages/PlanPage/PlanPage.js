@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
 import { useOwner } from 'services/user'
 
 import { PlanBreadcrumbProvider } from './context'
@@ -20,6 +21,7 @@ const Loader = (
 function PlanPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+  const shouldRenderPlanTab = useIsPersonalAccount()
 
   return (
     <div className="flex flex-col gap-4">
@@ -29,6 +31,7 @@ function PlanPage() {
         <PlanBreadcrumb />
         <Suspense fallback={Loader}>
           <Switch>
+            {!shouldRenderPlanTab && <Redirect to="/:provider/:owner" />}
             <Route path={path} exact>
               current org plan
             </Route>
