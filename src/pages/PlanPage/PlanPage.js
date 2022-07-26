@@ -4,12 +4,12 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
 
-import BillingBreadcrumb from './BillingBreadcrumb'
-import { BillingBreadcrumbProvider } from './context'
+import { PlanBreadcrumbProvider } from './context'
 import Header from './Header'
+import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
 
-const path = '/billing/:provider/:owner'
+const path = '/plan/:provider/:owner'
 
 const Loader = (
   <div className="flex-1 flex items-center justify-center mt-16">
@@ -17,7 +17,7 @@ const Loader = (
   </div>
 )
 
-function BillingPage() {
+function PlanPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
@@ -25,8 +25,8 @@ function BillingPage() {
     <div className="flex flex-col gap-4">
       <Header />
       {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
-      <BillingBreadcrumbProvider>
-        <BillingBreadcrumb />
+      <PlanBreadcrumbProvider>
+        <PlanBreadcrumb />
         <Suspense fallback={Loader}>
           <Switch>
             <Route path={path} exact>
@@ -36,14 +36,14 @@ function BillingPage() {
               plan work
             </Route>
             <Redirect
-              from="/billing/:provider/:owner/*"
-              to="/billing/:provider/:owner"
+              from="/plan/:provider/:owner/*"
+              to="/plan/:provider/:owner"
             />
           </Switch>
         </Suspense>
-      </BillingBreadcrumbProvider>
+      </PlanBreadcrumbProvider>
     </div>
   )
 }
 
-export default BillingPage
+export default PlanPage

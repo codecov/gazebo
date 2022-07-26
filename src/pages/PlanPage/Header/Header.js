@@ -8,10 +8,7 @@ function Header() {
   const { data: ownerData } = useOwner({ username: owner })
 
   return (
-    <MyContextSwitcher
-      pageName="billingTab"
-      activeContext={ownerData?.username}
-    />
+    <MyContextSwitcher pageName="planTab" activeContext={ownerData?.username} />
   )
 }
 

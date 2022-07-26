@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { BillingBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
+import { PlanBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
 
 const TestComponent = () => {
   const crumbs = useCrumbs()
@@ -19,12 +19,12 @@ const TestComponent = () => {
   )
 }
 
-describe('Billing breadcrumb context', () => {
+describe('Plan breadcrumb context', () => {
   function setup() {
     render(
-      <BillingBreadcrumbProvider>
+      <PlanBreadcrumbProvider>
         <TestComponent />
-      </BillingBreadcrumbProvider>
+      </PlanBreadcrumbProvider>
     )
   }
 
