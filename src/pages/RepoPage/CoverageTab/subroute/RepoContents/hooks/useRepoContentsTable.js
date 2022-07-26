@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
+import { SortingDirection } from 'ui/Table/constants'
 
 import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
@@ -68,17 +69,12 @@ const sortingParameter = Object.freeze({
   coverage: 'COVERAGE',
 })
 
-const sortingDirection = Object.freeze({
-  desc: 'DESC',
-  asc: 'ASC',
-})
-
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
     ...(sortBy && {
       ordering: {
-        direction: sortBy?.desc ? sortingDirection.desc : sortingDirection.asc,
+        direction: sortBy?.desc ? SortingDirection.DESC : SortingDirection.ASC,
         parameter: sortingParameter[sortBy?.id],
       },
     }),
