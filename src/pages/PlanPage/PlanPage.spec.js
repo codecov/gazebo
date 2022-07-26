@@ -3,22 +3,22 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
 
-import BillingPage from './BillingPage'
+import PlanPage from './PlanPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
 jest.mock('services/navigation')
 jest.mock('./Tabs', () => () => 'Tabs')
 
-describe('BillingPage', () => {
+describe('PlanPage', () => {
   function setup({ owner = null }) {
     useOwner.mockReturnValue({
       data: owner,
     })
     render(
-      <MemoryRouter initialEntries={['/billing/gh/codecov']}>
-        <Route path="/billing/:provider/:owner">
-          <BillingPage />
+      <MemoryRouter initialEntries={['/plan/gh/codecov']}>
+        <Route path="/plan/:provider/:owner">
+          <PlanPage />
         </Route>
       </MemoryRouter>
     )

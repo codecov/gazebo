@@ -5,7 +5,7 @@ import { useOwner } from 'services/user'
 import Header from './Header'
 import Tabs from './Tabs'
 
-function BillingPage() {
+function PlanPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
@@ -17,4 +17,4 @@ function BillingPage() {
   )
 }
 
-export default BillingPage
+export default PlanPage

@@ -159,22 +159,20 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('billing', () => {
+  describe('Plan', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.billingTab.path()).toBe(
-        `/billing/gl/doggo`
-      )
+      expect(hookData.result.current.planTab.path()).toBe(`/plan/gl/doggo`)
     })
     it('can override the params', () => {
-      expect(hookData.result.current.billingTab.path({ provider: 'bb' })).toBe(
-        `/billing/bb/doggo`
+      expect(hookData.result.current.planTab.path({ provider: 'bb' })).toBe(
+        `/plan/bb/doggo`
       )
-      expect(hookData.result.current.billingTab.path({ owner: 'cat' })).toBe(
-        `/billing/gl/cat`
+      expect(hookData.result.current.planTab.path({ owner: 'cat' })).toBe(
+        `/plan/gl/cat`
       )
     })
   })
