@@ -2,9 +2,9 @@ import PropType from 'prop-types'
 import { useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import Button from 'old_ui/Button'
 import Modal from 'old_ui/Modal'
 import { isFreePlan } from 'shared/utils/billing'
+import Button from 'ui/Button'
 
 import { useCancel } from './hooks'
 import { getEndPeriod } from './utils'
@@ -22,7 +22,7 @@ function CancelButton({
     { customerId },
     {
       onSuccess: () => {
-        console.log('canceled')
+        console.log('canceled from the maing page')
         sendUserToBilling()
       },
     }
@@ -48,9 +48,9 @@ function CancelButton({
   }
 
   return (
-    <div className="text-center mt-4">
+    <div>
       <Button
-        color="red"
+        variant="danger"
         onClick={() => setIsModalOpen(true)}
         disabled={isDisabled}
       >
