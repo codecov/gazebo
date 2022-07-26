@@ -36,7 +36,6 @@ function App() {
   const { gazeboBillingsTab } = useFlags({
     gazeboBillingsTab: false,
   })
-  
 
   return (
     <ToastNotificationProvider>
@@ -64,11 +63,13 @@ function App() {
                 <AnalyticsPage />
               </BaseLayout>
             </Route>
-           {gazeboBillingsTab && <Route path="/billing/:provider/:owner/" exact>
-              <BaseLayout>
-                <BillingPage />
-              </BaseLayout>
-            </Route>}
+            {gazeboBillingsTab && (
+              <Route path="/billing/:provider/:owner/">
+                <BaseLayout>
+                  <BillingPage />
+                </BaseLayout>
+              </Route>
+            )}
             <Route path="/:provider/+" exact>
               <BaseLayout>
                 <HomePage />
