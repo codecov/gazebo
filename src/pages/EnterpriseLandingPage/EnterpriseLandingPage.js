@@ -3,15 +3,6 @@ import BitbucketLoginCard from './ProviderCards/BitbucketLoginCard'
 import GitHubLoginCard from './ProviderCards/GitHubLoginCard'
 import GitLabLoginCard from './ProviderCards/GitLabLoginCard'
 
-const includeGitHub = (data) =>
-  data?.includes('GITHUB') || data?.includes('GITHUB_ENTERPRISE')
-
-const includeGitLab = (data) =>
-  data?.includes('GITLAB') || data.includes('GITLAB_ENTERPRISE')
-
-const includeBitbucket = (data) =>
-  data?.includes('BITBUCKET') || data?.includes('BITBUCKET_SERVER')
-
 function EnterpriseLandingPage() {
   const { data } = useServiceProviders()
 
@@ -23,9 +14,11 @@ function EnterpriseLandingPage() {
         </div>
         <hr />
         <div className="flex md:flex-row md:gap-36 gap-8 flex-col text-center justify-center">
-          {includeGitHub(data) && <GitHubLoginCard providers={data} />}
-          {includeGitLab(data) && <GitLabLoginCard providers={data} />}
-          {includeBitbucket(data) && <BitbucketLoginCard providers={data} />}
+          {data?.github && <GitHubLoginCard providers={data?.providerList} />}
+          {data?.gitlab && <GitLabLoginCard providers={data?.providerList} />}
+          {data?.bitbucket && (
+            <BitbucketLoginCard providers={data?.providerList} />
+          )}
         </div>
       </div>
     </>

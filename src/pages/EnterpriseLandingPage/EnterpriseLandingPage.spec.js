@@ -10,14 +10,19 @@ jest.mock('react-router-dom', () => ({
 jest.mock('./hooks')
 
 const mockData = {
-  data: [
-    'GITHUB',
-    'GITHUB_ENTERPRISE',
-    'GITLAB',
-    'GITLAB_ENTERPRISE',
-    'BITBUCKET',
-    'BITBUCKET_SERVER',
-  ],
+  data: {
+    providerList: [
+      'GITHUB',
+      'GITHUB_ENTERPRISE',
+      'GITLAB',
+      'GITLAB_ENTERPRISE',
+      'BITBUCKET',
+      'BITBUCKET_SERVER',
+    ],
+    github: true,
+    gitlab: true,
+    bitbucket: true,
+  },
 }
 
 describe('EnterpriseLandingPage', () => {

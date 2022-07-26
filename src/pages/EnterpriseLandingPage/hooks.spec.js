@@ -53,6 +53,11 @@ describe('useServiceProviders', () => {
   it('returns data', async () => {
     await hookData.waitFor(() => hookData.result.current.isSuccess)
 
-    expect(hookData.result.current.data).toStrictEqual(mockData.loginProviders)
+    expect(hookData.result.current.data).toStrictEqual({
+      providerList: mockData.loginProviders,
+      github: true,
+      gitlab: true,
+      bitbucket: true,
+    })
   })
 })

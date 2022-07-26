@@ -12,7 +12,18 @@ const fetchServiceProviders = () => {
   return Api.graphql({
     provider: 'gh',
     query,
-  }).then((res) => res?.data?.loginProviders)
+  }).then((res) => ({
+    providerList: res?.data?.loginProviders,
+    github:
+      res?.data?.loginProviders?.includes('GITHUB') ||
+      res?.data?.loginProviders?.includes('GITHUB_ENTERPRISE'),
+    gitlab:
+      res?.data?.loginProviders?.includes('GITLAB') ||
+      res?.data?.loginProviders.includes('GITLAB_ENTERPRISE'),
+    bitbucket:
+      res?.data?.loginProviders?.includes('BITBUCKET') ||
+      res?.data?.loginProviders?.includes('BITBUCKET_SERVER'),
+  }))
 }
 
 export const useServiceProviders = () => {
