@@ -1,18 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
+import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
 
 import Tabs from './Tabs'
 
-jest.mock('shared/featureFlags')
+jest.mock('services/useIsPersonalAccount')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Tabs', () => {
   function setup() {
-    useFlags.mockReturnValue({
-      gazeboPlanTab: true,
-    })
+    useIsPersonalAccount.mockReturnValue(true)
 
     render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>

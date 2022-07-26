@@ -1,10 +1,8 @@
-import { useFlags } from 'shared/featureFlags'
+import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
-  const { gazeboPlanTab } = useFlags({
-    gazeboPlanTab: false,
-  })
+  const shouldRenderPlanTab = useIsPersonalAccount()
 
   return (
     <TabNavigation
@@ -17,7 +15,7 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(gazeboPlanTab ? [{ pageName: 'planTab' }] : []),
+        ...(shouldRenderPlanTab ? [{ pageName: 'planTab' }] : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',
