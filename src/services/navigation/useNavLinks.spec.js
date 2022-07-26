@@ -177,6 +177,46 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('Upgrade Plan', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.upgradeOrgPlan.path()).toBe(
+        `/plan/gl/doggo/upgrade`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.upgradeOrgPlan.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/upgrade`)
+      expect(
+        hookData.result.current.upgradeOrgPlan.path({ owner: 'cat' })
+      ).toBe(`/plan/gl/cat/upgrade`)
+    })
+  })
+
+  describe('Cancel Plan', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.cancelOrgPlan.path()).toBe(
+        `/plan/gl/doggo/cancel`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.cancelOrgPlan.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/cancel`)
+      expect(hookData.result.current.cancelOrgPlan.path({ owner: 'cat' })).toBe(
+        `/plan/gl/cat/cancel`
+      )
+    })
+  })
+
   describe('repo link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])

@@ -64,7 +64,7 @@ function App() {
               </BaseLayout>
             </Route>
             {gazeboPlanTab && (
-              <Route path="/plan/:provider/:owner/" exact>
+              <Route path="/plan/:provider/:owner/" >
                 <BaseLayout>
                   <PlanPage />
                 </BaseLayout>
