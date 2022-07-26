@@ -4,7 +4,7 @@ import { setupServer } from 'msw/node'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoFlags } from './useRepoFlags'
+import { useRepoFlagsSelect } from './useRepoFlagsSelect'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,27 +33,12 @@ const initialData = [
     node: {
       name: 'flag1',
       percentCovered: 93.26,
-      percentChanged: 1.65,
-      measurements: [
-        { avg: 91.74637512820512 },
-        { avg: 91.85559083333332 },
-        { avg: 91.95588104166666 },
-        { avg: 91.96796811111112 },
-      ],
     },
   },
   {
     node: {
       name: 'flag2',
       percentCovered: 92.72,
-      percentChanged: 1.58,
-      measurements: [
-        { avg: 92.44361365466449 },
-        { avg: 92.55269245333334 },
-        { avg: 92.84718477040816 },
-        { avg: 92.91016116666667 },
-        { avg: 92.92690138723546 },
-      ],
     },
   },
 ]
@@ -62,27 +47,10 @@ const expectedInitialData = [
   {
     name: 'flag1',
     percentCovered: 93.26,
-    percentChanged: 1.65,
-
-    measurements: [
-      { avg: 91.74637512820512 },
-      { avg: 91.85559083333332 },
-      { avg: 91.95588104166666 },
-      { avg: 91.96796811111112 },
-    ],
   },
   {
     name: 'flag2',
     percentCovered: 92.72,
-    percentChanged: 1.58,
-
-    measurements: [
-      { avg: 92.44361365466449 },
-      { avg: 92.55269245333334 },
-      { avg: 92.84718477040816 },
-      { avg: 92.91016116666667 },
-      { avg: 92.92690138723546 },
-    ],
   },
 ]
 
@@ -91,14 +59,6 @@ const nextPageData = [
     node: {
       name: 'flag3',
       percentCovered: 92.95,
-      percentChanged: 1.38,
-      measurements: [
-        { avg: 92.92690138723546 },
-        { avg: 92.99535449712643 },
-        { avg: 93.13587893358877 },
-        { avg: 93.04877792892155 },
-        { avg: 93.26297761904759 },
-      ],
     },
   },
 ]
@@ -107,15 +67,6 @@ const expectedNextPageData = [
   {
     name: 'flag3',
     percentCovered: 92.95,
-    percentChanged: 1.38,
-
-    measurements: [
-      { avg: 92.92690138723546 },
-      { avg: 92.99535449712643 },
-      { avg: 93.13587893358877 },
-      { avg: 93.04877792892155 },
-      { avg: 93.26297761904759 },
-    ],
   },
 ]
 
@@ -123,12 +74,12 @@ const provider = 'gh'
 const owner = 'codecov'
 const repo = 'gazebo'
 
-describe('FlagMeasurements', () => {
+describe('FlagsSelect', () => {
   let hookData
 
   function setup() {
     server.use(
-      graphql.query('FlagMeasurements', (req, res, ctx) => {
+      graphql.query('FlagsSelect', (req, res, ctx) => {
         const dataReturned = {
           owner: {
             repository: {
@@ -148,7 +99,7 @@ describe('FlagMeasurements', () => {
       })
     )
 
-    hookData = renderHook(() => useRepoFlags({ provider, owner, repo }), {
+    hookData = renderHook(() => useRepoFlagsSelect({ provider, owner, repo }), {
       wrapper,
     })
   }

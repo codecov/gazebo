@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types'
 
-import config from 'config'
-
 import {
   ErrorCodeEnum,
   UploadStateEnum,
@@ -57,12 +55,7 @@ const Upload = ({
           )}
         </div>
         {downloadUrl && (
-          <A
-            href={`${config.API_URL}${downloadUrl}`}
-            hook="download report"
-            download
-            isExternal
-          >
+          <A href={downloadUrl} hook="download report" download isExternal>
             Download
           </A>
         )}

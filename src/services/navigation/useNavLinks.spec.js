@@ -159,22 +159,20 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('billing', () => {
+  describe('Plan', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.billingTab.path()).toBe(
-        `/billing/gl/doggo`
-      )
+      expect(hookData.result.current.planTab.path()).toBe(`/plan/gl/doggo`)
     })
     it('can override the params', () => {
-      expect(hookData.result.current.billingTab.path({ provider: 'bb' })).toBe(
-        `/billing/bb/doggo`
+      expect(hookData.result.current.planTab.path({ provider: 'bb' })).toBe(
+        `/plan/bb/doggo`
       )
-      expect(hookData.result.current.billingTab.path({ owner: 'cat' })).toBe(
-        `/billing/gl/cat`
+      expect(hookData.result.current.planTab.path({ owner: 'cat' })).toBe(
+        `/plan/gl/cat`
       )
     })
   })
@@ -185,15 +183,17 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.upgradeOrgPlan.path()).toBe(`/billing/gl/doggo/upgrade`)
+      expect(hookData.result.current.upgradeOrgPlan.path()).toBe(
+        `/plan/gl/doggo/upgrade`
+      )
     })
     it('can override the params', () => {
-      expect(hookData.result.current.upgradeOrgPlan.path({ provider: 'bb' })).toBe(
-        `/billing/bb/doggo/upgrade`
-      )
-      expect(hookData.result.current.upgradeOrgPlan.path({ owner: 'cat' })).toBe(
-        `/billing/gl/cat/upgrade`
-      )
+      expect(
+        hookData.result.current.upgradeOrgPlan.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/upgrade`)
+      expect(
+        hookData.result.current.upgradeOrgPlan.path({ owner: 'cat' })
+      ).toBe(`/plan/gl/cat/upgrade`)
     })
   })
 
@@ -203,14 +203,16 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.cancelOrgPlan.path()).toBe(`/billing/gl/doggo/cancel`)
+      expect(hookData.result.current.cancelOrgPlan.path()).toBe(
+        `/plan/gl/doggo/cancel`
+      )
     })
     it('can override the params', () => {
-      expect(hookData.result.current.cancelOrgPlan.path({ provider: 'bb' })).toBe(
-        `/billing/bb/doggo/cancel`
-      )
+      expect(
+        hookData.result.current.cancelOrgPlan.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/cancel`)
       expect(hookData.result.current.cancelOrgPlan.path({ owner: 'cat' })).toBe(
-        `/billing/gl/cat/cancel`
+        `/plan/gl/cat/cancel`
       )
     })
   })

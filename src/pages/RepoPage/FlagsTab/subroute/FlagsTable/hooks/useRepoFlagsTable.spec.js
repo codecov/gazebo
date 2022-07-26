@@ -1,4 +1,7 @@
+import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
+import { format } from 'date-fns'
+import { act } from 'react-test-renderer'
 
 import { useRepoFlags } from 'services/repo/useRepoFlags'
 
@@ -37,7 +40,7 @@ const emptyRepoFlagsMock = {
   data: [],
 }
 
-describe('useFlagsRepoTable', () => {
+describe('useRepoFlagsTable', () => {
   let hookData
   function setup({ repoData }) {
     useRepoFlags.mockReturnValue(repoData)
@@ -58,6 +61,60 @@ describe('useFlagsRepoTable', () => {
     it('returns an empty array', () => {
       setup({ repoData: emptyRepoFlagsMock })
       expect(hookData.result.current.data).toEqual([])
+    })
+  })
+
+  describe('when handleSort is triggered', () => {
+    beforeEach(() => {
+      setup({ repoData: emptyRepoFlagsMock })
+    })
+
+    it('calls useRepoContents with desc value', async () => {
+      act(() => {
+        hookData.result.current.handleSort([{ desc: true }])
+      })
+
+      await waitFor(() =>
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: '2022-01-01',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: {},
+          interval: 'INTERVAL_7_DAY',
+          orderingDirection: 'DESC',
+        })
+      )
+    })
+
+    it('calls useRepoContents with asc value when the array is empty', async () => {
+      act(() => {
+        hookData.result.current.handleSort([])
+      })
+
+      await waitFor(() =>
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: '2022-01-01',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: {},
+          interval: 'INTERVAL_7_DAY',
+          orderingDirection: 'ASC',
+        })
+      )
+    })
+
+    it('calls useRepoContents with asc value', async () => {
+      act(() => {
+        hookData.result.current.handleSort([{ desc: false }])
+      })
+
+      await waitFor(() =>
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: '2022-01-01',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: {},
+          interval: 'INTERVAL_7_DAY',
+          orderingDirection: 'ASC',
+        })
+      )
     })
   })
 })

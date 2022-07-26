@@ -104,7 +104,7 @@ function useSubmit({ owner, provider }) {
           type: 'success',
           text: 'Plan successfully upgraded',
         })
-        redirect(`/billing/${provider}/${owner}/`)
+        redirect(`/plan/${provider}/${owner}/`)
       },
       onError: (error) =>
         addToast({

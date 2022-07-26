@@ -5,31 +5,17 @@ import Api from 'shared/api'
 
 import { mapEdges } from '../../shared/utils/graphql'
 
-function fetchRepoFlags({
-  provider,
-  owner: name,
-  repo,
-  filters,
-  orderingDirection,
-  interval,
-  afterDate,
-  beforeDate,
-  after,
-}) {
+function fetchRepoFlags({ provider, owner: name, repo, filters, after }) {
   const query = `
-    query FlagMeasurements(
+    query FlagsSelect(
       $name: String!
       $repo: String!
       $filters: FlagSetFilters!
-      $orderingDirection: OrderingDirection!
-      $interval: MeasurementInterval!
-      $afterDate: DateTime!
-      $beforeDate: DateTime!
       $after: String
     ) {
       owner(username: $name) {
         repository(name: $repo) {
-          flags(filters: $filters, orderingDirection: $orderingDirection, after: $after) {
+          flags(filters: $filters, after: $after) {
             pageInfo {
               hasNextPage
               endCursor
@@ -37,11 +23,6 @@ function fetchRepoFlags({
             edges {
               node {
                 name
-                percentCovered
-                percentChange
-                measurements(interval: $interval, after: $afterDate, before: $beforeDate) {
-                  avg
-                }
               }
             }
           }
@@ -56,14 +37,10 @@ function fetchRepoFlags({
       name,
       repo,
       filters,
-      orderingDirection,
-      interval,
-      afterDate,
-      beforeDate,
       after,
     },
   }).then((res) => {
-    const { flags } = res?.data?.owner?.repository
+    const flags = res?.data?.owner?.repository?.flags
 
     return {
       flags: mapEdges(flags),
@@ -72,37 +49,17 @@ function fetchRepoFlags({
   })
 }
 
-export function useRepoFlags({
-  filters,
-  orderingDirection,
-  interval,
-  afterDate,
-  beforeDate,
-}) {
+export function useRepoFlagsSelect({ filters } = { filters: {} }) {
   const { provider, owner, repo } = useParams()
 
   const { data, ...rest } = useInfiniteQuery(
-    [
-      'RepoFlags',
-      provider,
-      owner,
-      repo,
-      filters,
-      orderingDirection,
-      interval,
-      afterDate,
-      beforeDate,
-    ],
+    ['RepoFlagsSelect', provider, owner, repo, filters],
     ({ pageParam: after }) =>
       fetchRepoFlags({
         provider,
         owner,
         repo,
         filters,
-        orderingDirection,
-        interval,
-        afterDate,
-        beforeDate,
         after,
       }),
     {
@@ -111,7 +68,7 @@ export function useRepoFlags({
     }
   )
   return {
-    data: data?.pages.map((page) => page?.flags).flat(),
+    data: data?.pages?.map((page) => page?.flags).flat(),
     ...rest,
   }
 }

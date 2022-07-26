@@ -2,7 +2,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 
 import { useCrumbs } from './context'
 
-function BillingBreadcrumb() {
+function PlanBreadcrumb() {
   const crumbs = useCrumbs()
 
   return (
@@ -12,4 +12,4 @@ function BillingBreadcrumb() {
   )
 }
 
-export default BillingBreadcrumb;
+export default PlanBreadcrumb

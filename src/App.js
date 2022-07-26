@@ -19,7 +19,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage/RepoPage'))
-const BillingPage = lazy(() => import('./pages/BillingPage/BillingPage'))
+const PlanPage = lazy(() => import('./pages/PlanPage/PlanPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,8 +33,8 @@ const queryClient = new QueryClient({
 
 function App() {
   useUTM()
-  const { gazeboBillingsTab } = useFlags({
-    gazeboBillingsTab: false,
+  const { gazeboPlanTab } = useFlags({
+    gazeboPlanTab: false,
   })
 
   return (
@@ -63,10 +63,10 @@ function App() {
                 <AnalyticsPage />
               </BaseLayout>
             </Route>
-            {gazeboBillingsTab && (
-              <Route path="/billing/:provider/:owner/">
+            {gazeboPlanTab && (
+              <Route path="/plan/:provider/:owner/" >
                 <BaseLayout>
-                  <BillingPage />
+                  <PlanPage />
                 </BaseLayout>
               </Route>
             )}
