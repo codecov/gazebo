@@ -1,7 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useAccountDetails, useCancelPlan, usePlans } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
@@ -9,6 +9,10 @@ import { useAddNotification } from 'services/toastNotification'
 import CancelPlan from './CancelPlan'
 
 jest.mock('services/account/hooks')
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest.fn(() => {}),
+}))
 jest.mock('services/toastNotification')
 
 const provider = 'gh'
@@ -41,6 +45,7 @@ describe('CancelPlan', () => {
   let testLocation
 
   function setup(currentPlan = proPlan) {
+    useParams.mockReturnValue({ owner: 'codecov', provider: 'gh' })
     useAddNotification.mockReturnValue(addNotification)
     useAccountDetails.mockReturnValue({
       data: {
@@ -150,8 +155,8 @@ describe('CancelPlan', () => {
       mutate.mock.calls[0][1].onSuccess()
     })
 
-    it('redirects the user to the billing page', () => {
-      expect(testLocation.pathname).toEqual('/account/gh/codecov/billing')
+    it('redirects the user to the plan page', () => {
+      expect(testLocation.pathname).toEqual('/plan/gh/codecov')
     })
   })
 

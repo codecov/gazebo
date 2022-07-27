@@ -1,4 +1,5 @@
 import difference from 'lodash/difference'
+import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, usePlans } from 'services/account'
@@ -9,12 +10,21 @@ import DowngradeToFree from './DowngradeToFree'
 import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
 
+import { useSetCrumbs } from '../context'
 import BenefitList from '../shared/BenefitList'
 
 function CancelPlan() {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = usePlans(provider)
+  const setCrumbs = useSetCrumbs()
+
+  useLayoutEffect(() => {
+    setCrumbs({
+      pageName: 'cancelOrgPlan',
+      text: 'Cancel Plan',
+    })
+  }, [setCrumbs])
 
   const { proPlanMonth } = useProPlanMonth({ plans })
   const freePlan = plans.find((plan) => isFreePlan(plan?.value))
@@ -49,7 +59,11 @@ function CancelPlan() {
               You will need to manually reactivate up to five users or ensure
               auto activate is enabled in your plan settings.
             </p>
-            <DowngradeToFree accountDetails={accountDetails} />
+            <DowngradeToFree
+              accountDetails={accountDetails}
+              provider={provider}
+              owner={owner}
+            />
           </div>
         </Card>
       </div>
