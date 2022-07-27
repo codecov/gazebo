@@ -6,7 +6,7 @@ import Icon from 'ui/Icon'
 
 const message = {
   [CODE_RENDERER_INFO.UNEXPECTED_CHANGES]: (
-    <div className="flex gap-1 pattern-grid">
+    <div className="flex gap-1">
       <Icon variant="outline" name="information-circle" size="sm" />
       <span>
         indirect coverage change{' '}

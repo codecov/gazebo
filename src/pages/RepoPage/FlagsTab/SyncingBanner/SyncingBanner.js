@@ -14,9 +14,10 @@ function SyncingBanner() {
       </BannerHeading>
       <BannerContent>
         <p>
-          We are pulling in all of your historical flags data, this can
-          sometimes take awhile. This page will update once complete, feel free
-          to navigate away in the meantime.
+          We are pulling in all of your historical flags data, this will
+          sometimes take a while. This page will update once data has been
+          backfilled, feel free to navigate away in the meantime. For older
+          data, it may take longer to populate.
         </p>
       </BannerContent>
     </Banner>
