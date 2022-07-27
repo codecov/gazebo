@@ -1,12 +1,19 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import Tabs from './Tabs'
 
+jest.mock('shared/featureFlags')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Tabs', () => {
   function setup() {
+    useFlags.mockReturnValue({
+      gazeboPlanTab: true,
+    })
+
     render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
         <Route path="/analytics/:provider/:owner">
@@ -43,6 +50,14 @@ describe('Tabs', () => {
           name: /settings/i,
         })
       ).toHaveAttribute('href', `/account/gh/codecov`)
+    })
+
+    it('renders link to plan page', () => {
+      expect(
+        screen.getByRole('link', {
+          name: /plan/i,
+        })
+      ).toHaveAttribute('href', `/plan/gh/codecov`)
     })
   })
 })

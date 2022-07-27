@@ -1,10 +1,14 @@
 import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
+import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
   const { owner } = useParams()
+  const { gazeboPlanTab } = useFlags({
+    gazeboPlanTab: false,
+  })
 
   return (
     <>
@@ -14,6 +18,7 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
+            ...(gazeboPlanTab ? [{ pageName: 'planTab' }] : []),
             {
               pageName: 'accountAdmin',
               children: 'Settings',
