@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { PlanBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
 
@@ -13,7 +13,11 @@ const TestComponent = () => {
           <li key={i}>{text || children}</li>
         ))}
       </ul>
-      <button onClick={() => setCrumb({ pageName: 'added' })}>set crumb</button>
+      <button
+        onClick={() => setCrumb({ pageName: 'new crumb', text: 'New Crumb' })}
+      >
+        set crumb
+      </button>
     </div>
   )
 }
@@ -35,10 +39,10 @@ describe('Plan breadcrumb context', () => {
       expect(screen.getByText('Current org plan')).toBeInTheDocument()
     })
 
-    it('setCrumb can update the context', async () => {
+    it('setCrumb can update the context', () => {
       const button = screen.getByRole('button')
-      await fireEvent.click(button)
-      expect(screen.getByText('added')).toBeInTheDocument()
+      button.click()
+      expect(screen.getByText('New Crumb')).toBeInTheDocument()
     })
   })
 })
