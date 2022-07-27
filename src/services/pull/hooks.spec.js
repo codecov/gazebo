@@ -48,27 +48,18 @@ const pull = {
   },
 }
 
-const dataReturned = {
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    repository: {
-      private: false,
-      pull,
-    },
-  },
-}
-
 const provider = 'gh'
 const owner = 'codecov'
 const repo = 'gazebo'
 
 describe('usePull', () => {
+  afterEach(() => queryClient.clear())
   let hookData
 
-  function setup() {
+  function setup(data) {
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return res(ctx.status(200), ctx.data(data))
       })
     )
 
@@ -79,7 +70,15 @@ describe('usePull', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup()
+      setup({
+        owner: {
+          isCurrentUserPartOfOrg: true,
+          repository: {
+            private: true,
+            pull,
+          },
+        },
+      })
     })
 
     it('renders isLoading true', () => {
@@ -94,6 +93,36 @@ describe('usePull', () => {
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
           hasAccess: true,
+          ...pull,
+        })
+      })
+    })
+  })
+  describe(`when user shouldn't have access`, () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          isCurrentUserPartOfOrg: false,
+          repository: {
+            private: true,
+            pull,
+          },
+        },
+      })
+    })
+
+    it('renders isLoading true', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual({
+          hasAccess: false,
           ...pull,
         })
       })
