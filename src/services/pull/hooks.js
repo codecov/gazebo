@@ -1,12 +1,15 @@
 import { useQuery } from 'react-query'
 
 import Api from 'shared/api'
+import { userHasAccess } from 'shared/utils/user'
 
 export function usePull({ provider, owner, repo, pullId }) {
   const query = `
     query Pull($owner: String!, $repo: String!, $pullId: Int!) {
         owner(username: $owner) {
+          isCurrentUserPartOfOrg
           repository(name: $repo) {
+            private
             pull(id: $pullId) {
               pullId
               title
@@ -127,6 +130,14 @@ export function usePull({ provider, owner, repo, pullId }) {
         repo,
         pullId: parseInt(pullId, 10),
       },
-    }).then((res) => res?.data?.owner?.repository?.pull)
+    }).then((res) => {
+      return {
+        hasAccess: userHasAccess({
+          privateRepo: res?.data?.owner?.repository?.private,
+          isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
+        }),
+        ...res?.data?.owner?.repository?.pull,
+      }
+    })
   })
 }
