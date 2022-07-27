@@ -21,7 +21,7 @@ describe('PullRequestPage', () => {
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
   }) {
     usePull.mockReturnValue({
-      hasAccess,
+      data: { hasAccess },
     })
 
     render(
@@ -36,11 +36,11 @@ describe('PullRequestPage', () => {
     )
   }
 
-  describe.only('show 404 if repo is private and user not part of the org', () => {
+  describe('show 404 if repo is private and user not part of the org', () => {
     describe('the main breadcrumb', () => {
       beforeEach(() => {
         setup({
-          hasAccess: true,
+          hasAccess: false,
           initialEntries: ['/gh/test-org/test-repo/pull/12'],
         })
       })
@@ -67,7 +67,7 @@ describe('PullRequestPage', () => {
     describe('root', () => {
       beforeEach(async () => {
         setup({
-          hasAccess: true,
+          hasAccess: false,
           initialEntries: ['/gh/test-org/test-repo/pull/12'],
         })
         await waitFor(() =>
@@ -84,7 +84,7 @@ describe('PullRequestPage', () => {
   describe('the main breadcrumb', () => {
     beforeEach(() => {
       setup({
-        hasAccess: false,
+        hasAccess: true,
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
     })
@@ -111,7 +111,7 @@ describe('PullRequestPage', () => {
   describe('root', () => {
     beforeEach(async () => {
       setup({
-        hasAccess: false,
+        hasAccess: true,
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
@@ -127,7 +127,7 @@ describe('PullRequestPage', () => {
   describe('compare summary', () => {
     beforeEach(async () => {
       setup({
-        hasAccess: false,
+        hasAccess: true,
         initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
       })
       await waitFor(() =>
@@ -143,7 +143,7 @@ describe('PullRequestPage', () => {
   describe('header', () => {
     beforeEach(async () => {
       setup({
-        hasAccess: false,
+        hasAccess: true,
         initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
       })
       await waitFor(() =>
@@ -159,7 +159,7 @@ describe('PullRequestPage', () => {
   describe('flags', () => {
     beforeEach(async () => {
       setup({
-        hasAccess: false,
+        hasAccess: true,
         initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
       })
       await waitFor(() =>
@@ -175,7 +175,7 @@ describe('PullRequestPage', () => {
   describe('commits', () => {
     beforeEach(async () => {
       setup({
-        hasAccess: false,
+        hasAccess: true,
         initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
       })
       await waitFor(() =>
