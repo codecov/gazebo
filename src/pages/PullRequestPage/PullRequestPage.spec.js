@@ -45,7 +45,7 @@ describe('PullRequestPage', () => {
         })
       })
 
-      it('renders', () => {
+      it('does not render the breadcrumbs', () => {
         expect(
           screen.queryByRole('link', {
             name: /test-org/i,
@@ -75,8 +75,8 @@ describe('PullRequestPage', () => {
         )
       })
 
-      it('rendered', () => {
-        expect(screen.getByText(/404/i)).toBeInTheDocument()
+      it('renders a 404', () => {
+        expect(screen.getByText(/Error 404/i)).toBeInTheDocument()
       })
     })
   })
@@ -121,6 +121,10 @@ describe('PullRequestPage', () => {
 
     it('rendered', () => {
       expect(screen.getByText(/Root/i)).toBeInTheDocument()
+    })
+
+    it(`Isn't 404ing`, () => {
+      expect(screen.queryByText(/Error 404/i)).not.toBeInTheDocument()
     })
   })
 
