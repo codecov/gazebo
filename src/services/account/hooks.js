@@ -58,6 +58,7 @@ export function useAccountDetails({ provider, owner, opts = {} }) {
 export function usePlans(provider) {
   // the plans are very static data
   return useQuery('plans', () => fetchPlan(provider), {
+    // I dunno here if staleTime should be infinity. Plans do change every now and then :surprised-face:
     cacheTime: Infinity,
     staleTime: Infinity,
   })

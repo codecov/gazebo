@@ -26,7 +26,17 @@ const Template = (args) => {
   )
 }
 
-export const SimpleBanner = Template.bind({})
+export const DefaultBanner = Template.bind({})
+DefaultBanner.args = {
+  children: 'Normal button',
+  variant: 'default',
+}
+
+export const PlainBanner = Template.bind({})
+PlainBanner.args = {
+  children: 'Normal button',
+  variant: 'plain',
+}
 
 export default {
   title: 'Components/Banner',
