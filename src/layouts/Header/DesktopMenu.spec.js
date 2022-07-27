@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Switch, useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
@@ -55,7 +55,9 @@ describe('DesktopMenu', () => {
     ]
 
     expectedStaticLinks.forEach((expectedLink) => {
-      const a = screen.getByText(expectedLink.label).closest('a')
+      const a = within(screen.getByTestId('desktop-menu')).getByText(
+        expectedLink.label
+      )
       expect(a).toHaveAttribute('href', expectedLink.to)
     })
   })
@@ -99,6 +101,26 @@ describe('DesktopMenu', () => {
     const login = screen.getByTestId('login-prompt')
     expect(login).toBeInTheDocument()
   })
+
+  it('does not render the feedback link when user is not logged in', () => {
+    const provider = 'gh'
+    useUser.mockReturnValue({ data: undefined })
+    useParams.mockReturnValue({ owner: undefined, provider: provider })
+    setup({ provider })
+
+    expect(screen.queryByText('feedback')).toBeNull()
+  })
+
+  it('renders the feedback link when user is logged in', () => {
+    const provider = 'gh'
+    useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: undefined, provider: provider })
+    useAccountDetails.mockReturnValue({ data: accountDetails })
+    setup({ provider })
+
+    const feedback = screen.getByText('Feedback')
+    expect(feedback).toBeInTheDocument()
+  })
 })
 
 describe('LoginPrompt', () => {
@@ -115,7 +137,9 @@ describe('LoginPrompt', () => {
     ]
 
     expectedLinks.forEach((expectedLink) => {
-      const a = screen.getByText(expectedLink.label).closest('a')
+      const a = within(screen.getByTestId('login-prompt')).getByText(
+        expectedLink.label
+      )
       expect(a).toHaveAttribute('href', expectedLink.to)
     })
   })
