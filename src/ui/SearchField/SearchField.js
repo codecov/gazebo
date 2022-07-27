@@ -4,7 +4,7 @@ import { useDebounce } from 'react-use'
 
 import TextInput from 'ui/TextInput'
 
-function CoverageSearchField({ searchValue, setSearchValue }) {
+function SearchField({ searchValue, setSearchValue, placeholder }) {
   const [search, setSearch] = useState(searchValue)
 
   useDebounce(
@@ -19,14 +19,15 @@ function CoverageSearchField({ searchValue, setSearchValue }) {
     <TextInput
       value={search}
       onChange={(e) => setSearch(e.target.value)}
-      placeholder="Search for files"
+      placeholder={placeholder}
     />
   )
 }
 
-CoverageSearchField.propTypes = {
+SearchField.propTypes = {
   searchValue: PropTypes.string.isRequired,
   setSearchValue: PropTypes.func.isRequired,
+  placeholder: PropTypes.string.isRequired,
 }
 
-export default CoverageSearchField
+export default SearchField
