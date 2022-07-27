@@ -6,7 +6,9 @@ export function usePull({ provider, owner, repo, pullId }) {
   const query = `
     query Pull($owner: String!, $repo: String!, $pullId: Int!) {
         owner(username: $owner) {
+          isCurrentUserPartOfOrg
           repository(name: $repo) {
+            private
             pull(id: $pullId) {
               pullId
               title
@@ -118,6 +120,15 @@ export function usePull({ provider, owner, repo, pullId }) {
     `
 
   return useQuery(['pull', provider, owner, repo, pullId], () => {
+    function userHasAccess({ privateRepo, isCurrentUserPartOfOrg }) {
+      if (!privateRepo) {
+        return true
+      }
+      if (privateRepo && isCurrentUserPartOfOrg) {
+        return true
+      }
+      return false
+    }
     return Api.graphql({
       provider,
       query,
@@ -127,6 +138,19 @@ export function usePull({ provider, owner, repo, pullId }) {
         repo,
         pullId: parseInt(pullId, 10),
       },
-    }).then((res) => res?.data?.owner?.repository?.pull)
+    }).then((res) => {
+      console.log(
+        res?.data,
+        res?.data?.owner?.isCurrentUserPartOfOrg,
+        res?.data?.owner?.repository?.private
+      )
+      return {
+        hasAccess: userHasAccess({
+          privateRepo: res?.data?.owner?.repository?.private,
+          isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
+        }),
+        ...res?.data?.owner?.repository?.pull,
+      }
+    })
   })
 }

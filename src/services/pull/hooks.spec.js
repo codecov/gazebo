@@ -50,7 +50,9 @@ const pull = {
 
 const dataReturned = {
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
+      private: false,
       pull,
     },
   },
@@ -90,7 +92,10 @@ describe('usePull', () => {
       })
 
       it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(pull)
+        expect(hookData.result.current.data).toEqual({
+          hasAccess: true,
+          ...pull,
+        })
       })
     })
   })
