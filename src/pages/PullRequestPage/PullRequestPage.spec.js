@@ -1,9 +1,8 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { usePull } from 'services/pull'
 
 import PullRequestPage from './PullRequestPage'
 
@@ -14,43 +13,16 @@ jest.mock('./Commits', () => () => 'Commits')
 
 jest.mock('./subroute/Root', () => () => 'Root')
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
-
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-)
-
-const server = setupServer()
-
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+jest.mock('services/pull')
 
 describe('PullRequestPage', () => {
   function setup({
-    privateRepo = false,
+    hasAccess = false,
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
   }) {
-    console.log(privateRepo, initialEntries)
-    server.use(
-      graphql.query('pull', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              isCurrentUserPartOfOrg: false,
-              repository: { private: privateRepo },
-            },
-          })
-        )
-      })
-    )
+    usePull.mockReturnValue({
+      hasAccess,
+    })
 
     render(
       <MemoryRouter initialEntries={initialEntries}>
@@ -60,15 +32,17 @@ describe('PullRequestPage', () => {
         <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path">
           <PullRequestPage />
         </Route>
-      </MemoryRouter>,
-      { wrapper }
+      </MemoryRouter>
     )
   }
 
-  describe('show 404 if repo is private and user not part of the org', () => {
+  describe.only('show 404 if repo is private and user not part of the org', () => {
     describe('the main breadcrumb', () => {
       beforeEach(() => {
-        setup({ privateRepo: true })
+        setup({
+          hasAccess: true,
+          initialEntries: ['/gh/test-org/test-repo/pull/12'],
+        })
       })
 
       it('renders', () => {
@@ -92,7 +66,10 @@ describe('PullRequestPage', () => {
 
     describe('root', () => {
       beforeEach(async () => {
-        setup({ privateRepo: true })
+        setup({
+          hasAccess: true,
+          initialEntries: ['/gh/test-org/test-repo/pull/12'],
+        })
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
@@ -107,7 +84,7 @@ describe('PullRequestPage', () => {
   describe('the main breadcrumb', () => {
     beforeEach(() => {
       setup({
-        privateRepo: false,
+        hasAccess: false,
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
     })
@@ -133,7 +110,10 @@ describe('PullRequestPage', () => {
 
   describe('root', () => {
     beforeEach(async () => {
-      setup()
+      setup({
+        hasAccess: false,
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
+      })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
@@ -147,7 +127,7 @@ describe('PullRequestPage', () => {
   describe('compare summary', () => {
     beforeEach(async () => {
       setup({
-        privateRepo: false,
+        hasAccess: false,
         initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
       })
       await waitFor(() =>
@@ -163,7 +143,7 @@ describe('PullRequestPage', () => {
   describe('header', () => {
     beforeEach(async () => {
       setup({
-        privateRepo: false,
+        hasAccess: false,
         initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
       })
       await waitFor(() =>
@@ -179,7 +159,7 @@ describe('PullRequestPage', () => {
   describe('flags', () => {
     beforeEach(async () => {
       setup({
-        privateRepo: false,
+        hasAccess: false,
         initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
       })
       await waitFor(() =>
@@ -195,7 +175,7 @@ describe('PullRequestPage', () => {
   describe('commits', () => {
     beforeEach(async () => {
       setup({
-        privateRepo: false,
+        hasAccess: false,
         initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
       })
       await waitFor(() =>

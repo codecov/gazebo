@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query'
 
 import Api from 'shared/api'
+import { userHasAccess } from 'shared/utils/user'
 
 export function usePull({ provider, owner, repo, pullId }) {
   const query = `
@@ -120,15 +121,6 @@ export function usePull({ provider, owner, repo, pullId }) {
     `
 
   return useQuery(['pull', provider, owner, repo, pullId], () => {
-    function userHasAccess({ privateRepo, isCurrentUserPartOfOrg }) {
-      if (!privateRepo) {
-        return true
-      }
-      if (privateRepo && isCurrentUserPartOfOrg) {
-        return true
-      }
-      return false
-    }
     return Api.graphql({
       provider,
       query,
@@ -139,11 +131,6 @@ export function usePull({ provider, owner, repo, pullId }) {
         pullId: parseInt(pullId, 10),
       },
     }).then((res) => {
-      console.log(
-        res?.data,
-        res?.data?.owner?.isCurrentUserPartOfOrg,
-        res?.data?.owner?.repository?.private
-      )
       return {
         hasAccess: userHasAccess({
           privateRepo: res?.data?.owner?.repository?.private,
