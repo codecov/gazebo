@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useRepoBackfilled } from 'services/repo/hooks'
+import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
 import FlagsTab from './FlagsTab'
 
@@ -20,6 +21,17 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => {}),
 }))
 
+jest.mock('services/repo/useRepoFlagsSelect')
+
+const flagsData = [
+  {
+    name: 'flag1',
+  },
+  {
+    name: 'flag2',
+  },
+]
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -29,12 +41,14 @@ const queryClient = new QueryClient({
 })
 
 describe('Flags Tab', () => {
-  function setup(data) {
+  function setup({ data, flags = flagsData }) {
     useParams.mockReturnValue({
       owner: 'codecov',
       provider: 'gh',
       repo: 'gazebo',
     })
+
+    useRepoFlagsSelect.mockReturnValue({ data: flags })
 
     useRepoBackfilled.mockReturnValue(data)
     render(
@@ -52,8 +66,10 @@ describe('Flags Tab', () => {
     beforeEach(() => {
       setup({
         data: {
-          flagsMeasurementsActive: false,
-          flagsMeasurementsBackfilled: false,
+          data: {
+            flagsMeasurementsActive: false,
+            flagsMeasurementsBackfilled: false,
+          },
         },
       })
     })
@@ -69,8 +85,10 @@ describe('Flags Tab', () => {
     beforeEach(() => {
       setup({
         data: {
-          flagsMeasurementsActive: true,
-          flagsMeasurementsBackfilled: false,
+          data: {
+            flagsMeasurementsActive: true,
+            flagsMeasurementsBackfilled: false,
+          },
         },
       })
     })
@@ -86,8 +104,10 @@ describe('Flags Tab', () => {
     beforeEach(() => {
       setup({
         data: {
-          flagsMeasurementsActive: true,
-          flagsMeasurementsBackfilled: true,
+          data: {
+            flagsMeasurementsActive: true,
+            flagsMeasurementsBackfilled: true,
+          },
         },
       })
     })
@@ -96,6 +116,26 @@ describe('Flags Tab', () => {
       expect(screen.getByText(/Flags Header Component/)).toBeInTheDocument()
       expect(screen.queryByText(/Syncing Banner/)).not.toBeInTheDocument()
       expect(screen.queryByText(/Trigger Sync Banner/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with no flags', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          data: {
+            flagsMeasurementsActive: false,
+            flagsMeasurementsBackfilled: false,
+          },
+        },
+        flags: [],
+      })
+    })
+
+    it('renders empty state message', () => {
+      expect(
+        screen.getByText(/The Flags feature is not yet configured/)
+      ).toBeInTheDocument()
     })
   })
 })
