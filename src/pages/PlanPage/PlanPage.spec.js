@@ -7,7 +7,6 @@ import PlanPage from './PlanPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
-jest.mock('services/navigation')
 jest.mock('./Tabs', () => () => 'Tabs')
 
 describe('PlanPage', () => {
