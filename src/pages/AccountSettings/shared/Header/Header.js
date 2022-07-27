@@ -6,8 +6,8 @@ import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
   const { owner } = useParams()
-  const { gazeboBillingsTab } = useFlags({
-    gazeboBillingsTab: false,
+  const { gazeboPlanTab } = useFlags({
+    gazeboPlanTab: false,
   })
 
   return (
@@ -18,7 +18,7 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
-            ...(gazeboBillingsTab ? [{ pageName: 'billingTab' }] : []),
+            ...(gazeboPlanTab ? [{ pageName: 'planTab' }] : []),
             {
               pageName: 'accountAdmin',
               children: 'Settings',

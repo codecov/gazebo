@@ -11,7 +11,7 @@ jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 describe('Tabs', () => {
   function setup(props = {}) {
     useFlags.mockReturnValue({
-      gazeboBillingsTab: true,
+      gazeboPlanTab: true,
     })
 
     render(
@@ -38,12 +38,12 @@ describe('Tabs', () => {
       ).toHaveAttribute('href', '/account/gh/lewis')
     })
 
-    it('renders link to billing', () => {
+    it('renders link to plan', () => {
       expect(
         screen.getByRole('link', {
-          name: /billing/i,
+          name: /plan/i,
         })
-      ).toHaveAttribute('href', '/billing/gh/lewis')
+      ).toHaveAttribute('href', '/plan/gh/lewis')
     })
   })
 })
