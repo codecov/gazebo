@@ -1,5 +1,11 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+
+import { useNavLinks } from 'services/navigation'
+
 import { PlanBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
+
+
+jest.mock('services/navigation')
 
 const TestComponent = () => {
   const crumbs = useCrumbs()
@@ -12,7 +18,9 @@ const TestComponent = () => {
           <li key={i}>{text || children}</li>
         ))}
       </ul>
-      <button onClick={() => setCrumb({ pageName: 'added' })}>
+      <button
+        onClick={() => setCrumb({ pageName: 'new crumb', text: 'New Crumb' })}
+      >
         set crumb
       </button>
     </div>
@@ -21,6 +29,8 @@ const TestComponent = () => {
 
 describe('Plan breadcrumb context', () => {
   function setup() {
+    useNavLinks.mockReturnValue({ planTab: { path: () => '/plan/gh/codecov' } })
+
     render(
       <PlanBreadcrumbProvider>
         <TestComponent />
@@ -38,8 +48,8 @@ describe('Plan breadcrumb context', () => {
 
     it('setCrumb can update the context', () => {
       const button = screen.getByRole('button')
-      fireEvent.click(button)
-      waitFor(() => expect(screen.getByText('added')).toBeInTheDocument())
+      button.click()
+      expect(screen.getByText('New Crumb')).toBeInTheDocument()
     })
   })
 })
