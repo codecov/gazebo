@@ -116,6 +116,9 @@ module.exports = {
       screens: {
         print: { raw: 'print' },
       },
+      backgroundImage: {
+        'enterprise-banner-bg': "url('/src/assets/enterprise-banner-bg.png')",
+      },
     },
   },
   variants: {
