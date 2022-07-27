@@ -3,12 +3,16 @@ import { renderHook } from '@testing-library/react-hooks'
 import { format } from 'date-fns'
 import { act } from 'react-test-renderer'
 
+import { useLocationParams } from 'services/navigation'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
 
 import useRepoFlagsTable from './useRepoFlagsTable'
 
 jest.mock('services/repo/useRepoFlags')
-
+jest.mock('services/navigation', () => ({
+  ...jest.requireActual('services/navigation'),
+  useLocationParams: jest.fn(),
+}))
 const flagsData = [
   {
     node: {
@@ -42,8 +46,11 @@ const emptyRepoFlagsMock = {
 
 describe('useRepoFlagsTable', () => {
   let hookData
-  function setup({ repoData }) {
+  function setup({ repoData, useParamsValue = { search: '' } }) {
     useRepoFlags.mockReturnValue(repoData)
+    useLocationParams.mockReturnValue({
+      params: useParamsValue,
+    })
 
     hookData = renderHook(() => useRepoFlagsTable())
   }
@@ -78,7 +85,7 @@ describe('useRepoFlagsTable', () => {
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2022-01-01',
           beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: {},
+          filters: { term: '' },
           interval: 'INTERVAL_7_DAY',
           orderingDirection: 'DESC',
         })
@@ -94,7 +101,7 @@ describe('useRepoFlagsTable', () => {
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2022-01-01',
           beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: {},
+          filters: { term: '' },
           interval: 'INTERVAL_7_DAY',
           orderingDirection: 'ASC',
         })
@@ -110,11 +117,29 @@ describe('useRepoFlagsTable', () => {
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2022-01-01',
           beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: {},
+          filters: { term: '' },
           interval: 'INTERVAL_7_DAY',
           orderingDirection: 'ASC',
         })
       )
+    })
+
+    describe('when there is search param', () => {
+      it('calls useRepoContents with correct filters value', () => {
+        setup({
+          repoData: repoFlagsMock,
+          useParamsValue: { search: 'flag1' },
+        })
+
+        expect(hookData.result.current.isSearching).toEqual(true)
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: '2022-01-01',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: { term: 'flag1' },
+          interval: 'INTERVAL_7_DAY',
+          orderingDirection: 'ASC',
+        })
+      })
     })
   })
 })

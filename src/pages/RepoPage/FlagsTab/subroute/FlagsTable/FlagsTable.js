@@ -69,6 +69,7 @@ function FlagsTable() {
     data,
     isLoading,
     handleSort,
+    isSearching,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
@@ -95,8 +96,9 @@ function FlagsTable() {
       <Table data={tableData} columns={headers} onSort={handleSort} />
       {tableData?.length === 0 && (
         <p className="flex justify-center flex-1">
-          {/*TODO: Check different table state messages with AJ*/}
-          There was a problem getting flags data from your provider
+          {isSearching
+            ? 'No results found'
+            : 'There was a problem getting flags data'}
         </p>
       )}
       {hasNextPage && (

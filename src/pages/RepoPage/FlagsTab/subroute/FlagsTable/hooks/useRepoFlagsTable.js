@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { useCallback, useState } from 'react'
 
+import { useLocationParams } from 'services/navigation'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
 import { SortingDirection } from 'ui/Table/constants'
 
@@ -10,10 +11,13 @@ const getSortByDirection = (sortBy) =>
     : SortingDirection.ASC
 
 function useRepoFlagsTable() {
+  const { params } = useLocationParams({ search: '' })
+  const isSearching = Boolean(params?.search)
   const [sortBy, setSortBy] = useState(SortingDirection.ASC)
+
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRepoFlags({
-      filters: {},
+      filters: { term: params?.search },
       orderingDirection: sortBy,
       interval: 'INTERVAL_7_DAY', //TODO: Select interval based on selected date range
       beforeDate: format(new Date(), 'yyyy-MM-dd'),
@@ -34,6 +38,7 @@ function useRepoFlagsTable() {
     data,
     isLoading,
     handleSort,
+    isSearching,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
