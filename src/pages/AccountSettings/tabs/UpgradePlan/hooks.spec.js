@@ -29,7 +29,7 @@ describe('useProPlans', () => {
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [
-            'Configureable # of users',
+            'Configurable # of users',
             'Unlimited public repositories',
             'Unlimited private repositories',
             'Priorty Support',
@@ -41,7 +41,7 @@ describe('useProPlans', () => {
           billingRate: 'annually',
           baseUnitPrice: 10,
           benefits: [
-            'Configureable # of users',
+            'Configurable # of users',
             'Unlimited public repositories',
             'Unlimited private repositories',
             'Priorty Support',
@@ -63,7 +63,7 @@ describe('useProPlans', () => {
           billingRate: 'monthly',
           baseUnitPrice: 12,
           benefits: [
-            'Configureable # of users',
+            'Configurable # of users',
             'Unlimited public repositories',
             'Unlimited private repositories',
             'Priorty Support',
@@ -75,7 +75,7 @@ describe('useProPlans', () => {
           billingRate: 'annually',
           baseUnitPrice: 10,
           benefits: [
-            'Configureable # of users',
+            'Configurable # of users',
             'Unlimited public repositories',
             'Unlimited private repositories',
             'Priorty Support',
@@ -105,7 +105,7 @@ function getPlans() {
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -117,7 +117,7 @@ function getPlans() {
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -129,7 +129,7 @@ function getPlans() {
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -141,7 +141,7 @@ function getPlans() {
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
