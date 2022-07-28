@@ -7,7 +7,7 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 
-{/*No Need for the new component here*/}
+// No Need for the new component here
 const ActiveUsers = ({ accountDetails }) => (
   <p className="my-4">
     {accountDetails.activatedUserCount ?? 0} of{' '}

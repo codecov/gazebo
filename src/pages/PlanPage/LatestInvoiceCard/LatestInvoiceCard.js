@@ -7,7 +7,7 @@ import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 
 function LatestInvoiceCard({ invoice }) {
-  {/* have this check in the parent so there isn't any ambiguity why this component may or may not render at the parent level as well can the check to see if the invoice is not nullish be at the parent level*/}
+  // have this check in the parent so there isn't any ambiguity why this component may or may not render at the parent level as well can the check to see if the invoice is not nullish be at the parent level
   if (!invoice || !invoice?.dueDate || !invoice?.created) return null
   return (
     <Card header="Invoices">
