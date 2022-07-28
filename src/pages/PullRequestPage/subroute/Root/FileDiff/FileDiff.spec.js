@@ -22,11 +22,6 @@ describe('FileDiff', () => {
             lines: [{ content: 'abc' }, { content: 'def' }],
           },
         ],
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-        },
       })
     })
     it('renders the name of a impacted file', () => {
@@ -48,11 +43,6 @@ describe('FileDiff', () => {
             lines: [{ content: 'abc' }, { content: 'def' }],
           },
         ],
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-        },
       })
     })
     it('renders unexpected changes', () => {
@@ -64,11 +54,6 @@ describe('FileDiff', () => {
     beforeEach(() => {
       setup({
         headName: 'main.ts',
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-        },
       })
     })
     it('doesnt render information on the code renderer', () => {
@@ -83,11 +68,6 @@ describe('FileDiff', () => {
         headName: 'main.ts',
         isNewFile: true,
         segments: [],
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-        },
       })
     })
     it('renders a new file label', () => {
@@ -101,11 +81,6 @@ describe('FileDiff', () => {
         headName: 'main.ts',
         isRenamedFile: true,
         segments: [],
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-        },
       })
     })
     it('renders a renamed file label', () => {
@@ -119,11 +94,6 @@ describe('FileDiff', () => {
         headName: 'main.ts',
         isDeletedFile: true,
         segments: [],
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-        },
       })
     })
     it('renders a deleted file label', () => {
@@ -138,11 +108,6 @@ describe('FileDiff', () => {
         isNewFile: true,
         isCriticalFile: true,
         segments: [],
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-        },
       })
     })
     it('renders a critical file label', () => {

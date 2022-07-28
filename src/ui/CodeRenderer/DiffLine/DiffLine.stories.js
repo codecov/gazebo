@@ -29,41 +29,21 @@ const Template = (args) => {
 
 export const DefaultDiffLine = Template.bind({})
 DefaultDiffLine.args = {
-  showLines: {
-    showCovered: true,
-    showUncovered: null,
-    showPartial: null,
-  },
   coverage: 'H',
 }
 
 export const CoveredButNotShownDiffLine = Template.bind({})
 CoveredButNotShownDiffLine.args = {
-  showLines: {
-    showCovered: false,
-    showUncovered: null,
-    showPartial: null,
-  },
   coverage: 'H',
 }
 
 export const PartialDiffLine = Template.bind({})
 PartialDiffLine.args = {
-  showLines: {
-    showCovered: null,
-    showUncovered: null,
-    showPartial: true,
-  },
   coverage: 'P',
 }
 
 export const UncoveredDiffLine = Template.bind({})
 UncoveredDiffLine.args = {
-  showLines: {
-    showCovered: null,
-    showUncovered: true,
-    showPartial: null,
-  },
   coverage: 'M',
 }
 
