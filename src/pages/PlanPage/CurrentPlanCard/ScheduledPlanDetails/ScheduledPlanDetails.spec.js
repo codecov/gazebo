@@ -8,6 +8,7 @@ const queryClient = new QueryClient()
 
 describe('ScheduledPlanDetails', () => {
   function setup(scheduledPhase) {
+    {/*Let's try to git rid of unnecessary wrappers*/}
     render(
       <QueryClientProvider client={queryClient}>
         <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
