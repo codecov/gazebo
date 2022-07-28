@@ -11,6 +11,7 @@ import { useOwner } from 'services/user'
 import { PlanBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
+import Invoices from './Invoices'
 import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
 
@@ -42,6 +43,9 @@ function PlanPage() {
               </Route>
               <Route path={`${path}/plan`} exact>
                 plan work
+              </Route>
+              <Route path={`${path}/invoices`} exact>
+                <Invoices />
               </Route>
               <Redirect
                 from="/billing/:provider/:owner/*"

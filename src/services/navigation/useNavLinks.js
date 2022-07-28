@@ -118,6 +118,12 @@ function useNavLinks() {
         `/plan/${provider}/${owner}/cancel`,
       isExternalLink: false,
     },
+    invoicesPage: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/invoices`,
+      isExternalLink: false,
+      text: 'Invoices',
+    },
     accountAdmin: {
       text: 'Admin',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
