@@ -14,7 +14,7 @@ build.local:
 build:
 	docker build . -t ${image}:${DEPLOY_ENV}-${release_version}-${sha} \
 	--build-arg REACT_APP_STAGE=${BUILD_ENV} \
-	--build-arg REACT_APP_IS_ENTERPRISE=${is_enterprise} \
+	--build-arg REACT_APP_IS_ENTERPRISE=${IS_ENTERPRISE} \
 	--build-arg REACT_APP_ENV_ARG=${DEPLOY_ENV}
 	--label "org.label-schema.build-date"="$(build_date)" \
 	--label "org.label-schema.name"="Codecov Gazebo" \
