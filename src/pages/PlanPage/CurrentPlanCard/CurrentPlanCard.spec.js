@@ -8,7 +8,7 @@ const proAccountDetails = {
   plan: {
     marketingName: 'Pro Team',
     baseUnitPrice: 12,
-    benefits: ['Configurable # of users', 'Unlimited repos'],
+    benefits: ['Configureable # of users', 'Unlimited repos'],
     quantity: 5,
     value: 'users-inappm',
   },
@@ -39,12 +39,13 @@ jest.mock('react-router-dom', () => ({
 
 describe('CurrentPlanCard', () => {
   function setup(accountDetails) {
+    {/*Let's try to git rid of unnecessary wrappers*/}
     render(
       <QueryClientProvider client={queryClient}>
         <CurrentPlanCard accountDetails={accountDetails} />
       </QueryClientProvider>,
       {
-        wrapper: MemoryRouter,
+        wrapper: MemoryRouter, 
       }
     )
   }
