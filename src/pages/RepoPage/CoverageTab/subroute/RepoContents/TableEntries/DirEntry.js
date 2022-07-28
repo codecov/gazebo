@@ -3,9 +3,12 @@ import PropTypes from 'prop-types'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-function DirEntry({ branch, name, path }) {
+import { usePrefetchDirEntry } from './hooks/usePrefetchDirEntry'
+
+function DirEntry({ branch, name, path, filters }) {
+  const { runPrefetch } = usePrefetchDirEntry({ branch, path, filters })
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2" onMouseEnter={async () => await runPrefetch()}>
       <Icon name="folder" size="md" />
       <A
         to={{
@@ -26,6 +29,13 @@ DirEntry.propTypes = {
   branch: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   path: PropTypes.string,
+  filters: PropTypes.shape({
+    ordering: PropTypes.shape({
+      direction: PropTypes.string,
+      parameter: PropTypes.any,
+    }),
+    searchValue: PropTypes.any,
+  }),
 }
 
 export default DirEntry

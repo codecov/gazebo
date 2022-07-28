@@ -1,15 +1,12 @@
 import { render, screen } from 'custom-testing-library'
 
-import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
-import { useLegacyRedirects } from 'services/redirects'
 
 import Header from './Header'
 
 jest.mock('services/commit')
-jest.mock('services/redirects/hooks')
 
 const dataReturned = {
   commit: {
@@ -113,52 +110,6 @@ describe('Header', () => {
     })
     it('renders the pull label', () => {
       expect(screen.getByText(/pull-request-open.svg/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when provider is gh, bb or gl', () => {
-    it('Ask for feedback banner is rendered', () => {
-      setup({
-        data: dataReturned,
-      })
-      expect(
-        screen.getByText(
-          /Also, we would love to hear your feedback! Let us know what you think in/
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('Anchors show based on provider', () => {
-      setup({
-        data: dataReturned,
-      })
-      const issueLink = screen.getByRole('link', { name: /this issue/i })
-      expect(issueLink).toBeInTheDocument()
-      expect(issueLink.href).toBe(
-        'https://github.com/codecov/Codecov-user-feedback/issues/1'
-      )
-
-      const previousUILink = screen.getByRole('link', {
-        name: /switch back to the previous user interface/i,
-      })
-      expect(previousUILink).toBeInTheDocument()
-      expect(previousUILink.href).toBe(
-        'https://stage-web.codecov.dev/gh/test/test-repo/commit/abcd'
-      )
-    })
-
-    it('Calls the onclick when previous design is chosen', () => {
-      setup({
-        data: dataReturned,
-      })
-      const switchBackLink = screen.getByRole('link', { name: /switch back/i })
-      userEvent.click(switchBackLink)
-      expect(useLegacyRedirects).toHaveBeenCalledWith({
-        cookieName: 'commit_detail_page',
-        uri: '/gh/test/test-repo/commit/abcd',
-        cookiePath: '/gh/test/',
-        selectedOldUI: true,
-      })
     })
   })
 

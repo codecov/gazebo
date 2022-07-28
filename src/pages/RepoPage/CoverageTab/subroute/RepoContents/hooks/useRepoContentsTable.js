@@ -10,7 +10,7 @@ import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
 
-function createTableData({ tableData, branch, path, isSearching }) {
+function createTableData({ tableData, branch, path, isSearching, filters }) {
   return tableData?.length > 0
     ? tableData.map(
         ({
@@ -22,7 +22,12 @@ function createTableData({ tableData, branch, path, isSearching }) {
         }) => ({
           name:
             __typename === 'PathContentDir' ? (
-              <DirEntry branch={branch} name={name} path={path} />
+              <DirEntry
+                branch={branch}
+                name={name}
+                path={path}
+                filters={filters}
+              />
             ) : (
               <FileEntry
                 branch={branch}
@@ -111,8 +116,9 @@ function useRepoContentsTable() {
         branch: branch || defaultBranch,
         path,
         isSearching,
+        filters: getQueryFilters({ params, sortBy: sortBy[0] }),
       }),
-    [repoContents, branch, defaultBranch, path, isSearching]
+    [repoContents, branch, defaultBranch, path, isSearching, params, sortBy]
   )
 
   const handleSort = useCallback(
