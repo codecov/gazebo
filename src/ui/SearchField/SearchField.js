@@ -4,8 +4,10 @@ import { useDebounce } from 'react-use'
 
 import TextInput from 'ui/TextInput'
 
-function SearchField({ searchValue, setSearchValue, placeholder }) {
+function SearchField({ searchValue, setSearchValue, ...rest }) {
   const [search, setSearch] = useState(searchValue)
+  // eslint-disable-next-line no-unused-vars
+  const { className, value, onChange, icon, ...newProps } = rest
 
   useDebounce(
     () => {
@@ -15,11 +17,19 @@ function SearchField({ searchValue, setSearchValue, placeholder }) {
     [search]
   )
 
+  const onChangeHandler = (e) => {
+    setSearch(e.target.value)
+    if (onChange) {
+      onChange(e)
+    }
+  }
+
   return (
     <TextInput
       value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      placeholder={placeholder}
+      onChange={onChangeHandler}
+      icon={icon ?? 'search'}
+      {...newProps}
     />
   )
 }
@@ -27,7 +37,6 @@ function SearchField({ searchValue, setSearchValue, placeholder }) {
 SearchField.propTypes = {
   searchValue: PropTypes.string.isRequired,
   setSearchValue: PropTypes.func.isRequired,
-  placeholder: PropTypes.string.isRequired,
 }
 
 export default SearchField
