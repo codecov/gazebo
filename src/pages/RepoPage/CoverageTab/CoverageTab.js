@@ -3,12 +3,12 @@ import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
+import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
 import ContentsTableHeader from './ContentsTableHeader'
 import DeactivatedRepo from './DeactivatedRepo'
 import FileBreadcrumb from './FileBreadcrumb'
-import SearchField from './SearchField'
 import Summary from './Summary'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
@@ -44,6 +44,7 @@ function CoverageTab() {
             <ContentsTableHeader>
               <FileBreadcrumb />
               <SearchField
+                placeholder={'Search for files'}
                 searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />
@@ -56,6 +57,7 @@ function CoverageTab() {
             <ContentsTableHeader>
               <FileBreadcrumb />
               <SearchField
+                placeholder={'Search for files'}
                 searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />
@@ -73,6 +75,7 @@ function CoverageTab() {
             <ContentsTableHeader>
               <FileBreadcrumb />
               <SearchField
+                placeholder={'Search for files'}
                 searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />

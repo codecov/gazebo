@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
+import NotFound from 'pages/NotFound'
+import { usePull } from 'services/pull'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
@@ -12,13 +14,18 @@ import CompareSummary from './Summary'
 const Root = lazy(() => import('./subroute/Root'))
 
 function PullRequestPage() {
-  const { owner, repo, pullId } = useParams()
+  const { owner, repo, pullId, provider } = useParams()
+  const { data, isLoading } = usePull({ provider, owner, repo, pullId })
 
   const Loader = (
     <div className="flex items-center justify-center py-16">
       <Spinner />
     </div>
   )
+
+  if (!data?.hasAccess && !isLoading) {
+    return <NotFound />
+  }
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">

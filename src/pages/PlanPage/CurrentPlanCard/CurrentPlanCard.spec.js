@@ -39,12 +39,13 @@ jest.mock('react-router-dom', () => ({
 
 describe('CurrentPlanCard', () => {
   function setup(accountDetails) {
+    {/*Let's try to git rid of unnecessary wrappers*/}
     render(
       <QueryClientProvider client={queryClient}>
         <CurrentPlanCard accountDetails={accountDetails} />
       </QueryClientProvider>,
       {
-        wrapper: MemoryRouter,
+        wrapper: MemoryRouter, 
       }
     )
   }

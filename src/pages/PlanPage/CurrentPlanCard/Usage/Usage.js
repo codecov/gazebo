@@ -7,6 +7,7 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 
+// No Need for the new component here
 const ActiveUsers = ({ accountDetails }) => (
   <p className="my-4">
     {accountDetails.activatedUserCount ?? 0} of{' '}
@@ -21,7 +22,7 @@ ActiveUsers.propTypes = {
 function Usage({ accountDetails, isBasicPlan }) {
   const { provider, owner } = useParams()
   const { data: uploadsNumber } = useUploadsNumber({ provider, owner })
-  const maxUploadNumber = 250
+  const maxUploadNumber = 250 //Could possibly move this to a more "global" constant, that way if it ever changes we don't have to scour the frontend to change all occurances.
 
   const progressAmount = (uploadsNumber * 100) / maxUploadNumber || 0 //sometimes we get null
   const isUsageExceeded = uploadsNumber >= maxUploadNumber
