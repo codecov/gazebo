@@ -13,6 +13,7 @@ import { useFlags } from 'shared/featureFlags'
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
+const FeedbackPage = lazy(() => import('./pages/FeedbackPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -61,6 +62,11 @@ function App() {
             <Route path="/analytics/:provider/:owner/" exact>
               <BaseLayout>
                 <AnalyticsPage />
+              </BaseLayout>
+            </Route>
+            <Route path="/:provider/feedback">
+              <BaseLayout>
+                <FeedbackPage />
               </BaseLayout>
             </Route>
             {gazeboPlanTab && (

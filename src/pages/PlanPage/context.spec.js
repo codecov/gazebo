@@ -1,6 +1,10 @@
 import { render, screen } from '@testing-library/react'
 
+import { useNavLinks } from 'services/navigation'
+
 import { PlanBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
+
+jest.mock('services/navigation')
 
 const TestComponent = () => {
   const crumbs = useCrumbs()
@@ -24,6 +28,8 @@ const TestComponent = () => {
 
 describe('Plan breadcrumb context', () => {
   function setup() {
+    useNavLinks.mockReturnValue({ planTab: { path: () => '/plan/gh/codecov' } })
+
     render(
       <PlanBreadcrumbProvider>
         <TestComponent />
