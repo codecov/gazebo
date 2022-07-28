@@ -21,7 +21,7 @@ const accountDetailsObject = {
     billing_rate: 'monthly',
     base_unit_price: 12,
     benefits: [
-      'Configureable # of users',
+      'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
       'Priority Support',
