@@ -10,6 +10,7 @@ describe('SearchField', () => {
     props = {
       searchValue: '',
       setSearchValue: jest.fn(),
+      placeholder: 'Search',
     }
     render(<SearchField {...props} />)
   }
@@ -18,7 +19,7 @@ describe('SearchField', () => {
     jest.useFakeTimers()
     setup()
     const searchField = screen.getByRole('textbox', {
-      name: 'Search for files',
+      name: 'Search',
     })
     userEvent.type(searchField, 'file.js')
   })
