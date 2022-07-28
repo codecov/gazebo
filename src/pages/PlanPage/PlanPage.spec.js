@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
@@ -9,6 +10,14 @@ jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
 jest.mock('./Tabs', () => () => 'Tabs')
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
+
 describe('PlanPage', () => {
   function setup({ owner = null }) {
     useOwner.mockReturnValue({
@@ -17,7 +26,9 @@ describe('PlanPage', () => {
     render(
       <MemoryRouter initialEntries={['/plan/gh/codecov']}>
         <Route path="/plan/:provider/:owner">
+          <QueryClientProvider client={queryClient}>
           <PlanPage />
+          </QueryClientProvider>
         </Route>
       </MemoryRouter>
     )
