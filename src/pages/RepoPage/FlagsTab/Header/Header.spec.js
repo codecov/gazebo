@@ -18,7 +18,7 @@ describe('Header', () => {
       updateParams: updateLocationMock,
     })
     useRepoFlagsSelect.mockReturnValue({
-      data: new Array(6),
+      data: new Array(99),
     })
 
     render(<Header />)
@@ -32,7 +32,7 @@ describe('Header', () => {
       expect(screen.getByText(/Configured flags/)).toBeInTheDocument()
     })
     it('Renders the correct number of flags on the repo', () => {
-      expect(screen.getByText(/6/)).toBeInTheDocument()
+      expect(screen.getByText(/99/)).toBeInTheDocument()
     })
   })
 

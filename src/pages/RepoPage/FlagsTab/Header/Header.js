@@ -14,9 +14,9 @@ const Header = ({ controlsDisabled, children }) => {
   })
   const { data: flagsData } = useRepoFlagsSelect()
 
-  const value = [...TimeOptions]
-    .filter((item) => item.label === params.historicalTrend)
-    .pop()
+  const value = TimeOptions.find(
+    (item) => item.label === params.historicalTrend
+  )
 
   return (
     <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
@@ -37,7 +37,7 @@ const Header = ({ controlsDisabled, children }) => {
             disabled={controlsDisabled}
             ariaName="Select Historical Trend"
             items={TimeOptions}
-            value={value ?? TimeOptions[1]}
+            value={value ?? TimeOptions[3]}
             onChange={(historicalTrend) =>
               updateParams({ historicalTrend: historicalTrend.label })
             }

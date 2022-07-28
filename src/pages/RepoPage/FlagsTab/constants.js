@@ -5,9 +5,9 @@ export const MEASUREMENT_INTERVAL = Object.freeze({
 })
 
 export const TimeOptions = [
-  { label: 'All time', value: '' },
-  // { label: 'Last 6 months', value: 'SOME_CONST' },
-  // { label: 'Last 3 months', value: 'SOME_CONST' },
-  { label: 'Last 30 days', value: MEASUREMENT_INTERVAL.INTERVAL_30_DAY },
-  { label: 'Last 7 days', value: MEASUREMENT_INTERVAL.INTERVAL_7_DAY },
+  { label: 'All time', value: MEASUREMENT_INTERVAL.INTERVAL_30_DAY },
+  { label: 'Last 6 months', value: MEASUREMENT_INTERVAL.INTERVAL_7_DAY },
+  { label: 'Last 3 months', value: MEASUREMENT_INTERVAL.INTERVAL_7_DAY },
+  { label: 'Last 30 days', value: MEASUREMENT_INTERVAL.INTERVAL_7_DAY },
+  { label: 'Last 7 days', value: MEASUREMENT_INTERVAL.INTERVAL_1_DAY },
 ]
