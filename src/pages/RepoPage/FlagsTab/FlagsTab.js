@@ -1,13 +1,12 @@
 import { Suspense } from 'react'
 import { Route, useParams } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
 import { useRepoBackfilled } from 'services/repo/hooks'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
-import SearchField from 'ui/SearchField/SearchField'
 import Spinner from 'ui/Spinner'
 
 import FlagsNotConfigured from './FlagsNotConfigured'
+import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
 import SyncingBanner from './SyncingBanner'
 import TriggerSyncBanner from './TriggerSyncBanner'
@@ -22,9 +21,10 @@ const getIsRepoBackfilling = ({
   flagsMeasurementsActive,
   flagsMeasurementsBackfilled,
 }) => flagsMeasurementsActive && !flagsMeasurementsBackfilled
+const isDisabled = ({ flagsMeasurementsActive, isRepoBackfilling }) =>
+  !flagsMeasurementsActive || isRepoBackfilling
 
 function FlagsTab() {
-  const { params, updateParams } = useLocationParams({ search: '' })
   const { provider, owner, repo } = useParams()
   const { data: flagsData } = useRepoFlagsSelect()
   const { data } = useRepoBackfilled({ provider, owner, repo })
@@ -40,20 +40,19 @@ function FlagsTab() {
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       {flagsData && flagsData.length > 0 ? (
         <>
-          <h1>Flags Header Component</h1>
-          {!flagsMeasurementsActive && <TriggerSyncBanner />}
-          {isRepoBackfilling && <SyncingBanner />}
+          <Header
+            controlsDisabled={isDisabled({
+              flagsMeasurementsActive,
+              isRepoBackfilling,
+            })}
+          >
+            {!flagsMeasurementsActive && <TriggerSyncBanner />}
+            {isRepoBackfilling && <SyncingBanner />}
+          </Header>
           {/*TODO: Show blurred image instead of the table when backfill is running or not active*/}
-          <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
+          <div className="flex flex-1 flex-col gap-4">
             <Route path="/:provider/:owner/:repo/flags" exact>
               <Suspense fallback={Loader}>
-                <div className="flex justify-end pt-4">
-                  <SearchField
-                    placeholder={'Search for flags'}
-                    searchValue={params?.search}
-                    setSearchValue={(search) => updateParams({ search })}
-                  />
-                </div>
                 <FlagsTable />
               </Suspense>
             </Route>

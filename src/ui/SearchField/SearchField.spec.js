@@ -11,32 +11,51 @@ describe('SearchField', () => {
       searchValue: '',
       setSearchValue: jest.fn(),
       placeholder: 'Search',
+      ...over,
     }
     render(<SearchField {...props} />)
   }
 
-  beforeEach(() => {
-    jest.useFakeTimers()
-    setup()
-    const searchField = screen.getByRole('textbox', {
-      name: 'Search',
-    })
-    userEvent.type(searchField, 'file.js')
-  })
-
-  describe('when typing in the search field', () => {
-    it('waits to call setSearchValue', () => {
-      expect(props.setSearchValue).not.toHaveBeenCalledWith('file.js')
-    })
-  })
-
-  describe('after waiting for debounce', () => {
+  describe('Basic', () => {
     beforeEach(() => {
-      jest.advanceTimersByTime(1000)
+      jest.useFakeTimers()
+      setup()
+      const searchField = screen.getByRole('textbox', {
+        name: 'Search',
+      })
+      userEvent.type(searchField, 'file.js')
     })
 
-    it('calls setSearchValue', () => {
-      expect(props.setSearchValue).toHaveBeenCalled()
+    describe('when typing in the search field', () => {
+      it('waits to call setSearchValue', () => {
+        expect(props.setSearchValue).not.toHaveBeenCalledWith('file.js')
+      })
+    })
+
+    describe('after waiting for debounce', () => {
+      beforeEach(() => {
+        jest.advanceTimersByTime(1000)
+      })
+
+      it('calls setSearchValue', () => {
+        expect(props.setSearchValue).toHaveBeenCalled()
+      })
+    })
+  })
+
+  describe('custom onChange', () => {
+    let onChangeMock = jest.fn()
+    beforeEach(() => {
+      jest.useFakeTimers()
+      setup({ onChange: onChangeMock })
+      const searchField = screen.getByRole('textbox', {
+        name: 'Search',
+      })
+      userEvent.type(searchField, 'file.js')
+    })
+
+    it('fired the custom onChangehandler', () => {
+      expect(onChangeMock).toHaveBeenCalled()
     })
   })
 })
