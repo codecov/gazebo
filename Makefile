@@ -3,6 +3,7 @@ release_version := `cat VERSION`
 build_date ?= $(shell git show -s --date=iso8601-strict --pretty=format:%cd $$sha)
 image := us-docker.pkg.dev/genuine-polymer-165712/codecov/codecov-frontend-gazebo
 export DOCKER_BUILDKIT := 1
+IS_ENTERPRISE ?= false
 
 gcr.auth:
 	gcloud auth configure-docker us-docker.pkg.dev
@@ -13,6 +14,7 @@ build.local:
 build:
 	docker build . -t ${image}:${DEPLOY_ENV}-${release_version}-${sha} \
 	--build-arg REACT_APP_STAGE=${BUILD_ENV} \
+	--build-arg REACT_APP_IS_ENTERPRISE=${is_enterprise} \
 	--build-arg REACT_APP_ENV_ARG=${DEPLOY_ENV}
 	--label "org.label-schema.build-date"="$(build_date)" \
 	--label "org.label-schema.name"="Codecov Gazebo" \

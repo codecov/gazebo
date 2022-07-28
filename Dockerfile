@@ -1,7 +1,9 @@
 # syntax = docker/dockerfile:1.3
 FROM node:16.14.2-alpine3.15 as build
 ARG REACT_APP_ENV_ARG
+ARG REACT_APP_IS_ENTERPRISE
 ENV REACT_APP_ENV=$REACT_APP_ENV_ARG
+ENV REACT_APP_IS_ENTERPRISE=$REACT_APP_IS_ENTERPRISE
 ENV GENERATE_SOURCEMAP=false
 RUN mkdir /home/workspace
 COPY . /home/workspace
