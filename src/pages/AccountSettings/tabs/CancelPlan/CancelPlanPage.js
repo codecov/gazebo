@@ -56,11 +56,7 @@ function CancelPlanPage({ provider, owner }) {
                 deactivated. You will need to manually reactivate up to five
                 users or ensure auto activate is enabled in your plan settings.
               </p>
-              {/* <DowngradeToFree
-                accountDetails={accountDetails}
-                provider={provider}
-                owner={owner}
-              /> */}
+              {/* This is a weird component that is both a button and a modal, hence why it's imported this way. Defs not a good practice but I feel the overhaul of this component will be for another time */}
               <CancelCard
                 customerId={accountDetails?.subscriptionDetail?.customer}
                 planCost={accountDetails?.plan?.value}
@@ -70,9 +66,6 @@ function CancelPlanPage({ provider, owner }) {
                 currentPeriodEnd={
                   accountDetails?.subscriptionDetail?.currentPeriodEnd
                 }
-                accountDetails={accountDetails}
-                provider={provider}
-                owner={owner}
               />
             </div>
           </Card>

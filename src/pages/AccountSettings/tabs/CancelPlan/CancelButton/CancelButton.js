@@ -22,7 +22,6 @@ function CancelButton({
     { customerId },
     {
       onSuccess: () => {
-        console.log('canceled from the main page')
         sendUserToBilling()
       },
     }
@@ -38,7 +37,6 @@ function CancelButton({
   const periodEnd = getEndPeriod(currentPeriodEnd)
 
   function completeCancelation() {
-    console.log('baremetrics blocked', baremetricsBlocked)
     if (baremetricsBlocked) {
       cancelPlan()
     }
@@ -99,7 +97,7 @@ function CancelButton({
 CancelButton.propTypes = {
   customerId: PropType.string,
   planCost: PropType.string.isRequired,
-  upComingCancelation: PropType.bool.isRequired,
+  upComingCancelation: PropType.number.isRequired,
   currentPeriodEnd: PropType.number.isRequired,
 }
 

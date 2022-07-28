@@ -7,23 +7,23 @@ export function getEndPeriod(unixPeriodEnd) {
   )
 }
 
+/* eslint-disable max-statements */
 export function loadBaremetrics() {
   return new Promise((resolve) => {
-    console.log('hello here')
-    if (window.barecancel && window.barecancel.created) return resolve()
-    // Might not be needed
-    window.barecancel = { created: true }
-
-    const script = document.createElement('script')
-    script.src =
-      'https://baremetrics-barecancel.baremetrics.com/js/application.js'
-    script.async = true
-    script.dataset.testid = 'baremetrics-script'
-    // Next 2 Might not be needed, instead document.body.appendChild(script)
-    const createdScript = document.getElementsByTagName('script')[0]
-    createdScript.parentNode.insertBefore(script, createdScript)
-    script.onload = () => {
-      window.barecancel.created = true
+    if (window.barecancel && window.barecancel.created) {
+      window.console &&
+        console.error &&
+        console.error('Barecancel snippet included twice.')
+      resolve()
+    } else {
+      window.barecancel = { created: true }
+      const script = document.createElement('script')
+      script.src =
+        'https://baremetrics-barecancel.baremetrics.com/js/application.js'
+      script.async = true
+      script.dataset.testid = 'baremetrics-script'
+      const createdScript = document.getElementsByTagName('script')[0]
+      createdScript.parentNode.insertBefore(script, createdScript)
       resolve()
     }
   })
