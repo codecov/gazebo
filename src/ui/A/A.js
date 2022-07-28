@@ -20,6 +20,7 @@ const variantClasses = {
   cardLink: `text-ds-grey-octinary font-semibold truncate`,
   greyOctinary: `text-ds-gray-octinary`,
   grayQuinary: `text-ds-gray-quinary`,
+  headerHighlight: `font-semibold text-ds-pink`,
 }
 
 function _adjustPathForGLSubgroups(path) {
@@ -96,6 +97,7 @@ A.propTypes = {
     'semibold',
     'grayQuinary',
     'greyOctinary',
+    'headerHighlight',
   ]),
   isExternal: PropTypes.bool,
 }

@@ -8,7 +8,7 @@ const proAccountDetails = {
   plan: {
     marketingName: 'Pro Team',
     baseUnitPrice: 12,
-    benefits: ['Configureable # of users', 'Unlimited repos'],
+    benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
     value: 'users-inappm',
   },

@@ -42,7 +42,7 @@ describe('Members Activation', () => {
 
     it('Displays number of plan quantity', () => {
       expect(screen.getByText('9')).toBeInTheDocument()
-      expect(screen.getByText(/avaialbe seats/)).toBeInTheDocument()
+      expect(screen.getByText(/availablelbe seats/)).toBeInTheDocument()
     })
 
     it('Renders change plan link', () => {

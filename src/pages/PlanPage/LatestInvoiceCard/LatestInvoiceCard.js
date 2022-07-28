@@ -1,13 +1,13 @@
 import { format, fromUnixTime } from 'date-fns'
 
+import invoiceImg from 'assets/svg/invoice.svg'
 import { invoicePropType } from 'services/account'
 import A from 'ui/A'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 
-import invoiceImg from './invoice.svg'
-
 function LatestInvoiceCard({ invoice }) {
+  // have this check in the parent so there isn't any ambiguity why this component may or may not render at the parent level as well can the check to see if the invoice is not nullish be at the parent level
   if (!invoice || !invoice?.dueDate || !invoice?.created) return null
   return (
     <Card header="Invoices">
