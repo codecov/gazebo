@@ -62,12 +62,12 @@ describe('Header', () => {
       it('updates the location params on select', async () => {
         await screen.findByText('All time')
 
-        const item = screen.getByText('Last 24 hours')
+        const item = screen.getByText('Last 7 days')
         userEvent.click(item)
 
         await waitFor(() =>
           expect(updateLocationMock).toHaveBeenCalledWith({
-            historicalTrend: 'Last 24 hours',
+            historicalTrend: 'Last 7 days',
           })
         )
       })

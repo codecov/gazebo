@@ -10,5 +10,4 @@ export const TimeOptions = [
   // { label: 'Last 3 months', value: 'SOME_CONST' },
   { label: 'Last 30 days', value: MEASUREMENT_INTERVAL.INTERVAL_30_DAY },
   { label: 'Last 7 days', value: MEASUREMENT_INTERVAL.INTERVAL_7_DAY },
-  { label: 'Last 24 hours', value: MEASUREMENT_INTERVAL.INTERVAL_1_DAY },
 ]
