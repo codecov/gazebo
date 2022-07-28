@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 
 const SelectClasses = {
-  root: 'w-full relative',
+  root: 'flex-1 relative',
   item: 'block cursor-pointer py-1 px-3 text-sm',
   button:
     'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 outline-none h-8',
