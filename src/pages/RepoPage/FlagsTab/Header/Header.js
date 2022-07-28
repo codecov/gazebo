@@ -29,7 +29,7 @@ const Header = ({ controlsDisabled, children }) => {
             {flagsData.length}
           </p>
         </div>
-        <div className="mb-4 px-4 flex flex-col justify-between gap-2">
+        <div className="mb-4 px-4 flex flex-col justify-between gap-2 min-w-[15rem]">
           <h3 className="text-sm text-ds-gray-octonary font-semibold">
             Historical trend
           </h3>
