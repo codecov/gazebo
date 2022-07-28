@@ -1,5 +1,6 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen , waitFor } from 'custom-testing-library'
 
+import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
@@ -7,6 +8,8 @@ import { useRepoBackfilled } from 'services/repo/hooks'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
 import FlagsTab from './FlagsTab'
+
+import { useLocationParams } from '../../../services/navigation'
 
 jest.mock(
   './TriggerSyncBanner/TriggerSyncBanner.js',
@@ -19,6 +22,10 @@ jest.mock('services/repo/hooks')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
+}))
+jest.mock('services/navigation', () => ({
+  ...jest.requireActual('services/navigation'),
+  useLocationParams: jest.fn(),
 }))
 
 jest.mock('services/repo/useRepoFlagsSelect')
@@ -41,6 +48,8 @@ const queryClient = new QueryClient({
 })
 
 describe('Flags Tab', () => {
+  const updateParams = jest.fn()
+
   function setup({ data, flags = flagsData }) {
     useParams.mockReturnValue({
       owner: 'codecov',
@@ -49,6 +58,11 @@ describe('Flags Tab', () => {
     })
 
     useRepoFlagsSelect.mockReturnValue({ data: flags })
+
+    useLocationParams.mockReturnValue({
+      params: { search: '' },
+      updateParams: updateParams,
+    })
 
     useRepoBackfilled.mockReturnValue(data)
     render(
@@ -136,6 +150,30 @@ describe('Flags Tab', () => {
       expect(
         screen.getByText(/The Flags feature is not yet configured/)
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('update search params after typing', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          data: {
+            flagsMeasurementsActive: true,
+            flagsMeasurementsBackfilled: true,
+          },
+        },
+      })
+      const searchInput = screen.getByRole('textbox', {
+        name: 'Search for flags',
+      })
+      userEvent.type(searchInput, 'flag1')
+    })
+
+    it('calls setSearchValue', async () => {
+      await waitFor(() => expect(updateParams).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(updateParams).toHaveBeenCalledWith({ search: 'flag1' })
+      )
     })
   })
 })
