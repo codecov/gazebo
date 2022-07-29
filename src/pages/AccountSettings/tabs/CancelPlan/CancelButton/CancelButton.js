@@ -82,7 +82,7 @@ function CancelButton({
           <Button
             id="barecancel-trigger"
             variant="danger"
-            hook="continue-cancelation-button"
+            hook="continue-cancellation-button"
             disabled={isDisabled}
             onClick={completeCancelation}
           >
@@ -97,7 +97,7 @@ function CancelButton({
 CancelButton.propTypes = {
   customerId: PropType.string,
   planCost: PropType.string.isRequired,
-  upComingCancelation: PropType.number.isRequired,
+  upComingCancelation: PropType.bool.isRequired,
   currentPeriodEnd: PropType.number.isRequired,
 }
 
