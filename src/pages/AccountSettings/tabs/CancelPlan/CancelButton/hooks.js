@@ -17,7 +17,7 @@ export function useBarecancel({ customerId, callbackSend }) {
       window.barecancel.params = {
         /* eslint-disable camelcase */
         access_token_id: config.BAREMETRICS_TOKEN,
-        customer_oid: 'cus_M6AXUvjdlQKzgw',
+        customer_oid: customerId,
         comment_required: true,
         callback_send: () => {
           memoizedSuccess()

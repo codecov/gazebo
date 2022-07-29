@@ -1,40 +1,50 @@
-import { renderHook, screen } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react-hooks'
 
 import config from 'config'
 
 import { useBarecancel } from './hooks'
-
-xdescribe('useBarecancel', () => {
-  function setup(accountDetails, callback) {
-    renderHook(() => useBarecancel(accountDetails, callback))
+describe('useBarecancel', () => {
+  function setup(customerId, callbackSend, callback_error) {
+    renderHook(() =>
+      useBarecancel({ customerId, callbackSend, callback_error })
+    )
   }
 
   describe('Initializes', () => {
     beforeEach(() => {
-      setup({ subscriptionDetail: { customer: 1234 } }, () => {})
-    })
-    it('creates the script tag', () => {
-      expect(screen.getByTestId('baremetrics-script')).toBeInTheDocument()
+      const customerId = 1234
+      const callbackSend = () => {}
+      const callback_error = () => {}
+      setup(customerId, callbackSend, callback_error)
     })
     it('window params are set', () => {
-      expect(window.barecancel.params).toEqual({
+      const expectedParams = {
         access_token_id: config.BAREMETRICS_TOKEN,
         customer_oid: 1234,
         comment_required: true,
-        test_mode: true,
         callback_send: () => {},
-      })
+        callback_error: () => {},
+      }
+      expect(JSON.stringify(window.barecancel.params)).toEqual(
+        JSON.stringify(expectedParams)
+      )
     })
   })
 
-  describe('Cleans up', () => {
-    const customCallback = jest.fn()
-    beforeEach(() => {
-      setup({ subscriptionDetail: { customer: 1234 } }, customCallback)
-    })
-    it('Removes script tag', () => {
-      customCallback()
-      expect(screen.queryByTestId('baremetrics-script')).not.toBeInTheDocument()
-    })
-  })
+  // describe('Cleans up', () => {
+  //   const customCallback = jest.fn()
+  //   beforeEach(() => {
+  //     const customerId = 1234
+  //     const callbackSend = () => {}
+  //     const callback_error = () => {}
+  //     setup(customerId, callbackSend, callback_error)
+  //   })
+
+  //   it('Removes script tag', () => {
+  //     customCallback()
+  //     expect(
+  //       document.getElementById('baremetrics-script')
+  //     ).not.toBeInTheDocument()
+  //   })
+  // })
 })

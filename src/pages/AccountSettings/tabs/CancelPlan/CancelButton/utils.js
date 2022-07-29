@@ -10,22 +10,14 @@ export function getEndPeriod(unixPeriodEnd) {
 /* eslint-disable max-statements */
 export function loadBaremetrics() {
   return new Promise((resolve) => {
-    if (window.barecancel && window.barecancel.created) {
-      window.console &&
-        console.error &&
-        console.error('Barecancel snippet included twice.')
-      resolve()
-    } else {
-      window.barecancel = { created: true }
-      const script = document.createElement('script')
-      script.src =
-        'https://baremetrics-barecancel.baremetrics.com/js/application.js'
-      script.async = true
-      script.dataset.testid = 'baremetrics-script'
-      const createdScript = document.getElementsByTagName('script')[0]
-      createdScript.parentNode.insertBefore(script, createdScript)
-      resolve()
-    }
+    if (window.barecancel && window.barecancel.created) resolve()
+    window.barecancel = { created: true }
+    const script = document.createElement('script')
+    script.src =
+      'https://baremetrics-barecancel.baremetrics.com/js/application.js'
+    script.dataset.testid = 'baremetrics-script'
+    document.body.appendChild(script)
+    resolve()
   })
 }
 
