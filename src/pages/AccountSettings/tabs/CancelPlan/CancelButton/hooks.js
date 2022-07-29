@@ -38,7 +38,7 @@ export function useBarecancel({ customerId, callbackSend }) {
   return { baremetricsBlocked: wasBlocked }
 }
 
-export function useCancel({ customerId }, options = {}) {
+export function useCancel({ customerId }, options = {}) { 
   const addToast = useAddNotification()
   const { provider, owner } = useParams()
   const { mutate, isLoading } = useCancelPlan({ provider, owner })
