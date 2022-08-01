@@ -19,15 +19,15 @@ const getSortByDirection = (sortBy) =>
     : SortingDirection.ASC
 
 const getMeasurementVariables = (historicalTrend, oldestCommitAt) => {
-  const trend = _snakeCase(historicalTrend).toUpperCase()
-  const isAllTime = !Boolean(trend) || trend === 'ALL_TIME'
+  const selectedTrend = _snakeCase(historicalTrend).toUpperCase()
+  const isAllTime = !Boolean(selectedTrend) || selectedTrend === 'ALL_TIME'
   const selectedDate = isAllTime
     ? new Date(oldestCommitAt)
-    : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[trend] })
+    : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[selectedTrend] })
   const afterDate = format(selectedDate, 'yyyy-MM-dd')
   const interval = isAllTime
     ? MEASUREMENT_TIME_INTERVALS.ALL_TIME
-    : MEASUREMENT_TIME_INTERVALS[trend]
+    : MEASUREMENT_TIME_INTERVALS[selectedTrend]
 
   return { afterDate, interval }
 }
