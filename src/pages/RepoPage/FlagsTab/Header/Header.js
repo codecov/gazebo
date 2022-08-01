@@ -37,7 +37,7 @@ const Header = ({ controlsDisabled, children }) => {
             disabled={controlsDisabled}
             ariaName="Select Historical Trend"
             items={TimeOptions}
-            value={value ?? TimeOptions[3]}
+            value={value ?? TimeOptions[0]}
             onChange={(historicalTrend) =>
               updateParams({ historicalTrend: historicalTrend.label })
             }

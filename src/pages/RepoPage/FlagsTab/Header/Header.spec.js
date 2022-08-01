@@ -57,11 +57,11 @@ describe('Header', () => {
       })
 
       it('loads the expected list', async () => {
-        expect(await screen.findByText('All time')).toBeVisible()
+        expect(await screen.findByText('Last 6 months')).toBeVisible()
       })
-      it('updates the location params on select', async () => {
-        await screen.findByText('All time')
 
+      it('updates the location params on select', async () => {
+        await screen.findByText('Last 6 months')
         const item = screen.getByText('Last 7 days')
         userEvent.click(item)
 
