@@ -1,28 +1,10 @@
 import isNil from 'lodash/isNil'
-import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 import FileDiff from './FileDiff'
-
-function useCoverageAndFlagsStates() {
-  const [covered, setCovered] = useState(true)
-  const [uncovered, setUncovered] = useState(true)
-  const [partial, setPartial] = useState(true)
-
-  return {
-    lineCoverageStatesAndSetters: {
-      covered,
-      setCovered,
-      uncovered,
-      setUncovered,
-      partial,
-      setPartial,
-    },
-  }
-}
 
 export function useCompareDiff() {
   const { provider, owner, repo, pullId } = useParams()
@@ -42,10 +24,6 @@ const hasNoImpactedFiles = (files) => !files || files?.length === 0
 const Root = () => {
   const { data: diff, isLoading } = useCompareDiff()
 
-  // *********** This is temporary code that will be here in the meantime *********** //
-  const { lineCoverageStatesAndSetters } = useCoverageAndFlagsStates()
-  // *********** This is temporary code that will be here in the meantime *********** //
-
   return (
     !isLoading && (
       <div className="flex flex-col gap-4">
@@ -54,15 +32,10 @@ const Root = () => {
             flagData={null}
             title="Impacted Files"
             coverageIsLoading={isLoading}
-            lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
           />
         </div>
         {diff?.files?.map((file, i) => (
-          <FileDiff
-            key={`impacted-file-${i}`}
-            {...file}
-            lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
-          />
+          <FileDiff key={`impacted-file-${i}`} {...file} />
         ))}
         {hasNoImpactedFiles(diff?.files) &&
           hasReport({
