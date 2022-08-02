@@ -31,7 +31,7 @@ describe('PublicRepoScope', () => {
     })
     it('with a token', () => {
       expect(
-        screen.getByText(/public project/, { exact: false })
+        screen.getByText(/project/, { exact: false })
       ).toBeInTheDocument()
       expect(screen.getByText(/mytoken/)).toBeInTheDocument()
     })
