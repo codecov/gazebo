@@ -22,7 +22,7 @@ const proPlan = {
   value: 'users-inappm',
 }
 
-describe('CancelPlan', () => {
+describe('CancelPlanPage', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
 

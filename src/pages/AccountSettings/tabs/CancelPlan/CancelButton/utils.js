@@ -10,7 +10,9 @@ export function getEndPeriod(unixPeriodEnd) {
 /* eslint-disable max-statements */
 export function loadBaremetrics() {
   return new Promise((resolve) => {
-    if (window.barecancel && window.barecancel.created) resolve()
+    if (window.barecancel && window.barecancel.created) {
+      resolve()
+    }
     window.barecancel = { created: true }
     const script = document.createElement('script')
     script.src =
@@ -25,7 +27,7 @@ export function cleanupBaremetrics() {
   const scriptElement = document.querySelector(
     '[data-testid="baremetrics-script"]'
   )
-  // test this
+
   const stylesElement = document.querySelector(
     '[href="https://baremetrics-barecancel.baremetrics.com/css/barecancel.css"]' // Hacky but they auto add this style block with no identifier
   )

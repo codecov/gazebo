@@ -40,20 +40,16 @@ describe('useBarecancel', () => {
     })
   })
 
-  // describe('Cleans up', () => {
-  //   const customCallback = jest.fn()
-  //   beforeEach(() => {
-  //     const customerId = 1234
-  //     const callbackSend = () => {}
-  //     const callback_error = () => {}
-  //     setup(customerId, callbackSend, callback_error)
-  //   })
+  describe('Cleans up', () => {
+    beforeEach(() => {
+      const customerId = 1234
+      const callbackSend = () => {}
+      setup(customerId, callbackSend)
+    })
 
-  //   it('Removes script tag', () => {
-  //     customCallback()
-  //     expect(
-  //       document.getElementById('baremetrics-script')
-  //     ).not.toBeInTheDocument()
-  //   })
-  // })
+    it('Removes script and styles tag', () => {
+      expect(document.querySelector('[href="https://baremetrics-barecancel.baremetrics.com/css/barecancel.css"]')).not.toBeInTheDocument()
+      expect(document.querySelector('baremetrics-script')).not.toBeInTheDocument()
+    })
+  })
 })
