@@ -1,6 +1,5 @@
 import PropType from 'prop-types'
 import { useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
 
 import Modal from 'old_ui/Modal'
 import { isFreePlan } from 'shared/utils/billing'
@@ -15,17 +14,10 @@ function CancelButton({
   upComingCancelation,
   currentPeriodEnd,
 }) {
-  const { provider, owner } = useParams()
-  const { push } = useHistory()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { cancelPlan, baremetricsBlocked, queryIsLoading } = useCancel(
-    { customerId },
-    {
-      onSuccess: () => {
-        sendUserToBilling()
-      },
-    }
-  )
+  const { cancelPlan, baremetricsBlocked, queryIsLoading } = useCancel({
+    customerId,
+  })
 
   const isAlreadyFreeUser = isFreePlan(planCost)
   const isDisabled = [
@@ -40,10 +32,6 @@ function CancelButton({
     if (baremetricsBlocked) {
       cancelPlan()
     }
-  }
-
-  function sendUserToBilling() {
-    push(`/account/${provider}/${owner}/billing`)
   }
 
   return (
@@ -97,8 +85,8 @@ function CancelButton({
 CancelButton.propTypes = {
   customerId: PropType.string,
   planCost: PropType.string.isRequired,
-  upComingCancelation: PropType.bool.isRequired,
-  currentPeriodEnd: PropType.number.isRequired,
+  upComingCancelation: PropType.bool,
+  currentPeriodEnd: PropType.number,
 }
 
 export default CancelButton

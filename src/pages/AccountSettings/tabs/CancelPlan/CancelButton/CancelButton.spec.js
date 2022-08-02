@@ -2,12 +2,21 @@ import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
+
+import { useCancelPlan } from 'services/account'
+import { useAddNotification } from 'services/toastNotification'
 
 import CancelButton from './CancelButton'
-import { useCancel } from './hooks'
+import { useBarecancel } from './useBarecancel'
 
-jest.mock('./hooks')
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
+  useParams: jest.fn(() => {}),
+}))
+jest.mock('./useBarecancel')
+jest.mock('services/account')
+jest.mock('services/toastNotification')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,14 +36,20 @@ const defaultProps = {
 }
 
 describe('CancelButton', () => {
-  const cancelPlanMock = jest.fn()
+  let mutate
+  let testLocation
+  const addNotification = jest.fn()
 
   function setup(props = defaultProps, baremetricsBlocked = false) {
-    useCancel.mockReturnValue({
-      cancelPlan: cancelPlanMock,
-      baremetricsBlocked: baremetricsBlocked,
-      queryIsLoading: false,
+    mutate = jest.fn()
+    useAddNotification.mockReturnValue(addNotification)
+    useParams.mockReturnValue({ owner: 'Ollie', provider: 'gh' })
+    useCancelPlan.mockReturnValue({
+      isLoading: false,
+      mutate,
+      onError: jest.fn(),
     })
+    useBarecancel.mockReturnValue({ baremetricsBlocked })
 
     const { unmount } = render(
       <QueryClientProvider client={queryClient}>
@@ -43,6 +58,7 @@ describe('CancelButton', () => {
           <Route
             path="*"
             render={({ location }) => {
+              testLocation = location
               return null
             }}
           />
@@ -110,13 +126,32 @@ describe('CancelButton', () => {
       userEvent.click(screen.getByTestId('continue-cancellation-button'))
     })
 
-    it('calls the completeCancelation function', () => {
-      expect(cancelPlanMock).toHaveBeenCalled()
+    it('calls the cancelPlan/mutate function', () => {
+      expect(mutate).toHaveBeenCalled()
     })
 
-    // it('redirects the user to the billing page', () => {
-    //   expect(testLocation.pathname).toEqual('/account/gh/codecov/billing')
-    // })
+    describe('on a failure', () => {
+      beforeEach(() => {
+        mutate.mock.calls[0][1].onError()
+      })
+
+      it('calls the cancelPlan function', () => {
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong, we were unable to cancel your plan. Please reach out to support.',
+        })
+      })
+    })
+
+    describe('on a submit', () => {
+      beforeEach(() => {
+        mutate.mock.calls[0][1].onSuccess()
+      })
+
+      it('redirects the user to the billing page', () => {
+        expect(testLocation.pathname).toEqual('/account/gh/Ollie/billing')
+      })
+    })
   })
 
   // describe('when mutation is not successful', () => {

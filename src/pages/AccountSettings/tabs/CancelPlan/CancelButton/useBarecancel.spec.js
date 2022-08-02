@@ -2,20 +2,25 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import config from 'config'
 
-import { useBarecancel } from './hooks'
+import { useBarecancel } from './useBarecancel'
+jest.mock('services/toastNotification')
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
+  useParams: jest.fn(() => {}),
+}))
+jest.mock('services/account')
+
 describe('useBarecancel', () => {
-  function setup(customerId, callbackSend, callback_error) {
-    renderHook(() =>
-      useBarecancel({ customerId, callbackSend, callback_error })
-    )
+  function setup(customerId, callbackSend) {
+    renderHook(() => useBarecancel({ customerId, callbackSend }))
   }
 
   describe('Initializes', () => {
     beforeEach(() => {
       const customerId = 1234
       const callbackSend = () => {}
-      const callback_error = () => {}
-      setup(customerId, callbackSend, callback_error)
+      setup(customerId, callbackSend)
     })
     it('window params are set', () => {
       const expectedParams = {
