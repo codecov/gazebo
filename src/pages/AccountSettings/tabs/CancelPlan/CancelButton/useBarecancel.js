@@ -6,6 +6,7 @@ import { cleanupBaremetrics, loadBaremetrics } from './utils'
 
 export function useBarecancel({ customerId, callbackSend }) {
   const memoizedSuccess = useCallback(callbackSend, [callbackSend])
+  console.log(memoizedSuccess)
   const [wasBlocked, setWasBlocked] = useState(!window?.barecancel?.params)
 
   useEffect(() => {

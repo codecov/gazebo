@@ -17,9 +17,9 @@ describe('useBarecancel', () => {
   }
 
   describe('Initializes', () => {
+    const callbackSend = () => {}
     beforeEach(() => {
       const customerId = 1234
-      const callbackSend = () => {}
       setup(customerId, callbackSend)
     })
     it('window params are set', () => {
@@ -27,8 +27,12 @@ describe('useBarecancel', () => {
         access_token_id: config.BAREMETRICS_TOKEN,
         customer_oid: 1234,
         comment_required: true,
-        callback_send: () => {},
-        callback_error: () => {},
+        callback_send: () => {
+          callbackSend()
+        },
+        callback_error: (error) => {
+          console.error(error)
+        },
       }
       expect(JSON.stringify(window.barecancel.params)).toEqual(
         JSON.stringify(expectedParams)
