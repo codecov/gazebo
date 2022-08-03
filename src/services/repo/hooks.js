@@ -15,6 +15,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
           defaultBranch
           yaml
           activated
+          oldestCommitAt
         }
       }
     }
