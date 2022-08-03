@@ -17,6 +17,7 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
+        ...(gazeboPlanTab ? [{ pageName: 'membersTab' }] : []),
         ...(gazeboPlanTab ? [{ pageName: 'planTab' }] : []),
         {
           pageName: 'accountAdmin',

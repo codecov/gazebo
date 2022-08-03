@@ -15,8 +15,8 @@ describe('Tabs', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-        <Route path="/analytics/:provider/:owner">
+      <MemoryRouter initialEntries={['/members/gh/codecov']}>
+        <Route path="/members/:provider/:owner">
           <Tabs />
         </Route>
       </MemoryRouter>
