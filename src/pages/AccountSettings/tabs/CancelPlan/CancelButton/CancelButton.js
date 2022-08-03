@@ -30,7 +30,6 @@ function CancelButton({
   const periodEnd = getEndPeriod(currentPeriodEnd)
 
   function completeCancelation() {
-    console.log(baremetricsBlocked)
     if (baremetricsBlocked) {
       cancelPlan()
     }

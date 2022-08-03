@@ -13,7 +13,7 @@ jest.mock('services/account')
 
 describe('useBarecancel', () => {
   function setup(customerId, callbackSend) {
-    renderHook(() => useBarecancel({ customerId, callbackSend }))
+    renderHook(() => useBarecancel({ customerId, callbackSend, isModalOpen:true }))
   }
 
   describe('Initializes', () => {
