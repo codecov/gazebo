@@ -23,7 +23,7 @@ describe('cleanupBaremetrics', () => {
     setup()
   })
 
-  it('cleans up baremetrics script', () => {
+  it('cleans up baremetrics scripts', () => {
     expect(
       document.querySelector('[data-testid="baremetrics-script"]')
     ).not.toBeInTheDocument()
