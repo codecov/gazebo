@@ -160,7 +160,7 @@ describe('CancelButton', () => {
         mutate.mock.calls[0][1].onSuccess()
       })
 
-      it('redirects the user to the billing pagee', () => {
+      it('redirects the user to the billing page', () => {
         expect(testLocation.pathname).toEqual('/account/gh/Ollie/billing')
       })
     })
