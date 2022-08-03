@@ -7,6 +7,10 @@ function addBaremetricsScript() {
   script.dataset.testid = 'baremetrics-script'
   document.body.appendChild(script)
   window.barecancel = { created: true }
+  const link = document.createElement('link')
+  link.href =
+    'https://baremetrics-barecancel.baremetrics.com/css/barecancel.css'
+  document.body.appendChild(link)
 }
 
 describe('cleanupBaremetrics', () => {
