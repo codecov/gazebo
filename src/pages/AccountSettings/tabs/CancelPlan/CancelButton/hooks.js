@@ -5,7 +5,7 @@ import { useAddNotification } from 'services/toastNotification'
 
 import { useBarecancel } from './useBarecancel'
 
-export function useCancel({ customerId }, options = {}) {
+export function useCancel({ customerId, isModalOpen }, options = {}) {
   const addToast = useAddNotification()
   const { provider, owner } = useParams()
   const { push } = useHistory()
@@ -13,6 +13,7 @@ export function useCancel({ customerId }, options = {}) {
   const { baremetricsBlocked } = useBarecancel({
     customerId,
     callbackSend: cancelPlan,
+    isModalOpen,
   })
 
   function sendUserToBilling() {

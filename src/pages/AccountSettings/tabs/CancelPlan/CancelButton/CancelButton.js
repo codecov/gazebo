@@ -6,7 +6,7 @@ import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
 import { useCancel } from './hooks'
-import { getEndPeriod } from './utils'
+import { cleanupBaremetrics, getEndPeriod } from './utils'
 
 function CancelButton({
   customerId,
@@ -17,6 +17,7 @@ function CancelButton({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { cancelPlan, baremetricsBlocked, queryIsLoading } = useCancel({
     customerId,
+    isModalOpen,
   })
 
   const isAlreadyFreeUser = isFreePlan(planCost)
@@ -29,9 +30,15 @@ function CancelButton({
   const periodEnd = getEndPeriod(currentPeriodEnd)
 
   function completeCancelation() {
+    console.log(baremetricsBlocked)
     if (baremetricsBlocked) {
       cancelPlan()
     }
+  }
+
+  function handleOnClose() {
+    cleanupBaremetrics()
+    setIsModalOpen(false)
   }
 
   return (
@@ -46,7 +53,7 @@ function CancelButton({
       </Button>
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleOnClose}
         title="Are you sure you want to cancel your plan?"
       >
         <p className="text-sm">Cancelling your subscription will:</p>
@@ -62,7 +69,7 @@ function CancelButton({
           <Button
             hook="close-button"
             variant="plain"
-            onClick={() => setIsModalOpen(false)}
+            onClick={handleOnClose}
             disabled={isDisabled}
           >
             Close

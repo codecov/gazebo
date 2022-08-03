@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from 'react'
 
 import config from 'config'
 
-import { cleanupBaremetrics, loadBaremetrics } from './utils'
+import { loadBaremetrics } from './utils'
 
-export function useBarecancel({ customerId, callbackSend }) {
+export function useBarecancel({ customerId, callbackSend, isModalOpen }) {
   const memoizedSuccess = useCallback(callbackSend, [callbackSend])
   const [wasBlocked, setWasBlocked] = useState(!window?.barecancel?.params)
 
@@ -27,9 +27,8 @@ export function useBarecancel({ customerId, callbackSend }) {
       }
       setWasBlocked(false)
     }
-    loadBaremetrics().then(configureBarecancel)
-    return () => cleanupBaremetrics()
-  }, [customerId, memoizedSuccess, setWasBlocked])
+    isModalOpen && loadBaremetrics().then(configureBarecancel)
+  }, [customerId, memoizedSuccess, setWasBlocked, isModalOpen])
 
   return { baremetricsBlocked: wasBlocked }
 }
