@@ -160,38 +160,9 @@ describe('CancelButton', () => {
         mutate.mock.calls[0][1].onSuccess()
       })
 
-      it('redirects the user to the billing page', () => {
+      it('redirects the user to the billing pagee', () => {
         expect(testLocation.pathname).toEqual('/account/gh/Ollie/billing')
       })
     })
   })
-
-  // describe('when mutation is not successful', () => {
-  //   beforeEach(() => {
-  //     setup()
-  //     userEvent.click(screen.getByRole('button', { name: /Downgrade to Free/ }))
-  //     userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
-  //     // simulating the onError callback given to mutate
-  //     mutate.mock.calls[0][1].onError()
-  //   })
-
-  //   it('adds an error notification', () => {
-  //     expect(addNotification).toHaveBeenCalledWith({
-  //       type: 'error',
-  //       text: 'Something went wrong',
-  //     })
-  //   })
-  // })
 })
-
-// describe('when clicking the X icon', () => {
-//   beforeEach(() => {
-//     userEvent.click(screen.queryAllByRole('button', { name: /Close/ })[0])
-//   })
-
-//   it('closes the modal', () => {
-//     expect(
-//       screen.queryByText(/Are you sure you want to cancel your plan?/)
-//     ).not.toBeInTheDocument()
-//   })
-// })
