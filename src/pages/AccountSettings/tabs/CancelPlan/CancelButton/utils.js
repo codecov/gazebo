@@ -29,7 +29,7 @@ export function cleanupBaremetrics() {
   )
 
   const stylesElement = document.querySelector(
-    '[href="https://baremetrics-barecancel.baremetrics.com/css/barecancel.css"]' // Hacky but they auto add this style block with no identifier
+    '[href="https://baremetrics-barecancel.baremetrics.com/css/barecancel.css"]'
   )
 
   if (!!scriptElement) {
