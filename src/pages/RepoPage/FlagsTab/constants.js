@@ -8,7 +8,7 @@ export const MEASUREMENT_TIME_INTERVALS = Object.freeze({
   ALL_TIME: MEASUREMENT_INTERVAL.INTERVAL_30_DAY,
   LAST_6_MONTHS: MEASUREMENT_INTERVAL.INTERVAL_7_DAY,
   LAST_3_MONTHS: MEASUREMENT_INTERVAL.INTERVAL_7_DAY,
-  LAST_30_DAYS: MEASUREMENT_INTERVAL.INTERVAL_7_DAY,
+  LAST_30_DAYS: MEASUREMENT_INTERVAL.INTERVAL_1_DAY,
   LAST_7_DAYS: MEASUREMENT_INTERVAL.INTERVAL_1_DAY,
 })
 
@@ -20,9 +20,9 @@ export const AFTER_DATE_FORMAT_OPTIONS = Object.freeze({
 })
 
 export const TimeOptions = [
-  { label: 'All time' },
-  { label: 'Last 6 months' },
-  { label: 'Last 3 months' },
-  { label: 'Last 30 days' },
-  { label: 'Last 7 days' },
+  { label: 'All time', value: 'ALL_TIME' },
+  { label: 'Last 6 months', value: 'LAST_6_MONTHS' },
+  { label: 'Last 3 months', value: 'LAST_3_MONTHS' },
+  { label: 'Last 30 days', value: 'LAST_30_DAYS' },
+  { label: 'Last 7 days', value: 'LAST_7_DAYS' },
 ]

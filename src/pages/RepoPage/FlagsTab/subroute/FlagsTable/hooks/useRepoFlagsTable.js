@@ -1,33 +1,30 @@
 import { format, sub } from 'date-fns'
-import _snakeCase from 'lodash/snakeCase'
 import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
-
-import { useLocationParams } from 'services/navigation'
-import { useRepo } from 'services/repo'
-import { useRepoFlags } from 'services/repo/useRepoFlags'
-import { SortingDirection } from 'ui/Table/constants'
 
 import {
   AFTER_DATE_FORMAT_OPTIONS,
   MEASUREMENT_TIME_INTERVALS,
-} from '../../../constants'
+} from 'pages/RepoPage/FlagsTab/constants'
+import { useLocationParams } from 'services/navigation'
+import { useRepo } from 'services/repo'
+import { useRepoFlags } from 'services/repo/useRepoFlags'
+import { SortingDirection } from 'ui/Table/constants'
 
 const getSortByDirection = (sortBy) =>
   sortBy.length > 0 && sortBy[0].desc
     ? SortingDirection.DESC
     : SortingDirection.ASC
 
-const getMeasurementVariables = (historicalTrend, oldestCommitAt) => {
-  const selectedTrend = _snakeCase(historicalTrend).toUpperCase()
-  const isAllTime = !Boolean(selectedTrend) || selectedTrend === 'ALL_TIME'
+const useMeasurementVariables = (historicalTrend, oldestCommitAt) => {
+  const isAllTime = !Boolean(historicalTrend) || historicalTrend === 'ALL_TIME'
   const selectedDate = isAllTime
     ? new Date(oldestCommitAt)
-    : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[selectedTrend] })
+    : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[historicalTrend] })
   const afterDate = format(selectedDate, 'yyyy-MM-dd')
   const interval = isAllTime
     ? MEASUREMENT_TIME_INTERVALS.ALL_TIME
-    : MEASUREMENT_TIME_INTERVALS[selectedTrend]
+    : MEASUREMENT_TIME_INTERVALS[historicalTrend]
 
   return { afterDate, interval }
 }
@@ -42,7 +39,7 @@ function useRepoFlagsTable() {
   })
   const isSearching = Boolean(params?.search)
   const [sortBy, setSortBy] = useState(SortingDirection.ASC)
-  const { afterDate, interval } = getMeasurementVariables(
+  const { afterDate, interval } = useMeasurementVariables(
     params?.historicalTrend,
     repoData?.repository?.oldestCommitAt
   )

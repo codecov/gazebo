@@ -67,7 +67,7 @@ describe('Header', () => {
 
         await waitFor(() =>
           expect(updateLocationMock).toHaveBeenCalledWith({
-            historicalTrend: 'Last 7 days',
+            historicalTrend: 'LAST_7_DAYS',
           })
         )
       })

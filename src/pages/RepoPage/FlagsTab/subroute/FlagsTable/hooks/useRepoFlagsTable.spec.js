@@ -189,7 +189,7 @@ describe('useRepoFlagsTable', () => {
       beforeEach(() => {
         setup({
           repoData: repoFlagsMock,
-          useParamsValue: { historicalTrend: 'Last 6 months', search: '' },
+          useParamsValue: { historicalTrend: 'LAST_6_MONTHS', search: '' },
         })
       })
 
@@ -209,7 +209,7 @@ describe('useRepoFlagsTable', () => {
       beforeEach(() => {
         setup({
           repoData: repoFlagsMock,
-          useParamsValue: { historicalTrend: 'Last 7 days', search: '' },
+          useParamsValue: { historicalTrend: 'LAST_7_DAYS', search: '' },
         })
       })
 
