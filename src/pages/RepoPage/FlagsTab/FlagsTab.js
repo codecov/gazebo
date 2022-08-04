@@ -1,21 +1,13 @@
-import { Suspense } from 'react'
 import { Route, useParams } from 'react-router-dom'
 
 import { useRepoBackfilled } from 'services/repo/hooks'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
-import Spinner from 'ui/Spinner'
 
 import FlagsNotConfigured from './FlagsNotConfigured'
 import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
 import SyncingBanner from './SyncingBanner'
 import TriggerSyncBanner from './TriggerSyncBanner'
-
-const Loader = (
-  <div className="flex items-center justify-center py-16">
-    <Spinner />
-  </div>
-)
 
 const getIsRepoBackfilling = ({
   flagsMeasurementsActive,
@@ -52,9 +44,7 @@ function FlagsTab() {
           {/*TODO: Show blurred image instead of the table when backfill is running or not active*/}
           <div className="flex flex-1 flex-col gap-4">
             <Route path="/:provider/:owner/:repo/flags" exact>
-              <Suspense fallback={Loader}>
-                <FlagsTable />
-              </Suspense>
+              <FlagsTable />
             </Route>
           </div>
         </>
