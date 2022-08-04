@@ -111,6 +111,7 @@ describe('useRepoFlagsTable', () => {
           filters: { term: '' },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'DESC',
+          suspense: false,
         })
       )
     })
@@ -127,6 +128,7 @@ describe('useRepoFlagsTable', () => {
           filters: { term: '' },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'ASC',
+          suspense: false,
         })
       )
     })
@@ -143,6 +145,7 @@ describe('useRepoFlagsTable', () => {
           filters: { term: '' },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'ASC',
+          suspense: false,
         })
       )
     })
@@ -162,6 +165,7 @@ describe('useRepoFlagsTable', () => {
         filters: { term: 'flag1' },
         interval: 'INTERVAL_30_DAY',
         orderingDirection: 'ASC',
+        suspense: false,
       })
     })
   })
@@ -181,6 +185,7 @@ describe('useRepoFlagsTable', () => {
           filters: { term: '' },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'ASC',
+          suspense: false,
         })
       })
     })
@@ -201,6 +206,7 @@ describe('useRepoFlagsTable', () => {
           filters: { term: '' },
           interval: 'INTERVAL_7_DAY',
           orderingDirection: 'ASC',
+          suspense: false,
         })
       })
     })
@@ -221,6 +227,7 @@ describe('useRepoFlagsTable', () => {
           filters: { term: '' },
           interval: 'INTERVAL_1_DAY',
           orderingDirection: 'ASC',
+          suspense: false,
         })
       })
     })
