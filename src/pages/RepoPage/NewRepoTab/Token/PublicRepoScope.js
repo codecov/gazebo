@@ -10,8 +10,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
   return isCurrentUserPartOfOrg ? (
     <>
       <p className="text-base">
-        If the project is on TravisCI, CircleCI, AppVeyor, Azure
-        Pipelines, or{' '}
+        If the project is on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or{' '}
         <A
           href="https://github.com/codecov/codecov-action#usage"
           isExternal
@@ -32,7 +31,7 @@ const PublicRepoScope = ({ isCurrentUserPartOfOrg, token }) => {
     </>
   ) : (
     <p className="text-base">
-      If the public project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or{' '}
+      If the project on TravisCI, CircleCI, AppVeyor, Azure Pipelines, or{' '}
       <A
         href="https://github.com/codecov/codecov-action#usage"
         target="_blank"

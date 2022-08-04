@@ -15,7 +15,7 @@ const Header = ({ controlsDisabled, children }) => {
   const { data: flagsData } = useRepoFlagsSelect()
 
   const value = TimeOptions.find(
-    (item) => item.label === params.historicalTrend
+    (item) => item.value === params.historicalTrend
   )
 
   return (
@@ -37,9 +37,9 @@ const Header = ({ controlsDisabled, children }) => {
             disabled={controlsDisabled}
             ariaName="Select Historical Trend"
             items={TimeOptions}
-            value={value ?? TimeOptions[3]}
+            value={value ?? TimeOptions[0]}
             onChange={(historicalTrend) =>
-              updateParams({ historicalTrend: historicalTrend.label })
+              updateParams({ historicalTrend: historicalTrend.value })
             }
             renderItem={({ label }) => label}
             renderSelected={({ label }) => label}
