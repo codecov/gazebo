@@ -18,25 +18,16 @@ const NotFound = () => {
       />
       <h1 className="text-2xl mt-6">{title}</h1>
       <p className="my-4 px-3 sm:px-0">
-        Check on{' '}
+        You may be able to locate the content by visiting{' '}
         <a
           rel="noreferrer"
           className="text-blue-400"
-          href="https://status.codecov.io/"
+          href="https://app.codecov.io/"
           target="_blank"
         >
-          Codecov’s status
+          Codecov’s home page
         </a>{' '}
-        or see{' '}
-        <a
-          rel="noreferrer"
-          className="text-blue-400"
-          href="https://docs.codecov.io/"
-          target="_blank"
-        >
-          our docs
-        </a>{' '}
-        for common support.
+        and browsing to it.
       </p>
       <p>
         <strong>Error 404</strong>
