@@ -92,7 +92,7 @@ function MembersList() {
   const { upgradePlan } = useNavLinks()
   const [isOpen, setIsOpen] = useState(false)
 
-  const maxActivatedUsers = 0
+  const maxActivatedUsers = 5
 
   const handleActivate = (user) => {
     if (
