@@ -11,7 +11,7 @@ jest.mock('../CallToAction', () => () => 'CallToAction')
 
 describe('Tabs', () => {
   function setup(props = {}) {
-    useIsPersonalAccount.mockReturnValue(true)
+    useIsPersonalAccount.mockReturnValue(false)
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>

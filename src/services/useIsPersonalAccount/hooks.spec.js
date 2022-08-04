@@ -45,7 +45,7 @@ describe('useIsPersonalAccount', () => {
     })
 
     it('Account is not personal', () => {
-      expect(hookData.result.current).toBeTruthy()
+      expect(hookData.result.current).toBeFalsy()
     })
   })
 
@@ -55,7 +55,7 @@ describe('useIsPersonalAccount', () => {
     })
 
     it('Account is personal', () => {
-      expect(hookData.result.current).toBeFalsy()
+      expect(hookData.result.current).toBeTruthy()
     })
   })
 })

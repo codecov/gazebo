@@ -6,7 +6,7 @@ import TabNavigation from 'ui/TabNavigation'
 import CallToAction from '../CallToAction'
 
 function Tabs({ provider, owner }) {
-  const shouldRenderPlanTab = useIsPersonalAccount()
+  const isUserPersonalAccount = useIsPersonalAccount()
 
   return (
     <TabNavigation
@@ -19,7 +19,7 @@ function Tabs({ provider, owner }) {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(shouldRenderPlanTab ? [{ pageName: 'planTab' }] : []),
+        ...(!isUserPersonalAccount ? [{ pageName: 'planTab' }] : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',

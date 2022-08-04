@@ -10,7 +10,7 @@ jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Tabs', () => {
   function setup() {
-    useIsPersonalAccount.mockReturnValue(true)
+    useIsPersonalAccount.mockReturnValue(false)
 
     render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>

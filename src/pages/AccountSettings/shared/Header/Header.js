@@ -6,7 +6,7 @@ import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
   const { owner } = useParams()
-  const shouldRenderPlanTab = useIsPersonalAccount()
+  const isUserPersonalAccount = useIsPersonalAccount()
 
   return (
     <>
@@ -16,7 +16,7 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
-            ...(shouldRenderPlanTab ? [{ pageName: 'planTab' }] : []),
+            ...(!isUserPersonalAccount ? [{ pageName: 'planTab' }] : []),
             {
               pageName: 'accountAdmin',
               children: 'Settings',

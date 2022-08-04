@@ -2,7 +2,7 @@ import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
-  const shouldRenderPlanTab = useIsPersonalAccount()
+  const isUserPersonalAccount = useIsPersonalAccount()
 
   return (
     <TabNavigation
@@ -15,7 +15,7 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(shouldRenderPlanTab ? [{ pageName: 'planTab' }] : []),
+        ...(!isUserPersonalAccount ? [{ pageName: 'planTab' }] : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',

@@ -21,7 +21,7 @@ const Loader = (
 function PlanPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  const shouldRenderPlanTab = useIsPersonalAccount()
+  const isUserPersonalAccount = useIsPersonalAccount()
 
   return (
     <div className="flex flex-col gap-4">
@@ -31,7 +31,7 @@ function PlanPage() {
         <PlanBreadcrumb />
         <Suspense fallback={Loader}>
           <Switch>
-            {!shouldRenderPlanTab && <Redirect to="/:provider/:owner" />}
+            {!isUserPersonalAccount && <Redirect to="/:provider/:owner" />}
             <Route path={path} exact>
               current org plan
             </Route>

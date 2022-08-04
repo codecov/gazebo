@@ -12,5 +12,5 @@ export function useIsPersonalAccount() {
   const useIsPersonalAccount =
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
-  return gazeboPlanTab && !useIsPersonalAccount
+  return gazeboPlanTab && useIsPersonalAccount
 }
