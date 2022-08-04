@@ -3,21 +3,20 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useFlags } from 'shared/featureFlags'
 
-import Tabs from './Tabs'
-
+import Header from './Header'
 jest.mock('shared/featureFlags')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
-describe('Tabs', () => {
+describe('Header', () => {
   function setup(gazeboPlanTab = true) {
     useFlags.mockReturnValue({
       gazeboPlanTab,
     })
 
     render(
-      <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-        <Route path="/analytics/:provider/:owner">
-          <Tabs />
+      <MemoryRouter initialEntries={['/account/gh/codecov']}>
+        <Route path="/account/:provider/:owner">
+          <Header />
         </Route>
       </MemoryRouter>
     )
