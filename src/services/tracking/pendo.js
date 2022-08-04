@@ -17,6 +17,7 @@ export function useUpdatePendoWithOwner() {
     visitor: getCurUserInfo(currentUser),
     account: {
       id: ownerData?.hashOwnerid,
+      name: ownerData?.username,
       isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
       isAdmin: ownerData?.isAdmin,
     },

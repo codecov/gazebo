@@ -28,6 +28,7 @@ const curUser = {
 
 const ownerData = {
   hashOwnerid: 'hash ownerid',
+  username: 'codecov',
   isCurrentUserPartOfOrg: true,
 }
 
@@ -55,6 +56,7 @@ const expectedInitialization = {
 const accountUpdate = {
   account: {
     id: 'hash ownerid',
+    name: 'codecov',
     isAdmin: undefined,
     isCurrentUserPartOfOrg: true,
   },
