@@ -47,13 +47,13 @@ function NewRepoTab() {
       <>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>
         <p className="text-base">
-          Run your normal test suite in your CI to generate code coverage reports in a
-          supported format (often an .xml format).
+          Run your normal test suite in your CI to generate code coverage
+          reports in a supported format (often an .xml format).
         </p>
 
         <h2 className="font-semibold mt-8 text-base">Step 2</h2>
         <Token
-          privateRepo={data?.repository?.privateRepo}
+          privateRepo={data?.repository?.private}
           uploadToken={data?.repository?.uploadToken}
           isCurrentUserPartOfOrg={data?.isCurrentUserPartOfOrg}
         />
