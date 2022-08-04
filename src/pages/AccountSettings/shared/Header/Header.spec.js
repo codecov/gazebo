@@ -22,7 +22,7 @@ describe('Header', () => {
     )
   }
 
-  describe('when user is part of the org', () => {
+  describe('when users is part of the org', () => {
     beforeEach(() => {
       setup()
     })
