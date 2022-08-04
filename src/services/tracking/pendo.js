@@ -16,7 +16,7 @@ export function useUpdatePendoWithOwner() {
   window?.pendo?.updateOptions({
     visitor: getCurUserInfo(currentUser),
     account: {
-      id: ownerData?.username, //TBD ownerid
+      id: ownerData?.hashOwnerid,
       isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
       isAdmin: ownerData?.isAdmin,
     },
@@ -37,6 +37,8 @@ function getCurUserInfo(currentUser) {
     service: trackingMetadata?.service,
     planUserCount: trackingMetadata?.planUserCount,
     createstamp: trackingMetadata?.createdAt,
+    profileGoals: profile?.goals,
+    profileTypeProjects: profile?.typeProjects,
     profileOtherGoal: profile?.otherGoal,
     profileCreatedAt: profile?.createdAt,
     updatestamp: trackingMetadata?.updatedAt,

@@ -83,6 +83,7 @@ export function useOwner({ username, opts = {} }) {
   const query = `
     query DetailOwner($username: String!) {
       owner(username: $username) {
+        hashOwnerid
         username
         avatarUrl
         isCurrentUserPartOfOrg

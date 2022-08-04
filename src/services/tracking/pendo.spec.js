@@ -27,7 +27,7 @@ const curUser = {
 }
 
 const ownerData = {
-  username: 'RulaKhaled',
+  hashOwnerid: 'hash ownerid',
   isCurrentUserPartOfOrg: true,
 }
 
@@ -42,6 +42,8 @@ const expectedInitialization = {
     onboardingCompleted: true,
     plan: 'users-free',
     planUserCount: undefined,
+    profileGoals: undefined,
+    profileTypeProjects: undefined,
     profileCreatedAt: undefined,
     profileOtherGoal: undefined,
     service: 'github',
@@ -52,7 +54,7 @@ const expectedInitialization = {
 
 const accountUpdate = {
   account: {
-    id: 'RulaKhaled',
+    id: 'hash ownerid',
     isAdmin: undefined,
     isCurrentUserPartOfOrg: true,
   },
