@@ -51,6 +51,7 @@ function useRepoFlagsTable() {
       beforeDate: format(new Date(), 'yyyy-MM-dd'),
       interval,
       afterDate,
+      suspense: false,
     })
 
   const handleSort = useCallback(
