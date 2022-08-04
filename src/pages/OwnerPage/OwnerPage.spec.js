@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
-import { useOwner } from 'services/user'
+import { useOwner, useUser } from 'services/user'
 
 import OwnerPage from './OwnerPage'
 
@@ -18,6 +18,9 @@ describe('OwnerPage', () => {
     })
     useAccountDetails.mockReturnValue({
       data: accountDetails,
+    })
+    useUser.mockReturnValue({
+      data: null,
     })
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
