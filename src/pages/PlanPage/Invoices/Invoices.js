@@ -1,6 +1,5 @@
 import { fromUnixTime, getYear } from 'date-fns'
 import groupBy from 'lodash/groupBy'
-import PropTypes from 'prop-types'
 import { useLayoutEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -13,16 +12,6 @@ import { useSetCrumbs } from '../context'
 function useGroupedInvoices() {
   const { owner, provider } = useParams()
   const { data: invoices } = useInvoices({ provider, owner })
-  const setCrumb = useSetCrumbs()
-
-  useLayoutEffect(() => {
-    setCrumb([
-      {
-        pageName: 'invoicesPage',
-        text: 'All invoices',
-      },
-    ])
-  }, [setCrumb])
 
   // group the invoices per year, so we can iterate per year
   // then per invoice in each year
@@ -35,10 +24,19 @@ function useGroupedInvoices() {
   return groupedInvoices
 }
 
-function Invoices({ provider, owner }) {
+function Invoices() {
+  const { provider, owner } = useParams()
   const groupedInvoices = useGroupedInvoices({ provider, owner })
   // extract the years so we can be sure of the desc order of the years
   const years = Object.keys(groupedInvoices).sort().reverse()
+  const setCrumb = useSetCrumbs()
+
+  useLayoutEffect(() => {
+    setCrumb({
+      pageName: 'invoicesPage',
+      text: 'All invoices',
+    })
+  }, [setCrumb])
 
   return (
     <>
@@ -57,11 +55,6 @@ function Invoices({ provider, owner }) {
       ))}
     </>
   )
-}
-
-Invoices.propTypes = {
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default Invoices
