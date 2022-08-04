@@ -47,7 +47,7 @@ function NewRepoTab() {
       <>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>
         <p className="text-base">
-          Run your normal test suite to generate code coverage reports in a
+          Run your normal test suite in your CI to generate code coverage reports in a
           supported format (often an .xml format).
         </p>
 
@@ -60,7 +60,7 @@ function NewRepoTab() {
 
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
-          Download the{' '}
+          Invoke the{' '}
           <A
             to={{ pageName: 'uploader' }}
             data-testid="uploader"
@@ -68,8 +68,7 @@ function NewRepoTab() {
           >
             uploader{' '}
           </A>
-          and share your coverage reports with Codecov, by adding the the
-          following commands to your CI pipeline:
+          in your CI pipeline and share your coverage reports with Codecov:
         </p>
 
         <TerminalInstructions />
