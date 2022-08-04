@@ -7,7 +7,7 @@ import { useOwner } from 'services/user'
 import MembersPage from './MembersPage'
 
 jest.mock('services/user')
-jest.mock('./Tabs', () => () => 'Tabss')
+jest.mock('./Tabs', () => () => 'Tabs')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,7 +48,7 @@ describe('MembersPage', () => {
     })
 
     it('renders tabs associated with the page', () => {
-      expect(screen.getByText(/Tabss/)).toBeInTheDocument()
+      expect(screen.getByText(/Tabs/)).toBeInTheDocument()
     })
   })
 
@@ -65,7 +65,7 @@ describe('MembersPage', () => {
     })
 
     it('doesnt render Tabs', () => {
-      expect(screen.queryByText(/Tabss/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
     })
   })
 })

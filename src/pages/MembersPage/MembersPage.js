@@ -11,7 +11,7 @@ function MembersPage() {
   return (
     <div className="flex flex-col gap-4">
       Members Page
-      <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
+      {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
     </div>
   )
 }

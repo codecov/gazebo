@@ -18,8 +18,9 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
-            ...(gazeboPlanTab ? [{ pageName: 'membersTab' }] : []),
-            ...(gazeboPlanTab ? [{ pageName: 'planTab' }] : []),
+            ...(gazeboPlanTab
+              ? [{ pageName: 'membersTab' }, { pageName: 'planTab' }]
+              : []),
             {
               pageName: 'accountAdmin',
               children: 'Settings',
