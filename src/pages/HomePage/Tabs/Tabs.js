@@ -25,6 +25,16 @@ function Tabs({ currentUsername }) {
         ...(gazeboPlanTab
           ? [
               {
+                pageName: 'membersTab',
+                options: {
+                  owner: currentUsername,
+                },
+              },
+            ]
+          : []),
+        ...(gazeboPlanTab
+          ? [
+              {
                 pageName: 'planTab',
                 options: {
                   owner: currentUsername,
@@ -32,7 +42,6 @@ function Tabs({ currentUsername }) {
               },
             ]
           : []),
-
         {
           pageName: 'accountAdmin',
           children: 'Settings',
