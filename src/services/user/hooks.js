@@ -58,7 +58,27 @@ export function useUser(options = {}) {
       Api.graphql({ provider, query }).then((res) => {
         const currentUser = res?.data?.me
 
-        if (currentUser) return currentUser
+        if (currentUser) {
+          window.pendo.initialize({
+            visitor: {
+              id: currentUser.trackingMetadata.ownerid, // Required
+              email: currentUser.email, // Recommended if using Pendo Feedback, or NPS Email
+              fullName: currentUser.user.username, // Recommended if using Pendo Feedback
+              // You can add any additional visitor level key-values here as long as it's not one of the above reserved names.
+              staff: currentUser.trackingMetadata.staff,
+              service: currentUser.trackingMetadata.service,
+              planUserCount: currentUser.trackingMetadata?.planUserCount,
+              createstamp: currentUser.trackingMetadata?.createstamp,
+              profileOtherGoal:
+                currentUser.trackingMetadata?.profile?.otherGoal,
+              profileCreatedAt:
+                currentUser.trackingMetadata?.profile?.createdAt,
+              updatestamp: currentUser.trackingMetadata.updatestamp,
+            },
+          })
+
+          return currentUser
+        }
 
         // imitate REST behavior until we implement getting the current user
         // with a better approach
