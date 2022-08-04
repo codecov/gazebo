@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
+import { useUpdatePendoWithOwner } from 'services/tracking/pendo'
 import { useOwner } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
@@ -12,6 +13,7 @@ import Tabs from './Tabs'
 function OwnerPage({ active = false }) {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+  useUpdatePendoWithOwner()
 
   if (!ownerData) {
     return <NotFound />

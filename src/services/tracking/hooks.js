@@ -2,6 +2,7 @@ import { useUser } from 'services/user'
 
 import { useTrackFeatureFlags } from './featureFlags'
 import { gtmUser, setDataLayer } from './gtm'
+import { firePendo } from './pendo'
 import { identifySegmentUser, segmentUser, useSegmentPage } from './segment'
 import { getUserData } from './utils'
 
@@ -34,7 +35,10 @@ export function handleOnError(guest) {
 
 export function useTracking() {
   const { data: user, ...all } = useUser({
-    onSuccess: (user) => handleOnSuccess(user),
+    onSuccess: (user) => {
+      handleOnSuccess(user)
+      firePendo(user)
+    },
     onError: () => handleOnError({ guest: true }),
     suspense: false,
   })
