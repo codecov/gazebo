@@ -8,6 +8,10 @@ import MembersPage from './MembersPage'
 
 jest.mock('services/user')
 jest.mock('./Tabs', () => () => 'Tabs')
+jest.mock('./Header', () => () => 'Header')
+jest.mock('./MembersActivation', () => () => 'MemberActivation')
+jest.mock('./MissingMemberBanner', () => () => 'MissingMemberBanner')
+jest.mock('./MembersList', () => () => 'MembersList')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,7 +48,23 @@ describe('MembersPage', () => {
     })
 
     it('renders the base text', () => {
-      expect(screen.getByText(/Members Page/)).toBeInTheDocument()
+      expect(screen.getByText(/Manage members/)).toBeInTheDocument()
+    })
+
+    it('renders the Header', () => {
+      expect(screen.getByText(/Header/)).toBeInTheDocument()
+    })
+
+    it('renders the Member Activation', () => {
+      expect(screen.getByText(/MemberActivation/)).toBeInTheDocument()
+    })
+
+    it('renders the Missing Member Banner', () => {
+      expect(screen.getByText(/MissingMemberBanner/)).toBeInTheDocument()
+    })
+
+    it('renders the Missing Members List', () => {
+      expect(screen.getByText(/MembersList/)).toBeInTheDocument()
     })
 
     it('renders tabs associated with the page', () => {
