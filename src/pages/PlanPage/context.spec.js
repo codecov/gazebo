@@ -4,12 +4,11 @@ import { useNavLinks } from 'services/navigation'
 
 import { PlanBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
 
-
 jest.mock('services/navigation')
 
 const TestComponent = () => {
   const crumbs = useCrumbs()
-  const setCrumb = useSetCrumbs()
+  const setCrumbs = useSetCrumbs()
 
   return (
     <div>
@@ -19,7 +18,9 @@ const TestComponent = () => {
         ))}
       </ul>
       <button
-        onClick={() => setCrumb({ pageName: 'new crumb', text: 'New Crumb' })}
+        onClick={() =>
+          setCrumbs([{ pageName: 'new crumb', text: 'New Crumb' }])
+        }
       >
         set crumb
       </button>

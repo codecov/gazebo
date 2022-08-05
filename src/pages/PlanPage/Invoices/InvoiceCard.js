@@ -40,7 +40,7 @@ function InvoiceCard({ invoice }) {
         <span>|</span>
         <A
           to={{
-            pageName: 'invoiceDetail',
+            pageName: 'invoiceDetailsPage',
             options: {
               id: invoice.id,
             },
