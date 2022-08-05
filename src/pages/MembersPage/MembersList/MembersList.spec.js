@@ -771,7 +771,7 @@ describe('MembersList', () => {
     })
   })
 
-  xdescribe('Non-admin users activating random users', () => {
+  xdescribe('Non-admin userss activating random users', () => {
     let mutateMock = jest.fn()
     beforeEach(() => {
       const mockUseUpdateUserValue = {
