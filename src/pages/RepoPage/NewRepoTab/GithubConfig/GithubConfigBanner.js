@@ -28,7 +28,7 @@ const GithubConfigBanner = ({ privateRepo }) => {
             >
               Install Codecov&apos;s GitHub App
             </A>
-            . Once installed, you are done! You do not need to set a{' '}
+            . Once installed, you will not need to set a{' '}
             <A data-testid="teamBot-link" to={{ pageName: 'teamBot' }}>
               Team Bot
             </A>
