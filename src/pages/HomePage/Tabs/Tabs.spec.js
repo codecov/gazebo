@@ -45,5 +45,13 @@ describe('Tabs', () => {
         })
       ).toHaveAttribute('href', '/plan/gh/lewis')
     })
+
+    it('renders link to members page', () => {
+      expect(
+        screen.getByRole('link', {
+          name: /members/i,
+        })
+      ).toHaveAttribute('href', `/members/gh/lewis`)
+    })
   })
 })

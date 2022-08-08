@@ -8,9 +8,9 @@ jest.mock('shared/featureFlags')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Tabs', () => {
-  function setup() {
+  function setup(gazeboPlanTab = true) {
     useFlags.mockReturnValue({
-      gazeboPlanTab: true,
+      gazeboPlanTab,
     })
 
     render(
@@ -57,6 +57,36 @@ describe('Tabs', () => {
           name: /plan/i,
         })
       ).toHaveAttribute('href', `/plan/gh/codecov`)
+    })
+
+    it('renders link to members page', () => {
+      expect(
+        screen.getByRole('link', {
+          name: /members/i,
+        })
+      ).toHaveAttribute('href', `/members/gh/codecov`)
+    })
+  })
+
+  describe('when feature flag is off', () => {
+    beforeEach(() => {
+      setup(false)
+    })
+
+    it('does not render link to members page', () => {
+      expect(
+        screen.queryByRole('link', {
+          name: /members/i,
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('does not render link to plan page', () => {
+      expect(
+        screen.queryByRole('link', {
+          name: /plan/i,
+        })
+      ).not.toBeInTheDocument()
     })
   })
 })
