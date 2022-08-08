@@ -10,8 +10,8 @@ export function useShouldRenderBillingTabs() {
 
   const { owner } = useParams()
   const { data: currentUser } = useUser()
-  const useIsPersonalAccount =
+  const isPersonalAccount =
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
-  return gazeboPlanTab && !useIsPersonalAccount
+  return gazeboPlanTab && !isPersonalAccount
 }
