@@ -1,17 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import Header from './Header'
-jest.mock('shared/featureFlags')
+
+jest.mock('services/useShouldRenderBillingTabs')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Header', () => {
-  function setup(gazeboPlanTab = true) {
-    useFlags.mockReturnValue({
-      gazeboPlanTab,
-    })
+  function setup(show = true) {
+    useShouldRenderBillingTabs.mockReturnValue(show)
 
     render(
       <MemoryRouter initialEntries={['/account/gh/codecov']}>
