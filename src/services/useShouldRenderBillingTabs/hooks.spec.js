@@ -5,7 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
 
-import { useShouldRenderTabs } from './hooks'
+import { useShouldRenderBillingTabs } from './hooks'
 
 jest.mock('services/user')
 jest.mock('shared/featureFlags')
@@ -34,7 +34,7 @@ describe('useShouldRenderTabs', () => {
       },
     })
 
-    hookData = renderHook(() => useShouldRenderTabs(), {
+    hookData = renderHook(() => useShouldRenderBillingTabs(), {
       wrapper,
     })
   }

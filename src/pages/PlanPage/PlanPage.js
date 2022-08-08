@@ -7,7 +7,7 @@ import config from 'config'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
-import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import { PlanBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
@@ -27,7 +27,7 @@ const Loader = (
 function PlanPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  const shouldRenderTabs = useShouldRenderTabs()
+  const shouldRenderTabs = useShouldRenderBillingTabs()
 
   return (
     <div className="flex flex-col gap-4">

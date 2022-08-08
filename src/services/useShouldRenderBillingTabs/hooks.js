@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
 
-export function useShouldRenderTabs() {
+export function useShouldRenderBillingTabs() {
   const { gazeboPlanTab } = useFlags({
     gazeboPlanTab: false,
   })
@@ -13,5 +13,5 @@ export function useShouldRenderTabs() {
   const useIsPersonalAccount =
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
-  return gazeboPlanTab && !useIsPersonalAccount  
+  return gazeboPlanTab && !useIsPersonalAccount
 }

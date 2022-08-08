@@ -1,9 +1,8 @@
-import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
-  const shouldRenderTabs = useShouldRenderTabs()
-
+  const shouldRenderTabs = useShouldRenderBillingTabs()
 
   return (
     <TabNavigation
@@ -16,7 +15,9 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(shouldRenderTabs? [{ pageName: 'membersTab' }, { pageName: 'planTab' }] : []),
+        ...(shouldRenderTabs
+          ? [{ pageName: 'membersTab' }, { pageName: 'planTab' }]
+          : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',

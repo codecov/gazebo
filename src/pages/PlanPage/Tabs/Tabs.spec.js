@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import Tabs from './Tabs'
-jest.mock('services/useShouldRenderTabs')
+jest.mock('services/useShouldRenderBillingTabs')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Tabs', () => {
-  function setup(show= true) {
-    useShouldRenderTabs.mockReturnValue(show)
+  function setup(show = true) {
+    useShouldRenderBillingTabs.mockReturnValue(show)
 
     render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>

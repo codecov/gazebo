@@ -2,14 +2,14 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
 import { useOwner } from 'services/user'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import PlanPage from './PlanPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
-jest.mock('services/useShouldRenderTabs')
+jest.mock('services/useShouldRenderBillingTabs')
 
 jest.mock('./Tabs', () => () => 'Tabs')
 
@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
 
 describe('PlanPage', () => {
   function setup({ owner = null, show = true }) {
-    useShouldRenderTabs.mockReturnValue(show)
+    useShouldRenderBillingTabs.mockReturnValue(show)
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -31,7 +31,7 @@ describe('PlanPage', () => {
       <MemoryRouter initialEntries={['/plan/gh/codecov']}>
         <Route path="/plan/:provider/:owner">
           <QueryClientProvider client={queryClient}>
-          <PlanPage />
+            <PlanPage />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>
