@@ -106,6 +106,12 @@ function useNavLinks() {
         `/plan/${provider}/${owner}`,
       isExternalLink: false,
     },
+    membersTab: {
+      text: 'Members',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/members/${provider}/${owner}`,
+      isExternalLink: false,
+    },
     upgradeOrgPlan: {
       text: 'Upgrade Plan',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
