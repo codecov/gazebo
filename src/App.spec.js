@@ -6,6 +6,7 @@ import App from './App'
 
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
 jest.mock('./pages/PlanPage/PlanPage', () => () => 'PlanPage')
+jest.mock('./pages/MembersPage/MembersPage', () => () => 'MembersPage')
 jest.mock('react-query/devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
 }))
@@ -52,6 +53,20 @@ describe('App', () => {
     it('renders plan page', () => {
       return waitFor(() => {
         const page = screen.getByText(/PlanPage/i)
+        expect(page).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('rendering members page', () => {
+    beforeEach(() => {
+      window.history.pushState({}, 'Test Members page', '/members/gh/codecov/')
+      setup()
+    })
+
+    it('renders members page', () => {
+      return waitFor(() => {
+        const page = screen.getByText(/MembersPage/i)
         expect(page).toBeInTheDocument()
       })
     })

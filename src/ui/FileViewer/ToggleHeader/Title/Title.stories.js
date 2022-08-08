@@ -5,10 +5,7 @@ import { LINE_STATE } from 'shared/utils/fileviewer'
 import Title, { TitleCoverage, TitleFlags } from './Title'
 
 const Template = (args) => {
-  const [covered, setCovered] = useState(true)
   const [selectedFlags, setSelectedFlags] = useState([])
-  const [uncovered, setUncovered] = useState(true)
-  const [partial, setPartial] = useState(true)
 
   return (
     <Title
@@ -22,21 +19,9 @@ const Template = (args) => {
         />
       }}
     >
-      <TitleCoverage
-        onChange={() => setCovered((covered) => !covered)}
-        checked={covered}
-        coverage={LINE_STATE.COVERED}
-      />
-      <TitleCoverage
-        onChange={() => setPartial((partial) => !partial)}
-        checked={partial}
-        coverage={LINE_STATE.PARTIAL}
-      />
-      <TitleCoverage
-        onChange={() => setUncovered((uncovered) => !uncovered)}
-        checked={uncovered}
-        coverage={LINE_STATE.UNCOVERED}
-      />
+      <TitleCoverage coverage={LINE_STATE.COVERED} />
+      <TitleCoverage coverage={LINE_STATE.PARTIAL} />
+      <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
     </Title>
   )
 }

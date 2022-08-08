@@ -13,7 +13,7 @@ describe('SingleLine', () => {
     { types: ['plain'], content: '' },
   ]
 
-  function setup(number, coverage, showLines) {
+  function setup(number, coverage) {
     render(
       <table>
         <tbody>
@@ -21,7 +21,6 @@ describe('SingleLine', () => {
             line={line}
             number={number}
             coverage={coverage}
-            showLines={showLines}
             getTokenProps={() => {}}
             getLineProps={() => {}}
           />
@@ -30,108 +29,13 @@ describe('SingleLine', () => {
     )
   }
 
-  describe('renders base line', () => {
-    beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: true,
-      }
-      setup(1, null, showLines)
-    })
-
-    it('render base line', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(1)
-    })
-  })
-
   describe('renders highlighted covered line', () => {
     beforeEach(() => {
-      const showLines = {
-        showCovered: true,
-        showUncovered: false,
-        showPartial: false,
-      }
-      setup(1, LINE_TYPE.HIT, showLines)
+      setup(1, LINE_TYPE.HIT)
     })
 
     it('render covered line', () => {
       expect(screen.getAllByLabelText('covered line of code').length).toBe(1)
-    })
-  })
-
-  describe('renders base covered line', () => {
-    beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: false,
-      }
-      setup(1, LINE_TYPE.HIT, showLines)
-    })
-
-    it('render covered line', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(1)
-    })
-  })
-
-  describe('renders highlighted uncovered line', () => {
-    beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: true,
-        showPartial: false,
-      }
-      setup(1, LINE_TYPE.MISS, showLines)
-    })
-
-    it('render uncovered line', () => {
-      expect(screen.getAllByLabelText('uncovered line of code').length).toBe(1)
-    })
-  })
-
-  describe('renders base uncovered line', () => {
-    beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: false,
-      }
-      setup(1, LINE_TYPE.MISS, showLines)
-    })
-
-    it('render uncovered line', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(1)
-    })
-  })
-
-  describe('renders highlighted partial line', () => {
-    beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: true,
-      }
-      setup(2, LINE_TYPE.PARTIAL, showLines)
-    })
-
-    it('render partial line', () => {
-      expect(screen.getAllByLabelText('partial line of code').length).toBe(1)
-    })
-  })
-
-  describe('renders base partial line', () => {
-    beforeEach(() => {
-      const showLines = {
-        showCovered: false,
-        showUncovered: false,
-        showPartial: false,
-      }
-      setup(1, LINE_TYPE.PARTIAL, showLines)
-    })
-
-    it('render partial line', () => {
-      expect(screen.getAllByLabelText('line of code').length).toBe(1)
     })
   })
 })

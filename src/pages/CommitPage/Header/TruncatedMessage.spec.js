@@ -28,7 +28,7 @@ describe('TruncatedMessage', () => {
   describe('When commit message is longer than a line', () => {
     beforeEach(() => {
       Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
-        configurable: true,
+        Configurable: true,
         value: 500,
       })
       setup({ message: longMessage })
@@ -54,7 +54,7 @@ describe('TruncatedMessage', () => {
   describe('Check truncate buttons', () => {
     beforeEach(() => {
       Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
-        configurable: true,
+        Configurable: true,
         value: 500,
       })
 
