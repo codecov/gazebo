@@ -13,6 +13,7 @@ import { useFlags } from 'shared/featureFlags'
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
+const FeedbackPage = lazy(() => import('./pages/FeedbackPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -20,6 +21,7 @@ const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage/RepoPage'))
 const PlanPage = lazy(() => import('./pages/PlanPage/PlanPage'))
+const MembersPage = lazy(() => import('./pages/MembersPage/MembersPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,8 +65,20 @@ function App() {
                 <AnalyticsPage />
               </BaseLayout>
             </Route>
+            <Route path="/:provider/feedback">
+              <BaseLayout>
+                <FeedbackPage />
+              </BaseLayout>
+            </Route>
             {gazeboPlanTab && (
-              <Route path="/plan/:provider/:owner/" >
+              <Route path="/members/:provider/:owner/">
+                <BaseLayout>
+                  <MembersPage />
+                </BaseLayout>
+              </Route>
+            )}
+            {gazeboPlanTab && (
+              <Route path="/plan/:provider/:owner/">
                 <BaseLayout>
                   <PlanPage />
                 </BaseLayout>

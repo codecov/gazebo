@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types'
 
-import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
+import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
 import TabNavigation from 'ui/TabNavigation'
 
 import CallToAction from '../CallToAction'
 
 function Tabs({ provider, owner }) {
-  const isUserPersonalAccount = useIsPersonalAccount()
+  const shouldRenderTabs = useShouldRenderTabs()
+
 
   return (
     <TabNavigation
@@ -19,7 +20,7 @@ function Tabs({ provider, owner }) {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(!isUserPersonalAccount ? [{ pageName: 'planTab' }] : []),
+        ...(shouldRenderTabs? [{ pageName: 'membersTab' }, { pageName: 'planTab' }] : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',

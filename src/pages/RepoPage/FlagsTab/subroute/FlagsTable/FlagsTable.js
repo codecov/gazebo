@@ -64,11 +64,21 @@ function createTableData({ tableData }) {
     : []
 }
 
+const Loader = () => (
+  <div className="flex-1 flex justify-center">
+    <Spinner size={60} />
+  </div>
+)
+
+const getEmptyStateText = ({ isSearching }) =>
+  isSearching ? 'No results found' : 'There was a problem getting flags data'
+
 function FlagsTable() {
   const {
     data,
     isLoading,
     handleSort,
+    isSearching,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
@@ -82,23 +92,15 @@ function FlagsTable() {
     [data]
   )
 
-  if (isLoading) {
-    return (
-      <div className="flex-1 flex justify-center">
-        <Spinner size={60} />
-      </div>
-    )
-  }
-
   return (
     <>
       <Table data={tableData} columns={headers} onSort={handleSort} />
-      {tableData?.length === 0 && (
+      {tableData?.length === 0 && !isLoading && (
         <p className="flex justify-center flex-1">
-          {/*TODO: Check different table state messages with AJ*/}
-          There was a problem getting flags data from your provider
+          {getEmptyStateText({ isSearching })}
         </p>
       )}
+      {isLoading && <Loader />}
       {hasNextPage && (
         <div className="flex-1 mt-4 flex justify-center">
           <Button

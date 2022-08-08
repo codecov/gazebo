@@ -28,7 +28,7 @@ function BillingAndUsers({ provider, owner }) {
         {accountDetails?.plan ? (
           <>
             {/* TODO: Look into this line below after this is migrated to the 'plan' page as UserManagement will be in its own tab */}
-            <div className="sm:mr-4 sm:flex-initial flex-1 max-w-sm gap-4 flex flex-col gap-4">
+            <div className="sm:mr-4 sm:flex-initial flex-1 max-w-sm gap-4 flex flex-col">
               <CurrentPlanCard accountDetails={accountDetails} />
               {shouldRenderBillingDetails && (
                 <>

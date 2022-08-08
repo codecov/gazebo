@@ -1,8 +1,9 @@
-import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
+import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
-  const isUserPersonalAccount = useIsPersonalAccount()
+  const shouldRenderTabs = useShouldRenderTabs()
+
 
   return (
     <TabNavigation
@@ -15,7 +16,7 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(!isUserPersonalAccount ? [{ pageName: 'planTab' }] : []),
+        ...(shouldRenderTabs? [{ pageName: 'membersTab' }, { pageName: 'planTab' }] : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',

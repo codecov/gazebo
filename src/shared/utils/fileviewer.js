@@ -13,13 +13,21 @@ export const LINE_STATE = Object.freeze({
 })
 
 export const classNamePerLineState = {
-  [LINE_STATE.COVERED]:
-    'bg-ds-coverage-covered border-ds-primary-green border-r-2',
+  [LINE_STATE.COVERED]: 'bg-ds-coverage-covered font-normal',
   [LINE_STATE.UNCOVERED]:
-    'text-[#E1B3BA] bg-ds-coverage-uncovered border-ds-primary-red border-r-2 pattern-dots',
-  [LINE_STATE.BLANK]: 'border-ds-gray-tertiary border-r',
+    'bg-ds-coverage-uncovered border-ds-primary-red border-r-2 font-bold',
+  [LINE_STATE.BLANK]: 'border-ds-gray-tertiary border-r font-normal',
   [LINE_STATE.PARTIAL]:
-    'text-[#E8DFB2] bg-ds-coverage-partial border-ds-primary-yellow border-r-2 pattern-grid',
+    'bg-ds-coverage-partial border-ds-primary-yellow border-dotted border-r-2 font-bold',
+}
+
+export const classNamePerLineContent = {
+  [LINE_STATE.COVERED]: 'bg-ds-coverage-covered bg-opacity-25',
+  [LINE_STATE.UNCOVERED]:
+    'bg-ds-coverage-uncovered bg-opacity-25 border-ds-primary-red border-r-2',
+  [LINE_STATE.BLANK]: '',
+  [LINE_STATE.PARTIAL]:
+    'bg-ds-coverage-partial bg-opacity-25 border-ds-primary-yellow border-r-2 border-dotted',
 }
 
 export const lineStateToLabel = {
@@ -40,17 +48,12 @@ export const CODE_RENDERER_INFO = Object.freeze({
 })
 
 // Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
-export function getLineState({ coverage, showLines }) {
-  const { showCovered, showUncovered, showPartial } = showLines
+export function getLineState({ coverage }) {
   return coverage
     ? {
-        [LINE_TYPE.HIT]: showCovered ? LINE_STATE.COVERED : LINE_STATE.BLANK,
-        [LINE_TYPE.MISS]: showUncovered
-          ? LINE_STATE.UNCOVERED
-          : LINE_STATE.BLANK,
-        [LINE_TYPE.PARTIAL]: showPartial
-          ? LINE_STATE.PARTIAL
-          : LINE_STATE.BLANK,
+        [LINE_TYPE.HIT]: LINE_STATE.COVERED,
+        [LINE_TYPE.MISS]: LINE_STATE.UNCOVERED,
+        [LINE_TYPE.PARTIAL]: LINE_STATE.PARTIAL,
       }[coverage]
     : LINE_STATE.BLANK
 }

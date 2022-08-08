@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
-import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
+import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
 import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
   const { owner } = useParams()
-  const isUserPersonalAccount = useIsPersonalAccount()
+  const shouldRenderTabs = useShouldRenderTabs()
 
   return (
     <>
@@ -16,7 +16,7 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
-            ...(!isUserPersonalAccount ? [{ pageName: 'planTab' }] : []),
+            ...(shouldRenderTabs ? [{ pageName: 'membersTab' }, { pageName: 'planTab' }] : []),
             {
               pageName: 'accountAdmin',
               children: 'Settings',

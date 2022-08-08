@@ -2,20 +2,20 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
-import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
+import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
 import { useOwner } from 'services/user'
 
 import OwnerPage from './OwnerPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
-jest.mock('services/useIsPersonalAccount')
+jest.mock('services/useShouldRenderTabs')
 jest.mock('services/account')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 
 describe('OwnerPage', () => {
   function setup(owner, accountDetails) {
-    useIsPersonalAccount.mockReturnValue(true)
+    useShouldRenderTabs.mockReturnValue(true)
     useOwner.mockReturnValue({
       data: owner,
     })

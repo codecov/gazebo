@@ -29,10 +29,12 @@ describe('RepoContentsTable', () => {
     isLoading = false,
     data = flagsData,
     hasNextPage = false,
+    isSearching = false,
   } = {}) {
     useRepoFlagsTable.mockReturnValue({
       data,
       isLoading,
+      isSearching,
       handleSort,
       hasNextPage,
       fetchNextPage: fetchNextPage,
@@ -88,16 +90,16 @@ describe('RepoContentsTable', () => {
   })
 
   describe('when no data is returned', () => {
-    beforeEach(() => {
+    it('renders expected empty state message when isSearching is false', () => {
       setup({ data: [] })
+      expect(
+        screen.getByText(/There was a problem getting flags data/)
+      ).toBeInTheDocument()
     })
 
-    it('renders empty state message', () => {
-      expect(
-        screen.getByText(
-          /There was a problem getting flags data from your provider/
-        )
-      ).toBeInTheDocument()
+    it('renders expected empty state message when isSearching is true', () => {
+      setup({ data: [], isSearching: true })
+      expect(screen.getByText(/No results found/)).toBeInTheDocument()
     })
   })
 

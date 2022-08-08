@@ -1,17 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useIsPersonalAccount } from 'services/useIsPersonalAccount'
+import { useShouldRenderTabs } from 'services/useShouldRenderTabs'
 
 import Tabs from './Tabs'
 
-jest.mock('services/useIsPersonalAccount')
+jest.mock('services/useShouldRenderTabs')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('../CallToAction', () => () => 'CallToAction')
 
 describe('Tabs', () => {
   function setup(props = {}) {
-    useIsPersonalAccount.mockReturnValue(false)
+    useShouldRenderTabs.mockReturnValue(true)
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -41,6 +41,14 @@ describe('Tabs', () => {
           name: /plan/i,
         })
       ).toHaveAttribute('href', '/plan/gh/codecov')
+    })
+
+    it('renders link to members page', () => {
+      expect(
+        screen.getByRole('link', {
+          name: /members/i,
+        })
+      ).toHaveAttribute('href', `/members/gh/codecov`)
     })
   })
 })
