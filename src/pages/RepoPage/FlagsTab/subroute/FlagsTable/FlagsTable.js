@@ -19,9 +19,7 @@ const headers = [
   {
     id: 'coverage',
     header: (
-      <span className="flex flex-row-reverse grow text-right">
-        file coverage %
-      </span>
+      <span className="flex flex-row-reverse grow text-right">Coverage %</span>
     ),
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
@@ -31,9 +29,7 @@ const headers = [
   {
     id: 'trend',
     header: (
-      <span className="flex flex-row-reverse grow text-right">
-        trend last year
-      </span>
+      <span className="flex flex-row-reverse grow text-right">Trend</span>
     ),
     accessorKey: 'trend',
     cell: (info) => info.getValue(),

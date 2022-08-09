@@ -57,8 +57,8 @@ describe('RepoContentsTable', () => {
 
     it('renders table headers', () => {
       expect(screen.getByText('Flags')).toBeInTheDocument()
-      expect(screen.getByText('file coverage %')).toBeInTheDocument()
-      expect(screen.getByText('trend last year')).toBeInTheDocument()
+      expect(screen.getByText('Coverage %')).toBeInTheDocument()
+      expect(screen.getByText('Trend')).toBeInTheDocument()
     })
 
     it('renders repo flags', () => {
