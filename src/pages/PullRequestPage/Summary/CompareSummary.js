@@ -117,6 +117,7 @@ function lastCommitErrorCard({ recentCommit }) {
 
 function CompareSummary() {
   const {
+    errors,
     headCoverage,
     patchCoverage,
     changeCoverage,
@@ -124,6 +125,18 @@ function CompareSummary() {
     baseCommit,
     recentCommit,
   } = usePullForCompareSummary()
+
+  if (errors) {
+    return errors.map((error, i) => {
+      switch (error.type) {
+        // TODO: maybe we have a GraphQL enum of possible types here
+        case 'MissingComparisonReport':
+          return <div key={i}>Missing comparison report: {error.message}</div>
+        default:
+          return <div key={i}>{error.message}</div>
+      }
+    })
+  }
 
   const fields = [
     ...totalsCards({ headCoverage, headCommit, patchCoverage, changeCoverage }),

@@ -19,6 +19,7 @@ export function getPullDataForCompareSummary({
   }
 
   return {
+    errors: compareWithBase?._errors || [],
     headCoverage: head?.totals?.percentCovered,
     patchCoverage: compareWithBase?.patchTotals?.percentCovered * 100,
     changeCoverage: compareWithBase?.changeWithParent,

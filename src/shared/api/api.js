@@ -52,6 +52,34 @@ function prefillMethod(method) {
     })
 }
 
+function transformErrors(body) {
+  const unhandledErrors = []
+  if (body.errors) {
+    body.errors.forEach((error) => {
+      if (error.path && error.path.length > 0) {
+        let node = body.data
+        error.path.forEach((key) => {
+          if (!node[key]) {
+            // the node where an error arose will often be null
+            node[key] = {}
+          }
+          node = node[key]
+        })
+
+        // move the error to the resolver where it occurred
+        if (!node._errors) {
+          node._errors = []
+        }
+        node._errors.push(error)
+      } else {
+        unhandledErrors.push(error)
+      }
+    })
+    body.errors = unhandledErrors
+  }
+  return body
+}
+
 function graphql({ provider, query, variables = {} }) {
   const uri = `${config.API_URL}/graphql/${provider}`
   const headers = {
@@ -74,7 +102,9 @@ function graphql({ provider, query, variables = {} }) {
       query,
       variables,
     }),
-  }).then((d) => d.json())
+  })
+    .then((d) => d.json())
+    .then(transformErrors)
 }
 
 function graphqlMutation({ mutationPath, ...graphqlParams }) {
