@@ -1,17 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import Tabs from './Tabs'
-jest.mock('shared/featureFlags')
+jest.mock('services/useShouldRenderBillingTabs')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 describe('Tabs', () => {
-  function setup(gazeboPlanTab = true) {
-    useFlags.mockReturnValue({
-      gazeboPlanTab,
-    })
+  function setup(show = true) {
+    useShouldRenderBillingTabs.mockReturnValue(show)
 
     render(
       <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
@@ -68,7 +66,7 @@ describe('Tabs', () => {
     })
   })
 
-  describe('when feature flag is off', () => {
+  describe('when should render tabs is false', () => {
     beforeEach(() => {
       setup(false)
     })

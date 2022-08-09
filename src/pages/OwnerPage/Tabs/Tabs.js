@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types'
 
-import { useFlags } from 'shared/featureFlags'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 import TabNavigation from 'ui/TabNavigation'
 
 import CallToAction from '../CallToAction'
 
 function Tabs({ provider, owner }) {
-  const { gazeboPlanTab } = useFlags({
-    gazeboPlanTab: false,
-  })
+  const shouldRenderTabs = useShouldRenderBillingTabs()
 
   return (
     <TabNavigation
@@ -21,7 +19,7 @@ function Tabs({ provider, owner }) {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(gazeboPlanTab
+        ...(shouldRenderTabs
           ? [{ pageName: 'membersTab' }, { pageName: 'planTab' }]
           : []),
         {
