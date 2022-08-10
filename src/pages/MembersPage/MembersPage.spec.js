@@ -3,10 +3,12 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import MembersPage from './MembersPage'
 
 jest.mock('services/user')
+jest.mock('services/useShouldRenderBillingTabs')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./MembersActivation', () => () => 'MemberActivation')
@@ -22,7 +24,8 @@ const queryClient = new QueryClient({
 })
 
 describe('MembersPage', () => {
-  function setup({ owner = null }) {
+  function setup({ owner = null, show = true }) {
+    useShouldRenderBillingTabs.mockReturnValue(show)
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -85,6 +88,24 @@ describe('MembersPage', () => {
     })
 
     it('doesnt render Tabs', () => {
+      expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when user is personal account', () => {
+    beforeEach(() => {
+      setup({
+        owner: null,
+        show: false,
+      })
+    })
+
+    it('doesnt render the members page', () => {
+      expect(screen.queryByText(/Manage members/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Header/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/MemberActivation/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/MissingMemberBanner/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/MembersList/)).not.toBeInTheDocument()
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
     })
   })

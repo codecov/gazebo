@@ -19,7 +19,7 @@ function Activation() {
         <span className="font-semibold text-lg">{planQuantity || 0}</span>{' '}
         available seats{' '}
         <span className="text-xs">
-          <A to={{ pageName: 'upgradePlan' }} variant="semibold">
+          <A to={{ pageName: 'upgradeOrgPlan' }} variant="semibold">
             change plan
           </A>
         </span>

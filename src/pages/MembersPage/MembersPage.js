@@ -1,6 +1,7 @@
-import { useParams } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import Header from './Header'
 import MemberActivation from './MembersActivation'
@@ -9,8 +10,13 @@ import MissingMemberBanner from './MissingMemberBanner'
 import Tabs from './Tabs'
 
 function MembersPage() {
-  const { owner } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+  const shouldRenderTabs = useShouldRenderBillingTabs()
+
+  if (!shouldRenderTabs) {
+    return <Redirect to={`/${provider}/${owner}`} />
+  }
 
   return (
     <div className="flex flex-col gap-4">
