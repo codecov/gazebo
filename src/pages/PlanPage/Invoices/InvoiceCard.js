@@ -29,9 +29,8 @@ function InvoiceCard({ invoice }) {
           <span className="capitalize">{invoice.status}</span>
         </span>
         <A
-          href={invoiceDetail.path({ id: invoice.id })}
+          href={invoiceDetail.path({ id: invoice.id }) + '?print'}
           variant="semibold"
-          download
           hook="download-invoice"
         >
           <Icon name="download" variant="solid" size="sm" />
