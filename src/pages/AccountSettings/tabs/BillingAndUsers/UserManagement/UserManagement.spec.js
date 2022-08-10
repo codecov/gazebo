@@ -79,8 +79,6 @@ describe('UserManagerment', () => {
     mockUseAutoActivate = updateAccount,
     isAdmin,
   }) {
-    // console.error(mockUseAccountDetails, '======')
-
     useUpdateUser.mockReturnValue(mockUseUpdateUserValue)
     useAccountDetails.mockReturnValue(mockUseAccountDetails)
     useAutoActivate.mockReturnValue(mockUseAutoActivate)
@@ -380,7 +378,7 @@ describe('UserManagerment', () => {
             {
               username: 'dazzle',
               email: 'dazzle@dota.com',
-              lastPullTimestamp: '2022-06-17 15:18:17.290',
+              lastPullTimestamp: '', //we don't have last pull time stamp in DB for non enterprise users
             },
           ],
         },

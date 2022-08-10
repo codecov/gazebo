@@ -52,20 +52,12 @@ function useActivateUser({ provider, owner }) {
   return { activate, ...rest }
 }
 
-function createPills({
-  isAdmin,
-  email,
-  student,
-  lastPullTimestamp,
-  isEnterprise,
-}) {
+function createPills({ isAdmin, email, student, lastPullTimestamp }) {
   return [
     isAdmin ? { label: 'Admin', highlight: true } : null,
     email,
     student ? 'Student' : null,
-    isEnterprise && lastPullTimestamp
-      ? `last PR: ${formatTimeToNow(lastPullTimestamp)}`
-      : null,
+    lastPullTimestamp ? `last PR: ${formatTimeToNow(lastPullTimestamp)}` : null,
   ]
 }
 
@@ -177,13 +169,13 @@ function UserManagement({ provider, owner }) {
       <FormControls
         current={params}
         onChange={updateParams}
-        isEnterprisePlan={isEnterprise}
         defaultValues={{
           search: params.search,
           activated: ApiFilterEnum.none,
           isAdmin: ApiFilterEnum.none,
           ordering: '-name',
         }}
+        isEnterprisePlan={isEnterprise}
       />
       <Card className={UserManagementClasses.results}>
         <div>
@@ -198,7 +190,7 @@ function UserManagement({ provider, owner }) {
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
-                  pills={createPills({ ...user, isEnterprise })}
+                  pills={createPills({ ...user })}
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Toggle

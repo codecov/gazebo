@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
+import config from 'config'
+
 import Card from 'old_ui/Card'
 import ControlGroup from 'old_ui/ControlGroup'
 import Icon from 'old_ui/Icon'
@@ -58,6 +60,7 @@ export function FormControls({
   const { register, control } = useForm({
     defaultValues,
   })
+  const isEnterprise = config.IS_INTERPRISE || isEnterprisePlan
 
   const [searchText, setSearchText] = useState('')
 
@@ -116,7 +119,7 @@ export function FormControls({
               />
             )}
           />
-          {isEnterprisePlan && (
+          {isEnterprise && (
             <Controller
               name="ordering"
               control={control}
@@ -142,8 +145,8 @@ export function FormControls({
             variant="light"
             aria-label="search users"
             className={cs(FormClasses.search, {
-              'w-1/4': isEnterprisePlan,
-              'w-2/4': !isEnterprisePlan,
+              'w-1/4': isEnterprise,
+              'w-2/4': !isEnterprise,
             })}
             name="search"
             {...register('search')}
