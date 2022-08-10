@@ -15,13 +15,13 @@ describe('Header', () => {
   function setup() {
     useOwner.mockReturnValue({
       owner: {
-        username: 'dwight',
+        username: 'lancelot',
       },
     })
     render(
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/plan/gh/codecov']}>
-          <Route path="/plan/:provider/:owner">
+        <MemoryRouter initialEntries={['/members/gh/codecov']}>
+          <Route path="/members/:provider/:owner">
             <Header />
           </Route>
         </MemoryRouter>
