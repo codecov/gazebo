@@ -29,10 +29,12 @@ function UpgradePlan() {
   const setCrumbs = useSetCrumbs()
 
   useLayoutEffect(() => {
-    setCrumbs({
-      pageName: 'upgradeOrgPlan',
-      text: 'Manage Plan',
-    })
+    setCrumbs([
+      {
+        pageName: 'upgradeOrgPlan',
+        text: 'Manage Plan',
+      },
+    ])
   }, [setCrumbs])
 
   const { data: accountDetails } = useAccountDetails({ provider, owner })
