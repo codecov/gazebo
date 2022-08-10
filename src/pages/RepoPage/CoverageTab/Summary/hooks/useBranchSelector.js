@@ -6,11 +6,14 @@ import { mapEdges } from 'shared/utils/graphql'
 export function useBranchSelector(branches, defaultBranch) {
   const items = useMemo(() => mapEdges(branches), [branches])
   const { branch, ref } = useParams()
+  // Decoding the value when it is undefined returns "undefined" as a string, which breaks the selector
+  const decodedBranch = !!branch ? decodeURIComponent(branch) : branch
+  const decodedRef = !!ref ? decodeURIComponent(ref) : ref
   const selection = useMemo(() => {
-    const selectedBranch = branch || ref || defaultBranch
+    const selectedBranch = decodedBranch || decodedRef || defaultBranch
     const [currentBranch] = items.filter((b) => b.name === selectedBranch)
     return currentBranch
-  }, [items, branch, ref, defaultBranch])
+  }, [items, decodedBranch, decodedRef, defaultBranch])
 
   return {
     selection,
