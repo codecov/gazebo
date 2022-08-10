@@ -177,6 +177,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('Members', () => {
+    beforeAll(() => {
+      setup(['/gh/critical-role/calloway'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.membersTab.path()).toBe(
+        `/members/gh/critical-role`
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.membersTab.path({ provider: 'bb' })).toBe(
+        `/members/bb/critical-role`
+      )
+      expect(
+        hookData.result.current.membersTab.path({ owner: 'skirmisher' })
+      ).toBe(`/members/gh/skirmisher`)
+    })
+  })
+
   describe('Upgrade Plan', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])

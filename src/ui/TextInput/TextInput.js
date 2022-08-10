@@ -7,7 +7,8 @@ import { forwardRef } from 'react'
 import Icon from 'ui/Icon'
 
 const styles = {
-  input: 'block rounded border border-ds-gray-tertiary px-3 text-sm w-full h-8',
+  input:
+    'block rounded border border-ds-gray-tertiary px-3 text-sm w-full h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary',
   label: 'block font-semibold mb-2',
   iconWrapper:
     'absolute text-ds-gray-quaternary left-2 h-full flex items-center',

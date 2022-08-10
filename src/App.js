@@ -21,6 +21,7 @@ const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage/RepoPage'))
 const PlanPage = lazy(() => import('./pages/PlanPage/PlanPage'))
+const MembersPage = lazy(() => import('./pages/MembersPage/MembersPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,6 +70,13 @@ function App() {
                 <FeedbackPage />
               </BaseLayout>
             </Route>
+            {gazeboPlanTab && (
+              <Route path="/members/:provider/:owner/">
+                <BaseLayout>
+                  <MembersPage />
+                </BaseLayout>
+              </Route>
+            )}
             {gazeboPlanTab && (
               <Route path="/plan/:provider/:owner/">
                 <BaseLayout>

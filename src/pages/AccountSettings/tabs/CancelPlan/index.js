@@ -1,1 +1,1 @@
-export { default } from './CancelPlan'
+export { default } from './CancelPlanPage'

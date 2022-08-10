@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import ToggleHeader from './ToggleHeader'
 
@@ -11,14 +11,6 @@ describe('ToggleHeader', () => {
     beforeEach(() => {
       setup({
         coverageIsLoading: false,
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-          setCovered: jest.fn(),
-          setUncovered: jest.fn(),
-          setPartial: jest.fn(),
-        },
         flagData: {
           flagNames: [],
           selectedFlags: [],
@@ -33,29 +25,12 @@ describe('ToggleHeader', () => {
     it('renders flags title', () => {
       expect(screen.queryByText('All flags')).not.toBeInTheDocument()
     })
-    it('renders toggles', () => {
-      expect(screen.getByText(/View coverage by:/)).toBeInTheDocument()
-      expect(screen.getByLabelText('show-covered-lines')).toBeInTheDocument()
-      expect(screen.getByLabelText('show-partial-lines')).toBeInTheDocument()
-      expect(screen.getByLabelText('show-uncovered-lines')).toBeInTheDocument()
-      fireEvent.click(screen.getByLabelText('show-covered-lines'))
-      fireEvent.click(screen.getByLabelText('show-partial-lines'))
-      fireEvent.click(screen.getByLabelText('show-uncovered-lines'))
-    })
   })
 
   describe('when file has 1 flag', () => {
     beforeEach(() => {
       setup({
         coverageIsLoading: false,
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-          setCovered: jest.fn(),
-          setUncovered: jest.fn(),
-          setPartial: jest.fn(),
-        },
         flagData: {
           flagNames: ['one', 'two'],
           selectedFlags: ['one'],
@@ -73,14 +48,6 @@ describe('ToggleHeader', () => {
     beforeEach(() => {
       setup({
         coverageIsLoading: false,
-        lineCoverageStatesAndSetters: {
-          covered: true,
-          uncovered: true,
-          partial: true,
-          setCovered: jest.fn(),
-          setUncovered: jest.fn(),
-          setPartial: jest.fn(),
-        },
         flagData: {
           flagNames: ['one', 'two'],
           selectedFlags: ['one', 'two'],

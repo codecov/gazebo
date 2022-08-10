@@ -73,7 +73,6 @@ describe('Title', () => {
 
     it('shows the title', () => {
       expect(screen.getByText('sample title')).toBeInTheDocument()
-      expect(screen.getByText('View coverage by:')).toBeInTheDocument()
     })
   })
 })
