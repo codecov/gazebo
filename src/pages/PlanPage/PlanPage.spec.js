@@ -3,11 +3,14 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import PlanPage from './PlanPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
+jest.mock('services/useShouldRenderBillingTabs')
+
 jest.mock('./Tabs', () => () => 'Tabs')
 
 const queryClient = new QueryClient({
@@ -19,7 +22,8 @@ const queryClient = new QueryClient({
 })
 
 describe('PlanPage', () => {
-  function setup({ owner = null }) {
+  function setup({ owner = null, show = true }) {
+    useShouldRenderBillingTabs.mockReturnValue(show)
     useOwner.mockReturnValue({
       data: owner,
     })

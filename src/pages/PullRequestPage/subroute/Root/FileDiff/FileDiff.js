@@ -25,19 +25,11 @@ const FileDiff = ({
   headTotals,
   baseTotals,
   patchTotals,
-  lineCoverageStatesAndSetters,
   isNewFile,
   isRenamedFile,
   isDeletedFile,
   isCriticalFile,
 }) => {
-  const { covered, uncovered, partial } = lineCoverageStatesAndSetters
-  const showLines = {
-    showCovered: covered,
-    showPartial: partial,
-    showUncovered: uncovered,
-  }
-
   const headCoverage = headTotals?.percentCovered
   const changeCoverage = headCoverage - baseTotals?.percentCovered
   const patchCoverage = patchTotals?.percentCovered
@@ -78,7 +70,6 @@ const FileDiff = ({
                 <DiffLine
                   // If this line one of the first 3 or last three lines of the segment
                   key={i + 1}
-                  showLines={showLines}
                   lineContent={line}
                   edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
                   {...props}
@@ -129,11 +120,6 @@ FileDiff.propTypes = {
   }),
   patchTotals: PropTypes.shape({
     percentCovered: PropTypes.number,
-  }),
-  lineCoverageStatesAndSetters: PropTypes.shape({
-    covered: PropTypes.bool,
-    uncovered: PropTypes.bool,
-    partial: PropTypes.bool,
   }),
   hasChanges: PropTypes.bool,
 }

@@ -29,10 +29,12 @@ function UpgradePlan() {
   const setCrumbs = useSetCrumbs()
 
   useLayoutEffect(() => {
-    setCrumbs({
-      pageName: 'upgradeOrgPlan',
-      text: 'Manage Plan',
-    })
+    setCrumbs([
+      {
+        pageName: 'upgradeOrgPlan',
+        text: 'Manage Plan',
+      },
+    ])
   }, [setCrumbs])
 
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -44,7 +46,7 @@ function UpgradePlan() {
   return (
     <>
       {/* TODO: Refactor this layout to be it's own reusable component (also used in CurrentPlanCard and the CancelPlan card) */}
-      <div className="flex gap-8">
+      <div className="flex gap-8 mt-6">
         <Card variant="large">
           <div className="flex flex-col gap-4">
             <div className="-mt-16">
