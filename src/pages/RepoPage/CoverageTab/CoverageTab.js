@@ -1,12 +1,14 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
+import { useRepo } from 'services/repo'
+import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
 import ContentsTableHeader from './ContentsTableHeader'
+import DeactivatedRepo from './DeactivatedRepo'
 import FileBreadcrumb from './FileBreadcrumb'
-import SearchField from './SearchField'
 import Summary from './Summary'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
@@ -18,13 +20,22 @@ const defaultQueryParams = {
 
 function CoverageTab() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
+  const { provider, owner, repo } = useParams()
+  const { data: repoData } = useRepo({
+    provider,
+    owner,
+    repo,
+  })
+
+  const isRepoActivated = repoData?.repository?.activated
+
   const Loader = (
     <div className="flex items-center justify-center py-16">
       <Spinner />
     </div>
   )
 
-  return (
+  return isRepoActivated ? (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       <Summary />
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
@@ -33,6 +44,7 @@ function CoverageTab() {
             <ContentsTableHeader>
               <FileBreadcrumb />
               <SearchField
+                placeholder={'Search for files'}
                 searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />
@@ -45,6 +57,7 @@ function CoverageTab() {
             <ContentsTableHeader>
               <FileBreadcrumb />
               <SearchField
+                placeholder={'Search for files'}
                 searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />
@@ -62,6 +75,7 @@ function CoverageTab() {
             <ContentsTableHeader>
               <FileBreadcrumb />
               <SearchField
+                placeholder={'Search for files'}
                 searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}
               />
@@ -73,6 +87,8 @@ function CoverageTab() {
         </Switch>
       </div>
     </div>
+  ) : (
+    <DeactivatedRepo />
   )
 }
 

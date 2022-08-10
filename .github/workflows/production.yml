@@ -50,6 +50,7 @@ jobs:
         env:
           BUILD_ENV: production
           DEPLOY_ENV: enterprise
+          IS_ENTERPRISE: true
           NPM_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
         run: |-
           make build
@@ -62,9 +63,18 @@ jobs:
         run: |-
           make push
 
-      - name: Publish
+      - name: Publish Enterprise
         env:
           BUILD_ENV: production
+          IS_ENTERPRISE: true
           DEPLOY_ENV: enterprise
         run: |-
           make push
+
+      - name: Run Frontend Docker Build
+        uses: mvasigh/dispatch-action@1.1.6
+        with:
+          token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+          repo: codecov-frontend-docker
+          owner: codecov
+          event_type: production_build

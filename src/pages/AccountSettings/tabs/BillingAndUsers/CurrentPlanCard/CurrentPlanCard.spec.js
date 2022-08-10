@@ -8,7 +8,7 @@ const proAccountDetails = {
   plan: {
     marketingName: 'Pro Team',
     baseUnitPrice: 12,
-    benefits: ['Configureable # of users', 'Unlimited repos'],
+    benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
     value: 'users-inappm',
   },
@@ -56,12 +56,6 @@ describe('CurrentPlanCard', () => {
 
     it('renders the price of the plan', () => {
       expect(screen.getByText(/\$12/)).toBeInTheDocument()
-    })
-
-    it('renders the link to Cancel', () => {
-      expect(
-        screen.getByRole('link', { name: /Cancel Plan/ })
-      ).toBeInTheDocument()
     })
 
     it('shows the help message', () => {

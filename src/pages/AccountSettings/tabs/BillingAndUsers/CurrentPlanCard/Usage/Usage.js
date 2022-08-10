@@ -33,31 +33,26 @@ function Usage({ accountDetails, isBasicPlan }) {
       <h2 className="font-semibold">Usage</h2>
       <ActiveUsers accountDetails={accountDetails} />
       {isBasicPlan && (
-        <div className="grid gap-4">
+        <div className="flex flex-col gap-4">
           <p>{uploadsNumber} of 250 uploads - trailing 30 days</p>
-          <div>
-            <Progress amount={progressAmount} color={color} />
-          </div>
+          <Progress amount={progressAmount} color={color} />
           {isUsageExceeded && (
-            <div className="flex flex-col">
-              <div className="flex flex-row">
+            <>
+              <div className="flex flex-row gap-1">
                 <span className="text-ds-primary-red">
                   <Icon name="exclamation" variant="solid" />{' '}
                 </span>
-                <p className="font-semibold ml-1">
-                  usage exceeded upload limit
-                </p>
+                <p className="font-semibold">usage exceeded upload limit</p>
               </div>
-              <p className="mt-4">
+              <p>
                 <span className="font-semibold">Tip:</span> upgrade to 6 users
                 for unlimited uploads{' '}
                 <A to={{ pageName: 'upgradePlan' }}> upgrade today </A>
               </p>
-            </div>
+            </>
           )}
         </div>
       )}
-      <hr className="my-6" />
     </div>
   )
 }

@@ -29,11 +29,6 @@ describe('DiffLine', () => {
   describe('renders base lines', () => {
     const props = {
       edgeOfFile: false,
-      showLines: {
-        showCovered: true,
-        showUncovered: true,
-        showPartial: true,
-      },
       headNumber: '1',
       baseNumber: '1',
       headCoverage: null,
@@ -50,11 +45,6 @@ describe('DiffLine', () => {
     beforeEach(() => {
       const props = {
         edgeOfFile: false,
-        showLines: {
-          showCovered: true,
-          showUncovered: true,
-          showPartial: true,
-        },
         headNumber: '1',
         baseNumber: '1',
         headCoverage: 'H',
@@ -72,11 +62,6 @@ describe('DiffLine', () => {
     beforeEach(() => {
       const props = {
         edgeOfFile: false,
-        showLines: {
-          showCovered: true,
-          showUncovered: true,
-          showPartial: true,
-        },
         headNumber: '1',
         baseNumber: '1',
         headCoverage: 'H',
@@ -94,11 +79,6 @@ describe('DiffLine', () => {
     beforeEach(() => {
       const props = {
         edgeOfFile: false,
-        showLines: {
-          showCovered: true,
-          showUncovered: true,
-          showPartial: true,
-        },
         headNumber: '1',
         baseNumber: '1',
         headCoverage: 'M',
@@ -116,11 +96,6 @@ describe('DiffLine', () => {
     beforeEach(() => {
       const props = {
         edgeOfFile: false,
-        showLines: {
-          showCovered: true,
-          showUncovered: true,
-          showPartial: true,
-        },
         headNumber: '1',
         baseNumber: '1',
         headCoverage: null,
@@ -138,11 +113,6 @@ describe('DiffLine', () => {
     beforeEach(() => {
       const props = {
         edgeOfFile: false,
-        showLines: {
-          showCovered: true,
-          showUncovered: true,
-          showPartial: true,
-        },
         headNumber: '1',
         baseNumber: '1',
         headCoverage: 'P',
@@ -156,36 +126,9 @@ describe('DiffLine', () => {
     })
   })
 
-  describe('renders highlighted partial head', () => {
-    beforeEach(() => {
-      const props = {
-        edgeOfFile: false,
-        showLines: {
-          showCovered: true,
-          showUncovered: true,
-          showPartial: true,
-        },
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'P',
-        baseCoverage: null,
-      }
-      setup(props)
-    })
-
-    it('render partial line', () => {
-      expect(screen.getAllByLabelText('partial line of code').length).toBe(1)
-    })
-  })
-
   describe('detects edge of file', () => {
     beforeEach(() => {
       const props = {
-        showLines: {
-          showCovered: true,
-          showUncovered: true,
-          showPartial: true,
-        },
         headNumber: '1',
         baseNumber: '1',
         headCoverage: 'P',
@@ -203,7 +146,7 @@ describe('DiffLine', () => {
 
     it('render partial line', () => {
       expect(screen.getByTestId('affected-lines')).toHaveClass(
-        'bg-ds-gray-secondary'
+        'bg-ds-coverage-partial'
       )
     })
   })

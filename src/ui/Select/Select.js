@@ -6,10 +6,10 @@ import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 
 const SelectClasses = {
-  root: 'w-full relative',
+  root: 'flex-1 relative',
   item: 'block cursor-pointer py-1 px-3 text-sm',
   button:
-    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 outline-none h-8',
+    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 outline-none h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary',
   ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10',
 }
 
@@ -34,6 +34,7 @@ function Select({
   renderSelected,
   ariaName,
   variant = 'default',
+  disabled = false,
 }) {
   const {
     isOpen,
@@ -76,6 +77,7 @@ function Select({
   return (
     <div className={SelectClasses.root}>
       <button
+        disabled={disabled}
         aria-label={ariaName}
         type="button"
         className={cs(SelectClasses.button, variantClass[variant])}
@@ -107,6 +109,7 @@ Select.propTypes = {
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string,
   variant: PropTypes.oneOf(['default', 'gray']),
+  disabled: PropTypes.bool,
 }
 
 export default Select

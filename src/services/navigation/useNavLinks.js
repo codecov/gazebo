@@ -100,6 +100,30 @@ function useNavLinks() {
         `/account/${provider}/${owner}`,
       isExternalLink: false,
     },
+    planTab: {
+      text: 'Plan',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    membersTab: {
+      text: 'Members',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/members/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    upgradeOrgPlan: {
+      text: 'Upgrade Plan',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/upgrade`,
+      isExternalLink: false,
+    },
+    cancelOrgPlan: {
+      text: 'Cancel Plan',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/cancel`,
+      isExternalLink: false,
+    },
     accountAdmin: {
       text: 'Admin',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
@@ -326,6 +350,26 @@ function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
       isExternalLink: gazeboSettingsTab,
       text: 'Badges & Graphs',
+    },
+    feedback: {
+      text: 'Feedback',
+      path: ({ provider = p, ref } = { provider: p, ref: null }) => {
+        if (ref) {
+          return `/${provider}/feedback?ref=${encodeURIComponent(ref)}`
+        }
+        return `/${provider}/feedback`
+      },
+      isExternalLink: false,
+    },
+    prevLink: {
+      text: 'Back',
+      path: ({ provider = p, ref } = { provider: p, ref: null }) => {
+        if (ref) {
+          return decodeURIComponent(ref)
+        }
+        return `/${provider}`
+      },
+      isExternalLink: false,
     },
   }
 }

@@ -28,20 +28,22 @@ describe('TruncatedMessage', () => {
   describe('When commit message is longer than a line', () => {
     beforeEach(() => {
       Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
-        configurable: true,
+        Configurable: true,
         value: 500,
       })
       setup({ message: longMessage })
     })
 
     it('has scrollWidth of 500', () => {
-      expect(screen.getByTestId('truncate-message')).toHaveProperty(
+      expect(screen.getByTestId('truncate-message-pre')).toHaveProperty(
         'scrollWidth',
         500
       )
     })
     it('adds line-clamp-1 class to truncate message pre tag', () => {
-      expect(screen.getByTestId('truncate-message')).toHaveClass('line-clamp-1')
+      expect(screen.getByTestId('truncate-message-pre')).toHaveClass(
+        'line-clamp-1'
+      )
     })
 
     it('renders the expand button', () => {
@@ -52,7 +54,7 @@ describe('TruncatedMessage', () => {
   describe('Check truncate buttons', () => {
     beforeEach(() => {
       Object.defineProperty(HTMLElement.prototype, 'scrollWidth', {
-        configurable: true,
+        Configurable: true,
         value: 500,
       })
 

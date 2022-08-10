@@ -487,16 +487,16 @@ describe('UserManagerment', () => {
       setup({ mockUseUsersValue, mockUseUpdateUserValue, isAdmin: true })
     })
 
-    it('Renders a inactive user with a Activate button', () => {
+    it('Renders a inactive user with activate toggle', () => {
       const ActivateBtn = screen.getByRole('button', {
-        name: 'Activate',
+        name: 'Not yet activated',
       })
       expect(ActivateBtn).toBeInTheDocument()
     })
 
-    it('Clicking "Activate" activates a user', async () => {
+    it('Switching the toggle activates a user', async () => {
       const ActivateBtn = screen.getByRole('button', {
-        name: 'Activate',
+        name: 'Not yet activated',
       })
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
@@ -588,9 +588,9 @@ describe('UserManagerment', () => {
       })
     })
 
-    it('Clicking "Activate" opens up the modal', async () => {
+    it('Switching the toggle to "Activate" opens up the modal', async () => {
       const ActivateBtn = screen.getByRole('button', {
-        name: 'Activate',
+        name: 'Not yet activated',
       })
       user.click(ActivateBtn)
       const modalTitle = screen.getByRole('heading', {
@@ -601,10 +601,10 @@ describe('UserManagerment', () => {
 
     it('Clicking "x" svg will close up the modal', () => {
       const ActivateBtn = screen.getByRole('button', {
-        name: 'Activate',
+        name: 'Not yet activated',
       })
       user.click(ActivateBtn)
-      const xModalButton = screen.getByText('x.svg')
+      const xModalButton = screen.getAllByText('x.svg')[1]
       expect(xModalButton).toBeInTheDocument()
       user.click(xModalButton)
       expect(
@@ -616,7 +616,7 @@ describe('UserManagerment', () => {
 
     it('Clicking "close" button will close up the modal', () => {
       const ActivateBtn = screen.getByRole('button', {
-        name: 'Activate',
+        name: 'Not yet activated',
       })
       user.click(ActivateBtn)
       const cancelButton = screen.getByRole('button', {
@@ -707,9 +707,9 @@ describe('UserManagerment', () => {
       })
     })
 
-    it('Clicking "Activate" still activates a new user', async () => {
+    it('Switching the toggle to "Activate" still activates a new user', async () => {
       const ActivateBtn = screen.getByRole('button', {
-        name: 'Activate',
+        name: 'Not yet activated',
       })
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
@@ -745,16 +745,16 @@ describe('UserManagerment', () => {
       setup({ mockUseUsersValue, mockUseUpdateUserValue, isAdmin: true })
     })
 
-    it('Renders a inactive user with a Deactivate button', () => {
+    it('Renders a active user with a deactivate toggle', () => {
       const DeactivateBtn = screen.getByRole('button', {
-        name: 'Deactivate',
+        name: 'Activated',
       })
       expect(DeactivateBtn).toBeInTheDocument()
     })
 
-    it('Clicking "Deactivate" activates a user', async () => {
+    it('Switching the toggle deactivates a user', async () => {
       const ActivateBtn = screen.getByRole('button', {
-        name: 'Deactivate',
+        name: 'Activated',
       })
       user.click(ActivateBtn)
       await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1))
@@ -824,11 +824,9 @@ describe('UserManagerment', () => {
       })
 
       it('Clicking triggers a change', async () => {
-        const toggle = screen.getByText(/Auto activate users/)
+        const toggle = screen.getByText(/Auto-activate members/)
         user.click(toggle)
-        await waitFor(() =>
-          expect(updateAccountMutate).toHaveBeenCalledTimes(1)
-        )
+        await waitFor(() => expect(updateAccountMutate).toHaveBeenCalled())
       })
     })
   })
@@ -869,7 +867,7 @@ describe('UserManagerment', () => {
     })
 
     it('Does not render Auto activate users Toggle', async () => {
-      const toggle = screen.queryByText(/Auto activate users/)
+      const toggle = screen.queryByText(/Auto-activate members/)
       expect(toggle).not.toBeInTheDocument()
     })
   })
@@ -935,6 +933,24 @@ describe('UserManagerment', () => {
       })
       user.click(ActivateBtn)
       expect(mutateMock).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  xdescribe('renders missing members banner', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders the header', () => {
+      expect(screen.getByText('Don’t see a member?')).toBeInTheDocument()
+    })
+
+    it('renders the body', () => {
+      expect(
+        screen.getByText(
+          'It may be because they haven’t logged into Codecov yet. Please make sure they log into Codecov first'
+        )
+      ).toBeInTheDocument()
     })
   })
 })

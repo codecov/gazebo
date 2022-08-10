@@ -37,6 +37,11 @@ describe('UpgradePlanPage', () => {
       const title = screen.getAllByText(/Pro Team/)[0]
       expect(title).toBeInTheDocument()
     })
+
+    it('renders a cancel plan link', () => {
+      const cancelLink = screen.getByText('Cancel plan')
+      expect(cancelLink).toBeInTheDocument()
+    })
   })
 })
 
@@ -59,7 +64,7 @@ function getPlans() {
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -71,7 +76,7 @@ function getPlans() {
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -83,7 +88,7 @@ function getPlans() {
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -95,7 +100,7 @@ function getPlans() {
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',

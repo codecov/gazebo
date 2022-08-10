@@ -24,6 +24,12 @@ LinkA.args = {
   variant: 'link',
 }
 
+export const SemiboldA = Template.bind({})
+SemiboldA.args = {
+  children: 'Semibold A',
+  variant: 'semibold',
+}
+
 export default {
   title: 'Components/A',
   component: A,

@@ -159,6 +159,84 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('Plan', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.planTab.path()).toBe(`/plan/gl/doggo`)
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.planTab.path({ provider: 'bb' })).toBe(
+        `/plan/bb/doggo`
+      )
+      expect(hookData.result.current.planTab.path({ owner: 'cat' })).toBe(
+        `/plan/gl/cat`
+      )
+    })
+  })
+
+  describe('Members', () => {
+    beforeAll(() => {
+      setup(['/gh/critical-role/calloway'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.membersTab.path()).toBe(
+        `/members/gh/critical-role`
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.membersTab.path({ provider: 'bb' })).toBe(
+        `/members/bb/critical-role`
+      )
+      expect(
+        hookData.result.current.membersTab.path({ owner: 'skirmisher' })
+      ).toBe(`/members/gh/skirmisher`)
+    })
+  })
+
+  describe('Upgrade Plan', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.upgradeOrgPlan.path()).toBe(
+        `/plan/gl/doggo/upgrade`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.upgradeOrgPlan.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/upgrade`)
+      expect(
+        hookData.result.current.upgradeOrgPlan.path({ owner: 'cat' })
+      ).toBe(`/plan/gl/cat/upgrade`)
+    })
+  })
+
+  describe('Cancel Plan', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.cancelOrgPlan.path()).toBe(
+        `/plan/gl/doggo/cancel`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.cancelOrgPlan.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/cancel`)
+      expect(hookData.result.current.cancelOrgPlan.path({ owner: 'cat' })).toBe(
+        `/plan/gl/cat/cancel`
+      )
+    })
+  })
+
   describe('repo link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
@@ -761,6 +839,60 @@ describe('useNavLinks', () => {
       expect(hookData.result.current.pullDetail.path({ pullId: 888 })).toBe(
         `/gl/doggo/squirrel-locator/pull/888`
       )
+    })
+  })
+
+  describe('feedback', () => {
+    describe('ref provided', () => {
+      beforeAll(() => {
+        setup(['/gh/codecov/codecov-demo'])
+      })
+
+      it('returns the correct url', () => {
+        expect(
+          hookData.result.current.feedback.path({
+            ref: '/gh/codecov/codecov-demo',
+          })
+        ).toBe(
+          `/gh/feedback?ref=${encodeURIComponent('/gh/codecov/codecov-demo')}`
+        )
+      })
+    })
+    describe('no ref provided', () => {
+      beforeAll(() => {
+        setup(['/gh'])
+      })
+
+      it('returns the correct url', () => {
+        expect(hookData.result.current.feedback.path()).toBe('/gh/feedback')
+      })
+    })
+  })
+
+  describe('prevLink', () => {
+    describe('ref provided', () => {
+      beforeAll(() => {
+        setup([
+          `/gh/feedback?ref=${encodeURIComponent('/gh/codecov/codecov-demo')}`,
+        ])
+      })
+
+      it('returns the correct url', () => {
+        expect(
+          hookData.result.current.prevLink.path({
+            ref: encodeURIComponent('/gh/codecov/codecov-demo'),
+          })
+        ).toBe('/gh/codecov/codecov-demo')
+      })
+    })
+    describe('no ref provided', () => {
+      beforeAll(() => {
+        setup(['/gh/feedback'])
+      })
+
+      it('returns the correct url', () => {
+        expect(hookData.result.current.prevLink.path()).toBe('/gh')
+      })
     })
   })
 })

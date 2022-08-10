@@ -18,7 +18,9 @@ const variantClasses = {
   semibold: 'text-ds-blue-darker font-semibold',
   code: `font-mono text-ds-blue-darker`,
   cardLink: `text-ds-grey-octinary font-semibold truncate`,
-  greyOctinary: `text-ds-grey-octinary`,
+  greyOctinary: `text-ds-gray-octinary`,
+  grayQuinary: `text-ds-gray-quinary`,
+  headerHighlight: `font-semibold text-ds-pink`,
 }
 
 function _adjustPathForGLSubgroups(path) {
@@ -60,6 +62,7 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
       className={className}
       data-cy={hook}
       data-marketing={hook}
+      data-testid={hook}
       target={isExternal && 'blank'}
     >
       {children}
@@ -92,6 +95,9 @@ A.propTypes = {
     'cardLink',
     'fileViewHeader',
     'semibold',
+    'grayQuinary',
+    'greyOctinary',
+    'headerHighlight',
   ]),
   isExternal: PropTypes.bool,
 }

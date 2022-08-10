@@ -5,7 +5,6 @@ import { Controller, useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 
-import Button from 'old_ui/Button'
 import Select from 'old_ui/Select'
 import {
   accountDetailsPropType,
@@ -13,6 +12,7 @@ import {
   useUpgradePlan,
 } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import Button from 'ui/Button'
 
 const MIN_NB_SEATS = 6
 
@@ -152,14 +152,18 @@ function UpgradePlanForm({
 
   const { upgradePlan } = useSubmit({ owner, provider })
   return (
-    <form className="text-gray-900" onSubmit={handleSubmit(upgradePlan)}>
-      <h2 className="text-2xl text-pink-500 bold mb-8">
+    <form
+      className="text-ds-gray-nonary flex flex-col gap-8"
+      onSubmit={handleSubmit(upgradePlan)}
+    >
+      <h3 className="text-2xl text-ds-pink-quinary bold">
         {proPlanMonth.marketingName}
-      </h2>
+      </h3>
       <Controller
         name="newPlan"
         control={control}
         render={({ field }) => (
+          // TODO: Still need to change this select to New UI Select
           <Select
             data-cy="plan-pricing"
             items={planOptions}
@@ -179,14 +183,15 @@ function UpgradePlanForm({
           />
         )}
       />
-      <div className="mt-8 pt-8 border-gray-200 border-t">
-        <p className="mb-2">
+      <hr />
+      <div className="flex flex-col gap-2">
+        <p>
           {accountDetails.activatedUserCount} active users.{' '}
           {accountDetails.inactiveUserCount} seats needed to activate all users.
         </p>
         {renderStudentText(accountDetails.activatedStudentCount)}
-        <div className="flex items-center">
-          <label htmlFor="nb-seats" className="flex-none cursor-pointer pr-2">
+        <div className="flex gap-4 items-center">
+          <label htmlFor="nb-seats" className="flex-none cursor-pointer">
             User Seats:
           </label>
           <input
@@ -194,28 +199,30 @@ function UpgradePlanForm({
             {...register('seats')}
             id="nb-seats"
             size="20"
-            className="bg-gray-100 p-2 rounded border w-full"
+            className="bg-ds-gray-secondary p-2 rounded border w-full"
             type="number"
           />
         </div>
       </div>
       {isPerYear && (
-        <div className="mt-8 pt-8 border-gray-200 border-t">
-          <p className="flex">
-            Per month pricing ({seats} users x{proPlanMonth.baseUnitPrice})
-            <span className="ml-auto" data-test="normal-price-month">
-              ${formatNumber(perMonthPrice)}
-            </span>
-          </p>
-          <p className="flex mt-1">
-            - 16.67% Annual Discount
-            <span className="ml-auto" data-test="year-discount-value">
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between">
+            <p>
+              {' '}
+              Per month pricing ({seats} users x{proPlanMonth.baseUnitPrice})
+            </p>
+            <p data-test="normal-price-month">${formatNumber(perMonthPrice)}</p>
+          </div>
+          <div className="flex justify-between">
+            <p> - 16.67% Annual Discount </p>
+            <p data-test="year-discount-value">
               ${formatNumber(perMonthPrice - perYearPrice)}
-            </span>
-          </p>
+            </p>
+          </div>
         </div>
       )}
-      <div className="mt-8 pt-8 border-gray-200 border-t bold">
+      <hr />
+      <div className="border-gray-200">
         {isPerYear ? (
           <p className="flex">
             Annual price
@@ -234,16 +241,18 @@ function UpgradePlanForm({
           <span className="ml-auto">{nextBillingDate}</span>
         </p>
       )}
-      {errors.seats && (
-        <p className="bg-error-500 text-error-900 p-3 mt-4 rounded-md">
+      {errors?.seats && (
+        <p className="bg-ds-error-quinary text-ds-error-nonary p-3 rounded-md">
           {errors.seats?.message}
         </p>
       )}
+      <hr />
       <Button
         data-cy="update"
+        hook="update-button"
         disabled={!isValid}
         type="submit"
-        className="w-full block mt-4"
+        variant="primary"
       >
         Update
       </Button>
