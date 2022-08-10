@@ -16,7 +16,7 @@ const statusToColor = {
 }
 
 function InvoiceCard({ invoice }) {
-  const { invoiceDetail } = useNavLinks()
+  const { invoiceDetailsPage } = useNavLinks()
 
   return (
     <Card className="px-4 py-6 mt-4 flex text-sm items-center justify-between">
@@ -29,7 +29,7 @@ function InvoiceCard({ invoice }) {
           <span className="capitalize">{invoice.status}</span>
         </span>
         <A
-          href={invoiceDetail.path({ id: invoice.id }) + '?print'}
+          href={invoiceDetailsPage.path({ id: invoice.id }) + '?print'}
           variant="semibold"
           hook="download-invoice"
         >
