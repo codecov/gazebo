@@ -20,10 +20,12 @@ function CancelPlan() {
   const setCrumbs = useSetCrumbs()
 
   useLayoutEffect(() => {
-    setCrumbs({
-      pageName: 'cancelOrgPlan',
-      text: 'Cancel Plan',
-    })
+    setCrumbs([
+      {
+        pageName: 'cancelOrgPlan',
+        text: 'Cancel Plan',
+      },
+    ])
   }, [setCrumbs])
 
   const { proPlanMonth } = useProPlanMonth({ plans })
