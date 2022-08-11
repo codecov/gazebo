@@ -1,6 +1,6 @@
 import { render, screen } from 'custom-testing-library'
 
-import BackfillBanner from './BackfillBanner'
+import BackfillBanners from './BackfillBanners'
 import { useRepoBackfillingStatus } from './hooks'
 
 jest.mock('./TriggerSyncBanner', () => () => 'TriggerSyncBanner')
@@ -12,7 +12,7 @@ describe('BackfillBanner', () => {
   function setup(data) {
     useRepoBackfillingStatus.mockReturnValue(data)
 
-    render(<BackfillBanner />)
+    render(<BackfillBanners />)
   }
 
   describe('when rendered', () => {
