@@ -25,8 +25,8 @@ export function PlanBreadcrumbProvider({ children }) {
 
   useEffect(() => isBasePath && setBreadcrumbs(base), [isBasePath])
 
-  const addBreadcrumb = useCallback((crumb = []) => {
-    setBreadcrumbs(() => [...base, ...crumb])
+  const addBreadcrumb = useCallback((crumbs = []) => {
+    setBreadcrumbs(() => [...base, ...crumbs])
   }, [])
 
   const breadcrumbSetters = useMemo(() => ({ addBreadcrumb }), [addBreadcrumb])

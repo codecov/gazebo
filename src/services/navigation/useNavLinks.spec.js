@@ -257,6 +257,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('invoiceDetailsPage', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/9'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.invoiceDetailsPage.path()).toBe(
+        `/plan/gl/doggo/invoices/9`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.invoiceDetailsPage.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/invoices/9`)
+      expect(
+        hookData.result.current.invoiceDetailsPage.path({ owner: 'cat' })
+      ).toBe(`/plan/gl/cat/invoices/9`)
+    })
+  })
+
   describe('repo link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
