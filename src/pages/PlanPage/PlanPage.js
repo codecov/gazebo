@@ -12,6 +12,7 @@ import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 import { PlanBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
+import InvoiceDetail from './InvoiceDetail'
 import Invoices from './Invoices'
 import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
@@ -50,6 +51,9 @@ function PlanPage() {
               </Route>
               <Route path={`${path}/invoices`} exact>
                 <Invoices />
+              </Route>
+              <Route path={`${path}/invoices/:id`} exact>
+                <InvoiceDetail />
               </Route>
               <Redirect
                 from="/billing/:provider/:owner/*"

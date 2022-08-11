@@ -29,14 +29,16 @@ function Invoices() {
   const groupedInvoices = useGroupedInvoices({ provider, owner })
   // extract the years so we can be sure of the desc order of the years
   const years = Object.keys(groupedInvoices).sort().reverse()
-  const setCrumb = useSetCrumbs()
+  const setCrumbs = useSetCrumbs()
 
   useLayoutEffect(() => {
-    setCrumb({
-      pageName: 'invoicesPage',
-      text: 'All invoices',
-    })
-  }, [setCrumb])
+    setCrumbs([
+      {
+        pageName: 'invoicesPage',
+        text: 'All invoices',
+      },
+    ])
+  }, [setCrumbs])
 
   return (
     <>
