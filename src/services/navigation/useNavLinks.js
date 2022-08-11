@@ -166,6 +166,7 @@ function useNavLinks() {
         `/account/${provider}/${owner}/billing`,
       isExternalLink: false,
     },
+    // this and many other /account/ routes can be deleted after C4T is done
     upgradePlan: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/billing/upgrade`,

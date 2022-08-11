@@ -7,6 +7,7 @@ import { useNavLinks } from 'services/navigation'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
+//Fix to use our color scheme
 const statusToColor = {
   draft: 'text-gray-500',
   open: 'text-blue-400',

@@ -38,7 +38,7 @@ describe('PlanPage', () => {
     )
   }
 
-  describe('when the owner exists', () => {
+  describe('when the owner is part of org', () => {
     beforeEach(() => {
       setup({
         owner: {
@@ -46,10 +46,6 @@ describe('PlanPage', () => {
           isCurrentUserPartOfOrg: true,
         },
       })
-    })
-
-    it('renders the header', () => {
-      expect(screen.getByText(/Header/)).toBeInTheDocument()
     })
 
     it('renders tabs associated with the page', () => {
