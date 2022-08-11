@@ -9,7 +9,7 @@ import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
 import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
-import CancelPlan from './CancelPlan'
+import CancelPlanPage from './CancelPlan'
 import { PlanBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
@@ -49,7 +49,7 @@ function PlanPage() {
                 <UpgradePlan />
               </Route>
               <Route path={`${path}/cancel`} exact>
-                <CancelPlan />
+                <CancelPlanPage />
               </Route>
               <Redirect
                 from="/billing/:provider/:owner/*"
