@@ -1,19 +1,18 @@
 import difference from 'lodash/difference'
 import PropType from 'prop-types'
 
+import BackLink from 'pages/AccountSettings/shared/BackLink'
+import BenefitList from 'pages/AccountSettings/shared/BenefitList'
 import { useAccountDetails, usePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
 import Card from 'ui/Card'
 
-import DowngradeToFree from './DowngradeToFree'
+import CancelCard from './CancelButton'
 import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
 
-import BackLink from '../../shared/BackLink'
-import BenefitList from '../../shared/BenefitList'
-
-function CancelPlan({ provider, owner }) {
+function CancelPlanPage({ provider, owner }) {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = usePlans(provider)
   const { billingAndUsers } = useNavLinks()
@@ -57,10 +56,16 @@ function CancelPlan({ provider, owner }) {
                 deactivated. You will need to manually reactivate up to five
                 users or ensure auto activate is enabled in your plan settings.
               </p>
-              <DowngradeToFree
-                accountDetails={accountDetails}
-                provider={provider}
-                owner={owner}
+              {/* This is a weird component that is both a button and a modal, hence why it's imported this way. Defs not a good practice but I feel the overhaul of this component will be for another time */}
+              <CancelCard
+                customerId={accountDetails?.subscriptionDetail?.customer}
+                planCost={accountDetails?.plan?.value}
+                upComingCancelation={
+                  accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
+                }
+                currentPeriodEnd={
+                  accountDetails?.subscriptionDetail?.currentPeriodEnd
+                }
               />
             </div>
           </Card>
@@ -87,9 +92,9 @@ function CancelPlan({ provider, owner }) {
   )
 }
 
-CancelPlan.propTypes = {
+CancelPlanPage.propTypes = {
   provider: PropType.string.isRequired,
   owner: PropType.string.isRequired,
 }
 
-export default CancelPlan
+export default CancelPlanPage

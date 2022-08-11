@@ -1,6 +1,5 @@
-import { render, screen , waitFor } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
-import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
@@ -12,11 +11,17 @@ import FlagsTab from './FlagsTab'
 import { useLocationParams } from '../../../services/navigation'
 
 jest.mock(
-  './TriggerSyncBanner/TriggerSyncBanner.js',
+  './BackfillBanner/TriggerSyncBanner/TriggerSyncBanner.js',
   () => () => 'Trigger Sync Banner'
 )
-jest.mock('./SyncingBanner/SyncingBanner.js', () => () => 'Syncing Banner')
+jest.mock(
+  './BackfillBanner/SyncingBanner/SyncingBanner.js',
+  () => () => 'Syncing Banner'
+)
 jest.mock('./subroute/FlagsTable/FlagsTable', () => () => 'Flags table')
+jest.mock('./Header', () => ({ children }) => (
+  <p>Flags Header Component {children}</p>
+))
 
 jest.mock('services/repo/hooks')
 jest.mock('react-router-dom', () => ({
@@ -93,6 +98,13 @@ describe('Flags Tab', () => {
       expect(screen.getByText(/Trigger Sync Banner/)).toBeInTheDocument()
       expect(screen.queryByText(/Syncing Banner/)).not.toBeInTheDocument()
     })
+
+    it('renders a blurred image of the table', () => {
+      const blurredFlagsTableImage = screen.getByRole('img', {
+        name: /Blurred flags table/,
+      })
+      expect(blurredFlagsTableImage).toBeInTheDocument()
+    })
   })
 
   describe('when rendered while ongoing syncing', () => {
@@ -111,6 +123,13 @@ describe('Flags Tab', () => {
       expect(screen.getByText(/Flags Header Component/)).toBeInTheDocument()
       expect(screen.getByText(/Syncing Banner/)).toBeInTheDocument()
       expect(screen.queryByText(/Trigger Sync Banner/)).not.toBeInTheDocument()
+    })
+
+    it('renders a blurred image of the table', () => {
+      const blurredFlagsTableImage = screen.getByRole('img', {
+        name: /Blurred flags table/,
+      })
+      expect(blurredFlagsTableImage).toBeInTheDocument()
     })
   })
 
@@ -150,30 +169,6 @@ describe('Flags Tab', () => {
       expect(
         screen.getByText(/The Flags feature is not yet configured/)
       ).toBeInTheDocument()
-    })
-  })
-
-  describe('update search params after typing', () => {
-    beforeEach(() => {
-      setup({
-        data: {
-          data: {
-            flagsMeasurementsActive: true,
-            flagsMeasurementsBackfilled: true,
-          },
-        },
-      })
-      const searchInput = screen.getByRole('textbox', {
-        name: 'Search for flags',
-      })
-      userEvent.type(searchInput, 'flag1')
-    })
-
-    it('calls setSearchValue', async () => {
-      await waitFor(() => expect(updateParams).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(updateParams).toHaveBeenCalledWith({ search: 'flag1' })
-      )
     })
   })
 })

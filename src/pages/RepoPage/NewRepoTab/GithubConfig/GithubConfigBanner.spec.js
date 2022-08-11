@@ -27,7 +27,9 @@ describe('GithubConfigBanner', () => {
     })
 
     it('renders banner body', () => {
-      const body = screen.queryByText(/Once installed, you are done!/)
+      const body = screen.queryByText(
+        /Once installed, you will not need to set a/
+      )
       expect(body).toBeInTheDocument()
     })
   })
@@ -43,7 +45,9 @@ describe('GithubConfigBanner', () => {
     })
 
     it('does not render banner body', () => {
-      const body = screen.queryByText(/Once installed, you are done!/)
+      const body = screen.queryByText(
+        /Once installed, you will not need to set a/
+      )
       expect(body).not.toBeInTheDocument()
     })
   })
