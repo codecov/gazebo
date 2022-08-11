@@ -3,8 +3,8 @@ import { Route } from 'react-router-dom'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
 import blurredTable from './assets/blurredTable.png'
-import BackfillBanner from './BackfillBanner/BackfillBanner'
-import { useRepoBackfillingStatus } from './BackfillBanner/hooks'
+import BackfillBanners from './BackfillBanners/BackfillBanners'
+import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
 import FlagsNotConfigured from './FlagsNotConfigured'
 import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
@@ -31,7 +31,7 @@ function FlagsTab() {
               isRepoBackfilling,
             })}
           >
-            <BackfillBanner />
+            <BackfillBanners />
           </Header>
           <div className="flex flex-1 flex-col gap-4">
             {flagsMeasurementsActive && flagsMeasurementsBackfilled ? (

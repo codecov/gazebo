@@ -2,7 +2,7 @@ import { useRepoBackfillingStatus } from './hooks'
 import SyncingBanner from './SyncingBanner'
 import TriggerSyncBanner from './TriggerSyncBanner'
 
-function BackfillBanner() {
+function BackfillBanners() {
   const { flagsMeasurementsActive, isRepoBackfilling } =
     useRepoBackfillingStatus()
 
@@ -14,4 +14,4 @@ function BackfillBanner() {
   )
 }
 
-export default BackfillBanner
+export default BackfillBanners
