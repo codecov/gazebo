@@ -13,6 +13,7 @@ import CancelPlanPage from './CancelPlan'
 import { PlanBreadcrumbProvider } from './context'
 import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
+import Invoices from './Invoices'
 import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
 import UpgradePlan from './UpgradePlan'
@@ -50,6 +51,9 @@ function PlanPage() {
               </Route>
               <Route path={`${path}/cancel`} exact>
                 <CancelPlanPage />
+              </Route>
+              <Route path={`${path}/invoices`} exact>
+                <Invoices />
               </Route>
               <Redirect
                 from="/billing/:provider/:owner/*"
