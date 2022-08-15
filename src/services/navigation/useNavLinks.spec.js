@@ -177,6 +177,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('Members', () => {
+    beforeAll(() => {
+      setup(['/gh/critical-role/calloway'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.membersTab.path()).toBe(
+        `/members/gh/critical-role`
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.membersTab.path({ provider: 'bb' })).toBe(
+        `/members/bb/critical-role`
+      )
+      expect(
+        hookData.result.current.membersTab.path({ owner: 'skirmisher' })
+      ).toBe(`/members/gh/skirmisher`)
+    })
+  })
+
   describe('Upgrade Plan', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
@@ -214,6 +234,46 @@ describe('useNavLinks', () => {
       expect(hookData.result.current.cancelOrgPlan.path({ owner: 'cat' })).toBe(
         `/plan/gl/cat/cancel`
       )
+    })
+  })
+
+  describe('InvoicesPage', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.invoicesPage.path()).toBe(
+        `/plan/gl/doggo/invoices`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.invoicesPage.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/invoices`)
+      expect(hookData.result.current.invoicesPage.path({ owner: 'cat' })).toBe(
+        `/plan/gl/cat/invoices`
+      )
+    })
+  })
+
+  describe('invoiceDetailsPage', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/9'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.invoiceDetailsPage.path()).toBe(
+        `/plan/gl/doggo/invoices/9`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.invoiceDetailsPage.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/invoices/9`)
+      expect(
+        hookData.result.current.invoiceDetailsPage.path({ owner: 'cat' })
+      ).toBe(`/plan/gl/cat/invoices/9`)
     })
   })
 

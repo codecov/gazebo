@@ -1,22 +1,32 @@
 import difference from 'lodash/difference'
-import PropType from 'prop-types'
+import { useLayoutEffect } from 'react'
+import { useParams } from 'react-router-dom'
 
+import BenefitList from 'pages/AccountSettings/shared/BenefitList'
 import { useAccountDetails, usePlans } from 'services/account'
-import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
 import Card from 'ui/Card'
 
-import DowngradeToFree from './DowngradeToFree'
+import CancelCard from './CancelButton'
 import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
 
-import BackLink from '../../shared/BackLink'
-import BenefitList from '../../shared/BenefitList'
+import { useSetCrumbs } from '../context'
 
-function CancelPlan({ provider, owner }) {
+function CancelPlanPage() {
+  const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = usePlans(provider)
-  const { billingAndUsers } = useNavLinks()
+  const setCrumbs = useSetCrumbs()
+
+  useLayoutEffect(() => {
+    setCrumbs([
+      {
+        pageName: 'cancelOrgPlan',
+        text: 'Cancel Plan',
+      },
+    ])
+  }, [setCrumbs])
 
   const { proPlanMonth } = useProPlanMonth({ plans })
   const freePlan = plans.find((plan) => isFreePlan(plan?.value))
@@ -28,11 +38,6 @@ function CancelPlan({ provider, owner }) {
 
   return (
     <>
-      <BackLink
-        to={billingAndUsers.path()}
-        useRouter={!billingAndUsers?.isExternalLink}
-        textLink={billingAndUsers?.text}
-      />
       <div className="flex gap-8">
         <div className="flex basis-3/5">
           <Card variant="cancel">
@@ -57,10 +62,16 @@ function CancelPlan({ provider, owner }) {
                 deactivated. You will need to manually reactivate up to five
                 users or ensure auto activate is enabled in your plan settings.
               </p>
-              <DowngradeToFree
-                accountDetails={accountDetails}
-                provider={provider}
-                owner={owner}
+              {/* This is a weird component that is both a button and a modal, hence why it's imported this way. Defs not a good practice but I feel the overhaul of this component will be for another time */}
+              <CancelCard
+                customerId={accountDetails?.subscriptionDetail?.customer}
+                planCost={accountDetails?.plan?.value}
+                upComingCancelation={
+                  accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
+                }
+                currentPeriodEnd={
+                  accountDetails?.subscriptionDetail?.currentPeriodEnd
+                }
               />
             </div>
           </Card>
@@ -87,9 +98,4 @@ function CancelPlan({ provider, owner }) {
   )
 }
 
-CancelPlan.propTypes = {
-  provider: PropType.string.isRequired,
-  owner: PropType.string.isRequired,
-}
-
-export default CancelPlan
+export default CancelPlanPage

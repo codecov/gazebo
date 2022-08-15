@@ -16,7 +16,7 @@ function Toggle({ label, value = false, onClick }) {
   return (
     <div onClick={onClick} className="flex gap-1.5 items-center">
       {label && (
-        <label htmlFor={ID} className="cursor-pointer 2xl:whitespace-nowrap ">
+        <label htmlFor={ID} className="cursor-pointer xl:whitespace-nowrap ">
           {label}
         </label>
       )}

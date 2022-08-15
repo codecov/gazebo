@@ -15,6 +15,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
           defaultBranch
           yaml
           activated
+          oldestCommitAt
         }
       }
     }
@@ -147,11 +148,15 @@ export function useRepoContents({
   branch,
   path,
   filters,
+  ...options
 }) {
   return useQuery(
     ['BranchFiles', provider, owner, repo, branch, path, filters],
     () => {
       return fetchRepoContents({ provider, owner, repo, branch, path, filters })
+    },
+    {
+      ...options,
     }
   )
 }
@@ -181,7 +186,8 @@ function fetchRepoBackfilledContents({ provider, owner, repo }) {
   })
 }
 
-export function useRepoBackfilled({ provider, owner, repo }) {
+export function useRepoBackfilled() {
+  const { provider, owner, repo } = useParams()
   return useQuery(['BackfillFlagMemberships', provider, owner, repo], () => {
     return fetchRepoBackfilledContents({ provider, owner, repo })
   })

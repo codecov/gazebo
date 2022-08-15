@@ -20,8 +20,8 @@ describe('Header', () => {
     })
     render(
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/billings/gh/codecov']}>
-          <Route path="/billings/:provider/:owner">
+        <MemoryRouter initialEntries={['/plan/gh/codecov']}>
+          <Route path="/plan/:provider/:owner">
             <Header />
           </Route>
         </MemoryRouter>

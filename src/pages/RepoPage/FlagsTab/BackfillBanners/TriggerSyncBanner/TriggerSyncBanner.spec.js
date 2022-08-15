@@ -5,8 +5,13 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useActivateFlagMeasurements } from 'services/repo/hooks'
+import { trackSegmentEvent } from 'services/tracking/segment'
+import { useUser } from 'services/user'
 
 import TriggerSyncBanner from './TriggerSyncBanner'
+
+jest.mock('services/tracking/segment')
+jest.mock('services/user')
 
 jest.mock('services/repo/hooks')
 jest.mock('react-router-dom', () => ({
@@ -22,6 +27,13 @@ const queryClient = new QueryClient({
   },
 })
 
+const user = {
+  username: 'codecov',
+  trackingMetadata: {
+    ownerid: 4,
+  },
+}
+
 describe('TriggerSyncBanner', () => {
   const mutate = jest.fn()
   function setup() {
@@ -30,6 +42,7 @@ describe('TriggerSyncBanner', () => {
       provider: 'gh',
       repo: 'gazebo',
     })
+    useUser.mockReturnValue({ data: user })
     useActivateFlagMeasurements.mockReturnValue({ mutate })
 
     render(
@@ -72,6 +85,10 @@ describe('TriggerSyncBanner', () => {
           provider: 'gh',
           repo: 'gazebo',
           owner: 'codecov',
+        })
+        expect(trackSegmentEvent).toHaveBeenCalledWith({
+          data: { repoName: 'gazebo', userId: 4 },
+          event: 'Flags Analytics Enabled',
         })
       })
     })
