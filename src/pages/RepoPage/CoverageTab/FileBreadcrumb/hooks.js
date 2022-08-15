@@ -1,11 +1,10 @@
 import dropRight from 'lodash/dropRight'
-import indexOf from 'lodash/indexOf'
 import { useParams } from 'react-router-dom'
 
 import { getFilePathParts } from 'shared/utils/url'
 
-function getTreeLocation(paths, location) {
-  return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
+function getTreeLocation(paths, location, index) {
+  return dropRight(paths, paths.length - index - 1).join('/')
 }
 
 export function useTreePaths() {
@@ -14,14 +13,16 @@ export function useTreePaths() {
 
   const paths =
     filePaths &&
-    filePaths.map((location) => ({
-      pageName: 'treeView',
-      text: location,
-      options: {
-        tree: getTreeLocation(filePaths, location),
-        ref: branch ?? ref,
-      },
-    }))
+    filePaths.map((location, i) => {
+      return {
+        pageName: 'treeView',
+        text: location,
+        options: {
+          tree: getTreeLocation(filePaths, location, i),
+          ref: branch ?? ref,
+        },
+      }
+    })
 
   const repoPath = {
     pageName: 'treeView',
