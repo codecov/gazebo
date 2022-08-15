@@ -13,16 +13,14 @@ export function useTreePaths() {
 
   const paths =
     filePaths &&
-    filePaths.map((location, i) => {
-      return {
-        pageName: 'treeView',
-        text: location,
-        options: {
-          tree: getTreeLocation(filePaths, location, i),
-          ref: branch ?? ref,
-        },
-      }
-    })
+    filePaths.map((location, i) => ({
+      pageName: 'treeView',
+      text: location,
+      options: {
+        tree: getTreeLocation(filePaths, location, i),
+        ref: branch ?? ref,
+      },
+    }))
 
   const repoPath = {
     pageName: 'treeView',
