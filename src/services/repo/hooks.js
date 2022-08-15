@@ -148,11 +148,15 @@ export function useRepoContents({
   branch,
   path,
   filters,
+  ...options
 }) {
   return useQuery(
     ['BranchFiles', provider, owner, repo, branch, path, filters],
     () => {
       return fetchRepoContents({ provider, owner, repo, branch, path, filters })
+    },
+    {
+      ...options,
     }
   )
 }
