@@ -1,9 +1,7 @@
 import rocketImg from 'assets/enterprise-rocket.png'
 
 import { useServiceProviders } from './hooks'
-import BitbucketLoginCard from './ProviderCards/BitbucketLoginCard'
-import GitHubLoginCard from './ProviderCards/GitHubLoginCard'
-import GitLabLoginCard from './ProviderCards/GitLabLoginCard'
+import ProviderCard from './ProviderCard/ProviderCard'
 
 function EnterpriseLandingPage() {
   const { data } = useServiceProviders()
@@ -16,10 +14,14 @@ function EnterpriseLandingPage() {
         </div>
       </div>
       <div className="flex md:flex-row md:gap-36 gap-8 flex-col text-center justify-center">
-        {data?.github && <GitHubLoginCard providers={data?.providerList} />}
-        {data?.gitlab && <GitLabLoginCard providers={data?.providerList} />}
+        {data?.github && (
+          <ProviderCard providerKey="gh" providers={data?.providerList} />
+        )}
+        {data?.gitlab && (
+          <ProviderCard providerKey="gl" providers={data?.providerList} />
+        )}
         {data?.bitbucket && (
-          <BitbucketLoginCard providers={data?.providerList} />
+          <ProviderCard providerKey="bb" providers={data?.providerList} />
         )}
       </div>
     </div>
