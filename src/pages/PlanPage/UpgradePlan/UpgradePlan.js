@@ -66,7 +66,7 @@ function UpgradePlan() {
             </p>
             {shouldRenderCancelLink(accountDetails, plan) && (
               <A
-                to={{ pageName: 'cancelPlan' }}
+                to={{ pageName: 'cancelOrgPlan' }}
                 variant="grayQuinary"
                 hook="cancel-plan"
               >

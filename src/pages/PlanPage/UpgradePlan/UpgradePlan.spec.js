@@ -8,9 +8,6 @@ import UpgradePlan from './UpgradePlan'
 jest.mock('services/account/hooks')
 jest.mock('./UpgradePlanForm', () => () => 'UpgradePlanForm')
 
-const provider = 'gh'
-const owner = 'codecov'
-
 describe('UpgradePlanPage', () => {
   function setup() {
     useAccountDetails.mockReturnValue({
@@ -23,7 +20,7 @@ describe('UpgradePlanPage', () => {
     usePlans.mockReturnValue({
       data: getPlans(),
     })
-    render(<UpgradePlan provider={provider} owner={owner} />, {
+    render(<UpgradePlan />, {
       wrapper: MemoryRouter,
     })
   }
