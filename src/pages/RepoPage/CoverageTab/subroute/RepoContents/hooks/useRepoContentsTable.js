@@ -107,6 +107,7 @@ function useRepoContentsTable() {
     branch: branch || defaultBranch,
     path: path || '',
     filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+    suspense: false,
   })
 
   const data = useMemo(
