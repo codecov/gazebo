@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types'
 
-import { getCurrentProvider } from 'services/loginProviders'
+import { LoginProvidersEnum } from 'services/loginProviders'
 import { providerImage } from 'shared/utils/provider'
 import Button from 'ui/Button'
 
-function ProviderCard({ providerKey, providers }) {
-  const provider = getCurrentProvider(providerKey)
-
+function ProviderCard({ provider, providers }) {
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-col w-64">
@@ -48,7 +46,11 @@ function ProviderCard({ providerKey, providers }) {
 }
 
 ProviderCard.propTypes = {
-  providerKey: PropTypes.oneOf(['gh', 'gl', 'bb']),
+  provider: PropTypes.oneOf([
+    LoginProvidersEnum.BITBUCKET,
+    LoginProvidersEnum.GITHUB,
+    LoginProvidersEnum.GITLAB,
+  ]),
   providers: PropTypes.array,
 }
 

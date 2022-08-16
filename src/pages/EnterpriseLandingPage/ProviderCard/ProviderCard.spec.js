@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 
 import config from 'config'
 
+import { LoginProvidersEnum } from 'services/loginProviders'
+
 import ProviderCard from './ProviderCard'
 
 jest.mock('react-router-dom', () => ({
@@ -10,15 +12,15 @@ jest.mock('react-router-dom', () => ({
 }))
 
 describe('ProviderCard', () => {
-  function setup({ key, data }) {
-    render(<ProviderCard providerKey={key} providers={data} />)
+  function setup({ provider, data }) {
+    render(<ProviderCard provider={provider} providers={data} />)
   }
 
   describe('Bitbucket', () => {
     describe('when system is configured with Bitbucket', () => {
       beforeEach(() => {
         const data = ['BITBUCKET', 'BITBUCKET_SERVER']
-        setup({ key: 'bb', data })
+        setup({ provider: LoginProvidersEnum.BITBUCKET, data })
       })
 
       it('renders external login button', () => {
@@ -43,7 +45,7 @@ describe('ProviderCard', () => {
     describe('when system is configured with GitHub', () => {
       beforeEach(() => {
         const data = ['GITHUB', 'GITHUB_ENTERPRISE']
-        setup({ key: 'gh', data })
+        setup({ provider: LoginProvidersEnum.GITHUB, data })
       })
 
       it('renders external login button', () => {
@@ -66,7 +68,7 @@ describe('ProviderCard', () => {
     describe('when system is configured with GitLab', () => {
       beforeEach(() => {
         const data = ['GITLAB', 'GITLAB_ENTERPRISE']
-        setup({ key: 'gl', data })
+        setup({ provider: LoginProvidersEnum.GITLAB, data })
       })
 
       it('renders external login button', () => {
