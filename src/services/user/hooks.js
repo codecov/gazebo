@@ -40,6 +40,8 @@ fragment CurrentUserFragment on Me {
     profile {
       createdAt
       otherGoal
+      typeProjects
+      goals
     }
   }
 }
@@ -80,6 +82,7 @@ export function useUser(options = {}) {
 
 export function useOwner({ username, opts = {} }) {
   const { provider } = useParams()
+  console.log(provider)
   const query = `
     query DetailOwner($username: String!) {
       owner(username: $username) {
@@ -95,6 +98,7 @@ export function useOwner({ username, opts = {} }) {
   const variables = {
     username,
   }
+
 
   return useQuery(
     ['owner', variables, provider],
