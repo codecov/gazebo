@@ -9,7 +9,7 @@ function EnterpriseLandingPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="">
+      <div>
         <div className="flex justify-center items-center h-96 bg-enterprise-banner-bg relative bg-cover bg-repeat-x bg-center">
           <img className="h-3/4" alt="codecov space shuttle" src={rocketImg} />
         </div>
