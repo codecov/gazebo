@@ -23,41 +23,59 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-const mockData = {
-  loginProviders: [
-    'GITHUB',
-    'GITHUB_ENTERPRISE',
-    'GITLAB',
-    'GITLAB_ENTERPRISE',
-    'BITBUCKET',
-    'BITBUCKET_SERVER',
-  ],
-}
-
 describe('useServiceProviders', () => {
   let hookData
-  function setup() {
+  function setup(data) {
     server.use(
       graphql.query('GetServiceProviders', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
+        res(ctx.status(200), ctx.data(data))
       )
     )
 
     hookData = renderHook(() => useServiceProviders(), { wrapper })
   }
 
-  beforeEach(() => {
-    setup()
+  describe('third party services are configured providers', () => {
+    beforeEach(() => {
+      setup({
+        loginProviders: ['GITHUB', 'GITLAB', 'BITBUCKET'],
+      })
+    })
+    it('returns data', async () => {
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
+      expect(hookData.result.current.data).toStrictEqual({
+        providerList: ['GITHUB', 'GITLAB', 'BITBUCKET'],
+        github: true,
+        gitlab: true,
+        bitbucket: true,
+      })
+    })
   })
 
-  it('returns data', async () => {
-    await hookData.waitFor(() => hookData.result.current.isSuccess)
+  describe('self hosted services are configured providers', () => {
+    beforeEach(() => {
+      setup({
+        loginProviders: [
+          'GITHUB_ENTERPRISE',
+          'GITLAB_ENTERPRISE',
+          'BITBUCKET_SERVER',
+        ],
+      })
+    })
+    it('returns data', async () => {
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
 
-    expect(hookData.result.current.data).toStrictEqual({
-      providerList: mockData.loginProviders,
-      github: true,
-      gitlab: true,
-      bitbucket: true,
+      expect(hookData.result.current.data).toStrictEqual({
+        providerList: [
+          'GITHUB_ENTERPRISE',
+          'GITLAB_ENTERPRISE',
+          'BITBUCKET_SERVER',
+        ],
+        github: true,
+        gitlab: true,
+        bitbucket: true,
+      })
     })
   })
 })
