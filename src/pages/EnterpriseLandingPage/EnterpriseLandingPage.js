@@ -1,4 +1,5 @@
 import rocketImg from 'assets/enterprise-rocket.png'
+import { LoginProvidersEnum } from 'services/loginProviders'
 
 import { useServiceProviders } from './hooks'
 import ProviderCard from './ProviderCard/ProviderCard'
@@ -15,13 +16,22 @@ function EnterpriseLandingPage() {
       </div>
       <div className="flex md:flex-row md:gap-36 gap-8 flex-col text-center justify-center">
         {data?.github && (
-          <ProviderCard providerKey="gh" providers={data?.providerList} />
+          <ProviderCard
+            provider={LoginProvidersEnum.GITHUB}
+            providers={data?.providerList}
+          />
         )}
         {data?.gitlab && (
-          <ProviderCard providerKey="gl" providers={data?.providerList} />
+          <ProviderCard
+            provider={LoginProvidersEnum.GITLAB}
+            providers={data?.providerList}
+          />
         )}
         {data?.bitbucket && (
-          <ProviderCard providerKey="bb" providers={data?.providerList} />
+          <ProviderCard
+            provider={LoginProvidersEnum.BITBUCKET}
+            providers={data?.providerList}
+          />
         )}
       </div>
     </div>
