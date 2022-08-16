@@ -8,6 +8,7 @@ import UserOnboardingModal from './UserOnboardingModal'
 
 function UserOnboarding() {
   useTracking()
+
   const { data: currentUser } = useUser({
     suspense: false,
   })

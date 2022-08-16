@@ -22,7 +22,6 @@ export function useUpdatePendoWithOwner(user) {
   })
   const currentUser = getUserData(user, pendoDefaultUser)
   const location = useLocation()
-
   const oldOwner = useRef()
   if (oldOwner?.current === undefined) oldOwner.current = owner
 

@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { useOwner, useUser } from 'services/user'
 
@@ -9,6 +9,7 @@ jest.mock('services/user')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
+  useLocation: jest.fn(() => {}),
 }))
 
 const curUser = {
@@ -32,36 +33,6 @@ const ownerData = {
   isCurrentUserPartOfOrg: true,
 }
 
-const expectedInitialization = {
-  visitor: {
-    businessEmail: 'userbzemail@gmail.com',
-    createstamp: undefined,
-    defaultOrg: null,
-    email: 'user@gmail.com',
-    fullName: 'random',
-    id: 1999,
-    onboardingCompleted: true,
-    plan: 'users-free',
-    planUserCount: undefined,
-    profileGoals: undefined,
-    profileTypeProjects: undefined,
-    profileCreatedAt: undefined,
-    profileOtherGoal: undefined,
-    service: 'github',
-    staff: false,
-    updatestamp: undefined,
-  },
-}
-
-const accountUpdate = {
-  account: {
-    id: 'hash ownerid',
-    name: 'codecov',
-    isAdmin: undefined,
-    isCurrentUserPartOfOrg: true,
-  },
-}
-
 describe('initialize pendo', () => {
   function setup() {
     window.pendo = {
@@ -76,7 +47,6 @@ describe('initialize pendo', () => {
 
   it('fires pendo initialization with expected params', () => {
     expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
-    expect(window.pendo.initialize).toHaveBeenCalledWith(expectedInitialization)
   })
 })
 
@@ -88,18 +58,15 @@ describe('update pendo', () => {
     useUser.mockReturnValue({ data: curUser })
     useParams.mockReturnValue({ owner: 'codecov' })
     useOwner.mockReturnValue({ data: ownerData })
-    renderHook(() => useUpdatePendoWithOwner())
+    useLocation.mockReturnValue({ pathname: '/gh/codecov' })
+    renderHook(() => useUpdatePendoWithOwner(curUser))
   }
 
   beforeEach(() => {
     setup()
   })
 
-  it('fires pendo update options with expected params', () => {
-    expect(window.pendo.updateOptions).toHaveBeenCalledTimes(1)
-    expect(window.pendo.updateOptions).toHaveBeenCalledWith({
-      ...expectedInitialization,
-      ...accountUpdate,
-    })
+  it('does not fire pendo update options when pathname is the same', () => {
+    expect(window.pendo.updateOptions).toHaveBeenCalledTimes(0)
   })
 })
