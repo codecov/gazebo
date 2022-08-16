@@ -11,6 +11,7 @@ fragment CurrentUserFragment on Me {
   email
   privateAccess
   onboardingCompleted
+  businessEmail
   user {
     name
     username
@@ -36,6 +37,12 @@ fragment CurrentUserFragment on Me {
     planUserCount
     createdAt: createstamp
     updatedAt: updatestamp
+    profile {
+      createdAt
+      otherGoal
+      typeProjects
+      goals
+    }
   }
 }
 `
@@ -78,6 +85,7 @@ export function useOwner({ username, opts = {} }) {
   const query = `
     query DetailOwner($username: String!) {
       owner(username: $username) {
+        hashOwnerid
         username
         avatarUrl
         isCurrentUserPartOfOrg

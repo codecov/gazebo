@@ -8,6 +8,7 @@ import UserOnboarding from './UserOnboarding'
 
 jest.mock('services/user')
 jest.mock('shared/featureFlags')
+jest.mock('services/tracking')
 jest.mock('./UserOnboardingModal', () => () => 'UserOnboardingModal')
 
 describe('UserOnboarding', () => {

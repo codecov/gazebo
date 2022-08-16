@@ -35,6 +35,9 @@ describe('useTracking', () => {
   let hookData
 
   function setup() {
+    window.pendo = {
+      initialize: jest.fn(),
+    }
     hookData = renderHook(() => useTracking(), { wrapper })
     return hookData.waitFor(() => {
       return !hookData.result.current.isFetching
@@ -112,6 +115,10 @@ describe('useTracking', () => {
           },
         },
       })
+    })
+
+    it('fires pendo', () => {
+      expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
     })
   })
 
