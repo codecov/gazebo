@@ -31,17 +31,4 @@ const LoginProvidersEnum = Object.freeze({
   },
 })
 
-const getCurrentProvider = (provider) => {
-  switch (provider) {
-    case 'bb':
-      return LoginProvidersEnum.BITBUCKET
-    case 'gh':
-      return LoginProvidersEnum.GITHUB
-    case 'gl':
-      return LoginProvidersEnum.GITLAB
-    default:
-      return null
-  }
-}
-
-export { LoginProvidersEnum, getCurrentProvider }
+export { LoginProvidersEnum }
