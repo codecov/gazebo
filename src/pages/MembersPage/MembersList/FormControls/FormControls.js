@@ -1,34 +1,25 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+
+import config from 'config'
 
 import Card from 'old_ui/Card'
 import ControlGroup from 'old_ui/ControlGroup'
 import Icon from 'old_ui/Icon'
 import Select from 'old_ui/Select'
 import TextInput from 'old_ui/TextInput'
-import { ApiFilterEnum } from 'services/navigation'
 
-const AdminItems = [
-  { label: 'Everyone', value: ApiFilterEnum.none },
-  { label: 'Admins', value: ApiFilterEnum.true },
-  { label: 'Collaborators', value: ApiFilterEnum.false },
-]
-
-const ActivatedItems = [
-  { label: 'All users', value: ApiFilterEnum.none },
-  { label: 'Active users', value: ApiFilterEnum.true },
-  { label: 'In-active users', value: ApiFilterEnum.false },
-]
+import { ActivatedItems, AdminItems, OrderItems } from './enums'
 
 const FormClasses = {
-  search:
-    'flex-none md:w-1/2 w-full border-t md:border-t-0 border-solid border-gray-200 py-2',
+  search: 'flex-none border-t md:border-t-0 border-solid border-gray-200 py-2',
   submit: 'hidden sr:block bg-gray-100 flex-2 px-2 py-3',
   firstFilter: 'flex-1 md:w-1/4 rounded-tl-md rounded-bl-md',
   filter: 'flex-1 md:w-1/4',
-  item: 'flex justify-between text-base py-2 truncate',
-  itemContent: 'flex justify-between text-base truncate',
+  item: 'flex justify-between text-sm py-2 truncate',
+  itemContent: 'flex justify-between text-sm truncate',
   icon: 'w-6 h-6 bg-gray-100 rounded-full list-item-type ml-3',
 }
 
@@ -60,10 +51,16 @@ Item.propTypes = {
   label: PropTypes.string.isRequired,
 }
 
-function FormControls({ onChange, current, defaultValues }) {
+export function FormControls({
+  onChange,
+  current,
+  defaultValues,
+  isEnterprisePlan,
+}) {
   const { register, control } = useForm({
     defaultValues,
   })
+  const isEnterprise = config.IS_INTERPRISE || isEnterprisePlan
 
   const [searchText, setSearchText] = useState('')
 
@@ -122,10 +119,35 @@ function FormControls({ onChange, current, defaultValues }) {
               />
             )}
           />
+          {isEnterprise && (
+            <Controller
+              name="ordering"
+              control={control}
+              render={() => (
+                <Select
+                  ariaName="ordering"
+                  className={FormClasses.filter}
+                  control={control}
+                  items={OrderItems}
+                  renderSelected={SelectedItem}
+                  renderItem={Item}
+                  value={OrderItems.find(
+                    ({ value }) => value === current?.ordering
+                  )}
+                  onChange={({ value }) => {
+                    onChange({ ordering: value })
+                  }}
+                />
+              )}
+            />
+          )}
           <TextInput
             variant="light"
             aria-label="search users"
-            className={FormClasses.search}
+            className={cs(FormClasses.search, {
+              'w-1/4': isEnterprise,
+              'w-2/4': !isEnterprise,
+            })}
             name="search"
             {...register('search')}
             placeholder="Search"
@@ -153,4 +175,5 @@ FormControls.propTypes = {
   onChange: PropTypes.func.isRequired,
   defaultValues: PropTypes.object.isRequired,
   current: PropTypes.object.isRequired,
+  isEnterprisePlan: PropTypes.bool,
 }
