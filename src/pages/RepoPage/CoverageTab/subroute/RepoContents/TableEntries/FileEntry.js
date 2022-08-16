@@ -18,7 +18,7 @@ function FileEntry({
     path: filePath,
   })
   return (
-    <>
+    <div className="flex flex-col">
       <div
         className="flex gap-2"
         onMouseEnter={async () => await runPrefetch()}
@@ -42,7 +42,7 @@ function FileEntry({
         )}
       </div>
       {isSearching && <span className="text-xs pl-1">{filePath}</span>}
-    </>
+    </div>
   )
 }
 
