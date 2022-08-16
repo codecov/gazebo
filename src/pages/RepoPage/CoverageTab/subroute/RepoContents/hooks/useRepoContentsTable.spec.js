@@ -45,7 +45,6 @@ const useRepoOverviewMock = {
 
 describe('useRepoContentsTable', () => {
   let hookData
-  const updateParams = jest.fn()
   function setup({ repoData, useParamsValue }) {
     useParams.mockReturnValue({
       owner: 'Rabee-AbuBaker',
@@ -59,7 +58,6 @@ describe('useRepoContentsTable', () => {
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
     useLocationParams.mockReturnValue({
       params: useParamsValue,
-      updateParams,
     })
 
     hookData = renderHook(() => useRepoContentsTable())
@@ -94,6 +92,7 @@ describe('useRepoContentsTable', () => {
         path: '',
         provider: 'gh',
         repo: 'another-test',
+        suspense: false,
       })
     })
   })
@@ -116,6 +115,7 @@ describe('useRepoContentsTable', () => {
           path: '',
           provider: 'gh',
           repo: 'another-test',
+          suspense: false,
         })
       )
 
@@ -131,6 +131,7 @@ describe('useRepoContentsTable', () => {
           path: '',
           provider: 'gh',
           repo: 'another-test',
+          suspense: false,
         })
       )
     })

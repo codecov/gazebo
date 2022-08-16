@@ -9,7 +9,7 @@ function getTreeLocation(paths, location) {
 }
 
 export function useTreePaths() {
-  const { branch, path, repo } = useParams()
+  const { branch, path, repo, ref } = useParams()
   const filePaths = getFilePathParts(path)
 
   const paths =
@@ -17,13 +17,16 @@ export function useTreePaths() {
     filePaths.map((location) => ({
       pageName: 'treeView',
       text: location,
-      options: { tree: getTreeLocation(filePaths, location), ref: branch },
+      options: {
+        tree: getTreeLocation(filePaths, location),
+        ref: branch ?? ref,
+      },
     }))
 
   const repoPath = {
     pageName: 'treeView',
     text: repo,
-    options: { ref: branch },
+    options: { ref: branch ?? ref },
   }
   const treePaths = [repoPath, ...paths]
   return { treePaths }

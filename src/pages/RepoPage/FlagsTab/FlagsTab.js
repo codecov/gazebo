@@ -1,26 +1,55 @@
-import { Suspense } from 'react'
 import { Route } from 'react-router-dom'
 
-import Spinner from 'ui/Spinner'
+import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
+import blurredTable from './assets/blurredTable.png'
+import BackfillBanners from './BackfillBanners/BackfillBanners'
+import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
+import FlagsNotConfigured from './FlagsNotConfigured'
+import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
 
+const isDisabled = ({ flagsMeasurementsActive, isRepoBackfilling }) =>
+  !flagsMeasurementsActive || isRepoBackfilling
+
 function FlagsTab() {
-  const Loader = (
-    <div className="flex items-center justify-center py-16">
-      <Spinner />
-    </div>
-  )
+  const { data: flagsData } = useRepoFlagsSelect()
+
+  const {
+    flagsMeasurementsActive,
+    isRepoBackfilling,
+    flagsMeasurementsBackfilled,
+  } = useRepoBackfillingStatus()
+
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
-      <h1>Flags Header Component</h1>
-      <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
-        <Route path="/:provider/:owner/:repo/flags" exact>
-          <Suspense fallback={Loader}>
-            <FlagsTable />
-          </Suspense>
-        </Route>
-      </div>
+      {flagsData && flagsData.length > 0 ? (
+        <>
+          <Header
+            controlsDisabled={isDisabled({
+              flagsMeasurementsActive,
+              isRepoBackfilling,
+            })}
+          >
+            <BackfillBanners />
+          </Header>
+          <div className="flex flex-1 flex-col gap-4">
+            {flagsMeasurementsActive && flagsMeasurementsBackfilled ? (
+              <Route path="/:provider/:owner/:repo/flags" exact>
+                <FlagsTable />
+              </Route>
+            ) : (
+              <img
+                alt="Blurred flags table"
+                src={blurredTable}
+                className="h-auto max-w-full"
+              />
+            )}
+          </div>
+        </>
+      ) : (
+        <FlagsNotConfigured />
+      )}
     </div>
   )
 }

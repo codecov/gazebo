@@ -100,6 +100,42 @@ function useNavLinks() {
         `/account/${provider}/${owner}`,
       isExternalLink: false,
     },
+    planTab: {
+      text: 'Plan',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    membersTab: {
+      text: 'Members',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/members/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    upgradeOrgPlan: {
+      text: 'Upgrade Plan',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/upgrade`,
+      isExternalLink: false,
+    },
+    cancelOrgPlan: {
+      text: 'Cancel Plan',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/cancel`,
+      isExternalLink: false,
+    },
+    invoicesPage: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/invoices`,
+      isExternalLink: false,
+      text: 'Invoices',
+    },
+    invoiceDetailsPage: {
+      path: (
+        { provider = p, owner = o, id = i } = { provider: p, owner: o, id: i }
+      ) => `/plan/${provider}/${owner}/invoices/${id}`,
+      isExternalLink: false,
+    },
     accountAdmin: {
       text: 'Admin',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
@@ -130,6 +166,7 @@ function useNavLinks() {
         `/account/${provider}/${owner}/billing`,
       isExternalLink: false,
     },
+    // this and many other /account/ routes can be deleted after C4T is done
     upgradePlan: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/billing/upgrade`,
@@ -326,6 +363,26 @@ function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
       isExternalLink: gazeboSettingsTab,
       text: 'Badges & Graphs',
+    },
+    feedback: {
+      text: 'Feedback',
+      path: ({ provider = p, ref } = { provider: p, ref: null }) => {
+        if (ref) {
+          return `/${provider}/feedback?ref=${encodeURIComponent(ref)}`
+        }
+        return `/${provider}/feedback`
+      },
+      isExternalLink: false,
+    },
+    prevLink: {
+      text: 'Back',
+      path: ({ provider = p, ref } = { provider: p, ref: null }) => {
+        if (ref) {
+          return decodeURIComponent(ref)
+        }
+        return `/${provider}`
+      },
+      isExternalLink: false,
     },
   }
 }
