@@ -28,22 +28,8 @@ function ErrorDisplayMessage() {
 // TODO: probably move this to some sort of context; think of a solution with useReducer
 function useCoverageAndFlagsStates() {
   const [selectedFlags, setSelectedFlags] = useState([])
-  const [covered, setCovered] = useState(true)
-  const [uncovered, setUncovered] = useState(true)
-  const [partial, setPartial] = useState(true)
 
   return {
-    partial,
-    covered,
-    uncovered,
-    lineCoverageStatesAndSetters: {
-      covered,
-      setCovered,
-      uncovered,
-      setUncovered,
-      partial,
-      setPartial,
-    },
     flagsState: { selectedFlags, setSelectedFlags },
   }
 }
@@ -55,10 +41,6 @@ function RawFileviewer({ title }) {
   const { data: ownerData } = useOwner({ username: owner })
   // *********** This is temporary code that will be here in the meantime *********** //
   const {
-    partial,
-    covered,
-    uncovered,
-    lineCoverageStatesAndSetters,
     flagsState: { selectedFlags, setSelectedFlags },
   } = useCoverageAndFlagsStates()
 
@@ -95,7 +77,6 @@ function RawFileviewer({ title }) {
         title={title}
         flagData={flagData}
         coverageIsLoading={coverageIsLoading}
-        lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
       />
       <div id={path} className="target:ring">
         <CodeRendererProgressHeader
@@ -114,11 +95,6 @@ function RawFileviewer({ title }) {
                 key={i}
                 line={line}
                 number={i + 1}
-                showLines={{
-                  showCovered: covered,
-                  showPartial: partial,
-                  showUncovered: uncovered,
-                }}
                 getLineProps={getLineProps}
                 getTokenProps={getTokenProps}
                 coverage={coverageData && coverageData[i + 1]}
@@ -134,7 +110,7 @@ function RawFileviewer({ title }) {
 }
 
 RawFileviewer.propTypes = {
-  title: PropType.string,
+  title: PropType.oneOfType([PropType.string, PropType.object]),
 }
 
 export default RawFileviewer

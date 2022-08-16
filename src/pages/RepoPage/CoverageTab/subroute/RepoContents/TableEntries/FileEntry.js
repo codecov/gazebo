@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
+import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
+
 function FileEntry({
   branch,
   filePath,
@@ -11,16 +13,23 @@ function FileEntry({
   name,
   path,
 }) {
+  const { runPrefetch } = usePrefetchFileEntry({
+    branch,
+    path: filePath,
+  })
   return (
-    <>
-      <div className="flex gap-2">
+    <div className="flex flex-col">
+      <div
+        className="flex gap-2"
+        onMouseEnter={async () => await runPrefetch()}
+      >
         <Icon name="document" size="md" />
         <A
           to={{
             pageName: 'fileViewer',
             options: {
               ref: branch,
-              tree: !!path ? `${path}/${name}` : name,
+              tree: isSearching ? filePath : !!path ? `${path}/${name}` : name,
             },
           }}
         >
@@ -33,7 +42,7 @@ function FileEntry({
         )}
       </div>
       {isSearching && <span className="text-xs pl-1">{filePath}</span>}
-    </>
+    </div>
   )
 }
 

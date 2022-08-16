@@ -1,14 +1,19 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import FileEntry from './FileEntry'
+import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(() => {}),
 }))
 
+jest.mock('./hooks/usePrefetchFileEntry')
+
 describe('FileEntry', () => {
+  const runPrefetchMock = jest.fn()
+
   function setup({ isCriticalFile = false, isSearching = false }) {
     useParams.mockReturnValue({
       owner: 'codecov',
@@ -16,6 +21,10 @@ describe('FileEntry', () => {
       repo: 'test-repo',
       branch: 'main',
       path: '',
+    })
+
+    usePrefetchFileEntry.mockReturnValue({
+      runPrefetch: runPrefetchMock,
     })
 
     render(
@@ -68,6 +77,18 @@ describe('FileEntry', () => {
 
     it('displays the file path label', () => {
       expect(screen.getByText('dir/file.js')).toBeInTheDocument()
+    })
+  })
+
+  describe('prefetches data', () => {
+    beforeEach(() => {
+      setup({ isCriticalFile: false, isSearching: false })
+    })
+
+    it('fires the prefetch function on hover', async () => {
+      fireEvent.mouseOver(screen.getByText('file.js'))
+
+      await waitFor(() => expect(runPrefetchMock).toHaveBeenCalled())
     })
   })
 })

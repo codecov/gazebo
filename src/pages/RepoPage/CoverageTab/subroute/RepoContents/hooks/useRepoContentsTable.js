@@ -4,12 +4,13 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
+import { SortingDirection } from 'ui/Table/constants'
 
 import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
 
-function createTableData({ tableData, branch, path, isSearching }) {
+function createTableData({ tableData, branch, path, isSearching, filters }) {
   return tableData?.length > 0
     ? tableData.map(
         ({
@@ -21,7 +22,12 @@ function createTableData({ tableData, branch, path, isSearching }) {
         }) => ({
           name:
             __typename === 'PathContentDir' ? (
-              <DirEntry branch={branch} name={name} path={path} />
+              <DirEntry
+                branch={branch}
+                name={name}
+                path={path}
+                filters={filters}
+              />
             ) : (
               <FileEntry
                 branch={branch}
@@ -68,17 +74,12 @@ const sortingParameter = Object.freeze({
   coverage: 'COVERAGE',
 })
 
-const sortingDirection = Object.freeze({
-  desc: 'DESC',
-  asc: 'ASC',
-})
-
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
     ...(sortBy && {
       ordering: {
-        direction: sortBy?.desc ? sortingDirection.desc : sortingDirection.asc,
+        direction: sortBy?.desc ? SortingDirection.DESC : SortingDirection.ASC,
         parameter: sortingParameter[sortBy?.id],
       },
     }),
@@ -106,6 +107,7 @@ function useRepoContentsTable() {
     branch: branch || defaultBranch,
     path: path || '',
     filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+    suspense: false,
   })
 
   const data = useMemo(
@@ -115,8 +117,9 @@ function useRepoContentsTable() {
         branch: branch || defaultBranch,
         path,
         isSearching,
+        filters: getQueryFilters({ params, sortBy: sortBy[0] }),
       }),
-    [repoContents, branch, defaultBranch, path, isSearching]
+    [repoContents, branch, defaultBranch, path, isSearching, params, sortBy]
   )
 
   const handleSort = useCallback(

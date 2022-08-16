@@ -83,6 +83,14 @@ SparklineWithComplexData.args = {
   dataTemplate: (d) => `Foo ${d}%`,
 }
 
+export const SparklineCustomLineWidth = Template.bind({})
+SparklineCustomLineWidth.args = {
+  datum: createTestData,
+  description: 'storybook sparkline',
+  dataTemplate: (d) => `Foo ${d}%`,
+  lineSize: 2,
+}
+
 export const ManySparklines = ManyTemplate.bind({})
 ManySparklines.args = {
   description: 'storybook sparkline',

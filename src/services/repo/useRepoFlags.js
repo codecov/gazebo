@@ -38,8 +38,8 @@ function fetchRepoFlags({
               node {
                 name
                 percentCovered
+                percentChange
                 measurements(interval: $interval, after: $afterDate, before: $beforeDate) {
-                  timestamp
                   avg
                 }
               }
@@ -78,6 +78,7 @@ export function useRepoFlags({
   interval,
   afterDate,
   beforeDate,
+  ...options
 }) {
   const { provider, owner, repo } = useParams()
 
@@ -108,6 +109,7 @@ export function useRepoFlags({
     {
       getNextPageParam: (data) =>
         data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+      ...options,
     }
   )
   return {

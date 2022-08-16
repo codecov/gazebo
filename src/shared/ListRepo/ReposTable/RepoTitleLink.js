@@ -11,8 +11,8 @@ function Badge({ children }) {
   )
 }
 
-const getRepoIconName = ({ activated, isRepoPrivate }) =>
-  !activated ? 'ban' : isRepoPrivate ? 'lock-closed' : 'globe-alt'
+const getRepoIconName = ({ activated, isRepoPrivate, active }) =>
+  !activated && active ? 'ban' : isRepoPrivate ? 'lock-closed' : 'globe-alt'
 
 function RepoTitleLink({ repo, showRepoOwner, pageName }) {
   const options = {
@@ -20,7 +20,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName }) {
     repo: repo.name,
   }
 
-  const { private: isRepoPrivate, activated } = repo
+  const { private: isRepoPrivate, activated, active } = repo
 
   return (
     <div className="flex items-center">
@@ -32,7 +32,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName }) {
         <Icon
           size="sm"
           variant="solid"
-          name={getRepoIconName({ activated, isRepoPrivate })}
+          name={getRepoIconName({ activated, isRepoPrivate, active })}
         />
         <span className="ml-2.5 text-sm text-black">
           {showRepoOwner && `${repo?.author?.username} / `}
@@ -40,7 +40,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName }) {
         </span>
       </AppLink>
       {isRepoPrivate && <Badge>Private</Badge>}
-      {!activated && <Badge>Deactivated</Badge>}
+      {active && !activated && <Badge>Deactivated</Badge>}
     </div>
   )
 }
@@ -49,6 +49,7 @@ RepoTitleLink.propTypes = {
   repo: PropTypes.shape({
     private: PropTypes.bool.isRequired,
     activated: PropTypes.bool.isRequired,
+    active: PropTypes.bool.isRequired,
     author: PropTypes.shape({
       username: PropTypes.string,
     }),

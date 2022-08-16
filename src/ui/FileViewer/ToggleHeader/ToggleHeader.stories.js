@@ -4,9 +4,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ToggleHeader from './ToggleHeader'
 
 const Template = (args) => {
-  const [covered, setCovered] = useState(true)
-  const [uncovered, setUncovered] = useState(true)
-  const [partial, setPartial] = useState(true)
   const [selectedFlags, setSelectedFlags] = useState([])
 
   const flagNames = ['flag1', 'flag2', 'flag3']
@@ -17,25 +14,12 @@ const Template = (args) => {
     setSelectedFlags,
   }
 
-  const lineCoverageStatesAndSetters = {
-    covered,
-    setCovered,
-    uncovered,
-    setUncovered,
-    partial,
-    setPartial,
-  }
-
   return (
     <MemoryRouter
       initialEntries={['/gh/codecov/gazebo/commit/123sha/flag1/mafs.js']}
     >
       <Route path="/:provider/:owner/:repo/commit/:commit/:path">
-        <ToggleHeader
-          flagData={flagData}
-          lineCoverageStatesAndSetters={lineCoverageStatesAndSetters}
-          {...args}
-        />
+        <ToggleHeader flagData={flagData} {...args} />
       </Route>
     </MemoryRouter>
   )

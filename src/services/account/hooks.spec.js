@@ -36,7 +36,7 @@ const accountDetails = {
   plan: {
     marketingName: 'Pro Team',
     baseUnitPrice: 12,
-    benefits: ['Configureable # of users', 'Unlimited repos'],
+    benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
     value: 'users-inappm',
   },
@@ -630,7 +630,7 @@ function getPlans() {
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -642,7 +642,7 @@ function getPlans() {
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -654,7 +654,7 @@ function getPlans() {
       billingRate: 'monthly',
       baseUnitPrice: 12,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
@@ -666,7 +666,7 @@ function getPlans() {
       billingRate: 'annually',
       baseUnitPrice: 10,
       benefits: [
-        'Configureable # of users',
+        'Configurable # of users',
         'Unlimited public repositories',
         'Unlimited private repositories',
         'Priorty Support',
