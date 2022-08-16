@@ -13,7 +13,8 @@ import {
 import { useUser } from 'services/user'
 import { useUpdateUser, useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
-import { isFreePlan } from 'shared/utils/billing'
+import { isEnterprisePlan, isFreePlan } from 'shared/utils/billing'
+import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Modal from 'ui/Modal'
 import Toggle from 'ui/Toggle'
@@ -51,7 +52,7 @@ function useUsersData({ provider, owner }) {
   const { params, updateParams } = useLocationParams({
     activated: ApiFilterEnum.none, // Default to no filter on activated
     isAdmin: ApiFilterEnum.none, // Default to no filter on isAdmin
-    ordering: 'name', // Default sort is A-Z Name
+    ordering: '-name', // Default sort is A-Z Name
     search: '', // Default to no seach on initial load
     page: 1, // Default to first page
     pageSize: 50, // Default page size
@@ -73,11 +74,12 @@ function useUsersData({ provider, owner }) {
   }
 }
 
-function createPills({ isAdmin, email, student }) {
+function createPills({ isAdmin, email, student, lastPullTimestamp }) {
   return [
     isAdmin ? { label: 'Admin', highlight: true } : null,
     email,
     student ? 'Student' : null,
+    lastPullTimestamp ? `last PR: ${formatTimeToNow(lastPullTimestamp)}` : null,
   ]
 }
 
@@ -93,6 +95,7 @@ function MembersList() {
   const [isOpen, setIsOpen] = useState(false)
 
   const maxActivatedUsers = 5
+  const isEnterprise = isEnterprisePlan(accountDetails?.plan?.value) || false
 
   const handleActivate = (user) => {
     if (
@@ -151,8 +154,9 @@ function MembersList() {
           search: params.search,
           activated: ApiFilterEnum.none,
           isAdmin: ApiFilterEnum.none,
-          ordering: 'name',
+          ordering: '-name',
         }}
+        isEnterprisePlan={isEnterprise}
       />
       <Card className={UserManagementClasses.results}>
         <div>
@@ -167,7 +171,7 @@ function MembersList() {
                   username={user.username}
                   name={user.name}
                   avatarUrl={getOwnerImg(provider, user.username)}
-                  pills={createPills(user)}
+                  pills={createPills({ ...user })}
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Toggle
