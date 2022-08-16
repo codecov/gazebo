@@ -13,11 +13,11 @@ export function useTreePaths() {
 
   const paths =
     filePaths &&
-    filePaths.map((location, i) => ({
+    filePaths.map((location, index) => ({
       pageName: 'treeView',
       text: location,
       options: {
-        tree: getTreeLocation(filePaths, location, i),
+        tree: getTreeLocation(filePaths, location, index),
         ref: branch ?? ref,
       },
     }))
