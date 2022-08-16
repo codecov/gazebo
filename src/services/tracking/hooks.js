@@ -20,8 +20,8 @@ const trackingInfo = [
   {
     name: 'Pendo',
     callback: firePendo,
-    defaultUser: pendoDefaultUser
-  }
+    defaultUser: pendoDefaultUser,
+  },
 ]
 
 export function handleOnSuccess(user) {
@@ -40,9 +40,7 @@ export function handleOnError(guest) {
 
 export function useTracking() {
   const { data: user, ...all } = useUser({
-    onSuccess: (user) => {
-      handleOnSuccess(user)
-    },
+    onSuccess: (user) => handleOnSuccess(user),
     onError: () => handleOnError({ guest: true }),
     suspense: false,
   })

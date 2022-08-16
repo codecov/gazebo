@@ -13,12 +13,13 @@ export function firePendo(currentUser) {
 }
 
 export function useUpdatePendoWithOwner(user) {
-  // const { owner } = useParams()
-  const owner = ''
-  // const { data: ownerData } = useOwner({ username: owner, opts: {
-  //   enabled: owner !== undefined,
-  // }})
-  const ownerData =''
+  const { owner } = useParams()
+  const { data: ownerData } = useOwner({
+    username: owner,
+    opts: {
+      enabled: owner !== undefined,
+    },
+  })
   const currentUser = getUserData(user, pendoDefaultUser)
   const location = useLocation()
 
