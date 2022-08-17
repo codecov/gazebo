@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from 'react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
