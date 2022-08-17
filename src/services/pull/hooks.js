@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 import { userHasAccess } from 'shared/utils/user'
