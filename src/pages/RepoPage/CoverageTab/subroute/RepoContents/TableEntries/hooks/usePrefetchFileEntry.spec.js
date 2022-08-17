@@ -1,8 +1,8 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider, setLogger } from 'react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { usePrefetchFileEntry } from './usePrefetchFileEntry'
@@ -12,18 +12,17 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }))
 
-setLogger({
-  log: console.log,
-  warn: console.warn,
-  error: () => {},
-})
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
       cacheTime: Infinity,
     },
+  },
+  logger: {
+    log: console.log,
+    warn: console.warn,
+    error: () => {},
   },
 })
 const wrapper = ({ children }) => (
