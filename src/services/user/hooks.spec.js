@@ -1,7 +1,7 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, renderHook } from '@testing-library/react-hooks'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -114,12 +114,10 @@ describe('useUpdateProfile', () => {
         email: 'newemail@test.com',
         name: 'new name',
       }
-      beforeEach(() => {
-        return act(async () => {
-          hookData.result.current.mutate(newData)
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
-        })
+      beforeEach(async () => {
+        hookData.result.current.mutate(newData)
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns success', () => {
@@ -171,12 +169,10 @@ describe('useOnboardUser', () => {
     })
 
     describe('when calling the mutation', () => {
-      beforeEach(() => {
-        return act(async () => {
-          hookData.result.current.mutate({})
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
-        })
+      beforeEach(async () => {
+        hookData.result.current.mutate({})
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns success', () => {
@@ -194,16 +190,15 @@ describe('useOnboardUser', () => {
 
   describe('when called with opts', () => {
     const onSuccessFn = jest.fn()
-    beforeEach(() => {
+    beforeEach(async () => {
       const opts = {
         onSuccess: onSuccessFn,
       }
       setup(opts)
-      return act(async () => {
-        hookData.result.current.mutate({})
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
+
+      hookData.result.current.mutate({})
+      await hookData.waitFor(() => hookData.result.current.isLoading)
+      await hookData.waitFor(() => !hookData.result.current.isLoading)
     })
 
     it('returns onSuccess from opts', () => {
@@ -323,17 +318,17 @@ describe('useOwner', () => {
       isCurrentUserPartOfOrg: true,
       isAdmin: true,
     }
-    beforeEach(async () => {
-      setup(codecovOrg)
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-
+    function secondarySetup() {
       hookData = renderHook(
         () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
         { wrapper }
       )
-      return act(() =>
-        hookData.waitFor(() => hookData.result.current.isSuccess)
-      )
+    }
+    beforeEach(async () => {
+      setup(codecovOrg)
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      secondarySetup()
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
     it('returns true value', () => {
@@ -348,17 +343,21 @@ describe('useOwner', () => {
       isCurrentUserPartOfOrg: true,
       isAdmin: false,
     }
-    beforeEach(async () => {
-      setup(codecovOrg)
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
 
+    function secondarySetup() {
       hookData = renderHook(
         () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
         { wrapper }
       )
-      return act(() =>
-        hookData.waitFor(() => hookData.result.current.isSuccess)
-      )
+    }
+
+    beforeEach(async () => {
+      setup(codecovOrg)
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
+      secondarySetup()
+
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
     it('returns false value', () => {
@@ -367,18 +366,20 @@ describe('useOwner', () => {
   })
 
   describe('when calling useIsCurrentUserAnAdmin for undefined owners', () => {
-    beforeEach(async () => {
-      setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-
+    function secondarySetup() {
       hookData = renderHook(
         () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
         { wrapper }
       )
+    }
 
-      return act(() =>
-        hookData.waitFor(() => hookData.result.current.isSuccesss)
-      )
+    beforeEach(async () => {
+      setup()
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
+
+      secondarySetup()
+
+      await hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
     it('returns false', () => {
