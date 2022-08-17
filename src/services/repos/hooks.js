@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from 'react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
