@@ -1,9 +1,9 @@
 import { act, render, screen, waitFor } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useMyContexts } from 'services/user'
