@@ -29,7 +29,7 @@ function fetchRepoFlags({
     ) {
       owner(username: $name) {
         repository(name: $repo) {
-          flags(filters: $filters, orderingDirection: $orderingDirection, after: $after) {
+          flags(filters: $filters, orderingDirection: $orderingDirection, after: $after, first: 15) {
             pageInfo {
               hasNextPage
               endCursor
