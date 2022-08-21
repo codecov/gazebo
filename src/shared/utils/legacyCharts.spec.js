@@ -1,4 +1,4 @@
-import { calculateDayDifference, chartQuery } from './utils'
+import { calculateDayDifference, chartQuery } from './legacyCharts'
 
 describe('calculateDayDifference', () => {
   // Exporting and testing this on it's own due to it being difficult to test the charting lib

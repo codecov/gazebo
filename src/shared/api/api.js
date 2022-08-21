@@ -3,6 +3,7 @@ import get from 'lodash/get'
 import config from 'config'
 
 import { camelizeKeys } from 'shared/utils/camelizeKeys'
+import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 
 import { generatePath, getHeaders } from './helpers'
 
@@ -26,7 +27,7 @@ function _fetch({
     headers,
     method,
     credentials: 'include',
-    body: body ? JSON.stringify(body) : null,
+    body: body ? JSON.stringify(snakeifyKeys(body)) : null,
   }).then(async (res) => {
     let data = null
     try {
