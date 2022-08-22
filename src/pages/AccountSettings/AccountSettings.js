@@ -8,6 +8,7 @@ import config from 'config'
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useIsCurrentUserAnAdmin } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 
 import Header from './shared/Header'
 import SideMenuAccount from './SideMenuAccount'
@@ -27,6 +28,11 @@ const stripePromise = loadStripe(config.STRIPE_KEY)
 function AccountSettings() {
   const { provider, owner } = useParams()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
+  const { gazeboPlanTab } = useFlags({
+    gazeboPlanTab: false,
+  })
+  const yamlTab = `/account/${provider}/${owner}/yaml/`
+  const billingTab = `/account/${provider}/${owner}/billing/`
 
   const tabLoading = (
     <div className="h-full w-full flex items-center justify-center">
@@ -44,7 +50,7 @@ function AccountSettings() {
               {isAdmin ? (
                 <AdminTab provider={provider} owner={owner} />
               ) : (
-                <Redirect to={`/account/${provider}/${owner}/billing/`} />
+                <Redirect to={gazeboPlanTab ? yamlTab : billingTab} />
               )}
             </Route>
             <Route path="/account/:provider/:owner/yaml/" exact>
@@ -53,24 +59,28 @@ function AccountSettings() {
             <Route path="/account/:provider/:owner/access/" exact>
               <AccessTab provider={provider} />
             </Route>
-            <Route path="/account/:provider/:owner/billing/" exact>
-              <BillingAndUsersTab provider={provider} owner={owner} />
-            </Route>
-            <Route path="/account/:provider/:owner/users/" exact>
-              <Redirect to={`/account/${provider}/${owner}/billing/`} />
-            </Route>
-            <Route path="/account/:provider/:owner/billing/upgrade/" exact>
-              <UpgradePlanTab provider={provider} owner={owner} />
-            </Route>
-            <Route path="/account/:provider/:owner/billing/cancel/" exact>
-              <CancelPlanTab provider={provider} owner={owner} />
-            </Route>
-            <Route path="/account/:provider/:owner/invoices/" exact>
-              <InvoicesTab provider={provider} owner={owner} />
-            </Route>
-            <Route path="/account/:provider/:owner/invoices/:id/" exact>
-              <InvoiceDetailTab provider={provider} owner={owner} />
-            </Route>
+            {!gazeboPlanTab && (
+              <>
+                <Route path="/account/:provider/:owner/billing/" exact>
+                  <BillingAndUsersTab provider={provider} owner={owner} />
+                </Route>
+                <Route path="/account/:provider/:owner/users/" exact>
+                  <Redirect to={`/account/${provider}/${owner}/billing/`} />
+                </Route>
+                <Route path="/account/:provider/:owner/billing/upgrade/" exact>
+                  <UpgradePlanTab provider={provider} owner={owner} />
+                </Route>
+                <Route path="/account/:provider/:owner/billing/cancel/" exact>
+                  <CancelPlanTab provider={provider} owner={owner} />
+                </Route>
+                <Route path="/account/:provider/:owner/invoices/" exact>
+                  <InvoicesTab provider={provider} owner={owner} />
+                </Route>
+                <Route path="/account/:provider/:owner/invoices/:id/" exact>
+                  <InvoiceDetailTab provider={provider} owner={owner} />
+                </Route>
+              </>
+            )}
             <Route path="/account/:provider/:owner/*">
               <NotFound />
             </Route>
