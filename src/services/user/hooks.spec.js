@@ -375,11 +375,13 @@ describe('useOwner', () => {
 
     beforeEach(async () => {
       setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      await hookData.waitFor(() => hookData.result.current.isFetching)
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
 
       secondarySetup()
 
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      await hookData.waitFor(() => hookData.result.current.isFetching)
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
     it('returns false', () => {
