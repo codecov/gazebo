@@ -6,10 +6,12 @@ import { useParams } from 'react-router-dom'
 import { useCommit } from 'services/commit'
 import { UploadStateEnum } from 'shared/utils/commit'
 
+// eslint-disable-next-line complexity
 function humanReadableOverview(state, count) {
   const plural = (count) => (count > 1 ? 'are' : 'is')
   if (state === UploadStateEnum.error) return 'errored'
-  if (state === UploadStateEnum.uploaded) return `${plural(count)} pending`
+  if (state === UploadStateEnum.uploaded || state === UploadStateEnum.pending)
+    return `${plural(count)} pending`
   if (state === UploadStateEnum.processed) return 'successful'
   if (state === UploadStateEnum.complete) return 'carried forward'
 }

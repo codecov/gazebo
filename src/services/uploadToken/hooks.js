@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
@@ -23,7 +23,7 @@ export function useRegenerateUploadToken() {
   const queryClient = useQueryClient()
   return useMutation(() => regenerateUploadToken({ provider, owner, repo }), {
     onSuccess: () => {
-      queryClient.invalidateQueries('GetRepo')
+      queryClient.invalidateQueries(['GetRepo'])
     },
   })
 }

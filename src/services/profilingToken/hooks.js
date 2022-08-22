@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
@@ -10,8 +10,10 @@ export function useRegenerateProfilingToken() {
   return useMutation(
     () => {
       const query = `
-        mutation regenerateProfilingToken($input: RegenerateProfilingTokenInput!) {
-        regenerateProfilingToken(input: $input) {
+        mutation regenerateProfilingToken(
+          $input: RegenerateProfilingTokenInput!
+        ) {
+          regenerateProfilingToken(input: $input) {
             error {
               __typename
             }
@@ -30,7 +32,7 @@ export function useRegenerateProfilingToken() {
     {
       useErrorBoundary: true,
       onSuccess: () => {
-        queryClient.invalidateQueries('GetRepo')
+        queryClient.invalidateQueries(['GetRepo'])
       },
     }
   )

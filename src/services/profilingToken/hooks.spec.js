@@ -1,8 +1,9 @@
-import { renderHook, act } from '@testing-library/react-hooks'
-import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
+
 import { useRegenerateProfilingToken } from './hooks'
 
 const data = {
@@ -31,14 +32,10 @@ const wrapper = ({ children }) => (
 describe('useRegenerateProfilingToken', () => {
   let hookData
 
-
   function setup() {
     server.use(
       graphql.mutation('regenerateProfilingToken', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ data })
-        )
+        return res(ctx.status(200), ctx.data({ data }))
       })
     )
     hookData = renderHook(() => useRegenerateProfilingToken(), {
@@ -68,11 +65,9 @@ describe('useRegenerateProfilingToken', () => {
 
     describe('When mutation is a success', () => {
       beforeEach(async () => {
-        return act(async () => {
-          hookData.result.current.mutate()
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
-        })
+        hookData.result.current.mutate()
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns isSuccess true', () => {

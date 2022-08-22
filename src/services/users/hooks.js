@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
@@ -33,8 +33,8 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
 
   const successHandler = (...args) => {
     // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
-    queryClient.invalidateQueries('users')
-    queryClient.invalidateQueries('accountDetails')
+    queryClient.invalidateQueries(['users'])
+    queryClient.invalidateQueries(['accountDetails'])
 
     if (onSuccess) {
       // Exicute passed onSuccess after invalidating queries

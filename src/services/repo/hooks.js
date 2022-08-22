@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
@@ -66,7 +66,7 @@ export function useEraseRepoContent() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('GetRepo')
+        queryClient.invalidateQueries(['GetRepo'])
       },
     }
   )
@@ -94,8 +94,8 @@ export function useUpdateRepo() {
     ({ ...body }) => updateRepo({ provider, owner, repo, body }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('GetRepo')
-        queryClient.invalidateQueries('GetRepoSettings')
+        queryClient.invalidateQueries(['GetRepo'])
+        queryClient.invalidateQueries(['GetRepoSettings'])
       },
     }
   )

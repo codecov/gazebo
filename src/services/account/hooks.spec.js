@@ -1,10 +1,10 @@
 import { useStripe } from '@stripe/react-stripe-js'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import Cookie from 'js-cookie'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useFlags } from 'shared/featureFlags'
 
@@ -568,11 +568,11 @@ describe('useAutoActivate', () => {
       })
 
       it('accountDetails cache unchanged', () => {
-        expect(queryClient.isFetching('accountDetails')).toBe(0)
+        expect(queryClient.isFetching(['accountDetails'])).toBe(0)
       })
 
       it('users cache unchanged', () => {
-        expect(queryClient.isFetching('users')).toBe(0)
+        expect(queryClient.isFetching(['users'])).toBe(0)
       })
     })
   })
@@ -601,11 +601,11 @@ describe('useAutoActivate', () => {
       })
 
       it('accountDetails cache unchanged', () => {
-        expect(queryClient.isFetching('accountDetails')).toBe(0)
+        expect(queryClient.isFetching(['accountDetails'])).toBe(0)
       })
 
       it('users cache unchanged', () => {
-        expect(queryClient.isFetching('users')).toBe(0)
+        expect(queryClient.isFetching(['users'])).toBe(0)
       })
     })
   })

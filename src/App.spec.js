@@ -7,7 +7,7 @@ import App from './App'
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
 jest.mock('./pages/PlanPage/PlanPage', () => () => 'PlanPage')
 jest.mock('./pages/MembersPage/MembersPage', () => () => 'MembersPage')
-jest.mock('react-query/devtools', () => ({
+jest.mock('@tanstack/react-query-devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
 }))
 jest.mock('shared/featureFlags')
