@@ -28,7 +28,7 @@ const stripePromise = loadStripe(config.STRIPE_KEY)
 function AccountSettings() {
   const { provider, owner } = useParams()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
-  const { gazeboPlanTab } = useFlags({
+  const { gazeboPlanTab: gazeboPlanTabFlag } = useFlags({
     gazeboPlanTab: false,
   })
   const yamlTab = `/account/${provider}/${owner}/yaml/`
@@ -50,7 +50,7 @@ function AccountSettings() {
               {isAdmin ? (
                 <AdminTab provider={provider} owner={owner} />
               ) : (
-                <Redirect to={gazeboPlanTab ? yamlTab : billingTab} />
+                <Redirect to={gazeboPlanTabFlag ? yamlTab : billingTab} />
               )}
             </Route>
             <Route path="/account/:provider/:owner/yaml/" exact>
@@ -59,7 +59,7 @@ function AccountSettings() {
             <Route path="/account/:provider/:owner/access/" exact>
               <AccessTab provider={provider} />
             </Route>
-            {!gazeboPlanTab && (
+            {!gazeboPlanTabFlag && (
               <>
                 <Route path="/account/:provider/:owner/billing/" exact>
                   <BillingAndUsersTab provider={provider} owner={owner} />

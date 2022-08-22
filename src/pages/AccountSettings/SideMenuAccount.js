@@ -6,10 +6,10 @@ import Sidemenu from 'ui/Sidemenu'
 
 function SideMenuAccount() {
   const { owner } = useParams()
-  const { gazeboPlanTab } = useFlags({
+  const { gazeboPlanTab: gazeboPlanTabFlag } = useFlags({
     gazeboPlanTab: false,
   })
-  const shouldRenderBillingTab = !gazeboPlanTab && 'billingAndUsers'
+  const shouldRenderBillingTab = !gazeboPlanTabFlag && 'billingAndUsers'
 
   const { data: currentUser } = useUser()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
