@@ -80,9 +80,9 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
           repo,
           commitid,
         },
-      }).then((res) => {
-        return res?.data?.owner?.repository?.commit?.compareWithParent
-      })
+      }).then(
+        (res) => res?.data?.owner?.repository?.commit?.compareWithParent ?? {}
+      )
     },
     {
       ...opts,
@@ -166,30 +166,29 @@ export function useCommit({
     }))
   }
 
-  const commitQuery = useQuery(
-    ['commit', provider, owner, repo, commitid],
-    () => {
-      return Api.graphql({
+  const tempKey = ['commit', provider, owner, repo, commitid]
+
+  const commitQuery = useQuery(tempKey, () => {
+    return Api.graphql({
+      provider,
+      query,
+      variables: {
         provider,
-        query,
-        variables: {
-          provider,
-          owner,
-          repo,
-          commitid,
+        owner,
+        repo,
+        commitid,
+      },
+    }).then((res) => {
+      const commit = res?.data?.owner?.repository?.commit
+      if (!commit) return {}
+      return {
+        commit: {
+          ...commit,
+          uploads: processUploads(commit?.uploads),
         },
-      }).then((res) => {
-        const commit = res?.data?.owner?.repository?.commit
-        if (!commit) return null
-        return {
-          commit: {
-            ...commit,
-            uploads: processUploads(commit?.uploads),
-          },
-        }
-      })
-    }
-  )
+      }
+    })
+  })
 
   const queryClient = useQueryClient()
 
@@ -212,10 +211,7 @@ export function useCommit({
             compareWithParent: data,
           },
         }
-        queryClient.setQueryData(
-          ['commit', provider, owner, repo, commitid],
-          impactedFileData
-        )
+        queryClient.setQueryData(tempKey, impactedFileData)
       },
     },
   })
