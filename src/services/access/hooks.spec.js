@@ -1,7 +1,7 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { mapEdges } from 'shared/utils/graphql'
@@ -168,12 +168,10 @@ describe('useDeleteSession', () => {
       const data = {
         sessionid: 1,
       }
-      beforeEach(() => {
-        return act(async () => {
-          hookData.result.current.mutate(data)
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
-        })
+      beforeEach(async () => {
+        hookData.result.current.mutate(data)
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns success', () => {
@@ -212,12 +210,10 @@ describe('useGenerateToken', () => {
       const data = {
         sessionid: 1,
       }
-      beforeEach(() => {
-        return act(async () => {
-          hookData.result.current.mutate(data)
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
-        })
+      beforeEach(async () => {
+        hookData.result.current.mutate(data)
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns success', () => {

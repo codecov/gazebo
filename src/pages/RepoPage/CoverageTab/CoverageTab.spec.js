@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
