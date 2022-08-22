@@ -13,7 +13,13 @@ import {
 
 import { useUploads } from './hooks'
 
-const queryClient = new QueryClient({})
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/test/test-repo/1234']}>
@@ -26,7 +32,10 @@ const wrapper = ({ children }) => (
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
 afterAll(() => server.close())
 
 describe('useUploads', () => {
@@ -75,11 +84,11 @@ describe('useUploads', () => {
 
     describe('when data is loaded', () => {
       it('returns uploadsOverview', async () => {
-        await hookData.waitFor(() => {
+        await hookData.waitFor(() =>
           expect(hookData.result.current.uploadsOverview).toEqual(
             '2 errored, 3 are pending, 1 successful, 1 carried forward'
           )
-        })
+        )
       })
 
       it('returns sortedUploads', async () => {
@@ -235,13 +244,14 @@ describe('useUploads', () => {
   })
 
   describe('handles singular pending case', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup(commitOnePending)
     })
     afterEach(() => server.resetHandlers())
 
     describe('when data is loaded', () => {
       it('returns uploadsOverview', async () => {
+        await hookData.waitFor(() => hookData.result.current.isSuccess)
         await hookData.waitFor(() => {
           expect(hookData.result.current.uploadsOverview).toEqual(
             '1 is pending'
