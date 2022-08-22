@@ -59,6 +59,7 @@ function getCurUserInfo(currentUser) {
 }
 
 export const pendoDefaultUser = {
+  ownerid: null,
   email: null, // Recommended if using Pendo Feedback, or NPS Email
   staff: null,
   username: null,
