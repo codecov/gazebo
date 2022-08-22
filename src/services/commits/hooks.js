@@ -75,7 +75,7 @@ export function useCommits({ provider, owner, repo, filters }) {
     filters,
   }
   const { data, ...rest } = useInfiniteQuery(
-    [provider, owner, repo, variables, 'commits'],
+    ['commits', provider, owner, repo, variables],
     ({ pageParam }) =>
       fetchRepoCommits({
         provider,
