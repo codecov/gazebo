@@ -15,8 +15,6 @@ const SelectClasses = {
   listContainer:
     'overflow-scroll rounded-md bg-white border-ds-gray-tertiary absolute w-full z-10 max-h-80',
   listItem: 'block cursor-pointer py-1 px-3 text-sm',
-  resetButton:
-    'block cursor-pointer py-2 px-4 text-sm border-b border-ds-gray-tertiary',
   loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
 
@@ -25,8 +23,12 @@ const VariantClasses = {
   gray: `bg-ds-gray-primary`,
 }
 
+const SELECT_ALL_BUTTON = 'SELECT_ALL'
+
 const isItemSelected = (item, selectedItems) =>
   selectedItems.some((selectedItem) => selectedItem === item)
+
+const isAllButton = (item) => item === SELECT_ALL_BUTTON
 
 const getDefaultButtonPlaceholder = (items, resourceName) =>
   `${pluralize(resourceName, items.length, true)} selected`
@@ -67,7 +69,13 @@ function MultipleSelect({
     (item) => !isItemSelected(item, selectedItems)
   )
 
-  const listItems = [...selectedItems, ...filteredItems]
+  const listItems = [SELECT_ALL_BUTTON, ...selectedItems, ...filteredItems]
+
+  const toggleItem = (selectedItem) => {
+    isItemSelected(selectedItem, selectedItems)
+      ? removeSelectedItem(selectedItem)
+      : addSelectedItem(selectedItem)
+  }
 
   const {
     isOpen,
@@ -98,9 +106,7 @@ function MultipleSelect({
         case useSelect.stateChangeTypes.MenuKeyDownEnter:
         case useSelect.stateChangeTypes.MenuKeyDownSpaceButton:
         case useSelect.stateChangeTypes.ItemClick:
-          isItemSelected(selectedItem, selectedItems)
-            ? removeSelectedItem(selectedItem)
-            : addSelectedItem(selectedItem)
+          isAllButton(selectedItem) ? reset() : toggleItem(selectedItem)
           break
         default:
           break
@@ -160,30 +166,21 @@ function MultipleSelect({
                 setSearchValue={(search) => onSearch(search)}
               />
             )}
-
-            <li
-              onClick={reset}
-              className={cs(SelectClasses.resetButton, {
-                'px-2 font-bold border-l-4 border-l-black':
-                  selectedItems.length === 0,
-              })}
-            >
-              All {pluralize(resourceName)}
-            </li>
-
             {listItems.map((item, index) => (
               <li
                 className={cs(SelectClasses.listItem, {
-                  'px-2 font-bold border-l-4 border-black': isItemSelected(
-                    item,
-                    selectedItems
-                  ),
+                  'px-2 font-bold border-l-4 border-l-black':
+                    isItemSelected(item, selectedItems) ||
+                    (isAllButton(item) && selectedItems.length === 0),
                   'bg-ds-gray-secondary': highlightedIndex === index,
+                  'py-2 border-b border-ds-gray-tertiary': isAllButton(item),
                 })}
                 key={`${item}${index}`}
                 {...getItemProps({ item, index })}
               >
-                {renderItem(item)}
+                {isAllButton(item)
+                  ? `All ${pluralize(resourceName)}`
+                  : renderItem(item)}
               </li>
             ))}
             <LoadMoreTrigger

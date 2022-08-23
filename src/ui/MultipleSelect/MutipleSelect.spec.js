@@ -282,11 +282,11 @@ describe('MultipleSelect', () => {
         userEvent.keyboard('{enter}')
       })
       it('No longer highlights the selected item', () => {
-        expect(screen.getByText('item2')).not.toHaveClass('font-bold')
+        expect(screen.getByText('item1')).not.toHaveClass('font-bold')
       })
 
       it('calls onChange without the item', () => {
-        expect(onChange).toHaveBeenCalledWith(['item1', 'item3'])
+        expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
       })
     })
 
@@ -297,11 +297,11 @@ describe('MultipleSelect', () => {
         userEvent.keyboard('{space}')
       })
       it('No longer highlights the selected item', () => {
-        expect(screen.getByText('item2')).not.toHaveClass('font-bold')
+        expect(screen.getByText('item1')).not.toHaveClass('font-bold')
       })
 
       it('calls onChange without the item', () => {
-        expect(onChange).toHaveBeenCalledWith(['item1', 'item3'])
+        expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
       })
     })
   })
