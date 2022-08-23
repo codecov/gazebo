@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
@@ -30,7 +30,7 @@ function fetchIsUploadsNumberExceeded({ numberOfUploads = 0 }) {
 }
 
 export function useUploadsNumber({ provider, owner }) {
-  return useQuery([provider, owner, 'ownerUploads'], () => {
+  return useQuery(['ownerUploads', provider, owner], () => {
     return fetchOwnerUploadsNumber({ provider, owner })
   })
 }
@@ -38,7 +38,7 @@ export function useUploadsNumber({ provider, owner }) {
 export function useIsUploadsNumberExceeded({ provider, owner }) {
   const { data: numberOfUploads } = useUploadsNumber({ provider, owner })
 
-  return useQuery([provider, owner, 'uploadsExceeded'], () => {
+  return useQuery(['uploadsExceeded', provider, owner], () => {
     return fetchIsUploadsNumberExceeded({ numberOfUploads })
   })
 }

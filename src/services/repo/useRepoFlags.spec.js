@@ -1,7 +1,7 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoFlags } from './useRepoFlags'
@@ -177,12 +177,14 @@ describe('FlagMeasurements', () => {
     beforeEach(async () => {
       setup()
       await hookData.waitFor(() => hookData.result.current.isSuccess)
-      await act(() => {
-        return hookData.result.current.fetchNextPage()
-      })
+
+      hookData.result.current.fetchNextPage()
+
+      await hookData.waitFor(() => hookData.result.current.isFetching)
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('returns prev and next page flags data', () => {
+    it('returns prev and next page flags data', async () => {
       expect(hookData.result.current.data).toEqual([
         ...expectedInitialData,
         ...expectedNextPageData,

@@ -1,6 +1,6 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -13,7 +13,13 @@ import {
 
 import { useUploads } from './hooks'
 
-const queryClient = new QueryClient({})
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/test/test-repo/1234']}>
@@ -26,7 +32,10 @@ const wrapper = ({ children }) => (
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
 afterAll(() => server.close())
 
 describe('useUploads', () => {
@@ -47,8 +56,8 @@ describe('useUploads', () => {
     afterEach(() => server.resetHandlers())
 
     describe('when data is loaded', () => {
-      it('returns sortedUploads', () => {
-        hookData.waitFor(() => {
+      it('returns sortedUploads', async () => {
+        await hookData.waitFor(() => {
           expect(hookData.result.current.sortedUploads).toMatchObject({})
         })
       })
@@ -74,16 +83,16 @@ describe('useUploads', () => {
     afterEach(() => server.resetHandlers())
 
     describe('when data is loaded', () => {
-      it('returns uploadsOverview', () => {
-        hookData.waitFor(() => {
+      it('returns uploadsOverview', async () => {
+        await hookData.waitFor(() =>
           expect(hookData.result.current.uploadsOverview).toEqual(
             '2 errored, 3 are pending, 1 successful, 1 carried forward'
           )
-        })
+        )
       })
 
-      it('returns sortedUploads', () => {
-        hookData.waitFor(() => {
+      it('returns sortedUploads', async () => {
+        await hookData.waitFor(() => {
           expect(hookData.result.current.sortedUploads).toMatchObject({
             'github actions': [
               {
@@ -188,8 +197,8 @@ describe('useUploads', () => {
         })
       })
 
-      it('returns a uploadsProviderList', () => {
-        hookData.waitFor(() => {
+      it('returns a uploadsProviderList', async () => {
+        await hookData.waitFor(() => {
           expect(hookData.result.current.uploadsProviderList).toEqual([
             'travis',
             'github actions',
@@ -197,8 +206,8 @@ describe('useUploads', () => {
         })
       })
 
-      it('returns a hasNoUploads', () => {
-        hookData.waitFor(() => {
+      it('returns a hasNoUploads', async () => {
+        await hookData.waitFor(() => {
           expect(hookData.result.current.hasNoUploads).toEqual(false)
         })
       })
@@ -211,8 +220,8 @@ describe('useUploads', () => {
         setup(commitOneCarriedForward)
       })
       afterEach(() => server.resetHandlers())
-      it('returns uploadsOverview', () => {
-        hookData.waitFor(() => {
+      it('returns uploadsOverview', async () => {
+        await hookData.waitFor(() => {
           expect(hookData.result.current.uploadsOverview).toEqual(
             '1 carried forward'
           )
@@ -224,8 +233,8 @@ describe('useUploads', () => {
         setup(commitOnePending)
       })
       afterEach(() => server.resetHandlers())
-      it('returns uploadsOverview', () => {
-        hookData.waitFor(() => {
+      it('returns uploadsOverview', async () => {
+        await hookData.waitFor(() => {
           expect(hookData.result.current.uploadsOverview).not.toContain(
             '1 carried forward'
           )
@@ -235,14 +244,15 @@ describe('useUploads', () => {
   })
 
   describe('handles singular pending case', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup(commitOnePending)
     })
     afterEach(() => server.resetHandlers())
 
     describe('when data is loaded', () => {
-      it('returns uploadsOverview', () => {
-        hookData.waitFor(() => {
+      it('returns uploadsOverview', async () => {
+        await hookData.waitFor(() => hookData.result.current.isSuccess)
+        await hookData.waitFor(() => {
           expect(hookData.result.current.uploadsOverview).toEqual(
             '1 is pending'
           )

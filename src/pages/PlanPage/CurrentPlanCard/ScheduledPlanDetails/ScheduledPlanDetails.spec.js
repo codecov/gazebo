@@ -1,5 +1,5 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
 
 import ScheduledPlanDetails from './ScheduledPlanDetails'
@@ -8,7 +8,8 @@ const queryClient = new QueryClient()
 
 describe('ScheduledPlanDetails', () => {
   function setup(scheduledPhase) {
-    {/*Let's try to git rid of unnecessary wrappers*/}
+    /*Let's try to git rid of unnecessary wrappers*/
+
     render(
       <QueryClientProvider client={queryClient}>
         <ScheduledPlanDetails scheduledPhase={scheduledPhase} />

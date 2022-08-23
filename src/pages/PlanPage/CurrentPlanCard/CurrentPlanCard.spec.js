@@ -1,5 +1,5 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
 
 import CurrentPlanCard from './CurrentPlanCard'
@@ -39,13 +39,14 @@ jest.mock('react-router-dom', () => ({
 
 describe('CurrentPlanCard', () => {
   function setup(accountDetails) {
-    {/*Let's try to git rid of unnecessary wrappers*/}
+    /*Let's try to git rid of unnecessary wrappers*/
+
     render(
       <QueryClientProvider client={queryClient}>
         <CurrentPlanCard accountDetails={accountDetails} />
       </QueryClientProvider>,
       {
-        wrapper: MemoryRouter, 
+        wrapper: MemoryRouter,
       }
     )
   }
