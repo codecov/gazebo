@@ -20,7 +20,7 @@ const NotFoundErrorMessage = () => {
           href={href}
           target="_blank"
         >
-          the home page
+          the home page.
         </a>
       </p>
     )
