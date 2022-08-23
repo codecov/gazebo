@@ -17,13 +17,13 @@ function CurrentOrgPlan() {
   ].every(Boolean)
 
   return (
-    <>
+    <div className="w-full lg:w-4/5">
       <InfoMessageCancellation
         subscriptionDetail={accountDetails?.subscriptionDetail}
       />
       <InfoMessageStripeCallback />
       {accountDetails?.plan && (
-        <div className="sm:mr-4 sm:flex-initial gap-4 flex flex-col w-2/3 lg:w-2/4">
+        <div className="sm:mr-4 sm:flex-initial gap-4 flex flex-col w-2/3 lg:w-3/4">
           <CurrentPlanCard accountDetails={accountDetails} />
           {shouldRenderBillingDetails && (
             <>
@@ -39,7 +39,7 @@ function CurrentOrgPlan() {
           )}
         </div>
       )}
-    </>
+    </div>
   )
 }
 

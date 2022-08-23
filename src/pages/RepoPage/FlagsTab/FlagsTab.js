@@ -1,32 +1,25 @@
-import { Route, useParams } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 
-import { useRepoBackfilled } from 'services/repo/hooks'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
+import blurredTable from './assets/blurredTable.png'
+import BackfillBanners from './BackfillBanners/BackfillBanners'
+import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
 import FlagsNotConfigured from './FlagsNotConfigured'
 import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
-import SyncingBanner from './SyncingBanner'
-import TriggerSyncBanner from './TriggerSyncBanner'
 
-const getIsRepoBackfilling = ({
-  flagsMeasurementsActive,
-  flagsMeasurementsBackfilled,
-}) => flagsMeasurementsActive && !flagsMeasurementsBackfilled
 const isDisabled = ({ flagsMeasurementsActive, isRepoBackfilling }) =>
   !flagsMeasurementsActive || isRepoBackfilling
 
 function FlagsTab() {
-  const { provider, owner, repo } = useParams()
   const { data: flagsData } = useRepoFlagsSelect()
-  const { data } = useRepoBackfilled({ provider, owner, repo })
 
-  const { flagsMeasurementsActive, flagsMeasurementsBackfilled } = data
-
-  const isRepoBackfilling = getIsRepoBackfilling({
+  const {
     flagsMeasurementsActive,
+    isRepoBackfilling,
     flagsMeasurementsBackfilled,
-  })
+  } = useRepoBackfillingStatus()
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
@@ -38,14 +31,20 @@ function FlagsTab() {
               isRepoBackfilling,
             })}
           >
-            {!flagsMeasurementsActive && <TriggerSyncBanner />}
-            {isRepoBackfilling && <SyncingBanner />}
+            <BackfillBanners />
           </Header>
-          {/*TODO: Show blurred image instead of the table when backfill is running or not active*/}
           <div className="flex flex-1 flex-col gap-4">
-            <Route path="/:provider/:owner/:repo/flags" exact>
-              <FlagsTable />
-            </Route>
+            {flagsMeasurementsActive && flagsMeasurementsBackfilled ? (
+              <Route path="/:provider/:owner/:repo/flags" exact>
+                <FlagsTable />
+              </Route>
+            ) : (
+              <img
+                alt="Blurred flags table"
+                src={blurredTable}
+                className="h-auto max-w-full"
+              />
+            )}
           </div>
         </>
       ) : (

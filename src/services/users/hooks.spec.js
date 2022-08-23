@@ -1,7 +1,7 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useUpdateUser, useUsers } from './hooks'
 
@@ -142,16 +142,14 @@ describe('useUpdateUser', () => {
     })
 
     describe('when calling the mutation', () => {
-      beforeEach(() => {
-        return act(async () => {
-          hookData.result.current.mutate({
-            targetUserOwnerid: 11,
-            admin: true,
-            activated: true,
-          })
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
+      beforeEach(async () => {
+        hookData.result.current.mutate({
+          targetUserOwnerid: 11,
+          admin: true,
+          activated: true,
         })
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('updates the query', () => {
@@ -174,16 +172,14 @@ describe('useUpdateUser', () => {
     })
 
     describe('passes through the on success passed function', () => {
-      beforeEach(() => {
-        return act(async () => {
-          hookData.result.current.mutate({
-            targetUserOwnerid: 1,
-            admin: true,
-            activated: true,
-          })
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
+      beforeEach(async () => {
+        hookData.result.current.mutate({
+          targetUserOwnerid: 1,
+          admin: true,
+          activated: true,
         })
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('calls the onSuccess method', () => {
@@ -191,7 +187,7 @@ describe('useUpdateUser', () => {
       })
 
       it('accountDetails cache unchanged', () => {
-        expect(queryClient.isFetching('accountDetails')).toBe(0)
+        expect(queryClient.isFetching(['accountDetails'])).toBe(0)
       })
     })
   })

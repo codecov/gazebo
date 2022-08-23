@@ -12,7 +12,7 @@ const UserClasses = {
   name: 'text-gray-900 font-bold mr-1',
   username: 'text-gray-400 font-bold',
   pills: 'flex flex-wrap text-sm space-x-2 mt-1',
-  pill: 'flex-initial bg-gray-200 text-gray-900 rounded-full px-3',
+  pill: 'flex-initial bg-gray-200 text-gray-900 rounded-full px-3 mb-1',
 }
 
 const UserCompactClasses = {

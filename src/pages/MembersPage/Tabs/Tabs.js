@@ -1,10 +1,8 @@
-import { useFlags } from 'shared/featureFlags'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
-  const { gazeboPlanTab } = useFlags({
-    gazeboPlanTab: false,
-  })
+  const shouldRenderTabs = useShouldRenderBillingTabs()
 
   return (
     <TabNavigation
@@ -17,7 +15,7 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(gazeboPlanTab
+        ...(shouldRenderTabs
           ? [{ pageName: 'membersTab' }, { pageName: 'planTab' }]
           : []),
         {

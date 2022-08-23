@@ -1,6 +1,6 @@
 import { render, screen } from 'custom-testing-library'
 
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useRepoBackfilled } from 'services/repo/hooks'
@@ -11,10 +11,13 @@ import FlagsTab from './FlagsTab'
 import { useLocationParams } from '../../../services/navigation'
 
 jest.mock(
-  './TriggerSyncBanner/TriggerSyncBanner.js',
+  './BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.js',
   () => () => 'Trigger Sync Banner'
 )
-jest.mock('./SyncingBanner/SyncingBanner.js', () => () => 'Syncing Banner')
+jest.mock(
+  './BackfillBanners/SyncingBanner/SyncingBanner.js',
+  () => () => 'Syncing Banner'
+)
 jest.mock('./subroute/FlagsTable/FlagsTable', () => () => 'Flags table')
 jest.mock('./Header', () => ({ children }) => (
   <p>Flags Header Component {children}</p>
@@ -95,6 +98,13 @@ describe('Flags Tab', () => {
       expect(screen.getByText(/Trigger Sync Banner/)).toBeInTheDocument()
       expect(screen.queryByText(/Syncing Banner/)).not.toBeInTheDocument()
     })
+
+    it('renders a blurred image of the table', () => {
+      const blurredFlagsTableImage = screen.getByRole('img', {
+        name: /Blurred flags table/,
+      })
+      expect(blurredFlagsTableImage).toBeInTheDocument()
+    })
   })
 
   describe('when rendered while ongoing syncing', () => {
@@ -113,6 +123,13 @@ describe('Flags Tab', () => {
       expect(screen.getByText(/Flags Header Component/)).toBeInTheDocument()
       expect(screen.getByText(/Syncing Banner/)).toBeInTheDocument()
       expect(screen.queryByText(/Trigger Sync Banner/)).not.toBeInTheDocument()
+    })
+
+    it('renders a blurred image of the table', () => {
+      const blurredFlagsTableImage = screen.getByRole('img', {
+        name: /Blurred flags table/,
+      })
+      expect(blurredFlagsTableImage).toBeInTheDocument()
     })
   })
 

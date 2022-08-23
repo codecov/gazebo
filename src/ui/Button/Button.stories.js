@@ -44,6 +44,24 @@ PlainButton.args = {
   variant: 'plain',
 }
 
+export const GitHubButton = Template.bind({})
+GitHubButton.args = {
+  children: 'GitHub Button',
+  variant: 'github',
+}
+
+export const GitLabButton = Template.bind({})
+GitLabButton.args = {
+  children: 'GitLab Button',
+  variant: 'gitlab',
+}
+
+export const BitbucketButton = Template.bind({})
+BitbucketButton.args = {
+  children: 'Bitbucket Button',
+  variant: 'bitbucket',
+}
+
 export const MixedButton = Template.bind({})
 MixedButton.args = {
   children: (

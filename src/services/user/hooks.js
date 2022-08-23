@@ -1,5 +1,5 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
 import usePrevious from 'react-use/lib/usePrevious'
 
@@ -11,6 +11,7 @@ fragment CurrentUserFragment on Me {
   email
   privateAccess
   onboardingCompleted
+  businessEmail
   user {
     name
     username
@@ -36,6 +37,12 @@ fragment CurrentUserFragment on Me {
     planUserCount
     createdAt: createstamp
     updatedAt: updatestamp
+    profile {
+      createdAt
+      otherGoal
+      typeProjects
+      goals
+    }
   }
 }
 `
@@ -78,6 +85,7 @@ export function useOwner({ username, opts = {} }) {
   const query = `
     query DetailOwner($username: String!) {
       owner(username: $username) {
+        hashOwnerid
         username
         avatarUrl
         isCurrentUserPartOfOrg
@@ -260,16 +268,16 @@ export function useResyncUser() {
   const { provider } = useParams()
   const queryClient = useQueryClient()
 
-  // where we store the data query
-  const keyCache = ['isSyncing', provider]
-
   // we get the value we have from the cache as we need to for the interval refetch
-  const isSyncingInCache = Boolean(queryClient.getQueryData(keyCache))
+  const isSyncingInCache = Boolean(
+    queryClient.getQueryData(['isSyncing', provider])
+  )
 
   // when mutation, we set the isSyncing of the cache the return of the
   const mutationData = useMutation(() => triggerSync(provider), {
     useErrorBoundary: false,
-    onSuccess: (data) => queryClient.setQueryData(keyCache, data),
+    onSuccess: (data) =>
+      queryClient.setQueryData(['isSyncing', provider], data),
   })
 
   // we consider that data is syncing when the user triggered the mutation
@@ -277,7 +285,7 @@ export function useResyncUser() {
   const isSyncing = mutationData.isLoading || isSyncingInCache
 
   // useQuery will automatically feed the so we don't need to care about return
-  useQuery(keyCache, () => fetchIsSyncing(provider), {
+  useQuery(['isSyncing', provider], () => fetchIsSyncing(provider), {
     suspense: false,
     useErrorBoundary: false,
     // refetch every 2 seconds if we are syncing

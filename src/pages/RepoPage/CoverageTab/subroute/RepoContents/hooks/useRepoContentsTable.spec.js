@@ -92,6 +92,7 @@ describe('useRepoContentsTable', () => {
         path: '',
         provider: 'gh',
         repo: 'another-test',
+        suspense: false,
       })
     })
   })
@@ -114,6 +115,7 @@ describe('useRepoContentsTable', () => {
           path: '',
           provider: 'gh',
           repo: 'another-test',
+          suspense: false,
         })
       )
 
@@ -129,6 +131,7 @@ describe('useRepoContentsTable', () => {
           path: '',
           provider: 'gh',
           repo: 'another-test',
+          suspense: false,
         })
       )
     })

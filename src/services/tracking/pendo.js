@@ -1,0 +1,74 @@
+import { useEffect, useRef } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
+
+import { useOwner } from 'services/user'
+import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
+
+import { getUserData } from './utils'
+
+export function firePendo(currentUser) {
+  window?.pendo?.initialize({
+    visitor: getCurUserInfo(currentUser),
+  })
+}
+
+export function useUpdatePendoWithOwner(user) {
+  const { owner } = useParams()
+  const { data: ownerData } = useOwner({
+    username: owner,
+    opts: {
+      enabled: owner !== undefined,
+    },
+  })
+  const currentUser = getUserData(user, pendoDefaultUser)
+  const location = useLocation()
+  const oldOwner = useRef()
+  if (oldOwner?.current === undefined) oldOwner.current = owner
+
+  useEffect(() => {
+    if (oldOwner.current !== owner) {
+      window?.pendo?.updateOptions({
+        visitor: getCurUserInfo(currentUser),
+        account: {
+          id: ownerData?.hashOwnerid,
+          name: ownerData?.username,
+          isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
+          isAdmin: ownerData?.isAdmin,
+        },
+      })
+    }
+    oldOwner.current = owner
+  }, [location?.pathname, oldOwner, owner, currentUser, ownerData])
+}
+
+function getCurUserInfo(currentUser) {
+  const profile = currentUser?.profile
+  const defaultOrg = localStorage.getItem('gz-defaultOrganization')
+
+  return snakeifyKeys({
+    ...currentUser,
+    id: currentUser?.ownerid, // Required
+    fullName: currentUser?.username, // Recommended if using Pendo Feedback
+    // You can add any additional visitor level key-values here as long as it's not one of the above reserved names.
+    profileGoals: profile?.goals,
+    profileTypeProjects: profile?.typeProjects,
+    profileOtherGoal: profile?.otherGoal,
+    profileCreatedAt: profile?.createdAt,
+    defaultOrg: defaultOrg,
+  })
+}
+
+export const pendoDefaultUser = {
+  ownerid: null,
+  email: null, // Recommended if using Pendo Feedback, or NPS Email
+  staff: null,
+  username: null,
+  service: null,
+  planUserCount: null,
+  createdAt: null,
+  profile: null,
+  updatedAt: null,
+  businessEmail: null,
+  onboardingCompleted: null,
+  plan: null,
+}

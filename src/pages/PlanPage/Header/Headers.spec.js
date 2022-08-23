@@ -1,5 +1,5 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
@@ -20,8 +20,8 @@ describe('Header', () => {
     })
     render(
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/billings/gh/codecov']}>
-          <Route path="/billings/:provider/:owner">
+        <MemoryRouter initialEntries={['/plan/gh/codecov']}>
+          <Route path="/plan/:provider/:owner">
             <Header />
           </Route>
         </MemoryRouter>

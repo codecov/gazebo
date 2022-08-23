@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from 'react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
@@ -29,7 +29,7 @@ function fetchRepoFlags({
     ) {
       owner(username: $name) {
         repository(name: $repo) {
-          flags(filters: $filters, orderingDirection: $orderingDirection, after: $after) {
+          flags(filters: $filters, orderingDirection: $orderingDirection, after: $after, first: 15) {
             pageInfo {
               hasNextPage
               endCursor

@@ -124,6 +124,18 @@ function useNavLinks() {
         `/plan/${provider}/${owner}/cancel`,
       isExternalLink: false,
     },
+    invoicesPage: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/invoices`,
+      isExternalLink: false,
+      text: 'Invoices',
+    },
+    invoiceDetailsPage: {
+      path: (
+        { provider = p, owner = o, id = i } = { provider: p, owner: o, id: i }
+      ) => `/plan/${provider}/${owner}/invoices/${id}`,
+      isExternalLink: false,
+    },
     accountAdmin: {
       text: 'Admin',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
@@ -154,6 +166,7 @@ function useNavLinks() {
         `/account/${provider}/${owner}/billing`,
       isExternalLink: false,
     },
+    // this and many other /account/ routes can be deleted after C4T is done
     upgradePlan: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}/billing/upgrade`,

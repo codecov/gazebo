@@ -1,5 +1,5 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import map from 'lodash/map'
-import { useQuery, useQueryClient } from 'react-query'
 
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
@@ -80,9 +80,9 @@ function useCompareTotals({ provider, owner, repo, commitid, opts = {} }) {
           repo,
           commitid,
         },
-      }).then((res) => {
-        return res?.data?.owner?.repository?.commit?.compareWithParent
-      })
+      }).then(
+        (res) => res?.data?.owner?.repository?.commit?.compareWithParent ?? {}
+      )
     },
     {
       ...opts,
@@ -158,8 +158,6 @@ export function useCommit({
       ${comparisonFragment}
     `
 
-  const cacheKey = ['commit', provider, owner, repo, commitid]
-
   function processUploads(uploads) {
     const edgelessUploads = mapEdges(uploads)
     return map(edgelessUploads, (upload) => ({
@@ -168,7 +166,9 @@ export function useCommit({
     }))
   }
 
-  const commitQuery = useQuery(cacheKey, () => {
+  const tempKey = ['commit', provider, owner, repo, commitid]
+
+  const commitQuery = useQuery(tempKey, () => {
     return Api.graphql({
       provider,
       query,
@@ -180,7 +180,7 @@ export function useCommit({
       },
     }).then((res) => {
       const commit = res?.data?.owner?.repository?.commit
-      if (!commit) return null
+      if (!commit) return {}
       return {
         commit: {
           ...commit,
@@ -211,7 +211,7 @@ export function useCommit({
             compareWithParent: data,
           },
         }
-        queryClient.setQueryData(cacheKey, impactedFileData)
+        queryClient.setQueryData(tempKey, impactedFileData)
       },
     },
   })

@@ -1,6 +1,6 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useLegacyRepoCoverage, useOrgCoverage } from './hooks'
 import { orgCoverageHandler, repoCoverageHandler } from './mocks'

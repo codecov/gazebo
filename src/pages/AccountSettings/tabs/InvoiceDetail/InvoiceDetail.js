@@ -74,14 +74,7 @@ function InvoiceDetail({ provider, owner }) {
         </div>
       </div>
       <div className="my-8 flex gap-5">
-        <A
-          href={invoiceDetail.path({ id: invoice.id })}
-          variant="semibold"
-          download
-        >
-          <Icon name="download" variant="solid" size="sm" />
-          Download
-        </A>
+        {/* TODO: add the download button here */}
         <A
           href={invoiceDetail.path({ id: invoice.id }) + '?print'}
           variant="semibold"

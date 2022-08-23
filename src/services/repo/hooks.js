@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
@@ -66,7 +66,7 @@ export function useEraseRepoContent() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('GetRepo')
+        queryClient.invalidateQueries(['GetRepo'])
       },
     }
   )
@@ -94,8 +94,8 @@ export function useUpdateRepo() {
     ({ ...body }) => updateRepo({ provider, owner, repo, body }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('GetRepo')
-        queryClient.invalidateQueries('GetRepoSettings')
+        queryClient.invalidateQueries(['GetRepo'])
+        queryClient.invalidateQueries(['GetRepoSettings'])
       },
     }
   )
@@ -148,11 +148,15 @@ export function useRepoContents({
   branch,
   path,
   filters,
+  ...options
 }) {
   return useQuery(
     ['BranchFiles', provider, owner, repo, branch, path, filters],
     () => {
       return fetchRepoContents({ provider, owner, repo, branch, path, filters })
+    },
+    {
+      ...options,
     }
   )
 }
@@ -182,7 +186,8 @@ function fetchRepoBackfilledContents({ provider, owner, repo }) {
   })
 }
 
-export function useRepoBackfilled({ provider, owner, repo }) {
+export function useRepoBackfilled() {
+  const { provider, owner, repo } = useParams()
   return useQuery(['BackfillFlagMemberships', provider, owner, repo], () => {
     return fetchRepoBackfilledContents({ provider, owner, repo })
   })
