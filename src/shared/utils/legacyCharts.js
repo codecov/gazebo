@@ -26,7 +26,7 @@ const GroupingUnit = Object.freeze({
 })
 
 // eslint-disable-next-line complexity
-export const calculateTrendDate = ({ today, trend }) => {
+const calculateTrendDate = ({ today, trend }) => {
   if (trend === Trend.TWENTY_FOUR_HOURS) return subDays(today, 1)
   if (trend === Trend.SEVEN_DAYS) return subDays(today, 7)
   if (trend === Trend.THIRTY_DAYS) return subDays(today, 30)
@@ -34,11 +34,15 @@ export const calculateTrendDate = ({ today, trend }) => {
   if (trend === Trend.SIX_MONTHS) return subMonths(today, 6)
   if (trend === Trend.LAST_YEAR) return subMonths(today, 12)
   if (trend === Trend.ALL_TIME) return null
+  return null
 }
 
 export const calculateDayDifference = ({ end, start }) => {
   if (end && start) {
-    return differenceInCalendarDays(parseISO(end), parseISO(start))
+    const _end = typeof end === 'string' ? parseISO(end) : end
+    const _start = typeof start === 'string' ? parseISO(start) : start
+
+    return differenceInCalendarDays(_end, _start)
   }
   return 0
 }
@@ -64,7 +68,7 @@ export function chartQuery({ endDate, startDate, repositories }) {
 }
 
 function sparklineGroupingUnit({ dayDifference }) {
-  const A_YEAR = 368
+  const A_YEAR = 360
   const TWO_MONTHS = 61
   const TWO_WEEKS = 14
 
@@ -74,9 +78,10 @@ function sparklineGroupingUnit({ dayDifference }) {
     return GroupingUnit.WEEK
   } else if (dayDifference >= TWO_WEEKS) {
     return GroupingUnit.DAY
-  } else {
+  } else if (dayDifference > 0) {
     return GroupingUnit.HOUR
   }
+  return GroupingUnit.MONTH
 }
 
 export function sparklineQuery({ trend, branch, repo, today }) {

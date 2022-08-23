@@ -1,4 +1,9 @@
-import { calculateDayDifference, chartQuery } from './legacyCharts'
+import {
+  calculateDayDifference,
+  chartQuery,
+  sparklineQuery,
+  Trend,
+} from './legacyCharts'
 
 describe('calculateDayDifference', () => {
   // Exporting and testing this on it's own due to it being difficult to test the charting lib
@@ -69,6 +74,190 @@ describe('chartQuery', () => {
     })
     it('nothing is passed', () => {
       expect(chartQuery({}).repositories).toBe(undefined)
+    })
+  })
+})
+
+describe('sparklineQuery', () => {
+  function setup(props) {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2022/01/01'))
+
+    return sparklineQuery(props)
+  }
+  afterAll(() => jest.useRealTimers())
+
+  describe('static params', () => {
+    it('aggFunction', () => {
+      expect(
+        setup({
+          repo: 'critical role',
+          trend: Trend.ALL_TIME,
+          branch: 'main',
+          today: new Date(),
+        }).aggFunction
+      ).toBe('min')
+    })
+    it('aggValue', () => {
+      expect(
+        setup({
+          repo: 'critical role',
+          trend: Trend.ALL_TIME,
+          branch: 'main',
+          today: new Date(),
+        }).aggValue
+      ).toBe('timestamp')
+    })
+    it('coverageTimestampOrdering', () => {
+      expect(
+        setup({
+          repo: 'critical role',
+          trend: Trend.ALL_TIME,
+          branch: 'main',
+          today: new Date(),
+        }).coverageTimestampOrdering
+      ).toBe('increasing')
+    })
+  })
+  describe('dynamic params', () => {
+    it('branch', () => {
+      expect(
+        setup({
+          repo: 'critical role',
+          trend: Trend.ALL_TIME,
+          branch: 'main',
+          today: new Date(),
+        }).branch
+      ).toBe('main')
+    })
+
+    it('repository', () => {
+      expect(
+        setup({
+          repo: 'critical role',
+          trend: Trend.ALL_TIME,
+          branch: 'main',
+          today: new Date(),
+        }).repositories
+      ).toStrictEqual(['critical role'])
+    })
+
+    it('sets the start date', () => {
+      expect(
+        setup({
+          repo: 'critical role',
+          trend: Trend.SEVEN_DAYS,
+          branch: 'main',
+          today: new Date(),
+        }).startDate
+      ).toStrictEqual(new Date('2021/12/25'))
+    })
+
+    it('If today not set do not return a startDate', () => {
+      expect(
+        setup({
+          repo: 'critical role',
+          trend: Trend.ALL_TIME,
+          branch: 'main',
+        }).startDate
+      ).toBe(undefined)
+    })
+
+    describe('groupingUnit', () => {
+      it('invalid trend', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            branch: 'main',
+            today: new Date(),
+          }).groupingUnit
+        ).toBe('month')
+      })
+      it('no start', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            trend: Trend.ALL_TIME,
+            branch: 'main',
+          }).groupingUnit
+        ).toBe('month')
+      })
+      it('all time', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            trend: Trend.ALL_TIME,
+            branch: 'main',
+            today: new Date(),
+          }).groupingUnit
+        ).toBe('month')
+      })
+
+      it('last year', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            trend: Trend.LAST_YEAR,
+            branch: 'main',
+            today: new Date(),
+          }).groupingUnit
+        ).toBe('month')
+      })
+
+      it('seven days', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            trend: Trend.SEVEN_DAYS,
+            branch: 'main',
+            today: new Date(),
+          }).groupingUnit
+        ).toBe('hour')
+      })
+
+      it('six months', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            trend: Trend.SIX_MONTHS,
+            branch: 'main',
+            today: new Date(),
+          }).groupingUnit
+        ).toBe('week')
+      })
+
+      it('30 days', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            trend: Trend.THIRTY_DAYS,
+            branch: 'main',
+            today: new Date(),
+          }).groupingUnit
+        ).toBe('day')
+      })
+
+      it('3 months', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            trend: Trend.THREE_MONTHS,
+            branch: 'main',
+            today: new Date(),
+          }).groupingUnit
+        ).toBe('week')
+      })
+
+      it('24 hours', () => {
+        expect(
+          setup({
+            repo: 'critical role',
+            trend: Trend.TWENTY_FOUR_HOURS,
+            branch: 'main',
+            today: new Date(),
+          }).groupingUnit
+        ).toBe('hour')
+      })
     })
   })
 })
