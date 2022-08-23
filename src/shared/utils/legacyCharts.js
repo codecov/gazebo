@@ -33,7 +33,6 @@ const calculateTrendDate = ({ today, trend }) => {
   if (trend === Trend.THREE_MONTHS) return subMonths(today, 3)
   if (trend === Trend.SIX_MONTHS) return subMonths(today, 6)
   if (trend === Trend.LAST_YEAR) return subMonths(today, 12)
-  if (trend === Trend.ALL_TIME) return null
   return null
 }
 
