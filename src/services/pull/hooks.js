@@ -100,7 +100,6 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
               percentCovered
             }
             impactedFiles {
-              baseName
               headName
               baseCoverage {
                 percentCovered

@@ -7,7 +7,7 @@ import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import ImpactedFiles from './ImpactedFiles'
 
 function hasImpactedFiles(impactedFiles) {
-  return impactedFiles && impactedFiles?.length > 0 && false
+  return impactedFiles && impactedFiles?.length > 0
 }
 
 function hasReportWithoutChanges({
@@ -30,7 +30,6 @@ const Root = () => {
     repo,
     pullId,
   })
-  const impactedFiles = data?.impactedFiles
 
   return (
     !isLoading && (
@@ -40,7 +39,7 @@ const Root = () => {
           flagData={null}
           coverageIsLoading={false}
         />
-        {hasImpactedFiles(impactedFiles) ? (
+        {hasImpactedFiles(data?.impactedFiles) ? (
           <ImpactedFiles />
         ) : // Coverage changes remain the same as before, but no impacted files = no change
         hasReportWithoutChanges({
