@@ -54,16 +54,17 @@ export function chartQuery({ endDate, startDate, repositories }) {
     start: startDate,
   })
   const groupingUnit = dayDifference < dayDifferenceThreshold ? 'day' : 'week'
-  const _startDate = startDate ? startDate : undefined
-  const _endDate = endDate ? endDate : undefined
 
-  const _repositories = repositories?.length > 0 ? repositories : undefined
+  // Conditional returned keys
+  const _startDate = startDate ? { startDate } : {}
+  const _endDate = endDate ? { endDate } : {}
+  const _repositories = repositories?.length > 0 ? { repositories } : {}
 
   return {
     groupingUnit,
-    startDate: _startDate,
-    endDate: _endDate,
-    repositories: _repositories,
+    ..._startDate,
+    ..._endDate,
+    ..._repositories,
   }
 }
 
@@ -91,6 +92,8 @@ export function sparklineQuery({ trend, branch, repo, today }) {
     start: startDate,
   })
   const groupingUnit = sparklineGroupingUnit({ dayDifference })
+
+  // Conditional returned key
   const _startDate = startDate ? { startDate } : {}
 
   return {
