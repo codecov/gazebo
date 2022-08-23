@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { usePull } from 'services/pull'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
-import FileDiff from './FileDiff'
+import ImpactedFiles from './ImpactedFiles'
 
 export function useCompareDiff() {
   const { provider, owner, repo, pullId } = useParams()
@@ -19,7 +19,7 @@ export function useCompareDiff() {
 }
 const hasReport = ({ headTotals, patchTotals, baseTotals }) =>
   !isNil(headTotals) && !isNil(patchTotals) && !isNil(baseTotals)
-const hasNoImpactedFiles = (files) => !files || files?.length === 0
+const hasImpactedFiles = (files) => files || files?.length > 0
 
 const Root = () => {
   const { data: diff, isLoading } = useCompareDiff()
@@ -27,17 +27,14 @@ const Root = () => {
   return (
     !isLoading && (
       <div className="flex flex-col gap-4">
-        <div className="border-b border-ds-gray-secondary pb-4">
-          <ToggleHeader
-            flagData={null}
-            title="Impacted Files"
-            coverageIsLoading={isLoading}
-          />
-        </div>
-        {diff?.files?.map((file, i) => (
-          <FileDiff key={`impacted-file-${i}`} {...file} />
-        ))}
-        {hasNoImpactedFiles(diff?.files) &&
+        <ToggleHeader
+          title="Impacted Files"
+          flagData={null}
+          coverageIsLoading={false}
+        />
+        {hasImpactedFiles(diff?.files) ? (
+          <ImpactedFiles />
+        ) : (
           hasReport({
             headTotals: diff?.headTotals,
             patchTotals: diff?.patchTotals,
@@ -63,7 +60,8 @@ const Root = () => {
                 </li>
               </ul>
             </>
-          )}
+          )
+        )}
       </div>
     )
   )
