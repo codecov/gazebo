@@ -6,16 +6,22 @@ import PropTypes from 'prop-types'
 import Icon from 'ui/Icon'
 
 const SelectClasses = {
-  root: 'flex-1 relative',
-  item: 'block cursor-pointer py-1 px-3 text-sm',
-  button:
-    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 outline-none h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary',
-  ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute w-full z-10',
+  root: 'relative',
+  item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
+  button: 'flex justify-between items-center text-left outline-none',
+  ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute z-10 max-h-72 overflow-scroll',
 }
 
-const variantClass = {
-  default: ``,
-  gray: `bg-ds-gray-primary`,
+const UlVariantClass = {
+  default: 'w-full border-gray-ds-tertiary h-8',
+  gray: 'w-full border-gray-ds-tertiary h-8',
+  text: 'left-0 z-10 whitespace-nowrap',
+}
+
+const ButtonVariantClass = {
+  default: `w-full px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
+  gray: `w-full px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
+  text: `flex-init text-ds-blue`,
 }
 
 function Select({
@@ -80,7 +86,7 @@ function Select({
         disabled={disabled}
         aria-label={ariaName}
         type="button"
-        className={cs(SelectClasses.button, variantClass[variant])}
+        className={cs(SelectClasses.button, ButtonVariantClass[variant])}
         {...getToggleButtonProps()}
       >
         {renderButton()}
@@ -88,9 +94,8 @@ function Select({
       </button>
       <ul
         aria-label={ariaName}
-        className={cs(SelectClasses.ul, {
+        className={cs(SelectClasses.ul, UlVariantClass[variant], {
           border: isOpen,
-          'border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
         })}
         {...getMenuProps()}
       >
