@@ -35,81 +35,20 @@ export function usePull({ provider, owner, repo, pullId }) {
                 patchTotals {
                   percentCovered
                 }
-                changeWithParent
-              }
-              compareWithBase {
                 baseTotals {
                   percentCovered
-                  fileCount
-                  lineCount
-                  hitsCount
-                  missesCount
-                  partialsCount
                 }
                 headTotals {
                   percentCovered
-                  fileCount
-                  lineCount
-                  hitsCount
-                  missesCount
-                  partialsCount
                 }
-                fileComparisons {
-                  baseName
-                  headName
-                  isNewFile
-                  isRenamedFile
-                  isDeletedFile
-                  isCriticalFile
-                  hasDiff
-                  hasChanges
-                  baseTotals {
-                    percentCovered
-                    lineCount
-                    hitsCount
-                    missesCount
-                    partialsCount
-                  }
-                  headTotals {
-                    percentCovered
-                    lineCount
-                    hitsCount
-                    missesCount
-                    partialsCount
-                  }
-                  patchTotals {
-                    percentCovered
-                    fileCount
-                    lineCount
-                    hitsCount
-                    missesCount
-                    partialsCount
-                  }
-                  segments {
-                    header
-                    hasUnintendedChanges
-                    lines {
-                      baseNumber
-                      headNumber
-                      baseCoverage
-                      headCoverage
-                      content
-                    }
-                  }
-                }
+                changeWithParent
               }
               commits {
-                pageInfo {
-                  hasNextPage
-                  startCursor
-                  hasPreviousPage
-                }
                 edges {
                   node {
                     state
                     commitid
                     message
-                    createdAt
                     author {
                       username
                     }
@@ -151,6 +90,15 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
       repository(name: $repo) {
         pull(id: $pullId) {
           compareWithBase{
+            patchTotals {
+              percentCovered
+            }
+            baseTotals {
+              percentCovered
+            }
+            headTotals {
+              percentCovered
+            }
             impactedFiles {
               baseName
               headName
@@ -185,23 +133,33 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
     })
   }
 
-  function transformImpactedFilesData(impactedFile) {
-    const headCoverage = impactedFile?.headCoverage?.percentCovered
-    const patchCoverage = impactedFile?.patchCoverage?.percentCovered
-    const baseCoverage = impactedFile?.baseCoverage?.percentCovered
-    const changeCoverage =
-      isNumber(headCoverage) && isNumber(baseCoverage)
-        ? headCoverage - baseCoverage
-        : Number.NaN
-    const hasHeadAndPatchCoverage =
-      isNumber(headCoverage) || isNumber(patchCoverage)
+  function transformImpactedFilesData(compareWithBase) {
+    const impactedFiles = compareWithBase?.impactedFiles?.map(
+      (impactedFile) => {
+        const headCoverage = impactedFile?.headCoverage?.percentCovered
+        const patchCoverage = impactedFile?.patchCoverage?.percentCovered
+        const baseCoverage = impactedFile?.baseCoverage?.percentCovered
+        const changeCoverage =
+          isNumber(headCoverage) && isNumber(baseCoverage)
+            ? headCoverage - baseCoverage
+            : Number.NaN
+        const hasHeadAndPatchCoverage =
+          isNumber(headCoverage) || isNumber(patchCoverage)
 
+        return {
+          headCoverage,
+          patchCoverage,
+          changeCoverage,
+          hasHeadAndPatchCoverage,
+          headName: impactedFile?.headName,
+        }
+      }
+    )
     return {
-      headCoverage,
-      patchCoverage,
-      changeCoverage,
-      hasHeadAndPatchCoverage,
-      headName: impactedFile?.headName,
+      impactedFiles,
+      pullHeadCoverage: compareWithBase?.headTotals?.percentCovered,
+      pullPatchCoverage: compareWithBase?.patchTotals?.percentCovered,
+      pullBaseCoverage: compareWithBase?.baseTotals?.percentCovered,
     }
   }
 
@@ -210,8 +168,8 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
     fetchImpactedFiles,
     {
       select: ({ data }) =>
-        data?.owner?.repository?.pull?.compareWithBase?.impactedFiles?.map(
-          (impactedFile) => transformImpactedFilesData(impactedFile)
+        transformImpactedFilesData(
+          data?.owner?.repository?.pull?.compareWithBase
         ),
     }
   )

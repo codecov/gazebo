@@ -102,17 +102,9 @@ function createTable({ tableData }) {
 function ImpactedFiles() {
   const { provider, owner, repo, pullId } = useParams()
   const { data } = useImpactedFilesComparison({ provider, owner, repo, pullId })
-  const tableContent = createTable({ tableData: data })
+  const tableContent = createTable({ tableData: data?.impactedFiles })
 
-  return (
-    <>
-      {data?.length === 0 ? (
-        <p className="mx-4">No Files covered by tests were changed</p>
-      ) : (
-        <Table data={tableContent} columns={table} />
-      )}
-    </>
-  )
+  return <Table data={tableContent} columns={table} />
 }
 
 export default ImpactedFiles
