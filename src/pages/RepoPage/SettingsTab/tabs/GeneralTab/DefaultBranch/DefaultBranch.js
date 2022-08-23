@@ -49,6 +49,7 @@ function DefaultBranch({ defaultBranch }) {
           </h2>
           <div className="grid grid-cols-2">
             <Select
+              ariaName="Branch selector"
               variant="gray"
               items={branchesNames}
               onChange={(branch) => {

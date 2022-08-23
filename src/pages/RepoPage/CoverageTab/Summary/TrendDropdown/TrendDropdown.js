@@ -13,6 +13,7 @@ function TrendDropdown() {
   return (
     <h3 className="text-ds-gray-octonary text-sm font-semibold min-w-[16rem] flex items-center">
       <Select
+        ariaName="select coverage over time range"
         variant="text"
         items={items}
         onChange={(selected) => updateParams({ trend: selected })}

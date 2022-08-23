@@ -78,6 +78,7 @@ function CommitsTab() {
           </h2>
           <div>
             <Select
+              ariaName="Select branch"
               variant="gray"
               items={branchesNames}
               onChange={(branch) => {

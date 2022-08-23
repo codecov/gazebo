@@ -62,6 +62,7 @@ const Summary = () => {
           <span className="text-sm min-w-[16rem]">
             <Select
               {...branchSelectorProps}
+              ariaName="select branch"
               onChange={onChangeHandler}
               variant="gray"
               renderItem={(item) => <span>{item?.name}</span>}
