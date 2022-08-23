@@ -139,9 +139,9 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
         const patchCoverage = impactedFile?.patchCoverage?.percentCovered
         const baseCoverage = impactedFile?.baseCoverage?.percentCovered
         const changeCoverage =
-          isNumber(headCoverage) && isNumber(baseCoverage)
-            ? headCoverage - baseCoverage
-            : Number.NaN
+          isNumber(headCoverage) &&
+          isNumber(baseCoverage) &&
+          headCoverage - baseCoverage
         const hasHeadAndPatchCoverage =
           isNumber(headCoverage) || isNumber(patchCoverage)
 
