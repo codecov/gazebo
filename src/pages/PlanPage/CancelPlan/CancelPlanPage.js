@@ -38,7 +38,7 @@ function CancelPlanPage() {
 
   return (
     <>
-      <div className="flex gap-8">
+      <div className="flex gap-8 w-4/5">
         <div className="flex basis-3/5">
           <Card variant="cancel">
             <div className="flex flex-col gap-4 text-ds-gray-quinary">

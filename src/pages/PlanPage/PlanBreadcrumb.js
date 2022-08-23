@@ -6,7 +6,7 @@ function PlanBreadcrumb() {
   const crumbs = useCrumbs()
 
   return (
-    <div className="mx-6 md:mx-0 flex flex-row">
+    <div className="mx-6 md:mx-0 flex flex-row text-lg">
       <Breadcrumb paths={crumbs} />
     </div>
   )
