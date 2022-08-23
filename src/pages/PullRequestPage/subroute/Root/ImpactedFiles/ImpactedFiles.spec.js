@@ -23,7 +23,6 @@ const mockImpactedFiles = {
       },
     ],
   },
-  isLoading: false,
 }
 
 describe('ImpactedFiles', () => {
@@ -58,6 +57,31 @@ describe('ImpactedFiles', () => {
       expect(screen.getByText(/90.23%/i)).toBeInTheDocument()
       expect(screen.getByText(/27.43%/i)).toBeInTheDocument()
       expect(screen.getByText(/58.33%/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered without change', () => {
+    beforeEach(() => {
+      const impactedFiles = {
+        data: {
+          pullBaseCoverage: 41.66667,
+          pullHeadCoverage: 92.30769,
+          pullPatchCoverage: 1,
+          impactedFiles: [
+            {
+              changeCoverage: 58.333333333333336,
+              headCoverage: null,
+              hasHeadAndPatchCoverage: false,
+              headName: 'flag1/mafs.js',
+              patchCoverage: 27.43,
+            },
+          ],
+        },
+      }
+      setup({ impactedFiles })
+    })
+    it('renders no data available for the change', () => {
+      expect(screen.getByText('No data available')).toBeInTheDocument()
     })
   })
 })
