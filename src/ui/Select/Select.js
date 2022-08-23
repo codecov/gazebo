@@ -112,8 +112,8 @@ Select.propTypes = {
   value: PropTypes.any,
   renderItem: PropTypes.func,
   renderSelected: PropTypes.func,
-  ariaName: PropTypes.string,
-  variant: PropTypes.oneOf(['default', 'gray']),
+  ariaName: PropTypes.string.isRequired,
+  variant: PropTypes.oneOf(['default', 'gray', 'text']),
   disabled: PropTypes.bool,
 }
 
