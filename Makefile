@@ -11,6 +11,12 @@ gcr.auth:
 build.local:
 	docker build . -t ${image}:latest --build-arg REACT_APP_STAGE=development
 
+build.local.enterprise:
+	docker build . -t ${image}:latest \
+	--build-arg REACT_APP_STAGE=development \
+	--build-arg REACT_APP_ENV_ARG=enterprise \
+	--build-arg REACT_APP_IS_ENTERPRISE=true
+
 build:
 	docker build . -t ${image}:${DEPLOY_ENV}-${release_version}-${sha} \
 	--build-arg REACT_APP_STAGE=${BUILD_ENV} \
