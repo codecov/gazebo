@@ -17,7 +17,7 @@ function CurrentOrgPlan() {
   ].every(Boolean)
 
   return (
-    <>
+    <div className="w-full lg:w-4/5">
       <InfoMessageCancellation
         subscriptionDetail={accountDetails?.subscriptionDetail}
       />
@@ -39,7 +39,7 @@ function CurrentOrgPlan() {
           )}
         </div>
       )}
-    </>
+    </div>
   )
 }
 

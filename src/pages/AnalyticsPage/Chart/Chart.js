@@ -12,9 +12,9 @@ import {
 } from 'victory'
 
 import { useOrgCoverage } from 'services/charts'
+import { chartQuery } from 'shared/utils/legacyCharts'
 
 import './chart.css'
-import { chartQuery } from './utils'
 
 const tailwindResponsive = {
   sm: 640,

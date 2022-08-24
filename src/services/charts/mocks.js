@@ -2,10 +2,16 @@
 import faker from 'faker'
 import { rest } from 'msw'
 
-const chartUri = '/internal/charts/:provider/:owner/coverage/organization'
+const repoUri = '/internal/charts/:provider/:owner/coverage/repository'
 
-export const orgCoverageHandler = rest.get(chartUri, (req, res, ctx) => {
-  // This is maybe a bit redundent atm but I would like to test some data mutation utils later
+export const repoCoverageHandler = rest.post(repoUri, (req, res, ctx) => {
+  return res(ctx.status(200), ctx.json(exampleYearlyRes))
+})
+
+const orgUri = '/internal/charts/:provider/:owner/coverage/organization'
+
+export const orgCoverageHandler = rest.get(orgUri, (req, res, ctx) => {
+  // This is maybe a bit redundant atm but I would like to test some data mutation utils later
   const query = req.url.searchParams
   if (query.get('grouping_unit') === 'yearly') {
     return res(ctx.status(200), ctx.json(exampleYearlyRes))
@@ -23,7 +29,7 @@ const createCoverage = () => ({
   coverage: faker.datatype.float({ min: 0, max: 100 }),
 })
 
-export const randomOrgCoverageHandler = rest.get(chartUri, (req, res, ctx) => {
+export const randomOrgCoverageHandler = rest.get(orgUri, (req, res, ctx) => {
   return res(
     ctx.status(200),
     ctx.json({
