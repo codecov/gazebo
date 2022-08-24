@@ -107,6 +107,7 @@ export function useImpactedFilesComparison({
               percentCovered
             }
             impactedFiles(filters:$filters) {
+              fileName
               headName
               baseCoverage {
                 percentCovered
@@ -147,9 +148,9 @@ export function useImpactedFilesComparison({
         const patchCoverage = impactedFile?.patchCoverage?.percentCovered
         const baseCoverage = impactedFile?.baseCoverage?.percentCovered
         const changeCoverage =
-          isNumber(headCoverage) &&
-          isNumber(baseCoverage) &&
-          headCoverage - baseCoverage
+          isNumber(headCoverage) && isNumber(baseCoverage)
+            ? headCoverage - baseCoverage
+            : Number.NaN
         const hasHeadAndPatchCoverage =
           isNumber(headCoverage) || isNumber(patchCoverage)
 
@@ -159,6 +160,7 @@ export function useImpactedFilesComparison({
           changeCoverage,
           hasHeadAndPatchCoverage,
           headName: impactedFile?.headName,
+          fileName: impactedFile?.fileName,
         }
       }
     )

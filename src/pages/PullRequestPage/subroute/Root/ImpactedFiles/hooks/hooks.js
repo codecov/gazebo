@@ -10,7 +10,7 @@ const orderingDirection = Object.freeze({
 })
 
 const orderingParameter = Object.freeze({
-  name: 'HEAD_NAME',
+  name: 'FILE_NAME',
   change: 'CHANGE_COVERAGE',
 })
 

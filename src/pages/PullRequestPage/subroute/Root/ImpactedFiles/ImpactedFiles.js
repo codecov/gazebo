@@ -1,4 +1,3 @@
-import { getFilenameFromFilePath } from 'shared/utils/url'
 import A from 'ui/A'
 import Progress from 'ui/Progress'
 import Table from 'ui/Table'
@@ -52,6 +51,7 @@ function createTable({ tableData }) {
           changeCoverage,
           hasHeadAndPatchCoverage,
           headName,
+          fileName,
         } = row
 
         return {
@@ -63,7 +63,7 @@ function createTable({ tableData }) {
                   // options: { commit, path: headName },
                 }}
               >
-                <span>{getFilenameFromFilePath(headName)}</span>
+                <span>{fileName}</span>
               </A>
               <span className="text-xs mt-0.5 text-ds-gray-quinary">
                 {headName}
