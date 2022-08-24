@@ -33,7 +33,10 @@ describe('useSummary', () => {
       newPath: 'test/test/',
       isRedirectionEnabled: true,
     })
-    useLegacyRepoCoverage.mockReturnValue({ data: {} })
+    useLegacyRepoCoverage.mockReturnValue({
+      data: { coverage: [{ coverage: 30 }, { coverage: 40 }] },
+      isSuccess: true,
+    })
 
     hookData = renderHook(() => useSummary(), { wrapper })
   }

@@ -16,6 +16,7 @@ import TrendDropdown from './TrendDropdown'
 
 // eslint-disable-next-line complexity
 const Summary = () => {
+  console.error('fgesfs')
   const setCrumbs = useSetCrumbs()
   const { setNewPath, redirectState } = useCoverageRedirect()
   const {
