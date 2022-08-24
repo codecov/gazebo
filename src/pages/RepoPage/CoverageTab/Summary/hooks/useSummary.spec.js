@@ -2,12 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useLegacyRepoCoverage } from 'services/charts'
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
 import { useBranchSelector } from './useBranchSelector'
 import { useSummary } from './useSummary'
 
 jest.mock('services/repo')
+jest.mock('services/charts')
 jest.mock('./useBranchSelector')
 
 const queryClient = new QueryClient()
@@ -31,6 +33,7 @@ describe('useSummary', () => {
       newPath: 'test/test/',
       isRedirectionEnabled: true,
     })
+    useLegacyRepoCoverage.mockReturnValue({ data: {} })
 
     hookData = renderHook(() => useSummary(), { wrapper })
   }

@@ -52,21 +52,21 @@ describe('ListRepo', () => {
     it('reads ordering & direction (ASC) parameter from URL', () => {
       setup(null, false, '?ordering=NAME&direction=ASC')
       const select = screen.getByRole('button', {
-        name: /Name \[A-Z\]/,
+        name: /Sort Order/,
       })
       expect(select).toBeInTheDocument()
     })
     it('reads ordering & direction (DESC) parameter from URL', () => {
       setup(null, false, '?ordering=NAME&direction=DESC')
       const select = screen.getByRole('button', {
-        name: /Name \[Z-A\]/,
+        name: /Sort Order/,
       })
       expect(select).toBeInTheDocument()
     })
     it('default fallback for ordering & direction parameter from URL', () => {
       setup(null, true, '?ordering=NAMEe&direction=DESC')
       const select = screen.getByRole('button', {
-        name: /Most recent commit/,
+        name: /Sort Order/,
       })
       expect(select).toBeInTheDocument()
     })
