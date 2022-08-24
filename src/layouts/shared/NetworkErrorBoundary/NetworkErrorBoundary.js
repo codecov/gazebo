@@ -3,6 +3,8 @@ import { Component } from 'react'
 
 import config from 'config'
 
+import A from 'ui/A'
+
 import img401 from './assets/error-401.svg'
 import img403 from './assets/error-403.svg'
 import img404 from './assets/error-404.svg'
@@ -52,14 +54,15 @@ const NetworkErrorMessage = () => {
     return (
       <p className="my-4 px-3 sm:px-0">
         Please see{' '}
-        <a
+        <A
           rel="noreferrer"
           className="text-blue-400"
           href="https://docs.codecov.io/"
-          target="_blank"
+          isExternal={true}
+          hook="docs"
         >
           our docs
-        </a>{' '}
+        </A>{' '}
         for common support.
       </p>
     )
@@ -68,23 +71,25 @@ const NetworkErrorMessage = () => {
   return (
     <p className="my-4 px-3 sm:px-0">
       Check on{' '}
-      <a
+      <A
         rel="noreferrer"
         className="text-blue-400"
         href="https://status.codecov.io/"
-        target="_blank"
+        isExternal={true}
+        hook="status"
       >
         Codecov’s status
-      </a>{' '}
+      </A>{' '}
       or see{' '}
-      <a
+      <A
         rel="noreferrer"
         className="text-blue-400"
         href="https://docs.codecov.io/"
-        target="_blank"
+        isExternal={true}
+        hook="docs"
       >
         our docs
-      </a>{' '}
+      </A>{' '}
       for common support.
     </p>
   )

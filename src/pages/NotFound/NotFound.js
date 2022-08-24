@@ -2,6 +2,8 @@ import cs from 'classnames'
 
 import config from 'config'
 
+import A from 'ui/A'
+
 import img404 from './assets/error-404.svg'
 import styles from './NotFound.module.css'
 
@@ -14,14 +16,15 @@ const NotFoundErrorMessage = () => {
     return (
       <p className="my-4 px-3 sm:px-0">
         You may be able to locate this content by browsing for it from{' '}
-        <a
+        <A
           rel="noreferrer"
           className="text-blue-400"
           href={href}
           target="_blank"
+          hook="home"
         >
           the home page.
-        </a>
+        </A>
       </p>
     )
   }
@@ -29,9 +32,15 @@ const NotFoundErrorMessage = () => {
   return (
     <p className="my-4 px-3 sm:px-0">
       You may be able to locate the content by visiting{' '}
-      <a rel="noreferrer" className="text-blue-400" href={href} target="_blank">
+      <A
+        rel="noreferrer"
+        className="text-blue-400"
+        href={href}
+        isExternal={true}
+        hook="home"
+      >
         Codecov’s home page
-      </a>{' '}
+      </A>{' '}
       and browsing to it.
     </p>
   )
