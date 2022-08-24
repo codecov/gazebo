@@ -8,6 +8,7 @@ import useIntersection from 'react-use/lib/useIntersection'
 
 import Icon from '../Icon'
 import SearchField from '../SearchField'
+import Spinner from '../Spinner'
 
 const SelectClasses = {
   button:
@@ -33,25 +34,35 @@ const isAllButton = (item) => item === SELECT_ALL_BUTTON
 const getDefaultButtonPlaceholder = (items, resourceName) =>
   `${pluralize(resourceName, items.length, true)} selected`
 
-const LoadMoreTrigger = ({ intersectionRef, onLoadMore }) =>
-  onLoadMore ? (
-    <span ref={intersectionRef} className={SelectClasses.loadMoreTrigger}>
-      Loading more items...
-    </span>
-  ) : null
+const LoadMoreTrigger = ({ intersectionRef, onLoadMore, isLoading }) => (
+  <>
+    {onLoadMore ? (
+      isLoading ? (
+        <span className="flex py-2 px-3">
+          <Spinner />
+        </span>
+      ) : (
+        <span ref={intersectionRef} className={SelectClasses.loadMoreTrigger}>
+          Loading more items...
+        </span>
+      )
+    ) : null}
+  </>
+)
 
 function MultipleSelect({
   items,
-  onSearch,
-  onLoadMore,
-  renderItem = identity,
-  renderSelected,
+  value,
+  variant,
   ariaName,
   disabled,
   onChange,
-  value,
-  variant,
+  onSearch,
+  onLoadMore,
   resourceName,
+  isLoadingMore,
+  renderSelected,
+  renderItem = identity,
   placeholder = `Select ${pluralize(resourceName)}`,
 }) {
   const {
@@ -186,6 +197,7 @@ function MultipleSelect({
             <LoadMoreTrigger
               intersectionRef={intersectionRef}
               onLoadMore={onLoadMore}
+              isLoading={isLoadingMore}
             />
           </>
         )}
@@ -208,11 +220,13 @@ MultipleSelect.propTypes = {
   variant: PropTypes.oneOf(['default', 'gray']),
   disabled: PropTypes.bool,
   placeholder: PropTypes.string,
+  isLoadingMore: PropTypes.bool,
 }
 
 LoadMoreTrigger.propTypes = {
   onLoadMore: PropTypes.func,
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+  isLoading: PropTypes.string,
 }
 
 export default MultipleSelect

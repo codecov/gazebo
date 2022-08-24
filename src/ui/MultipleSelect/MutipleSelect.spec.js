@@ -248,10 +248,28 @@ describe('MultipleSelect', () => {
       expect(screen.getByText(/Loading more items/)).toBeInTheDocument()
     })
 
-    describe('when scrolling to the bottom of the list', () => {
+    describe('when load more trigger span is intersecting', () => {
       it('calls onLoadMore with the search value', async () => {
         await waitFor(() => expect(onLoadMore).toHaveBeenCalled())
       })
+    })
+  })
+
+  describe('when onLoadMore function is passed and isLoadingMore is true', () => {
+    beforeEach(() => {
+      setup(
+        {
+          onLoadMore: jest.fn(),
+          isLoadingMore: true,
+        },
+        true
+      )
+      const button = screen.getByText(/Select/)
+      userEvent.click(button)
+    })
+
+    it('a spinner is rendered at the bottom of the list', async () => {
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
     })
   })
 

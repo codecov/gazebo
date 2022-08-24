@@ -79,6 +79,15 @@ SelectWithLoadMore.args = {
   },
 }
 
+export const SelectWithLoader = Template.bind({})
+SelectWithLoader.args = {
+  items: [`Item1`, `Item2`, `Item3`],
+  isLoadingMore: true,
+  onLoadMore: () => {
+    console.log('Load more')
+  },
+}
+
 export default {
   title: 'Components/MultipleSelect',
   component: MultipleSelect,
