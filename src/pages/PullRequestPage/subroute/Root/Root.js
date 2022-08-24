@@ -1,10 +1,9 @@
 import isNil from 'lodash/isNil'
-import { useParams } from 'react-router-dom'
 
-import { useImpactedFilesComparison } from 'services/pull'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 import ImpactedFiles from './ImpactedFiles'
+import { useImpactedFilesTable } from './ImpactedFiles/hooks'
 
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0
@@ -23,12 +22,8 @@ function hasReportWithoutChanges({
 }
 
 const Root = () => {
-  const { provider, owner, repo, pullId } = useParams()
-  const { data, isLoading } = useImpactedFilesComparison({
-    provider,
-    owner,
-    repo,
-    pullId,
+  const { data, isLoading } = useImpactedFilesTable({
+    options: { suspense: true },
   })
 
   return (

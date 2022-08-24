@@ -83,9 +83,16 @@ export function usePull({ provider, owner, repo, pullId }) {
   })
 }
 
-export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
+export function useImpactedFilesComparison({
+  provider,
+  owner,
+  repo,
+  pullId,
+  filters,
+  ...options
+}) {
   const query = `
-  query ImpactedFilesComparison($owner: String!, $repo: String!, $pullId: Int!) {
+  query ImpactedFilesComparison($owner: String!, $repo: String!, $pullId: Int!, $filters: ImpactedFilesFilters!) {
     owner(username: $owner) {
       repository(name: $repo) {
         pull(id: $pullId) {
@@ -99,7 +106,7 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
             headTotals {
               percentCovered
             }
-            impactedFiles {
+            impactedFiles(filters:$filters) {
               headName
               baseCoverage {
                 percentCovered
@@ -128,6 +135,7 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
         owner,
         repo,
         pullId: parseInt(pullId, 10),
+        filters,
       },
     })
   }
@@ -163,13 +171,14 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
   }
 
   return useQuery(
-    ['impactedFileComparison', provider, owner, repo, pullId],
+    ['impactedFileComparison', provider, owner, repo, pullId, filters],
     fetchImpactedFiles,
     {
       select: ({ data }) =>
         transformImpactedFilesData(
           data?.owner?.repository?.pull?.compareWithBase
         ),
+      ...options,
     }
   )
 }
