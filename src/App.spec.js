@@ -144,6 +144,24 @@ describe('App', () => {
     })
   })
 
+  describe('rendering enterprise landing page', () => {
+    describe('IS_ENTERPRISE is true', () => {
+      beforeAll(() => {
+        config.IS_ENTERPRISE = true
+      })
+
+      describe('/', () => {
+        it('renders landing page', () => {
+          window.history.pushState({}, 'Test Landing Page Render', '/')
+          setup()
+
+          const page = screen.getByText('EnterpriseLandingPage')
+          expect(page).toBeInTheDocument()
+        })
+      })
+    })
+  })
+
   describe('rendering feedback page', () => {
     beforeEach(() => {
       window.history.pushState({}, 'Test Feedback Page', '/gh/feedback')
@@ -177,6 +195,94 @@ describe('App', () => {
 
     it('renders the file view page', () => {
       expect(screen.getByText(/FileViewPage/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('rendering home page', () => {
+    describe('IS_ENTERPRISE is false', () => {
+      beforeAll(() => {
+        config.IS_ENTERPRISE = false
+      })
+
+      describe('/', () => {
+        it('redirects to /gh', async () => {
+          window.history.pushState({}, 'Test Landing Page Redirect', '/')
+          setup()
+
+          await waitForElementToBeRemoved(() =>
+            screen.queryByTestId('logo-spinner')
+          )
+
+          const page = screen.getByText('HomePage')
+          expect(page).toBeInTheDocument()
+        })
+      })
+    })
+  })
+
+  describe('rendering login page', () => {
+    describe('IS_ENTERPRISE is true', () => {
+      beforeAll(() => {
+        config.IS_ENTERPRISE = true
+      })
+
+      describe('/login/:provider', () => {
+        it('redirects to landing page', () => {
+          window.history.pushState(
+            {},
+            'Test Landing Page Redirect',
+            '/login/gh'
+          )
+          setup()
+
+          const page = screen.getByText('EnterpriseLandingPage')
+          expect(page).toBeInTheDocument()
+        })
+      })
+
+      describe('/login', () => {
+        it('redirects to landing page', () => {
+          window.history.pushState({}, 'Test Landing Page Redirect', '/login')
+          setup()
+
+          const page = screen.getByText('EnterpriseLandingPage')
+          expect(page).toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('IS_ENTERPRISE is false', () => {
+      beforeAll(() => {
+        config.IS_ENTERPRISE = false
+      })
+
+      describe('/login/:provider', () => {
+        it('renders login page', async () => {
+          window.history.pushState(
+            {},
+            'Test Landing Page Redirect',
+            '/login/gh'
+          )
+          setup()
+
+          await waitForElementToBeRemoved(() =>
+            screen.queryByTestId('logo-spinner')
+          )
+
+          const page = screen.getByText('LoginPage')
+          expect(page).toBeInTheDocument()
+        })
+      })
+
+      describe('/login', () => {
+        it('renders login page', () => {
+          window.history.pushState({}, 'Test Landing Page Redirect', '/login')
+          setup()
+
+          const page = screen.getByText('LoginPage')
+          expect(page).toBeInTheDocument()
+        })
+      })
     })
   })
 
@@ -263,90 +369,6 @@ describe('App', () => {
 
     it('renders the repo page', async () => {
       expect(screen.getByText(/RepoPage/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('testing IS_ENTERPRISE', () => {
-    describe('IS_ENTERPRISE is true', () => {
-      beforeAll(() => {
-        config.IS_ENTERPRISE = true
-      })
-
-      describe('/login/:provider', () => {
-        it('redirects to landing page', () => {
-          window.history.pushState(
-            {},
-            'Test Landing Page Redirect',
-            '/login/gh'
-          )
-          setup()
-
-          const page = screen.getByText('EnterpriseLandingPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-      describe('/login', () => {
-        it('redirects to landing page', () => {
-          window.history.pushState({}, 'Test Landing Page Redirect', '/login')
-          setup()
-
-          const page = screen.getByText('EnterpriseLandingPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-      describe('/', () => {
-        it('renders landing page', () => {
-          window.history.pushState({}, 'Test Landing Page Render', '/')
-          setup()
-
-          const page = screen.getByText('EnterpriseLandingPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-    })
-    describe('IS_ENTERPRISE is false', () => {
-      beforeAll(() => {
-        config.IS_ENTERPRISE = false
-      })
-      describe('/login/:provider', () => {
-        it('renders login page', async () => {
-          window.history.pushState(
-            {},
-            'Test Landing Page Redirect',
-            '/login/gh'
-          )
-          setup()
-
-          await waitForElementToBeRemoved(() =>
-            screen.queryByTestId('logo-spinner')
-          )
-
-          const page = screen.getByText('LoginPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-      describe('/login', () => {
-        it('renders login page', () => {
-          window.history.pushState({}, 'Test Landing Page Redirect', '/login')
-          setup()
-
-          const page = screen.getByText('LoginPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-      describe('/', () => {
-        it('redirects to /gh', async () => {
-          window.history.pushState({}, 'Test Landing Page Redirect', '/')
-          setup()
-
-          await waitForElementToBeRemoved(() =>
-            screen.queryByTestId('logo-spinner')
-          )
-
-          const page = screen.getByText('HomePage')
-          expect(page).toBeInTheDocument()
-        })
-      })
     })
   })
 })
