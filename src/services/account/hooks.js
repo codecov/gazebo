@@ -1,6 +1,6 @@
 import { useStripe } from '@stripe/react-stripe-js'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Cookie from 'js-cookie'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 import Api from 'shared/api'
 import { ProviderCookieKeyMapping } from 'shared/api/helpers'
@@ -57,7 +57,8 @@ export function useAccountDetails({ provider, owner, opts = {} }) {
 
 export function usePlans(provider) {
   // the plans are very static data
-  return useQuery('plans', () => fetchPlan(provider), {
+  return useQuery(['plans'], () => fetchPlan(provider), {
+    // I dunno here if staleTime should be infinity. Plans do change every now and then :surprised-face:
     cacheTime: Infinity,
     staleTime: Infinity,
   })
@@ -178,8 +179,8 @@ export function useAutoActivate({ provider, owner, opts = {} }) {
 
   const successHandler = (...args) => {
     // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
-    queryClient.invalidateQueries('users')
-    queryClient.invalidateQueries('accountDetails')
+    queryClient.invalidateQueries(['users'])
+    queryClient.invalidateQueries(['accountDetails'])
 
     if (onSuccess) {
       // Exicute passed onSuccess after invalidating queries

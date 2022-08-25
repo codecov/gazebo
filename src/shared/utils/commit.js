@@ -3,6 +3,7 @@ export const UploadStateEnum = Object.freeze({
   uploaded: 'UPLOADED',
   processed: 'PROCESSED',
   complete: 'COMPLETE',
+  pending: 'PENDING',
 })
 
 export const ErrorCodeEnum = Object.freeze({

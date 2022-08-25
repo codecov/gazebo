@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from 'react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
@@ -75,7 +75,7 @@ export function useCommits({ provider, owner, repo, filters }) {
     filters,
   }
   const { data, ...rest } = useInfiniteQuery(
-    [provider, owner, repo, variables, 'commits'],
+    ['commits', provider, owner, repo, variables],
     ({ pageParam }) =>
       fetchRepoCommits({
         provider,

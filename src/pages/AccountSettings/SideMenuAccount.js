@@ -1,10 +1,15 @@
 import { useParams } from 'react-router-dom'
 
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 import Sidemenu from 'ui/Sidemenu'
 
 function SideMenuAccount() {
   const { owner } = useParams()
+  const { gazeboPlanTab: gazeboPlanTabFlag } = useFlags({
+    gazeboPlanTab: false,
+  })
+  const shouldRenderBillingTab = !gazeboPlanTabFlag && 'billingAndUsers'
 
   const { data: currentUser } = useUser()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
@@ -26,7 +31,7 @@ function SideMenuAccount() {
                 {
                   pageName: isPersonalSettings
                     ? 'internalAccessTab'
-                    : 'billingAndUsers',
+                    : shouldRenderBillingTab,
                 },
                 { pageName: 'yamlTab' },
               ]
@@ -34,7 +39,7 @@ function SideMenuAccount() {
                 {
                   pageName: isPersonalSettings
                     ? 'internalAccessTab'
-                    : 'billingAndUsers',
+                    : shouldRenderBillingTab,
                 },
                 { pageName: 'yamlTab' },
               ]

@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
@@ -9,6 +9,7 @@ function fetchRepoSettingsDetails({ provider, owner, repo }) {
       owner(username:$name){
         repository(name:$repo){
           private
+          activated
           uploadToken
           defaultBranch
           profilingToken
@@ -39,7 +40,7 @@ function fetchRepoSettingsDetails({ provider, owner, repo }) {
 export function useRepoSettings() {
   const { provider, owner, repo } = useParams()
 
-  return useQuery([provider, owner, repo, 'settings'], () => {
+  return useQuery(['GetRepoSettings', provider, owner, repo], () => {
     return fetchRepoSettingsDetails({ provider, owner, repo })
   })
 }

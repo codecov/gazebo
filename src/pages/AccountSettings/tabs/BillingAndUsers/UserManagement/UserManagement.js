@@ -4,9 +4,8 @@ import { Link } from 'react-router-dom'
 
 import Button from 'old_ui/Button'
 import Card from 'old_ui/Card'
-import Toggle from 'old_ui/Toggle'
 import User from 'old_ui/User'
-import { useAccountDetails, useAutoActivate } from 'services/account'
+import { useAccountDetails } from 'services/account'
 import {
   ApiFilterEnum,
   useLocationParams,
@@ -17,22 +16,27 @@ import { useUpdateUser, useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 import { isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A'
+import Banner from 'ui/Banner'
+import BannerContent from 'ui/Banner/BannerContent'
+import BannerHeading from 'ui/Banner/BannerHeading'
 import Modal from 'ui/Modal'
+import Toggle from 'ui/Toggle'
 
+import AutoActivate from './AutoActivate'
 import { FormControls } from './FormControls'
 import { FormPaginate } from './FormPaginate'
+import MemberActivation from './MembersActivation'
 
 const UserManagementClasses = {
   root: 'space-y-4 col-span-2 mb-20 grow', // Select pushes page length out. For now padding
   cardHeader: 'flex justify-between items-center pb-4',
   activateUsers:
     'flex items-center py-2 px-4 shadow rounded-full text-blue-500',
-  activateUsersText: 'ml-2',
   title: 'text-2xl font-bold',
   results: 'shadow divide-y divide-gray-200 divide-solid p-6',
   userTable: 'grid grid-cols-5 lg:gap-2 my-6',
   user: 'col-span-4',
-  ctaWrapper: 'flex items-center justify-end',
+  ctaWrapper: 'flex items-center justify-end gap-2',
   cta: 'w-full truncate',
 }
 
@@ -92,11 +96,11 @@ function UserManagement({ provider, owner }) {
   })
   // Makes the PUT call to activate/deactivate selected user
   const { activate } = useActivateUser({ owner, provider })
-  const { mutate: autoActivate } = useAutoActivate({ owner, provider })
   const { data: accountDetails } = useAccountDetails({ owner, provider })
   const { upgradePlan } = useNavLinks()
   const [isOpen, setIsOpen] = useState(false)
   const maxActivatedUsers = 5
+  const planAutoActivate = accountDetails?.planAutoActivate
 
   const handleActivate = (user) => {
     if (
@@ -148,6 +152,24 @@ function UserManagement({ provider, owner }) {
           </div>
         }
       />
+      <MemberActivation
+        activatedUserCount={accountDetails?.activatedUserCount}
+        planQuantity={accountDetails?.plan?.quantity}
+      />
+      {planAutoActivate !== undefined && (
+        <AutoActivate planAutoActivate={planAutoActivate} />
+      )}
+      <Banner>
+        <BannerHeading>
+          <h2 className="font-semibold">Don’t see a member?</h2>
+        </BannerHeading>
+        <BannerContent>
+          <p>
+            It may be because they haven’t logged into Codecov yet. Please make
+            sure they log into Codecov first
+          </p>
+        </BannerContent>
+      </Banner>
       <FormControls
         current={params}
         onChange={updateParams}
@@ -159,18 +181,6 @@ function UserManagement({ provider, owner }) {
         }}
       />
       <Card className={UserManagementClasses.results}>
-        <div className={UserManagementClasses.cardHeader}>
-          <h2 className={UserManagementClasses.title}>Users</h2>
-          <span className={UserManagementClasses.activateUsers}>
-            <Toggle
-              showLabel={true}
-              onClick={() => autoActivate(!accountDetails?.planAutoActivate)}
-              value={accountDetails?.planAutoActivate}
-              label="Auto activate users"
-              labelClass={UserManagementClasses.activateUsersText}
-            />
-          </span>
-        </div>
         <div>
           {isSuccess &&
             data.results.map((user) => (
@@ -186,17 +196,11 @@ function UserManagement({ provider, owner }) {
                   pills={createPills(user)}
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
-                  <Button
-                    data-cy={`activate-${user.username}`}
-                    className={UserManagementClasses.cta}
-                    color={user.activated ? 'red' : 'blue'}
-                    variant={user.activated ? 'outline' : 'normal'}
-                    onClick={() => {
-                      handleActivate(user)
-                    }}
-                  >
-                    {user.activated ? 'Deactivate' : 'Activate'}
-                  </Button>
+                  <Toggle
+                    label={user.activated ? 'Activated' : 'Not yet activated'}
+                    value={user.activated}
+                    onClick={() => handleActivate(user)}
+                  />
                 </div>
               </div>
             ))}

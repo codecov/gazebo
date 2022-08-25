@@ -1,9 +1,9 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { usePulls } from './hooks'
+import * as hooks from './hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -130,7 +130,7 @@ describe('GetPulls', () => {
       })
     )
 
-    hookData = renderHook(() => usePulls({ provider, owner, repo }), {
+    hookData = renderHook(() => hooks.usePulls({ provider, owner, repo }), {
       wrapper,
     })
   }
@@ -145,8 +145,8 @@ describe('GetPulls', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      beforeEach(async () => {
+        await hookData.waitFor(() => hookData.result.current.isSuccess)
       })
 
       it('returns expected pulls nodes', () => {
@@ -162,12 +162,12 @@ describe('GetPulls', () => {
     beforeEach(async () => {
       setup()
       await hookData.waitFor(() => hookData.result.current.isSuccess)
-      await act(() => {
-        return hookData.result.current.fetchNextPage()
-      })
+      hookData.result.current.fetchNextPage()
+      await hookData.waitFor(() => hookData.result.current.isFetching)
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('returns prev and next page pulls of the user', () => {
+    it('returns prev and next page pulls of the user', async () => {
       expect(hookData.result.current.data.pulls).toEqual([
         { node: node1 },
         { node: node2 },

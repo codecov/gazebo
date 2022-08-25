@@ -1,26 +1,23 @@
-import PropTypes from 'prop-types'
-
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
 import useRepoContentsTable from './hooks'
 
+const Loader = () => (
+  <div className="flex-1 flex justify-center">
+    <Spinner size={60} />
+  </div>
+)
+
 function RepoContentsTable() {
   const { data, headers, handleSort, isLoading, isSearching } =
     useRepoContentsTable()
 
-  if (isLoading) {
-    return (
-      <div className="flex-1 flex justify-center">
-        <Spinner size={60} />
-      </div>
-    )
-  }
-
   return (
     <>
       <Table data={data} columns={headers} onSort={handleSort} />
-      {data?.length === 0 && (
+      {isLoading && <Loader />}
+      {data?.length === 0 && !isLoading && (
         <p className="flex justify-center flex-1">
           {isSearching
             ? 'No results found'
@@ -29,10 +26,6 @@ function RepoContentsTable() {
       )}
     </>
   )
-}
-
-RepoContentsTable.propTypes = {
-  state: PropTypes.string,
 }
 
 export default RepoContentsTable

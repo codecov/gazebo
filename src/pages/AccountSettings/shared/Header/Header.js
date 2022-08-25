@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
   const { owner } = useParams()
+  const shouldRenderTabs = useShouldRenderBillingTabs()
 
   return (
     <>
@@ -14,6 +16,9 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
+            ...(shouldRenderTabs
+              ? [{ pageName: 'membersTab' }, { pageName: 'planTab' }]
+              : []),
             {
               pageName: 'accountAdmin',
               children: 'Settings',

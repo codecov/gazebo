@@ -1,7 +1,7 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter } from 'react-router-dom'
 
 import { useTracking } from './hooks'
@@ -35,6 +35,9 @@ describe('useTracking', () => {
   let hookData
 
   function setup() {
+    window.pendo = {
+      initialize: jest.fn(),
+    }
     hookData = renderHook(() => useTracking(), { wrapper })
     return hookData.waitFor(() => {
       return !hookData.result.current.isFetching
@@ -112,6 +115,10 @@ describe('useTracking', () => {
           },
         },
       })
+    })
+
+    it('fires pendo', () => {
+      expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
     })
   })
 

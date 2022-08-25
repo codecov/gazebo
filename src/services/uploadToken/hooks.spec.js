@@ -1,9 +1,8 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { act } from 'react-test-renderer'
 
 import { useRegenerateUploadToken } from './hooks'
 
@@ -91,11 +90,9 @@ describe('useRegenerateUploadToken', () => {
 
     describe('When success', () => {
       beforeEach(async () => {
-        return act(async () => {
-          hookData.result.current.mutate({})
-          await hookData.waitFor(() => hookData.result.current.isLoading)
-          await hookData.waitFor(() => !hookData.result.current.isLoading)
-        })
+        hookData.result.current.mutate({})
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
       it('returns isSuccess true', () => {

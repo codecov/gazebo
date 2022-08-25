@@ -6,6 +6,7 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 
 import Dropdown from './Dropdown'
+import FeedbackLink from './FeedbackLink'
 import RequestButton from './RequestButton'
 
 export function LoginPrompt() {
@@ -64,6 +65,7 @@ function DesktopMenu() {
         <A to={{ pageName: 'blog' }} variant="header" showExternalIcon={false}>
           Blog
         </A>
+        {currentUser && <FeedbackLink />}
       </div>
       {currentUser ? (
         <div className="flex items-center space-between mx-2 md:mx-4 gap-2">

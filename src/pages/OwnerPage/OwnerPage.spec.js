@@ -2,22 +2,28 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
-import { useOwner } from 'services/user'
+import { useOwner, useUser } from 'services/user'
+import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import OwnerPage from './OwnerPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
+jest.mock('services/useShouldRenderBillingTabs')
 jest.mock('services/account')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 
 describe('OwnerPage', () => {
   function setup(owner, accountDetails) {
+    useShouldRenderBillingTabs.mockReturnValue(true)
     useOwner.mockReturnValue({
       data: owner,
     })
     useAccountDetails.mockReturnValue({
       data: accountDetails,
+    })
+    useUser.mockReturnValue({
+      data: null,
     })
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>

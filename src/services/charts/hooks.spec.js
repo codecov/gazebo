@@ -1,9 +1,9 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { setupServer } from 'msw/node'
-import { QueryClient, QueryClientProvider } from 'react-query'
 
-import { useOrgCoverage } from './hooks'
-import { orgCoverageHandler } from './mocks'
+import { useLegacyRepoCoverage, useOrgCoverage } from './hooks'
+import { orgCoverageHandler, repoCoverageHandler } from './mocks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -117,14 +117,12 @@ describe('useOrgCoverage', () => {
     hookData = renderHook(() => useOrgCoverage({ provider, owner, query }), {
       wrapper,
     })
-    return hookData.waitFor(() => {
-      return !hookData.result.current.isFetching
-    })
   }
 
-  describe('returns quaterly coverage data', () => {
-    beforeEach(() => {
-      return setup({ provider, owner, query: { groupingUnit: 'quarterly' } })
+  describe('returns quarterly coverage data', () => {
+    beforeEach(async () => {
+      setup({ provider, owner, query: { groupingUnit: 'quarterly' } })
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
     it('returns chart data', () => {
@@ -133,8 +131,50 @@ describe('useOrgCoverage', () => {
   })
 
   describe('returns year coverage data', () => {
-    beforeEach(() => {
-      return setup({ provider, owner, query: { groupingUnit: 'yearly' } })
+    beforeEach(async () => {
+      setup({ provider, owner, query: { groupingUnit: 'yearly' } })
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
+    })
+
+    it('returns chart data', () => {
+      expect(hookData.result.current.data).toStrictEqual(exampleYearlyHookData)
+    })
+  })
+})
+
+describe('useLegacyRepoCoverage', () => {
+  const provider = 'gl'
+  const owner = 'doggo'
+
+  let hookData
+
+  beforeEach(() => {
+    server.use(repoCoverageHandler)
+  })
+
+  function setup({
+    provider = 'github',
+    owner = 'Doggo',
+    query = { groupingUnit: 'quarterly' },
+  }) {
+    hookData = renderHook(
+      () => useLegacyRepoCoverage({ provider, owner, query }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('returns year coverage data', () => {
+    beforeEach(async () => {
+      setup({
+        provider,
+        owner,
+        branch: 'main',
+        trend: 'all_time',
+        body: { groupingUnit: 'yearly' },
+      })
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
     it('returns chart data', () => {

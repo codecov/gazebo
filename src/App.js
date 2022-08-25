@@ -1,23 +1,27 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { lazy } from 'react'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { ReactQueryDevtools } from 'react-query/devtools'
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 
 import BaseLayout from 'layouts/BaseLayout'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
+import { useFlags } from 'shared/featureFlags'
 
 // Not lazy loading because the page is very small and is accessed often
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
+const FeedbackPage = lazy(() => import('./pages/FeedbackPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage/RepoPage'))
+const PlanPage = lazy(() => import('./pages/PlanPage/PlanPage'))
+const MembersPage = lazy(() => import('./pages/MembersPage/MembersPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +35,9 @@ const queryClient = new QueryClient({
 
 function App() {
   useUTM()
+  const { gazeboPlanTab } = useFlags({
+    gazeboPlanTab: false,
+  })
 
   return (
     <ToastNotificationProvider>
@@ -58,6 +65,25 @@ function App() {
                 <AnalyticsPage />
               </BaseLayout>
             </Route>
+            <Route path="/:provider/feedback">
+              <BaseLayout>
+                <FeedbackPage />
+              </BaseLayout>
+            </Route>
+            {gazeboPlanTab && (
+              <Route path="/members/:provider/:owner/">
+                <BaseLayout>
+                  <MembersPage />
+                </BaseLayout>
+              </Route>
+            )}
+            {gazeboPlanTab && (
+              <Route path="/plan/:provider/:owner/">
+                <BaseLayout>
+                  <PlanPage />
+                </BaseLayout>
+              </Route>
+            )}
             <Route path="/:provider/+" exact>
               <BaseLayout>
                 <HomePage />

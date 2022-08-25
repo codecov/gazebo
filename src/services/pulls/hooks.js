@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from 'react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
@@ -79,7 +79,7 @@ export function usePulls({
     orderingDirection,
   }
   const { data, ...rest } = useInfiniteQuery(
-    [provider, owner, repo, variables, 'pulls'],
+    ['pulls', provider, owner, repo, variables],
     ({ pageParam }) =>
       fetchRepoPulls({
         provider,

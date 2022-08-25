@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
@@ -14,6 +14,8 @@ function fetchRepoDetails({ provider, owner, repo }) {
           uploadToken
           defaultBranch
           yaml
+          activated
+          oldestCommitAt
         }
       }
     }
@@ -35,7 +37,7 @@ function fetchRepoDetails({ provider, owner, repo }) {
 }
 
 export function useRepo({ provider, owner, repo }) {
-  return useQuery([provider, owner, repo], () => {
+  return useQuery(['GetRepo', provider, owner, repo], () => {
     return fetchRepoDetails({ provider, owner, repo })
   })
 }
@@ -64,7 +66,7 @@ export function useEraseRepoContent() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('GetRepo')
+        queryClient.invalidateQueries(['GetRepo'])
       },
     }
   )
@@ -92,7 +94,8 @@ export function useUpdateRepo() {
     ({ ...body }) => updateRepo({ provider, owner, repo, body }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('GetRepo')
+        queryClient.invalidateQueries(['GetRepo'])
+        queryClient.invalidateQueries(['GetRepoSettings'])
       },
     }
   )
@@ -125,7 +128,6 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
 
   return Api.graphql({
     provider,
-    repo,
     query,
     variables: {
       name: owner,
@@ -146,11 +148,81 @@ export function useRepoContents({
   branch,
   path,
   filters,
+  ...options
 }) {
   return useQuery(
-    [provider, owner, repo, branch, path, filters, 'BranchFiles'],
+    ['BranchFiles', provider, owner, repo, branch, path, filters],
     () => {
       return fetchRepoContents({ provider, owner, repo, branch, path, filters })
+    },
+    {
+      ...options,
+    }
+  )
+}
+
+function fetchRepoBackfilledContents({ provider, owner, repo }) {
+  const query = `
+    query BackfillFlagMemberships($name: String!, $repo: String!) {
+      owner(username:$name){
+        repository(name:$repo){
+          flagsMeasurementsActive
+          flagsMeasurementsBackfilled
+        }
+      }
+    }
+  `
+
+  return Api.graphql({
+    provider,
+    repo,
+    query,
+    variables: {
+      name: owner,
+      repo,
+    },
+  }).then((res) => {
+    return res?.data?.owner?.repository
+  })
+}
+
+export function useRepoBackfilled() {
+  const { provider, owner, repo } = useParams()
+  return useQuery(['BackfillFlagMemberships', provider, owner, repo], () => {
+    return fetchRepoBackfilledContents({ provider, owner, repo })
+  })
+}
+
+export function useActivateFlagMeasurements({ provider, owner, repo }) {
+  const queryClient = useQueryClient()
+  return useMutation(
+    () => {
+      const query = `
+        mutation ActivateFlagsMeasurements($input: ActivateFlagsMeasurementsInput!) {
+          activateFlagsMeasurements(input: $input) {
+            error {
+              __typename
+            }
+          }
+        }
+      `
+      const variables = { input: { owner, repoName: repo } }
+      return Api.graphqlMutation({
+        provider,
+        query,
+        variables,
+        mutationPath: 'activateFlagsMeasurements',
+      })
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          'BackfillFlagMemberships',
+          provider,
+          owner,
+          repo,
+        ])
+      },
     }
   )
 }
