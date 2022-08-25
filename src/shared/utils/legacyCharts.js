@@ -27,7 +27,7 @@ const GroupingUnit = Object.freeze({
 
 export function getTrendEnum(trend) {
   for (let key in Trend) {
-    if (Trend[key] === trend) {
+    if (Trend[key] === trend?.toLowerCase()) {
       return Trend[key]
     }
   }
