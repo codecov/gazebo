@@ -25,6 +25,16 @@ const GroupingUnit = Object.freeze({
   YEAR: 'year',
 })
 
+export function getTrendEnum(trend) {
+  for (let key in Trend) {
+    if (Trend[key] === trend) {
+      return Trend[key]
+    }
+  }
+
+  return Trend.LAST_YEAR
+}
+
 // eslint-disable-next-line complexity
 const calculateTrendDate = ({ today, trend }) => {
   if (trend === Trend.TWENTY_FOUR_HOURS) return subDays(today, 1)
