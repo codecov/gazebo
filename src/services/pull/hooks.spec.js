@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { usePull } from './hooks'
+import { useImpactedFilesComparison, usePull } from './hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,8 +86,8 @@ describe('usePull', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
       })
 
       it('returns the data', () => {
@@ -116,14 +116,102 @@ describe('usePull', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
       })
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
           hasAccess: false,
           ...pull,
+        })
+      })
+    })
+  })
+})
+
+const mockImpactedFilesData = {
+  patchTotals: {
+    percentCovered: 1,
+  },
+  baseTotals: {
+    percentCovered: 41.66667,
+  },
+  headTotals: {
+    percentCovered: 92.30769,
+  },
+  impactedFiles: [
+    {
+      headName: 'file A',
+      headCoverage: {
+        percentCovered: 90.23,
+      },
+      baseCoverage: {
+        percentCovered: 23.42,
+      },
+      patchCoverage: {
+        percentCovered: 27.43,
+      },
+      changeCoverage: 58.333333333333336,
+    },
+  ],
+}
+
+describe('useImpactedFilesComparison', () => {
+  afterEach(() => queryClient.clear())
+  let hookData
+
+  function setup(data) {
+    server.use(
+      graphql.query('ImpactedFilesComparison', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(data))
+      })
+    )
+
+    hookData = renderHook(
+      () => useImpactedFilesComparison({ provider, owner, repo, pullId: 10 }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          repository: {
+            pull: {
+              compareWithBase: mockImpactedFilesData,
+            },
+          },
+        },
+      })
+    })
+
+    it('renders isLoading true', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual({
+          impactedFiles: [
+            {
+              changeCoverage: 66.81,
+              hasHeadAndPatchCoverage: true,
+              headCoverage: 90.23,
+              headName: 'file A',
+              patchCoverage: 27.43,
+            },
+          ],
+          pullBaseCoverage: 41.66667,
+          pullHeadCoverage: 92.30769,
+          pullPatchCoverage: 1,
         })
       })
     })
