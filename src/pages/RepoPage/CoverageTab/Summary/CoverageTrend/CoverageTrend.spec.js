@@ -1,29 +1,42 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import CoverageTrend from './CoverageTrend'
 
-import { useSummary } from '../hooks'
+import { useBranchSelector } from '../hooks/useBranchSelector'
+import { useSparkline } from '../hooks/useSparkline'
 
-jest.mock('../hooks')
+jest.mock('../hooks/useSparkline')
+jest.mock('../hooks/useBranchSelector')
 jest.mock('../TrendDropdown', () => () => 'TrendDropdown')
 
-describe('CoverageTrend', () => {
-  function setup({ summaryData }) {
-    useSummary.mockReturnValue(summaryData)
+const queryClient = new QueryClient()
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={[`/gh/caleb/mighty-nein`]}>
+    <Route path="/:provider/:owner/:repo">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
 
-    return render(<CoverageTrend />)
+describe('CoverageTrend', () => {
+  function setup({ sparklineData }) {
+    useSparkline.mockReturnValue(sparklineData)
+    useBranchSelector.mockReturnValue({
+      selection: { name: 'bells-hells' },
+    })
+
+    return render(<CoverageTrend />, { wrapper })
   }
 
   describe('trend sparkline', () => {
     it('renders a sparkline', () => {
       setup({
-        summaryData: {
+        sparklineData: {
           coverage: [{ coverage: 81 }, { coverage: 30 }, { coverage: 45 }],
-          currentBranchSelected: {
-            name: 'bells-hells',
-          },
           coverageChange: -40,
-          legacyApiIsSuccess: true,
+          isSuccess: true,
         },
       })
       expect(
@@ -31,15 +44,12 @@ describe('CoverageTrend', () => {
       ).toBeInTheDocument()
     })
 
-    it('the coverage change', () => {
+    it('renders the coverage change', () => {
       setup({
-        summaryData: {
+        sparklineData: {
           coverage: [{ coverage: 81 }, { coverage: 30 }, { coverage: 45 }],
-          currentBranchSelected: {
-            name: 'bells-hells',
-          },
           coverageChange: -40,
-          legacyApiIsSuccess: true,
+          isSuccess: true,
         },
       })
       expect(screen.getByText(/-40/)).toBeInTheDocument()
@@ -47,13 +57,10 @@ describe('CoverageTrend', () => {
 
     it('plots each coverage point on the sparkline', () => {
       setup({
-        summaryData: {
+        sparklineData: {
           coverage: [{ coverage: 81 }, { coverage: 30 }, { coverage: 45 }],
-          currentBranchSelected: {
-            name: 'bells-hells',
-          },
           coverageChange: -40,
-          legacyApiIsSuccess: true,
+          isSuccess: true,
         },
       })
       expect(screen.getByText(/coverage: 81%/)).toBeInTheDocument()
@@ -63,13 +70,10 @@ describe('CoverageTrend', () => {
 
     it('Handles cases where there is no coverage in the selected time span', () => {
       setup({
-        summaryData: {
+        sparklineData: {
           coverage: [],
-          currentBranchSelected: {
-            name: 'bells-hells',
-          },
           coverageChange: -40,
-          legacyApiIsSuccess: true,
+          isSuccess: true,
         },
       })
 
@@ -81,13 +85,15 @@ describe('CoverageTrend', () => {
 
   describe('render nothing if the api call fails', () => {
     setup({
-      summaryData: {
-        legacyApiIsSuccess: false,
+      sparklineData: {
+        isSuccess: false,
       },
     })
 
-    expect(
-      screen.queryByText(/No coverage reports found in this timespan./)
-    ).not.toBeInTheDocument()
+    it('does not render the sparkline', () => {
+      expect(
+        screen.queryByText(/No coverage reports found in this timespan./)
+      ).not.toBeInTheDocument()
+    })
   })
 })

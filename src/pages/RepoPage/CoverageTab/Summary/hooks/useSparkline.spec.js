@@ -39,69 +39,75 @@ describe('useSparkline', () => {
     )
   }
 
-  beforeEach(() => {
-    jest.clearAllMocks()
-    jest.useFakeTimers()
-    jest.setSystemTime(new Date('2022/01/01'))
-  })
+  describe('with a trend in the url', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2022/01/01'))
+      setup({ searchParams: `?trend=${Trend.TWENTY_FOUR_HOURS}` })
+    })
 
-  it('called the legacy repo coverage with the correct body', () => {
-    setup({ searchParams: `?trend=${Trend.TWENTY_FOUR_HOURS}` })
-
-    expect(useLegacyRepoCoverage).toBeCalledWith({
-      body: {
-        aggFunction: 'min',
-        aggValue: 'timestamp',
+    it('called the legacy repo coverage with the correct body', () => {
+      expect(useLegacyRepoCoverage).toBeCalledWith({
+        body: {
+          aggFunction: 'min',
+          aggValue: 'timestamp',
+          branch: {
+            name: 'c3',
+            options: {},
+          },
+          coverageTimestampOrdering: 'increasing',
+          groupingUnit: 'hour',
+          repositories: ['mighty-nein'],
+          startDate: new Date('2021-12-31T00:00:00.000Z'),
+        },
         branch: {
           name: 'c3',
           options: {},
         },
-        coverageTimestampOrdering: 'increasing',
-        groupingUnit: 'hour',
-        repositories: ['mighty-nein'],
-        startDate: new Date('2021-12-31T00:00:00.000Z'),
-      },
-      branch: {
-        name: 'c3',
-        options: {},
-      },
-      opts: undefined,
-      owner: 'caleb',
-      provider: 'gh',
-      trend: '24 hours',
+        opts: undefined,
+        owner: 'caleb',
+        provider: 'gh',
+        trend: '24 hours',
+      })
     })
   })
 
-  it('called the legacy repo coverage with the correct body when no trend is set', () => {
-    setup()
+  describe('with no trend in the url', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2022/01/01'))
+      setup()
+    })
 
-    expect(useLegacyRepoCoverage).toBeCalledWith({
-      body: {
-        aggFunction: 'min',
-        aggValue: 'timestamp',
+    it('called the legacy repo coverage with the correct body when no trend is set', () => {
+      expect(useLegacyRepoCoverage).toBeCalledWith({
+        body: {
+          aggFunction: 'min',
+          aggValue: 'timestamp',
+          branch: {
+            name: 'c3',
+            options: {},
+          },
+          coverageTimestampOrdering: 'increasing',
+          groupingUnit: 'month',
+          repositories: ['mighty-nein'],
+          startDate: new Date('2021-01-01T00:00:00.000Z'),
+        },
         branch: {
           name: 'c3',
           options: {},
         },
-        coverageTimestampOrdering: 'increasing',
-        groupingUnit: 'month',
-        repositories: ['mighty-nein'],
-        startDate: new Date('2021-01-01T00:00:00.000Z'),
-      },
-      branch: {
-        name: 'c3',
-        options: {},
-      },
-      opts: undefined,
-      owner: 'caleb',
-      provider: 'gh',
-      trend: undefined,
+        opts: undefined,
+        owner: 'caleb',
+        provider: 'gh',
+        trend: undefined,
+      })
     })
-  })
 
-  it('calculates the correct change', () => {
-    setup()
-
-    expect(hookData.result.current.coverageChange).toBe(10)
+    it('calculates the correct change', () => {
+      expect(hookData.result.current.coverageChange).toBe(10)
+    })
   })
 })

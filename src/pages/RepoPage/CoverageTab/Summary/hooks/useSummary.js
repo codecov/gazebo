@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
 import { useBranchSelector } from './useBranchSelector'
-import { useSparkline } from './useSparkline'
 
 export function useSummary() {
   const { repo, owner, provider } = useParams()
@@ -23,10 +22,6 @@ export function useSummary() {
     branch: selection?.name,
     options: { enabled: !!selection?.name },
   })
-  const { coverageChange, legacyApiIsSuccess, coverage } = useSparkline({
-    branch: selection?.name,
-    options: { enabled: !!selection?.name },
-  })
 
   return {
     isLoading: isLoading && isLoadingRepoCoverage,
@@ -35,8 +30,5 @@ export function useSummary() {
     currentBranchSelected: selection,
     defaultBranch: overview?.defaultBranch,
     privateRepo: overview?.private,
-    coverage,
-    coverageChange,
-    legacyApiIsSuccess,
   }
 }

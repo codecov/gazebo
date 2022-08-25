@@ -1,22 +1,34 @@
+import { useParams } from 'react-router-dom'
+
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
+import { useRepoOverview } from 'services/repo'
 import Sparkline from 'ui/Sparkline'
 import { SummaryField } from 'ui/Summary'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import { useSummary } from '../hooks'
+import { useBranchSelector } from '../hooks/useBranchSelector'
+import { useSparkline } from '../hooks/useSparkline'
 import TrendDropdown from '../TrendDropdown'
 
 function CoverageTrend() {
-  const {
-    coverage,
-    currentBranchSelected,
-    coverageChange,
-    legacyApiIsSuccess,
-  } = useSummary()
+  const { repo, owner, provider } = useParams()
+  const { data: overview } = useRepoOverview({
+    provider,
+    repo,
+    owner,
+  })
+  const { selection } = useBranchSelector(
+    overview?.branches,
+    overview?.defaultBranch
+  )
+  const { coverageChange, isSuccess, coverage } = useSparkline({
+    branch: selection?.name,
+    options: { enabled: !!selection?.name },
+  })
 
   return (
     <ErrorBoundary errorComponent={null}>
-      {legacyApiIsSuccess && (
+      {isSuccess && (
         <SummaryField>
           <TrendDropdown />
           <div className="flex gap-2 pb-[1.3rem]">
@@ -25,7 +37,7 @@ function CoverageTrend() {
               <>
                 <Sparkline
                   datum={coverage}
-                  description={`The ${currentBranchSelected?.name} branch coverage trend`}
+                  description={`The ${selection?.name} branch coverage trend`}
                   dataTemplate={(d) => `coverage: ${d}%`}
                   select={(d) => d?.coverage}
                 />

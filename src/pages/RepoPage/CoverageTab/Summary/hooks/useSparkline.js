@@ -5,7 +5,7 @@ import { useLegacyRepoCoverage } from 'services/charts'
 import { useLocationParams } from 'services/navigation'
 import { getTrendEnum, sparklineQuery } from 'shared/utils/legacyCharts'
 
-export function useSparkline({ branch, options }) {
+export function useSparkline({ branch }, options) {
   const { params } = useLocationParams()
   const { repo, owner, provider } = useParams()
 
@@ -22,7 +22,7 @@ export function useSparkline({ branch, options }) {
   )
   const {
     data: { coverage },
-    isSuccess,
+    ...rest
   } = useLegacyRepoCoverage({
     provider,
     owner,
@@ -38,7 +38,7 @@ export function useSparkline({ branch, options }) {
 
   return {
     coverageChange,
-    legacyApiIsSuccess: isSuccess,
     coverage,
+    ...rest,
   }
 }

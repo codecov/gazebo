@@ -6,6 +6,7 @@ import { useCoverageRedirect, useSummary } from './hooks'
 import Summary from './Summary'
 
 jest.mock('./hooks')
+jest.mock('./CoverageTrend', () => () => 'CoverageTrend')
 
 describe('Summary', () => {
   const mockOnChange = jest.fn()
