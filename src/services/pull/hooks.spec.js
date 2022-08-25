@@ -86,8 +86,8 @@ describe('usePull', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => !hookData.result.current.isFetching)
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
       })
 
       it('returns the data', () => {
