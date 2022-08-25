@@ -30,11 +30,10 @@ const mockImpactedFiles = {
   isLoading: false,
 }
 
+const initialEntries = ['/gh/test-org/test-repo/pull/12']
+
 describe('Root', () => {
-  function setup({
-    initialEntries = ['/gh/test-org/test-repo/pull/12'],
-    impactedFiles = mockImpactedFiles,
-  }) {
+  function setup({ impactedFiles = mockImpactedFiles }) {
     useImpactedFilesComparison.mockReturnValue(impactedFiles)
     render(
       <MemoryRouter initialEntries={initialEntries}>

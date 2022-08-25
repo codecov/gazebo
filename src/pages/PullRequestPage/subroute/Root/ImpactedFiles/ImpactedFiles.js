@@ -2,12 +2,11 @@ import { useParams } from 'react-router-dom'
 
 import { useImpactedFilesComparison } from 'services/pull'
 import { getFilenameFromFilePath } from 'shared/utils/url'
-import A from 'ui/A'
 import Progress from 'ui/Progress'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
-const table = [
+const columns = [
   {
     id: 'name',
     header: 'Name',
@@ -55,14 +54,15 @@ function createTable({ tableData }) {
     return {
       name: (
         <div className="flex flex-col">
-          <A
+          {/* TODO: add logic on subsequent PR when Diff unrurls on click */}
+          {/* <A
             to={{
               pageName: 'commitFile',
               // options: { commit, path: headName },
             }}
-          >
-            <span>{getFilenameFromFilePath(headName)}</span>
-          </A>
+          > */}
+          <span>{getFilenameFromFilePath(headName)}</span>
+          {/* </A> */}
           <span className="text-xs mt-0.5 text-ds-gray-quinary">
             {headName}
           </span>
@@ -100,7 +100,7 @@ function ImpactedFiles() {
   const { data } = useImpactedFilesComparison({ provider, owner, repo, pullId })
   const tableContent = createTable({ tableData: data?.impactedFiles })
 
-  return <Table data={tableContent} columns={table} />
+  return <Table data={tableContent} columns={columns} />
 }
 
 export default ImpactedFiles
