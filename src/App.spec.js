@@ -96,11 +96,8 @@ describe('App', () => {
     })
 
     it('renders the AccountSettings page', async () => {
-      await waitForElementToBeRemoved(() =>
-        screen.queryByTestId('logo-spinner')
-      )
-
-      expect(screen.getByText(/AccountSettings/i)).toBeInTheDocument()
+      const page = screen.getByText(/AccountSettings/i)
+      expect(page).toBeInTheDocument()
     })
   })
 
@@ -120,7 +117,8 @@ describe('App', () => {
     })
 
     it('renders the Analytics page', () => {
-      expect(screen.getByText(/AnalyticsPage/i)).toBeInTheDocument()
+      const page = screen.getByText(/AnalyticsPage/i)
+      expect(page).toBeInTheDocument()
     })
   })
 
@@ -140,21 +138,29 @@ describe('App', () => {
     })
 
     it('renders the commit page', () => {
-      expect(screen.getByText(/CommitPage/i)).toBeInTheDocument()
+      const page = screen.getByText(/CommitPage/i)
+      expect(page).toBeInTheDocument()
     })
   })
 
   describe('rendering enterprise landing page', () => {
     describe('IS_ENTERPRISE is true', () => {
-      beforeAll(() => {
+      beforeEach(() => {
         config.IS_ENTERPRISE = true
       })
 
       describe('/', () => {
-        it('renders landing page', () => {
+        beforeEach(() => {
           window.history.pushState({}, 'Test Landing Page Render', '/')
           setup()
+        })
 
+        it('renders the loading state', () => {
+          const loading = screen.getByTestId('logo-spinner')
+          expect(loading).toBeInTheDocument()
+        })
+
+        it('renders landing page', () => {
           const page = screen.getByText('EnterpriseLandingPage')
           expect(page).toBeInTheDocument()
         })
@@ -174,7 +180,8 @@ describe('App', () => {
     })
 
     it('renders the feedback page', () => {
-      expect(screen.getByText(/FeedbackPage/i)).toBeInTheDocument()
+      const page = screen.getByText(/FeedbackPage/i)
+      expect(page).toBeInTheDocument()
     })
   })
 
@@ -194,7 +201,8 @@ describe('App', () => {
     })
 
     it('renders the file view page', () => {
-      expect(screen.getByText(/FileViewPage/i)).toBeInTheDocument()
+      const page = screen.getByText(/FileViewPage/i)
+      expect(page).toBeInTheDocument()
     })
   })
 
@@ -222,29 +230,33 @@ describe('App', () => {
 
   describe('rendering login page', () => {
     describe('IS_ENTERPRISE is true', () => {
-      beforeAll(() => {
+      beforeEach(() => {
         config.IS_ENTERPRISE = true
       })
 
       describe('/login/:provider', () => {
-        it('redirects to landing page', () => {
+        beforeEach(() => {
           window.history.pushState(
             {},
             'Test Landing Page Redirect',
             '/login/gh'
           )
           setup()
+        })
 
+        it('redirects to landing page', () => {
           const page = screen.getByText('EnterpriseLandingPage')
           expect(page).toBeInTheDocument()
         })
       })
 
       describe('/login', () => {
-        it('redirects to landing page', () => {
+        beforeEach(() => {
           window.history.pushState({}, 'Test Landing Page Redirect', '/login')
           setup()
+        })
 
+        it('redirects to landing page', () => {
           const page = screen.getByText('EnterpriseLandingPage')
           expect(page).toBeInTheDocument()
         })
@@ -257,28 +269,33 @@ describe('App', () => {
       })
 
       describe('/login/:provider', () => {
-        it('renders login page', async () => {
+        beforeEach(() => {
           window.history.pushState(
             {},
             'Test Landing Page Redirect',
             '/login/gh'
           )
           setup()
+        })
 
-          await waitForElementToBeRemoved(() =>
-            screen.queryByTestId('logo-spinner')
-          )
+        it('renders the loading state', () => {
+          const loading = screen.getByTestId('logo-spinner')
+          expect(loading).toBeInTheDocument()
+        })
 
+        it('renders login page', async () => {
           const page = screen.getByText('LoginPage')
           expect(page).toBeInTheDocument()
         })
       })
 
       describe('/login', () => {
-        it('renders login page', () => {
+        beforeEach(() => {
           window.history.pushState({}, 'Test Landing Page Redirect', '/login')
           setup()
+        })
 
+        it('renders login page', () => {
           const page = screen.getByText('LoginPage')
           expect(page).toBeInTheDocument()
         })
@@ -298,7 +315,8 @@ describe('App', () => {
     })
 
     it('renders the owner page', () => {
-      expect(screen.getByText(/OwnerPage/i)).toBeInTheDocument()
+      const page = screen.getByText(/OwnerPage/i)
+      expect(page).toBeInTheDocument()
     })
   })
 
@@ -352,7 +370,8 @@ describe('App', () => {
     })
 
     it('renders the pull request page', () => {
-      expect(screen.getByText(/PullRequestPage/i)).toBeInTheDocument()
+      const page = screen.getByText(/PullRequestPage/i)
+      expect(page).toBeInTheDocument()
     })
   })
 
@@ -368,7 +387,8 @@ describe('App', () => {
     })
 
     it('renders the repo page', async () => {
-      expect(screen.getByText(/RepoPage/i)).toBeInTheDocument()
+      const page = screen.getByText(/RepoPage/i)
+      expect(page).toBeInTheDocument()
     })
   })
 })
