@@ -59,7 +59,7 @@ describe('useSparkline', () => {
         coverageTimestampOrdering: 'increasing',
         groupingUnit: 'hour',
         repositories: ['mighty-nein'],
-        startDate: new Date('2021-12-31T04:00:00.000Z'),
+        startDate: new Date('2021-12-31T00:00:00.000Z'),
       },
       branch: {
         name: 'c3',
@@ -86,7 +86,7 @@ describe('useSparkline', () => {
         coverageTimestampOrdering: 'increasing',
         groupingUnit: 'month',
         repositories: ['mighty-nein'],
-        startDate: new Date('2021-01-01T04:00:00.000Z'),
+        startDate: new Date('2021-01-01T00:00:00.000Z'),
       },
       branch: {
         name: 'c3',
