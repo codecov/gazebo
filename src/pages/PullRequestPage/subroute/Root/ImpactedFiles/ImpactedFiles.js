@@ -1,11 +1,10 @@
-import A from 'ui/A'
 import Progress from 'ui/Progress'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import useImpactedFilesTable from './hooks'
 
-const table = [
+const columns = [
   {
     id: 'name',
     header: 'Name',
@@ -57,14 +56,14 @@ function createTable({ tableData }) {
         return {
           name: (
             <div className="flex flex-col">
-              <A
+              {/* <A
                 to={{
                   pageName: 'commitFile',
                   // options: { commit, path: headName },
                 }}
-              >
-                <span>{fileName}</span>
-              </A>
+              > */}
+              <span>{fileName}</span>
+              {/* </A> */}
               <span className="text-xs mt-0.5 text-ds-gray-quinary">
                 {headName}
               </span>
@@ -103,8 +102,7 @@ function ImpactedFiles() {
     options: { suspense: false },
   })
   const tableContent = createTable({ tableData: data?.impactedFiles })
-
-  return <Table data={tableContent} columns={table} onSort={handleSort} />
+  return <Table data={tableContent} columns={columns} onSort={handleSort} />
 }
 
 export default ImpactedFiles

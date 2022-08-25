@@ -86,8 +86,8 @@ describe('usePull', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
       })
 
       it('returns the data', () => {
@@ -116,8 +116,8 @@ describe('usePull', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
       })
 
       it('returns the data', () => {
@@ -221,8 +221,8 @@ describe('useImpactedFilesComparison', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
       })
 
       it('returns the data', () => {
