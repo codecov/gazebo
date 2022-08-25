@@ -13,8 +13,8 @@ const SelectClasses = {
 }
 
 const UlVariantClass = {
-  default: 'w-full border-gray-ds-tertiary h-8',
-  gray: 'w-full border-gray-ds-tertiary h-8',
+  default: 'w-full border-gray-ds-tertiary',
+  gray: 'w-full border-gray-ds-tertiary',
   text: 'left-0 z-10 whitespace-nowrap',
 }
 
