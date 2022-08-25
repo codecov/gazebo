@@ -7,11 +7,17 @@ const defaultConfig = {
   SENTRY_ENVIRONMENT: 'staging',
 }
 
-function removeReactAppPrefix(obj) {
+export function removeReactAppPrefix(obj) {
   // in .env file, the variable must start with REACT_APP_
   // to be injected in the application, so we remove that
   // prefix to be more convenient for us
-  return mapKeys(obj, (_, key) => key.replace('REACT_APP_', ''))
+  const keys = mapKeys(obj, (_, key) => key.replace('REACT_APP_', ''))
+
+  if ('IS_ENTERPRISE' in keys) {
+    keys['IS_ENTERPRISE'] = keys['IS_ENTERPRISE'].toLowerCase() === 'true'
+  }
+
+  return keys
 }
 
 const config = {
