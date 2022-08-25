@@ -1,7 +1,6 @@
 import {
   render,
   screen,
-  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { graphql, rest } from 'msw'
@@ -226,10 +225,8 @@ describe('App', () => {
     })
 
     it('renders members page', () => {
-      return waitFor(() => {
-        const page = screen.getByText(/MembersPage/i)
-        expect(page).toBeInTheDocument()
-      })
+      const page = screen.getByText(/MembersPage/i)
+      expect(page).toBeInTheDocument()
     })
   })
 
@@ -259,10 +256,12 @@ describe('App', () => {
       setup()
     })
 
+    it('renders the loading state', () => {
+      const loading = screen.getByTestId('logo-spinner')
+      expect(loading).toBeInTheDocument()
+    })
+
     it('renders the repo page', async () => {
-      await waitForElementToBeRemoved(() =>
-        screen.queryByTestId('logo-spinner')
-      )
       expect(screen.getByText(/RepoPage/i)).toBeInTheDocument()
     })
   })
