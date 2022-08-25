@@ -45,12 +45,12 @@ const localStorageKey = 'gz-dismissFlagsCard'
 function getTableData(data) {
   return (
     data &&
-    data.map((flag) => {
-      const { name, headReportTotals, baseReportTotals, diffTotals } = flag
+    data.map((flagComparison) => {
+      const { name, headTotals, baseTotals, patchTotals } = flagComparison
 
-      const headCoverage = headReportTotals?.coverage
-      const baseCoverage = baseReportTotals?.coverage
-      const patchCoverage = diffTotals?.coverage
+      const headCoverage = headTotals?.percentCovered
+      const baseCoverage = baseTotals?.percentCovered
+      const patchCoverage = patchTotals?.percentCovered
       const changeCoverage =
         headCoverage && baseCoverage && headCoverage - baseCoverage
 
@@ -132,7 +132,7 @@ function Flags() {
     provider,
     owner,
     repo,
-    query: { pullid },
+    pullId: pullid,
   })
 
   const [isCardDismissed, setIsCardDismissed] = useState(
