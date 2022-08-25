@@ -23,7 +23,7 @@ function getFilters({ sortBy }) {
   }
 }
 
-export function useImpactedFilesTable({ options }) {
+function useImpactedFilesTable({ options }) {
   const { provider, owner, repo, pullId } = useParams()
   const [sortBy, setSortBy] = useState([])
   const filters = getFilters({ sortBy: sortBy[0] })
@@ -48,3 +48,5 @@ export function useImpactedFilesTable({ options }) {
 
   return { data, isLoading, handleSort }
 }
+
+export default useImpactedFilesTable

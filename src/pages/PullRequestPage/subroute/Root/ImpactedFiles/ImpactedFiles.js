@@ -3,7 +3,7 @@ import Progress from 'ui/Progress'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import { useImpactedFilesTable } from './hooks'
+import useImpactedFilesTable from './hooks'
 
 const table = [
   {

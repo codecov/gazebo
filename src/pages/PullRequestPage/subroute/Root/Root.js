@@ -3,7 +3,7 @@ import isNil from 'lodash/isNil'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 
 import ImpactedFiles from './ImpactedFiles'
-import { useImpactedFilesTable } from './ImpactedFiles/hooks'
+import useImpactedFilesTable from './ImpactedFiles/hooks'
 
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0
