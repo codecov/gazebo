@@ -34,7 +34,7 @@ describe('calculateDayDifference', () => {
 
 describe.each`
   value          | expected
-  ${undefined}   | ${Trend.ALL_TIME}
+  ${undefined}   | ${Trend.LAST_YEAR}
   ${'24 HOURS'}  | ${Trend.TWENTY_FOUR_HOURS}
   ${'24 hours'}  | ${Trend.TWENTY_FOUR_HOURS}
   ${'7 days'}    | ${Trend.SEVEN_DAYS}
@@ -44,7 +44,7 @@ describe.each`
   ${'last year'} | ${Trend.LAST_YEAR}
   ${'all time'}  | ${Trend.ALL_TIME}
 `('getTrendEnum', ({ value, expected }) => {
-  it('returns the expected value', () => {
+  it(`${value} returns the expected value ${expected}`, () => {
     expect(getTrendEnum(value)).toBe(expected)
   })
 })
