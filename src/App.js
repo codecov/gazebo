@@ -7,7 +7,6 @@ import config from 'config'
 
 import BaseLayout from 'layouts/BaseLayout'
 // not lazy loading because is first page user sees
-import EnterpriseLandingPage from 'pages/EnterpriseLandingPage'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
 import { useFlags } from 'shared/featureFlags'
@@ -17,6 +16,7 @@ import { useFlags } from 'shared/featureFlags'
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
+const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const HomePage = lazy(() => import('./pages/HomePage'))
