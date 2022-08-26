@@ -2,11 +2,10 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useImpactedFilesComparison } from 'services/pull'
-
+import useImpactedFilesTable from './ImpactedFiles/hooks'
 import Root from './Root'
 
-jest.mock('services/pull')
+jest.mock('./ImpactedFiles/hooks')
 jest.mock(
   './ImpactedFiles/ImpactedFiles',
   () => () => 'ImpactedFiles Component'
@@ -34,7 +33,7 @@ const initialEntries = ['/gh/test-org/test-repo/pull/12']
 
 describe('Root', () => {
   function setup({ impactedFiles = mockImpactedFiles }) {
-    useImpactedFilesComparison.mockReturnValue(impactedFiles)
+    useImpactedFilesTable.mockReturnValue(impactedFiles)
     render(
       <MemoryRouter initialEntries={initialEntries}>
         <Route path="/:provider/:owner/:repo/pull/:pullId">

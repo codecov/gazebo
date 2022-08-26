@@ -1,10 +1,11 @@
 import isNil from 'lodash/isNil'
-import { useParams } from 'react-router-dom'
+import { Suspense } from 'react'
 
-import { useImpactedFilesComparison } from 'services/pull'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
+import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './ImpactedFiles'
+import useImpactedFilesTable from './ImpactedFiles/hooks'
 
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0
@@ -23,13 +24,13 @@ function hasReportWithoutChanges({
 }
 
 const Root = () => {
-  const { provider, owner, repo, pullId } = useParams()
-  const { data, isLoading } = useImpactedFilesComparison({
-    provider,
-    owner,
-    repo,
-    pullId,
-  })
+  const { data, isLoading } = useImpactedFilesTable()
+
+  const Loader = (
+    <div className="flex items-center justify-center py-16">
+      <Spinner />
+    </div>
+  )
 
   return (
     !isLoading && (
@@ -40,7 +41,9 @@ const Root = () => {
           coverageIsLoading={false}
         />
         {hasImpactedFiles(data?.impactedFiles) ? (
-          <ImpactedFiles />
+          <Suspense fallback={Loader}>
+            <ImpactedFiles />
+          </Suspense>
         ) : // Coverage changes remain the same as before, but no impacted files = no change
         hasReportWithoutChanges({
             pullHeadCoverage: data?.pullHeadCoverage,

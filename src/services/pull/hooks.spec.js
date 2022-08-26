@@ -157,6 +157,33 @@ const mockImpactedFilesData = {
   ],
 }
 
+const mockImpactedFilesWithEmptyHeadAndBaseCoverage = {
+  patchTotals: {
+    percentCovered: 1,
+  },
+  baseTotals: {
+    percentCovered: 41.66667,
+  },
+  headTotals: {
+    percentCovered: 92.30769,
+  },
+  impactedFiles: [
+    {
+      headName: 'file B',
+      headCoverage: {
+        percentCovered: undefined,
+      },
+      baseCoverage: {
+        percentCovered: undefined,
+      },
+      patchCoverage: {
+        percentCovered: 27.43,
+      },
+      changeCoverage: 58.333333333333336,
+    },
+  ],
+}
+
 describe('useImpactedFilesComparison', () => {
   afterEach(() => queryClient.clear())
   let hookData
@@ -212,6 +239,44 @@ describe('useImpactedFilesComparison', () => {
           pullBaseCoverage: 41.66667,
           pullHeadCoverage: 92.30769,
           pullPatchCoverage: 1,
+        })
+      })
+    })
+  })
+
+  describe('when called without a numeric base and head coverage', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          repository: {
+            pull: {
+              compareWithBase: mockImpactedFilesWithEmptyHeadAndBaseCoverage,
+            },
+          },
+        },
+      })
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual({
+          impactedFiles: [
+            {
+              headCoverage: undefined,
+              patchCoverage: 27.43,
+              changeCoverage: NaN,
+              hasHeadAndPatchCoverage: true,
+              headName: 'file B',
+              fileName: undefined,
+            },
+          ],
+          pullHeadCoverage: 92.30769,
+          pullPatchCoverage: 1,
+          pullBaseCoverage: 41.66667,
         })
       })
     })

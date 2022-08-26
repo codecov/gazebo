@@ -83,9 +83,15 @@ export function usePull({ provider, owner, repo, pullId }) {
   })
 }
 
-export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
+export function useImpactedFilesComparison({
+  provider,
+  owner,
+  repo,
+  pullId,
+  filters,
+}) {
   const query = `
-  query ImpactedFilesComparison($owner: String!, $repo: String!, $pullId: Int!) {
+  query ImpactedFilesComparison($owner: String!, $repo: String!, $pullId: Int!, $filters: ImpactedFilesFilters!) {
     owner(username: $owner) {
       repository(name: $repo) {
         pull(id: $pullId) {
@@ -99,7 +105,8 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
             headTotals {
               percentCovered
             }
-            impactedFiles {
+            impactedFiles(filters:$filters) {
+              fileName
               headName
               baseCoverage {
                 percentCovered
@@ -128,6 +135,7 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
         owner,
         repo,
         pullId: parseInt(pullId, 10),
+        filters,
       },
     })
   }
@@ -139,9 +147,9 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
         const patchCoverage = impactedFile?.patchCoverage?.percentCovered
         const baseCoverage = impactedFile?.baseCoverage?.percentCovered
         const changeCoverage =
-          isNumber(headCoverage) &&
-          isNumber(baseCoverage) &&
-          headCoverage - baseCoverage
+          isNumber(headCoverage) && isNumber(baseCoverage)
+            ? headCoverage - baseCoverage
+            : Number.NaN
         const hasHeadAndPatchCoverage =
           isNumber(headCoverage) || isNumber(patchCoverage)
 
@@ -151,6 +159,7 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
           changeCoverage,
           hasHeadAndPatchCoverage,
           headName: impactedFile?.headName,
+          fileName: impactedFile?.fileName,
         }
       }
     )
@@ -163,13 +172,14 @@ export function useImpactedFilesComparison({ provider, owner, repo, pullId }) {
   }
 
   return useQuery(
-    ['impactedFileComparison', provider, owner, repo, pullId],
+    ['impactedFileComparison', provider, owner, repo, pullId, filters],
     fetchImpactedFiles,
     {
       select: ({ data }) =>
         transformImpactedFilesData(
           data?.owner?.repository?.pull?.compareWithBase
         ),
+      staleTime: 1000 * 60 * 5,
     }
   )
 }
