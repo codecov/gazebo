@@ -1,6 +1,8 @@
 import isNil from 'lodash/isNil'
+import { Suspense } from 'react'
 
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
+import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './ImpactedFiles'
 import useImpactedFilesTable from './ImpactedFiles/hooks'
@@ -22,9 +24,13 @@ function hasReportWithoutChanges({
 }
 
 const Root = () => {
-  const { data, isLoading } = useImpactedFilesTable({
-    options: { suspense: true },
-  })
+  const { data, isLoading } = useImpactedFilesTable()
+
+  const Loader = (
+    <div className="flex items-center justify-center py-16">
+      <Spinner />
+    </div>
+  )
 
   return (
     !isLoading && (
@@ -35,7 +41,9 @@ const Root = () => {
           coverageIsLoading={false}
         />
         {hasImpactedFiles(data?.impactedFiles) ? (
-          <ImpactedFiles />
+          <Suspense fallback={Loader}>
+            <ImpactedFiles />
+          </Suspense>
         ) : // Coverage changes remain the same as before, but no impacted files = no change
         hasReportWithoutChanges({
             pullHeadCoverage: data?.pullHeadCoverage,

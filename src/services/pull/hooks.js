@@ -89,7 +89,6 @@ export function useImpactedFilesComparison({
   repo,
   pullId,
   filters,
-  ...options
 }) {
   const query = `
   query ImpactedFilesComparison($owner: String!, $repo: String!, $pullId: Int!, $filters: ImpactedFilesFilters!) {
@@ -180,7 +179,7 @@ export function useImpactedFilesComparison({
         transformImpactedFilesData(
           data?.owner?.repository?.pull?.compareWithBase
         ),
-      ...options,
+      staleTime: 1000 * 60 * 5,
     }
   )
 }

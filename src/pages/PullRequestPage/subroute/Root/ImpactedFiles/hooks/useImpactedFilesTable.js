@@ -23,9 +23,9 @@ function getFilters({ sortBy }) {
   }
 }
 
-function useImpactedFilesTable({ options }) {
+function useImpactedFilesTable() {
   const { provider, owner, repo, pullId } = useParams()
-  const [sortBy, setSortBy] = useState([])
+  const [sortBy, setSortBy] = useState([{ desc: true, id: 'change' }])
   const filters = getFilters({ sortBy: sortBy[0] })
 
   const { data, isLoading } = useImpactedFilesComparison({
@@ -34,12 +34,11 @@ function useImpactedFilesTable({ options }) {
     repo,
     pullId,
     filters,
-    ...options,
   })
 
   const handleSort = useCallback(
     (tableSortBy) => {
-      if (!isEqual(sortBy, tableSortBy)) {
+      if (tableSortBy.length > 0 && !isEqual(sortBy, tableSortBy)) {
         setSortBy(tableSortBy)
       }
     },

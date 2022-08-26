@@ -98,9 +98,7 @@ function createTable({ tableData }) {
 }
 
 function ImpactedFiles() {
-  const { data, handleSort } = useImpactedFilesTable({
-    options: { suspense: false },
-  })
+  const { data, handleSort } = useImpactedFilesTable()
   const tableContent = createTable({ tableData: data?.impactedFiles })
   return <Table data={tableContent} columns={columns} onSort={handleSort} />
 }
