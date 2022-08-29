@@ -4,7 +4,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRegenerateUploadToken } from './hooks'
+import { useRegenerateRepoUploadToken } from './hooks'
 
 const repoDetails = {
   can_edit: true,
@@ -51,7 +51,7 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('useRegenerateUploadToken', () => {
+describe('useRegenerateRepoUploadToken', () => {
   let hookData
 
   function setup() {
@@ -63,7 +63,7 @@ describe('useRegenerateUploadToken', () => {
         }
       )
     )
-    hookData = renderHook(() => useRegenerateUploadToken(), {
+    hookData = renderHook(() => useRegenerateRepoUploadToken(), {
       wrapper,
     })
   }
