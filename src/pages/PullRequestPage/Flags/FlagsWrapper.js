@@ -1,14 +1,15 @@
 import { Suspense } from 'react'
 
+import SilentNetworkError from 'layouts/shared/SilentNetworkError'
+
 import Flags from './Flags'
-import FlagsErrorBoundary from './FlagsErrorBoundary'
 
 function FlagsWrapper() {
   return (
-    <Suspense>
-      <FlagsErrorBoundary>
+    <Suspense fallback={null}>
+      <SilentNetworkError>
         <Flags />
-      </FlagsErrorBoundary>
+      </SilentNetworkError>
     </Suspense>
   )
 }

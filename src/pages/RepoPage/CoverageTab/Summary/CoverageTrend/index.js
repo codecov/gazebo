@@ -1,1 +1,1 @@
-export { default } from './CoverageTrend'
+export { default } from './CoverageTrendWrapper'

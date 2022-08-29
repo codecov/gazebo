@@ -1,4 +1,4 @@
-import { lazy, Suspense, useLayoutEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import { useSetCrumbs } from 'pages/RepoPage/context'
@@ -8,9 +8,8 @@ import Progress from 'ui/Progress'
 import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
+import CoverageTrend from './CoverageTrend'
 import { useCoverageRedirect, useSummary } from './hooks'
-
-const CoverageTrend = lazy(() => import('./CoverageTrend'))
 
 const Summary = () => {
   const setCrumbs = useSetCrumbs()
@@ -89,9 +88,7 @@ const Summary = () => {
             </p>
           </SummaryField>
         )}
-        <Suspense fallback={null}>
-          <CoverageTrend />
-        </Suspense>
+        <CoverageTrend />
       </SummaryRoot>
     </>
   )
