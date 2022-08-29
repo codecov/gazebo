@@ -31,7 +31,7 @@ export function usePull({ provider, owner, repo, pullId }) {
               comparedTo {
                 commitid
               }
-              compareWithBase {
+              compareWithBase: compareWithBaseTemp {
                 patchTotals {
                   percentCovered
                 }

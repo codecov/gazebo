@@ -8,7 +8,7 @@ export function useFlagsForComparePage({ provider, owner, repo, pullId }) {
         owner(username: $owner) {
           repository(name: $repo) {
             pull(id: $pullId) {
-              compareWithBase {
+              compareWithBase: compareWithBaseTemp {
                 flagComparisons {
                   name
                   patchTotals {
