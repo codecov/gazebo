@@ -1,10 +1,10 @@
 import cs from 'classnames'
-import { useMultipleSelection, useSelect } from 'downshift'
 import identity from 'lodash/identity'
 import pluralize from 'pluralize'
 import PropTypes from 'prop-types'
-import { useEffect, useRef } from 'react'
-import useIntersection from 'react-use/lib/useIntersection'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+
+import { useMultiSelect } from './hooks'
 
 import Icon from '../Icon'
 import SearchField from '../SearchField'
@@ -14,7 +14,7 @@ const SelectClasses = {
   button:
     'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
   listContainer:
-    'overflow-scroll rounded-md bg-white border-ds-gray-tertiary absolute w-full z-10 max-h-80',
+    'overflow-scroll rounded-md bg-white border-ds-gray-tertiary absolute w-full z-10 max-h-80 min-w-fit',
   listItem: 'block cursor-pointer py-1 px-3 text-sm',
   loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
@@ -24,15 +24,10 @@ const VariantClasses = {
   gray: `bg-ds-gray-primary`,
 }
 
-const SELECT_ALL_BUTTON = 'SELECT_ALL'
-
-const isItemSelected = (item, selectedItems) =>
-  selectedItems.some((selectedItem) => selectedItem === item)
-
-const isAllButton = (item) => item === SELECT_ALL_BUTTON
-
 const getDefaultButtonPlaceholder = (items, resourceName) =>
-  `${pluralize(resourceName, items.length, true)} selected`
+  items.length === 0
+    ? `All ${pluralize(resourceName, items.length)}`
+    : `${pluralize(resourceName, items.length, true)} selected`
 
 const LoadMoreTrigger = ({ intersectionRef, onLoadMore, isLoading }) => (
   <>
@@ -50,99 +45,57 @@ const LoadMoreTrigger = ({ intersectionRef, onLoadMore, isLoading }) => (
   </>
 )
 
-function MultipleSelect({
-  items,
-  value,
-  variant,
-  ariaName,
-  disabled,
-  onChange,
-  onSearch,
-  onLoadMore,
-  resourceName,
-  isLoadingMore,
-  renderSelected,
-  renderItem = identity,
-  placeholder = `Select ${pluralize(resourceName)}`,
-}) {
-  const {
-    getDropdownProps,
-    addSelectedItem,
-    removeSelectedItem,
-    selectedItems,
-    reset,
-  } = useMultipleSelection({
-    initialSelectedItems: value ?? [],
-    onSelectedItemsChange: ({ selectedItems }) => onChange(selectedItems),
-  })
-
-  const filteredItems = items.filter(
-    (item) => !isItemSelected(item, selectedItems)
-  )
-
-  const listItems = [SELECT_ALL_BUTTON, ...selectedItems, ...filteredItems]
-
-  const toggleItem = (selectedItem) => {
-    isItemSelected(selectedItem, selectedItems)
-      ? removeSelectedItem(selectedItem)
-      : addSelectedItem(selectedItem)
-  }
-
-  const {
-    isOpen,
-    getToggleButtonProps,
-    getMenuProps,
-    highlightedIndex,
-    getItemProps,
-  } = useSelect({
-    selectedItem: null,
-    items: listItems,
-    stateReducer: (state, actionAndChanges) => {
-      const { changes, type } = actionAndChanges
-      switch (type) {
-        case useSelect.stateChangeTypes.MenuKeyDownEnter:
-        case useSelect.stateChangeTypes.MenuKeyDownSpaceButton:
-        case useSelect.stateChangeTypes.ItemClick:
-          return {
-            ...changes,
-            isOpen: true, // keep the menu open after selection.
-          }
-        default:
-          break
-      }
-      return changes
-    },
-    onStateChange: ({ type, selectedItem }) => {
-      switch (type) {
-        case useSelect.stateChangeTypes.MenuKeyDownEnter:
-        case useSelect.stateChangeTypes.MenuKeyDownSpaceButton:
-        case useSelect.stateChangeTypes.ItemClick:
-          isAllButton(selectedItem) ? reset() : toggleItem(selectedItem)
-          break
-        default:
-          break
-      }
-    },
-  })
-
+const MultipleSelect = forwardRef(function MultipleSelect(
+  {
+    items,
+    value,
+    variant,
+    ariaName,
+    disabled,
+    onChange,
+    onSearch,
+    isLoading,
+    onLoadMore,
+    isLoadingMore,
+    renderSelected,
+    resourceName = '',
+    renderItem = identity,
+  },
+  ref
+) {
   const intersectionRef = useRef(null)
-  const intersection = useIntersection(intersectionRef, {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-  })
+
+  const {
+    reset,
+    isOpen,
+    listItems,
+    getMenuProps,
+    getItemProps,
+    selectedItems,
+    isIntersecting,
+    getDropdownProps,
+    highlightedIndex,
+    getToggleButtonProps,
+    isAllButton,
+    isItemSelected,
+  } = useMultiSelect({ value, onChange, items, intersectionRef })
+
+  useImperativeHandle(ref, () => ({
+    resetSelected: () => {
+      reset()
+    },
+  }))
 
   useEffect(() => {
-    if (intersection?.isIntersecting && onLoadMore) {
+    if (isIntersecting && onLoadMore) {
       onLoadMore()
     }
-  }, [intersection?.isIntersecting, onLoadMore])
+  }, [isIntersecting, onLoadMore])
 
   function renderSelectedItems() {
-    const _renderFunction = renderSelected || getDefaultButtonPlaceholder
-    return selectedItems.length === 0 && !renderSelected
-      ? placeholder
-      : _renderFunction(selectedItems, resourceName)
+    return renderSelected
+      ? renderSelected(selectedItems)
+      : getDefaultButtonPlaceholder(selectedItems, resourceName)
   }
 
   return (
@@ -194,6 +147,11 @@ function MultipleSelect({
                   : renderItem(item)}
               </li>
             ))}
+            {isLoading && (
+              <span className="flex py-2 px-3">
+                <Spinner />
+              </span>
+            )}
             <LoadMoreTrigger
               intersectionRef={intersectionRef}
               onLoadMore={onLoadMore}
@@ -204,29 +162,28 @@ function MultipleSelect({
       </ul>
     </div>
   )
-}
+})
 
 MultipleSelect.propTypes = {
   items: PropTypes.arrayOf(PropTypes.any).isRequired,
   onChange: PropTypes.func.isRequired,
-  resourceName: PropTypes.string.isRequired,
+  resourceName: PropTypes.string,
   onSearch: PropTypes.func,
   onLoadMore: PropTypes.func,
   value: PropTypes.any,
   renderItem: PropTypes.func,
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string,
-  allButtonLabel: PropTypes.string,
   variant: PropTypes.oneOf(['default', 'gray']),
   disabled: PropTypes.bool,
-  placeholder: PropTypes.string,
   isLoadingMore: PropTypes.bool,
+  isLoading: PropTypes.bool,
 }
 
 LoadMoreTrigger.propTypes = {
   onLoadMore: PropTypes.func,
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-  isLoading: PropTypes.string,
+  isLoading: PropTypes.bool,
 }
 
 export default MultipleSelect
