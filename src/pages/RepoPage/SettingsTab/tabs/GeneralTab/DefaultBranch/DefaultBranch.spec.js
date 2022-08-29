@@ -68,7 +68,7 @@ describe('DefaultBranch', () => {
       const label = screen.getByText(/Branch Context/)
       expect(label).toBeInTheDocument()
       const select = screen.getByRole('button', {
-        name: 'master chevron-down.svg',
+        name: 'Branch selector',
       })
       expect(select).toBeInTheDocument()
     })
@@ -77,9 +77,7 @@ describe('DefaultBranch', () => {
   describe('when clicking on select btn', () => {
     beforeEach(() => {
       setup()
-      userEvent.click(
-        screen.getByRole('button', { name: 'master chevron-down.svg' })
-      )
+      userEvent.click(screen.getByRole('button', { name: 'Branch selector' }))
     })
     it('renders all branches of repo', () => {
       const branch1 = screen.getByText('dummy')
@@ -111,9 +109,7 @@ describe('DefaultBranch', () => {
   describe('when mutation is not successful', () => {
     beforeEach(() => {
       setup()
-      userEvent.click(
-        screen.getByRole('button', { name: 'master chevron-down.svg' })
-      )
+      userEvent.click(screen.getByRole('button', { name: 'Branch selector' }))
       userEvent.click(screen.getByText('dummy'))
       mutate.mock.calls[0][1].onError()
     })

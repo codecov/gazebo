@@ -35,6 +35,6 @@ export default function ErrorBoundary({
 
 ErrorBoundary.propTypes = {
   children: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
-  errorComponent: PropTypes.element,
+  errorComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.node]),
   sentryScopes: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)), // https://docs.sentry.io/platforms/javascript/guides/react/components/errorboundary/#using-multiple-error-boundaries
 }

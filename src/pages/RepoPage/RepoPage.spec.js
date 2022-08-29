@@ -193,7 +193,7 @@ describe('RepoPage', () => {
 
     it('renders the branch context selector', async () => {
       const select = screen.getByRole('button', {
-        name: 'main chevron-down.svg',
+        name: 'Select branch',
       })
       await waitFor(() => expect(select).toBeInTheDocument())
     })
@@ -214,7 +214,7 @@ describe('RepoPage', () => {
       let select
       await waitFor(() => {
         select = screen.getByRole('button', {
-          name: 'main chevron-down.svg',
+          name: 'Select branch',
         })
       })
       fireEvent.click(select)
@@ -243,7 +243,7 @@ describe('RepoPage', () => {
       let select
       await waitFor(() => {
         select = screen.getByRole('button', {
-          name: 'main chevron-down.svg',
+          name: 'Select branch',
         })
       })
       fireEvent.click(select)

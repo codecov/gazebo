@@ -1,12 +1,17 @@
 import { render, screen } from '@testing-library/react'
 
+import config from 'config'
+
 import NetworkErrorBoundary from './NetworkErrorBoundary'
 
 // silence all verbose console.error
 jest.spyOn(console, 'error').mockImplementation()
+jest.mock('config')
 
 describe('NetworkErrorBoundary', () => {
-  function setup(ToRender) {
+  function setup(ToRender, isEnterprise = false) {
+    config.IS_ENTERPRISE = isEnterprise
+
     render(
       <NetworkErrorBoundary>
         <ToRender />
@@ -93,34 +98,70 @@ describe('NetworkErrorBoundary', () => {
   })
 
   describe('when the children component has a 404 error', () => {
-    beforeEach(() => {
-      function ToRender() {
-        // eslint-disable-next-line no-throw-literal
-        throw {
-          status: 404,
+    describe('when not running in self-hosted mode', () => {
+      beforeEach(() => {
+        function ToRender() {
+          // eslint-disable-next-line no-throw-literal
+          throw {
+            status: 404,
+          }
         }
-      }
-      setup(ToRender)
+        setup(ToRender)
+      })
+
+      it('renders a Not found', () => {
+        expect(screen.getByText(/Not found/)).toBeInTheDocument()
+      })
     })
 
-    it('renders a Not found', () => {
-      expect(screen.getByText(/Not found/)).toBeInTheDocument()
+    describe('when running in self hosted mode', () => {
+      beforeEach(() => {
+        function ToRender() {
+          // eslint-disable-next-line no-throw-literal
+          throw {
+            status: 404,
+          }
+        }
+        setup(ToRender, true)
+      })
+
+      it('renders a Not found', () => {
+        expect(screen.getByText(/Please see/)).toBeInTheDocument()
+      })
     })
   })
 
   describe('when the children component has a 500 error', () => {
-    beforeEach(() => {
-      function ToRender() {
-        // eslint-disable-next-line no-throw-literal
-        throw {
-          status: 500,
+    describe('when not running in self-hosted mode', () => {
+      beforeEach(() => {
+        function ToRender() {
+          // eslint-disable-next-line no-throw-literal
+          throw {
+            status: 500,
+          }
         }
-      }
-      setup(ToRender)
+        setup(ToRender)
+      })
+
+      it('renders a Server error', () => {
+        expect(screen.getByText(/Server error/)).toBeInTheDocument()
+      })
     })
 
-    it('renders a Server error', () => {
-      expect(screen.getByText(/Server error/)).toBeInTheDocument()
+    describe('when running in self-hosted mode', () => {
+      beforeEach(() => {
+        function ToRender() {
+          // eslint-disable-next-line no-throw-literal
+          throw {
+            status: 500,
+          }
+        }
+        setup(ToRender, true)
+      })
+
+      it('renders a Server error', () => {
+        expect(screen.getByText(/Please see/)).toBeInTheDocument()
+      })
     })
   })
 

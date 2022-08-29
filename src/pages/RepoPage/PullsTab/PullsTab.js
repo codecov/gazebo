@@ -124,6 +124,7 @@ function PullsTab() {
           <label className="font-semibold text-sm ">Sort by:</label>
           <div>
             <Select
+              ariaName="Sort order"
               value={selectedOrder}
               items={orderItems}
               onChange={handleOrderChange}

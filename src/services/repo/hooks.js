@@ -123,7 +123,7 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
           }
         }
       }
-     } 
+     }
    `
 
   return Api.graphql({

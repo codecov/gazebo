@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { lazy, Suspense, useLayoutEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import { useSetCrumbs } from 'pages/RepoPage/context'
@@ -10,11 +10,12 @@ import { SummaryField, SummaryRoot } from 'ui/Summary'
 
 import { useCoverageRedirect, useSummary } from './hooks'
 
+const CoverageTrend = lazy(() => import('./CoverageTrend'))
+
 const Summary = () => {
   const setCrumbs = useSetCrumbs()
-  const { data, currentBranchSelected, branchSelectorProps } = useSummary()
   const { setNewPath, redirectState } = useCoverageRedirect()
-
+  const { data, currentBranchSelected, branchSelectorProps } = useSummary()
   useLayoutEffect(() => {
     setCrumbs([
       {
@@ -51,6 +52,7 @@ const Summary = () => {
           <span className="text-sm min-w-[16rem]">
             <Select
               {...branchSelectorProps}
+              ariaName="select branch"
               onChange={onChangeHandler}
               variant="gray"
               renderItem={(item) => <span>{item?.name}</span>}
@@ -87,6 +89,9 @@ const Summary = () => {
             </p>
           </SummaryField>
         )}
+        <Suspense fallback={null}>
+          <CoverageTrend />
+        </Suspense>
       </SummaryRoot>
     </>
   )
