@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { act } from 'react-dom/test-utils'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import MultipleSelect from './MultipleSelect'
@@ -8,10 +9,11 @@ jest.mock('react-use/lib/useIntersection')
 
 describe('MultipleSelect', () => {
   let props
+  let multipleSelectRef
+
   const onChange = jest.fn()
   const defaultProps = {
     items: ['item1', 'item2', 'item3'],
-    resourceName: 'item',
     onChange,
   }
 
@@ -23,7 +25,14 @@ describe('MultipleSelect', () => {
 
     useIntersection.mockReturnValue({ isIntersecting })
 
-    render(<MultipleSelect {...props} />)
+    render(
+      <MultipleSelect
+        {...props}
+        ref={(ref) => {
+          multipleSelectRef = ref
+        }}
+      />
+    )
   }
 
   describe('when rendered', () => {
@@ -32,7 +41,7 @@ describe('MultipleSelect', () => {
     })
 
     it('renders the default placeholder', () => {
-      const button = screen.getByText(/Select items/)
+      const button = screen.getByText(/All/)
       expect(button).toBeInTheDocument()
     })
 
@@ -41,13 +50,13 @@ describe('MultipleSelect', () => {
     })
   })
 
-  describe('when rendering with a custom placeholder', () => {
+  describe('when rendering with a resourceName', () => {
     beforeEach(() => {
-      setup({ placeholder: 'Custom placeholder' })
+      setup({ resourceName: 'item' })
     })
 
-    it('renders the placeholder', () => {
-      expect(screen.getByText(/Custom placeholder/)).toBeInTheDocument()
+    it('renders the correct placeholder', () => {
+      expect(screen.getByText('All items')).toBeInTheDocument()
     })
   })
 
@@ -57,7 +66,7 @@ describe('MultipleSelect', () => {
     })
 
     it('renders the default selected items count', () => {
-      expect(screen.getByText(/1 item selected/)).toBeInTheDocument()
+      expect(screen.getByText(/1 selected/)).toBeInTheDocument()
     })
   })
 
@@ -68,7 +77,7 @@ describe('MultipleSelect', () => {
 
     describe('when triggered with a click', () => {
       beforeEach(() => {
-        const button = screen.getByText(/Select/)
+        const button = screen.getByText('All')
         userEvent.click(button)
       })
 
@@ -82,7 +91,7 @@ describe('MultipleSelect', () => {
 
     describe('when triggered enter', () => {
       beforeEach(() => {
-        const button = screen.getByText(/Select/)
+        const button = screen.getByText('All')
         userEvent.type(button, '{enter}')
       })
 
@@ -93,7 +102,7 @@ describe('MultipleSelect', () => {
 
     describe('when triggered with space button', () => {
       beforeEach(() => {
-        const button = screen.getByText(/Select/)
+        const button = screen.getByText('All')
         userEvent.type(button, '{space}')
       })
 
@@ -106,7 +115,7 @@ describe('MultipleSelect', () => {
   describe('when selecting an item from the list', () => {
     beforeEach(() => {
       setup()
-      const button = screen.getByText(/Select/)
+      const button = screen.getByText('All')
       userEvent.click(button)
     })
 
@@ -123,7 +132,7 @@ describe('MultipleSelect', () => {
       })
 
       it('renders the all button', () => {
-        expect(screen.getByText(/All items/)).toBeInTheDocument()
+        expect(screen.getByText('All')).toBeInTheDocument()
       })
     })
 
@@ -161,6 +170,7 @@ describe('MultipleSelect', () => {
       setup({
         items,
         value,
+        resourceName: 'item',
         renderItem,
       })
     })
@@ -205,8 +215,9 @@ describe('MultipleSelect', () => {
     beforeEach(() => {
       setup({
         onSearch,
+        resourceName: 'item',
       })
-      const button = screen.getByText(/Select/)
+      const button = screen.getByText(/All items/)
       userEvent.click(button)
     })
 
@@ -240,7 +251,7 @@ describe('MultipleSelect', () => {
         },
         true
       )
-      const button = screen.getByText(/Select/)
+      const button = screen.getByText('All')
       userEvent.click(button)
     })
 
@@ -264,7 +275,7 @@ describe('MultipleSelect', () => {
         },
         true
       )
-      const button = screen.getByText(/Select/)
+      const button = screen.getByText('All')
       userEvent.click(button)
     })
 
@@ -275,7 +286,7 @@ describe('MultipleSelect', () => {
 
   describe('when selecting a selected item from the list', () => {
     beforeEach(() => {
-      setup({ value: ['item1', 'item2', 'item3'] })
+      setup({ value: ['item1', 'item2', 'item3'], resourceName: 'item' })
       const button = screen.getByText(/3 items selected/)
       userEvent.click(button)
     })
@@ -326,7 +337,7 @@ describe('MultipleSelect', () => {
 
   describe('when selecting all button', () => {
     beforeEach(() => {
-      setup({ value: ['item1', 'item2', 'item3'] })
+      setup({ value: ['item1', 'item2', 'item3'], resourceName: 'item' })
       const button = screen.getByText(/3 items selected/)
       userEvent.click(button)
       const allButton = screen.getByText(/All items/)
@@ -335,6 +346,33 @@ describe('MultipleSelect', () => {
 
     it('calls onChange with an empty array', () => {
       expect(onChange).toHaveBeenCalledWith([])
+    })
+  })
+
+  describe('when forward ref is passed', () => {
+    beforeEach(() => {
+      setup({ value: ['item1', 'item2', 'item3'], resourceName: 'item' })
+      const button = screen.getByText(/3 items selected/)
+      userEvent.click(button)
+      act(() => {
+        multipleSelectRef.resetSelected()
+      })
+    })
+
+    it('reset selected function is defined', () => {
+      expect(multipleSelectRef.resetSelected).toBeDefined()
+    })
+  })
+
+  describe('when isLoading is true', () => {
+    beforeEach(() => {
+      setup({ items: [], isLoading: true })
+      const button = screen.getByText(/All/)
+      userEvent.click(button)
+    })
+
+    it('a spinner is rendered', async () => {
+      expect(screen.getByRole('presentation')).toBeInTheDocument()
     })
   })
 })
