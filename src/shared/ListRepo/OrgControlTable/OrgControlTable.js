@@ -43,6 +43,7 @@ function OrgControlTable({
       <div className="flex flex-wrap justify-center sm:flex-nowrap">
         <div className="w-52 mr-2">
           <Select
+            ariaName="Sort Order"
             value={sortItem}
             items={active ? orderingOptions : nonActiveOrderingOptions}
             onChange={setSortItem}

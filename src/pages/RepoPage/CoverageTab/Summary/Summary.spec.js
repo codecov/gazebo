@@ -6,6 +6,7 @@ import { useCoverageRedirect, useSummary } from './hooks'
 import Summary from './Summary'
 
 jest.mock('./hooks')
+jest.mock('./CoverageTrend', () => () => 'CoverageTrend')
 
 describe('Summary', () => {
   const mockOnChange = jest.fn()
@@ -67,6 +68,9 @@ describe('Summary', () => {
           currentBranchSelected: selectedBranch,
           defaultBranch: 'main',
           privateRepo: false,
+          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
+          coverageChange: 40,
+          legacyApiIsSuccess: true,
         },
       })
     })
@@ -95,6 +99,9 @@ describe('Summary', () => {
           currentBranchSelected: undefined,
           defaultBranch: 'main',
           privateRepo: false,
+          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
+          coverageChange: 40,
+          legacyApiIsSuccess: true,
         },
       })
     })
@@ -139,6 +146,9 @@ describe('Summary', () => {
           currentBranchSelected: selectedBranch,
           defaultBranch: 'main',
           privateRepo: false,
+          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
+          coverageChange: 40,
+          legacyApiIsSuccess: true,
         },
       })
     })
@@ -182,6 +192,9 @@ describe('Summary', () => {
           currentBranchSelected: selectedBranch,
           defaultBranch: 'main',
           privateRepo: false,
+          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
+          coverageChange: 40,
+          legacyApiIsSuccess: true,
         },
       })
     })
@@ -222,12 +235,15 @@ describe('Summary', () => {
           currentBranchSelected: selectedBranch,
           defaultBranch: 'main',
           privateRepo: false,
+          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
+          coverageChange: 40,
+          legacyApiIsSuccess: true,
         },
       })
     })
     beforeEach(() => {
       // open select
-      userEvent.click(screen.getByRole('button', { name: /something-else/i }))
+      userEvent.click(screen.getByRole('button', { name: /select branch/i }))
       // pick foo branch
       userEvent.click(screen.getByRole('option', { name: /foo/ }))
     })
