@@ -5,25 +5,30 @@ import Api from 'shared/api'
 const fetchServiceProviders = () => {
   const query = `
     query GetServiceProviders {
-      loginProviders
+      config {
+        loginProviders
+      }
     }
   `
 
   return Api.graphql({
     provider: 'gh',
     query,
-  }).then((res) => ({
-    providerList: res?.data?.loginProviders,
-    github:
-      res?.data?.loginProviders?.includes('GITHUB') ||
-      res?.data?.loginProviders?.includes('GITHUB_ENTERPRISE'),
-    gitlab:
-      res?.data?.loginProviders?.includes('GITLAB') ||
-      res?.data?.loginProviders.includes('GITLAB_ENTERPRISE'),
-    bitbucket:
-      res?.data?.loginProviders?.includes('BITBUCKET') ||
-      res?.data?.loginProviders?.includes('BITBUCKET_SERVER'),
-  }))
+  }).then((res) => {
+    const loginProviders = res?.data?.config?.loginProviders
+    return {
+      providerList: loginProviders,
+      github:
+        loginProviders?.includes('GITHUB') ||
+        loginProviders?.includes('GITHUB_ENTERPRISE'),
+      gitlab:
+        loginProviders?.includes('GITLAB') ||
+        loginProviders.includes('GITLAB_ENTERPRISE'),
+      bitbucket:
+        loginProviders?.includes('BITBUCKET') ||
+        loginProviders?.includes('BITBUCKET_SERVER'),
+    }
+  })
 }
 
 export const useServiceProviders = () => {
