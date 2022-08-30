@@ -8,6 +8,10 @@ export const repoCoverageHandler = rest.post(repoUri, (req, res, ctx) => {
   return res(ctx.status(200), ctx.json(exampleYearlyRes))
 })
 
+export const repoCoverageHandler404 = rest.post(repoUri, (req, res, ctx) => {
+  return res(ctx.status(404), ctx.json({}))
+})
+
 const orgUri = '/internal/charts/:provider/:owner/coverage/organization'
 
 export const orgCoverageHandler = rest.get(orgUri, (req, res, ctx) => {

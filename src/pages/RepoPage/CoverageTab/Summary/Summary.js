@@ -1,6 +1,7 @@
-import { useLayoutEffect } from 'react'
+import { lazy, useLayoutEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 
+import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useSetCrumbs } from 'pages/RepoPage/context'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
@@ -8,8 +9,9 @@ import Progress from 'ui/Progress'
 import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
-import CoverageTrend from './CoverageTrend'
 import { useCoverageRedirect, useSummary } from './hooks'
+
+const CoverageTrend = lazy(() => import('./CoverageTrend'))
 
 const Summary = () => {
   const setCrumbs = useSetCrumbs()
@@ -88,7 +90,9 @@ const Summary = () => {
             </p>
           </SummaryField>
         )}
-        <CoverageTrend />
+        <SilentNetworkErrorWrapper>
+          <CoverageTrend />
+        </SilentNetworkErrorWrapper>
       </SummaryRoot>
     </>
   )
