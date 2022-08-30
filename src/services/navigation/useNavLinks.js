@@ -384,10 +384,24 @@ function useNavLinks() {
       },
       isExternalLink: false,
     },
+    access: {
+      text: 'Access',
+      path: ({ provider = p } = { provider: p }) => {
+        return `/admin/${provider}/access`
+      },
+      isExternalLink: false,
+    },
+    users: {
+      text: 'Users',
+      path: ({ provider = p } = { provider: p }) => {
+        return `/admin/${provider}/users`
+      },
+      isExternalLink: false,
+    },
   }
 }
 
-// Seperate function which doesn't unessisarily use the router.
+// Separate function which doesn't unnecessarily use the router.
 function useStaticNavLinks() {
   return {
     root: { path: () => `${config.MARKETING_BASE_URL}`, isExternalLink: true },
