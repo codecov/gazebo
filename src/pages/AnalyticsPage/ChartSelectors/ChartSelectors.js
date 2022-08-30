@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import { useRepos } from 'services/repos/hooks'
 import DateRangePicker from 'ui/DateRangePicker'
@@ -11,7 +11,6 @@ function formatDataForMultiselect(repos) {
 
 function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
   const { search, repositories, startDate, endDate } = params
-  const [selectedRepos, setSelectedRepos] = useState(repositories)
   const { data } = useRepos({
     active,
     sortItem,
@@ -23,11 +22,6 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
   const multiSelectRef = useRef(null)
   const items = formatDataForMultiselect(data?.repos)
 
-  const onSelectChangeHandler = (item) => {
-    setSelectedRepos(item)
-    updateParams({ repositories: item })
-  }
-
   const onDateRangeChangeHandler = ([startDate, endDate]) => {
     updateParams({ startDate, endDate })
   }
@@ -38,7 +32,6 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
       endDate: null,
       repositories: [],
     })
-    setSelectedRepos([])
     multiSelectRef.current.resetSelected()
   }
 
@@ -57,9 +50,11 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
         <MultipleSelect
           ariaName="Select repos to choose"
           items={items}
-          onChange={onSelectChangeHandler}
+          onChange={(repos) => {
+            updateParams({ repositories: repos })
+          }}
           resourceName="Repo"
-          value={selectedRepos}
+          value={repositories}
           ref={multiSelectRef}
         />
       </div>
