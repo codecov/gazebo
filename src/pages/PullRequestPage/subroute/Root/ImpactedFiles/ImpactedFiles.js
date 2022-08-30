@@ -13,16 +13,15 @@ const columns = [
     cell: (info) => info.getValue(),
   },
   {
-    id: 'coverage',
+    id: 'head',
     header: (
       <span className="w-full text-right">
         <span className="font-mono">HEAD</span> file coverage %
       </span>
     ),
-    accessorKey: 'coverage',
+    accessorKey: 'head',
     width: 'w-3/12 min-w-min',
     cell: (info) => info.getValue(),
-    enableSorting: false,
   },
   {
     id: 'patch',
@@ -30,7 +29,6 @@ const columns = [
     accessorKey: 'patch',
     width: 'w-28 min-w-min',
     cell: (info) => info.getValue(),
-    enableSorting: false,
   },
   {
     id: 'change',
@@ -64,12 +62,13 @@ function createTable({ tableData }) {
               > */}
               <span>{fileName}</span>
               {/* </A> */}
-              <span className="text-xs mt-0.5 text-ds-gray-quinary">
+              <span className="text-xs mt-0.5 text-ds-gray-quinary break-all">
                 {headName}
               </span>
+              <button>press pls</button>
             </div>
           ),
-          coverage: (
+          head: (
             <div className="flex flex-1 gap-2 items-center">
               <Progress amount={headCoverage} label />
             </div>
