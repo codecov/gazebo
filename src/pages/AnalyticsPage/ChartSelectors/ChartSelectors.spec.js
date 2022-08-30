@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepos } from 'services/repos/hooks'
@@ -40,28 +39,7 @@ describe('ChartSelectors', () => {
       setup({
         params: {
           search: 'Repo name 1',
-          repositories: [
-            {
-              private: false,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 1',
-              latestCommitAt: subDays(new Date(), 3),
-              coverage: 43,
-              active: true,
-            },
-            {
-              private: false,
-              author: {
-                username: 'owner2',
-              },
-              name: 'Repo name 3',
-              latestCommitAt: subDays(new Date(), 4),
-              coverage: 35,
-              active: false,
-            },
-          ],
+          repositories: ['codecov-api', 'gazebo'],
         },
         updateParams: jest.fn(),
         owner: 'bob',
@@ -104,6 +82,7 @@ describe('ChartSelectors', () => {
       const allRepos = screen.getAllByRole('option')[0]
       fireEvent.click(allRepos)
       expect(screen.queryByText(/2 Repos selected/)).not.toBeInTheDocument()
+      fireEvent.click(button)
       expect(screen.getByText(/All Repos/)).toBeInTheDocument()
     })
 
