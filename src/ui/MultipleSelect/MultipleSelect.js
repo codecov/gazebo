@@ -29,6 +29,9 @@ const getDefaultButtonPlaceholder = (items, resourceName) =>
     ? `All ${pluralize(resourceName, items.length)}`
     : `${pluralize(resourceName, items.length, true)} selected`
 
+const getSearchPlaceholder = (resourceName) =>
+  `Search ${resourceName ? `for ${pluralize(resourceName)}` : ''}`
+
 const LoadMoreTrigger = ({ intersectionRef, onLoadMore, isLoading }) => (
   <>
     {onLoadMore ? (
@@ -125,7 +128,7 @@ const MultipleSelect = forwardRef(function MultipleSelect(
           <>
             {onSearch && (
               <SearchField
-                placeholder={`Search for ${pluralize(resourceName)}`}
+                placeholder={getSearchPlaceholder(resourceName)}
                 searchValue={''}
                 setSearchValue={(search) => onSearch(search)}
               />

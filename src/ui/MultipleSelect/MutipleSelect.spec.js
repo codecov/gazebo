@@ -209,6 +209,25 @@ describe('MultipleSelect', () => {
     })
   })
 
+  describe('when onSearch function is passed without a resourceName', () => {
+    const onSearch = jest.fn()
+
+    beforeEach(() => {
+      setup({
+        onSearch,
+      })
+      const button = screen.getByText(/All/)
+      userEvent.click(button)
+    })
+
+    it('renders a search input with the correct placeholder', () => {
+      const searchField = screen.getByRole('textbox', {
+        name: 'Search',
+      })
+      expect(searchField).toBeInTheDocument()
+    })
+  })
+
   describe('when onSearch function is passed', () => {
     const onSearch = jest.fn()
 
