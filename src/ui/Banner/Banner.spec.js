@@ -3,13 +3,17 @@ import { render, screen } from 'custom-testing-library'
 import Banner from './Banner'
 
 describe('Banner', () => {
-  function setup(props, content) {
-    render(<Banner {...props}>{content}</Banner>)
+  function setup(variant, content) {
+    render(
+      <Banner heading={'Default banner'} variant={variant}>
+        {content}
+      </Banner>
+    )
   }
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ variant: 'default' }, <span>This is some content</span>)
+      setup('default', <span>This is some content</span>)
     })
 
     it('renders contents', () => {

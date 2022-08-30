@@ -17,8 +17,6 @@ import { getOwnerImg } from 'shared/utils'
 import { isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
-import BannerContent from 'ui/Banner/BannerContent'
-import BannerHeading from 'ui/Banner/BannerHeading'
 import Modal from 'ui/Modal'
 import Toggle from 'ui/Toggle'
 
@@ -159,16 +157,9 @@ function UserManagement({ provider, owner }) {
       {planAutoActivate !== undefined && (
         <AutoActivate planAutoActivate={planAutoActivate} />
       )}
-      <Banner>
-        <BannerHeading>
-          <h2 className="font-semibold">Don’t see a member?</h2>
-        </BannerHeading>
-        <BannerContent>
-          <p>
-            It may be because they haven’t logged into Codecov yet. Please make
-            sure they log into Codecov first
-          </p>
-        </BannerContent>
+      <Banner heading={<h2 className="font-semibold">Don’t see a member?</h2>}>
+        It may be because they haven’t logged into Codecov yet. Please make sure
+        they log into Codecov first
       </Banner>
       <FormControls
         current={params}

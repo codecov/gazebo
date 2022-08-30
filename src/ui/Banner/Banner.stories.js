@@ -7,7 +7,7 @@ const Template = (args) => {
     <>
       <Banner
         {...args}
-        title={
+        heading={
           <div className="flex justify-center gap-2">
             <Icon name="speakerphone"></Icon>A Header
           </div>
@@ -36,6 +36,12 @@ export const PlainBanner = Template.bind({})
 PlainBanner.args = {
   children: 'Normal button',
   variant: 'plain',
+}
+
+export const WarningBanner = Template.bind({})
+WarningBanner.args = {
+  children: 'Normal button',
+  variant: 'warning',
 }
 
 export default {

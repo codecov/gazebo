@@ -106,6 +106,10 @@ module.exports = {
           500: '#A3D9FF',
           900: '#013B65',
         },
+        orange: {
+          100: '#FFEDD5',
+          500: '#F97316',
+        },
         github: '#333333',
         gitlab: '#FC6D26',
         bitbucket: '#0052CC',
