@@ -35,6 +35,7 @@ Template.propTypes = {
 
 export const SimpleSelect = Template.bind({})
 SimpleSelect.args = {
+  ariaName: 'storybook select',
   items: [`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`],
 }
 

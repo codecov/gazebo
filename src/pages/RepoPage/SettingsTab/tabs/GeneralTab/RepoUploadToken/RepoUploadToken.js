@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
+import { useRegenerateRepoUploadToken } from 'services/repoUploadToken'
 import { useAddNotification } from 'services/toastNotification'
-import { useRegenerateUploadToken } from 'services/uploadToken'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
@@ -17,7 +17,7 @@ const TokenFormatEnum = Object.freeze({
 
 function useRegenerateToken() {
   const addToast = useAddNotification()
-  const { mutate, ...rest } = useRegenerateUploadToken()
+  const { mutate, ...rest } = useRegenerateRepoUploadToken()
 
   async function regenerateToken() {
     mutate(null, {

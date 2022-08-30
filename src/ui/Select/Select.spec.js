@@ -17,7 +17,7 @@ describe('Select', () => {
       ...defaultProps,
       ...overProps,
     }
-    render(<Select {...props} />)
+    render(<Select {...props} ariaName="unit test" />)
   }
 
   describe('when rendered with no items selected', () => {

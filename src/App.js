@@ -3,7 +3,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { lazy } from 'react'
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 
+import config from 'config'
+
 import BaseLayout from 'layouts/BaseLayout'
+// not lazy loading because is first page user sees
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
 import { useFlags } from 'shared/featureFlags'
@@ -13,15 +16,16 @@ import { useFlags } from 'shared/featureFlags'
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
+const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage'))
 const FileViewPage = lazy(() => import('./pages/FileView'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const MembersPage = lazy(() => import('./pages/MembersPage/MembersPage'))
+const PlanPage = lazy(() => import('./pages/PlanPage/PlanPage'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage/RepoPage'))
-const PlanPage = lazy(() => import('./pages/PlanPage/PlanPage'))
-const MembersPage = lazy(() => import('./pages/MembersPage/MembersPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,6 +37,7 @@ const queryClient = new QueryClient({
   },
 })
 
+// eslint-disable-next-line complexity
 function App() {
   useUTM()
   const { gazeboPlanTab } = useFlags({
@@ -47,12 +52,12 @@ function App() {
           <Switch>
             <Route path="/login/:provider">
               <BaseLayout>
-                <LoginPage />
+                {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
               </BaseLayout>
             </Route>
             <Route path="/login">
               <BaseLayout>
-                <LoginPage />
+                {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
               </BaseLayout>
             </Route>
             <Route path="/account/:provider/:owner/">
@@ -142,7 +147,13 @@ function App() {
               </BaseLayout>
             </Route>
             <Route path="/">
-              <Redirect to="/gh" />
+              {config.IS_ENTERPRISE ? (
+                <BaseLayout>
+                  <EnterpriseLandingPage />
+                </BaseLayout>
+              ) : (
+                <Redirect to="/gh" />
+              )}
             </Route>
           </Switch>
         </BrowserRouter>

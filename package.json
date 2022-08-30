@@ -112,7 +112,8 @@
   "jest": {
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!d3)/"
-    ]
+    ],
+    "globalSetup": "./src/setupTestGlobal.js"
   },
   "msw": {
     "workerDirectory": "public"

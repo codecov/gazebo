@@ -4,11 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
-import { useRegenerateUploadToken } from 'services/uploadToken'
+import { useRegenerateRepoUploadToken } from 'services/repoUploadToken'
 
 import RepoUploadToken from './RepoUploadToken'
 
-jest.mock('services/uploadToken')
+jest.mock('services/repoUploadToken')
 jest.mock('services/toastNotification')
 
 describe('RepoUploadToken', () => {
@@ -17,7 +17,7 @@ describe('RepoUploadToken', () => {
 
   function setup(uploadToken = undefined) {
     useAddNotification.mockReturnValue(addNotification)
-    useRegenerateUploadToken.mockReturnValue({
+    useRegenerateRepoUploadToken.mockReturnValue({
       isLoading: false,
       mutate,
       data: { uploadToken },
