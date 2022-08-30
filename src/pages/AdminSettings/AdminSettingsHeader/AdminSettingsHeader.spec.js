@@ -37,27 +37,4 @@ describe('AdminSettingsHeader', () => {
       expect(admin).toBeInTheDocument()
     })
   })
-  describe('when on org specific admin', () => {
-    beforeEach(() => {
-      setup({
-        initialEntries: ['/admin/gh/codecov/access'],
-        path: '/admin/:provider/:owner/access',
-      })
-    })
-
-    it('displays codecov link', () => {
-      const link = screen.getByRole('link', { name: 'codecov' })
-      expect(link).toBeInTheDocument()
-    })
-
-    it('links to the right location', () => {
-      const link = screen.getByRole('link', { name: 'codecov' })
-      expect(link).toHaveAttribute('href', '/gh/codecov')
-    })
-
-    it('displays admin', () => {
-      const admin = screen.getByText('Admin')
-      expect(admin).toBeInTheDocument()
-    })
-  })
 })
