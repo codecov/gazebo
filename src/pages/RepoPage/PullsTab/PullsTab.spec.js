@@ -158,6 +158,7 @@ describe('Pulls Pab', () => {
       fireEvent.click(select)
       const state = screen.getAllByRole('option')[2]
       fireEvent.click(state)
+      fireEvent.click(select)
     })
 
     it('renders the number of selected options', () => {

@@ -4,11 +4,11 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
 import Button from 'ui/Button'
-import MultiSelect from 'ui/MultiSelect'
+import MultipleSelect from 'ui/MultipleSelect'
 import Select from 'ui/Select'
 
 import {
-  fitlerItems,
+  filterItems,
   orderingEnum,
   orderItems,
   orderNames,
@@ -110,13 +110,12 @@ function PullsTab() {
       <div className="flex flex-row gap-3">
         <div className="flex gap-3 justify-center items-center">
           <label className="font-semibold text-sm">View:</label>
-          <div>
-            <MultiSelect
+          <div className="w-32">
+            <MultipleSelect
               ariaName="Filter by state"
-              selectedItems={selectedStates}
-              items={fitlerItems}
+              items={filterItems}
               onChange={handleStatesChange}
-              resourceName=""
+              value={selectedStates}
             />
           </div>
         </div>
