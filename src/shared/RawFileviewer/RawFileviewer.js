@@ -24,25 +24,12 @@ function ErrorDisplayMessage() {
   )
 }
 
-// This function solely done to eliminate max-statements complexity
-// TODO: probably move this to some sort of context; think of a solution with useReducer
-function useCoverageAndFlagsStates() {
-  const [selectedFlags, setSelectedFlags] = useState([])
-
-  return {
-    flagsState: { selectedFlags, setSelectedFlags },
-  }
-}
-
 // Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
 // component will affect both places
 function RawFileviewer({ title }) {
   const { owner, repo, provider, ref, path } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  // *********** This is temporary code that will be here in the meantime *********** //
-  const {
-    flagsState: { selectedFlags, setSelectedFlags },
-  } = useCoverageAndFlagsStates()
+  const [selectedFlags, setSelectedFlags] = useState([])
 
   // TODO: This hook needs revision/enhancement
   const {
@@ -61,11 +48,6 @@ function RawFileviewer({ title }) {
     selectedFlags,
   })
 
-  const flagData = {
-    flagNames,
-    selectedFlags,
-    setSelectedFlags,
-  }
   // *********** This is temporary code that will be here in the meantime *********** //
   if (!ownerData) {
     return <NotFound />
@@ -75,7 +57,8 @@ function RawFileviewer({ title }) {
     <div className="border-t border-solid border-ds-gray-tertiary pt-6 flex flex-col gap-2">
       <ToggleHeader
         title={title}
-        flagData={flagData}
+        flagNames={flagNames}
+        onFlagsChange={setSelectedFlags}
         coverageIsLoading={coverageIsLoading}
       />
       <div id={path} className="target:ring">

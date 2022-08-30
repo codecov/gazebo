@@ -1,63 +1,67 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import ToggleHeader from './ToggleHeader'
 
 describe('ToggleHeader', () => {
+  const onFlagsChange = jest.fn()
   function setup(props) {
-    render(<ToggleHeader title={'sample title'} {...props} />)
+    render(
+      <ToggleHeader
+        title={'sample title'}
+        onFlagsChange={onFlagsChange}
+        {...props}
+      />
+    )
   }
 
-  describe('renders Titles with flags and toggles', () => {
+  describe('when there is no flags data', () => {
     beforeEach(() => {
       setup({
         coverageIsLoading: false,
-        flagData: {
-          flagNames: [],
-          selectedFlags: [],
-          setSelectedFlags: jest.fn(),
-        },
+        flagNames: [],
       })
     })
 
     it('renders title', () => {
       expect(screen.getByText('sample title')).toBeInTheDocument()
     })
-    it('renders flags title', () => {
+    it('does not render flags multi-select', () => {
       expect(screen.queryByText('All flags')).not.toBeInTheDocument()
     })
   })
 
-  describe('when file has 1 flag', () => {
+  describe('when there is flags data', () => {
     beforeEach(() => {
       setup({
         coverageIsLoading: false,
-        flagData: {
-          flagNames: ['one', 'two'],
-          selectedFlags: ['one'],
-          setSelectedFlags: jest.fn(),
-        },
+        flagNames: ['flag1', 'flag2'],
       })
+      const button = screen.getByText('All flags')
+      userEvent.click(button)
     })
 
-    it('renders flags title', () => {
-      expect(screen.getByText('1 flag selected')).toBeInTheDocument()
-    })
-  })
-
-  describe('when file has many flags', () => {
-    beforeEach(() => {
-      setup({
-        coverageIsLoading: false,
-        flagData: {
-          flagNames: ['one', 'two'],
-          selectedFlags: ['one', 'two'],
-          setSelectedFlags: jest.fn(),
-        },
+    it('renders all flags title', () => {
+      const title = screen.getByRole('button', {
+        name: /Filter by flags/i,
       })
+
+      expect(title).toHaveTextContent(/All flags/)
     })
 
-    it('renders flags title', () => {
-      expect(screen.getByText('2 flags selected')).toBeInTheDocument()
+    it('renders flags in the list', () => {
+      expect(screen.getByText('flag1')).toBeInTheDocument()
+      expect(screen.getByText('flag2')).toBeInTheDocument()
+    })
+
+    describe('when a flag is selected', () => {
+      beforeEach(() => {
+        userEvent.click(screen.getByText(/flag1/))
+      })
+
+      it('calls onFlagsChange with the value', () => {
+        expect(onFlagsChange).toHaveBeenCalledWith(['flag1'])
+      })
     })
   })
 })

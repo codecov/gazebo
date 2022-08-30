@@ -12,8 +12,7 @@ describe('TitleFlags', () => {
   describe('shows the loading spinner', () => {
     beforeEach(() => {
       setup({
-        list: ['hi', 'more'],
-        current: [],
+        flags: ['hi', 'more'],
         onChange,
         flagsIsLoading: true,
       })
@@ -27,8 +26,7 @@ describe('TitleFlags', () => {
   describe('hides the spinner', () => {
     beforeEach(() => {
       setup({
-        list: ['hi', 'more'],
-        current: [],
+        flags: ['hi', 'more'],
         onChange,
         flagsIsLoading: false,
       })
@@ -42,7 +40,7 @@ describe('TitleFlags', () => {
   describe('defaults to no spinner', () => {
     beforeEach(() => {
       setup({
-        list: ['hi', 'more'],
+        flags: ['hi', 'more'],
         current: [],
         onChange,
       })

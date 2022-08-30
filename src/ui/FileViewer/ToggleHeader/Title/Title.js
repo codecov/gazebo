@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 
-import MultiSelect from 'ui/MultiSelect'
+import MultipleSelect from 'ui/MultipleSelect'
 import Spinner from 'ui/Spinner'
 
 import CoverageSelect from './CoverageSelect'
 
-export default function Title({ title, Flags, children }) {
+export default function Title({ title, children }) {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap px-3 md:p-0">
       <span className="text-ds-gray-senary font-semibold text-base">
@@ -13,7 +13,6 @@ export default function Title({ title, Flags, children }) {
       </span>
       <div className="flex flex-row items-center justify-between gap-2">
         {children}
-        <Flags />
       </div>
     </div>
   )
@@ -26,21 +25,15 @@ Title.propTypes = {
 
 export const TitleCoverage = CoverageSelect
 
-export const TitleFlags = ({
-  list,
-  current,
-  onChange,
-  flagsIsLoading = false,
-}) => {
+export const TitleFlags = ({ flags, onChange, flagsIsLoading = false }) => {
   return (
     // Anyone know why this is 1 not 0? I think this means if there's one flag there's no UI to know what flag is on the file?
-    list.length > 1 && (
+    flags?.length > 1 && (
       <>
         {flagsIsLoading && <Spinner />}
-        <MultiSelect
+        <MultipleSelect
           ariaName="Filter by flags"
-          selectedItems={current}
-          items={list}
+          items={flags}
           onChange={onChange}
           resourceName="flag"
         />
@@ -50,8 +43,7 @@ export const TitleFlags = ({
 }
 
 TitleFlags.propTypes = {
-  list: PropTypes.arrayOf(PropTypes.string).isRequired,
-  current: PropTypes.arrayOf(PropTypes.string).isRequired,
+  flags: PropTypes.arrayOf(PropTypes.string),
   onChange: PropTypes.func.isRequired,
   flagsIsLoading: PropTypes.bool,
 }

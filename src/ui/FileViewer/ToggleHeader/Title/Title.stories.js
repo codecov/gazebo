@@ -1,27 +1,18 @@
-import { useState } from 'react'
-
 import { LINE_STATE } from 'shared/utils/fileviewer'
 
 import Title, { TitleCoverage, TitleFlags } from './Title'
 
 const Template = (args) => {
-  const [selectedFlags, setSelectedFlags] = useState([])
-
   return (
-    <Title
-      {...args}
-      Flags={() => {
-        ;<TitleFlags
-          list={['flag1', 'flag2']}
-          current={selectedFlags}
-          onChange={setSelectedFlags}
-          flagsIsLoading={false}
-        />
-      }}
-    >
+    <Title {...args}>
       <TitleCoverage coverage={LINE_STATE.COVERED} />
       <TitleCoverage coverage={LINE_STATE.PARTIAL} />
       <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
+      <TitleFlags
+        flags={['flag1', 'flag2']}
+        onChange={(flags) => console.log(flags)}
+        flagsIsLoading={false}
+      />
     </Title>
   )
 }
