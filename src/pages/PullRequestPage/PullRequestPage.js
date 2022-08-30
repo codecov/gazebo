@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
+import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import { usePull } from 'services/pull'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -60,7 +61,9 @@ function PullRequestPage() {
         </article>
         <aside className="flex flex-col gap-4 self-start sticky top-1.5">
           <Commits />
-          <Flags />
+          <SilentNetworkErrorWrapper>
+            <Flags />
+          </SilentNetworkErrorWrapper>
         </aside>
       </div>
     </div>
