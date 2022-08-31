@@ -38,7 +38,9 @@ describe('useServiceProviders', () => {
   describe('third party services are configured providers', () => {
     beforeEach(() => {
       setup({
-        loginProviders: ['GITHUB', 'GITLAB', 'BITBUCKET'],
+        config: {
+          loginProviders: ['GITHUB', 'GITLAB', 'BITBUCKET'],
+        },
       })
     })
     it('returns data', async () => {
@@ -56,11 +58,13 @@ describe('useServiceProviders', () => {
   describe('self hosted services are configured providers', () => {
     beforeEach(() => {
       setup({
-        loginProviders: [
-          'GITHUB_ENTERPRISE',
-          'GITLAB_ENTERPRISE',
-          'BITBUCKET_SERVER',
-        ],
+        config: {
+          loginProviders: [
+            'GITHUB_ENTERPRISE',
+            'GITLAB_ENTERPRISE',
+            'BITBUCKET_SERVER',
+          ],
+        },
       })
     })
     it('returns data', async () => {
