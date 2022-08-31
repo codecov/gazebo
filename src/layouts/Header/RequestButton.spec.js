@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useAccountDetails } from 'services/account'
 import * as Segment from 'services/tracking/segment'
 
@@ -10,6 +12,7 @@ const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 
 jest.mock('services/account')
 jest.mock('services/user')
+jest.mock('config')
 
 describe('RequestButton', () => {
   let container
@@ -77,6 +80,23 @@ describe('RequestButton', () => {
         },
       })
       expect(screen.queryByText(/Request demo/)).toBeNull()
+    })
+  })
+
+  describe('when the app is in enterprise mode', () => {
+    beforeEach(() => {
+      config.IS_ENTERPRISE = true
+
+      setup(null)
+    })
+    afterEach(() => jest.resetAllMocks())
+
+    it('does not render the request button', () => {
+      expect(screen.queryByText(/Request Button/)).toBeNull()
+    })
+
+    it('renders null when there isnt data', () => {
+      expect(container).toBeEmptyDOMElement()
     })
   })
 })

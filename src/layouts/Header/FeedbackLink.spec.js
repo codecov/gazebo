@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import config from 'config'
+
 import FeedbackLink from './FeedbackLink'
+
+jest.mock('config')
 
 describe('FeedbackLink', () => {
   function setup({ entry, path }) {
@@ -43,6 +47,22 @@ describe('FeedbackLink', () => {
       const element = screen.getByText('Feedback')
       expect(element).toBeInTheDocument()
       expect(element.getAttribute('class')).toContain('text-ds-gray-secondary')
+    })
+  })
+
+  describe('does not render for enterprise', () => {
+    beforeEach(() => {
+      config.IS_ENTERPRISE = true
+      setup({
+        entry: '/gh/feedback',
+        path: '/:provider/feedback',
+      })
+    })
+    afterEach(() => jest.resetAllMocks())
+
+    it('sets the text colour to pink', () => {
+      const element = screen.queryByText('Feedback')
+      expect(element).not.toBeInTheDocument()
     })
   })
 })

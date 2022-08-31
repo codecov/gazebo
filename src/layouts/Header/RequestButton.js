@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 
+import config from 'config'
+
 import { useAccountDetails } from 'services/account'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { isFreePlan } from 'shared/utils/billing'
@@ -11,8 +13,11 @@ function RequestButton({ owner, provider }) {
     owner,
     opts: {
       suspense: false,
+      enabled: !config.IS_ENTERPRISE,
     },
   })
+
+  if (config.IS_ENTERPRISE) return null
 
   return isFreePlan(accountDetails?.plan?.value) ? (
     <Button
