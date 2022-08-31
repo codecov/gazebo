@@ -143,13 +143,13 @@ const mockImpactedFilesData = {
   impactedFiles: [
     {
       headName: 'file A',
-      headTotals: {
+      headCoverage: {
         percentCovered: 90.23,
       },
-      baseTotals: {
+      baseCoverage: {
         percentCovered: 23.42,
       },
-      patchTotals: {
+      patchCoverage: {
         percentCovered: 27.43,
       },
       changeCoverage: 58.333333333333336,
@@ -170,13 +170,13 @@ const mockImpactedFilesWithEmptyHeadAndBaseCoverage = {
   impactedFiles: [
     {
       headName: 'file B',
-      headTotals: {
+      headCoverage: {
         percentCovered: undefined,
       },
-      baseTotals: {
+      baseCoverage: {
         percentCovered: undefined,
       },
-      patchTotals: {
+      patchCoverage: {
         percentCovered: 27.43,
       },
       changeCoverage: 58.333333333333336,
@@ -230,7 +230,7 @@ describe('useImpactedFilesComparison', () => {
           impactedFiles: [
             {
               changeCoverage: 66.81,
-              hasHeadAndPatchCoverage: true,
+              hasHeadOrPatchCoverage: true,
               headCoverage: 90.23,
               headName: 'file A',
               patchCoverage: 27.43,
@@ -269,7 +269,7 @@ describe('useImpactedFilesComparison', () => {
               headCoverage: undefined,
               patchCoverage: 27.43,
               changeCoverage: NaN,
-              hasHeadAndPatchCoverage: true,
+              hasHeadOrPatchCoverage: true,
               headName: 'file B',
               fileName: undefined,
             },

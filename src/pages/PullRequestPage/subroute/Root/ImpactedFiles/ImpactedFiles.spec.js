@@ -16,7 +16,7 @@ const mockImpactedFiles = {
     impactedFiles: [
       {
         changeCoverage: 58.333333333333336,
-        hasHeadAndPatchCoverage: true,
+        hasHeadOrPatchCoverage: true,
         headCoverage: 90.23,
         headName: 'flag1/mafs.js',
         fileName: 'mafs.js',
@@ -72,7 +72,7 @@ describe('ImpactedFiles', () => {
             {
               changeCoverage: 58.333333333333336,
               headCoverage: null,
-              hasHeadAndPatchCoverage: false,
+              hasHeadOrPatchCoverage: false,
               headName: 'flag1/mafs.js',
               patchCoverage: 27.43,
             },

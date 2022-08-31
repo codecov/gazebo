@@ -18,17 +18,21 @@ const columns = [
     width: 'w-7/12 min-w-min',
     cell: ({ row, getValue }) => {
       return (
-        <div className="flex gap-2">
-          <button
-            onClick={() => row.toggleExpanded()}
-            className="cursor-pointer"
+        <div
+          className="flex gap-2 cursor-pointer items-center "
+          onClick={() => row.toggleExpanded()}
+        >
+          <span
+            className={
+              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
+            }
           >
             <Icon
               size="md"
               name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
               variant="solid"
             />
-          </button>
+          </span>
           {getValue()}
         </div>
       )
@@ -68,7 +72,7 @@ function createTable({ tableData }) {
           headCoverage,
           patchCoverage,
           changeCoverage,
-          hasHeadAndPatchCoverage,
+          hasHeadOrPatchCoverage,
           headName,
           fileName,
         } = row
@@ -76,7 +80,7 @@ function createTable({ tableData }) {
         return {
           name: (
             <div className="flex flex-col">
-              <span>{fileName}</span>
+              <span className="text-ds-blue">{fileName}</span>
               <span className="text-xs mt-0.5 text-ds-gray-quinary break-all">
                 {headName}
               </span>
@@ -92,7 +96,7 @@ function createTable({ tableData }) {
               <TotalsNumber value={patchCoverage} />
             </div>
           ),
-          change: hasHeadAndPatchCoverage ? (
+          change: hasHeadOrPatchCoverage ? (
             <div className="w-full flex justify-end">
               <TotalsNumber
                 value={changeCoverage}
@@ -118,7 +122,9 @@ const Loader = (
 
 const renderSubComponent = ({ row }) => {
   const nameColumn = row.getValue('name')
-  const path = nameColumn?.props?.children[1]?.props?.children
+  const [, pathItem] = nameColumn?.props?.children
+  const path = pathItem?.props?.children
+  // TODO: this component has a nested table and needs to be reworked as it is used inside the Table component, which leads to an accessibilty issue
   return (
     <Suspense fallback={Loader}>
       <FileDiff path={path} />

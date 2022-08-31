@@ -20,6 +20,7 @@ const TableClasses = {
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
 
+// TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it. Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page imapcted files table
 function Table({ data, columns, onSort, renderSubComponent = null }) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])

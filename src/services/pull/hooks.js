@@ -108,13 +108,13 @@ export function useImpactedFilesComparison({
             impactedFiles(filters:$filters) {
               fileName
               headName
-              baseTotals {
+              baseCoverage {
                 percentCovered
               }
-              headTotals {
+              headCoverage {
                 percentCovered
               }
-              patchTotals {
+              patchCoverage {
                 percentCovered
               }
               changeCoverage
@@ -143,21 +143,21 @@ export function useImpactedFilesComparison({
   function transformImpactedFilesData(compareWithBase) {
     const impactedFiles = compareWithBase?.impactedFiles?.map(
       (impactedFile) => {
-        const headCoverage = impactedFile?.headTotals?.percentCovered
-        const patchCoverage = impactedFile?.patchTotals?.percentCovered
-        const baseCoverage = impactedFile?.baseTotals?.percentCovered
+        const headCoverage = impactedFile?.headCoverage?.percentCovered
+        const patchCoverage = impactedFile?.patchCoverage?.percentCovered
+        const baseCoverage = impactedFile?.baseCoverage?.percentCovered
         const changeCoverage =
           isNumber(headCoverage) && isNumber(baseCoverage)
             ? headCoverage - baseCoverage
             : Number.NaN
-        const hasHeadAndPatchCoverage =
+        const hasHeadOrPatchCoverage =
           isNumber(headCoverage) || isNumber(patchCoverage)
 
         return {
           headCoverage,
           patchCoverage,
           changeCoverage,
-          hasHeadAndPatchCoverage,
+          hasHeadOrPatchCoverage,
           headName: impactedFile?.headName,
           fileName: impactedFile?.fileName,
         }
@@ -203,13 +203,13 @@ export function useSingularImpactedFileComparison({
               isRenamedFile
               isDeletedFile
               isCriticalFile
-              baseTotals {
+              baseCoverage {
                 percentCovered
               }
-              headTotals {
+              headCoverage {
                 percentCovered
               }
-              patchTotals {
+              patchCoverage {
                 percentCovered
               }
               changeCoverage
@@ -246,8 +246,22 @@ export function useSingularImpactedFileComparison({
     })
   }
 
+  function setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
+    if (isNewFile) return 'New'
+    if (isRenamedFile) return 'Renamed'
+    if (isDeletedFile) return 'Deleted'
+    return null
+  }
+
   function transformImpactedFileData(impactedFile) {
+    const fileLabel = setFileLabel({
+      isNewFile: impactedFile?.isNewFile,
+      isRenamedFile: impactedFile?.isRenamedFile,
+      isDeletedFile: impactedFile?.isDeletedFile,
+    })
+
     return {
+      fileLabel,
       headName: impactedFile?.headName,
       isCriticalFile: impactedFile?.isCriticalFile,
       segments: impactedFile?.segments,

@@ -3,11 +3,13 @@ import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useSingularImpactedFileComparison } from 'services/pull'
-import { CODE_RENDERER_INFO, CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
+import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
+import A from 'ui/A'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
+import Icon from 'ui/Icon'
 
 function FileDiff({ path }) {
   const { provider, owner, repo, pullId } = useParams()
@@ -19,7 +21,7 @@ function FileDiff({ path }) {
     path,
   })
 
-  const { headName, isCriticalFile, segments } = data
+  const { fileLabel, headName, isCriticalFile, segments } = data
 
   return (
     !isLoading && (
@@ -29,14 +31,25 @@ function FileDiff({ path }) {
           const content = segment.lines.map((line) => line.content).join('\n')
           return (
             <Fragment key={`${headName}-${segmentIndex}`}>
-              <CodeRendererInfoRow
-                patch={segment?.header}
-                type={
-                  segment?.hasUnintendedChanges
-                    ? CODE_RENDERER_INFO.UNEXPECTED_CHANGES
-                    : CODE_RENDERER_INFO.EMPTY
-                }
-              />
+              <CodeRendererInfoRow>
+                <span data-testid="patch">{segment?.header}</span>
+                {segment?.hasUnintendedChanges && (
+                  <div className="flex gap-1">
+                    <Icon
+                      variant="outline"
+                      name="information-circle"
+                      size="sm"
+                    />
+                    <span>
+                      indirect coverage change{' '}
+                      <A to={{ pageName: 'unexpectedChanges' }}>learn more</A>
+                    </span>
+                  </div>
+                )}
+                {fileLabel && (
+                  <span className="border-l-2 pl-2">{fileLabel}</span>
+                )}
+              </CodeRendererInfoRow>
               <CodeRenderer
                 code={content}
                 fileName={headName}
