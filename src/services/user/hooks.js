@@ -61,21 +61,17 @@ export function useUser(options = {}) {
 
   return useQuery(
     ['currentUser', provider],
-    () =>
-      Api.graphql({ provider, query }).then((res) => {
-        const currentUser = res?.data?.me
+    async () => {
+      try {
+        const { data } = await Api.graphql({ provider, query })
+        const currentUser = data?.me
 
         if (currentUser) return currentUser
-
-        // imitate REST behavior until we implement getting the current user
-        // with a better approach
-        return Promise.reject({
-          status: 401,
-          data: {
-            message: 'Unauthenticated',
-          },
-        })
-      }),
+        throw new Error('Unauthenticated')
+      } catch (e) {
+        console.error(e)
+      }
+    },
     {
       enabled: provider !== undefined,
       ...options,
