@@ -1,1 +1,1 @@
-export { default } from './FlagsWrapper'
+export { default } from './Flags'
