@@ -77,7 +77,7 @@ export function useUser(options = {}) {
         })
       }),
     {
-      enabled: !!provider,
+      enabled: provider !== undefined,
       ...options,
     }
   )
