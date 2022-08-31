@@ -143,13 +143,13 @@ const mockImpactedFilesData = {
   impactedFiles: [
     {
       headName: 'file A',
-      headCoverage: {
+      headTotals: {
         percentCovered: 90.23,
       },
-      baseCoverage: {
+      baseTotals: {
         percentCovered: 23.42,
       },
-      patchCoverage: {
+      patchTotals: {
         percentCovered: 27.43,
       },
       changeCoverage: 58.333333333333336,
@@ -170,13 +170,13 @@ const mockImpactedFilesWithEmptyHeadAndBaseCoverage = {
   impactedFiles: [
     {
       headName: 'file B',
-      headCoverage: {
+      headTotals: {
         percentCovered: undefined,
       },
-      baseCoverage: {
+      baseTotals: {
         percentCovered: undefined,
       },
-      patchCoverage: {
+      patchTotals: {
         percentCovered: 27.43,
       },
       changeCoverage: 58.333333333333336,

@@ -108,13 +108,13 @@ export function useImpactedFilesComparison({
             impactedFiles(filters:$filters) {
               fileName
               headName
-              baseCoverage {
+              baseTotals {
                 percentCovered
               }
-              headCoverage {
+              headTotals {
                 percentCovered
               }
-              patchCoverage {
+              patchTotals {
                 percentCovered
               }
               changeCoverage
@@ -143,9 +143,9 @@ export function useImpactedFilesComparison({
   function transformImpactedFilesData(compareWithBase) {
     const impactedFiles = compareWithBase?.impactedFiles?.map(
       (impactedFile) => {
-        const headCoverage = impactedFile?.headCoverage?.percentCovered
-        const patchCoverage = impactedFile?.patchCoverage?.percentCovered
-        const baseCoverage = impactedFile?.baseCoverage?.percentCovered
+        const headCoverage = impactedFile?.headTotals?.percentCovered
+        const patchCoverage = impactedFile?.patchTotals?.percentCovered
+        const baseCoverage = impactedFile?.baseTotals?.percentCovered
         const changeCoverage =
           isNumber(headCoverage) && isNumber(baseCoverage)
             ? headCoverage - baseCoverage
@@ -172,7 +172,7 @@ export function useImpactedFilesComparison({
   }
 
   return useQuery(
-    ['impactedFileComparison', provider, owner, repo, pullId, filters],
+    ['impactedFilesComparison', provider, owner, repo, pullId, filters],
     fetchImpactedFiles,
     {
       select: ({ data }) =>
@@ -180,6 +180,88 @@ export function useImpactedFilesComparison({
           data?.owner?.repository?.pull?.compareWithBase
         ),
       staleTime: 1000 * 60 * 5,
+    }
+  )
+}
+
+export function useSingularImpactedFileComparison({
+  provider,
+  owner,
+  repo,
+  pullId,
+  path,
+}) {
+  const query = `
+  query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!) {
+    owner(username: $owner) {
+      repository(name: $repo) {
+        pull(id: $pullId) {
+          compareWithBase{
+            impactedFile(path:$path) {
+              headName
+              isNewFile
+              isRenamedFile
+              isDeletedFile
+              isCriticalFile
+              baseTotals {
+                percentCovered
+              }
+              headTotals {
+                percentCovered
+              }
+              patchTotals {
+                percentCovered
+              }
+              changeCoverage
+              segments {
+                header
+                hasUnintendedChanges
+                lines {
+                  baseNumber
+                  headNumber
+                  baseCoverage
+                  headCoverage
+                  content
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  `
+
+  const fetchSingularImpactedFile = () => {
+    return Api.graphql({
+      provider,
+      query,
+      variables: {
+        provider,
+        owner,
+        repo,
+        pullId: parseInt(pullId, 10),
+        path,
+      },
+    })
+  }
+
+  function transformImpactedFileData(impactedFile) {
+    return {
+      headName: impactedFile?.headName,
+      isCriticalFile: impactedFile?.isCriticalFile,
+      segments: impactedFile?.segments,
+    }
+  }
+
+  return useQuery(
+    ['impactedFileComparison', provider, owner, repo, pullId, path],
+    fetchSingularImpactedFile,
+    {
+      select: ({ data }) =>
+        transformImpactedFileData(
+          data?.owner?.repository?.pull?.compareWithBase?.impactedFile
+        ),
     }
   )
 }

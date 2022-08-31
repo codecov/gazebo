@@ -1,8 +1,14 @@
+import { Suspense } from 'react'
+
+import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
+import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import useImpactedFilesTable from './hooks'
+
+import FileDiff from '../FileDiff'
 
 const columns = [
   {
@@ -10,7 +16,23 @@ const columns = [
     header: 'Name',
     accessorKey: 'name',
     width: 'w-7/12 min-w-min',
-    cell: (info) => info.getValue(),
+    cell: ({ row, getValue }) => {
+      return (
+        <div className="flex gap-2">
+          <button
+            onClick={() => row.toggleExpanded()}
+            className="cursor-pointer"
+          >
+            <Icon
+              size="md"
+              name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
+              variant="solid"
+            />
+          </button>
+          {getValue()}
+        </div>
+      )
+    },
   },
   {
     id: 'head',
@@ -54,18 +76,10 @@ function createTable({ tableData }) {
         return {
           name: (
             <div className="flex flex-col">
-              {/* <A
-                to={{
-                  pageName: 'commitFile',
-                  // options: { commit, path: headName },
-                }}
-              > */}
               <span>{fileName}</span>
-              {/* </A> */}
               <span className="text-xs mt-0.5 text-ds-gray-quinary break-all">
                 {headName}
               </span>
-              <button>press pls</button>
             </div>
           ),
           head: (
@@ -96,10 +110,34 @@ function createTable({ tableData }) {
     : []
 }
 
+const Loader = (
+  <div className="flex items-center justify-center py-16">
+    <Spinner />
+  </div>
+)
+
+const renderSubComponent = ({ row }) => {
+  const nameColumn = row.getValue('name')
+  const path = nameColumn?.props?.children[1]?.props?.children
+  return (
+    <Suspense fallback={Loader}>
+      <FileDiff path={path} />
+    </Suspense>
+  )
+}
+
 function ImpactedFiles() {
   const { data, handleSort } = useImpactedFilesTable()
   const tableContent = createTable({ tableData: data?.impactedFiles })
-  return <Table data={tableContent} columns={columns} onSort={handleSort} />
+
+  return (
+    <Table
+      data={tableContent}
+      columns={columns}
+      onSort={handleSort}
+      renderSubComponent={renderSubComponent}
+    />
+  )
 }
 
 export default ImpactedFiles
