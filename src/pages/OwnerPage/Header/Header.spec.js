@@ -120,15 +120,17 @@ describe('Header', () => {
   describe('in enterprise', () => {
     describe('when user is part of the org', () => {
       beforeEach(() => {
-        config.IS_ENTERPRISE = true
-
-        setup({
-          provider: 'gh',
-          owner: {
-            username: 'codecov',
-            isCurrentUserPartOfOrg: true,
+        setup(
+          {
+            provider: 'gh',
+            owner: {
+              username: 'codecov',
+              isCurrentUserPartOfOrg: true,
+            },
           },
-        })
+          false,
+          true
+        )
       })
 
       it('renders the context switcher', () => {
@@ -145,14 +147,17 @@ describe('Header', () => {
     })
     describe('when user is not part of the org', () => {
       beforeEach(() => {
-        config.IS_ENTERPRISE = true
-        setup({
-          provider: 'gh',
-          owner: {
-            username: 'codecov',
-            isCurrentUserPartOfOrg: false,
+        setup(
+          {
+            provider: 'gh',
+            owner: {
+              username: 'codecov',
+              isCurrentUserPartOfOrg: false,
+            },
           },
-        })
+          false,
+          true
+        )
       })
 
       it('renders the title of the owner', () => {

@@ -1,7 +1,5 @@
 import { useLocation, useParams } from 'react-router-dom'
 
-import config from 'config'
-
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 import A from 'ui/A'
@@ -14,8 +12,6 @@ import RequestButton from './RequestButton'
 export function LoginPrompt() {
   const to = window.location.href
   const { pathname } = useLocation()
-
-  if (config.IS_ENTERPRISE) return null
 
   // different page if login
   if (pathname.startsWith('/login')) {
@@ -77,7 +73,7 @@ function DesktopMenu() {
           <Dropdown currentUser={currentUser} />
         </div>
       ) : (
-        <LoginPrompt />
+        provider && <LoginPrompt />
       )}
     </>
   )
