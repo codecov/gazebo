@@ -104,4 +104,25 @@ describe('ImpactedFiles', () => {
       expect(screen.getByText('No data available')).toBeInTheDocument()
     })
   })
+
+  describe('when rendered with an empty list of impacted files', () => {
+    beforeEach(() => {
+      const impactedFiles = {
+        data: {
+          pullBaseCoverage: 41.66667,
+          pullHeadCoverage: 92.30769,
+          pullPatchCoverage: 1,
+          impactedFiles: [],
+        },
+      }
+      setup({ impactedFiles })
+    })
+    it('renders headers without data', () => {
+      expect(screen.getByText('Name')).toBeInTheDocument()
+      expect(screen.getByText('HEAD')).toBeInTheDocument()
+      expect(screen.getByText('file coverage %')).toBeInTheDocument()
+      expect(screen.getByText('Patch %')).toBeInTheDocument()
+      expect(screen.getByText('Change')).toBeInTheDocument()
+    })
+  })
 })
