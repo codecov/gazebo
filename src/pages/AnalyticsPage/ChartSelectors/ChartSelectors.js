@@ -32,7 +32,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
       endDate: null,
       repositories: [],
     })
-    multiSelectRef.current.resetSelected()
+    multiSelectRef?.current?.resetSelected()
   }
 
   return (
