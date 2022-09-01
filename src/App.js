@@ -14,6 +14,7 @@ import { useFlags } from 'shared/featureFlags'
 // Not lazy loading because the page is very small and is accessed often
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
+const AdminSettings = lazy(() => import('./pages/AdminSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
@@ -65,6 +66,13 @@ function App() {
                 <AccountSettings />
               </BaseLayout>
             </Route>
+            {config.IS_ENTERPRISE && (
+              <Route path="/admin/:provider">
+                <BaseLayout>
+                  <AdminSettings />
+                </BaseLayout>
+              </Route>
+            )}
             <Route path="/analytics/:provider/:owner/" exact>
               <BaseLayout>
                 <AnalyticsPage />

@@ -21,6 +21,10 @@ describe('useNavLinks', () => {
             {children}
           </Route>
           <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+          <Route path="/admin/:provider/access">{children}</Route>
+          <Route path="/admin/:provider/users">{children}</Route>
+          <Route path="/admin/:provider/:owner/access">{children}</Route>
+          <Route path="/admin/:provider/:owner/users">{children}</Route>
         </MemoryRouter>
       ),
     })
@@ -377,6 +381,7 @@ describe('useNavLinks', () => {
       )
     })
   })
+
   describe('internalAccessTab link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
@@ -856,6 +861,7 @@ describe('useNavLinks', () => {
       )
     })
   })
+
   describe('pull detail', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator/pull/409'])
@@ -932,6 +938,42 @@ describe('useNavLinks', () => {
 
       it('returns the correct url', () => {
         expect(hookData.result.current.prevLink.path()).toBe('/gh')
+      })
+    })
+  })
+
+  describe('access', () => {
+    describe('testing all orgs and repos', () => {
+      beforeAll(() => {
+        setup(['/admin/gh/access'])
+      })
+
+      it('returns the correct url', () => {
+        expect(hookData.result.current.access.path()).toBe('/admin/gh/access')
+      })
+
+      it('returns the correct url provided provider', () => {
+        expect(hookData.result.current.access.path({ provider: 'gl' })).toBe(
+          '/admin/gl/access'
+        )
+      })
+    })
+  })
+
+  describe('users', () => {
+    describe('testing all orgs and repos', () => {
+      beforeAll(() => {
+        setup(['/admin/gh/users'])
+      })
+
+      it('returns the correct url', () => {
+        expect(hookData.result.current.users.path()).toBe('/admin/gh/users')
+      })
+
+      it('returns the correct url provided provider', () => {
+        expect(hookData.result.current.users.path({ provider: 'gl' })).toBe(
+          '/admin/gl/users'
+        )
       })
     })
   })

@@ -14,6 +14,7 @@ import App from './App'
 
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
+jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
 jest.mock('./pages/CommitPage', () => () => 'CommitPage')
 jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
@@ -98,6 +99,35 @@ describe('App', () => {
     it('renders the AccountSettings page', async () => {
       const page = screen.getByText(/AccountSettings/i)
       expect(page).toBeInTheDocument()
+    })
+  })
+
+  describe('rendering admin settings page', () => {
+    describe('IS_ENTERPRISE is true', () => {
+      beforeEach(() => {
+        config.IS_ENTERPRISE = true
+      })
+
+      describe('/admin/gh/access', () => {
+        beforeEach(() => {
+          window.history.pushState(
+            {},
+            'Test Admin Settings Page',
+            '/admin/gh/access'
+          )
+          setup()
+        })
+
+        it('renders the loading state', () => {
+          const loading = screen.getByTestId('logo-spinner')
+          expect(loading).toBeInTheDocument()
+        })
+
+        it('renders admin settings page', () => {
+          const page = screen.getByText('AdminSettingsPage')
+          expect(page).toBeInTheDocument()
+        })
+      })
     })
   })
 
