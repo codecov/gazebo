@@ -19,7 +19,8 @@ const columns = [
     cell: ({ row, getValue }) => {
       return (
         <div
-          className="flex gap-2 cursor-pointer items-center "
+          className="flex gap-2 cursor-pointer items-center"
+          data-testid="name-expand"
           onClick={() => row.toggleExpanded()}
         >
           <span

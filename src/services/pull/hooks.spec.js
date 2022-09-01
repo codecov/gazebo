@@ -420,4 +420,117 @@ describe('useSingularImpactedFileComparison', () => {
       })
     })
   })
+
+  describe('when called with renamed file', () => {
+    beforeEach(() => {
+      const renamedImpactedFile = {
+        headName: 'file A',
+        isRenamedFile: true,
+        isCriticalFile: false,
+        segments: [],
+      }
+      setup({
+        owner: {
+          repository: {
+            pull: {
+              compareWithBase: {
+                impactedFile: renamedImpactedFile,
+              },
+            },
+          },
+        },
+      })
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual({
+          fileLabel: 'Renamed',
+          headName: 'file A',
+          isCriticalFile: false,
+          segments: [],
+        })
+      })
+    })
+  })
+
+  describe('when called with deleted file', () => {
+    beforeEach(() => {
+      const renamedImpactedFile = {
+        headName: 'file A',
+        isDeletedFile: true,
+        isCriticalFile: false,
+        segments: [],
+      }
+      setup({
+        owner: {
+          repository: {
+            pull: {
+              compareWithBase: {
+                impactedFile: renamedImpactedFile,
+              },
+            },
+          },
+        },
+      })
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual({
+          fileLabel: 'Deleted',
+          headName: 'file A',
+          isCriticalFile: false,
+          segments: [],
+        })
+      })
+    })
+  })
+
+  describe('when called with an unchanged file label', () => {
+    beforeEach(() => {
+      const renamedImpactedFile = {
+        headName: 'file A',
+        isNewFile: false,
+        isRenamedFile: false,
+        isDeletedFile: false,
+        isCriticalFile: false,
+        segments: [],
+      }
+      setup({
+        owner: {
+          repository: {
+            pull: {
+              compareWithBase: {
+                impactedFile: renamedImpactedFile,
+              },
+            },
+          },
+        },
+      })
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual({
+          fileLabel: null,
+          headName: 'file A',
+          isCriticalFile: false,
+          segments: [],
+        })
+      })
+    })
+  })
 })

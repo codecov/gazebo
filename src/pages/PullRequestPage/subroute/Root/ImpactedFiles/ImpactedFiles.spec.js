@@ -1,11 +1,13 @@
 import { render, screen } from 'custom-testing-library'
 
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useImpactedFilesComparison } from 'services/pull'
 
 import ImpactedFiles from './ImpactedFiles'
 
+jest.mock('../FileDiff', () => () => 'FileDiff Component')
 jest.mock('services/pull')
 
 const mockImpactedFiles = {
@@ -61,6 +63,23 @@ describe('ImpactedFiles', () => {
     })
   })
 
+  describe('when expanding the name column', () => {
+    beforeEach(() => {
+      setup({})
+      userEvent.click(screen.getByTestId('name-expand'))
+    })
+    it('renders the headers of the impacted file table', () => {
+      expect(screen.getByText('Name')).toBeInTheDocument()
+      expect(screen.getByText('HEAD')).toBeInTheDocument()
+      expect(screen.getByText('file coverage %')).toBeInTheDocument()
+      expect(screen.getByText('Patch %')).toBeInTheDocument()
+      expect(screen.getByText('Change')).toBeInTheDocument()
+    })
+    it('renders the FileDiff component', () => {
+      expect(screen.getByText('FileDiff Component')).toBeInTheDocument()
+    })
+  })
+
   describe('when rendered without change', () => {
     beforeEach(() => {
       const impactedFiles = {
@@ -83,27 +102,6 @@ describe('ImpactedFiles', () => {
     })
     it('renders no data available for the change', () => {
       expect(screen.getByText('No data available')).toBeInTheDocument()
-    })
-  })
-
-  describe('when rendered with empty impacted files', () => {
-    beforeEach(() => {
-      const impactedFiles = {
-        data: {
-          pullBaseCoverage: 41.66667,
-          pullHeadCoverage: 92.30769,
-          pullPatchCoverage: 1,
-          impactedFiles: [],
-        },
-      }
-      setup({ impactedFiles })
-    })
-    it('renders the headers of the impacted file table', () => {
-      expect(screen.getByText('Name')).toBeInTheDocument()
-      expect(screen.getByText('HEAD')).toBeInTheDocument()
-      expect(screen.getByText('file coverage %')).toBeInTheDocument()
-      expect(screen.getByText('Patch %')).toBeInTheDocument()
-      expect(screen.getByText('Change')).toBeInTheDocument()
     })
   })
 })
