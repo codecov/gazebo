@@ -231,5 +231,25 @@ describe('useRepoFlagsTable', () => {
         })
       })
     })
+
+    describe('when there are selected flags', () => {
+      beforeEach(() => {
+        setup({
+          repoData: repoFlagsMock,
+          useParamsValue: { selectedFlags: ['flag1'], search: '' },
+        })
+      })
+
+      it('calls useRepoContents with correct query params', () => {
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: '2020-06-11',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: { flagsNames: ['flag1'], term: '' },
+          interval: 'INTERVAL_30_DAY',
+          orderingDirection: 'ASC',
+          suspense: false,
+        })
+      })
+    })
   })
 })
