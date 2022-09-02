@@ -96,8 +96,7 @@ const Header = ({ controlsDisabled, children }) => {
             resourceName="Flags"
             onLoadMore={handleLoadMoreFlags}
             onSearch={(term) => setMultiSelectSearchTerm(term)}
-            isLoadingMore={isFetchingNextPage}
-            isLoading={isLoading}
+            isLoading={isLoading || isFetchingNextPage}
             ariaName="Select flags"
           />
         </div>
