@@ -82,7 +82,7 @@ SelectWithLoadMore.args = {
 export const SelectWithLoader = Template.bind({})
 SelectWithLoader.args = {
   items: [`Item1`, `Item2`, `Item3`],
-  isLoadingMore: true,
+  isLoading: true,
   onLoadMore: () => {
     console.log('Load more')
   },
