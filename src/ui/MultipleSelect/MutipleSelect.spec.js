@@ -285,24 +285,6 @@ describe('MultipleSelect', () => {
     })
   })
 
-  describe('when onLoadMore function is passed and isLoadingMore is true', () => {
-    beforeEach(() => {
-      setup(
-        {
-          onLoadMore: jest.fn(),
-          isLoadingMore: true,
-        },
-        true
-      )
-      const button = screen.getByText('All')
-      userEvent.click(button)
-    })
-
-    it('a spinner is rendered at the bottom of the list', async () => {
-      expect(screen.getByRole('presentation')).toBeInTheDocument()
-    })
-  })
-
   describe('when selecting a selected item from the list', () => {
     beforeEach(() => {
       setup({ value: ['item1', 'item2', 'item3'], resourceName: 'item' })

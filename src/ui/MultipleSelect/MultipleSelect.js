@@ -32,18 +32,12 @@ const getDefaultButtonPlaceholder = (items, resourceName) =>
 const getSearchPlaceholder = (resourceName) =>
   `Search ${resourceName ? `for ${pluralize(resourceName)}` : ''}`
 
-const LoadMoreTrigger = ({ intersectionRef, onLoadMore, isLoading }) => (
+const LoadMoreTrigger = ({ intersectionRef, onLoadMore }) => (
   <>
     {onLoadMore ? (
-      isLoading ? (
-        <span className="flex py-2 px-3">
-          <Spinner />
-        </span>
-      ) : (
-        <span ref={intersectionRef} className={SelectClasses.loadMoreTrigger}>
-          Loading more items...
-        </span>
-      )
+      <span ref={intersectionRef} className={SelectClasses.loadMoreTrigger}>
+        Loading more items...
+      </span>
     ) : null}
   </>
 )
@@ -59,7 +53,6 @@ const MultipleSelect = forwardRef(function MultipleSelect(
     onSearch,
     isLoading,
     onLoadMore,
-    isLoadingMore,
     renderSelected,
     resourceName = '',
     renderItem = identity,
@@ -158,7 +151,6 @@ const MultipleSelect = forwardRef(function MultipleSelect(
             <LoadMoreTrigger
               intersectionRef={intersectionRef}
               onLoadMore={onLoadMore}
-              isLoading={isLoadingMore}
             />
           </>
         )}
@@ -179,14 +171,12 @@ MultipleSelect.propTypes = {
   ariaName: PropTypes.string,
   variant: PropTypes.oneOf(['default', 'gray']),
   disabled: PropTypes.bool,
-  isLoadingMore: PropTypes.bool,
   isLoading: PropTypes.bool,
 }
 
 LoadMoreTrigger.propTypes = {
   onLoadMore: PropTypes.func,
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-  isLoading: PropTypes.bool,
 }
 
 export default MultipleSelect
