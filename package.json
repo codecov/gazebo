@@ -121,5 +121,8 @@
   "volta": {
     "node": "18.8.0",
     "npm": "8.19.1"
+  },
+  "overrides": {
+    "react-refresh": "^0.12.0"
   }
 }
