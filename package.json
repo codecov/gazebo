@@ -107,7 +107,7 @@
     "webpack": "^5.70.0"
   },
   "engines": {
-    "node": "16.14.2"
+    "node": "18.8.0"
   },
   "jest": {
     "transformIgnorePatterns": [
@@ -119,7 +119,7 @@
     "workerDirectory": "public"
   },
   "volta": {
-    "node": "16.14.2",
-    "npm": "8.5.0"
+    "node": "18.8.0",
+    "npm": "8.19.1"
   }
 }
