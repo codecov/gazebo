@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import AvatarSVG from './AvatarSVG.js'
+import AvatarSVG from './AvatarSVG.jsx'
 
 describe('AvatarSVG', () => {
   const args = {

@@ -1,9 +1,9 @@
 import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
 import { Suspense, useState } from 'react'
+import BaseModal from 'ui/Modal/BaseModal'
 
 import A from 'ui/A'
-import BaseModal from 'ui/Modal/BaseModal'
 import Spinner from 'ui/Spinner'
 
 import OrganizationsList from './OrganizationsList'
