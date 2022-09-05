@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
@@ -114,6 +114,55 @@ export function useRepoFlags({
   )
   return {
     data: data?.pages.map((page) => page?.flags).flat(),
+    ...rest,
+  }
+}
+
+function fetchRepoFlagsTotalCount({ provider, owner: name, repo }) {
+  const query = `
+    query RepoFlagsTotalCount(
+      $name: String!
+      $repo: String!
+      $filters: FlagSetFilters!
+      $after: String
+    ) {
+      owner(username: $name) {
+        repository(name: $repo) {
+          flags(filters: $filters, after: $after) {
+            totalCount
+          }
+        }
+      }
+    }
+   `
+  return Api.graphql({
+    provider,
+    query,
+    variables: {
+      name,
+      repo,
+      filters: {},
+    },
+  }).then((res) => {
+    return {
+      totalCount: res?.data?.owner?.repository?.flags?.totalCount,
+    }
+  })
+}
+
+export function useRepoFlagsTotalCount() {
+  const { provider, owner, repo } = useParams()
+  const { data, ...rest } = useQuery(
+    ['RepoFlagsTotalCount', provider, owner, repo],
+    () =>
+      fetchRepoFlagsTotalCount({
+        provider,
+        owner,
+        repo,
+      })
+  )
+  return {
+    data: data?.totalCount,
     ...rest,
   }
 }

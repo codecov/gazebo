@@ -5,11 +5,13 @@ import userEvent from '@testing-library/user-event'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import { useLocationParams } from 'services/navigation'
+import { useRepoFlagsTotalCount } from 'services/repo/useRepoFlags'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
 import Header from './Header'
 
 jest.mock('services/navigation')
+jest.mock('services/repo/useRepoFlags')
 jest.mock('services/repo/useRepoFlagsSelect')
 jest.mock('react-use/lib/useIntersection')
 
@@ -39,6 +41,10 @@ describe('Header', () => {
       isFetchingNextPage: false,
     })
 
+    useRepoFlagsTotalCount.mockReturnValue({
+      data: 15,
+    })
+
     useIntersection.mockReturnValue({ isIntersecting })
 
     render(<Header />)
@@ -52,7 +58,7 @@ describe('Header', () => {
       expect(screen.getByText(/Configured flags/)).toBeInTheDocument()
     })
     it('Renders the correct number of flags on the repo', () => {
-      expect(screen.getByText(/4/)).toBeInTheDocument()
+      expect(screen.getByText(/15/)).toBeInTheDocument()
     })
   })
 

@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoFlags } from './useRepoFlags'
+import { useRepoFlags, useRepoFlagsTotalCount } from './useRepoFlags'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -189,6 +189,53 @@ describe('FlagMeasurements', () => {
         ...expectedInitialData,
         ...expectedNextPageData,
       ])
+    })
+  })
+})
+describe('RepoFlagsTotalCount', () => {
+  let hookData
+
+  function setup() {
+    server.use(
+      graphql.query('RepoFlagsTotalCount', (req, res, ctx) => {
+        const dataReturned = {
+          owner: {
+            repository: {
+              flags: {
+                totalCount: 101,
+              },
+            },
+          },
+        }
+        return res(ctx.status(200), ctx.data(dataReturned))
+      })
+    )
+
+    hookData = renderHook(
+      () => useRepoFlagsTotalCount({ provider, owner, repo }),
+      {
+        wrapper,
+      }
+    )
+  }
+
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders isLoading true', () => {
+      expect(hookData.result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(() => {
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual(101)
+      })
     })
   })
 })

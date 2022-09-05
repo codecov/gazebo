@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
+import { useRepoFlagsTotalCount } from 'services/repo/useRepoFlags'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 import Icon from 'ui/Icon'
 import MultipleSelect from 'ui/MultipleSelect'
@@ -31,6 +32,8 @@ const Header = ({ controlsDisabled, children }) => {
     suspense: false,
   })
 
+  const { data: totalFlagsCount } = useRepoFlagsTotalCount()
+
   const historicalTrendValue = TimeOptions.find(
     (item) => item.value === params.historicalTrend
   )
@@ -54,7 +57,7 @@ const Header = ({ controlsDisabled, children }) => {
             Configured flags
           </h3>
           <p className="text-xl text-ds-gray-octonary font-light">
-            {flagsData?.length}
+            {totalFlagsCount}
           </p>
         </div>
         <div className="mb-4 px-4 flex flex-col justify-between gap-2 min-w-[15rem]">
