@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import Icon from 'old_ui/Icon'
 
+
 const typeToStyle = {
   success: {
     text: 'text-success-900',

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 
 import YamlEditor from 'pages/AccountSettings/tabs/YAML/YamlEditor'
 
+
 function YAML({ yaml }) {
   return (
     <div className="flex flex-col gap-1">

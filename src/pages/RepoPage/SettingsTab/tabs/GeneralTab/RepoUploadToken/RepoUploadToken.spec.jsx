@@ -3,8 +3,8 @@ import { act, render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useAddNotification } from 'services/toastNotification'
 import { useRegenerateRepoUploadToken } from 'services/repoUploadToken'
+import { useAddNotification } from 'services/toastNotification'
 
 import RepoUploadToken from './RepoUploadToken'
 

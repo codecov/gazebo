@@ -212,7 +212,7 @@
     },
     // Story Rules
     {
-      "files": ["*.stories.js", "*.stories.jsx"],
+      "files": ["*.stories.jsx"],
       "rules": {
         "import/no-anonymous-default-export": "off"
       }
@@ -220,6 +220,9 @@
   ],
   "settings": {
     "import/resolver": {
+      "node": {
+        "extensions": [".js",".jsx"]
+       },
       "alias": {
         "map": [
           ["layouts", "./src/layouts"],

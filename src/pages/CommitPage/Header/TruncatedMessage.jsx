@@ -1,5 +1,5 @@
 import cs from 'classnames'
-import { sanitize } from 'dompurify'
+import sanitize from 'dompurify'
 import PropTypes from 'prop-types'
 import { useLayoutEffect, useRef, useState } from 'react'
 

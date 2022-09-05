@@ -1,4 +1,4 @@
-import { sanitize } from 'dompurify'
+import sanitize from 'dompurify'
 import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
 import { Controller, useForm } from 'react-hook-form'

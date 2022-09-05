@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 
 import Avatar from 'old_ui/Avatar'
 
+
 const UserClasses = {
   root: 'flex text-md text-sm space-x-4',
   avatar: 'flex-none rounded-full object-cover h-12 w-12',

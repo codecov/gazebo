@@ -9,6 +9,7 @@ import { useUpdateProfile } from 'services/user'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
 
+
 function getSchema() {
   return yup.object().shape({
     name: yup.string().required('Name is required'),

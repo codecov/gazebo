@@ -14,6 +14,7 @@ import {
 import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
 
+
 const MIN_NB_SEATS = 6
 
 function getInitialDataForm(planOptions, accountDetails) {

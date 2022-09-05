@@ -1,1 +1,1 @@
-export { default } from './BackfillBanners.js'
+export { default } from './BackfillBanners.jsx'

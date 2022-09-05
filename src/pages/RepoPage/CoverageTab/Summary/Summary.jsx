@@ -1,8 +1,8 @@
-import { useSetCrumbs } from 'pages/RepoPage/context'
 import { lazy, useLayoutEffect } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
+import { useSetCrumbs } from 'pages/RepoPage'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'

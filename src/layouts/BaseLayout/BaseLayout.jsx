@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 
+
 import Footer from '../Footer'
 import Header from '../Header'
 import ErrorBoundary from '../shared/ErrorBoundary'

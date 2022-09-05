@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { ActiveContext } from 'shared/context'
 
-import NoReposBlock from './NoReposBlock.js'
+import NoReposBlock from './NoReposBlock.jsx'
 
 describe('NoReposBlock', () => {
   function setup({ owner, active }) {

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 
 import Pagination from 'old_ui/Pagination'
 
+
 const FormPaginateClasses = {
   container: 'flex justify-between pt-6 pb-2',
   flex1: 'flex-1',

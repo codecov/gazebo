@@ -12,9 +12,12 @@ function modalRender(ui, options) {
     ...options,
   })
 }
+/* eslint-disable */
 
 // re-export everything
 export * from '@testing-library/react'
 
 // override render method
 export { modalRender as render }
+
+/* eslint-disable */

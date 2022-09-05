@@ -2,6 +2,7 @@ import PropType from 'prop-types'
 
 import Icon from 'old_ui/Icon'
 
+
 function BenefitList({ benefits, iconName, iconColor }) {
   const iconClassName = `bg-ds-gray-secondary rounded-full list-item-type`
   return (

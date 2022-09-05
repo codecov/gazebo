@@ -5,7 +5,9 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import Button from 'ui/Button'
-import BaseModal from 'ui/Modal/BaseModal'
+import BaseModal from 'ui/Modal'
+
+
 
 import { getInitialDataForm, getSchema, shouldGoToEmailStep } from './config'
 import FormEmails from './FormEmails'
