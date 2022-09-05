@@ -1,1 +1,1 @@
-export { default } from './FlagsTab.js'
+export { default } from './FlagsTab.jsx'

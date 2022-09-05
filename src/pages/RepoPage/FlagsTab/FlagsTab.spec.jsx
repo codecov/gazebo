@@ -11,11 +11,11 @@ import FlagsTab from './FlagsTab'
 import { useLocationParams } from '../../../services/navigation'
 
 jest.mock(
-  './BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.js',
+  './BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.jsx',
   () => () => 'Trigger Sync Banner'
 )
 jest.mock(
-  './BackfillBanners/SyncingBanner/SyncingBanner.js',
+  './BackfillBanners/SyncingBanner/SyncingBanner.jsx',
   () => () => 'Syncing Banner'
 )
 jest.mock('./subroute/FlagsTable/FlagsTable', () => () => 'Flags table')

@@ -9,8 +9,8 @@ import Header from './Header'
 import CommitDetailsSummary from './Summary'
 import UploadsCard from './UploadsCard'
 
-const CommitFileView = lazy(() => import('./subroute/CommitFileView.js'))
-const CommitsTable = lazy(() => import('./subroute/CommitsTable.js'))
+const CommitFileView = lazy(() => import('./subroute/CommitFileView.jsx'))
+const CommitsTable = lazy(() => import('./subroute/CommitsTable.jsx'))
 const NotFound = lazy(() => import('pages/NotFound'))
 
 function CommitPage() {
