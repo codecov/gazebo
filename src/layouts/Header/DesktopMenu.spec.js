@@ -4,6 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { useAccountDetails } from 'services/account'
 import { useUser } from 'services/user'
 
@@ -16,6 +18,7 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => {}),
 }))
 jest.mock('./RequestButton', () => () => 'Request Button')
+jest.mock('config')
 
 const loggedInUser = {
   user: {
@@ -91,6 +94,7 @@ describe('DesktopMenu', () => {
   })
 
   it('renders the seat count when user is logged in', () => {
+    config.IS_ENTERPRISE = true
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
     useParams.mockReturnValue({ owner: 'fjord', provider: provider })
