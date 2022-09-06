@@ -9,7 +9,7 @@ const user = {
   activated: false,
   email: 'codecov@codecov.io',
   isAdmin: true,
-  name: 'Nicholas',
+  name: 'Codecov',
   ownerid: 2,
   username: 'codecov',
 }
