@@ -18,6 +18,7 @@ export function useUpdatePendoWithOwner(user) {
     username: owner,
     opts: {
       enabled: owner !== undefined,
+      suspense: false,
     },
   })
   const currentUser = getUserData(user, pendoDefaultUser)
