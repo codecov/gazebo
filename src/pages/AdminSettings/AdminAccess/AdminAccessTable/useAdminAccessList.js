@@ -10,11 +10,11 @@ export const useAdminAccessList = () => {
     {
       select: ({ pages }) => pages.map(({ results }) => results).flat(),
       getNextPageParam: (data) => {
-        if (data.next) {
+        if (data?.next) {
           const { searchParams } = new URL(data.next)
           return searchParams.get('page')
         }
-        return null
+        return undefined
       },
     }
   )

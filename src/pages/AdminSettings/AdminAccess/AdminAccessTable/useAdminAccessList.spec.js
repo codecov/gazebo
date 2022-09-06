@@ -59,7 +59,7 @@ afterAll(() => server.close())
 describe('useAdminAccessList', () => {
   let hookData
 
-  function setup(data) {
+  function setup() {
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
         const {
