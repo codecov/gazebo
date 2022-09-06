@@ -172,7 +172,7 @@ export function useImpactedFilesComparison({
   }
 
   return useQuery(
-    ['impactedFilesComparison', provider, owner, repo, pullId, filters],
+    ['ImpactedFilesComparison', provider, owner, repo, pullId, filters],
     fetchImpactedFiles,
     {
       select: ({ data }) =>
@@ -269,7 +269,7 @@ export function useSingularImpactedFileComparison({
   }
 
   return useQuery(
-    ['impactedFileComparison', provider, owner, repo, pullId, path],
+    ['ImpactedFileComparison', provider, owner, repo, pullId, path],
     fetchSingularImpactedFile,
     {
       select: ({ data }) =>

@@ -125,6 +125,7 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
                       })
                     }
                   </tr>
+                  {/* TODO: add getCanExpan() condition here when tanstack table is updated at least to 8.5.13  */}
                   {row.getIsExpanded() && renderSubComponent({ row })}
                 </Fragment>
               )
