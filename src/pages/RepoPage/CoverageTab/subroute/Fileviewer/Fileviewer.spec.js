@@ -25,10 +25,10 @@ describe('FileView', () => {
     render(
       <MemoryRouter
         initialEntries={[
-          '/gh/criticalrole/mightynein/blobs/19236709182orym9234879/folder/subfolder/file.js',
+          '/gh/criticalrole/mightynein/blob/19236709182orym9234879/folder/subfolder/file.js',
         ]}
       >
-        <Route path="/:provider/:owner/:repo/blobs/:ref/:path+">
+        <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
           <FileView />
         </Route>
       </MemoryRouter>

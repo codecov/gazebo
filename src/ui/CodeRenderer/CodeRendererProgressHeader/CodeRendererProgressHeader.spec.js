@@ -1,17 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import CodeRendererProgressHeader from './CodeRendererProgressHeader'
 
-jest.mock('shared/featureFlags')
-
 describe('CodeRendererProgressHeader', () => {
-  function setup(props, flagValue = false) {
-    useFlags.mockReturnValue({
-      unifyFileViewers: flagValue,
-    })
+  function setup(props) {
     render(<CodeRendererProgressHeader {...props} />, {
       wrapper: MemoryRouter,
     })
@@ -54,26 +47,6 @@ describe('CodeRendererProgressHeader', () => {
       expect(filename).toBeInTheDocument()
       expect(screen.getByText(/path/)).toBeInTheDocument()
       expect(screen.getByText(/to/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when feature flag is true', () => {
-    beforeEach(() => {
-      setup(
-        {
-          path: 'path/to/file.js',
-          pathRef: 'main',
-          fileCoverage: 39.28,
-          change: 34.21,
-        },
-        true
-      )
-    })
-
-    it('renders anchor tag', () => {
-      const link = screen.getByRole('link', { name: 'path/to/file.js' })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '#path/to/file.js')
     })
   })
 })
