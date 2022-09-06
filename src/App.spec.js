@@ -14,10 +14,10 @@ import App from './App'
 
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
+jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
 jest.mock('./pages/CommitPage', () => () => 'CommitPage')
 jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
-jest.mock('./pages/FileView', () => () => 'FileViewPage')
 jest.mock('./pages/HomePage', () => () => 'HomePage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
 jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
@@ -101,6 +101,35 @@ describe('App', () => {
     })
   })
 
+  describe('rendering admin settings page', () => {
+    describe('IS_ENTERPRISE is true', () => {
+      beforeEach(() => {
+        config.IS_ENTERPRISE = true
+      })
+
+      describe('/admin/gh/access', () => {
+        beforeEach(() => {
+          window.history.pushState(
+            {},
+            'Test Admin Settings Page',
+            '/admin/gh/access'
+          )
+          setup()
+        })
+
+        it('renders the loading state', () => {
+          const loading = screen.getByTestId('logo-spinner')
+          expect(loading).toBeInTheDocument()
+        })
+
+        it('renders admin settings page', () => {
+          const page = screen.getByText('AdminSettingsPage')
+          expect(page).toBeInTheDocument()
+        })
+      })
+    })
+  })
+
   describe('rendering analytics page', () => {
     beforeEach(() => {
       window.history.pushState(
@@ -181,27 +210,6 @@ describe('App', () => {
 
     it('renders the feedback page', () => {
       const page = screen.getByText(/FeedbackPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering file view page', () => {
-    beforeEach(() => {
-      window.history.pushState(
-        {},
-        'Test File View Page',
-        '/gh/codecov/repo/blob/ref/path'
-      )
-      setup()
-    })
-
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
-
-    it('renders the file view page', () => {
-      const page = screen.getByText(/FileViewPage/i)
       expect(page).toBeInTheDocument()
     })
   })

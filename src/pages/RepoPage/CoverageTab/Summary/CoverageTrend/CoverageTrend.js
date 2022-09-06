@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 
-import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import { useRepoOverview } from 'services/repo'
 import Sparkline from 'ui/Sparkline'
 import { SummaryField } from 'ui/Summary'
@@ -27,31 +26,29 @@ function CoverageTrend() {
   })
 
   return (
-    <ErrorBoundary errorComponent={null}>
-      {isSuccess && (
-        <SummaryField>
-          <TrendDropdown />
-          <div className="flex gap-2 pb-[1.3rem]">
-            {/* ^ CSS doesn't want to render like the others without a p tag in the dom. */}
-            {coverage?.length > 0 ? (
-              <>
-                <Sparkline
-                  datum={coverage}
-                  description={`The ${selection?.name} branch coverage trend`}
-                  dataTemplate={(d) => `coverage: ${d}%`}
-                  select={(d) => d?.coverage}
-                />
-                <TotalsNumber value={coverageChange} light showChange />
-              </>
-            ) : (
-              <p className="text-sm font-medium">
-                No coverage reports found in this timespan.
-              </p>
-            )}
-          </div>
-        </SummaryField>
-      )}
-    </ErrorBoundary>
+    isSuccess && (
+      <SummaryField>
+        <TrendDropdown />
+        <div className="flex gap-2 pb-[1.3rem]">
+          {/* ^ CSS doesn't want to render like the others without a p tag in the dom. */}
+          {coverage?.length > 0 ? (
+            <>
+              <Sparkline
+                datum={coverage}
+                description={`The ${selection?.name} branch coverage trend`}
+                dataTemplate={(d) => `coverage: ${d}%`}
+                select={(d) => d?.coverage}
+              />
+              <TotalsNumber value={coverageChange} light showChange />
+            </>
+          ) : (
+            <p className="text-sm font-medium">
+              No coverage reports found in this timespan.
+            </p>
+          )}
+        </div>
+      </SummaryField>
+    )
   )
 }
 export default CoverageTrend

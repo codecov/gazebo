@@ -38,6 +38,12 @@ PlainBanner.args = {
   variant: 'plain',
 }
 
+export const WarningBanner = Template.bind({})
+WarningBanner.args = {
+  children: 'Normal button',
+  variant: 'warning',
+}
+
 export default {
   title: 'Components/Banner',
   component: Banner,

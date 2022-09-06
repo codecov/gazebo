@@ -14,11 +14,11 @@ import { useFlags } from 'shared/featureFlags'
 // Not lazy loading because the page is very small and is accessed often
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
+const AdminSettings = lazy(() => import('./pages/AdminSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitPage = lazy(() => import('./pages/CommitPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage'))
-const FileViewPage = lazy(() => import('./pages/FileView'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const MembersPage = lazy(() => import('./pages/MembersPage/MembersPage'))
@@ -65,6 +65,13 @@ function App() {
                 <AccountSettings />
               </BaseLayout>
             </Route>
+            {config.IS_ENTERPRISE && (
+              <Route path="/admin/:provider">
+                <BaseLayout>
+                  <AdminSettings />
+                </BaseLayout>
+              </Route>
+            )}
             <Route path="/analytics/:provider/:owner/" exact>
               <BaseLayout>
                 <AnalyticsPage />
@@ -134,11 +141,6 @@ function App() {
             <Route path="/:provider/:owner/:repo/commit/:commit" exact>
               <BaseLayout>
                 <CommitPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
-              <BaseLayout>
-                <FileViewPage />
               </BaseLayout>
             </Route>
             <Route path="/:provider/:owner/:repo">

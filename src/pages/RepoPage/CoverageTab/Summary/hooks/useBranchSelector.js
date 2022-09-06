@@ -11,7 +11,7 @@ export function useBranchSelector(branches, defaultBranch) {
   const decodedRef = !!ref ? decodeURIComponent(ref) : ref
   const selection = useMemo(() => {
     const selectedBranch = decodedBranch || decodedRef || defaultBranch
-    const [currentBranch] = items.filter((b) => b.name === selectedBranch)
+    const [currentBranch] = items.filter((b) => b?.name === selectedBranch)
     return currentBranch
   }, [items, decodedBranch, decodedRef, defaultBranch])
 

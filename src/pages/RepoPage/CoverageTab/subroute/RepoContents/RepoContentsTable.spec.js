@@ -95,7 +95,7 @@ describe('RepoContentsTable', () => {
       const file = screen.getByText('app.js')
       expect(file).toHaveAttribute(
         'href',
-        '/gh/Rabee-AbuBaker/another-test/blobs/default-branch/app.js'
+        '/gh/Rabee-AbuBaker/another-test/blob/default-branch/app.js'
       )
     })
   })
@@ -115,7 +115,7 @@ describe('RepoContentsTable', () => {
       const file = screen.getByText('app.js')
       expect(file).toHaveAttribute(
         'href',
-        '/gh/Rabee-AbuBaker/another-test/blobs/main/src/app.js'
+        '/gh/Rabee-AbuBaker/another-test/blob/main/src/app.js'
       )
     })
   })
