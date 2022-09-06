@@ -18,7 +18,7 @@ function fetchRepoPulls({ provider, owner, repo, variables, after }) {
                 coverage
             }
         }
-        compareWithBase{
+        compareWithBase: compareWithBaseTemp {
           patchTotals{
             coverage
           }
