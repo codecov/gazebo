@@ -1,24 +1,19 @@
 import CodeRendererInfoRow from './CodeRendererInfoRow'
 
-const Template = (args) => <CodeRendererInfoRow {...args} />
-
-export const SimpleCoverageHeader = Template.bind({})
-SimpleCoverageHeader.args = {
-  header: '-6,16, +6,16',
-  headName: 'folder/file.js',
-  headCoverage: 23.34,
-  patchCoverage: 85.34,
-  changeCoverage: 75.23,
+const Template = () => {
+  return (
+    <>
+      <CodeRendererInfoRow>
+        <p>
+          This is the children of the new ui system code renderer info row.
+          Lorem Ipsum blah bleh bluh.
+        </p>
+      </CodeRendererInfoRow>
+    </>
+  )
 }
 
-export const CoverageHeaderWithoutValues = Template.bind({})
-CoverageHeaderWithoutValues.args = {
-  header: null,
-  headName: null,
-  headCoverage: null,
-  patchCoverage: null,
-  changeCoverage: null,
-}
+export const DefaultCodeRendererInfoRow = Template.bind({})
 
 export default {
   title: 'Components/CodeRendererInfoRow',
