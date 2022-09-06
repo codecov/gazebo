@@ -8,6 +8,7 @@ import Button from 'ui/Button'
 import Dropdown from './Dropdown'
 import FeedbackLink from './FeedbackLink'
 import RequestButton from './RequestButton'
+import SeatDetails from './SeatDetails'
 
 export function LoginPrompt() {
   const to = window.location.href
@@ -69,6 +70,7 @@ function DesktopMenu() {
       </div>
       {currentUser ? (
         <div className="flex items-center space-between mx-2 md:mx-4 gap-2">
+          <SeatDetails />
           {!!owner && <RequestButton owner={owner} provider={provider} />}
           <Dropdown currentUser={currentUser} />
         </div>
