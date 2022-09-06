@@ -143,26 +143,21 @@ function fetchRepoFlagsTotalCount({ provider, owner: name, repo }) {
       repo,
       filters: {},
     },
-  }).then((res) => {
-    return {
-      totalCount: res?.data?.owner?.repository?.flags?.totalCount,
-    }
   })
 }
 
 export function useRepoFlagsTotalCount() {
   const { provider, owner, repo } = useParams()
-  const { data, ...rest } = useQuery(
+  return useQuery(
     ['RepoFlagsTotalCount', provider, owner, repo],
     () =>
       fetchRepoFlagsTotalCount({
         provider,
         owner,
         repo,
-      })
+      }),
+    {
+      select: ({ data }) => data?.owner?.repository?.flags?.totalCount,
+    }
   )
-  return {
-    data: data?.totalCount,
-    ...rest,
-  }
 }
