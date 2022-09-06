@@ -1,5 +1,8 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Switch } from 'react-router-dom'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 
@@ -14,17 +17,42 @@ const loggedInUser = {
   },
 }
 
+const mockSeatData = {
+  config: {
+    seatsUsed: 5,
+    seatsLimit: 10,
+  },
+}
+
+const queryClient = new QueryClient()
+const server = setupServer()
+
+beforeAll(() => server.listen())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+afterAll(() => server.close())
+
 describe('Header', () => {
   function setup({ provider }) {
     useUser.mockReturnValue({ data: loggedInUser })
 
+    server.use(
+      server.use(
+        graphql.query('Seats', (req, res, ctx) =>
+          res(ctx.status(200), ctx.data(mockSeatData))
+        )
+      )
+    )
+
     render(
       <MemoryRouter initialEntries={[`/${provider}`]}>
-        <Switch>
-          <Route path="/:provider" exact>
+        <Route path="/:provider" exact>
+          <QueryClientProvider client={queryClient}>
             <Header />
-          </Route>
-        </Switch>
+          </QueryClientProvider>
+        </Route>
       </MemoryRouter>
     )
   }
