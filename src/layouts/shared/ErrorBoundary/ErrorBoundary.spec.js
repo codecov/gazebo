@@ -6,8 +6,7 @@ import ErrorBoundary from './ErrorBoundary'
 
 const thrownError = 'Alice in wonderland'
 function BadComponent() {
-  // eslint-disable-next-line no-throw-literal
-  throw thrownError
+  throw new Error(thrownError)
 }
 
 describe('Error Boundary', () => {
@@ -39,7 +38,7 @@ describe('Error Boundary', () => {
 
     it('displays it in the console', () => {
       expect(mockError).toHaveBeenCalledTimes(2)
-      expect(mockError.mock.calls[0]).toContain(thrownError)
+      expect(mockError.mock.calls[0][0]).toContain(thrownError) // Can this be done better?
     })
 
     it('renders the default error UI', () => {
@@ -69,7 +68,7 @@ describe('Error Boundary', () => {
 
     it('displays it in the console', () => {
       expect(mockError).toHaveBeenCalledTimes(2)
-      expect(mockError.mock.calls[0]).toContain(thrownError)
+      expect(mockError.mock.calls[0][0]).toContain(thrownError)
     })
 
     it('renders a custom error component', () => {

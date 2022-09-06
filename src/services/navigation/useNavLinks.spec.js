@@ -615,7 +615,7 @@ describe('useNavLinks', () => {
 
   describe('fileViewer link', () => {
     beforeAll(() => {
-      setup(['/gh/Rabee-AbuBaker/another-test/blobs/main/index.js'])
+      setup(['/gh/Rabee-AbuBaker/another-test/blob/main/index.js'])
     })
 
     it('Returns the correct link with nothing passed', () => {
@@ -624,7 +624,7 @@ describe('useNavLinks', () => {
           ref: 'main',
           tree: 'index.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/main/index.js')
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/main/index.js')
     })
 
     it('can override the params', () => {
@@ -634,28 +634,28 @@ describe('useNavLinks', () => {
           ref: 'main',
           tree: 'index.js',
         })
-      ).toBe('/bb/Rabee-AbuBaker/another-test/blobs/main/index.js')
+      ).toBe('/bb/Rabee-AbuBaker/another-test/blob/main/index.js')
       expect(
         hookData.result.current.fileViewer.path({
           owner: 'cat',
           ref: 'main',
           tree: 'index.js',
         })
-      ).toBe('/gh/cat/another-test/blobs/main/index.js')
+      ).toBe('/gh/cat/another-test/blob/main/index.js')
 
       expect(
         hookData.result.current.fileViewer.path({
           ref: 'main',
           tree: 'flags1/mafs.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/main/flags1/mafs.js')
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/main/flags1/mafs.js')
 
       expect(
         hookData.result.current.fileViewer.path({
           ref: 'test-br',
           tree: 'index.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/test-br/index.js')
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/test-br/index.js')
     })
   })
 

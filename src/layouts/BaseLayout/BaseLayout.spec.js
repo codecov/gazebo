@@ -7,6 +7,7 @@ jest.mock('layouts/UserOnboarding', () => () => null)
 jest.mock('layouts/Footer', () => () => 'Footer')
 jest.mock('services/user', () => ({
   useUser: () => ({ data: null }),
+  useOwner: () => ({ data: null }),
 }))
 
 describe('BaseLayout', () => {

@@ -18,7 +18,6 @@ jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
 jest.mock('./pages/CommitPage', () => () => 'CommitPage')
 jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
-jest.mock('./pages/FileView', () => () => 'FileViewPage')
 jest.mock('./pages/HomePage', () => () => 'HomePage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
 jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
@@ -211,27 +210,6 @@ describe('App', () => {
 
     it('renders the feedback page', () => {
       const page = screen.getByText(/FeedbackPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering file view page', () => {
-    beforeEach(() => {
-      window.history.pushState(
-        {},
-        'Test File View Page',
-        '/gh/codecov/repo/blob/ref/path'
-      )
-      setup()
-    })
-
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
-
-    it('renders the file view page', () => {
-      const page = screen.getByText(/FileViewPage/i)
       expect(page).toBeInTheDocument()
     })
   })
