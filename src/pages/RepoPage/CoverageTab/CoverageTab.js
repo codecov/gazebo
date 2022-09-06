@@ -66,7 +66,7 @@ function CoverageTab() {
               <RepoContentsTable />
             </Suspense>
           </Route>
-          <Route path="/:provider/:owner/:repo/blobs/:ref/:path+" exact>
+          <Route path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
             <Suspense fallback={Loader}>
               <FileViewer />
             </Suspense>
