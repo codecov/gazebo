@@ -1,19 +1,10 @@
-import dropRight from 'lodash/dropRight'
-import indexOf from 'lodash/indexOf'
 import isFinite from 'lodash/isFinite'
 import PropTypes from 'prop-types'
 
-import { useFlags } from 'shared/featureFlags'
-import { getFilePathParts } from 'shared/utils/url'
 import A from 'ui/A'
-import Breadcrumb from 'ui/Breadcrumb'
 import CopyClipboard from 'ui/CopyClipboard'
 import Progress from 'ui/Progress'
 import TotalsNumber from 'ui/TotalsNumber'
-
-function getTreeLocation(paths, location) {
-  return dropRight(paths, paths.length - indexOf(paths, location) - 1).join('/')
-}
 
 function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
   /**
@@ -22,18 +13,6 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
    * @param {Float} fileCoverage total coverage of current file
    * @param {Float} change difference between head and base coverage. Only used in commmit based file viewer
    */
-  const { unifyFileViewers } = useFlags({
-    unifyFileViewers: true,
-  })
-
-  const treePaths = getFilePathParts(path)?.map((location) => ({
-    pageName: 'treeView',
-    text: location,
-    options: {
-      tree: getTreeLocation(path?.split('/'), location),
-      ref: pathRef,
-    },
-  }))
 
   return (
     <div
@@ -45,13 +24,9 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
     >
       <div className="flex flex-1 gap-1">
         {/* TODO: remove after coverage tab full release */}
-        {unifyFileViewers ? (
-          <A href={`#${path}`} hook="file-viewer" variant="greyOctinary">
-            {path}
-          </A>
-        ) : (
-          treePaths && <Breadcrumb paths={[...treePaths]} />
-        )}
+        <A href={`#${path}`} hook="file-viewer" variant="greyOctinary">
+          {path}
+        </A>
         {path && (
           <CopyClipboard string={path} showLabel={false} variant="muted" />
         )}

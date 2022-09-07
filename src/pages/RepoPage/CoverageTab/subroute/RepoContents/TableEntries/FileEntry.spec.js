@@ -55,7 +55,7 @@ describe('FileEntry', () => {
     it('sets the correct href', () => {
       expect(screen.getByText('file.js')).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/blobs/main/dir/file.js'
+        '/gh/codecov/test-repo/blob/main/dir/file.js'
       )
     })
   })

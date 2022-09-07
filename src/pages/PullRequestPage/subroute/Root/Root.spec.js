@@ -19,7 +19,7 @@ const mockImpactedFiles = {
     impactedFiles: [
       {
         changeCoverage: 58.333333333333336,
-        hasHeadAndPatchCoverage: true,
+        hasHeadOrPatchCoverage: true,
         headCoverage: 90.23,
         headName: 'flag1/mafs.js',
         patchCoverage: 27.43,

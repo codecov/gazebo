@@ -8,7 +8,7 @@ export function useFlagsForComparePage({ provider, owner, repo, pullId }) {
         owner(username: $owner) {
           repository(name: $repo) {
             pull(id: $pullId) {
-              compareWithBase {
+              compareWithBase: compareWithBaseTemp {
                 flagComparisons {
                   name
                   patchTotals {
@@ -39,7 +39,8 @@ export function useFlagsForComparePage({ provider, owner, repo, pullId }) {
       },
     }).then(
       (res) =>
-        res?.data?.owner?.repository?.pull?.compareWithBase?.flagComparisons
+        res?.data?.owner?.repository?.pull?.compareWithBase?.flagComparisons ||
+        []
     )
   })
 }

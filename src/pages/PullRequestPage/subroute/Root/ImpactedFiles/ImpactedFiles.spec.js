@@ -1,11 +1,13 @@
 import { render, screen } from 'custom-testing-library'
 
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useImpactedFilesComparison } from 'services/pull'
 
 import ImpactedFiles from './ImpactedFiles'
 
+jest.mock('../FileDiff', () => () => 'FileDiff Component')
 jest.mock('services/pull')
 
 const mockImpactedFiles = {
@@ -16,7 +18,7 @@ const mockImpactedFiles = {
     impactedFiles: [
       {
         changeCoverage: 58.333333333333336,
-        hasHeadAndPatchCoverage: true,
+        hasHeadOrPatchCoverage: true,
         headCoverage: 90.23,
         headName: 'flag1/mafs.js',
         fileName: 'mafs.js',
@@ -61,6 +63,23 @@ describe('ImpactedFiles', () => {
     })
   })
 
+  describe('when expanding the name column', () => {
+    beforeEach(() => {
+      setup({})
+      userEvent.click(screen.getByTestId('name-expand'))
+    })
+    it('renders the headers of the impacted file table', () => {
+      expect(screen.getByText('Name')).toBeInTheDocument()
+      expect(screen.getByText('HEAD')).toBeInTheDocument()
+      expect(screen.getByText('file coverage %')).toBeInTheDocument()
+      expect(screen.getByText('Patch %')).toBeInTheDocument()
+      expect(screen.getByText('Change')).toBeInTheDocument()
+    })
+    it('renders the FileDiff component', () => {
+      expect(screen.getByText('FileDiff Component')).toBeInTheDocument()
+    })
+  })
+
   describe('when rendered without change', () => {
     beforeEach(() => {
       const impactedFiles = {
@@ -72,7 +91,7 @@ describe('ImpactedFiles', () => {
             {
               changeCoverage: 58.333333333333336,
               headCoverage: null,
-              hasHeadAndPatchCoverage: false,
+              hasHeadOrPatchCoverage: false,
               headName: 'flag1/mafs.js',
               patchCoverage: 27.43,
             },
@@ -86,7 +105,7 @@ describe('ImpactedFiles', () => {
     })
   })
 
-  describe('when rendered with empty impacted files', () => {
+  describe('when rendered with an empty list of impacted files', () => {
     beforeEach(() => {
       const impactedFiles = {
         data: {
@@ -98,7 +117,7 @@ describe('ImpactedFiles', () => {
       }
       setup({ impactedFiles })
     })
-    it('renders the headers of the impacted file table', () => {
+    it('renders headers without data', () => {
       expect(screen.getByText('Name')).toBeInTheDocument()
       expect(screen.getByText('HEAD')).toBeInTheDocument()
       expect(screen.getByText('file coverage %')).toBeInTheDocument()

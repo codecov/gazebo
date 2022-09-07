@@ -1,8 +1,14 @@
+import { Suspense } from 'react'
+
+import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
+import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import useImpactedFilesTable from './hooks'
+
+import FileDiff from '../FileDiff'
 
 const columns = [
   {
@@ -10,19 +16,39 @@ const columns = [
     header: 'Name',
     accessorKey: 'name',
     width: 'w-7/12 min-w-min',
-    cell: (info) => info.getValue(),
+    cell: ({ row, getValue }) => {
+      return (
+        <div
+          className="flex gap-2 cursor-pointer items-center"
+          data-testid="name-expand"
+          onClick={() => row.toggleExpanded()}
+        >
+          <span
+            className={
+              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
+            }
+          >
+            <Icon
+              size="md"
+              name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
+              variant="solid"
+            />
+          </span>
+          {getValue()}
+        </div>
+      )
+    },
   },
   {
-    id: 'coverage',
+    id: 'head',
     header: (
       <span className="w-full text-right">
         <span className="font-mono">HEAD</span> file coverage %
       </span>
     ),
-    accessorKey: 'coverage',
+    accessorKey: 'head',
     width: 'w-3/12 min-w-min',
     cell: (info) => info.getValue(),
-    enableSorting: false,
   },
   {
     id: 'patch',
@@ -30,7 +56,6 @@ const columns = [
     accessorKey: 'patch',
     width: 'w-28 min-w-min',
     cell: (info) => info.getValue(),
-    enableSorting: false,
   },
   {
     id: 'change',
@@ -48,7 +73,7 @@ function createTable({ tableData }) {
           headCoverage,
           patchCoverage,
           changeCoverage,
-          hasHeadAndPatchCoverage,
+          hasHeadOrPatchCoverage,
           headName,
           fileName,
         } = row
@@ -56,20 +81,13 @@ function createTable({ tableData }) {
         return {
           name: (
             <div className="flex flex-col">
-              {/* <A
-                to={{
-                  pageName: 'commitFile',
-                  // options: { commit, path: headName },
-                }}
-              > */}
-              <span>{fileName}</span>
-              {/* </A> */}
-              <span className="text-xs mt-0.5 text-ds-gray-quinary">
+              <span className="text-ds-blue">{fileName}</span>
+              <span className="text-xs mt-0.5 text-ds-gray-quinary break-all">
                 {headName}
               </span>
             </div>
           ),
-          coverage: (
+          head: (
             <div className="flex flex-1 gap-2 items-center">
               <Progress amount={headCoverage} label />
             </div>
@@ -79,7 +97,7 @@ function createTable({ tableData }) {
               <TotalsNumber value={patchCoverage} />
             </div>
           ),
-          change: hasHeadAndPatchCoverage ? (
+          change: hasHeadOrPatchCoverage ? (
             <div className="w-full flex justify-end">
               <TotalsNumber
                 value={changeCoverage}
@@ -97,10 +115,36 @@ function createTable({ tableData }) {
     : []
 }
 
+const Loader = (
+  <div className="flex items-center justify-center py-16">
+    <Spinner />
+  </div>
+)
+
+const renderSubComponent = ({ row }) => {
+  const nameColumn = row.getValue('name')
+  const [, pathItem] = nameColumn?.props?.children
+  const path = pathItem?.props?.children
+  // TODO: this component has a nested table and needs to be reworked as it is used inside the Table component, which leads to an accessibilty issue
+  return (
+    <Suspense fallback={Loader}>
+      <FileDiff path={path} />
+    </Suspense>
+  )
+}
+
 function ImpactedFiles() {
   const { data, handleSort } = useImpactedFilesTable()
   const tableContent = createTable({ tableData: data?.impactedFiles })
-  return <Table data={tableContent} columns={columns} onSort={handleSort} />
+
+  return (
+    <Table
+      data={tableContent}
+      columns={columns}
+      onSort={handleSort}
+      renderSubComponent={renderSubComponent}
+    />
+  )
 }
 
 export default ImpactedFiles
