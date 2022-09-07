@@ -221,8 +221,8 @@
   "settings": {
     "import/resolver": {
       "node": {
-        "extensions": [".js",".jsx"]
-       },
+        "extensions": [".jsx"]
+      },
       "alias": {
         "map": [
           ["layouts", "./src/layouts"],
