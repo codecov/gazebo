@@ -6,8 +6,6 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import config from 'config'
 
 import BaseLayout from 'layouts/BaseLayout'
-
-
 // not lazy loading because is first page user sees
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'

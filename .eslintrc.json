@@ -150,7 +150,7 @@
     },
     // Services Rules
     {
-      "files": ["src/services/**/*.js", "src/services/*.js", "src/services/**/*.jsx", "src/services/*.jsx"],
+      "files": ["src/services/**/*.js", "src/services/*.js"],
       "rules": {
         "no-restricted-imports": [
           "error",

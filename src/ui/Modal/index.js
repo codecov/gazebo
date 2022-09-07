@@ -1,2 +1,2 @@
 export { default } from './Modal'
-export {BaseModal} from './BaseModal'
+export { default as BaseModal } from './BaseModal'

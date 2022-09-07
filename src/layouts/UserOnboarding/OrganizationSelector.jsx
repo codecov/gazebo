@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Suspense, useState } from 'react'
 
 import A from 'ui/A'
-import BaseModal from 'ui/Modal'
+import { BaseModal } from 'ui/Modal'
 import Spinner from 'ui/Spinner'
 
 import OrganizationsList from './OrganizationsList'
