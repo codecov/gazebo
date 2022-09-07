@@ -82,7 +82,7 @@ function createTable({ tableData }) {
         return {
           name: (
             <div className="flex gap-4">
-              <div className="flex flex-col content-center">
+              <div className="flex flex-col">
                 <span className="text-ds-blue">{fileName}</span>
                 <span className="text-xs mt-0.5 text-ds-gray-quinary break-all">
                   {headName}
