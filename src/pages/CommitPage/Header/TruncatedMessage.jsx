@@ -1,5 +1,5 @@
 import cs from 'classnames'
-import sanitize from 'dompurify'
+import dompurify from 'dompurify'
 import PropTypes from 'prop-types'
 import { useLayoutEffect, useRef, useState } from 'react'
 
@@ -40,7 +40,7 @@ function TruncatedMessage({ message }) {
           }
         )}
       >
-        {sanitize(message)}{' '}
+        {dompurify.sanitize(message)}{' '}
       </pre>
 
       {isTruncatable && (
