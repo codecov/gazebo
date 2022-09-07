@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, within } from '@testing-library/react'
-import { graphql } from 'msw'
+import { render, screen, waitFor, within } from '@testing-library/react'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
@@ -40,6 +40,15 @@ const mockSeatData = {
   },
 }
 
+const mockSelfHostedUser = {
+  activated: true,
+  email: 'codecov@codecov.io',
+  isAdmin: true,
+  name: 'Codecov',
+  ownerid: 2,
+  username: 'codecov',
+}
+
 const queryClient = new QueryClient()
 const server = setupServer()
 
@@ -53,10 +62,14 @@ afterAll(() => server.close())
 describe('DesktopMenu', () => {
   function setup({ provider }) {
     server.use(
-      server.use(
-        graphql.query('Seats', (req, res, ctx) =>
-          res(ctx.status(200), ctx.data(mockSeatData))
-        )
+      graphql.query('Seats', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockSeatData))
+      )
+    )
+
+    server.use(
+      rest.get('/internal/users/current', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(mockSelfHostedUser))
       )
     )
 
@@ -103,6 +116,21 @@ describe('DesktopMenu', () => {
 
     const seatCount = screen.getByText(/available seats/)
     expect(seatCount).toBeInTheDocument()
+  })
+
+  it('renders the admin link when user is logged in', async () => {
+    config.IS_ENTERPRISE = true
+    const provider = 'gh'
+    useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
+    useAccountDetails.mockReturnValue({ data: accountDetails })
+    setup({ provider })
+
+    await waitFor(() => queryClient.isFetching)
+    await waitFor(() => !queryClient.isFetching)
+
+    const adminLink = await screen.findByText(/Admin/)
+    expect(adminLink).toBeInTheDocument()
   })
 
   it('renders the dropdown when user is logged in', () => {
