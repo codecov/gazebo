@@ -131,7 +131,8 @@ const Loader = (
 
 const renderSubComponent = ({ row }) => {
   const nameColumn = row.getValue('name')
-  const [, pathItem] = nameColumn?.props?.children
+  const [fileNames] = nameColumn?.props?.children
+  const [, pathItem] = fileNames?.props?.children
   const path = pathItem?.props?.children
   // TODO: this component has a nested table and needs to be reworked as it is used inside the Table component, which leads to an accessibilty issue
   return (
