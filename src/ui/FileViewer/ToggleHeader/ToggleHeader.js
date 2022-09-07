@@ -13,16 +13,11 @@ function ToggleHeader({ title, flagNames, onFlagsChange, coverageIsLoading }) {
    */
 
   return (
-    <Title
-      title={title}
-      flagNames={flagNames}
-      coverageIsLoading={coverageIsLoading}
-      onChange={onFlagsChange}
-    >
+    <Title title={title}>
       <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
       <TitleCoverage coverage={LINE_STATE.PARTIAL} />
       <TitleCoverage coverage={LINE_STATE.COVERED} />
-      {flagNames && flagNames.length > 0 && (
+      {flagNames && flagNames?.length > 0 && (
         <TitleFlags
           flags={flagNames}
           onChange={onFlagsChange}
