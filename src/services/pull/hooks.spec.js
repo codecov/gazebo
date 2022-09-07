@@ -147,6 +147,7 @@ const mockImpactedFilesData = {
   impactedFiles: [
     {
       headName: 'file A',
+      isCriticalFile: true,
       headCoverage: {
         percentCovered: 90.23,
       },
@@ -237,6 +238,7 @@ describe('useImpactedFilesComparison', () => {
               hasHeadOrPatchCoverage: true,
               headCoverage: 90.23,
               headName: 'file A',
+              isCriticalFile: true,
               patchCoverage: 27.43,
             },
           ],
