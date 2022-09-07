@@ -108,6 +108,7 @@ export function useImpactedFilesComparison({
             impactedFiles(filters:$filters) {
               fileName
               headName
+              isCriticalFile
               baseCoverage {
                 percentCovered
               }
@@ -160,6 +161,7 @@ export function useImpactedFilesComparison({
           hasHeadOrPatchCoverage,
           headName: impactedFile?.headName,
           fileName: impactedFile?.fileName,
+          isCriticalFile: impactedFile?.isCriticalFile,
         }
       }
     )
