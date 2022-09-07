@@ -110,25 +110,21 @@ function PullsTab() {
       <div className="flex flex-row gap-3">
         <div className="flex gap-3 justify-center items-center">
           <label className="font-semibold text-sm">View:</label>
-          <div className="w-32">
-            <MultipleSelect
-              ariaName="Filter by state"
-              items={filterItems}
-              onChange={handleStatesChange}
-              value={selectedStates}
-            />
-          </div>
+          <MultipleSelect
+            ariaName="Filter by state"
+            items={filterItems}
+            onChange={handleStatesChange}
+            value={selectedStates}
+          />
         </div>
         <div className="flex gap-3 justify-center items-center">
           <label className="font-semibold text-sm ">Sort by:</label>
-          <div>
-            <Select
-              ariaName="Sort order"
-              value={selectedOrder}
-              items={orderItems}
-              onChange={handleOrderChange}
-            />
-          </div>
+          <Select
+            ariaName="Sort order"
+            value={selectedOrder}
+            items={orderItems}
+            onChange={handleOrderChange}
+          />
         </div>
       </div>
       <PullsTable pulls={pulls} />
