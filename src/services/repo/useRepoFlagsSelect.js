@@ -15,6 +15,7 @@ function fetchRepoFlags({ provider, owner: name, repo, filters, after }) {
     ) {
       owner(username: $name) {
         repository(name: $repo) {
+          flagsCount
           flags(filters: $filters, after: $after, first: 20) {
             pageInfo {
               hasNextPage
@@ -40,11 +41,11 @@ function fetchRepoFlags({ provider, owner: name, repo, filters, after }) {
       after,
     },
   }).then((res) => {
-    const flags = res?.data?.owner?.repository?.flags
-
+    const repo = res?.data?.owner?.repository
     return {
-      flags: mapEdges(flags),
-      pageInfo: flags?.pageInfo,
+      flags: mapEdges(repo?.flags),
+      pageInfo: repo?.flags?.pageInfo,
+      flagsCount: repo?.flagsCount,
     }
   })
 }
@@ -70,6 +71,7 @@ export function useRepoFlagsSelect({ filters, ...options } = { filters: {} }) {
   )
   return {
     data: data?.pages?.map((page) => page?.flags).flat(),
+    flagsCount: data?.pages?.at(0)?.flagsCount,
     ...rest,
   }
 }

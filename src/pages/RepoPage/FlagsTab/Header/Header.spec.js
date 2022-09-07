@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoFlagsTotalCount } from 'services/repo/useRepoFlags'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
 import Header from './Header'
@@ -36,13 +35,10 @@ describe('Header', () => {
     })
     useRepoFlagsSelect.mockReturnValue({
       data: flagsData,
+      flagsCount: 15,
       hasNextPage,
       fetchNextPage: fetchNextPageMock,
       isFetchingNextPage: false,
-    })
-
-    useRepoFlagsTotalCount.mockReturnValue({
-      data: 15,
     })
 
     useIntersection.mockReturnValue({ isIntersecting })

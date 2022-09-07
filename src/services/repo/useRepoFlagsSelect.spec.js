@@ -83,6 +83,7 @@ describe('FlagsSelect', () => {
         const dataReturned = {
           owner: {
             repository: {
+              flagsCount: 15,
               flags: {
                 edges: req.variables.after
                   ? [...nextPageData]
@@ -120,6 +121,7 @@ describe('FlagsSelect', () => {
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual(expectedInitialData)
+        expect(hookData.result.current.flagsCount).toEqual(15)
       })
     })
   })
