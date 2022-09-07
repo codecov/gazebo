@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 import AccountSettings from './AccountSettings'
 
@@ -14,20 +13,18 @@ jest.mock('./tabs/YAML', () => () => 'YAMLTab')
 jest.mock('./tabs/CancelPlan', () => () => 'CancelPlanTab')
 jest.mock('./tabs/UpgradePlan', () => () => 'UpgradePlan')
 jest.mock('./tabs/InvoiceDetail', () => () => 'InvoiceDetail')
+jest.mock('./tabs/InvoiceDetail', () => () => 'InvoiceDetail')
+jest.mock('../NotFound', () => () => 'NotFound')
 jest.mock('services/user/hooks')
-jest.mock('shared/featureFlags')
 
 describe('AccountSettings', () => {
-  function setup({ url, isAdmin, gazeboPlanTab = false }) {
+  function setup({ url, isAdmin }) {
     useUser.mockReturnValue({
       data: {
         user: {
           username: 'dorian',
         },
       },
-    })
-    useFlags.mockReturnValue({
-      gazeboPlanTab,
     })
 
     useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
@@ -52,9 +49,6 @@ describe('AccountSettings', () => {
         screen.queryByRole('link', { name: /Access/ })
       ).not.toBeInTheDocument()
       expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-      expect(
-        screen.getByRole('link', { name: /billing & users/i })
-      ).toBeInTheDocument()
     })
   })
 
@@ -67,9 +61,6 @@ describe('AccountSettings', () => {
       expect(screen.getByRole('link', { name: /Admin/ })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: /Access/ })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /billing & users/i })
-      ).not.toBeInTheDocument()
     })
   })
 
@@ -86,9 +77,6 @@ describe('AccountSettings', () => {
         screen.queryByRole('link', { name: /Access/ })
       ).not.toBeInTheDocument()
       expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-      expect(
-        screen.getByRole('link', { name: /billing & users/i })
-      ).toBeInTheDocument()
     })
   })
 
@@ -109,9 +97,9 @@ describe('AccountSettings', () => {
     })
   })
 
-  describe('when flag is on and user in an admin', () => {
+  describe('when user iS an admin', () => {
     beforeEach(() => {
-      setup({ url: '/account/gh/dorian', isAdmin: true, gazeboPlanTab: true })
+      setup({ url: '/account/gh/dorian', isAdmin: true })
     })
 
     it('renders the right links', () => {
@@ -124,9 +112,9 @@ describe('AccountSettings', () => {
     })
   })
 
-  describe('when flag is on and account is not personal', () => {
+  describe('when account is not personal', () => {
     beforeEach(() => {
-      setup({ url: '/account/gh/rula', isAdmin: false, gazeboPlanTab: true })
+      setup({ url: '/account/gh/rula', isAdmin: false })
     })
 
     it('renders the right links', () => {
