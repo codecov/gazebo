@@ -248,7 +248,7 @@ function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/blobs/${ref}/${tree}`,
+      ) => `/${provider}/${owner}/${repo}/blob/${ref}/${tree}`,
       isExternalLink: false,
       text: 'File Viewer',
     },

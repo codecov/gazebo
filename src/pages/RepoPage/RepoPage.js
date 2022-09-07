@@ -114,7 +114,7 @@ function RepoPage() {
             <Route path={`${path}/tree/:branch`} exact>
               <CoverageTab />
             </Route>
-            <Route path={`${path}/blobs/:ref/:path+`} exact>
+            <Route path={`${path}/blob/:ref/:path+`} exact>
               <CoverageTab />
             </Route>
             <Redirect

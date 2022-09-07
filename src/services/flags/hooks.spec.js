@@ -64,10 +64,10 @@ const dataReturned = {
 describe('useFlagsForComparePage', () => {
   let hookData
 
-  function setup() {
+  function setup(data = dataReturned) {
     server.use(
       graphql.query('FlagComparisons', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return res(ctx.status(200), ctx.data(data))
       })
     )
 
@@ -89,6 +89,25 @@ describe('useFlagsForComparePage', () => {
 
     it('returns chart data', () => {
       expect(hookData.result.current.data).toStrictEqual(mockResponseData)
+    })
+  })
+
+  describe('when there is no compareWithBase', () => {
+    beforeEach(() => {
+      const dataReturned = {
+        owner: {
+          repository: {
+            pull: {
+              compareWithBase: null,
+            },
+          },
+        },
+      }
+      return setup(dataReturned)
+    })
+
+    it('returns chart data', () => {
+      expect(hookData.result.current.data).toStrictEqual([])
     })
   })
 })
