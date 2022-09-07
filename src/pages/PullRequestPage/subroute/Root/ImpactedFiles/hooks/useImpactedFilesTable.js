@@ -12,6 +12,8 @@ const orderingDirection = Object.freeze({
 const orderingParameter = Object.freeze({
   name: 'FILE_NAME',
   change: 'CHANGE_COVERAGE',
+  patch: 'PATCH_COVERAGE',
+  head: 'HEAD_COVERAGE',
 })
 
 function getFilters({ sortBy }) {

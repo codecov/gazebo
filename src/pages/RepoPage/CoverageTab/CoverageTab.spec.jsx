@@ -59,7 +59,7 @@ describe('Coverage Tab', () => {
           <Route path="/:provider/:owner/:repo/tree/:branch" exact>
             <CoverageTab />
           </Route>
-          <Route path="/:provider/:owner/:repo/blobs/:ref/:path+">
+          <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
             <CoverageTab />
           </Route>
           <Route path="/:provider/:owner/:repo/" exact={true}>
@@ -120,7 +120,7 @@ describe('Coverage Tab', () => {
   describe('when rendered with blob route', () => {
     beforeEach(async () => {
       setup({
-        initialEntries: ['/gh/test-org/test-repo/blobs/main/path/to/file.js'],
+        initialEntries: ['/gh/test-org/test-repo/blob/main/path/to/file.js'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()

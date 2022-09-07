@@ -176,27 +176,4 @@ describe('YAMLTab', () => {
       await screen.findByText(/Something went wrong/)
     })
   })
-
-  xdescribe('basic tests for non-admin users', () => {
-    beforeEach(() => {
-      useIsCurrentUserAnAdmin.mockReturnValue(false)
-
-      setup({
-        YamlConfig: basicYamlConfig,
-        UpdateYamlConfig: updateYamlConfig(''),
-      })
-    })
-
-    it('renders the description text', () => {
-      const tab = screen.getByText(
-        /Changes made to the Global yml will override the default repo settings and is applied to all repositories in the org./
-      )
-      expect(tab).toBeInTheDocument()
-    })
-
-    it('The save button is not rendered', () => {
-      const save = screen.queryByRole('button', { name: /Save Changes/ })
-      expect(save).not.toBeInTheDocument()
-    })
-  })
 })
