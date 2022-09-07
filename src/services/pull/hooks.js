@@ -31,7 +31,7 @@ export function usePull({ provider, owner, repo, pullId }) {
               comparedTo {
                 commitid
               }
-              compareWithBase {
+              compareWithBase: compareWithBaseTemp {
                 patchTotals {
                   percentCovered
                 }
@@ -95,7 +95,7 @@ export function useImpactedFilesComparison({
     owner(username: $owner) {
       repository(name: $repo) {
         pull(id: $pullId) {
-          compareWithBase{
+          compareWithBase: compareWithBaseTemp {
             patchTotals {
               percentCovered
             }
@@ -196,7 +196,7 @@ export function useSingularImpactedFileComparison({
     owner(username: $owner) {
       repository(name: $repo) {
         pull(id: $pullId) {
-          compareWithBase{
+          compareWithBase: compareWithBaseTemp {
             impactedFile(path:$path) {
               headName
               isNewFile
