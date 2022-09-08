@@ -97,7 +97,7 @@ describe('AccountSettings', () => {
     })
   })
 
-  describe('when user iS an admin', () => {
+  describe('when user is an admin', () => {
     beforeEach(() => {
       setup({ url: '/account/gh/dorian', isAdmin: true })
     })
