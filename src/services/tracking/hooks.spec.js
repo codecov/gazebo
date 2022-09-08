@@ -2,46 +2,67 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTracking } from './hooks'
 import { useSegmentPage } from './segment'
 
 jest.mock('./segment')
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-      refetchOnWindowFocus: false,
-    },
-  },
-})
+const queryClient = new QueryClient()
 
 const wrapper = ({ children }) => (
-  <MemoryRouter>
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <MemoryRouter initialEntries={['/gh/codecov']}>
+    <Route path="/:provider/:owner">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
   </MemoryRouter>
 )
 
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
 afterAll(() => server.close())
 
 describe('useTracking', () => {
   let hookData
+  let pendoCopy = window.pendo
+  let dataLayerCopy = window.dataLayer
 
-  function setup() {
+  afterAll(() => {
+    // Cleanup window "mocks"
+    window.pendo = pendoCopy
+    window.dataLayer = dataLayerCopy
+  })
+
+  function setup(user) {
     window.pendo = {
       initialize: jest.fn(),
     }
+    window.dataLayer = [
+      {
+        codecov: {
+          app: {
+            version: 'react-app',
+          },
+        },
+      },
+    ]
+
+    server.use(
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(user))
+      }),
+      graphql.query('DetailOwner', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({ owner: 'codecov' }))
+      })
+    )
+
     hookData = renderHook(() => useTracking(), { wrapper })
-    return hookData.waitFor(() => {
-      return !hookData.result.current.isFetching
-    })
   }
 
   describe('when the user is logged-in and has all data', () => {
@@ -73,13 +94,9 @@ describe('useTracking', () => {
       email: 'fake@test.com',
     }
 
-    beforeEach(() => {
-      server.use(
-        graphql.query('CurrentUser', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data({ me: user }))
-        })
-      )
-      return setup()
+    beforeEach(async () => {
+      setup({ me: user })
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
     it('set the user data in the dataLayer', () => {
@@ -151,13 +168,9 @@ describe('useTracking', () => {
       privateAccess: null,
     }
 
-    beforeEach(() => {
-      server.use(
-        graphql.query('CurrentUser', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data({ me: user }))
-        })
-      )
-      return setup()
+    beforeEach(async () => {
+      setup({ me: user })
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
     it('set the user data in the dataLayer', () => {
@@ -197,16 +210,12 @@ describe('useTracking', () => {
   })
 
   describe('when user is not logged in', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const spy = jest.spyOn(console, 'error')
       spy.mockImplementation(jest.fn())
 
-      server.use(
-        graphql.query('CurrentUser', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data({ me: null }))
-        })
-      )
-      return setup()
+      setup({ me: null })
+      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
     it('set the user as guest in the dataLayer', () => {
