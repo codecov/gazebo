@@ -1,5 +1,5 @@
 import BenefitList from 'pages/AccountSettings/shared/BenefitList'
-import { accountDetailsPropType } from 'services/account'
+import { accountDetailsPropType } from 'services'
 import A from 'ui/A'
 import Card from 'ui/Card'
 

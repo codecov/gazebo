@@ -1,7 +1,7 @@
 import { format, fromUnixTime } from 'date-fns'
 
 import invoiceImg from 'assets/svg/invoice.svg'
-import { invoicePropType } from 'services/account'
+import { invoicePropType } from 'services'
 import A from 'ui/A'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'

@@ -8,7 +8,7 @@ import AnalyticsPage from './AnalyticsPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
-jest.mock('services/account')
+jest.mock('services')
 jest.mock('services/navigation')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('./ChartSelectors', () => () => 'Chart Selectors')

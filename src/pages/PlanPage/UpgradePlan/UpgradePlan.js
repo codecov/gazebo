@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails, usePlans } from 'services/account'
+import { useAccountDetails, usePlans } from 'services'
 import { isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A'
 import Card from 'ui/Card'

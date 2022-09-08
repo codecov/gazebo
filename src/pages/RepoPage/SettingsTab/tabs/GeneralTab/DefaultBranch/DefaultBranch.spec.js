@@ -3,13 +3,13 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
+import { useBranches } from 'services'
 import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
 import DefaultBranch from './DefaultBranch'
 
-jest.mock('services/branches')
+jest.mock('services')
 jest.mock('services/repo')
 jest.mock('services/toastNotification')
 

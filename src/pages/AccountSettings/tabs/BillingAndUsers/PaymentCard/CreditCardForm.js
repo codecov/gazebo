@@ -7,7 +7,7 @@ import {
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import { useUpdateCard } from 'services/account'
+import { useUpdateCard } from 'services'
 import Button from 'ui/Button'
 
 function CreditCardForm({ closeForm, provider, owner }) {

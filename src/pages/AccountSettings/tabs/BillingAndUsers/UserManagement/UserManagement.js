@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import Button from 'old_ui/Button'
 import Card from 'old_ui/Card'
 import User from 'old_ui/User'
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 import {
   ApiFilterEnum,
   useLocationParams,

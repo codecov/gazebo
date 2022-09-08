@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useAccountDetails, useInvoice } from 'services/account'
+import { useAccountDetails, useInvoice } from 'services'
 
 import InvoiceDetail from './InvoiceDetail'
 
-jest.mock('services/account/hooks')
+jest.mock('services')
 
 const invoice = {
   id: 'in_1I3vJAGlVGuVgOrk5h77hHRa',

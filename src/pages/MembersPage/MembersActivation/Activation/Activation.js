@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 import A from 'ui/A'
 
 function Activation() {

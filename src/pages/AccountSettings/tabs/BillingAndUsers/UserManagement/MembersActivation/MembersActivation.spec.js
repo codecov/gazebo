@@ -5,7 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import MembersActivation from './MembersActivation'
 
-jest.mock('services/account/hooks')
+jest.mock('services')
 
 const queryClient = new QueryClient()
 

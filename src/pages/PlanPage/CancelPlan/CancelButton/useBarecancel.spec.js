@@ -9,7 +9,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
 }))
-jest.mock('services/account')
+jest.mock('services')
 
 describe('useBarecancel', () => {
   function setup(customerId, callbackSend) {

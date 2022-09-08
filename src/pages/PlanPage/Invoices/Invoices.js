@@ -3,7 +3,7 @@ import groupBy from 'lodash/groupBy'
 import { useLayoutEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useInvoices } from 'services/account'
+import { useInvoices } from 'services'
 
 import InvoiceCard from './InvoiceCard'
 

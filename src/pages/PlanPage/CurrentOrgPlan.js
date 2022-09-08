@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 
 import CurrentPlanCard from './CurrentPlanCard'
 import InfoMessageCancellation from './InfoMessageCancellation'

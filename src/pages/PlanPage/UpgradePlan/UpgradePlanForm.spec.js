@@ -2,12 +2,12 @@ import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useUpgradePlan } from 'services/account'
+import { useUpgradePlan } from 'services'
 import { useAddNotification } from 'services/toastNotification'
 
 import UpgradePlanForm from './UpgradePlanForm'
 
-jest.mock('services/account/hooks')
+jest.mock('services')
 jest.mock('services/toastNotification')
 
 const freePlan = {

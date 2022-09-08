@@ -7,11 +7,11 @@ import {
   useDeleteSession,
   useGenerateToken,
   useSessions,
-} from 'services/access'
+} from 'services'
 
 import Access from './Access'
 
-jest.mock('services/access')
+jest.mock('services')
 
 window.confirm = jest.fn(() => true)
 

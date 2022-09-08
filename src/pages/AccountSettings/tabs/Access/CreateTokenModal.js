@@ -2,7 +2,8 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { useGenerateToken } from 'services/access'
+import { useGenerateToken } from 'services'
+
 import Button from 'ui/Button'
 import CopyClipboard from 'ui/CopyClipboard'
 import Modal from 'ui/Modal'

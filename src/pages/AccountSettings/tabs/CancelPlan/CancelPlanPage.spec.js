@@ -2,12 +2,12 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useAccountDetails, useCancelPlan, usePlans } from 'services/account'
+import { useAccountDetails, useCancelPlan, usePlans } from 'services'
 import { useAddNotification } from 'services/toastNotification'
 
 import CancelPlanPage from './CancelPlanPage'
 
-jest.mock('services/account/hooks')
+jest.mock('services')
 jest.mock('services/toastNotification')
 jest.mock('./CancelButton', () => () => 'Cancel Card')
 

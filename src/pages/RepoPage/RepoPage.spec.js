@@ -1,4 +1,4 @@
-import { useBranches } from 'services/branches'
+import { useBranches } from 'services'
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo/hooks'
 import { useOwner } from 'services/user'
@@ -11,7 +11,7 @@ import RepoPage from '.'
 
 jest.mock('services/repo/hooks')
 jest.mock('services/commits')
-jest.mock('services/branches')
+jest.mock('services')
 jest.mock('services/user')
 jest.mock('shared/featureFlags')
 

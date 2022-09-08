@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
+import { useBranches } from 'services'
 import { useCommits } from 'services/commits'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'

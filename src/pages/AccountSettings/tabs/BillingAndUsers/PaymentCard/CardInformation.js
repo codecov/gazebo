@@ -1,7 +1,7 @@
 import { format, fromUnixTime } from 'date-fns'
 import PropTypes from 'prop-types'
 
-import { subscriptionDetailType } from 'services/account'
+import { subscriptionDetailType } from 'services'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 

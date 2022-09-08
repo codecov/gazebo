@@ -18,7 +18,7 @@ import {
   usePlans,
   useUpdateCard,
   useUpgradePlan,
-} from './hooks'
+} from './useAccount'
 
 jest.mock('@stripe/react-stripe-js')
 jest.mock('js-cookie')

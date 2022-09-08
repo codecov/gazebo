@@ -1,6 +1,6 @@
 import PropType from 'prop-types'
 
-import { useAccountDetails, usePlans } from 'services/account'
+import { useAccountDetails, usePlans } from 'services'
 import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A'

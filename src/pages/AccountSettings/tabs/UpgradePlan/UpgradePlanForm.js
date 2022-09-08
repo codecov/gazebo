@@ -10,7 +10,7 @@ import {
   accountDetailsPropType,
   planPropType,
   useUpgradePlan,
-} from 'services/account'
+} from 'services'
 import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
 

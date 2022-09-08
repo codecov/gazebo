@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { accountDetailsPropType } from 'services/account'
+import { accountDetailsPropType } from 'services'
 import { useUploadsNumber } from 'services/uploadsNumber/hooks'
 import A from 'ui/A'
 import Icon from 'ui/Icon'

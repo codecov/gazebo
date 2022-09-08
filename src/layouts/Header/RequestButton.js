@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'

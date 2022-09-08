@@ -3,11 +3,11 @@ import { MemoryRouter } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 
 import GithubIntegrationCard from './GithubIntegrationCard'
 
-jest.mock('services/account')
+jest.mock('services')
 
 describe('GithubIntegrationCard', () => {
   let wrapper

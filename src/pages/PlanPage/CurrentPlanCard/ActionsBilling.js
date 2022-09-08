@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
 import githubLogo from 'assets/githublogo.png'
-import { accountDetailsPropType } from 'services/account'
+import { accountDetailsPropType } from 'services'
 import Button from 'ui/Button'
 
 function ActionsBilling({ accountDetails, isFreePlan }) {

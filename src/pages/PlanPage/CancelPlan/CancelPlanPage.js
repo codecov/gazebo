@@ -3,7 +3,7 @@ import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import BenefitList from 'pages/AccountSettings/shared/BenefitList'
-import { useAccountDetails, usePlans } from 'services/account'
+import { useAccountDetails, usePlans } from 'services'
 import { isFreePlan } from 'shared/utils/billing'
 import Card from 'ui/Card'
 

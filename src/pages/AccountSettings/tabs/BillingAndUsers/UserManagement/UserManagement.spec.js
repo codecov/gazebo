@@ -4,14 +4,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import user from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useAccountDetails, useAutoActivate } from 'services/account'
+import { useAccountDetails, useAutoActivate } from 'services'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 import { useUpdateUser, useUsers } from 'services/users'
 
 import UserManagerment from './UserManagement'
 
 jest.mock('services/users/hooks')
-jest.mock('services/account/hooks')
+jest.mock('services')
 jest.mock('services/user/hooks')
 
 const queryClient = new QueryClient()

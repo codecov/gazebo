@@ -1,7 +1,7 @@
 import { fromUnixTime } from 'date-fns'
 import { format, utcToZonedTime } from 'date-fns-tz'
 
-import { invoicePropType } from 'services/account'
+import { invoicePropType } from 'services'
 
 function InvoiceHeader({ invoice }) {
   return (

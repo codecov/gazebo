@@ -2,11 +2,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
 
-jest.mock('services/account')
+jest.mock('services')
 jest.mock('./PaymentCard', () => () => 'PaymentCard')
 jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
 jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')

@@ -4,7 +4,7 @@ import qs from 'qs'
 import { useEffect, useLayoutEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { useAccountDetails, useInvoice } from 'services/account'
+import { useAccountDetails, useInvoice } from 'services'
 import { useNavLinks } from 'services/navigation'
 import A from 'ui/A'
 import Icon from 'ui/Icon'

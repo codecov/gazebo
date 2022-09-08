@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { subscriptionDetailType } from 'services/account'
+import { subscriptionDetailType } from 'services'
 import Button from 'ui/Button'
 import Card from 'ui/Card'
 

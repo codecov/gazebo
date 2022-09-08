@@ -3,13 +3,13 @@ import { render, screen } from 'custom-testing-library'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 
 import MembersActivation from './MembersActivation'
 
 jest.mock('./AutoActivate/AutoActivate', () => () => 'Auto Activate')
 jest.mock('./Activation/Activation', () => () => 'Activation')
-jest.mock('services/account/hooks')
+jest.mock('services')
 
 const queryClient = new QueryClient()
 

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Button from 'old_ui/Button'
 import Card from 'old_ui/Card'
-import { accountDetailsPropType } from 'services/account'
+import { accountDetailsPropType } from 'services'
 import { useNavLinks, useStaticNavLinks } from 'services/navigation'
 
 import LatestInvoiceCard from '../LatestInvoiceCard'

@@ -3,12 +3,12 @@ import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useEraseAccount } from 'services/account'
+import { useEraseAccount } from 'services'
 import { useAddNotification } from 'services/toastNotification'
 
 import DeletionCard from './DeletionCard'
 
-jest.mock('services/account/hooks')
+jest.mock('services')
 jest.mock('services/toastNotification')
 
 describe('DeletionCard', () => {

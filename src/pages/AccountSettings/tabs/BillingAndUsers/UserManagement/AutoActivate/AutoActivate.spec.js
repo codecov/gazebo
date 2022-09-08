@@ -3,11 +3,11 @@ import { fireEvent, render, screen, waitFor } from 'custom-testing-library'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useAutoActivate } from 'services/account'
+import { useAutoActivate } from 'services'
 
 import AutoActivate from './AutoActivate'
 
-jest.mock('services/account/hooks')
+jest.mock('services')
 
 const queryClient = new QueryClient()
 

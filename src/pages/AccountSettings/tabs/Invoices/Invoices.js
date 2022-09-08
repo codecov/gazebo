@@ -3,7 +3,7 @@ import groupBy from 'lodash/groupBy'
 import PropTypes from 'prop-types'
 import { useMemo } from 'react'
 
-import { useInvoices } from 'services/account'
+import { useInvoices } from 'services'
 import { useNavLinks } from 'services/navigation'
 
 import InvoiceCard from './InvoiceCard'

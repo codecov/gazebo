@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 
 import BillingAndUsers from './BillingAndUsers'
 
@@ -14,7 +14,7 @@ jest.mock(
   () => () => 'InfoMessageStripeCallback'
 )
 jest.mock('./LegacyUser', () => () => 'LegacyUser')
-jest.mock('services/account/hooks')
+jest.mock('services')
 
 const provider = 'gh'
 const owner = 'codecov'

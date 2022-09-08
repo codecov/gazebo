@@ -2,11 +2,11 @@ import { act, render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 
-import { useGenerateToken } from 'services/access'
+import { useGenerateToken } from 'services'
 
 import CreateTokenModal from './CreateTokenModal'
 
-jest.mock('services/access')
+jest.mock('services')
 
 describe('CreateTokenModal', () => {
   const closeModal = jest.fn()

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useCancelPlan } from 'services/account'
+import { useCancelPlan } from 'services'
 import { useAddNotification } from 'services/toastNotification'
 
 import CancelButton from './CancelButton'
@@ -15,7 +15,7 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => {}),
 }))
 jest.mock('./useBarecancel')
-jest.mock('services/account')
+jest.mock('services')
 jest.mock('services/toastNotification')
 
 const queryClient = new QueryClient({

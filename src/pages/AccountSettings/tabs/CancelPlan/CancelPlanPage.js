@@ -3,7 +3,7 @@ import PropType from 'prop-types'
 
 import BackLink from 'pages/AccountSettings/shared/BackLink'
 import BenefitList from 'pages/AccountSettings/shared/BenefitList'
-import { useAccountDetails, usePlans } from 'services/account'
+import { useAccountDetails, usePlans } from 'services'
 import { useNavLinks } from 'services/navigation'
 import { isFreePlan } from 'shared/utils/billing'
 import Card from 'ui/Card'

@@ -5,7 +5,7 @@ import amexLogo from 'assets/billing/amex.png'
 import discoverLogo from 'assets/billing/discover.jpg'
 import mastercardLogo from 'assets/billing/mastercard.png'
 import visaLogo from 'assets/billing/visa.png'
-import { subscriptionDetailType } from 'services/account'
+import { subscriptionDetailType } from 'services'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 

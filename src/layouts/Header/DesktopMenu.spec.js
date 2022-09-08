@@ -1,13 +1,13 @@
 import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Switch, useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 import { useUser } from 'services/user'
 
 import DesktopMenu, { LoginPrompt } from './DesktopMenu'
 
 jest.mock('services/user')
-jest.mock('services/account')
+jest.mock('services')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),

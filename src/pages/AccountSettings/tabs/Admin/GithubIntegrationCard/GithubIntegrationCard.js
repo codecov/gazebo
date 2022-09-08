@@ -4,7 +4,7 @@ import config from 'config'
 
 import githubLogo from 'assets/githublogo.png'
 import Card from 'old_ui/Card'
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails } from 'services'
 import A from 'ui/A'
 
 function GithubIntegrationCard({ provider, owner }) {

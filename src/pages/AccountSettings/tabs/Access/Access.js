@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { useDeleteSession, useSessions } from 'services/access'
+import { useDeleteSession, useSessions } from 'services'
+
 import Button from 'ui/Button'
 
 import CreateTokenModal from './CreateTokenModal'

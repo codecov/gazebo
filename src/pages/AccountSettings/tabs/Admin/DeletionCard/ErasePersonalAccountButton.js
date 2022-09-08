@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import Modal from 'old_ui/Modal'
-import { useEraseAccount } from 'services/account'
+import { useEraseAccount } from 'services'
 import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
 

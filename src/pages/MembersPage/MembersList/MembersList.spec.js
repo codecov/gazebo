@@ -4,14 +4,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import user from '@testing-library/user-event'
 import { MemoryRouter, useParams } from 'react-router-dom'
 
-import { useAccountDetails, useAutoActivate } from 'services/account'
+import { useAccountDetails, useAutoActivate } from 'services'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 import { useUpdateUser, useUsers } from 'services/users'
 
 import MembersList from './MembersList'
 
 jest.mock('services/users/hooks')
-jest.mock('services/account/hooks')
+jest.mock('services')
 jest.mock('services/user/hooks')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
