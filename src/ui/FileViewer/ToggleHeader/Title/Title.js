@@ -27,18 +27,15 @@ export const TitleCoverage = CoverageSelect
 
 export const TitleFlags = ({ flags, onChange, flagsIsLoading = false }) => {
   return (
-    // Anyone know why this is 1 not 0? I think this means if there's one flag there's no UI to know what flag is on the file?
-    flags?.length > 1 && (
-      <>
-        {flagsIsLoading && <Spinner />}
-        <MultipleSelect
-          ariaName="Filter by flags"
-          items={flags}
-          onChange={onChange}
-          resourceName="flag"
-        />
-      </>
-    )
+    <>
+      {flagsIsLoading && <Spinner />}
+      <MultipleSelect
+        ariaName="Filter by flags"
+        items={flags}
+        onChange={onChange}
+        resourceName="flag"
+      />
+    </>
   )
 }
 
