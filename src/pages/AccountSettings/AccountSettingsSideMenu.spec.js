@@ -44,14 +44,20 @@ describe('AccountSettingsSideMenu', () => {
         })
       })
 
-      it('shows  internal access tab', async () => {
+      it('does not show admin link', () => {
+        const link = screen.queryByText('Admin')
+
+        expect(link).not.toBeInTheDocument()
+      })
+
+      it('shows  internal access link', async () => {
         const link = await screen.findByText('Access')
 
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
       })
 
-      it('displays yaml tab', async () => {
+      it('displays yaml link', async () => {
         const link = await screen.findByText('Global YAML')
 
         expect(link).toBeInTheDocument()
@@ -72,13 +78,19 @@ describe('AccountSettingsSideMenu', () => {
         })
       })
 
-      it('does not show internal access tab', () => {
+      it('does not show admin link', () => {
+        const link = screen.queryByText('Admin')
+
+        expect(link).not.toBeInTheDocument()
+      })
+
+      it('does not show internal access link', () => {
         const link = screen.queryByText('Access')
 
         expect(link).not.toBeInTheDocument()
       })
 
-      it('displays yaml tab', async () => {
+      it('displays yaml link', async () => {
         const link = await screen.findByText('Global YAML')
 
         expect(link).toBeInTheDocument()
@@ -101,21 +113,21 @@ describe('AccountSettingsSideMenu', () => {
         })
       })
 
-      it('shows admin tab', async () => {
+      it('shows admin link', async () => {
         const link = await screen.findByText('Admin')
 
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov')
       })
 
-      it('shows internal access tab', async () => {
+      it('shows internal access link', async () => {
         const link = await screen.findByText('Access')
 
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
       })
 
-      it('displays yaml tab', async () => {
+      it('displays yaml link', async () => {
         const link = await screen.findByText('Global YAML')
 
         expect(link).toBeInTheDocument()
@@ -136,20 +148,20 @@ describe('AccountSettingsSideMenu', () => {
         })
       })
 
-      it('shows admin tab', async () => {
+      it('shows admin link', async () => {
         const link = await screen.findByText('Admin')
 
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov-org')
       })
 
-      it('does not show internal access tab', () => {
+      it('does not show internal access link', () => {
         const link = screen.queryByText('Access')
 
         expect(link).not.toBeInTheDocument()
       })
 
-      it('displays yaml tab', async () => {
+      it('displays yaml link', async () => {
         const link = await screen.findByText('Global YAML')
 
         expect(link).toBeInTheDocument()
@@ -172,11 +184,23 @@ describe('AccountSettingsSideMenu', () => {
       })
     })
 
-    it('displays yaml tab', async () => {
+    it('does not show admin link', () => {
+      const link = screen.queryByText('Admin')
+
+      expect(link).not.toBeInTheDocument()
+    })
+
+    it('displays yaml link', async () => {
       const link = await screen.findByText('Global YAML')
 
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/account/gh/codecov-org/yaml')
+    })
+
+    it('does not show the access link', () => {
+      const link = screen.queryByText('Access')
+
+      expect(link).not.toBeInTheDocument()
     })
   })
 })
