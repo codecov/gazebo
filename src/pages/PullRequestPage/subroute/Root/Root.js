@@ -35,11 +35,7 @@ const Root = () => {
   return (
     !isLoading && (
       <div className="flex flex-col gap-4">
-        <ToggleHeader
-          title="Impacted Files"
-          flagData={null}
-          coverageIsLoading={false}
-        />
+        <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
         {hasImpactedFiles(data?.impactedFiles) ? (
           <Suspense fallback={Loader}>
             <ImpactedFiles />
