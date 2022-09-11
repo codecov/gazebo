@@ -125,7 +125,7 @@
   "overrides": [
     // UI Rules
     {
-      "files": ["src/ui/**/*.js", "src/ui/*.js"],
+      "files": ["src/ui/**/*.js", "src/ui/*.js", "src/ui/**/*.jsx", "src/ui/*.jsx"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -151,7 +151,7 @@
     },
     // Services Rules
     {
-      "files": ["src/services/**/*.js", "src/services/*.js"],
+      "files": ["src/services/**/*.js", "src/services/*.js", "src/services/**/*.jsx", "src/services/*.jsx"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -177,7 +177,7 @@
     },
     // All
     {
-      "files": ["src/**/*.js"],
+      "files": ["src/**/*.js", "src/**/*.jsx"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -195,7 +195,7 @@
     },
     // Testing Rules
     {
-      "files": ["*-test.js", "*.spec.js", "*.test.js"],
+      "files": ["*-test.js", "*.spec.js", "*.test.js", "*-test.jsx", "*.spec.jsx", "*.test.jsx"],
       "rules": {
         "max-nested-callbacks": "off",
         "max-statements": "off",
@@ -206,13 +206,17 @@
     },
     // Story Rules
     {
-      "files": ["*.stories.js"],
+      "files": ["*.stories.jsx"],
       "rules": {
         "import/no-anonymous-default-export": "off"
       }
     }
   ],
   "settings": {
+    "import/extensions": [
+      ".js",
+      ".jsx"
+    ],
     "import/resolver": {
       "alias": {
         "map": [
@@ -226,7 +230,8 @@
           ["assets", "./src/assets"],
           ["custom-testing-library", "./src/custom-testing-library"],
           ["config", "./src/config"]
-        ]
+        ],
+        "extensions": [".js", ".jsx", ".json"]
       }
     }
   }

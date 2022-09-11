@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { icicle, sunburst, tree } from 'assets/svg/graphs'
 
+
 const useChartsDetails = ({ defaultBranch, graphToken }) => {
   const { provider, owner, repo } = useParams()
 

@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 
 import config from 'config'
 
+
 // This is an older pattern that launch darkly still uses.
 export const withFeatureFlagProvider = (Component) => {
   if (config.LAUNCHDARKLY) {

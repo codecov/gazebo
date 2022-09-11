@@ -2,6 +2,7 @@ import Cookie from 'js-cookie'
 
 import config from 'config'
 
+
 import { generatePath, getHeaders } from './helpers'
 
 describe('generatePath', () => {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import config from 'config'
 
+
 import { loadBaremetrics } from './utils'
 
 export function useBarecancel({ customerId, callbackSend, isModalOpen }) {
