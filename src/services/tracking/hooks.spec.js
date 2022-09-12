@@ -42,6 +42,7 @@ describe('useTracking', () => {
   function setup(user) {
     window.pendo = {
       initialize: jest.fn(),
+      updateOptions: jest.fn(),
     }
     window.dataLayer = [
       {

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { useOwner } from 'services/user'
 import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
@@ -22,9 +22,7 @@ export function useUpdatePendoWithOwner(user) {
     },
   })
   const currentUser = getUserData(user, pendoDefaultUser)
-  const location = useLocation()
   const oldOwner = useRef()
-  if (oldOwner?.current === undefined) oldOwner.current = owner
 
   useEffect(() => {
     if (oldOwner.current !== owner) {
@@ -38,8 +36,8 @@ export function useUpdatePendoWithOwner(user) {
         },
       })
     }
-    oldOwner.current = owner
-  }, [location?.pathname, oldOwner, owner, currentUser, ownerData])
+    ownerData ? (oldOwner.current = owner) : (oldOwner.current = undefined)
+  }, [oldOwner, owner, currentUser, ownerData])
 }
 
 function getCurUserInfo(currentUser) {
