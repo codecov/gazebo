@@ -12,7 +12,7 @@ function AccountSettingsSideMenu() {
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
 
   const isPersonalSettings =
-    currentUser.user.username.toLowerCase() === owner.toLowerCase()
+    currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   let links = [
     {
@@ -21,7 +21,7 @@ function AccountSettingsSideMenu() {
     { pageName: 'yamlTab' },
   ]
 
-  if (config.IS_ENTERPRISE) {
+  if (config?.IS_ENTERPRISE) {
     links = [{ pageName: 'yamlTab' }]
   } else if (isAdmin) {
     links = [
@@ -36,12 +36,7 @@ function AccountSettingsSideMenu() {
     ]
   }
 
-  return (
-    // Need that extra div because the side menu gets stretched otherwise
-    <div>
-      <Sidemenu links={links} />
-    </div>
-  )
+  return <Sidemenu links={links} />
 }
 
 export default AccountSettingsSideMenu
