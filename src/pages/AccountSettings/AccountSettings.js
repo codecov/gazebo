@@ -9,8 +9,8 @@ import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useIsCurrentUserAnAdmin } from 'services/user'
 
+import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 import Header from './shared/Header'
-import SideMenuAccount from './SideMenuAccount'
 
 const AccessTab = lazy(() => import('./tabs/Access'))
 const AdminTab = lazy(() => import('./tabs/Admin'))
@@ -33,11 +33,11 @@ function AccountSettings() {
   return (
     <Elements stripe={stripePromise}>
       <Header />
-      <SidebarLayout sidebar={<SideMenuAccount />}>
+      <SidebarLayout sidebar={<AccountSettingsSideMenu />}>
         <Suspense fallback={tabLoading}>
           <Switch>
             <Route path="/account/:provider/:owner/" exact>
-              {isAdmin ? (
+              {!config.IS_ENTERPRISE && isAdmin ? (
                 <AdminTab provider={provider} owner={owner} />
               ) : (
                 <Redirect to={yamlTab} />
@@ -46,9 +46,11 @@ function AccountSettings() {
             <Route path="/account/:provider/:owner/yaml/" exact>
               <YAMLTab provider={provider} owner={owner} />
             </Route>
-            <Route path="/account/:provider/:owner/access/" exact>
-              <AccessTab provider={provider} />
-            </Route>
+            {!config.IS_ENTERPRISE && (
+              <Route path="/account/:provider/:owner/access/" exact>
+                <AccessTab provider={provider} />
+              </Route>
+            )}
             <Route path="/account/:provider/:owner/*">
               <NotFound />
             </Route>

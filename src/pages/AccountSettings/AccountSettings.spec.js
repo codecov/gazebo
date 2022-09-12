@@ -1,28 +1,29 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 
 import AccountSettings from './AccountSettings'
 
+jest.mock('config')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-jest.mock('./tabs/Admin', () => () => 'AdminTab')
-jest.mock('./tabs/BillingAndUsers', () => () => 'BillingAndUsersTab')
-jest.mock('./tabs/CancelPlan', () => () => 'CancelPlan')
-jest.mock('./tabs/YAML', () => () => 'YAMLTab')
-jest.mock('./tabs/CancelPlan', () => () => 'CancelPlanTab')
-jest.mock('./tabs/UpgradePlan', () => () => 'UpgradePlan')
-jest.mock('./tabs/InvoiceDetail', () => () => 'InvoiceDetail')
-jest.mock('./tabs/InvoiceDetail', () => () => 'InvoiceDetail')
-jest.mock('../NotFound', () => () => 'NotFound')
 jest.mock('services/user/hooks')
 
+jest.mock('./tabs/Admin', () => () => 'AdminTab')
+jest.mock('./tabs/Access', () => () => 'AccessTab')
+jest.mock('../NotFound', () => () => 'NotFound')
+jest.mock('./tabs/YAML', () => () => 'YAMLTab')
+jest.mock('./AccountSettingsSideMenu', () => () => 'AccountSettingsSideMenu')
+
 describe('AccountSettings', () => {
-  function setup({ url, isAdmin }) {
+  function setup({ url = [], isAdmin = false, isSelfHosted = false }) {
+    config.IS_ENTERPRISE = isSelfHosted
     useUser.mockReturnValue({
       data: {
         user: {
-          username: 'dorian',
+          username: 'codecov',
         },
       },
     })
@@ -38,96 +39,109 @@ describe('AccountSettings', () => {
     )
   }
 
-  describe('when rendering for an organization', () => {
-    beforeEach(() => {
-      setup({ url: '/account/gh/codecov', isAdmin: true })
+  describe('when not running in self hosted mode', () => {
+    describe('when attempting to access admin tab', () => {
+      describe('when user is an admin', () => {
+        beforeEach(() => {
+          setup({
+            url: '/account/gh/codecov',
+            isAdmin: true,
+          })
+        })
+
+        it('renders the admin tab', async () => {
+          const tab = await screen.findByText('AdminTab')
+
+          expect(tab).toBeInTheDocument()
+        })
+      })
+
+      describe('when user is not an admin', () => {
+        beforeEach(() => {
+          setup({
+            url: '/account/gh/codecov',
+            isAdmin: false,
+          })
+        })
+
+        it('redirects to yaml tab', async () => {
+          const tab = await screen.findByText('YAMLTab')
+
+          expect(tab).toBeInTheDocument()
+        })
+      })
     })
 
-    it('renders the right links', () => {
-      expect(screen.getByRole('link', { name: /Admin/ })).toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /Access/ })
-      ).not.toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-    })
-  })
+    describe('when attempting to access yaml tab', () => {
+      beforeEach(() => {
+        setup({
+          url: '/account/gh/codecov/yaml',
+        })
+      })
 
-  describe('when rendering for admin users and is personal settings', () => {
-    beforeEach(() => {
-      setup({ url: '/account/gh/dorian', isAdmin: true })
-    })
+      it('renders the yaml tab', async () => {
+        const tab = await screen.findByText('YAMLTab')
 
-    it('renders the right links', () => {
-      expect(screen.getByRole('link', { name: /Admin/ })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /Access/ })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-    })
-  })
-
-  describe('when rendering for non admin users and not personal settings', () => {
-    beforeEach(() => {
-      setup({ url: '/account/gh/random', isAdmin: false })
+        expect(tab).toBeInTheDocument()
+      })
     })
 
-    it('renders the right links', () => {
-      expect(
-        screen.queryByRole('link', { name: /Admin/ })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /Access/ })
-      ).not.toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-    })
-  })
+    describe('when attempting to access access tab', () => {
+      beforeEach(() => {
+        setup({
+          url: '/account/gh/codecov/access',
+        })
+      })
 
-  describe('when rendering for non admin users and is personal settings', () => {
-    beforeEach(() => {
-      setup({ url: '/account/gh/dorian', isAdmin: false })
-    })
+      it('renders access tab', async () => {
+        const tab = await screen.findByText('AccessTab')
 
-    it('renders the right links', () => {
-      expect(
-        screen.queryByRole('link', { name: /Admin/ })
-      ).not.toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /Access/ })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /billing & users/i })
-      ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when user is an admin', () => {
-    beforeEach(() => {
-      setup({ url: '/account/gh/dorian', isAdmin: true })
-    })
-
-    it('renders the right links', () => {
-      expect(screen.getByRole('link', { name: /Admin/ })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /Access/ })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /billing & users/i })
-      ).not.toBeInTheDocument()
+        expect(tab).toBeInTheDocument()
+      })
     })
   })
 
-  describe('when account is not personal', () => {
-    beforeEach(() => {
-      setup({ url: '/account/gh/rula', isAdmin: false })
+  describe('when running in self hosted mode', () => {
+    describe('when attempted to access the admin tab', () => {
+      beforeEach(() => {
+        setup({
+          url: '/account/gh/codecov',
+          isSelfHosted: true,
+        })
+      })
+
+      it('redirects to the yaml tab', async () => {
+        const tab = await screen.findByText('YAMLTab')
+
+        expect(tab).toBeInTheDocument()
+      })
     })
 
-    it('renders the right links', () => {
-      expect(
-        screen.queryByRole('link', { name: /Admin/ })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /Access/ })
-      ).not.toBeInTheDocument()
-      expect(screen.getByRole('link', { name: /YAML/ })).toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', { name: /billing & users/i })
-      ).not.toBeInTheDocument()
+    describe('when navigating to the yaml tab', () => {
+      beforeEach(() => {
+        setup({
+          url: '/account/gh/codecov/yaml',
+          isSelfHosted: true,
+        })
+      })
+
+      it('renders the yaml tab', async () => {
+        const tab = await screen.findByText('YAMLTab')
+
+        expect(tab).toBeInTheDocument()
+      })
+    })
+  })
+  describe('when going to an unknown page', () => {
+    beforeEach(() => {
+      setup({
+        url: '/account/gh/codecov/ahhhhhhhhh',
+      })
+    })
+    it('renders not found tab', async () => {
+      const tab = await screen.findByText('NotFound')
+
+      expect(tab).toBeInTheDocument()
     })
   })
 })
