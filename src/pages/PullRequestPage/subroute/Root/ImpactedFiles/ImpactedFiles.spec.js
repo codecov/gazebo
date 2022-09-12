@@ -23,6 +23,7 @@ const mockImpactedFiles = {
         headName: 'flag1/mafs.js',
         fileName: 'mafs.js',
         patchCoverage: 27.43,
+        isCriticalFile: true,
       },
     ],
   },
@@ -60,6 +61,7 @@ describe('ImpactedFiles', () => {
       expect(screen.getByText(/90.23%/i)).toBeInTheDocument()
       expect(screen.getByText(/27.43%/i)).toBeInTheDocument()
       expect(screen.getByText(/58.33%/i)).toBeInTheDocument()
+      expect(screen.getByText(/Critical File/i)).toBeInTheDocument()
     })
   })
 

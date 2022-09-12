@@ -26,7 +26,7 @@ function FileDiff({ path }) {
   return (
     !isLoading && (
       <>
-        {isCriticalFile && <CriticalFileLabel variant="borderBottom" />}
+        {isCriticalFile && <CriticalFileLabel variant="borderTop" />}
         {segments?.map((segment, segmentIndex) => {
           const content = segment.lines.map((line) => line.content).join('\n')
           return (

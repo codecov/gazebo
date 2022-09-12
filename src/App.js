@@ -9,7 +9,6 @@ import BaseLayout from 'layouts/BaseLayout'
 // not lazy loading because is first page user sees
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
-import { useFlags } from 'shared/featureFlags'
 
 // Not lazy loading because the page is very small and is accessed often
 
@@ -40,9 +39,6 @@ const queryClient = new QueryClient({
 // eslint-disable-next-line complexity
 function App() {
   useUTM()
-  const { gazeboPlanTab } = useFlags({
-    gazeboPlanTab: false,
-  })
 
   return (
     <ToastNotificationProvider>
@@ -82,20 +78,16 @@ function App() {
                 <FeedbackPage />
               </BaseLayout>
             </Route>
-            {gazeboPlanTab && (
-              <Route path="/members/:provider/:owner/">
-                <BaseLayout>
-                  <MembersPage />
-                </BaseLayout>
-              </Route>
-            )}
-            {gazeboPlanTab && (
-              <Route path="/plan/:provider/:owner/">
-                <BaseLayout>
-                  <PlanPage />
-                </BaseLayout>
-              </Route>
-            )}
+            <Route path="/members/:provider/:owner/">
+              <BaseLayout>
+                <MembersPage />
+              </BaseLayout>
+            </Route>
+            <Route path="/plan/:provider/:owner/">
+              <BaseLayout>
+                <PlanPage />
+              </BaseLayout>
+            </Route>
             <Route path="/:provider/+" exact>
               <BaseLayout>
                 <HomePage />
