@@ -10,11 +10,9 @@ function AdminLink() {
   }
 
   return (
-    <>
-      <A variant="header" to={{ pageName: 'access' }}>
-        <Icon size="md" name="cog" variant="solid" /> Admin
-      </A>
-    </>
+    <A variant="header" to={{ pageName: 'access' }}>
+      <Icon size="md" name="cog" variant="solid" /> Admin
+    </A>
   )
 }
 
