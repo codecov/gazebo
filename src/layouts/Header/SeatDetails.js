@@ -5,6 +5,10 @@ function SeatDetails() {
     suspense: false,
   })
 
+  if (!selfHostedSeats?.seatsUsed && !selfHostedSeats?.seatsLimit) {
+    return null
+  }
+
   return (
     <p>
       <span className="font-semibold">{selfHostedSeats?.seatsUsed}</span> active
