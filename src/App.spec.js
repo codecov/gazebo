@@ -8,8 +8,6 @@ import { setupServer } from 'msw/node'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import App from './App'
 
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
@@ -30,7 +28,6 @@ jest.mock('@tanstack/react-query-devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
 }))
 
-jest.mock('shared/featureFlags')
 jest.mock('config')
 
 const user = {
@@ -48,10 +45,6 @@ afterAll(() => server.close())
 
 describe('App', () => {
   function setup() {
-    useFlags.mockReturnValue({
-      gazeboPlanTab: true,
-    })
-
     server.use(
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))

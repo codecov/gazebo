@@ -11,19 +11,21 @@ const styles = {
 
 function Sidemenu({ links }) {
   return (
-    <nav className={styles.nav}>
-      {links.map((tab) => (
-        // need an extra div to have the border to separate links from the
-        // active left border with a different color
-        <div key={tab.pageName}>
-          <AppLink
-            {...tab}
-            className={styles.link}
-            activeClassName={styles.activeLink}
-          />
-        </div>
-      ))}
-    </nav>
+    <div>
+      <nav className={styles.nav}>
+        {links.map((tab) => (
+          // need an extra div to have the border to separate links from the
+          // active left border with a different color
+          <div key={tab.pageName}>
+            <AppLink
+              {...tab}
+              className={styles.link}
+              activeClassName={styles.activeLink}
+            />
+          </div>
+        ))}
+      </nav>
+    </div>
   )
 }
 
