@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
@@ -64,10 +64,7 @@ describe('DesktopMenu', () => {
     server.use(
       graphql.query('Seats', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSeatData))
-      )
-    )
-
-    server.use(
+      ),
       rest.get('/internal/users/current', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(mockSelfHostedUser))
       )
@@ -106,15 +103,15 @@ describe('DesktopMenu', () => {
     })
   })
 
-  it('renders the seat count when user is logged in', () => {
+  it('renders the seat count when user is logged in', async () => {
     config.IS_ENTERPRISE = true
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
+    useParams.mockReturnValue({ owner: 'fjord', provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
     setup({ provider })
 
-    const seatCount = screen.getByText(/available seats/)
+    const seatCount = await screen.findByText(/available seats/)
     expect(seatCount).toBeInTheDocument()
   })
 
@@ -122,12 +119,9 @@ describe('DesktopMenu', () => {
     config.IS_ENTERPRISE = true
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
+    useParams.mockReturnValue({ owner: 'fjord', provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
     setup({ provider })
-
-    await waitFor(() => queryClient.isFetching)
-    await waitFor(() => !queryClient.isFetching)
 
     const adminLink = await screen.findByText(/Admin/)
     expect(adminLink).toBeInTheDocument()

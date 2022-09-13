@@ -12,6 +12,10 @@ const mockData = {
   },
 }
 
+const mockUndefinedSeats = {
+  config: {},
+}
+
 const queryClient = new QueryClient()
 
 const server = new setupServer()
@@ -23,14 +27,16 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('SeatDetails', () => {
-  function setup() {
+  let renderData
+
+  function setup({ data = mockData }) {
     server.use(
       graphql.query('Seats', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
+        res(ctx.status(200), ctx.data(data))
       )
     )
 
-    render(
+    renderData = render(
       <QueryClientProvider client={queryClient}>
         <SeatDetails />
       </QueryClientProvider>
@@ -38,24 +44,36 @@ describe('SeatDetails', () => {
   }
 
   describe('renders component', () => {
-    beforeEach(() => {
-      setup()
+    describe('values are defined', () => {
+      beforeEach(() => {
+        setup({})
+      })
+
+      it('displays the number of active seats', async () => {
+        const number = await screen.findByText('5')
+        expect(number).toBeInTheDocument()
+
+        const text = await screen.findByText(/active users/)
+        expect(text).toBeInTheDocument()
+      })
+
+      it('displays the number of total seats', async () => {
+        const number = await screen.findByText('10')
+        expect(number).toBeInTheDocument()
+
+        const text = await screen.findByText(/available seats/)
+        expect(text).toBeInTheDocument()
+      })
     })
 
-    it('displays the number of active seats', async () => {
-      const number = await screen.findByText('5')
-      expect(number).toBeInTheDocument()
+    describe('values are undefined', () => {
+      beforeEach(() => {
+        setup({ data: mockUndefinedSeats })
+      })
 
-      const text = await screen.findByText(/active users/)
-      expect(text).toBeInTheDocument()
-    })
-
-    it('displays the number of total seats', async () => {
-      const number = await screen.findByText('10')
-      expect(number).toBeInTheDocument()
-
-      const text = await screen.findByText(/available seats/)
-      expect(text).toBeInTheDocument()
+      it('renders nothing', () => {
+        expect(renderData.container).toBeEmptyDOMElement()
+      })
     })
   })
 })
