@@ -26,27 +26,41 @@ describe('Token', () => {
     })
     it('with a token', () => {
       expect(
-        screen.getByText(
-          /Copy the below token and set it in your CI environment variables./
-        )
+        screen.getByText(/Not required if your repo is using GitHub Actions/)
       ).toBeInTheDocument()
       expect(screen.getByText(/mytoken/, { exact: false })).toBeInTheDocument()
     })
   })
 
   describe('public scope', () => {
-    beforeEach(() => {
+    it('user is part of org', () => {
       setup({
         uploadToken: 'mytoken',
         privateRepo: false,
         isCurrentUserPartOfOrg: true,
       })
-    })
-    it('with a token', () => {
+
       expect(
-        screen.getByText(/project/, { exact: false })
+        screen.getByText(/Not required if your repo is using GitHub Actions/, {
+          exact: false,
+        })
       ).toBeInTheDocument()
       expect(screen.getByText(/mytoken/)).toBeInTheDocument()
+    })
+
+    it('user is not part of the org', () => {
+      setup({
+        uploadToken: 'mytoken',
+        privateRepo: false,
+        isCurrentUserPartOfOrg: false,
+      })
+
+      expect(
+        screen.getByText(/Not required if your repo is using GitHub Actions/, {
+          exact: false,
+        })
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/mytoken/)).not.toBeInTheDocument()
     })
   })
 })
