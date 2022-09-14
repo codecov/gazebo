@@ -25,7 +25,7 @@ function NewRepoTab() {
   return (
     <div className="flex flex-col gap-6">
       <hr />
-      <div className="mx-auto w-4/5 md:w-3/5 lg:w-2/5 mt-6r">
+      <div className="mx-auto w-4/5 md:w-3/5 lg:w-3/6 mt-6">
         <h1 className="font-semibold text-3xl my-4">
           Let&apos;s get your repo covered
         </h1>

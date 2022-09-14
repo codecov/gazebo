@@ -36,12 +36,17 @@ function NewRepoContent() {
           reports in a supported format (often an .xml format).
         </p>
 
-        <h2 className="font-semibold mt-8 text-base">Step 2</h2>
-        <Token
-          privateRepo={data?.repository?.private}
-          uploadToken={data?.repository?.uploadToken}
-          isCurrentUserPartOfOrg={data?.isCurrentUserPartOfOrg}
-        />
+        <div className="flex flex-col gap-2">
+          <h2 className="font-semibold mt-8 text-base">
+            Step 2: copy the repository upload token
+          </h2>
+          <p>Set the token in your CI environment variable.</p>
+          <Token
+            privateRepo={data?.repository?.private}
+            uploadToken={data?.repository?.uploadToken}
+            isCurrentUserPartOfOrg={data?.isCurrentUserPartOfOrg}
+          />
+        </div>
 
         <h2 className="font-semibold mt-8 text-base">Step 3</h2>
         <p className="text-base">
