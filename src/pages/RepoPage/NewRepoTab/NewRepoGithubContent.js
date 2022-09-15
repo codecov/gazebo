@@ -9,7 +9,7 @@ function NewRepoGithubContent() {
           <li>integrated Codecov into this repo’s CI/CD.</li>
           <li> uploaded coverage report to Codecov.</li>
           <li>
-            iewed coverage reports on Codecov app and in your pull request.
+            viewed coverage reports on Codecov app and in your pull request.
           </li>
         </ul>
       </div>
