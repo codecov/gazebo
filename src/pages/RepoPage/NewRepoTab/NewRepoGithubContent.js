@@ -1,8 +1,16 @@
+import { useParams } from 'react-router-dom'
+
+import { useRepo } from 'services/repo'
 import A from 'ui/A'
 
+import GithubConfigBanner from './GithubConfig/GithubConfigBanner'
+
 function NewRepoGithubContent() {
+  const { provider, owner, repo } = useParams()
+  const { data } = useRepo({ provider, owner, repo })
+
   return (
-    <div className="flex flex-col gap-6 text-base">
+    <div className="flex flex-col gap-6 text-base font-light">
       <div className="flex flex-col gap-1">
         <p>After completing the three steps in this guide, you’ll have:</p>
         <ul className="list-disc pl-6">
@@ -41,6 +49,10 @@ function NewRepoGithubContent() {
           {/*TBD right link*/}
         </ul>
       </div>
+
+      <hr />
+
+      <GithubConfigBanner privateRepo={data?.repository?.private} />
     </div>
   )
 }
