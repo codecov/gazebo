@@ -16,7 +16,7 @@ export default function Token({
   return (
     <div className="flex flex-col gap-2 px-4 py-2 border-2 border-ds-gray-primary">
       {!hideToken && (
-        <p className="flex flex-row text-sm mt-4 gap-2">
+        <p className="flex flex-row text-sm mt-4 gap-2 items-center">
           <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary h-auto xl:h-5">
             {token}
           </span>
