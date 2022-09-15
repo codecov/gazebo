@@ -21,6 +21,7 @@ function NewRepoGithubContent() {
           <li>
             familiarity with modifying your{' '}
             <A to={{ pageName: 'ciProviderWorkflow' }}> CI provider workflow</A>
+            .
           </li>
           <li>
             a CI/CD provider that runs tests and collects coverage reports.
