@@ -3,7 +3,10 @@ import { useParams } from 'react-router-dom'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 
-import GithubConfigBanner from './GithubConfig/GithubConfigBanner'
+import TeamBotBanner from './TeamBotBanner'
+import TerminalInstructions from './TerminalInstructions'
+import Token from './Token'
+import UploaderCheckBanner from './UploaderCheckBanner.js/UploaderCheckBanner'
 
 function NewRepoGithubContent() {
   const { provider, owner, repo } = useParams()
@@ -52,7 +55,40 @@ function NewRepoGithubContent() {
 
       <hr />
 
-      <GithubConfigBanner privateRepo={data?.repository?.private} />
+      <div className="flex flex-col gap-1">
+        <h2 className="font-semibold">
+          Step 1: copy the repository upload token* and designate team bot
+        </h2>
+        <p>Set the token in your CI environment variable.</p>
+        <span className="font-normal text-sm">
+          <Token
+            privateRepo={data?.repository?.private}
+            uploadToken={data?.repository?.uploadToken}
+            isCurrentUserPartOfOrg={data?.isCurrentUserPartOfOrg}
+          />
+        </span>
+      </div>
+
+      <TeamBotBanner />
+
+      <div className="flex flex-col gap-1 mt-4">
+        <h2 className="font-semibold">
+          Step 2: add the Codecov uploader to your CI workflow
+        </h2>
+        <p>
+          To start sharing your coverage reports with Codecov, you need to
+          invoke the
+          <A to={{ pageName: 'uploader' }} data-testid="uploader">
+            {' '}
+            uploader{' '}
+          </A>
+          in your CI pipeline
+        </p>
+        <span className="font-normal text-sm">
+          <TerminalInstructions />
+        </span>
+        <UploaderCheckBanner />
+      </div>
     </div>
   )
 }
