@@ -2,7 +2,7 @@ import A from 'ui/A'
 
 function NewRepoGithubContent() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-base">
       <div className="flex flex-col gap-1">
         <p>After completing the three steps in this guide, you’ll have:</p>
         <ul className="list-disc pl-6">
