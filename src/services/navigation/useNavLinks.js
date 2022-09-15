@@ -579,6 +579,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    ciProviderWorkflow: {
+      text: 'CI provider workflow',
+      path: () => 'https://circleci.com/blog/what-is-continuous-integration',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
 
