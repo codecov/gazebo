@@ -6,11 +6,11 @@ import LogoSpinner from 'old_ui/LogoSpinner'
 import { useSelfHostedCurrentUser } from 'services/selfHosted'
 import Spinner from 'ui/Spinner'
 
-import AdminMembers from './AdminMembers'
 import AdminSettingsHeader from './AdminSettingsHeader'
 import AdminSettingsSidebar from './AdminSettingsSidebar'
 
 const AdminAccess = lazy(() => import('./AdminAccess'))
+const AdminMembers = lazy(() => import('./AdminMembers'))
 
 const Loader = (
   <div className="flex-1 flex items-center justify-center mt-16">
