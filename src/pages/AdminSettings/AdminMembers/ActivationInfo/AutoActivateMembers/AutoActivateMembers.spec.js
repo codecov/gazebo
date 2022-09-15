@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 
-import AutoActivation from './AutoActivation'
+import AutoActivateMembers from './AutoActivateMembers'
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -15,37 +15,40 @@ const mockResponse = {
 }
 
 beforeAll(() => server.listen())
-beforeEach(() => {
+afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
 afterAll(() => server.close())
 
-describe('AutoActivation', () => {
+describe('AutoActivateMembers', () => {
   function setup() {
     server.use(
-      rest.get('/internal/settings', (req, res, ctx) => {
-        console.debug(mockResponse)
+      rest.get('/internal/settings', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(mockResponse))
-      }),
+      ),
       rest.patch('/internal/settings', (req, res, ctx) => {
         const { plan_auto_activate } = req.body
+
         mockResponse.planAutoActivate = plan_auto_activate
 
-        return res(ctx.status(200))
+        return res(ctx.status(200), ctx.json({}))
       })
     )
 
     render(
       <QueryClientProvider client={queryClient}>
-        <AutoActivation autoActivate={mockResponse.planAutoActivate} />
+        <AutoActivateMembers autoActivate={mockResponse.planAutoActivate} />
       </QueryClientProvider>
     )
   }
 
   describe('it renders the component', () => {
-    beforeEach(() => {
-      setup({ toggleState: true })
+    beforeEach(async () => {
+      setup()
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
     })
 
     it('displays activated toggle', async () => {
@@ -58,8 +61,11 @@ describe('AutoActivation', () => {
   })
 
   describe('user clicks on toggle', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup()
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
     })
 
     it('changes to off', async () => {
@@ -67,10 +73,8 @@ describe('AutoActivation', () => {
 
       userEvent.click(toggle)
 
-      await waitFor(() => queryClient.isMutating)
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
-      await waitFor(() => !queryClient.isMutating)
 
       toggle = await screen.findByRole('button', { name: 'Off' })
       expect(toggle).toBeInTheDocument()
