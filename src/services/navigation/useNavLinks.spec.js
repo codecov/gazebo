@@ -1018,6 +1018,7 @@ describe('useStaticNavLinks', () => {
     ${links.graphsSunburst}     | ${'https://docs.codecov.com/reference/sunburst'}
     ${links.ciProviderWorkflow} | ${'https://circleci.com/blog/what-is-continuous-integration'}
     ${links.exampleRepos}       | ${'https://docs.codecov.com/docs/supported-languages'}
+    ${links.prCommentLayout}    | ${'https://docs.codecov.com/docs/pull-request-comments#layout'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

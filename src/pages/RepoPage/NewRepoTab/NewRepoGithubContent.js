@@ -73,7 +73,7 @@ function NewRepoGithubContent() {
 
       <TeamBotBanner />
 
-      <div className="flex flex-col gap-1 mt-4">
+      <div className="flex flex-col gap-1 mt-3">
         <h2 className="font-semibold">
           Step 2: add the Codecov uploader to your CI workflow
         </h2>
@@ -92,7 +92,7 @@ function NewRepoGithubContent() {
         <UploaderCheckBanner />
       </div>
 
-      <div className="flex flex-col gap-1 mt-4">
+      <div className="flex flex-col gap-1 my-3">
         <h2 className="font-semibold">
           Step 3: get coverage analysis from Codecov
         </h2>
@@ -109,9 +109,8 @@ function NewRepoGithubContent() {
         <img alt="codecov report" src={codecovReport} />
         <p className="text-sm">
           Learn more about the comment report and customizing{' '}
-          <A to={{ pageName: '' }}>here</A>
-        </p>{' '}
-        {/*TBD correct link*/}
+          <A to={{ pageName: 'prCommentLayout' }}>here</A>
+        </p>
       </div>
 
       <CompletionBanner />
