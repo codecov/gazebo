@@ -46,23 +46,63 @@ function totalsCards({
   ]
 }
 
-function compareCards({ headCommit, baseCommit }) {
+function compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }) {
+  const headCommit = head?.commitid
+  const baseCommit = base?.commitid
   return [
     {
       name: 'source',
       title: 'Source',
       value: headCommit && baseCommit && (
-        <p className="text-ds-gray-octonary text-sm mt-2">
-          Coverage data based on{' '}
-          <span className="uppercase font-medium">head</span>{' '}
-          <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
-            {headCommit?.slice(0, 7)}
-          </A>{' '}
-          compared to <span className="uppercase font-medium">base</span>{' '}
-          <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
-            {baseCommit?.slice(0, 7)}
-          </A>{' '}
-        </p>
+        <>
+          {hasDifferentNumberOfHeadAndBaseReports ? (
+            <>
+              <p className="text-ds-gray-octonary text-sm">
+                Coverage data based on{' '}
+                <span className="uppercase font-medium">head</span>{' '}
+                <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
+                  {headCommit?.slice(0, 7)}
+                  <span>({head?.uploads?.totalCount} uploads)</span>
+                </A>{' '}
+                compared to <span className="uppercase font-medium">base</span>{' '}
+                <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
+                  {baseCommit?.slice(0, 7)}
+                  <span>({base?.uploads?.totalCount} uploads)</span>
+                </A>{' '}
+              </p>
+              <div className="flex gap-1 text-sm">
+                <div className="text-warning-500">
+                  <Icon name="exclamation-circle" size="sm" variant="outline" />
+                </div>
+                <p className="text-xs">
+                  Commits have different number of coverage report uploads{' '}
+                  <A
+                    variant="semibold"
+                    hook="learn-more"
+                    href={
+                      'https://docs.codecov.com/docs/unexpected-coverage-changes#mismatching-base-and-head-commit-upload-counts'
+                    }
+                    isExternal
+                  >
+                    learn more
+                  </A>{' '}
+                </p>
+              </div>
+            </>
+          ) : (
+            <p className="text-ds-gray-octonary text-sm">
+              Coverage data based on{' '}
+              <span className="uppercase font-medium">head</span>{' '}
+              <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
+                {headCommit?.slice(0, 7)}
+              </A>{' '}
+              compared to <span className="uppercase font-medium">base</span>{' '}
+              <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
+                {baseCommit?.slice(0, 7)}
+              </A>{' '}
+            </p>
+          )}
+        </>
       ),
     },
   ]
@@ -120,14 +160,20 @@ function CompareSummary() {
     headCoverage,
     patchCoverage,
     changeCoverage,
-    headCommit,
-    baseCommit,
     recentCommit,
+    head,
+    base,
+    hasDifferentNumberOfHeadAndBaseReports,
   } = usePullForCompareSummary()
 
   const fields = [
-    ...totalsCards({ headCoverage, headCommit, patchCoverage, changeCoverage }),
-    ...compareCards({ headCommit, baseCommit }),
+    ...totalsCards({
+      headCoverage,
+      headCommit: head?.commitid,
+      patchCoverage,
+      changeCoverage,
+    }),
+    ...compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }),
     ...pendingCard({ patchCoverage, headCoverage, changeCoverage }),
     ...lastCommitErrorCard({ recentCommit }),
   ]
