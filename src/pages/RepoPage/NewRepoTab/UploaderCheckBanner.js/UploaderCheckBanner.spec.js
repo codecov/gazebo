@@ -16,8 +16,8 @@ const queryClient = new QueryClient({
 describe('UploaderCheckBanner', () => {
   function setup() {
     render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
-        <Route path="/:provider/:owner/:repo/flags" exact={true}>
+      <MemoryRouter initialEntries={['/gh/codecov/gazebo/new']}>
+        <Route path="/:provider/:owner/:repo/new" exact={true}>
           <QueryClientProvider client={queryClient}>
             <UploaderCheckBanner />
           </QueryClientProvider>

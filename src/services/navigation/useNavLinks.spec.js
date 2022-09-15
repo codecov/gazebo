@@ -1017,6 +1017,7 @@ describe('useStaticNavLinks', () => {
     ${links.graphAuthorization} | ${'https://docs.codecov.com/reference/authorization#about-graphs'}
     ${links.graphsSunburst}     | ${'https://docs.codecov.com/reference/sunburst'}
     ${links.ciProviderWorkflow} | ${'https://circleci.com/blog/what-is-continuous-integration'}
+    ${links.exampleRepos}       | ${'https://docs.codecov.com/docs/supported-languages'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

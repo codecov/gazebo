@@ -124,4 +124,29 @@ describe('New Repo Tab Github Content', () => {
       expect(link).toBeInTheDocument()
     })
   })
+
+  describe('renders step 3', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders header', () => {
+      const title = screen.getByText(/Step 3/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders body', () => {
+      const body = screen.getByText(
+        /commit your changes in step 2 and ran your CI\/CD pipeline/
+      )
+      expect(body).toBeInTheDocument()
+    })
+
+    it('renders uploader integrity check banner', () => {
+      const link = screen.getByRole('link', {
+        name: /integrity check the uploader/i,
+      })
+      expect(link).toBeInTheDocument()
+    })
+  })
 })

@@ -1,8 +1,11 @@
 import { useParams } from 'react-router-dom'
 
+import codecovReport from 'assets/repoConfig/codecov-report.png'
+import patchAndProject from 'assets/repoConfig/patch-and-project.png'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 
+import CompletionBanner from './CompletionBanner'
 import TeamBotBanner from './TeamBotBanner'
 import TerminalInstructions from './TerminalInstructions'
 import Token from './Token'
@@ -47,9 +50,8 @@ function NewRepoGithubContent() {
             <A to={{ pageName: 'docs' }}>Quick start guide</A>.
           </li>
           <li>
-            <A to={{ pageName: 'ciProviderWorkflow' }}>Example repo</A>.
+            <A to={{ pageName: 'exampleRepos' }}>Example repos</A>.
           </li>{' '}
-          {/*TBD right link*/}
         </ul>
       </div>
 
@@ -89,6 +91,30 @@ function NewRepoGithubContent() {
         </span>
         <UploaderCheckBanner />
       </div>
+
+      <div className="flex flex-col gap-1 mt-4">
+        <h2 className="font-semibold">
+          Step 3: get coverage analysis from Codecov
+        </h2>
+        <p>
+          Once you&apos;ve commit your changes in step 2 and ran your CI/CD
+          pipeline.In your pull request, you should see two status checks:
+        </p>
+        <img
+          alt="codecov patch and project"
+          src={patchAndProject}
+          className="xl:w-2/3 self-center mt-2"
+        />
+        <p>and a comment with coverage report in the pull request:</p>
+        <img alt="codecov report" src={codecovReport} />
+        <p className="text-sm">
+          Learn more about the comment report and customizing{' '}
+          <A to={{ pageName: '' }}>here</A>
+        </p>{' '}
+        {/*what is here*/}
+      </div>
+
+      <CompletionBanner />
     </div>
   )
 }

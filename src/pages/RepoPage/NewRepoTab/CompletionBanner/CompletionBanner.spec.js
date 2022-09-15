@@ -3,7 +3,7 @@ import { render, screen } from 'custom-testing-library'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import TeamBotBanner from './TeamBotBanner'
+import CompletionBanner from './CompletionBanner'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,13 +13,13 @@ const queryClient = new QueryClient({
   },
 })
 
-describe('TeamBotBanner', () => {
+describe('CompletionBanner', () => {
   function setup() {
     render(
       <MemoryRouter initialEntries={['/gh/codecov/gazebo/new']}>
         <Route path="/:provider/:owner/:repo/new" exact={true}>
           <QueryClientProvider client={queryClient}>
-            <TeamBotBanner />
+            <CompletionBanner />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>
@@ -31,12 +31,12 @@ describe('TeamBotBanner', () => {
       setup()
     })
 
-    it('renders heading and content components', () => {
-      expect(screen.getByText('Next, set up a')).toBeInTheDocument()
+    it('renders content', () => {
       expect(
-        screen.getByText(
-          /Codecov will use the integration to post statuses and comments./
-        )
+        screen.getByText(/Once the steps are complete/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(/How was your set up experience?/)
       ).toBeInTheDocument()
     })
   })
