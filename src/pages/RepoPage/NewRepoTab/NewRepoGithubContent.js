@@ -98,7 +98,7 @@ function NewRepoGithubContent() {
         </h2>
         <p>
           Once you&apos;ve commit your changes in step 2 and ran your CI/CD
-          pipeline.In your pull request, you should see two status checks:
+          pipeline. In your pull request, you should see two status checks:
         </p>
         <img
           alt="codecov patch and project"
@@ -111,7 +111,7 @@ function NewRepoGithubContent() {
           Learn more about the comment report and customizing{' '}
           <A to={{ pageName: '' }}>here</A>
         </p>{' '}
-        {/*what is here*/}
+        {/*TBD correct link*/}
       </div>
 
       <CompletionBanner />
