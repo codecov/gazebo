@@ -20,6 +20,8 @@ const TableClasses = {
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
 
+const generateKeyUniqueId = (id) => `${id}-${Math.floor(Math.random() * 11)}`
+
 // TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it. Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page imapcted files table
 function Table({ data, columns, onSort, renderSubComponent = null }) {
   const _data = React.useMemo(() => data, [data])
@@ -49,92 +51,93 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
   )
 
   return (
-    <div className="block text-ds-gray-quaternary -my-2 -mx-4 overflow-x-auto">
-      <div className="inline-block min-w-full py-2 align-middle">
-        <table className="flex flex-col mx-4 sm:mx-0">
-          <thead data-testid="header-row">
-            {
-              // Loop over the header rows
-              table.getHeaderGroups().map((headerGroup, key) => (
-                <tr key={key} className={TableClasses.headerRow}>
-                  {
-                    // Loop over the headers in each row
-                    headerGroup.headers.map((header, key) => {
-                      return (
-                        <th
-                          key={key}
-                          className={cs(
-                            TableClasses.headerCell,
-                            columnsWidth[header.id]
-                          )}
+    <div className="text-ds-gray-quaternary overflow-x-auto">
+      <table className="flex flex-col mx-4 sm:mx-0">
+        <thead data-testid="header-row">
+          {
+            // Loop over the header rows
+            table.getHeaderGroups().map((headerGroup, key) => (
+              <tr key={key} className={TableClasses.headerRow}>
+                {
+                  // Loop over the headers in each row
+                  headerGroup.headers.map((header, key) => {
+                    return (
+                      <th
+                        key={key}
+                        className={cs(
+                          TableClasses.headerCell,
+                          columnsWidth[header.id]
+                        )}
+                      >
+                        <div
+                          {...(!!onSort
+                            ? {
+                                className:
+                                  'flex flex-row grow gap-1 items-center cursor-pointer select-none',
+                                onClick:
+                                  header.column.getToggleSortingHandler(),
+                              }
+                            : { className: 'flex flex-row grow' })}
                         >
-                          <div
-                            {...(!!onSort && {
-                              className:
-                                'flex flex-row grow gap-1 items-center cursor-pointer select-none',
-                              onClick: header.column.getToggleSortingHandler(),
-                            })}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getIsSorted() && (
+                            <span className="text-ds-blue-darker">
+                              {
+                                {
+                                  asc: <Icon name="arrow-up" size="sm" />,
+                                  desc: <Icon name="arrow-down" size="sm" />,
+                                }[header.column.getIsSorted()]
+                              }
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    )
+                  })
+                }
+              </tr>
+            ))
+          }
+        </thead>
+        {/* Apply the table body props */}
+        <tbody data-testid="body-row">
+          {
+            // Loop over the table rows
+            table.getRowModel().rows.map((row) => {
+              return (
+                <Fragment key={generateKeyUniqueId(row.id)}>
+                  <tr className={TableClasses.tableRow}>
+                    {
+                      // Loop over the rows cells
+                      row.getVisibleCells().map((cell) => {
+                        return (
+                          <td
+                            key={generateKeyUniqueId(cell.id)}
+                            className={cs(
+                              TableClasses.tableCell,
+                              columnsWidth[cell.column.columnDef.accessorKey]
+                            )}
                           >
                             {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
+                              cell.column.columnDef.cell,
+                              cell.getContext()
                             )}
-                            {header.column.getIsSorted() && (
-                              <span className="text-ds-blue-darker">
-                                {
-                                  {
-                                    asc: <Icon name="arrow-up" size="sm" />,
-                                    desc: <Icon name="arrow-down" size="sm" />,
-                                  }[header.column.getIsSorted()]
-                                }
-                              </span>
-                            )}
-                          </div>
-                        </th>
-                      )
-                    })
-                  }
-                </tr>
-              ))
-            }
-          </thead>
-          {/* Apply the table body props */}
-          <tbody data-testid="body-row">
-            {
-              // Loop over the table rows
-              table.getRowModel().rows.map((row) => {
-                return (
-                  <Fragment key={row.id}>
-                    <tr className={TableClasses.tableRow}>
-                      {
-                        // Loop over the rows cells
-                        row.getVisibleCells().map((cell) => {
-                          return (
-                            <td
-                              key={cell.id}
-                              className={cs(
-                                TableClasses.tableCell,
-                                columnsWidth[cell.column.columnDef.accessorKey]
-                              )}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          )
-                        })
-                      }
-                    </tr>
-                    {/* TODO: add getCanExpan() condition here when tanstack table is updated at least to 8.5.13  */}
-                    {row.getIsExpanded() && renderSubComponent({ row })}
-                  </Fragment>
-                )
-              })
-            }
-          </tbody>
-        </table>
-      </div>
+                          </td>
+                        )
+                      })
+                    }
+                  </tr>
+                  {/* TODO: add getCanExpan() condition here when tanstack table is updated at least to 8.5.13  */}
+                  {row.getIsExpanded() && renderSubComponent({ row })}
+                </Fragment>
+              )
+            })
+          }
+        </tbody>
+      </table>
     </div>
   )
 }
