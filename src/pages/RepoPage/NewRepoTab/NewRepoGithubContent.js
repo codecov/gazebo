@@ -18,19 +18,19 @@ function NewRepoGithubContent() {
   return (
     <div className="flex flex-col gap-6 text-base font-light">
       <div className="flex flex-col gap-1">
-        <p>After completing the three steps in this guide, you’ll have:</p>
+        <p>After completing the three steps in this guide, you&apos;ll have:</p>
         <ul className="list-disc pl-6">
-          <li>integrated Codecov into this repo’s CI/CD.</li>
-          <li> uploaded coverage report to Codecov.</li>
+          <li>integrated Codecov into this repo&apos; s CI/CD.</li>
+          <li>uploaded coverage report to Codecov.</li>
           <li>
-            iewed coverage reports on Codecov app and in your pull request.
+            viewed coverage reports on Codecov app and in your pull request.
           </li>
         </ul>
       </div>
 
       <div className="flex flex-col gap-1">
         <h3 className="font-semibold">Prerequisites</h3>
-        <p>In order to get started you’ll need:</p>
+        <p>In order to get started you&apos;ll need:</p>
         <ul className="list-disc pl-6">
           <li>
             familiarity with modifying your{' '}

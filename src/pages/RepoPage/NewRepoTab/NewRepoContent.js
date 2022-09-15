@@ -71,7 +71,7 @@ function NewRepoContent() {
           .
         </p>
         <h2 className="font-semibold mt-8 text-base">
-          🎉 &nbsp;Confirming completion
+          &#127881; &nbsp;Confirming completion
         </h2>
         <p className="text-base">
           These steps should be added to the CI configuration. Codecov jobs
