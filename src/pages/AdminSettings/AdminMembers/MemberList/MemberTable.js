@@ -10,7 +10,7 @@ import Toggle from 'ui/Toggle'
 
 const columns = [
   {
-    id: 'user-name',
+    id: 'userName',
     header: 'User Name',
     accessorKey: 'userName',
     cell: (info) => info.getValue(),
@@ -21,22 +21,18 @@ const columns = [
     header: () => <span className="flex flex-row grow text-center">Type</span>,
     accessorKey: 'type',
     cell: (info) => info.getValue(),
-    width: 'w-3/12 min-win-min',
+    width: 'w-2/12 min-win-min',
   },
   {
     id: 'email',
     header: 'email',
     accessorKey: 'email',
     cell: (info) => info.getValue(),
-    width: 'w-3/12 min-win-min',
+    width: 'w-4/12 min-win-min',
   },
   {
-    id: 'activation-status',
-    header: (
-      <span className="flex flex-row-reverse grow text-right">
-        Activation Status
-      </span>
-    ),
+    id: 'activationStatus',
+    header: 'Activation Status',
     accessorKey: 'activationStatus',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-win-min',
@@ -53,7 +49,7 @@ const createTable = ({ tableData, mutate }) =>
           activationStatus: (
             <div className="flex flex-row-reverse grow">
               <Toggle
-                label={activated ? 'Activated' : 'Not yet activated'}
+                label={activated ? 'Activated' : 'Non-Active'}
                 value={activated}
                 onClick={() => {
                   mutate({ ownerid, activated: !activated })
@@ -67,12 +63,13 @@ const createTable = ({ tableData, mutate }) =>
 
 function MemberTable() {
   const queryClient = useQueryClient()
-
   const { params } = useLocationParams({
     activated: undefined,
     isAdmin: undefined,
     search: '',
   })
+  const { data, isFetching, hasNextPage, fetchNextPage } =
+    useSelfHostedUserList(params)
 
   const { mutate } = useMutation(
     ({ activated, ownerid }) =>
@@ -90,9 +87,6 @@ function MemberTable() {
       },
     }
   )
-
-  const { data, isFetching, hasNextPage, fetchNextPage } =
-    useSelfHostedUserList(params)
 
   const tableContent = createTable({ tableData: data, mutate })
 
