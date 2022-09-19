@@ -1,5 +1,14 @@
-import ActivationCount from './ActivationCount'
-import AutoActivation from './AutoActivation'
+import { lazy, Suspense } from 'react'
+
+import Spinner from 'ui/Spinner'
+
+const Loader = () => (
+  <div className="flex items-center justify-center py-16">
+    <Spinner />
+  </div>
+)
+
+const ActivationInfo = lazy(() => import('./ActivationInfo'))
 
 function AdminMembers() {
   return (
@@ -8,9 +17,11 @@ function AdminMembers() {
         <h2 className="font-semibold text-2xl">Account Members</h2>
         <p>All members under the organization plan and related management</p>
       </div>
-      <hr />
-      <ActivationCount />
-      <AutoActivation />
+      <Suspense fallback={<Loader />}>
+        <hr />
+        <ActivationInfo />
+        <hr />
+      </Suspense>
     </div>
   )
 }
