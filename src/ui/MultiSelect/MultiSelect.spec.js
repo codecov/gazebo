@@ -33,7 +33,7 @@ describe('MultiSelect', () => {
     })
 
     it('doesnt render the individual items', () => {
-      expect(screen.getByRole('listbox')).toBeEmptyDOMElement()
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
     })
   })
 
@@ -56,7 +56,7 @@ describe('MultiSelect', () => {
       })
 
       it('doesnt render the items anymore', () => {
-        expect(screen.getByRole('listbox')).toBeEmptyDOMElement()
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
       })
 
       it('calls props.onChange with the item', () => {
