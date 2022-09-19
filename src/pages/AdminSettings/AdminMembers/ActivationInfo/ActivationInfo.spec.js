@@ -16,12 +16,12 @@ describe('ActivationInfo', () => {
     })
 
     it('renders ActivationCount', async () => {
-      const page = await screen.findByText('ActivationCount')
+      const page = await screen.findByText(/ActivationCount/)
       expect(page).toBeInTheDocument()
     })
 
     it('renders AutoActivateMembers', async () => {
-      const page = await screen.findByText('AutoActivateMembers')
+      const page = await screen.findByText(/AutoActivateMembers/)
       expect(page).toBeInTheDocument()
     })
   })
