@@ -31,20 +31,28 @@ export function useCommitErrors() {
       }
     `
 
-  return useQuery(['commit-errors', provider, owner, repo, commitid], () => {
-    return Api.graphql({
-      provider,
-      query,
-      variables: {
-        owner,
-        repo,
-        commitid,
+  return useQuery(
+    ['commit-errors', provider, owner, repo, commitid],
+    () => {
+      return Api.graphql({
+        provider,
+        query,
+        variables: {
+          owner,
+          repo,
+          commitid,
+        },
+      })
+    },
+    {
+      select: ({ data }) => {
+        return {
+          yamlErrors:
+            mapEdges(data?.owner?.repository?.commit?.yamlErrors) || [],
+          botErrors: mapEdges(data?.owner?.repository?.commit?.botErrors) || [],
+        }
       },
-    }).then((res) => {
-      return {
-        yamlErrors: mapEdges(res?.data?.owner?.repository?.commit?.yamlErrors),
-        botErrors: mapEdges(res?.data?.owner?.repository?.commit?.botErrors),
-      }
-    })
-  })
+      staleTime: 1000 * 60 * 5,
+    }
+  )
 }
