@@ -20,9 +20,15 @@ const pull = {
     totals: {
       coverage: 78.33,
     },
+    uploads: {
+      totalCount: 4,
+    },
   },
   comparedTo: {
     commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+    uploads: {
+      totalCount: 1,
+    },
   },
   compareWithBase: {
     patchTotals: {
@@ -36,8 +42,21 @@ const pullData = {
   headCoverage: 78.33,
   patchCoverage: 92.12,
   changeCoverage: 38.94,
-  headCommit: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-  baseCommit: '2d6c42fe217c61b007b2c17544a9d85840381857',
+  head: {
+    commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+    totals: {
+      coverage: 78.33,
+    },
+    uploads: {
+      totalCount: 4,
+    },
+  },
+  base: {
+    commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+    uploads: {
+      totalCount: 1,
+    },
+  },
 }
 
 describe('CompareSummary', () => {
@@ -137,6 +156,40 @@ describe('CompareSummary', () => {
       expect(
         screen.getByText(pull.comparedTo.commitid.slice(0, 7))
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('When base and head have different number of reports', () => {
+    beforeEach(() => {
+      setup({
+        pullData: {
+          ...pullData,
+          hasDifferentNumberOfHeadAndBaseReports: true,
+          commits: {
+            edges: [{ node: { state: 'complete', commitid: 'abc' } }],
+          },
+        },
+      })
+    })
+
+    it('renders a card for every valid field', () => {
+      const sourceCardTitle = screen.getByText('Source')
+      expect(sourceCardTitle).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          /Commits have different number of coverage report uploads/i
+        )
+      ).toBeInTheDocument()
+      const learnMore = screen.getByRole('link', {
+        name: /learn more/i,
+      })
+      expect(learnMore).toBeInTheDocument()
+      expect(learnMore).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/unexpected-coverage-changes#mismatching-base-and-head-commit-upload-counts'
+      )
+      expect(screen.getByText(/(4 uploads)/i)).toBeInTheDocument()
+      expect(screen.getByText(/(1 uploads)/i)).toBeInTheDocument()
     })
   })
 })

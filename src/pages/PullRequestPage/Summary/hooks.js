@@ -22,8 +22,10 @@ export function getPullDataForCompareSummary({
     headCoverage: head?.totals?.percentCovered,
     patchCoverage: compareWithBase?.patchTotals?.percentCovered * 100,
     changeCoverage: compareWithBase?.changeWithParent,
-    headCommit: head?.commitid,
-    baseCommit: base?.commitid,
+    hasDifferentNumberOfHeadAndBaseReports:
+      compareWithBase?.hasDifferentNumberOfHeadAndBaseReports,
+    head,
+    base,
     ...optionalKeys,
   }
 }
