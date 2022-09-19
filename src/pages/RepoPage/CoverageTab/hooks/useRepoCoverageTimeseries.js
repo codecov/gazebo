@@ -1,11 +1,16 @@
-import { useMemo } from 'react'
+import { format } from 'date-fns'
+import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLegacyRepoCoverage } from 'services/charts'
 import { useLocationParams } from 'services/navigation'
-import { getTrendEnum, sparklineQuery } from 'shared/utils/legacyCharts'
+import {
+  getTrendEnum,
+  GroupingUnit,
+  sparklineQuery,
+} from 'shared/utils/legacyCharts'
 
-export function useSparkline({ branch }, options) {
+export function useRepoCoverageTimeseries({ branch }, options) {
   const { params } = useLocationParams()
   const { repo, owner, provider } = useParams()
 
@@ -36,7 +41,24 @@ export function useSparkline({ branch }, options) {
     [coverage]
   )
 
+  const coverageAxisLabel = useCallback(
+    (time) => {
+      switch (body?.groupingUnit) {
+        case GroupingUnit.HOUR:
+          return format(time, 'MMM dd, h:mm aaa')
+        case GroupingUnit.DAY:
+          return format(time, 'MMM d')
+        case GroupingUnit.WEEK:
+          return format(time, 'MMM')
+        default:
+          return format(time, 'MMM yyyy')
+      }
+    },
+    [body]
+  )
+
   return {
+    coverageAxisLabel,
     coverageChange,
     coverage,
     ...rest,

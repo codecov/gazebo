@@ -12,6 +12,7 @@ import CoverageTab from './CoverageTab'
 jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
 jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
 jest.mock('./Summary', () => () => 'Summary Component')
+jest.mock('./Chart', () => () => 'Chart Component')
 jest.mock('./DeactivatedRepo', () => () => 'Disabled Repo Component')
 jest.mock('services/repo')
 

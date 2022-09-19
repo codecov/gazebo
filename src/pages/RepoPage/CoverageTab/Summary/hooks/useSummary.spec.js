@@ -4,11 +4,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
-import { useBranchSelector } from './useBranchSelector'
 import { useSummary } from './useSummary'
 
+import { useBranchSelector } from '../../hooks'
+
 jest.mock('services/repo')
-jest.mock('./useBranchSelector')
+jest.mock('../../hooks')
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (

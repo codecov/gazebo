@@ -15,7 +15,7 @@ export const Trend = Object.freeze({
   ALL_TIME: 'all time',
 })
 
-const GroupingUnit = Object.freeze({
+export const GroupingUnit = Object.freeze({
   COMMIT: 'commit',
   HOUR: 'hour',
   DAY: 'day',

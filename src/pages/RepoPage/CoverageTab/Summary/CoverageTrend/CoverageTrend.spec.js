@@ -4,11 +4,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import CoverageTrend from './CoverageTrend'
 
-import { useBranchSelector } from '../hooks/useBranchSelector'
-import { useSparkline } from '../hooks/useSparkline'
+import { useBranchSelector, useRepoCoverageTimeseries } from '../../hooks'
 
-jest.mock('../hooks/useSparkline')
-jest.mock('../hooks/useBranchSelector')
+jest.mock('../../hooks')
 jest.mock('../TrendDropdown', () => () => 'TrendDropdown')
 
 const queryClient = new QueryClient()
@@ -22,66 +20,13 @@ const wrapper = ({ children }) => (
 
 describe('CoverageTrend', () => {
   function setup({ sparklineData }) {
-    useSparkline.mockReturnValue(sparklineData)
+    useRepoCoverageTimeseries.mockReturnValue(sparklineData)
     useBranchSelector.mockReturnValue({
       selection: { name: 'bells-hells' },
     })
 
     return render(<CoverageTrend />, { wrapper })
   }
-
-  describe('trend sparkline', () => {
-    it('renders a sparkline', () => {
-      setup({
-        sparklineData: {
-          coverage: [{ coverage: 81 }, { coverage: 30 }, { coverage: 45 }],
-          coverageChange: -40,
-          isSuccess: true,
-        },
-      })
-      expect(
-        screen.getByText(/The bells-hells branch coverage trend/)
-      ).toBeInTheDocument()
-    })
-
-    it('renders the coverage change', () => {
-      setup({
-        sparklineData: {
-          coverage: [{ coverage: 81 }, { coverage: 30 }, { coverage: 45 }],
-          coverageChange: -40,
-          isSuccess: true,
-        },
-      })
-      expect(screen.getByText(/-40/)).toBeInTheDocument()
-    })
-
-    it('plots each coverage point on the sparkline', () => {
-      setup({
-        sparklineData: {
-          coverage: [{ coverage: 81 }, { coverage: 30 }, { coverage: 45 }],
-          coverageChange: -40,
-          isSuccess: true,
-        },
-      })
-      expect(screen.getByText(/coverage: 81%/)).toBeInTheDocument()
-      expect(screen.getByText(/coverage: 30%/)).toBeInTheDocument()
-      expect(screen.getByText(/coverage: 45%/)).toBeInTheDocument()
-    })
-
-    it('Handles cases where there is no coverage in the selected time span', () => {
-      setup({
-        sparklineData: {
-          coverage: [],
-          coverageChange: -40,
-          isSuccess: true,
-        },
-      })
-
-      expect(
-        screen.getByText(/No coverage reports found in this timespan./)
-      ).toBeInTheDocument()
-    })
-  })
 
   describe('render nothing if the api call fails', () => {
     setup({

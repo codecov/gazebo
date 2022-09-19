@@ -1,0 +1,40 @@
+.VictoryContainer title {
+  pointer-events: none;
+}
+
+.VictoryContainer {
+  @apply max-h-[110px] md:max-h-[140px] lg:max-h-[190px] xl:max-h-[230px] !important;
+}
+
+.VictoryContainer .coverage-line path {
+  @apply text-ds-pink stroke-current !important;
+}
+
+.VictoryContainer .chart-tooltip path {
+  @apply text-ds-gray-tertiary stroke-current !important;
+  fill: white !important;
+}
+
+.VictoryContainer .chart-tooltip tspan {
+  @apply font-sans !important;
+  @apply text-ds-gray-octonary font-extralight stroke-current;
+}
+
+.VictoryContainer .date-axis tspan {
+  text-anchor: end !important;
+}
+
+.VictoryContainer .coverage-axis tspan {
+  text-anchor: end !important;
+}
+
+.VictoryContainer .date-axis line,
+.VictoryContainer .coverage-axis line {
+  @apply text-ds-gray-tertiary stroke-current !important;
+}
+
+.VictoryContainer .date-axis tspan,
+.VictoryContainer .coverage-axis tspan {
+  @apply font-sans !important;
+  @apply font-sans font-light text-ds-gray-quinary stroke-current;
+}

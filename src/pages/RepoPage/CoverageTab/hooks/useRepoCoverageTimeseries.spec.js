@@ -5,7 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useLegacyRepoCoverage } from 'services/charts'
 import { Trend } from 'shared/utils/legacyCharts'
 
-import { useSparkline } from './useSparkline'
+import { useRepoCoverageTimeseries } from './useRepoCoverageTimeseries'
 
 jest.mock('services/charts')
 
@@ -23,7 +23,7 @@ const wrapper =
       </MemoryRouter>
     )
 
-describe('useSparkline', () => {
+describe('useRepoCoverageTimeseries', () => {
   let hookData
   function setup({ searchParams } = { searchParams: '' }) {
     useLegacyRepoCoverage.mockReturnValue({
@@ -32,7 +32,7 @@ describe('useSparkline', () => {
     })
 
     hookData = renderHook(
-      () => useSparkline({ branch: { name: 'c3', options: {} } }),
+      () => useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
       {
         wrapper: wrapper(searchParams),
       }
