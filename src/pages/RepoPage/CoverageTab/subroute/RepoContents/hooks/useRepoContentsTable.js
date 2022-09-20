@@ -25,7 +25,7 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
               <FileEntry
                 name={name}
                 path={path}
-                isSearching
+                isList
                 branch={branch}
                 filePath={filePath}
                 isCriticalFile={isCriticalFile}
@@ -42,7 +42,7 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
                 branch={branch}
                 filePath={filePath}
                 isCriticalFile={isCriticalFile}
-                isSearching={isSearching}
+                isList={isSearching}
                 name={name}
                 path={path}
               />

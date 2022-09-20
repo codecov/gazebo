@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { useLocationParams } from 'services/navigation'
 import OptionButton from 'ui/OptionButton'
 
+import useRepoContentsTable from '../subroute/RepoContents/hooks'
+
 const options = [
   {
     text: 'Code tree',
@@ -15,6 +17,7 @@ const options = [
 ]
 
 function DisplayTypeButton() {
+  const { data } = useRepoContentsTable()
   const { updateParams } = useLocationParams()
   const [active, setActive] = useState(true)
 
@@ -24,11 +27,14 @@ function DisplayTypeButton() {
   }
 
   return (
-    <OptionButton
-      active={active ? options[0] : options[1]}
-      options={options}
-      onChange={(option) => handleOnChange(option)}
-    />
+    <div className="flex gap-4 items-center">
+      <OptionButton
+        active={active ? options[0] : options[1]}
+        options={options}
+        onChange={(option) => handleOnChange(option)}
+      />
+      {!active && data && <span>{data?.length} files</span>}
+    </div>
   )
 }
 
