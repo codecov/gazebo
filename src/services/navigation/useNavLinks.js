@@ -585,6 +585,18 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    exampleRepos: {
+      text: 'Codecov uploader and supported languages',
+      path: () => 'https://docs.codecov.com/docs/supported-languages',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    prCommentLayout: {
+      text: 'Pull request comment layout',
+      path: () => 'https://docs.codecov.com/docs/pull-request-comments#layout',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
 
