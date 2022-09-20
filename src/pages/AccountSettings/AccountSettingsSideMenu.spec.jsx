@@ -171,36 +171,61 @@ describe('AccountSettingsSideMenu', () => {
   })
 
   describe('codecov is running in self hosted mode', () => {
-    beforeEach(() => {
-      setup({
-        entries: ['/account/gh/codecov-org'],
-        isAdmin: true,
-        user: {
+    describe('user is looking at their own settings', () => {
+      beforeEach(() => {
+        setup({
+          entries: ['/account/gh/codecov'],
+          isAdmin: true,
           user: {
-            username: 'codecov',
+            user: {
+              username: 'codecov',
+            },
           },
-        },
-        isSelfHosted: true,
+          isSelfHosted: true,
+        })
+      })
+
+      it('displays profile link', async () => {
+        const link = await screen.findByText('Profile')
+
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', '/account/gh/codecov')
+      })
+
+      it('displays yaml link', async () => {
+        const link = await screen.findByText('Global YAML')
+
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', '/account/gh/codecov/yaml')
       })
     })
 
-    it('does not show admin link', () => {
-      const link = screen.queryByText('Admin')
+    describe('user is not looking at their own settings', () => {
+      beforeEach(() => {
+        setup({
+          entries: ['/account/gh/codecov-org'],
+          isAdmin: true,
+          user: {
+            user: {
+              username: 'codecov',
+            },
+          },
+          isSelfHosted: true,
+        })
+      })
 
-      expect(link).not.toBeInTheDocument()
-    })
+      it('does not display profile link', () => {
+        const link = screen.queryByText('Profile')
 
-    it('displays yaml link', async () => {
-      const link = await screen.findByText('Global YAML')
+        expect(link).not.toBeInTheDocument()
+      })
 
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/account/gh/codecov-org/yaml')
-    })
+      it('displays yaml link', async () => {
+        const link = await screen.findByText('Global YAML')
 
-    it('does not show the access link', () => {
-      const link = screen.queryByText('Access')
-
-      expect(link).not.toBeInTheDocument()
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', '/account/gh/codecov-org/yaml')
+      })
     })
   })
 })
