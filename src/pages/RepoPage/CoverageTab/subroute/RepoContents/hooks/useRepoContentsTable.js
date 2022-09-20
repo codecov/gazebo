@@ -155,7 +155,7 @@ function useRepoContentsTable() {
       createTableData({
         tableData: repoContents,
         branch: branch || defaultBranch,
-        path,
+        path: path || '',
         isSearching,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
       }),
