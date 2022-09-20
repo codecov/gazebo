@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { generatePath, useSelfHostedUserList } from './useSelfHostedUserList'
+import { useSelfHostedUserList } from './useSelfHostedUserList'
 
 const mockFirstResponse = {
   count: 2,
@@ -38,79 +38,6 @@ const mockSecondResponse = {
   ],
   total_pages: 2,
 }
-
-describe('generatePath', () => {
-  describe('all arguments are their "empty" values', () => {
-    it('generates basic path', () => {
-      const path = generatePath({
-        activated: undefined,
-        search: '',
-        isAdmin: undefined,
-      })
-
-      expect(path).toBe('/users')
-    })
-  })
-
-  describe('activated is not undefined', () => {
-    it('adds query param', () => {
-      const path = generatePath({
-        activated: true,
-        search: '',
-        isAdmin: undefined,
-      })
-      expect(path).toBe('/users?activated=true')
-    })
-  })
-
-  describe('isAdmin is not undefined', () => {
-    describe('other params have been set', () => {
-      it('generates the correct path', () => {
-        const path = generatePath({
-          activated: true,
-          search: '',
-          isAdmin: true,
-        })
-        expect(path).toBe('/users?activated=true&is_admin=true')
-      })
-    })
-
-    describe('no other params have been set', () => {
-      it('generates the correct path', () => {
-        const path = generatePath({
-          activated: undefined,
-          search: '',
-          isAdmin: true,
-        })
-        expect(path).toBe('/users?is_admin=true')
-      })
-    })
-  })
-
-  describe('search is not an empty string', () => {
-    describe('other params have been set', () => {
-      it('generates the correct path', () => {
-        const path = generatePath({
-          activated: true,
-          search: 'search',
-          isAdmin: undefined,
-        })
-        expect(path).toBe('/users?activated=true&search=search')
-      })
-    })
-
-    describe('no other params have been set', () => {
-      it('generates the correct path', () => {
-        const path = generatePath({
-          activated: undefined,
-          search: 'search',
-          isAdmin: undefined,
-        })
-        expect(path).toBe('/users?search=search')
-      })
-    })
-  })
-})
 
 describe('useSelfHostedUserList', () => {
   let hookData
