@@ -19,6 +19,10 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
           __typename,
           path: filePath,
           isCriticalFile,
+          misses,
+          partials,
+          hits,
+          lines,
         }) => ({
           name:
             __typename === 'PathContentDir' ? (
@@ -38,6 +42,10 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
                 path={path}
               />
             ),
+          lines: <>{lines}</>,
+          misses: <>{misses}</>,
+          hits: <>{hits}</>,
+          partials: <>{partials}</>,
           coverage: <CoverageEntry percentCovered={percentCovered} />,
         })
       )
@@ -51,6 +59,34 @@ const headers = [
     accessorKey: 'name',
     cell: (info) => info.getValue(),
     width: 'w-9/12 min-w-min',
+  },
+  {
+    id: 'lines',
+    header: 'Tracked lines',
+    accessorKey: 'lines',
+    cell: (info) => info.getValue(),
+    width: 'w-1/6',
+  },
+  {
+    id: 'hits',
+    header: 'Covered',
+    accessorKey: 'hits',
+    cell: (info) => info.getValue(),
+    width: 'w-1/12 min-w-min',
+  },
+  {
+    id: 'partials',
+    header: 'Partial',
+    accessorKey: 'partials',
+    cell: (info) => info.getValue(),
+    width: 'w-1/12 min-w-min',
+  },
+  {
+    id: 'misses',
+    header: 'Missed',
+    accessorKey: 'misses',
+    cell: (info) => info.getValue(),
+    width: 'w-1/12 min-w-min',
   },
   {
     id: 'coverage',
@@ -72,6 +108,10 @@ const defaultQueryParams = {
 const sortingParameter = Object.freeze({
   name: 'NAME',
   coverage: 'COVERAGE',
+  hits: 'HITS',
+  misses: 'MISSES',
+  partials: 'PARTIALS',
+  lines: 'LINES',
 })
 
 const getQueryFilters = ({ params, sortBy }) => {
