@@ -42,10 +42,10 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
                 path={path}
               />
             ),
-          lines,
-          misses,
-          hits,
-          partials,
+          lines: <div className="flex w-full justify-end">{lines}</div>,
+          misses: <div className="flex w-full justify-end">{misses}</div>,
+          hits: <div className="flex w-full justify-end">{hits}</div>,
+          partials: <div className="flex w-full justify-end">{partials}</div>,
           coverage: <CoverageEntry percentCovered={percentCovered} />,
         })
       )
@@ -62,31 +62,31 @@ const headers = [
   },
   {
     id: 'lines',
-    header: 'Tracked lines',
+    header: <span className="md:whitespace-nowrap">Tracked lines</span>,
     accessorKey: 'lines',
     cell: (info) => info.getValue(),
-    width: 'w-1/6',
+    width: 'md:w-36 min-w-min',
   },
   {
     id: 'hits',
     header: 'Covered',
     accessorKey: 'hits',
     cell: (info) => info.getValue(),
-    width: 'w-1/12 min-w-min',
+    width: 'lg:w-1/12 w-1/5 min-w-min',
   },
   {
     id: 'partials',
     header: 'Partial',
     accessorKey: 'partials',
     cell: (info) => info.getValue(),
-    width: 'w-1/12 min-w-min',
+    width: 'lg:w-1/12 w-1/5 min-w-min',
   },
   {
     id: 'misses',
     header: 'Missed',
     accessorKey: 'misses',
     cell: (info) => info.getValue(),
-    width: 'w-1/12 min-w-min',
+    width: 'lg:w-1/12 w-1/5 min-w-min',
   },
   {
     id: 'coverage',
