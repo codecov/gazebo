@@ -15,6 +15,7 @@ import Header from './shared/Header'
 const AccessTab = lazy(() => import('./tabs/Access'))
 const AdminTab = lazy(() => import('./tabs/Admin'))
 const NotFound = lazy(() => import('../NotFound'))
+const Profile = lazy(() => import('./tabs/Profile'))
 const YAMLTab = lazy(() => import('./tabs/YAML'))
 
 const stripePromise = loadStripe(config.STRIPE_KEY)
@@ -39,6 +40,8 @@ function AccountSettings() {
             <Route path="/account/:provider/:owner/" exact>
               {!config.IS_ENTERPRISE && isAdmin ? (
                 <AdminTab provider={provider} owner={owner} />
+              ) : config.IS_ENTERPRISE ? (
+                <Profile />
               ) : (
                 <Redirect to={yamlTab} />
               )}
