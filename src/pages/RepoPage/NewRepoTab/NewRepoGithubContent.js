@@ -79,11 +79,10 @@ function NewRepoGithubContent() {
         </h2>
         <p>
           To start sharing your coverage reports with Codecov, you need to
-          invoke the
+          invoke the{' '}
           <A to={{ pageName: 'uploader' }} data-testid="uploader">
-            {' '}
-            uploader{' '}
-          </A>
+            uploader
+          </A>{' '}
           in your CI pipeline
         </p>
         <span className="font-normal text-sm">
