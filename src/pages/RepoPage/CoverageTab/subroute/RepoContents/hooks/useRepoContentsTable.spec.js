@@ -25,6 +25,10 @@ const repoContentsMock = {
       filepath: '',
       percentCovered: 92.78,
       __typename: 'PathContentDir',
+      hits: 4,
+      misses: 2,
+      lines: 7,
+      partials: 1,
     },
   ],
   isLoading: false,
@@ -66,7 +70,7 @@ describe('useRepoContentsTable', () => {
   it('returns data accordingly', () => {
     setup({ repoData: repoContentsMock })
     expect(hookData.result.current.data.length).toEqual(1)
-    expect(hookData.result.current.headers.length).toEqual(2)
+    expect(hookData.result.current.headers.length).toEqual(6)
     expect(hookData.result.current.isLoading).toEqual(false)
   })
 
