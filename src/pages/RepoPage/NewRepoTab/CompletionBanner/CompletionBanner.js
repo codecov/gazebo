@@ -15,8 +15,8 @@ function CompletionBanner() {
           dashboard
         </p>
         <div className="flex gap-1">
-          <h3 className="font-semibold">How was your set up experience?</h3>Let
-          us know in{' '}
+          <span className="font-semibold">How was your set up experience?</span>
+          Let us know in{' '}
           <A
             hook="feedback"
             href={providerFeedback(provider)}

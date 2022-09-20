@@ -7,12 +7,12 @@ function UploaderCheckBanner() {
   return (
     <Banner variant="plain">
       <BannerHeading>
-        <div className="font-semibold text-sm">
+        <p className="font-semibold text-sm">
           It is highly recommended to{' '}
           <A to={{ pageName: 'integrityCheck' }}>
             integrity check the uploader
           </A>
-        </div>
+        </p>
       </BannerHeading>
       <BannerContent>
         This will verify the uploader integrity before uploading to Codecov.

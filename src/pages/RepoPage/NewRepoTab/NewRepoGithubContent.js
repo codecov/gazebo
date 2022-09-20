@@ -9,7 +9,7 @@ import CompletionBanner from './CompletionBanner'
 import TeamBotBanner from './TeamBotBanner'
 import TerminalInstructions from './TerminalInstructions'
 import Token from './Token'
-import UploaderCheckBanner from './UploaderCheckBanner.js/UploaderCheckBanner'
+import UploaderCheckBanner from './UploaderCheckBanner'
 
 function NewRepoGithubContent() {
   const { provider, owner, repo } = useParams()
