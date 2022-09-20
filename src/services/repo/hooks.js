@@ -116,8 +116,8 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
               path
               percentCovered
               ... on PathContentFile {
-              isCriticalFile
-            }
+                isCriticalFile
+              }
             }
            }
           }

@@ -21,7 +21,16 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
           isCriticalFile,
         }) => ({
           name:
-            __typename === 'PathContentDir' ? (
+            filters?.displayType === displayTypeParameter.list ? (
+              <FileEntry
+                name={name}
+                path={path}
+                isSearching
+                branch={branch}
+                filePath={filePath}
+                isCriticalFile={isCriticalFile}
+              />
+            ) : __typename === 'PathContentDir' ? (
               <DirEntry
                 branch={branch}
                 name={name}
@@ -67,6 +76,7 @@ const headers = [
 
 const defaultQueryParams = {
   search: '',
+  displayType: '',
 }
 
 const sortingParameter = Object.freeze({
@@ -74,9 +84,17 @@ const sortingParameter = Object.freeze({
   coverage: 'COVERAGE',
 })
 
+const displayTypeParameter = Object.freeze({
+  tree: 'TREE',
+  list: 'LIST',
+})
+
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
+    ...(params?.displayType && {
+      displayType: displayTypeParameter[params?.displayType],
+    }),
     ...(sortBy && {
       ordering: {
         direction: sortBy?.desc ? SortingDirection.DESC : SortingDirection.ASC,

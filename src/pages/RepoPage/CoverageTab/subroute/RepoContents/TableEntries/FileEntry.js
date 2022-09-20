@@ -41,6 +41,7 @@ function FileEntry({
           </span>
         )}
       </div>
+      {/* TODO: change isSearching to isList */}
       {isSearching && <span className="text-xs pl-1">{filePath}</span>}
     </div>
   )
