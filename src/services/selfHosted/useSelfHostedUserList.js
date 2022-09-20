@@ -11,7 +11,7 @@ export const useSelfHostedUserList = ({ activated, search, isAdmin }) =>
         query: {
           activated,
           isAdmin,
-          search: search !== '' ? search : undefined,
+          search: search ? search : undefined,
           page: pageParam,
         },
       })
