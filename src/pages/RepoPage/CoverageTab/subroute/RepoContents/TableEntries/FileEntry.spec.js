@@ -36,7 +36,7 @@ describe('FileEntry', () => {
             name="file.js"
             path="dir"
             isCriticalFile={isCriticalFile}
-            isSearching={isSearching}
+            isList={isSearching}
           />
         </Route>
       </MemoryRouter>
