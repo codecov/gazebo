@@ -27,9 +27,15 @@ export function usePull({ provider, owner, repo, pullId }) {
                 totals {
                   percentCovered
                 }
+                uploads {
+                  totalCount
+                }
               }
               comparedTo {
                 commitid
+                uploads {
+                  totalCount
+                }
               }
               compareWithBase: compareWithBaseTemp {
                 patchTotals {
@@ -42,6 +48,7 @@ export function usePull({ provider, owner, repo, pullId }) {
                   percentCovered
                 }
                 changeWithParent
+                hasDifferentNumberOfHeadAndBaseReports
               }
               commits {
                 edges {
