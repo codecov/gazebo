@@ -42,10 +42,10 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
                 path={path}
               />
             ),
-          lines: <>{lines}</>,
-          misses: <>{misses}</>,
-          hits: <>{hits}</>,
-          partials: <>{partials}</>,
+          lines,
+          misses,
+          hits,
+          partials,
           coverage: <CoverageEntry percentCovered={percentCovered} />,
         })
       )
