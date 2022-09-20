@@ -398,6 +398,12 @@ function useNavLinks() {
       },
       isExternalLink: false,
     },
+    profile: {
+      text: 'Profile',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}`,
+      isExternalLink: false,
+    },
   }
 }
 

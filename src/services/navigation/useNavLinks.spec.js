@@ -977,6 +977,18 @@ describe('useNavLinks', () => {
       })
     })
   })
+
+  describe('profile', () => {
+    beforeAll(() => {
+      setup(['/gh/codecov-user'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.profile.path()).toBe(
+        '/account/gh/codecov-user'
+      )
+    })
+  })
 })
 
 describe('useStaticNavLinks', () => {
