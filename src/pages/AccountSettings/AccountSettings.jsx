@@ -48,8 +48,6 @@ function AccountSettings() {
                 <Profile />
               ) : !config.IS_ENTERPRISE && isAdmin ? (
                 <AdminTab provider={provider} owner={owner} />
-              ) : config.IS_ENTERPRISE ? (
-                <Profile />
               ) : (
                 <Redirect to={yamlTab} />
               )}
