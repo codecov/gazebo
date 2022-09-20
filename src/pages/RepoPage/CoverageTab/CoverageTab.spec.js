@@ -13,6 +13,7 @@ jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
 jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
 jest.mock('./Summary', () => () => 'Summary Component')
 jest.mock('./DeactivatedRepo', () => () => 'Disabled Repo Component')
+jest.mock('./DisplayTypeButton', () => () => 'Display Type Button')
 jest.mock('services/repo')
 
 jest.mock('services/navigation', () => ({
@@ -73,8 +74,9 @@ describe('Coverage Tab', () => {
       setup({ initialEntries: ['/gh/test-org/test-repo/'] })
     })
 
-    it('renders summary and root tree component', () => {
+    it('renders summary, display type button, and root tree component', () => {
       expect(screen.getByText(/Summary Component/)).toBeInTheDocument()
+      expect(screen.getByText(/Display Type Button/)).toBeInTheDocument()
       expect(screen.queryByText(/Fileviewer Component/)).not.toBeInTheDocument()
     })
   })
