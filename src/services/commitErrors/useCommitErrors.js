@@ -11,14 +11,14 @@ export function useCommitErrors() {
         owner(username: $owner) {
           repository(name: $repo) {
             commit(id: $commitid) {
-              yamlErrors{
+              yamlErrors: errors(errorType: YAML_ERROR){
                 edges{
                     node{
                         errorCode
                     }
                 }
               }
-              botErrors{
+              botErrors: errors(errorType: BOT_ERROR){
                 edges{
                     node{
                         errorCode
