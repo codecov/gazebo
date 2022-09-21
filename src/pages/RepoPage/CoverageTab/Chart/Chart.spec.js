@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -12,14 +11,10 @@ jest.mock('services/repo')
 jest.mock('../hooks')
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/critical-role/c3/bells-hells']}>
-      <Route path="/:provider/:owner/:repo">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <MemoryRouter initialEntries={['/critical-role/c3/bells-hells']}>
+    <Route path="/:provider/:owner/:repo">{children}</Route>
+  </MemoryRouter>
 )
-
-const queryClient = new QueryClient()
 
 describe('Coverage Tab chart', () => {
   function setup({ chartData }) {

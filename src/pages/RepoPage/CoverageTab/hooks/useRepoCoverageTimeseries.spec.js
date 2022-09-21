@@ -9,10 +9,6 @@ import { useRepoCoverageTimeseries } from './useRepoCoverageTimeseries'
 
 jest.mock('services/charts')
 
-beforeEach(() => {
-  queryClient.clear()
-})
-
 const queryClient = new QueryClient()
 const wrapper =
   (searchParams = '') =>
@@ -37,16 +33,13 @@ describe('useRepoCoverageTimeseries', () => {
     useLegacyRepoCoverage.mockImplementation(({ body, trend, opts }) => {
       config = body
 
-      // if (opts.select) {
-      //   opts.select = selectMock
-      // }
-
       return opts.select(mockData)
     })
   }
 
   describe('with a trend in the url', () => {
     beforeEach(() => {
+      queryClient.clear()
       jest.clearAllMocks()
       jest.useFakeTimers()
       jest.setSystemTime(new Date('2022/01/01'))
@@ -78,6 +71,7 @@ describe('useRepoCoverageTimeseries', () => {
 
   describe('with no trend in the url', () => {
     beforeEach(() => {
+      queryClient.clear()
       jest.clearAllMocks()
       jest.useFakeTimers()
       jest.setSystemTime(new Date('2022/01/01'))
@@ -109,6 +103,7 @@ describe('useRepoCoverageTimeseries', () => {
 
   describe('Coverage Axis Label', () => {
     beforeEach(() => {
+      queryClient.clear()
       jest.clearAllMocks()
       jest.useFakeTimers()
       jest.setSystemTime(new Date('2022/01/01'))
@@ -158,6 +153,7 @@ describe('useRepoCoverageTimeseries', () => {
 
   describe('coverage change', () => {
     beforeEach(() => {
+      queryClient.clear()
       jest.clearAllMocks()
       jest.useFakeTimers()
       jest.setSystemTime(new Date('2022/01/01'))
@@ -193,6 +189,7 @@ describe('useRepoCoverageTimeseries', () => {
 
   describe('select', () => {
     beforeEach(() => {
+      queryClient.clear()
       jest.clearAllMocks()
       jest.useFakeTimers()
       jest.setSystemTime(new Date('2022/01/01'))
