@@ -1,6 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
+// TODO: make this more composable
 function OptionButton({ active, options, onChange }) {
   return (
     <div className="rounded border inline-flex">

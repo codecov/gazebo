@@ -6,11 +6,16 @@ import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
 import { SortingDirection } from 'ui/Table/constants'
 
+import { displayTypeParameter } from '../../../constants'
 import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
 
 function createTableData({ tableData, branch, path, isSearching, filters }) {
+  const displayType =
+    filters?.displayType === displayTypeParameter.list || isSearching
+      ? displayTypeParameter.list
+      : displayTypeParameter.tree
   return tableData?.length > 0
     ? tableData.map(
         ({
@@ -34,12 +39,12 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
               />
             ) : (
               <FileEntry
-                branch={branch}
-                filePath={filePath}
-                isCriticalFile={isCriticalFile}
-                isSearching={isSearching}
                 name={name}
                 path={path}
+                branch={branch}
+                filePath={filePath}
+                displayType={displayType}
+                isCriticalFile={isCriticalFile}
               />
             ),
           lines: <div className="flex w-full justify-end">{lines}</div>,
@@ -103,6 +108,7 @@ const headers = [
 
 const defaultQueryParams = {
   search: '',
+  displayType: '',
 }
 
 const sortingParameter = Object.freeze({
@@ -117,6 +123,9 @@ const sortingParameter = Object.freeze({
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
+    ...(params?.displayType && {
+      displayType: displayTypeParameter[params?.displayType],
+    }),
     ...(sortBy && {
       ordering: {
         direction: sortBy?.desc ? SortingDirection.DESC : SortingDirection.ASC,

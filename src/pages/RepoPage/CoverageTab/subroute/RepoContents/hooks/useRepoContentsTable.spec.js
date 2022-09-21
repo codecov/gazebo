@@ -34,6 +34,42 @@ const repoContentsMock = {
   isLoading: false,
 }
 
+const manyFilesAndDirsMock = {
+  data: [
+    {
+      name: 'flag2',
+      filepath: 'flag2',
+      percentCovered: 92.78,
+      __typename: 'PathContentFile',
+      hits: 4,
+      misses: 2,
+      lines: 7,
+      partials: 1,
+    },
+    {
+      name: 'flag',
+      filepath: 'subfolder/folder/flag1',
+      percentCovered: 92.78,
+      __typename: 'PathContentFile',
+      hits: 2,
+      misses: 5,
+      lines: 6,
+      partials: 1,
+    },
+    {
+      name: 'flag3',
+      filepath: 'a/b/c/d/e/f/g/flag3',
+      percentCovered: 92.78,
+      __typename: 'PathContentFile',
+      hits: 4,
+      misses: 2,
+      lines: 7,
+      partials: 1,
+    },
+  ],
+  isLoading: false,
+}
+
 const emptyRepoContentsMock = {
   data: [],
   isLoading: false,
@@ -92,6 +128,26 @@ describe('useRepoContentsTable', () => {
       expect(useRepoContents).toHaveBeenCalledWith({
         branch: 'main',
         filters: { searchValue: 'file.js' },
+        owner: 'Rabee-AbuBaker',
+        path: '',
+        provider: 'gh',
+        repo: 'another-test',
+        suspense: false,
+      })
+    })
+  })
+
+  describe('when there is list param', () => {
+    it('calls useRepoContents with correct filters value', () => {
+      setup({
+        repoData: manyFilesAndDirsMock,
+        useParamsValue: { displayType: 'list' },
+      })
+
+      expect(hookData.result.current.data.length).toBe(3)
+      expect(useRepoContents).toHaveBeenCalledWith({
+        branch: 'main',
+        filters: { displayType: 'LIST' },
         owner: 'Rabee-AbuBaker',
         path: '',
         provider: 'gh',
