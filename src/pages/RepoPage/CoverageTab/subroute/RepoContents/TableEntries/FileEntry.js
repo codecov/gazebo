@@ -19,7 +19,7 @@ function FileEntry({
     branch,
     path: filePath,
   })
-  const isList = displayType === displayTypeParameter.list
+  const displayAsList = displayType === displayTypeParameter.list
   return (
     <div className="flex flex-col">
       <div
@@ -31,7 +31,11 @@ function FileEntry({
             pageName: 'fileViewer',
             options: {
               ref: branch,
-              tree: isList ? filePath : !!path ? `${path}/${name}` : name,
+              tree: displayAsList
+                ? filePath
+                : !!path
+                ? `${path}/${name}`
+                : name,
             },
           }}
         >
@@ -44,7 +48,7 @@ function FileEntry({
           </span>
         )}
       </div>
-      {isList && (
+      {displayAsList && (
         <span className="text-xs pl-1 text-ds-gray-quinary break-all">
           {filePath}
         </span>
