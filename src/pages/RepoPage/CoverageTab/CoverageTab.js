@@ -9,6 +9,7 @@ import Spinner from 'ui/Spinner'
 
 import ContentsTableHeader from './ContentsTableHeader'
 import DeactivatedRepo from './DeactivatedRepo'
+import DisplayTypeButton from './DisplayTypeButton'
 import FileBreadcrumb from './FileBreadcrumb'
 import Summary from './Summary'
 
@@ -70,7 +71,10 @@ function CoverageTab() {
             exact
           >
             <ContentsTableHeader>
-              <FileBreadcrumb />
+              <div className="flex gap-4">
+                <DisplayTypeButton />
+                <FileBreadcrumb />
+              </div>
               <SearchField
                 placeholder="Search for files"
                 searchValue={params?.search}

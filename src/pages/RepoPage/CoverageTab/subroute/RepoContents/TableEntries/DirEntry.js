@@ -9,7 +9,6 @@ function DirEntry({ branch, name, path, filters }) {
   const { runPrefetch } = usePrefetchDirEntry({ branch, path, filters })
   return (
     <div className="flex gap-2" onMouseEnter={async () => await runPrefetch()}>
-      <Icon name="folder" size="md" />
       <A
         to={{
           pageName: 'treeView',
@@ -19,7 +18,10 @@ function DirEntry({ branch, name, path, filters }) {
           },
         }}
       >
-        {name}
+        <div className="flex gap-2 items-center">
+          <Icon name="folder" size="md" variant="solid" />
+          {name}
+        </div>
       </A>
     </div>
   )
