@@ -47,12 +47,17 @@ const mockRepoContents = {
   ],
 }
 
+const mockUrlParams = {
+  displayType: 'tree',
+}
+
 describe('Coverage Tab', () => {
   const mockUpdateParams = jest.fn()
-  function setup(repoContents = mockRepoContents) {
-    useRepoContentsTable.mockReturnValue(repoContents)
+  function setup(urlParams = mockUrlParams) {
+    useRepoContentsTable.mockReturnValue(mockRepoContents)
     useLocationParams.mockReturnValue({
       updateParams: mockUpdateParams,
+      params: urlParams,
     })
 
     render(
@@ -117,6 +122,22 @@ describe('Coverage Tab', () => {
     })
 
     it('renders sets the list button as selected', () => {
+      expect(screen.getByText(/Code tree/)).toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/File list/)).not.toHaveClass('bg-ds-blue-darker')
+    })
+  })
+
+  describe('when url param is list', () => {
+    beforeEach(() => {
+      const mockUrlParams = {
+        params: {
+          displayType: 'list',
+        },
+      }
+      setup(mockUrlParams)
+    })
+
+    it('renders list view as selected', () => {
       expect(screen.getByText(/Code tree/)).toHaveClass('bg-ds-blue-darker')
       expect(screen.getByText(/File list/)).not.toHaveClass('bg-ds-blue-darker')
     })

@@ -17,10 +17,17 @@ const options = [
   },
 ]
 
+function initialState(urlParams) {
+  return urlParams?.displayType ===
+    displayTypeParameter.list.toLocaleLowerCase()
+    ? options[1]
+    : options[0]
+}
+
 function DisplayTypeButton() {
   const { data } = useRepoContentsTable()
-  const { updateParams } = useLocationParams()
-  const [active, setActive] = useState(options[0])
+  const { params, updateParams } = useLocationParams()
+  const [active, setActive] = useState(() => initialState(params))
 
   function handleOnChange(option) {
     updateParams({ displayType: option.displayType.toLowerCase() })
