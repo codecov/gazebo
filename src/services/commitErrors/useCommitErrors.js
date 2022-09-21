@@ -7,7 +7,7 @@ import { mapEdges } from 'shared/utils/graphql'
 export function useCommitErrors() {
   const { provider, owner, repo, commit: commitid } = useParams()
   const query = `
-      query useCommitErrors($owner: String!, $repo: String!, $commitid: String!) {
+      query CommitErrors($owner: String!, $repo: String!, $commitid: String!) {
         owner(username: $owner) {
           repository(name: $repo) {
             commit(id: $commitid) {
@@ -32,7 +32,7 @@ export function useCommitErrors() {
     `
 
   return useQuery(
-    ['commit-errors', provider, owner, repo, commitid],
+    ['CommitErrors', provider, owner, repo, commitid],
     () => {
       return Api.graphql({
         provider,

@@ -40,7 +40,6 @@ const server = setupServer()
 
 beforeAll(() => server.listen())
 beforeEach(() => {
-  jest.useRealTimers()
   server.resetHandlers()
   queryClient.clear()
 })
@@ -51,7 +50,7 @@ describe('useCommitErrors', () => {
 
   function setup() {
     server.use(
-      graphql.query(`useCommitErrors`, (req, res, ctx) => {
+      graphql.query(`CommitErrors`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
