@@ -52,7 +52,6 @@ export function useCommitErrors() {
           botErrors: mapEdges(data?.owner?.repository?.commit?.botErrors) || [],
         }
       },
-      staleTime: 1000 * 60 * 5,
     }
   )
 }
