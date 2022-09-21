@@ -98,16 +98,18 @@ function MultiSelect({
         {renderButton()}
         <Icon variant="solid" name={isOpen ? 'chevron-up' : 'chevron-down'} />
       </button>
-      <ul
-        aria-label={ariaName}
-        className={cs(SelectClasses.ul, {
-          border: isOpen,
-          'border-gray-ds-tertiary': isOpen,
-        })}
-        {...getMenuProps()}
-      >
-        {isOpen && itemsWithReset.map(_renderItem)}
-      </ul>
+      {isOpen && (
+        <ul
+          aria-label={ariaName}
+          className={cs(SelectClasses.ul, {
+            border: isOpen,
+            'border-gray-ds-tertiary': isOpen,
+          })}
+          {...getMenuProps()}
+        >
+          {itemsWithReset.map(_renderItem)}
+        </ul>
+      )}
     </div>
   )
 }

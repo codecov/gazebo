@@ -21,6 +21,10 @@ const repoContents = [
     path: '',
     percentCovered: 92.78,
     __typename: 'PathContentDir',
+    hits: 456,
+    misses: 234,
+    lines: 789,
+    partials: 123,
   },
   {
     name: 'app.js',
@@ -28,6 +32,10 @@ const repoContents = [
     percentCovered: 62.53,
     isCriticalFile: false,
     __typename: 'PathContentFile',
+    hits: 567,
+    misses: 345,
+    lines: 891,
+    partials: 233,
   },
 ]
 
@@ -83,6 +91,26 @@ describe('RepoContentsTable', () => {
     it('renders coverage', () => {
       expect(screen.getByText(/92.78%/)).toBeInTheDocument()
       expect(screen.getByText(/62.53%/)).toBeInTheDocument()
+    })
+
+    it('renders hits', () => {
+      expect(screen.getByText(/456/)).toBeInTheDocument()
+      expect(screen.getByText(/567/)).toBeInTheDocument()
+    })
+
+    it('renders lines', () => {
+      expect(screen.getByText(/789/)).toBeInTheDocument()
+      expect(screen.getByText(/891/)).toBeInTheDocument()
+    })
+
+    it('renders misses', () => {
+      expect(screen.getByText(/234/)).toBeInTheDocument()
+      expect(screen.getByText(/345/)).toBeInTheDocument()
+    })
+
+    it('renders partials', () => {
+      expect(screen.getByText(/123/)).toBeInTheDocument()
+      expect(screen.getByText(/233/)).toBeInTheDocument()
     })
 
     it('renders corresponding links', () => {

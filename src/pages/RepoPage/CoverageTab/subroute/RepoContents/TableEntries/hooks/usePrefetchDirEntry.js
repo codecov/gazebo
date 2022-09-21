@@ -18,6 +18,10 @@ query BranchFiles(
         head {
           pathContents(path: $path, filters: $filters) {
             __typename
+            hits
+            misses
+            partials
+            lines
             name
             path
             percentCovered
