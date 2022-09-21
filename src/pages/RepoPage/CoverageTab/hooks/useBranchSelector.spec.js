@@ -16,7 +16,7 @@ describe('useBranchSelector', () => {
 
     hookData = renderHook(() => useBranchSelector(branches, defaultBranch))
   }
-  //
+
   describe('with default branch', () => {
     beforeEach(() => {
       setup({
