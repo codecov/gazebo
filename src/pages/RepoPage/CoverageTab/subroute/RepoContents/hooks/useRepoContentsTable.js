@@ -6,11 +6,16 @@ import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
 import { SortingDirection } from 'ui/Table/constants'
 
+import { displayTypeParameter } from '../../../constants'
 import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
 
 function createTableData({ tableData, branch, path, isSearching, filters }) {
+  const displayType =
+    filters?.displayType === displayTypeParameter.list || isSearching
+      ? displayTypeParameter.list
+      : displayTypeParameter.tree
   return tableData?.length > 0
     ? tableData.map(
         ({
@@ -25,16 +30,7 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
           lines,
         }) => ({
           name:
-            filters?.displayType === displayTypeParameter.list ? (
-              <FileEntry
-                name={name}
-                path={path}
-                isList
-                branch={branch}
-                filePath={filePath}
-                isCriticalFile={isCriticalFile}
-              />
-            ) : __typename === 'PathContentDir' ? (
+            __typename === 'PathContentDir' ? (
               <DirEntry
                 branch={branch}
                 name={name}
@@ -43,12 +39,12 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
               />
             ) : (
               <FileEntry
-                branch={branch}
-                filePath={filePath}
-                isCriticalFile={isCriticalFile}
-                isList={isSearching}
                 name={name}
                 path={path}
+                branch={branch}
+                filePath={filePath}
+                displayType={displayType}
+                isCriticalFile={isCriticalFile}
               />
             ),
           lines: <div className="flex w-full justify-end">{lines}</div>,
@@ -122,11 +118,6 @@ const sortingParameter = Object.freeze({
   misses: 'MISSES',
   partials: 'PARTIALS',
   lines: 'LINES',
-})
-
-const displayTypeParameter = Object.freeze({
-  tree: 'TREE',
-  list: 'LIST',
 })
 
 const getQueryFilters = ({ params, sortBy }) => {

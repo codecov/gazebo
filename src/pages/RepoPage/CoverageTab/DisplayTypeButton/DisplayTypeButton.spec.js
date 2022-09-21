@@ -99,4 +99,26 @@ describe('Coverage Tab', () => {
       ).toBeInTheDocument()
     })
   })
+
+  describe('when tree button is clicked', () => {
+    beforeEach(() => {
+      setup()
+      // This is clicked 2 cause code tree is the default, so we want to change and then click back
+      screen
+        .getByRole('button', {
+          name: /File list/i,
+        })
+        .click()
+      screen
+        .getByRole('button', {
+          name: /Code tree/i,
+        })
+        .click()
+    })
+
+    it('renders sets the list button as selected', () => {
+      expect(screen.getByText(/Code tree/)).toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/File list/)).not.toHaveClass('bg-ds-blue-darker')
+    })
+  })
 })

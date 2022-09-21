@@ -3,37 +3,40 @@ import { useState } from 'react'
 import { useLocationParams } from 'services/navigation'
 import OptionButton from 'ui/OptionButton'
 
+import { displayTypeParameter } from '../constants'
 import useRepoContentsTable from '../subroute/RepoContents/hooks'
 
 const options = [
   {
     text: 'Code tree',
-    displayType: 'tree',
+    displayType: displayTypeParameter.tree,
   },
   {
     text: 'File list',
-    displayType: 'list',
+    displayType: displayTypeParameter.list,
   },
 ]
 
 function DisplayTypeButton() {
   const { data } = useRepoContentsTable()
   const { updateParams } = useLocationParams()
-  const [active, setActive] = useState(true)
+  const [active, setActive] = useState(options[0])
 
   function handleOnChange(option) {
-    updateParams({ displayType: option.displayType })
-    setActive(option.text === options[0].text)
+    updateParams({ displayType: option.displayType.toLowerCase() })
+    setActive(option)
   }
 
   return (
     <div className="flex gap-4 items-center">
       <OptionButton
-        active={active ? options[0] : options[1]}
+        active={active}
         options={options}
         onChange={(option) => handleOnChange(option)}
       />
-      {!active && data && <span>{data?.length} files</span>}
+      {active?.displayType === displayTypeParameter.list && data && (
+        <span>{data?.length} files</span>
+      )}
     </div>
   )
 }

@@ -5,11 +5,21 @@ import Icon from 'ui/Icon'
 
 import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
 
-function FileEntry({ branch, filePath, isCriticalFile, isList, name, path }) {
+import { displayTypeParameter } from '../../../constants'
+
+function FileEntry({
+  branch,
+  filePath,
+  isCriticalFile,
+  name,
+  path,
+  displayType,
+}) {
   const { runPrefetch } = usePrefetchFileEntry({
     branch,
     path: filePath,
   })
+  const isList = displayType === displayTypeParameter.list
   return (
     <div className="flex flex-col">
       <div
@@ -47,8 +57,8 @@ FileEntry.propTypes = {
   branch: PropTypes.string.isRequired,
   filePath: PropTypes.string.isRequired,
   isCriticalFile: PropTypes.bool,
-  isList: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
+  displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   path: PropTypes.string,
 }
 
