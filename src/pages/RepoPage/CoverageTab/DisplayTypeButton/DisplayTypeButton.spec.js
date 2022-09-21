@@ -130,16 +130,14 @@ describe('Coverage Tab', () => {
   describe('when url param is list', () => {
     beforeEach(() => {
       const mockUrlParams = {
-        params: {
-          displayType: 'list',
-        },
+        displayType: 'list',
       }
       setup(mockUrlParams)
     })
 
     it('renders list view as selected', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).not.toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).not.toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/File list/)).toHaveClass('bg-ds-blue-darker')
     })
   })
 })
