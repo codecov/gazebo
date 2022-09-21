@@ -12,6 +12,7 @@ import CoverageTab from './CoverageTab'
 jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
 jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
 jest.mock('./Summary', () => () => 'Summary Component')
+jest.mock('./Chart', () => () => 'Chart Component')
 jest.mock('./DeactivatedRepo', () => () => 'Disabled Repo Component')
 jest.mock('./DisplayTypeButton', () => () => 'Display Type Button')
 jest.mock('services/repo')
@@ -61,7 +62,7 @@ describe('Coverage Tab', () => {
           <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
             <CoverageTab />
           </Route>
-          <Route path="/:provider/:owner/:repo/" exact={true}>
+          <Route path="/:provider/:owner/:repo" exact={true}>
             <CoverageTab />
           </Route>
         </MemoryRouter>

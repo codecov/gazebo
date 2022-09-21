@@ -86,6 +86,7 @@ function Chart({ provider, owner, params }) {
 
   return (
     <VictoryChart
+      className="analyticsChart"
       width={500}
       height={220}
       yDomain={[0, 100]}
