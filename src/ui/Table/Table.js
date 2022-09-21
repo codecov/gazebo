@@ -1,11 +1,12 @@
 import {
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 
 import Icon from 'ui/Icon'
 
@@ -19,7 +20,8 @@ const TableClasses = {
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
 
-function Table({ data, columns, onSort }) {
+// TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it. Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page imapcted files table
+function Table({ data, columns, onSort, renderSubComponent = null }) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])
   const [sorting, setSorting] = useState([])
@@ -32,6 +34,7 @@ function Table({ data, columns, onSort }) {
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
   })
 
   useEffect(() => {
@@ -100,27 +103,31 @@ function Table({ data, columns, onSort }) {
             // Loop over the table rows
             table.getRowModel().rows.map((row) => {
               return (
-                <tr key={row.id} className={TableClasses.tableRow}>
-                  {
-                    // Loop over the rows cells
-                    row.getVisibleCells().map((cell) => {
-                      return (
-                        <td
-                          key={cell.id}
-                          className={cs(
-                            TableClasses.tableCell,
-                            columnsWidth[cell.column.columnDef.accessorKey]
-                          )}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      )
-                    })
-                  }
-                </tr>
+                <Fragment key={row.id}>
+                  <tr className={TableClasses.tableRow}>
+                    {
+                      // Loop over the rows cells
+                      row.getVisibleCells().map((cell) => {
+                        return (
+                          <td
+                            key={cell.id}
+                            className={cs(
+                              TableClasses.tableCell,
+                              columnsWidth[cell.column.columnDef.accessorKey]
+                            )}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        )
+                      })
+                    }
+                  </tr>
+                  {/* TODO: add getCanExpan() condition here when tanstack table is updated at least to 8.5.13  */}
+                  {row.getIsExpanded() && renderSubComponent({ row })}
+                </Fragment>
               )
             })
           }
@@ -134,6 +141,7 @@ Table.propTypes = {
   data: PropTypes.array.isRequired,
   columns: PropTypes.array.isRequired,
   onSort: PropTypes.func,
+  renderSubComponent: PropTypes.func,
 }
 
 export default Table

@@ -112,12 +112,16 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
           head {
             pathContents(path:$path, filters:$filters){
               __typename
+              hits
+              misses
+              partials
+              lines
               name
               path
               percentCovered
               ... on PathContentFile {
-              isCriticalFile
-            }
+                isCriticalFile
+              }
             }
            }
           }

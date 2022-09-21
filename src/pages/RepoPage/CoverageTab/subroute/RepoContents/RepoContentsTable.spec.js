@@ -21,6 +21,10 @@ const repoContents = [
     path: '',
     percentCovered: 92.78,
     __typename: 'PathContentDir',
+    hits: 456,
+    misses: 234,
+    lines: 789,
+    partials: 123,
   },
   {
     name: 'app.js',
@@ -28,6 +32,10 @@ const repoContents = [
     percentCovered: 62.53,
     isCriticalFile: false,
     __typename: 'PathContentFile',
+    hits: 567,
+    misses: 345,
+    lines: 891,
+    partials: 233,
   },
 ]
 
@@ -85,9 +93,31 @@ describe('RepoContentsTable', () => {
       expect(screen.getByText(/62.53%/)).toBeInTheDocument()
     })
 
+    it('renders hits', () => {
+      expect(screen.getByText(/456/)).toBeInTheDocument()
+      expect(screen.getByText(/567/)).toBeInTheDocument()
+    })
+
+    it('renders lines', () => {
+      expect(screen.getByText(/789/)).toBeInTheDocument()
+      expect(screen.getByText(/891/)).toBeInTheDocument()
+    })
+
+    it('renders misses', () => {
+      expect(screen.getByText(/234/)).toBeInTheDocument()
+      expect(screen.getByText(/345/)).toBeInTheDocument()
+    })
+
+    it('renders partials', () => {
+      expect(screen.getByText(/123/)).toBeInTheDocument()
+      expect(screen.getByText(/233/)).toBeInTheDocument()
+    })
+
     it('renders corresponding links', () => {
-      const directory = screen.getByText('flag2')
-      expect(directory).toHaveAttribute(
+      // Open to better ways of doing this if anyone has an idea :)
+      const links = screen.getAllByRole('link')
+      const flag2Link = links[0]
+      expect(flag2Link).toHaveAttribute(
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/default-branch/flag2'
       )
@@ -95,7 +125,7 @@ describe('RepoContentsTable', () => {
       const file = screen.getByText('app.js')
       expect(file).toHaveAttribute(
         'href',
-        '/gh/Rabee-AbuBaker/another-test/blobs/default-branch/app.js'
+        '/gh/Rabee-AbuBaker/another-test/blob/default-branch/app.js'
       )
     })
   })
@@ -106,8 +136,10 @@ describe('RepoContentsTable', () => {
     })
 
     it('renders corresponding links correctly', () => {
-      const directory = screen.getByText('flag2')
-      expect(directory).toHaveAttribute(
+      // Open to better ways of doing this if anyone has an idea :)
+      const links = screen.getAllByRole('link')
+      const flag2Link = links[0]
+      expect(flag2Link).toHaveAttribute(
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/main/src/flag2'
       )
@@ -115,7 +147,7 @@ describe('RepoContentsTable', () => {
       const file = screen.getByText('app.js')
       expect(file).toHaveAttribute(
         'href',
-        '/gh/Rabee-AbuBaker/another-test/blobs/main/src/app.js'
+        '/gh/Rabee-AbuBaker/another-test/blob/main/src/app.js'
       )
     })
   })

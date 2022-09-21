@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
-import { useBranchSelector } from './useBranchSelector'
+import { useBranchSelector } from '../../hooks'
 
 export function useSummary() {
   const { repo, owner, provider } = useParams()

@@ -2,13 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 import { useShouldRenderBillingTabs } from './hooks'
 
 jest.mock('services/user')
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({})
 
@@ -22,10 +22,9 @@ const wrapper = ({ children }) => (
 
 describe('useShouldRenderTabs', () => {
   let hookData
-  function setup(username = '') {
-    useFlags.mockReturnValue({
-      gazeboPlanTab: true,
-    })
+  function setup({ username = '', isEnterprise = false }) {
+    config.IS_ENTERPRISE = isEnterprise
+
     useUser.mockReturnValue({
       data: {
         user: {
@@ -41,7 +40,7 @@ describe('useShouldRenderTabs', () => {
 
   describe('When render with different username', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('Account is not personal', () => {
@@ -51,10 +50,20 @@ describe('useShouldRenderTabs', () => {
 
   describe('When render with same username', () => {
     beforeEach(() => {
-      setup('codecov')
+      setup({ username: 'codecov' })
     })
 
     it('Account is personal', () => {
+      expect(hookData.result.current).toBeFalsy()
+    })
+  })
+
+  describe('when running in enterprise', () => {
+    beforeEach(() => {
+      setup({ isEnterprise: true })
+    })
+
+    it('returns false', () => {
       expect(hookData.result.current).toBeFalsy()
     })
   })

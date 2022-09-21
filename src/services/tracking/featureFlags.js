@@ -30,7 +30,7 @@ const defaultUser = {
 
 /**
  * Takes the user object from the me query extends a default user shape and extends the object with the passed user object.
- * If there is no user (not logged in) dont identify user.
+ * If there is no user (not logged in) don't identify user.
  *
  * @param {*} user
  * @returns

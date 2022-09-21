@@ -14,28 +14,28 @@ const tableColumns = [
     id: 'name',
     header: <span>Name</span>,
     accessorKey: 'name',
-    width: 'w-4/12',
+    width: 'w-7/12 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
     id: 'headCoverage',
     header: <span className="w-full text-right">HEAD %</span>,
     accessorKey: 'headCoverage',
-    width: 'w-3/12',
+    width: 'w-3/12 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
     id: 'patchCoverage',
     header: <span className="w-full text-right">Patch %</span>,
     accessorKey: 'patchCoverage',
-    width: 'w-3/12',
+    width: 'w-28 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
     id: 'changeCoverage',
     header: <span className="w-full text-right">+/-</span>,
     accessorKey: 'changeCoverage',
-    width: 'w-3/12',
+    width: 'w-28 min-w-min',
     cell: (info) => info.getValue(),
   },
 ]
@@ -139,7 +139,7 @@ function Flags() {
     !!JSON.parse(localStorage.getItem(localStorageKey))
   )
   const tableData = getTableData(data)
-  const isTableDataEmpty = tableData && tableData.length <= 0
+  const isTableDataEmpty = tableData && tableData?.length <= 0
   const { title, value } = getTableInfo({
     tableData,
     isTableDataEmpty,

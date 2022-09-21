@@ -17,7 +17,7 @@ function TrendDropdown() {
         variant="text"
         items={items}
         onChange={(selected) => updateParams({ trend: selected })}
-        value={params?.trend || Trend.LAST_YEAR}
+        value={params?.trend || Trend.TWELVE_MONTHS}
         renderItem={(item) => <p className="capitalize">{item}</p>}
       />
       trend

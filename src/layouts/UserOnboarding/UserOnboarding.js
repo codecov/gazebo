@@ -1,14 +1,11 @@
 import Cookie from 'js-cookie'
 
-import { useTracking } from 'services/tracking'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
 
 import UserOnboardingModal from './UserOnboardingModal'
 
 function UserOnboarding() {
-  useTracking()
-
   const { data: currentUser } = useUser({
     suspense: false,
   })
