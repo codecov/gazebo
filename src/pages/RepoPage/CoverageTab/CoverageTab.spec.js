@@ -61,7 +61,7 @@ describe('Coverage Tab', () => {
           <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
             <CoverageTab />
           </Route>
-          <Route path="/:provider/:owner/:repo/" exact={true}>
+          <Route path="/:provider/:owner/:repo" exact={true}>
             <CoverageTab />
           </Route>
         </MemoryRouter>

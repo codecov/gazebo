@@ -2,11 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useRepoOverview } from 'services/repo'
+
 import Chart from './Chart'
 
-import { useRepoCoverageTimeseries } from '../hooks'
+import { useBranchSelector, useRepoCoverageTimeseries } from '../hooks'
 
-jest.mock('services/charts')
+jest.mock('services/repo')
 jest.mock('../hooks')
 
 const wrapper = ({ children }) => (
@@ -20,9 +22,11 @@ const wrapper = ({ children }) => (
 const queryClient = new QueryClient()
 
 describe('Coverage Tab chart', () => {
-  function setup({ provider, owner, params, chartData }) {
+  function setup({ chartData }) {
     useRepoCoverageTimeseries.mockReturnValue(chartData)
-    render(<Chart provider={provider} owner={owner} params={params} />, {
+    useRepoOverview.mockReturnValue({})
+    useBranchSelector.mockReturnValue({ selection: { name: 'bells-hells' } })
+    render(<Chart />, {
       wrapper,
     })
   }
@@ -32,17 +36,7 @@ describe('Coverage Tab chart', () => {
       jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
 
       setup({
-        provider: 'gh',
-        owner: 'codecov',
-        params: {
-          startDate: '2020-01-15',
-          endDate: '2020-01-19',
-          repositories: [],
-        },
-        chartData: {
-          coverageAxisLabel: (t) => t,
-          coverage: [],
-        },
+        chartData: {},
       })
     })
     afterAll(() => {
@@ -59,19 +53,15 @@ describe('Coverage Tab chart', () => {
       jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
 
       setup({
-        provider: 'gh',
-        owner: 'codecov',
-        params: {
-          startDate: '2020-01-15',
-          endDate: '2020-01-19',
-          repositories: [],
-        },
         chartData: {
-          coverageAxisLabel: (t) => t,
-          coverage: [
-            { date: '2020-01-15T20:18:39.413Z', coverage: 20 },
-            { date: '2020-01-17T20:18:39.413Z', coverage: 50 },
-          ],
+          data: {
+            coverageAxisLabel: (t) => t,
+            coverage: [
+              { date: '2020-01-15T20:18:39.413Z', coverage: 20 },
+              { date: '2020-01-17T20:18:39.413Z', coverage: 50 },
+            ],
+          },
+          isSuccess: true,
         },
       })
     })
@@ -80,15 +70,42 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders victory', () => {
-      expect(screen.getByRole('img')).toBeInTheDocument(0)
+      expect(screen.getByRole('img')).toBeInTheDocument()
     })
 
-    it('renders a screen reader friendly description', () => {
+    it('renders a screen reader description', () => {
       expect(
         screen.getByText(
-          'Organization wide coverage chart from Jan 15, 2020 to Jan 17, 2020, coverage change is +20%'
+          'bells-hells coverage chart from Jan 15, 2020 to Jan 17, 2020, coverage change is +20%'
         )
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('Not enough data to render', () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
+
+      setup({
+        chartData: {
+          data: {
+            coverageAxisLabel: (t) => t,
+            coverage: [{ date: '2020-01-15T20:18:39.413Z', coverage: 20 }],
+          },
+          isSuccess: true,
+        },
+      })
+    })
+    afterAll(() => {
+      jest.useRealTimers()
+    })
+
+    it('renders victory', () => {
+      expect(screen.getByRole('img')).toBeInTheDocument()
+    })
+
+    it('renders a screen reader description', () => {
+      expect(screen.getByText('Not enough data to render')).toBeInTheDocument()
     })
   })
 })

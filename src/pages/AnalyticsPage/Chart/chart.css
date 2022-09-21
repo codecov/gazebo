@@ -1,32 +1,32 @@
-.VictoryContainer title {
+.analyticsChart title {
   pointer-events: none;
 }
 
-.VictoryContainer .coverage-line path {
+.analyticsChart .coverage-line path {
   @apply text-ds-pink stroke-current !important;
 }
 
-.VictoryContainer .chart-tooltip path {
+.analyticsChart .chart-tooltip path {
   @apply text-ds-gray-tertiary stroke-current !important;
   fill: white !important;
 }
 
-.VictoryContainer .chart-tooltip tspan {
+.analyticsChart .chart-tooltip tspan {
   @apply font-sans !important;
   @apply text-ds-gray-octonary font-extralight stroke-current;
 }
 
-.VictoryContainer .date-axis tspan {
+.analyticsChart .date-axis tspan {
   text-anchor: end !important;
 }
 
-.VictoryContainer .date-axis line,
-.VictoryContainer .coverage-axis line {
+.analyticsChart .date-axis line,
+.analyticsChart .coverage-axis line {
   @apply text-ds-gray-tertiary stroke-current !important;
 }
 
-.VictoryContainer .date-axis tspan,
-.VictoryContainer .coverage-axis tspan {
+.analyticsChart .date-axis tspan,
+.analyticsChart .coverage-axis tspan {
   @apply font-sans !important;
   @apply font-sans font-light text-ds-gray-quinary stroke-current;
 }

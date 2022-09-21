@@ -1,40 +1,44 @@
-.VictoryContainer title {
+.coverageOverTimeChart title {
   pointer-events: none;
 }
 
-.VictoryContainer {
-  @apply max-h-[110px] md:max-h-[140px] lg:max-h-[190px] xl:max-h-[230px] !important;
+.coverageOverTimeChart {
+  @apply max-h-[110px] md:max-h-[140px] lg:max-h-[190px] xl:max-h-[230px]  2xl:max-h-[265px] !important;
 }
 
-.VictoryContainer .coverage-line path {
+.coverageOverTimeChart .coverage-line path {
   @apply text-ds-pink stroke-current !important;
 }
 
-.VictoryContainer .chart-tooltip path {
+.coverageOverTimeChart .chart-tooltip path {
   @apply text-ds-gray-tertiary stroke-current !important;
   fill: white !important;
 }
 
-.VictoryContainer .chart-tooltip tspan {
+.coverageOverTimeChart .chart-tooltip tspan {
   @apply font-sans !important;
   @apply text-ds-gray-octonary font-extralight stroke-current;
 }
 
-.VictoryContainer .date-axis tspan {
+.coverageOverTimeChart .date-axis tspan {
+  text-anchor: start !important;
+}
+
+.coverageOverTimeChart .date-axis:last-child tspan {
+  text-anchor: middle !important;
+}
+
+.coverageOverTimeChart .coverage-axis tspan {
   text-anchor: end !important;
 }
 
-.VictoryContainer .coverage-axis tspan {
-  text-anchor: end !important;
-}
-
-.VictoryContainer .date-axis line,
-.VictoryContainer .coverage-axis line {
+.coverageOverTimeChart .date-axis line,
+.coverageOverTimeChart .coverage-axis line {
   @apply text-ds-gray-tertiary stroke-current !important;
 }
 
-.VictoryContainer .date-axis tspan,
-.VictoryContainer .coverage-axis tspan {
+.coverageOverTimeChart .date-axis tspan,
+.coverageOverTimeChart .coverage-axis tspan {
   @apply font-sans !important;
-  @apply font-sans font-light text-ds-gray-quinary stroke-current;
+  @apply font-light text-ds-gray-quinary stroke-current;
 }

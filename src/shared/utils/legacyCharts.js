@@ -11,7 +11,7 @@ export const Trend = Object.freeze({
   THIRTY_DAYS: '30 days',
   THREE_MONTHS: '3 months',
   SIX_MONTHS: '6 months',
-  LAST_YEAR: 'last year',
+  TWELVE_MONTHS: '12 months',
   ALL_TIME: 'all time',
 })
 
@@ -32,7 +32,7 @@ export function getTrendEnum(trend) {
     }
   }
 
-  return Trend.LAST_YEAR
+  return Trend.TWELVE_MONTHS
 }
 
 // eslint-disable-next-line complexity
@@ -42,7 +42,7 @@ const calculateTrendDate = ({ today, trend }) => {
   if (trend === Trend.THIRTY_DAYS) return subDays(today, 30)
   if (trend === Trend.THREE_MONTHS) return subMonths(today, 3)
   if (trend === Trend.SIX_MONTHS) return subMonths(today, 6)
-  if (trend === Trend.LAST_YEAR) return subMonths(today, 12)
+  if (trend === Trend.TWELVE_MONTHS) return subMonths(today, 12)
   return null
 }
 
@@ -94,7 +94,7 @@ function sparklineGroupingUnit({ dayDifference }) {
   return GroupingUnit.MONTH
 }
 
-export function sparklineQuery({ trend, branch, repo, today }) {
+export function legacyRepoCoverageQuery({ trend, branch, repo, today }) {
   const startDate = calculateTrendDate({ today, trend })
   const dayDifference = calculateDayDifference({
     end: today,

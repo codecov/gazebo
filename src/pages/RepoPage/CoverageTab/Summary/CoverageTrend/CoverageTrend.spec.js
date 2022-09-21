@@ -18,27 +18,61 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
+const renderCoverageTab = () => render(<CoverageTrend />, { wrapper })
 describe('CoverageTrend', () => {
-  function setup({ sparklineData }) {
-    useRepoCoverageTimeseries.mockReturnValue(sparklineData)
+  function setup({ coverageData }) {
+    useRepoCoverageTimeseries.mockReturnValue(coverageData)
     useBranchSelector.mockReturnValue({
       selection: { name: 'bells-hells' },
     })
-
-    return render(<CoverageTrend />, { wrapper })
   }
 
-  describe('render nothing if the api call fails', () => {
-    setup({
-      sparklineData: {
-        isSuccess: false,
-      },
+  describe('when fetching', () => {
+    beforeEach(() =>
+      setup({
+        coverageData: {
+          isFetching: true,
+        },
+      })
+    )
+    it('renders a spinner', () => {
+      renderCoverageTab()
+      expect(screen.getByTestId('spinner')).toBeInTheDocument()
     })
+  })
 
-    it('does not render the sparkline', () => {
+  describe('coverage exists', () => {
+    beforeEach(() =>
+      setup({
+        coverageData: {
+          data: {
+            coverage: [{}],
+            coverageChange: 40,
+          },
+        },
+      })
+    )
+    it('rendered the change %', () => {
+      renderCoverageTab()
+      expect(screen.getByText(/40.00%+/)).toBeInTheDocument()
+    })
+  })
+
+  describe('coverage is empty', () => {
+    beforeEach(() =>
+      setup({
+        coverageData: {
+          data: {
+            coverage: [],
+          },
+        },
+      })
+    )
+    it('does messages if there is no reports', () => {
+      renderCoverageTab()
       expect(
-        screen.queryByText(/No coverage reports found in this timespan./)
-      ).not.toBeInTheDocument()
+        screen.getByText(/No coverage reports found in this timespan./)
+      ).toBeInTheDocument()
     })
   })
 })

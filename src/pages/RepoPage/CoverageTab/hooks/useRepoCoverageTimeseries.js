@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLegacyRepoCoverage } from 'services/charts'
@@ -7,17 +7,18 @@ import { useLocationParams } from 'services/navigation'
 import {
   getTrendEnum,
   GroupingUnit,
-  sparklineQuery,
+  legacyRepoCoverageQuery,
 } from 'shared/utils/legacyCharts'
 
-export function useRepoCoverageTimeseries({ branch }, options) {
+export function useRepoCoverageTimeseries({ branch }, options = {}) {
+  const { select, ...newOptions } = options
   const { params } = useLocationParams()
   const { repo, owner, provider } = useParams()
 
   const today = useMemo(() => new Date(), [])
   const body = useMemo(
     () =>
-      sparklineQuery({
+      legacyRepoCoverageQuery({
         branch,
         repo,
         trend: getTrendEnum(params?.trend),
@@ -25,42 +26,43 @@ export function useRepoCoverageTimeseries({ branch }, options) {
       }),
     [repo, branch, today, params?.trend]
   )
-  const {
-    data: { coverage },
-    ...rest
-  } = useLegacyRepoCoverage({
+
+  return useLegacyRepoCoverage({
     provider,
     owner,
     branch,
     trend: params.trend,
     body,
-    opts: options,
-  })
-  const coverageChange = useMemo(
-    () => coverage[coverage?.length - 1]?.coverage - coverage[0]?.coverage,
-    [coverage]
-  )
+    opts: {
+      select: (data) => {
+        const coverageAxisLabel = (time) => {
+          switch (body?.groupingUnit) {
+            case GroupingUnit.HOUR:
+              return format(time, 'E, h:mm aaa')
+            case GroupingUnit.DAY:
+              return format(time, 'MMM d')
+            case GroupingUnit.WEEK:
+              return format(time, 'MMM')
+            default:
+              return format(time, 'MMM yyyy')
+          }
+        }
 
-  const coverageAxisLabel = useCallback(
-    (time) => {
-      switch (body?.groupingUnit) {
-        case GroupingUnit.HOUR:
-          return format(time, 'MMM dd, h:mm aaa')
-        case GroupingUnit.DAY:
-          return format(time, 'MMM d')
-        case GroupingUnit.WEEK:
-          return format(time, 'MMM')
-        default:
-          return format(time, 'MMM yyyy')
-      }
+        const newData = {
+          coverageChange:
+            data.coverage[data.coverage?.length - 1].coverage -
+            data.coverage[0].coverage,
+          coverageAxisLabel,
+          ...data,
+        }
+
+        if (typeof select === 'function') {
+          return select(newData)
+        } else {
+          return newData
+        }
+      },
+      ...newOptions,
     },
-    [body]
-  )
-
-  return {
-    coverageAxisLabel,
-    coverageChange,
-    coverage,
-    ...rest,
-  }
+  })
 }
