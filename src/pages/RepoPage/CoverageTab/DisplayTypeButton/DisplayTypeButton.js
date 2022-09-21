@@ -18,10 +18,11 @@ const options = [
 ]
 
 function initialState(urlParams) {
+  const [treeView, listView] = options
   return urlParams?.displayType ===
     displayTypeParameter.list.toLocaleLowerCase()
-    ? options[1]
-    : options[0]
+    ? listView
+    : treeView
 }
 
 function DisplayTypeButton() {
