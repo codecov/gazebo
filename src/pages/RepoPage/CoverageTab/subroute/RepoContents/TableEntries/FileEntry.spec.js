@@ -4,6 +4,8 @@ import { MemoryRouter, Route, useParams } from 'react-router-dom'
 import FileEntry from './FileEntry'
 import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
 
+import {displayTypeParameter} from '../../../constants'
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(() => {}),
@@ -14,7 +16,7 @@ jest.mock('./hooks/usePrefetchFileEntry')
 describe('FileEntry', () => {
   const runPrefetchMock = jest.fn()
 
-  function setup({ isCriticalFile = false, isSearching = false }) {
+  function setup({ isCriticalFile = false, displayType = displayTypeParameter.tree }) {
     useParams.mockReturnValue({
       owner: 'codecov',
       provider: 'gh',
@@ -36,7 +38,7 @@ describe('FileEntry', () => {
             name="file.js"
             path="dir"
             isCriticalFile={isCriticalFile}
-            isList={isSearching}
+            displayType={displayType}
           />
         </Route>
       </MemoryRouter>
@@ -45,7 +47,7 @@ describe('FileEntry', () => {
 
   describe('checking properties', () => {
     beforeEach(() => {
-      setup({ isCriticalFile: false, isSearching: false })
+      setup({ isCriticalFile: false, isSearching: displayTypeParameter.tree })
     })
 
     it('displays the file name', () => {
@@ -70,9 +72,9 @@ describe('FileEntry', () => {
     })
   })
 
-  describe('is searching', () => {
+  describe('is displaying a list', () => {
     beforeEach(() => {
-      setup({ isSearching: true })
+      setup({ displayType: "LIST" })
     })
 
     it('displays the file path label', () => {
@@ -82,7 +84,7 @@ describe('FileEntry', () => {
 
   describe('prefetches data', () => {
     beforeEach(() => {
-      setup({ isCriticalFile: false, isSearching: false })
+      setup({ isCriticalFile: false, displayType: displayTypeParameter.tree })
     })
 
     it('fires the prefetch function on hover', async () => {
