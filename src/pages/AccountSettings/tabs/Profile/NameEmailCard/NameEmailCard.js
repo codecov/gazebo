@@ -24,8 +24,8 @@ function NameEmailCard({ currentUser, provider }) {
   const { register, handleSubmit, formState, reset } = useForm({
     resolver: yupResolver(getSchema()),
     defaultValues: {
-      email: currentUser.email,
-      name: currentUser.name,
+      email: currentUser?.email,
+      name: currentUser?.name,
     },
   })
 
