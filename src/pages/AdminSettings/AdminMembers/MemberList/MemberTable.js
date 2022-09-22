@@ -78,6 +78,7 @@ function MemberTable() {
       useErrorBoundary: true,
       onSuccess: () => {
         queryClient.invalidateQueries(['SelfHostedSettings'])
+        queryClient.invalidateQueries(['Seats'])
         queryClient.invalidateQueries([
           'SelfHostedUserList',
           params?.activated,
