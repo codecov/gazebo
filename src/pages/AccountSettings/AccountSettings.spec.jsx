@@ -14,6 +14,7 @@ jest.mock('services/user/hooks')
 jest.mock('./tabs/Admin', () => () => 'AdminTab')
 jest.mock('./tabs/Access', () => () => 'AccessTab')
 jest.mock('../NotFound', () => () => 'NotFound')
+jest.mock('./tabs/Profile', () => () => 'Profile')
 jest.mock('./tabs/YAML', () => () => 'YAMLTab')
 jest.mock('./AccountSettingsSideMenu', () => () => 'AccountSettingsSideMenu')
 
@@ -102,7 +103,7 @@ describe('AccountSettings', () => {
   })
 
   describe('when running in self hosted mode', () => {
-    describe('when attempted to access the admin tab', () => {
+    describe('when attempted to access the profile tab', () => {
       beforeEach(() => {
         setup({
           url: '/account/gh/codecov',
@@ -110,8 +111,8 @@ describe('AccountSettings', () => {
         })
       })
 
-      it('redirects to the yaml tab', async () => {
-        const tab = await screen.findByText('YAMLTab')
+      it('renders profile tab', async () => {
+        const tab = await screen.findByText('Profile')
 
         expect(tab).toBeInTheDocument()
       })
