@@ -1,13 +1,17 @@
 import { useLocation, useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
+import AdminLink from './AdminLink'
 import Dropdown from './Dropdown'
 import FeedbackLink from './FeedbackLink'
 import RequestButton from './RequestButton'
+import SeatDetails from './SeatDetails'
 
 export function LoginPrompt() {
   const to = window.location.href
@@ -68,7 +72,13 @@ function DesktopMenu() {
         {currentUser && <FeedbackLink />}
       </div>
       {currentUser ? (
-        <div className="flex items-center space-between mx-2 md:mx-4 gap-2">
+        <div className="flex items-center space-between mx-2 md:mx-4 gap-4">
+          {config.IS_ENTERPRISE && (
+            <>
+              <SeatDetails />
+              <AdminLink />
+            </>
+          )}
           {!!owner && <RequestButton owner={owner} provider={provider} />}
           <Dropdown currentUser={currentUser} />
         </div>

@@ -24,14 +24,14 @@ const trackingInfo = [
   },
 ]
 
-export function handleOnSuccess(user) {
+function handleOnSuccess(user) {
   trackingInfo.forEach((platform) => {
     const { callback, defaultUser } = platform
     callback(getUserData(user, defaultUser))
   })
 }
 
-export function handleOnError(guest) {
+function handleOnError(guest) {
   trackingInfo.forEach((platform) => {
     const { callback } = platform
     callback(guest)
@@ -45,7 +45,7 @@ export function useTracking() {
     suspense: false,
   })
 
-  useTrackFeatureFlags(user)
+  useTrackFeatureFlags(user) // TODO: Can probably delete
   useSegmentPage()
   useUpdatePendoWithOwner(user)
 

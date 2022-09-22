@@ -23,7 +23,7 @@ export const withFeatureFlagProvider = (Component) => {
 
 /*
   In the future we might want to have a larger config to control
-  features by licencing / configuration. This is fine for now though.
+  features by licensing / configuration. This is fine for now though.
 */
 export function useFlags(fallback) {
   const useFlags = useLDFlags()

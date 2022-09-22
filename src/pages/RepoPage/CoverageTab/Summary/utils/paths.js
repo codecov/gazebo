@@ -1,4 +1,4 @@
-import { newFileviewString, treeviewString } from 'pages/RepoPage/utils'
+import { fileviewString, treeviewString } from 'pages/RepoPage/utils'
 
 const conditionalPathnameReplacement =
   (pathname) =>
@@ -25,7 +25,7 @@ const handleRootLocation = ({ pathname, owner, repo, name }) => {
 export function createPath({ pathname, owner, repo, ref, branch, name }) {
   const conditionalReplace = conditionalPathnameReplacement(pathname)
   let newPath = conditionalReplace({
-    pathToMatch: newFileviewString({ owner, repo }),
+    pathToMatch: fileviewString({ owner, repo }),
     oldParam: ref,
     newParam: name,
   })

@@ -248,7 +248,7 @@ function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/blobs/${ref}/${tree}`,
+      ) => `/${provider}/${owner}/${repo}/blob/${ref}/${tree}`,
       isExternalLink: false,
       text: 'File Viewer',
     },
@@ -384,10 +384,24 @@ function useNavLinks() {
       },
       isExternalLink: false,
     },
+    access: {
+      text: 'Access',
+      path: ({ provider = p } = { provider: p }) => {
+        return `/admin/${provider}/access`
+      },
+      isExternalLink: false,
+    },
+    users: {
+      text: 'Users',
+      path: ({ provider = p } = { provider: p }) => {
+        return `/admin/${provider}/users`
+      },
+      isExternalLink: false,
+    },
   }
 }
 
-// Seperate function which doesn't unessisarily use the router.
+// Separate function which doesn't unnecessarily use the router.
 function useStaticNavLinks() {
   return {
     root: { path: () => `${config.MARKETING_BASE_URL}`, isExternalLink: true },
@@ -562,6 +576,24 @@ function useStaticNavLinks() {
     graphsSunburst: {
       text: 'Graphs Sunburst',
       path: () => 'https://docs.codecov.com/reference/sunburst',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    ciProviderWorkflow: {
+      text: 'CI provider workflow',
+      path: () => 'https://circleci.com/blog/what-is-continuous-integration',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    exampleRepos: {
+      text: 'Codecov uploader and supported languages',
+      path: () => 'https://docs.codecov.com/docs/supported-languages',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    prCommentLayout: {
+      text: 'Pull request comment layout',
+      path: () => 'https://docs.codecov.com/docs/pull-request-comments#layout',
       isExternalLink: true,
       openNewTab: true,
     },

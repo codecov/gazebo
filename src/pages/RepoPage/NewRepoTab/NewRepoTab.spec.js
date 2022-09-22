@@ -4,11 +4,12 @@ import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
 import * as Segment from 'services/tracking/segment'
 import { useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 import { NotFoundException } from 'shared/utils'
 
-import { repoPageRender, screen } from '../repo-jest-setup'
+import NewRepoTab from './NewRepoTab'
 
-import NewRepoTab from '.'
+import { repoPageRender, screen } from '../repo-jest-setup'
 
 const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 
@@ -16,6 +17,7 @@ jest.mock('shared/utils/exceptions')
 jest.mock('services/repo/hooks')
 jest.mock('services/commits/hooks')
 jest.mock('services/user')
+jest.mock('shared/featureFlags')
 
 describe('New Repo Tab', () => {
   let mockError
@@ -45,6 +47,7 @@ describe('New Repo Tab', () => {
     useRepo.mockReturnValue({ data: repoData })
     useCommits.mockReturnValue({ data: commitsData })
     useUser.mockReturnValue({ data: loggedInUser })
+    useFlags.mockReturnValue({ newRepoGhContent: false })
 
     mockError = jest.fn()
     const spy = jest.spyOn(console, 'error')

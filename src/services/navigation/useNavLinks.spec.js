@@ -21,6 +21,10 @@ describe('useNavLinks', () => {
             {children}
           </Route>
           <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+          <Route path="/admin/:provider/access">{children}</Route>
+          <Route path="/admin/:provider/users">{children}</Route>
+          <Route path="/admin/:provider/:owner/access">{children}</Route>
+          <Route path="/admin/:provider/:owner/users">{children}</Route>
         </MemoryRouter>
       ),
     })
@@ -377,6 +381,7 @@ describe('useNavLinks', () => {
       )
     })
   })
+
   describe('internalAccessTab link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
@@ -610,7 +615,7 @@ describe('useNavLinks', () => {
 
   describe('fileViewer link', () => {
     beforeAll(() => {
-      setup(['/gh/Rabee-AbuBaker/another-test/blobs/main/index.js'])
+      setup(['/gh/Rabee-AbuBaker/another-test/blob/main/index.js'])
     })
 
     it('Returns the correct link with nothing passed', () => {
@@ -619,7 +624,7 @@ describe('useNavLinks', () => {
           ref: 'main',
           tree: 'index.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/main/index.js')
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/main/index.js')
     })
 
     it('can override the params', () => {
@@ -629,28 +634,28 @@ describe('useNavLinks', () => {
           ref: 'main',
           tree: 'index.js',
         })
-      ).toBe('/bb/Rabee-AbuBaker/another-test/blobs/main/index.js')
+      ).toBe('/bb/Rabee-AbuBaker/another-test/blob/main/index.js')
       expect(
         hookData.result.current.fileViewer.path({
           owner: 'cat',
           ref: 'main',
           tree: 'index.js',
         })
-      ).toBe('/gh/cat/another-test/blobs/main/index.js')
+      ).toBe('/gh/cat/another-test/blob/main/index.js')
 
       expect(
         hookData.result.current.fileViewer.path({
           ref: 'main',
           tree: 'flags1/mafs.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/main/flags1/mafs.js')
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/main/flags1/mafs.js')
 
       expect(
         hookData.result.current.fileViewer.path({
           ref: 'test-br',
           tree: 'index.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blobs/test-br/index.js')
+      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/test-br/index.js')
     })
   })
 
@@ -856,6 +861,7 @@ describe('useNavLinks', () => {
       )
     })
   })
+
   describe('pull detail', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator/pull/409'])
@@ -935,6 +941,42 @@ describe('useNavLinks', () => {
       })
     })
   })
+
+  describe('access', () => {
+    describe('testing all orgs and repos', () => {
+      beforeAll(() => {
+        setup(['/admin/gh/access'])
+      })
+
+      it('returns the correct url', () => {
+        expect(hookData.result.current.access.path()).toBe('/admin/gh/access')
+      })
+
+      it('returns the correct url provided provider', () => {
+        expect(hookData.result.current.access.path({ provider: 'gl' })).toBe(
+          '/admin/gl/access'
+        )
+      })
+    })
+  })
+
+  describe('users', () => {
+    describe('testing all orgs and repos', () => {
+      beforeAll(() => {
+        setup(['/admin/gh/users'])
+      })
+
+      it('returns the correct url', () => {
+        expect(hookData.result.current.users.path()).toBe('/admin/gh/users')
+      })
+
+      it('returns the correct url provided provider', () => {
+        expect(hookData.result.current.users.path({ provider: 'gl' })).toBe(
+          '/admin/gl/users'
+        )
+      })
+    })
+  })
 })
 
 describe('useStaticNavLinks', () => {
@@ -974,6 +1016,9 @@ describe('useStaticNavLinks', () => {
     ${links.runtimeInsights}    | ${'https://docs.codecov.com/docs/runtime-insights'}
     ${links.graphAuthorization} | ${'https://docs.codecov.com/reference/authorization#about-graphs'}
     ${links.graphsSunburst}     | ${'https://docs.codecov.com/reference/sunburst'}
+    ${links.ciProviderWorkflow} | ${'https://circleci.com/blog/what-is-continuous-integration'}
+    ${links.exampleRepos}       | ${'https://docs.codecov.com/docs/supported-languages'}
+    ${links.prCommentLayout}    | ${'https://docs.codecov.com/docs/pull-request-comments#layout'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

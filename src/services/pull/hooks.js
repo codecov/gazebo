@@ -27,11 +27,17 @@ export function usePull({ provider, owner, repo, pullId }) {
                 totals {
                   percentCovered
                 }
+                uploads {
+                  totalCount
+                }
               }
               comparedTo {
                 commitid
+                uploads {
+                  totalCount
+                }
               }
-              compareWithBase {
+              compareWithBase: compareWithBaseTemp {
                 patchTotals {
                   percentCovered
                 }
@@ -42,6 +48,7 @@ export function usePull({ provider, owner, repo, pullId }) {
                   percentCovered
                 }
                 changeWithParent
+                hasDifferentNumberOfHeadAndBaseReports
               }
               commits {
                 edges {
@@ -95,7 +102,7 @@ export function useImpactedFilesComparison({
     owner(username: $owner) {
       repository(name: $repo) {
         pull(id: $pullId) {
-          compareWithBase{
+          compareWithBase: compareWithBaseTemp {
             patchTotals {
               percentCovered
             }
@@ -108,6 +115,7 @@ export function useImpactedFilesComparison({
             impactedFiles(filters:$filters) {
               fileName
               headName
+              isCriticalFile
               baseCoverage {
                 percentCovered
               }
@@ -150,16 +158,17 @@ export function useImpactedFilesComparison({
           isNumber(headCoverage) && isNumber(baseCoverage)
             ? headCoverage - baseCoverage
             : Number.NaN
-        const hasHeadAndPatchCoverage =
+        const hasHeadOrPatchCoverage =
           isNumber(headCoverage) || isNumber(patchCoverage)
 
         return {
           headCoverage,
           patchCoverage,
           changeCoverage,
-          hasHeadAndPatchCoverage,
+          hasHeadOrPatchCoverage,
           headName: impactedFile?.headName,
           fileName: impactedFile?.fileName,
+          isCriticalFile: impactedFile?.isCriticalFile,
         }
       }
     )
@@ -172,7 +181,7 @@ export function useImpactedFilesComparison({
   }
 
   return useQuery(
-    ['impactedFileComparison', provider, owner, repo, pullId, filters],
+    ['ImpactedFilesComparison', provider, owner, repo, pullId, filters],
     fetchImpactedFiles,
     {
       select: ({ data }) =>
@@ -180,6 +189,102 @@ export function useImpactedFilesComparison({
           data?.owner?.repository?.pull?.compareWithBase
         ),
       staleTime: 1000 * 60 * 5,
+    }
+  )
+}
+
+export function useSingularImpactedFileComparison({
+  provider,
+  owner,
+  repo,
+  pullId,
+  path,
+}) {
+  const query = `
+  query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!) {
+    owner(username: $owner) {
+      repository(name: $repo) {
+        pull(id: $pullId) {
+          compareWithBase: compareWithBaseTemp {
+            impactedFile(path:$path) {
+              headName
+              isNewFile
+              isRenamedFile
+              isDeletedFile
+              isCriticalFile
+              baseCoverage {
+                percentCovered
+              }
+              headCoverage {
+                percentCovered
+              }
+              patchCoverage {
+                percentCovered
+              }
+              changeCoverage
+              segments {
+                header
+                hasUnintendedChanges
+                lines {
+                  baseNumber
+                  headNumber
+                  baseCoverage
+                  headCoverage
+                  content
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  `
+
+  const fetchSingularImpactedFile = () => {
+    return Api.graphql({
+      provider,
+      query,
+      variables: {
+        provider,
+        owner,
+        repo,
+        pullId: parseInt(pullId, 10),
+        path,
+      },
+    })
+  }
+
+  function setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
+    if (isNewFile) return 'New'
+    if (isRenamedFile) return 'Renamed'
+    if (isDeletedFile) return 'Deleted'
+    return null
+  }
+
+  function transformImpactedFileData(impactedFile) {
+    const fileLabel = setFileLabel({
+      isNewFile: impactedFile?.isNewFile,
+      isRenamedFile: impactedFile?.isRenamedFile,
+      isDeletedFile: impactedFile?.isDeletedFile,
+    })
+
+    return {
+      fileLabel,
+      headName: impactedFile?.headName,
+      isCriticalFile: impactedFile?.isCriticalFile,
+      segments: impactedFile?.segments,
+    }
+  }
+
+  return useQuery(
+    ['ImpactedFileComparison', provider, owner, repo, pullId, path],
+    fetchSingularImpactedFile,
+    {
+      select: ({ data }) =>
+        transformImpactedFileData(
+          data?.owner?.repository?.pull?.compareWithBase?.impactedFile
+        ),
     }
   )
 }

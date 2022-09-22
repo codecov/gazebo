@@ -8,16 +8,14 @@ import { setupServer } from 'msw/node'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import App from './App'
 
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
+jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
 jest.mock('./pages/CommitPage', () => () => 'CommitPage')
 jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
-jest.mock('./pages/FileView', () => () => 'FileViewPage')
 jest.mock('./pages/HomePage', () => () => 'HomePage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
 jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
@@ -30,7 +28,6 @@ jest.mock('@tanstack/react-query-devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
 }))
 
-jest.mock('shared/featureFlags')
 jest.mock('config')
 
 const user = {
@@ -48,10 +45,6 @@ afterAll(() => server.close())
 
 describe('App', () => {
   function setup() {
-    useFlags.mockReturnValue({
-      gazeboPlanTab: true,
-    })
-
     server.use(
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
@@ -98,6 +91,35 @@ describe('App', () => {
     it('renders the AccountSettings page', async () => {
       const page = screen.getByText(/AccountSettings/i)
       expect(page).toBeInTheDocument()
+    })
+  })
+
+  describe('rendering admin settings page', () => {
+    describe('IS_ENTERPRISE is true', () => {
+      beforeEach(() => {
+        config.IS_ENTERPRISE = true
+      })
+
+      describe('/admin/gh/access', () => {
+        beforeEach(() => {
+          window.history.pushState(
+            {},
+            'Test Admin Settings Page',
+            '/admin/gh/access'
+          )
+          setup()
+        })
+
+        it('renders the loading state', () => {
+          const loading = screen.getByTestId('logo-spinner')
+          expect(loading).toBeInTheDocument()
+        })
+
+        it('renders admin settings page', () => {
+          const page = screen.getByText('AdminSettingsPage')
+          expect(page).toBeInTheDocument()
+        })
+      })
     })
   })
 
@@ -181,27 +203,6 @@ describe('App', () => {
 
     it('renders the feedback page', () => {
       const page = screen.getByText(/FeedbackPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering file view page', () => {
-    beforeEach(() => {
-      window.history.pushState(
-        {},
-        'Test File View Page',
-        '/gh/codecov/repo/blob/ref/path'
-      )
-      setup()
-    })
-
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
-
-    it('renders the file view page', () => {
-      const page = screen.getByText(/FileViewPage/i)
       expect(page).toBeInTheDocument()
     })
   })

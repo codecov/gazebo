@@ -1,5 +1,10 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, within } from '@testing-library/react'
-import { MemoryRouter, Route, Switch, useParams } from 'react-router-dom'
+import { graphql, rest } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
+
+import config from 'config'
 
 import { useAccountDetails } from 'services/account'
 import { useUser } from 'services/user'
@@ -13,6 +18,7 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => {}),
 }))
 jest.mock('./RequestButton', () => () => 'Request Button')
+jest.mock('config')
 
 const loggedInUser = {
   user: {
@@ -27,15 +33,50 @@ const accountDetails = {
   },
 }
 
+const mockSeatData = {
+  config: {
+    seatsUsed: 5,
+    seatsLimit: 10,
+  },
+}
+
+const mockSelfHostedUser = {
+  activated: true,
+  email: 'codecov@codecov.io',
+  isAdmin: true,
+  name: 'Codecov',
+  ownerid: 2,
+  username: 'codecov',
+}
+
+const queryClient = new QueryClient()
+const server = setupServer()
+
+beforeAll(() => server.listen())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+afterAll(() => server.close())
+
 describe('DesktopMenu', () => {
   function setup({ provider }) {
+    server.use(
+      graphql.query('Seats', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockSeatData))
+      ),
+      rest.get('/internal/users/current', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(mockSelfHostedUser))
+      )
+    )
+
     render(
       <MemoryRouter initialEntries={[`/${provider}`]}>
-        <Switch>
-          <Route path="/:provider" exact>
+        <Route path="/:provider" exact>
+          <QueryClientProvider client={queryClient}>
             <DesktopMenu />
-          </Route>
-        </Switch>
+          </QueryClientProvider>
+        </Route>
       </MemoryRouter>
     )
   }
@@ -60,6 +101,30 @@ describe('DesktopMenu', () => {
       )
       expect(a).toHaveAttribute('href', expectedLink.to)
     })
+  })
+
+  it('renders the seat count when user is logged in', async () => {
+    config.IS_ENTERPRISE = true
+    const provider = 'gh'
+    useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: 'fjord', provider })
+    useAccountDetails.mockReturnValue({ data: accountDetails })
+    setup({ provider })
+
+    const seatCount = await screen.findByText(/available seats/)
+    expect(seatCount).toBeInTheDocument()
+  })
+
+  it('renders the admin link when user is logged in', async () => {
+    config.IS_ENTERPRISE = true
+    const provider = 'gh'
+    useUser.mockReturnValue({ data: loggedInUser })
+    useParams.mockReturnValue({ owner: 'fjord', provider })
+    useAccountDetails.mockReturnValue({ data: accountDetails })
+    setup({ provider })
+
+    const adminLink = await screen.findByText(/Admin/)
+    expect(adminLink).toBeInTheDocument()
   })
 
   it('renders the dropdown when user is logged in', () => {
