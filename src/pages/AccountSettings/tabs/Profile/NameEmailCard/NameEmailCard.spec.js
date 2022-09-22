@@ -47,20 +47,7 @@ describe('NameEmailCard', () => {
     server.use(
       graphql.mutation('UpdateProfile', (req, res, ctx) => {
         if (req.body.variables.input.name === 'failTest') {
-          return res(
-            ctx.status(500)
-            // ctx.errors([
-            //   {
-            //     message: 'Unable to update',
-            //     locations: [
-            //       {
-            //         line: 8,
-            //         column: 12,
-            //       },
-            //     ],
-            //   },
-            // ])
-          )
+          return res(ctx.status(500))
         } else {
           return res(
             ctx.data({
