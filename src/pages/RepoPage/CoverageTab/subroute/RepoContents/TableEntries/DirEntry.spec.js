@@ -45,11 +45,8 @@ describe('DirEntry', () => {
   })
 
   it('sets the correct href', () => {
-    const dir = screen.getByText('dir')
-    expect(dir).toHaveAttribute(
-      'href',
-      '/gh/codecov/test-repo/tree/branch/path/to/directory/dir'
-    )
+    const a = screen.getByRole('link')
+    expect(a).toHaveAttribute('href', '/gh/codecov/test-repo/tree/branch/path/to/directory/dir')
   })
 
   it('fires the prefetch function on hover', async () => {

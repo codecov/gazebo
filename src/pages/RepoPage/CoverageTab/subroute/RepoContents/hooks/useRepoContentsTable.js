@@ -6,11 +6,16 @@ import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
 import { SortingDirection } from 'ui/Table/constants'
 
+import { displayTypeParameter } from '../../../constants'
 import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
 
 function createTableData({ tableData, branch, path, isSearching, filters }) {
+  const displayType =
+    filters?.displayType === displayTypeParameter.list || isSearching
+      ? displayTypeParameter.list
+      : displayTypeParameter.tree
   return tableData?.length > 0
     ? tableData.map(
         ({
@@ -19,6 +24,10 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
           __typename,
           path: filePath,
           isCriticalFile,
+          misses,
+          partials,
+          hits,
+          lines,
         }) => ({
           name:
             __typename === 'PathContentDir' ? (
@@ -30,14 +39,18 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
               />
             ) : (
               <FileEntry
-                branch={branch}
-                filePath={filePath}
-                isCriticalFile={isCriticalFile}
-                isSearching={isSearching}
                 name={name}
                 path={path}
+                branch={branch}
+                filePath={filePath}
+                displayType={displayType}
+                isCriticalFile={isCriticalFile}
               />
             ),
+          lines: <div className="flex w-full justify-end">{lines}</div>,
+          misses: <div className="flex w-full justify-end">{misses}</div>,
+          hits: <div className="flex w-full justify-end">{hits}</div>,
+          partials: <div className="flex w-full justify-end">{partials}</div>,
           coverage: <CoverageEntry percentCovered={percentCovered} />,
         })
       )
@@ -51,6 +64,34 @@ const headers = [
     accessorKey: 'name',
     cell: (info) => info.getValue(),
     width: 'w-9/12 min-w-min',
+  },
+  {
+    id: 'lines',
+    header: <span className="md:whitespace-nowrap">Tracked lines</span>,
+    accessorKey: 'lines',
+    cell: (info) => info.getValue(),
+    width: 'md:w-36 min-w-min',
+  },
+  {
+    id: 'hits',
+    header: 'Covered',
+    accessorKey: 'hits',
+    cell: (info) => info.getValue(),
+    width: 'lg:w-1/12 w-1/5 min-w-min',
+  },
+  {
+    id: 'partials',
+    header: 'Partial',
+    accessorKey: 'partials',
+    cell: (info) => info.getValue(),
+    width: 'lg:w-1/12 w-1/5 min-w-min',
+  },
+  {
+    id: 'misses',
+    header: 'Missed',
+    accessorKey: 'misses',
+    cell: (info) => info.getValue(),
+    width: 'lg:w-1/12 w-1/5 min-w-min',
   },
   {
     id: 'coverage',
@@ -67,16 +108,24 @@ const headers = [
 
 const defaultQueryParams = {
   search: '',
+  displayType: '',
 }
 
 const sortingParameter = Object.freeze({
   name: 'NAME',
   coverage: 'COVERAGE',
+  hits: 'HITS',
+  misses: 'MISSES',
+  partials: 'PARTIALS',
+  lines: 'LINES',
 })
 
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
+    ...(params?.displayType && {
+      displayType: displayTypeParameter[params?.displayType],
+    }),
     ...(sortBy && {
       ordering: {
         direction: sortBy?.desc ? SortingDirection.DESC : SortingDirection.ASC,
@@ -115,7 +164,7 @@ function useRepoContentsTable() {
       createTableData({
         tableData: repoContents,
         branch: branch || defaultBranch,
-        path,
+        path: path || '',
         isSearching,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
       }),

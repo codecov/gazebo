@@ -1,9 +1,17 @@
+import { useRepo } from 'services/repo'
+
 import NewRepoGithubContent from './NewRepoGithubContent'
 
 import { repoPageRender, screen } from '../repo-jest-setup'
 
+jest.mock('services/repo')
+
 describe('New Repo Tab Github Content', () => {
-  function setup() {
+  function setup(uploadToken = '') {
+    useRepo.mockReturnValue({
+      data: { repository: { uploadToken, private: true } },
+    })
+
     repoPageRender({
       initialEntries: ['/gh/codecov/Test/new'],
       renderNew: () => <NewRepoGithubContent />,
@@ -66,6 +74,79 @@ describe('New Repo Tab Github Content', () => {
       })
       expect(ciProviderLink).toBeInTheDocument()
       expect(ciProviderLink).toHaveAttribute('href', 'https://docs.codecov.io/')
+    })
+  })
+
+  describe('renders step 1', () => {
+    beforeEach(() => {
+      setup('64543f83-c5d9-40bd-95aa-af71d7301d')
+    })
+
+    it('renders header', () => {
+      const title = screen.getByText(/Step 1/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders token', () => {
+      const token = screen.getByText(
+        /CODECOV_TOKEN=64543f83-c5d9-40bd-95aa-af71d7301d/
+      )
+      expect(token).toBeInTheDocument()
+    })
+
+    it('renders team bot banner', () => {
+      const link = screen.getByRole('link', { name: /team Bot/i })
+      expect(link).toBeInTheDocument()
+    })
+  })
+
+  describe('renders step 2', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders header', () => {
+      const title = screen.getByText(/Step 2/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders body', () => {
+      const body = screen.getByText(
+        /To start sharing your coverage reports with Codecov/
+      )
+      expect(body).toBeInTheDocument()
+    })
+
+    it('renders uploader integrity check banner', () => {
+      const link = screen.getByRole('link', {
+        name: /integrity check the uploader/i,
+      })
+      expect(link).toBeInTheDocument()
+    })
+  })
+
+  describe('renders step 3', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders header', () => {
+      const title = screen.getByText(/Step 3/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders body', () => {
+      const body = screen.getByText(
+        /commit your changes in step 2 and ran your CI\/CD pipeline/
+      )
+      expect(body).toBeInTheDocument()
+    })
+
+    it('renders uploader integrity check banner', () => {
+      const link = screen.getByRole('link', {
+        name: /integrity check the uploader/i,
+      })
+      expect(link).toBeInTheDocument()
     })
   })
 })

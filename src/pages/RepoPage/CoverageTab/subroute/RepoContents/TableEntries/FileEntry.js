@@ -5,34 +5,41 @@ import Icon from 'ui/Icon'
 
 import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
 
+import { displayTypeParameter } from '../../../constants'
+
 function FileEntry({
   branch,
   filePath,
   isCriticalFile,
-  isSearching,
   name,
   path,
+  displayType,
 }) {
   const { runPrefetch } = usePrefetchFileEntry({
     branch,
     path: filePath,
   })
+  const displayAsList = displayType === displayTypeParameter.list
   return (
     <div className="flex flex-col">
       <div
-        className="flex gap-2"
+        className="flex gap-2 items-center"
         onMouseEnter={async () => await runPrefetch()}
       >
-        <Icon name="document" size="md" />
         <A
           to={{
             pageName: 'fileViewer',
             options: {
               ref: branch,
-              tree: isSearching ? filePath : !!path ? `${path}/${name}` : name,
+              tree: displayAsList
+                ? filePath
+                : !!path
+                ? `${path}/${name}`
+                : name,
             },
           }}
         >
+          <Icon name="document" size="md" />
           {name}
         </A>
         {isCriticalFile && (
@@ -41,7 +48,11 @@ function FileEntry({
           </span>
         )}
       </div>
-      {isSearching && <span className="text-xs pl-1">{filePath}</span>}
+      {displayAsList && (
+        <span className="text-xs pl-1 text-ds-gray-quinary break-all">
+          {filePath}
+        </span>
+      )}
     </div>
   )
 }
@@ -50,8 +61,8 @@ FileEntry.propTypes = {
   branch: PropTypes.string.isRequired,
   filePath: PropTypes.string.isRequired,
   isCriticalFile: PropTypes.bool,
-  isSearching: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
+  displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   path: PropTypes.string,
 }
 
