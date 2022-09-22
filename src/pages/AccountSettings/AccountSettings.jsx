@@ -45,7 +45,7 @@ function AccountSettings() {
           <Switch>
             <Route path="/account/:provider/:owner/" exact>
               {config.IS_ENTERPRISE && isViewingPersonalSettings ? (
-                <Profile />
+                <Profile provider={provider} owner={owner} />
               ) : !config.IS_ENTERPRISE && isAdmin ? (
                 <AdminTab provider={provider} owner={owner} />
               ) : (
