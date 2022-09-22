@@ -11,10 +11,17 @@ const ToggleClasses = {
     'pointer-events-none translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200',
 }
 
-function Toggle({ label, value = false, onClick }) {
+function Toggle({ label, value = false, onClick, disabled = false }) {
   const ID = uniqueId('toggle')
   return (
-    <div onClick={onClick} className="flex gap-1.5 items-center">
+    <div
+      onClick={() => {
+        if (!disabled) {
+          onClick()
+        }
+      }}
+      className="flex gap-1.5 items-center"
+    >
       {label && (
         <label htmlFor={ID} className="cursor-pointer xl:whitespace-nowrap ">
           {label}
@@ -25,6 +32,8 @@ function Toggle({ label, value = false, onClick }) {
         className={cs(ToggleClasses.button, {
           'bg-ds-blue-darker': value,
           'bg-ds-gray-quinary': !value,
+          'bg-ds-gray-quaternary': disabled,
+          'cursor-not-allowed': disabled,
         })}
         aria-pressed="false"
         type="button"
@@ -41,6 +50,7 @@ function Toggle({ label, value = false, onClick }) {
             className={cs({
               'text-ds-blue-darker': value,
               'text-ds-gray-quinary': !value,
+              'text-ds-gray-quaternary': disabled,
             })}
           >
             <Icon name={value ? 'check' : 'x'} variant="solid" size="flex" />
@@ -55,6 +65,7 @@ Toggle.propTypes = {
   value: PropTypes.bool.isRequired,
   label: PropTypes.string,
   onClick: PropTypes.func,
+  disabled: PropTypes.bool,
 }
 
 export default Toggle
