@@ -66,7 +66,7 @@ function Header() {
             </A>
           </div>
           <CIStatusLabel ciPassed={ciPassed} />
-          <span className="flex items-center">
+          <span className="flex items-center flex-none">
             <Icon name="branch" variant="developer" size="sm" />
             {branchName}
           </span>
