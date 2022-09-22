@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -123,6 +123,9 @@ describe('AdminAccessTable', () => {
     it('displays extended list after button click', async () => {
       const button = await screen.findByText('Load More')
       await userEvent.click(button)
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       const user1 = await screen.findByText('User 1')
       expect(user1).toBeInTheDocument()
