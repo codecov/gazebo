@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import Modal from 'old_ui/Modal'
 import { useEraseAccount } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
+import Modal from 'ui/Modal'
 
 function ErasePersonalAccountButton({ provider, owner }) {
   const { mutate, isLoading } = useEraseAccount({ provider, owner })
@@ -13,11 +13,12 @@ function ErasePersonalAccountButton({ provider, owner }) {
 
   function eraseAccount() {
     mutate(null, {
-      onError: () =>
+      onError: () => {
         addToast({
           type: 'error',
           text: 'Something went wrong',
-        }),
+        })
+      },
     })
   }
 
@@ -34,33 +35,36 @@ function ErasePersonalAccountButton({ provider, owner }) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Are you sure?"
-      >
-        <p>Erasing your account will:</p>
-        <ul className="mt-4 list-disc pl-4">
-          <li>
-            This will delete all your session data, oauth token, email and other
-            personal data
-          </li>
-          <li>This will delete all your personal repositories</li>
-          <li>This will NOT touch organization information</li>
-        </ul>
-        <div className="flex justify-between mt-6">
-          <Button
-            hook="cancel deleting personal data"
-            onClick={() => setIsModalOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            hook="delete personal data"
-            variant="danger"
-            onClick={eraseAccount}
-            disabled={isLoading}
-          >
-            Erase my account
-          </Button>
-        </div>
-      </Modal>
+        body={
+          <>
+            <p>Erasing your account will:</p>
+            <ul className="mt-4 list-disc pl-4">
+              <li>
+                This will delete all your session data, oauth token, email and
+                other personal data
+              </li>
+              <li>This will delete all your personal repositories</li>
+              <li>This will NOT touch organization information</li>
+            </ul>
+            <div className="flex justify-between mt-6">
+              <Button
+                hook="cancel deleting personal data"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                hook="delete personal data"
+                variant="danger"
+                onClick={eraseAccount}
+                disabled={isLoading}
+              >
+                Erase my account
+              </Button>
+            </div>
+          </>
+        }
+      />
     </>
   )
 }
