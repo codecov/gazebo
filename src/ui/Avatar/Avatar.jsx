@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import { useImage } from 'services/image'
 
-import AvatarSVG from './AvatarSVG.js'
+import AvatarSVG from './AvatarSVG'
 
 let baseClasses = 'rounded-full h-6 w-6 flex items-center justify-center'
 let borderedClasses = 'border-ds-grey-secondary border-2'

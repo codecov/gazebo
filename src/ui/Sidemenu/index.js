@@ -1,1 +1,1 @@
-export { default } from './Sidemenu.js'
+export { default } from './Sidemenu'

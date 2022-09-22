@@ -9,10 +9,10 @@ import CommitPage from './CommitPage'
 
 jest.mock('services/commit')
 jest.mock('services/file')
-jest.mock('./Header/Header.js', () => () => 'The Header')
-jest.mock('./subroute/CommitFileView.js', () => () => 'The Commit File View')
+jest.mock('./Header/Header.jsx', () => () => 'The Header')
+jest.mock('./subroute/CommitFileView.jsx', () => () => 'The Commit File View')
 jest.mock(
-  './Summary/CommitDetailsSummary.js',
+  './Summary/CommitDetailsSummary.jsx',
   () => () => 'Commit Details Summary'
 )
 
