@@ -1,18 +1,37 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useEraseAccount } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 
 import DeletionCard from './DeletionCard'
 
-jest.mock('services/account/hooks')
 jest.mock('services/toastNotification')
 
+const queryClient = new QueryClient({
+  logger: {
+    error: () => {},
+  },
+})
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
+beforeEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
 describe('DeletionCard', () => {
-  const mutate = jest.fn()
+  let returnError = false
   const addNotification = jest.fn()
 
   function setup(over = {}) {
@@ -22,37 +41,31 @@ describe('DeletionCard', () => {
       isPersonalSettings: true,
       ...over,
     }
+
     useAddNotification.mockReturnValue(addNotification)
-    useEraseAccount.mockReturnValue({ mutate, isLoading: false })
-    render(<DeletionCard {...props} />, {
-      wrapper: MemoryRouter,
-    })
+
+    server.use(
+      rest.delete('/internal/gh/codecov/account-details/', (req, res, ctx) => {
+        if (returnError) {
+          return res(ctx.status(500))
+        }
+        return res(ctx.status(200))
+      })
+    )
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <DeletionCard {...props} />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
   }
 
-  describe('when rendered for organization', () => {
-    beforeEach(() => {
-      setup({
-        isPersonalSettings: false,
-      })
-    })
-
-    it('renders the copy for organization', () => {
-      expect(
-        screen.getByText(/Erase all my organization content and projects/)
-      ).toBeInTheDocument()
-    })
-
-    it('has a link to the support page', () => {
-      expect(
-        screen.getByRole('link', {
-          name: /contact support/i,
-        })
-      ).toBeInTheDocument()
-    })
-  })
-
   describe('when rendering for individual', () => {
-    beforeEach(setup)
+    beforeEach(() => {
+      setup()
+    })
 
     it('renders the copy for individual', () => {
       expect(
@@ -74,71 +87,95 @@ describe('DeletionCard', () => {
   describe('when clicking on the button to erase', () => {
     beforeEach(() => {
       setup()
-      userEvent.click(
-        screen.getByRole('button', {
-          name: /erase account/i,
-        })
-      )
     })
 
-    it('opens the modal with warning', () => {
-      expect(
-        screen.getByRole('heading', {
-          name: /are you sure\?/i,
-        })
-      ).toBeInTheDocument()
+    it('opens the modal with warning', async () => {
+      const eraseButton = await screen.findByRole('button', {
+        name: /erase account/i,
+      })
+      userEvent.click(eraseButton)
+
+      const confirmationButton = await screen.findByRole('heading', {
+        name: /are you sure\?/i,
+      })
+      expect(confirmationButton).toBeInTheDocument()
     })
 
     describe('when clicking Cancel', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
-      })
+      it('closes the modal', async () => {
+        const eraseButton = await screen.findByRole('button', {
+          name: /erase account/i,
+        })
+        userEvent.click(eraseButton)
 
-      it('closes the modal', () => {
-        expect(
-          screen.queryByRole('heading', {
-            name: /are you sure\?/i,
-          })
-        ).not.toBeInTheDocument()
+        const cancelButton = await screen.findByRole('button', {
+          name: /Cancel/,
+        })
+        userEvent.click(cancelButton)
+
+        const confirmationButton = screen.queryByRole('heading', {
+          name: /are you sure\?/i,
+        })
+        expect(confirmationButton).not.toBeInTheDocument()
       })
     })
 
     describe('when clicking Close icon', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByRole('button', { name: /Close/ }))
-      })
+      it('closes the modal', async () => {
+        const eraseButton = await screen.findByRole('button', {
+          name: /erase account/i,
+        })
+        userEvent.click(eraseButton)
 
-      it('closes the modal', () => {
-        expect(
-          screen.queryByRole('heading', {
-            name: /are you sure\?/i,
-          })
-        ).not.toBeInTheDocument()
+        const closeButton = await screen.findByLabelText('Close')
+        userEvent.click(closeButton)
+
+        const heading = screen.queryByRole('heading', {
+          name: /are you sure\?/i,
+        })
+        expect(heading).not.toBeInTheDocument()
       })
     })
 
     describe('when confirming', () => {
-      beforeEach(() => {
-        userEvent.click(
-          screen.getByRole('button', { name: /Erase my account/ })
-        )
-      })
-
-      it('calls the mutation', () => {
-        expect(mutate).toHaveBeenCalled()
-      })
-
-      describe('when the mutation fails', () => {
-        beforeEach(() => {
-          mutate.mock.calls[0][1].onError()
+      it('calls the mutation', async () => {
+        const erase1Button = await screen.findByRole('button', {
+          name: /erase account/i,
         })
+        userEvent.click(erase1Button)
 
-        it('adds an error notification', () => {
+        const eraseButton = await screen.findByRole('button', {
+          name: /Erase my account/,
+        })
+        userEvent.click(eraseButton)
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+      })
+    })
+
+    describe('when the mutation fails', () => {
+      beforeEach(() => {
+        returnError = true
+      })
+
+      it('adds an error notification', async () => {
+        const erase1Button = await screen.findByRole('button', {
+          name: /erase account/i,
+        })
+        userEvent.click(erase1Button)
+
+        const eraseButton = await screen.findByRole('button', {
+          name: /Erase my account/,
+        })
+        userEvent.click(eraseButton)
+
+        await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
             type: 'error',
             text: 'Something went wrong',
           })
-        })
+        )
       })
     })
   })
