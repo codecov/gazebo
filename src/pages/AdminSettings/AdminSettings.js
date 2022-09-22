@@ -6,6 +6,7 @@ import LogoSpinner from 'old_ui/LogoSpinner'
 import { useSelfHostedCurrentUser } from 'services/selfHosted'
 import Spinner from 'ui/Spinner'
 
+import AdminMembers from './AdminMembers'
 import AdminSettingsHeader from './AdminSettingsHeader'
 import AdminSettingsSidebar from './AdminSettingsSidebar'
 
@@ -41,7 +42,7 @@ function AdminSettings() {
                   <AdminAccess />
                 </Route>
                 <Route path="/admin/:provider/users" exact>
-                  <p>{provider} users</p>
+                  <AdminMembers />
                 </Route>
                 <Route path="/admin/:provider">
                   <Redirect to={redirectTo} />

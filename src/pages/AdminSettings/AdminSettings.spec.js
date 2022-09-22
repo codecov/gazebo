@@ -7,6 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import AdminSettings from './AdminSettings'
 
 jest.mock('./AdminAccess', () => () => 'AdminAccess')
+jest.mock('./AdminMembers', () => () => 'AdminMembers')
 
 const user = {
   activated: false,
@@ -79,7 +80,7 @@ describe('AdminSettings', () => {
     })
 
     it('renders users page', async () => {
-      const text = await screen.findByText('gh users')
+      const text = await screen.findByText('AdminMembers')
       expect(text).toBeInTheDocument()
     })
   })
