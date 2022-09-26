@@ -1,16 +1,16 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 import {
   useSelfHostedCurrentUser,
   useSelfHostedSeatsConfig,
 } from 'services/selfHosted'
-import Api from 'shared/api'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
-import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
+
+import { useSelfActivationMutation } from './useSelfActivationMutation'
 
 function NoSeatsContent() {
   return (
@@ -25,89 +25,33 @@ function NoSeatsContent() {
   )
 }
 
-const Loader = (
-  <div className="h-full w-full flex items-center justify-center">
-    <Spinner />
-  </div>
-)
-
-const optimisticMutate = (queryClient) => async (activated) => {
-  await queryClient.cancelQueries(['SelfHostedCurrentUser'])
-  await queryClient.cancelQueries(['Seats'])
-
-  const prevUser = queryClient.getQueryData(['SelfHostedCurrentUser'])
-  const prevSeat = queryClient.getQueryData(['Seats'])
-
-  queryClient.setQueryData(['SelfHostedCurrentUser'], (user) => ({
-    ...user,
-    activated,
-  }))
-
-  queryClient.setQueryData(['Seats'], (seats) => {
-    const seatsUsed = seats?.data?.config?.seatsUsed
-
-    return {
-      data: {
-        config: {
-          ...seats.data.config,
-          seatsUsed: activated ? seatsUsed + 1 : seatsUsed - 1,
-        },
-      },
-    }
-  })
-
-  return {
-    prevUser,
-    prevSeat,
-  }
-}
-
-// eslint-disable-next-line max-statements, complexity
-function ActivationBanner() {
-  const { data: currentUser, isLoading: isLoadingUser } =
-    useSelfHostedCurrentUser()
-  const { data: seatConfig, isLoading: isLoadingSeats } =
-    useSelfHostedSeatsConfig()
-  const queryClient = useQueryClient()
-
+function canChangeActivation({ seatConfig, currentUser }) {
   const noSeatsAvailable = seatConfig?.seatsUsed === seatConfig?.seatsLimit
 
   let displaySeatMsg = false
   let canChange = true
-  if (
-    !currentUser?.activated &&
-    noSeatsAvailable &&
-    (!isLoadingUser || !isLoadingSeats)
-  ) {
+  if (!currentUser?.activated && noSeatsAvailable) {
     canChange = false
     displaySeatMsg = true
   }
 
-  const { mutate } = useMutation(
-    () => {
-      if (canChange) {
-        return Api.patch({
-          path: '/users/current',
-          body: { activated: !currentUser?.activated },
-        })
-      }
-    },
-    {
-      onMutate: optimisticMutate(queryClient),
-      onError: (_err, _activated, context) => {
-        queryClient.setQueryData(['SelfHostedCurrentUser'], context.prevUser)
-        queryClient.setQueryData(['Seats'], context.prevSeat)
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries(['SelfHostedCurrentUser'])
-        queryClient.invalidateQueries(['Seats'])
-      },
-    }
-  )
+  return { canChange, displaySeatMsg }
+}
 
-  if (isLoadingUser || isLoadingSeats) {
-    return Loader
-  }
+function ActivationBanner() {
+  const queryClient = useQueryClient()
+  const { data: currentUser } = useSelfHostedCurrentUser()
+  const { data: seatConfig } = useSelfHostedSeatsConfig()
+
+  const { canChange, displaySeatMsg } = canChangeActivation({
+    seatConfig,
+    currentUser,
+  })
+
+  const { mutate } = useSelfActivationMutation({
+    queryClient,
+    canChange,
+  })
 
   return (
     <Banner>
@@ -117,7 +61,7 @@ function ActivationBanner() {
       <BannerContent>
         <div className="flex flex-col gap-2">
           <Toggle
-            value={currentUser?.activated || false}
+            value={!!currentUser?.activated}
             label=""
             onClick={() => mutate(!currentUser?.activated)}
           />

@@ -280,7 +280,5 @@ describe('ActivationBanner', () => {
         expect(notActivated).toBeInTheDocument()
       })
     })
-
-    // describe('')
   })
 })
