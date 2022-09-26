@@ -56,10 +56,7 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
           {
             // Loop over the header rows
             table.getHeaderGroups().map((headerGroup, key) => (
-              <tr
-                key={uniqueId(`head_row_${key}_`)}
-                className={TableClasses.headerRow}
-              >
+              <tr key={key} className={TableClasses.headerRow}>
                 {
                   // Loop over the headers in each row
                   headerGroup.headers.map((header, key) => {
