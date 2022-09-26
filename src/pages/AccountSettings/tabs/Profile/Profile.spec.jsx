@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -27,6 +27,12 @@ describe('Profile', () => {
     server.use(
       rest.get('/internal/users/current', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(mockUser))
+      ),
+      graphql.query('Seats', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ config: { seatsUsed: 0, seatsLimit: 10 } })
+        )
       )
     )
   }
