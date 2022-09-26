@@ -31,6 +31,37 @@ const Loader = (
   </div>
 )
 
+const optimisticMutate = (queryClient) => async (activated) => {
+  await queryClient.cancelQueries(['SelfHostedCurrentUser'])
+  await queryClient.cancelQueries(['Seats'])
+
+  const prevUser = queryClient.getQueryData(['SelfHostedCurrentUser'])
+  const prevSeat = queryClient.getQueryData(['Seats'])
+
+  queryClient.setQueryData(['SelfHostedCurrentUser'], (user) => ({
+    ...user,
+    activated,
+  }))
+
+  queryClient.setQueryData(['Seats'], (seats) => {
+    const seatsUsed = seats?.data?.config?.seatsUsed
+
+    return {
+      data: {
+        config: {
+          ...seats.data.config,
+          seatsUsed: activated ? seatsUsed + 1 : seatsUsed - 1,
+        },
+      },
+    }
+  })
+
+  return {
+    prevUser,
+    prevSeat,
+  }
+}
+
 // eslint-disable-next-line max-statements, complexity
 function ActivationBanner() {
   const { data: currentUser, isLoading: isLoadingUser } =
@@ -52,7 +83,7 @@ function ActivationBanner() {
     displaySeatMsg = true
   }
 
-  const { mutate, isLoading: isLoadingMutation } = useMutation(
+  const { mutate } = useMutation(
     () => {
       if (canChange) {
         return Api.patch({
@@ -62,14 +93,19 @@ function ActivationBanner() {
       }
     },
     {
-      onSuccess: () => {
+      onMutate: optimisticMutate(queryClient),
+      onError: (_err, _activated, context) => {
+        queryClient.setQueryData(['SelfHostedCurrentUser'], context.prevUser)
+        queryClient.setQueryData(['Seats'], context.prevSeat)
+      },
+      onSettled: () => {
         queryClient.invalidateQueries(['SelfHostedCurrentUser'])
         queryClient.invalidateQueries(['Seats'])
       },
     }
   )
 
-  if (isLoadingUser || isLoadingSeats || isLoadingMutation) {
+  if (isLoadingUser || isLoadingSeats) {
     return Loader
   }
 
@@ -83,15 +119,14 @@ function ActivationBanner() {
           <Toggle
             value={currentUser?.activated || false}
             label=""
-            onClick={() => mutate()}
-            disabled={isLoadingMutation || !canChange}
+            onClick={() => mutate(!currentUser?.activated)}
           />
 
           {canChange &&
             (currentUser?.activated
               ? 'You are currently activated'
               : 'You are currently not activated')}
-          {!isLoadingMutation && displaySeatMsg && <NoSeatsContent />}
+          {displaySeatMsg && <NoSeatsContent />}
         </div>
       </BannerContent>
     </Banner>
