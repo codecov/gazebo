@@ -87,7 +87,7 @@ describe('AdminSettings', () => {
 
   describe('user is not an admin', () => {
     beforeEach(async () => {
-      queryClient.setQueryData(['IsSelfHostedAdmin'], {
+      queryClient.setQueryData(['SelfHostedCurrentUser'], {
         activated: false,
         email: 'codecov@codecov.io',
         isAdmin: false,
