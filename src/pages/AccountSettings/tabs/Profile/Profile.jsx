@@ -13,7 +13,7 @@ function Profile({ provider, owner }) {
   const { data: currentUser } = useSelfHostedCurrentUser()
 
   const isPersonalSettings =
-    currentUser.username.toLowerCase() === owner.toLowerCase()
+    currentUser?.username?.toLowerCase() === owner?.toLowerCase()
 
   if (!isPersonalSettings) {
     return <Redirect to={yamlTab} />
