@@ -2,15 +2,18 @@ import { lazy, Suspense } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
+import { useCommitErrors } from 'services/commitErrors'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
+import BotErrorBanner from './BotErrorBanner'
 import Header from './Header'
 import CommitDetailsSummary from './Summary'
 import UploadsCard from './UploadsCard'
+import YamlErrorBanner from './YamlErrorBanner'
 
-const CommitFileView = lazy(() => import('./subroute/CommitFileView.jsx'))
-const CommitsTable = lazy(() => import('./subroute/CommitsTable.jsx'))
+const CommitFileView = lazy(() => import('./subroute/CommitFileView'))
+const CommitsTable = lazy(() => import('./subroute/CommitsTable'))
 const NotFound = lazy(() => import('pages/NotFound'))
 
 function CommitPage() {
@@ -21,6 +24,13 @@ function CommitPage() {
     repo,
     commitid: commitSHA,
   })
+
+  const {
+    data: { yamlErrors, botErrors },
+  } = useCommitErrors()
+  const invalidYaml = yamlErrors?.find(
+    (err) => err?.errorCode === 'invalid_yaml'
+  )
 
   const commit = data?.commit
   const loadingState = (
@@ -52,8 +62,11 @@ function CommitPage() {
       />
       <Header />
       <CommitDetailsSummary />
-      <div className="flex pt-6 flex-col gap-8 xl:flex-row-reverse">
-        <aside className="flex flex-1 gap-6 max-w-sm flex-col self-start lg:sticky top-1.5">
+      {botErrors?.length && <BotErrorBanner />}{' '}
+      {/**we are currently capturing a single error*/}
+      {invalidYaml && <YamlErrorBanner />}
+      <div className="flex pt-6 flex-col gap-8 md:flex-row-reverse">
+        <aside className="flex flex-1 gap-6 md:max-w-sm flex-col self-start sticky top-1.5">
           <UploadsCard />
         </aside>
         <article className="flex flex-1 flex-col gap-4">

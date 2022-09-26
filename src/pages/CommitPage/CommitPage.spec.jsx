@@ -1,12 +1,16 @@
-import { render, screen, waitFor } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useAccountDetails } from 'services/account'
 import { useCommit } from 'services/commit'
+import { useCommitErrors } from 'services/commitErrors'
 import { useFileWithMainCoverage } from 'services/file'
 
 import CommitPage from './CommitPage'
 
+jest.mock('services/account')
+jest.mock('services/commitErrors')
 jest.mock('services/commit')
 jest.mock('services/file')
 jest.mock('./Header/Header.jsx', () => () => 'The Header')
@@ -92,6 +96,13 @@ describe('CommitPage', () => {
   function setup(data) {
     useCommit.mockReturnValue(data)
     useFileWithMainCoverage.mockReturnValue(fileData)
+    useAccountDetails.mockReturnValue({ data: {} })
+    useCommitErrors.mockReturnValue({
+      data: {
+        yamlErrors: [{ errorCode: 'invalid_yaml' }],
+        botErrors: [{ errorCode: 'repo_bot_invalid' }],
+      },
+    })
 
     render(
       <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
@@ -127,6 +138,13 @@ describe('CommitPage', () => {
   describe('Not Found', () => {
     function setup(data) {
       useCommit.mockReturnValue(data)
+      useAccountDetails.mockReturnValue({ data: {} })
+      useCommitErrors.mockReturnValue({
+        data: {
+          yamlErrors: [{ errorCode: 'invalid_yaml' }],
+          botErrors: [{ errorCode: 'repo_bot_invalid' }],
+        },
+      })
 
       render(
         <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
@@ -142,7 +160,7 @@ describe('CommitPage', () => {
         setup({ data: null, isLoading: false })
       })
       it('renders the Uploads', async () => {
-        await screen.findByText(/Not found/)
+        expect(await screen.findByText(/Not found/)).toBeInTheDocument()
       })
     })
 
@@ -159,6 +177,13 @@ describe('CommitPage', () => {
   describe('Commits Table', () => {
     function setup(data) {
       useCommit.mockReturnValue(data)
+      useAccountDetails.mockReturnValue({ data: {} })
+      useCommitErrors.mockReturnValue({
+        data: {
+          yamlErrors: [{ errorCode: 'invalid_yaml' }],
+          botErrors: [{ errorCode: 'repo_bot_invalid' }],
+        },
+      })
 
       render(
         <MemoryRouter
@@ -212,6 +237,13 @@ describe('CommitPage', () => {
 
   describe('FileViewer', () => {
     function setup(data) {
+      useCommitErrors.mockReturnValue({
+        data: {
+          yamlErrors: [{ errorCode: 'invalid_yaml' }],
+          botErrors: [{ errorCode: 'repo_bot_invalid' }],
+        },
+      })
+      useAccountDetails.mockReturnValue({ data: {} })
       useCommit.mockReturnValue(data)
       useFileWithMainCoverage.mockReturnValue({
         data: fileData,
@@ -235,13 +267,14 @@ describe('CommitPage', () => {
 
       it('the impacted file', () => {
         expect(screen.getByTestId('spinner')).toBeInTheDocument()
-        waitFor(() => {
-          expect(screen.getByText(/index.js/)).toBeInTheDocument()
-        })
+        expect(screen.getByText(/abcd/)).toBeInTheDocument()
+        expect(screen.getByText(/test-repo/)).toBeInTheDocument()
       })
     })
 
     describe('handles when a path is not part of the impacted files', () => {
+      useAccountDetails.mockReturnValue({ data: {} })
+
       const data = {
         commit: {
           compareWithParent: {
@@ -270,6 +303,28 @@ describe('CommitPage', () => {
       it('without change values', () => {
         expect(screen.getByText(/Error 404/)).toBeInTheDocument()
         expect(screen.getByText(/Not found/)).toBeInTheDocument()
+      })
+    })
+
+    describe('renders with commit errors', () => {
+      beforeEach(() => {
+        setup({ data: dataReturned, isSuccess: true })
+      })
+
+      it('renders yaml warning banner', () => {
+        const banner = screen.getByText(/Commit YAML is invalid/)
+        expect(banner).toBeInTheDocument()
+      })
+
+      it('renders bot warning banner', () => {
+        expect(screen.getByText(/Team bot/)).toBeInTheDocument()
+      })
+
+      it('renders yaml modal warning banner', () => {
+        const viewYaml = screen.getByText('view yml file')
+        viewYaml.click()
+
+        expect(screen.getByText(/When the commit-level/)).toBeInTheDocument()
       })
     })
   })

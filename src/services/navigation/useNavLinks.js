@@ -585,6 +585,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    repoYaml: {
+      text: 'Repository Yaml',
+      path: () => 'https://docs.codecov.com/docs/codecov-yaml#repository-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     ciProviderWorkflow: {
       text: 'CI provider workflow',
       path: () => 'https://circleci.com/blog/what-is-continuous-integration',
