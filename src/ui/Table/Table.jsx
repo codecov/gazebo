@@ -5,6 +5,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
+import { uniqueId } from 'lodash/util'
 import PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
 
@@ -19,8 +20,6 @@ const TableClasses = {
   tableCell:
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
-
-const generateKeyUniqueId = (id) => `${id}-${Math.floor(Math.random() * 11)}`
 
 // TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it. Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page imapcted files table
 function Table({ data, columns, onSort, renderSubComponent = null }) {
@@ -57,7 +56,10 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
           {
             // Loop over the header rows
             table.getHeaderGroups().map((headerGroup, key) => (
-              <tr key={key} className={TableClasses.headerRow}>
+              <tr
+                key={uniqueId(`head_row_${key}_`)}
+                className={TableClasses.headerRow}
+              >
                 {
                   // Loop over the headers in each row
                   headerGroup.headers.map((header, key) => {
@@ -108,14 +110,14 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
             // Loop over the table rows
             table.getRowModel().rows.map((row) => {
               return (
-                <Fragment key={generateKeyUniqueId(row.id)}>
+                <Fragment key={uniqueId(`row_${row.id}_`)}>
                   <tr className={TableClasses.tableRow}>
                     {
                       // Loop over the rows cells
                       row.getVisibleCells().map((cell) => {
                         return (
                           <td
-                            key={generateKeyUniqueId(cell.id)}
+                            key={uniqueId(`cell_${cell.id}_`)}
                             className={cs(
                               TableClasses.tableCell,
                               columnsWidth[cell.column.columnDef.accessorKey]
