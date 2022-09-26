@@ -9,6 +9,7 @@ import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
+import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
 
 function NoSeatsContent() {
@@ -24,22 +25,34 @@ function NoSeatsContent() {
   )
 }
 
+const Loader = (
+  <div className="h-full w-full flex items-center justify-center">
+    <Spinner />
+  </div>
+)
+
 // eslint-disable-next-line max-statements, complexity
 function ActivationBanner() {
-  const { data: currentUser } = useSelfHostedCurrentUser()
-  const { data: seatConfig } = useSelfHostedSeatsConfig()
+  const { data: currentUser, isLoading: isLoadingUser } =
+    useSelfHostedCurrentUser()
+  const { data: seatConfig, isLoading: isLoadingSeats } =
+    useSelfHostedSeatsConfig()
   const queryClient = useQueryClient()
 
   const noSeatsAvailable = seatConfig?.seatsUsed === seatConfig?.seatsLimit
 
   let displaySeatMsg = false
   let canChange = true
-  if (!currentUser?.activated && noSeatsAvailable) {
+  if (
+    !currentUser?.activated &&
+    noSeatsAvailable &&
+    (!isLoadingUser || !isLoadingSeats)
+  ) {
     canChange = false
     displaySeatMsg = true
   }
 
-  const { mutate } = useMutation(
+  const { mutate, isLoading: isLoadingMutation } = useMutation(
     () => {
       if (canChange) {
         return Api.patch({
@@ -56,6 +69,10 @@ function ActivationBanner() {
     }
   )
 
+  if (isLoadingUser || isLoadingSeats || isLoadingMutation) {
+    return Loader
+  }
+
   return (
     <Banner>
       <BannerHeading>
@@ -64,17 +81,17 @@ function ActivationBanner() {
       <BannerContent>
         <div className="flex flex-col gap-2">
           <Toggle
-            value={currentUser?.activated}
+            value={currentUser?.activated || false}
             label=""
             onClick={() => mutate()}
-            disabled={!canChange}
+            disabled={isLoadingMutation || !canChange}
           />
 
           {canChange &&
             (currentUser?.activated
               ? 'You are currently activated'
               : 'You are currently not activated')}
-          {displaySeatMsg && <NoSeatsContent />}
+          {!isLoadingMutation && displaySeatMsg && <NoSeatsContent />}
         </div>
       </BannerContent>
     </Banner>
