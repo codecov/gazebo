@@ -4,7 +4,7 @@ import Api from 'shared/api'
 
 export const useSelfHostedCurrentUser = (options = {}) =>
   useQuery(
-    ['IsSelfHostedAdmin'],
+    ['SelfHostedCurrentUser'],
     () => Api.get({ path: '/users/current' }),
     options
   )

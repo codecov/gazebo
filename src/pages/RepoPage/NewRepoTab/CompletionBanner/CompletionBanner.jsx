@@ -1,12 +1,7 @@
-import { useParams } from 'react-router-dom'
-
-import { providerFeedback } from 'shared/utils'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 
 function CompletionBanner() {
-  const { provider } = useParams()
-
   return (
     <Banner variant="plain">
       <div className="flex flex-col gap-6 text-sm">
@@ -19,7 +14,7 @@ function CompletionBanner() {
           Let us know in{' '}
           <A
             hook="feedback"
-            href={providerFeedback(provider)}
+            to={{ pageName: 'repoConfigFeedback' }}
             isExternal={true}
           >
             this issue

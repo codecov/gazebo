@@ -585,6 +585,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    repoYaml: {
+      text: 'Repository Yaml',
+      path: () => 'https://docs.codecov.com/docs/codecov-yaml#repository-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     ciProviderWorkflow: {
       text: 'CI provider workflow',
       path: () => 'https://circleci.com/blog/what-is-continuous-integration',
@@ -600,6 +606,12 @@ function useStaticNavLinks() {
     prCommentLayout: {
       text: 'Pull request comment layout',
       path: () => 'https://docs.codecov.com/docs/pull-request-comments#layout',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    repoConfigFeedback: {
+      text: 'New repo set up feedback',
+      path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/18',
       isExternalLink: true,
       openNewTab: true,
     },
