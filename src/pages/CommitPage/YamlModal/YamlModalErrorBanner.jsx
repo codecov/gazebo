@@ -3,7 +3,7 @@ import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 
-function YamlErrorBanner() {
+function YamlModalErrorBanner() {
   return (
     <Banner variant="warning">
       <BannerHeading>
@@ -18,4 +18,4 @@ function YamlErrorBanner() {
   )
 }
 
-export default YamlErrorBanner
+export default YamlModalErrorBanner

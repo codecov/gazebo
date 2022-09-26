@@ -115,12 +115,6 @@ describe('CommitPage', () => {
 
   describe('renders', () => {
     beforeEach(() => {
-      useCommitErrors.mockReturnValue({
-        data: {
-          yamlErrors: [{ errorCode: 'invalid_yaml' }],
-          botErrors: [{ errorCode: 'repo_bot_invalid' }],
-        },
-      })
       setup({ data: dataReturned, isSuccess: true })
     })
 

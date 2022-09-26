@@ -6,7 +6,7 @@ import A from 'ui/A'
 import Modal from 'ui/Modal'
 import Spinner from 'ui/Spinner'
 
-import YamlErrorBanner from './YamlModalErrorBanner'
+import YamlModalErrorBanner from './YamlModalErrorBanner'
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
@@ -26,7 +26,7 @@ function YamlModal({ showYAMLModal, setShowYAMLModal }) {
       body={
         <Suspense fallback={<Spinner size={40} />}>
           <div className="flex flex-col gap-3">
-            {invalidYaml && <YamlErrorBanner />}
+            {invalidYaml && <YamlModalErrorBanner />}
             <YAMLViewer />
           </div>
         </Suspense>
