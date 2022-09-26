@@ -603,6 +603,12 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    repoConfigFeedback: {
+      text: 'New repo set up feedback',
+      path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/18',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
 
