@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { lazy, Suspense } from 'react'
 
 import { useLocationParams } from 'services/navigation'
@@ -7,6 +6,18 @@ import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
 const MemberTable = lazy(() => import('./MemberTable'))
+
+const ActivationStates = Object.freeze({
+  ALL_USERS: { value: 'All Users' },
+  ACTIVE: { value: 'Active', state: true },
+  NON_ACTIVE: { value: 'Non-Active', state: false },
+})
+
+const RoleStates = Object.freeze({
+  EVERYONE: { value: 'Everyone' },
+  ADMINS: { value: 'Admins', state: true },
+  DEVELOPERS: { value: 'Developers', state: false },
+})
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -27,51 +38,51 @@ function MemberList() {
         <div className="w-3/12">
           <Select
             value={
-              typeof params.activated === 'undefined'
-                ? 'All Users'
-                : params.activated
-                ? 'Active'
-                : 'Non-Active'
+              ActivationStates[
+                Object.keys(ActivationStates).find(
+                  (key) => ActivationStates[key]?.state === params.activated
+                )
+              ]?.value
             }
-            items={['All Users', 'Active', 'Non-Active']}
-            onChange={(item) => {
-              let activated
-              if (item === 'Active') {
-                activated = true
-              } else if (item === 'Non-Active') {
-                activated = false
-              } else {
-                activated = undefined
-              }
-
-              updateParams({ ...params, activated })
-            }}
-            ariaName=""
+            items={Object.keys(ActivationStates).map(
+              (key) => ActivationStates[key]?.value
+            )}
+            onChange={(value) =>
+              updateParams({
+                ...params,
+                activated:
+                  ActivationStates[
+                    Object.keys(ActivationStates).find(
+                      (key) => ActivationStates[key]?.value === value
+                    )
+                  ]?.state,
+              })
+            }
+            ariaName="status selector"
           />
         </div>
         <div className="w-3/12">
           <Select
             value={
-              typeof params.isAdmin === 'undefined'
-                ? 'Everyone'
-                : params.isAdmin
-                ? 'Admins'
-                : 'Developers'
+              RoleStates[
+                Object.keys(RoleStates).find(
+                  (key) => RoleStates[key]?.state === params.isAdmin
+                )
+              ]?.value
             }
-            items={['Everyone', 'Admins', 'Developers']}
-            onChange={(item) => {
-              let isAdmin
-              if (item === 'Admins') {
-                isAdmin = true
-              } else if (item === 'Developers') {
-                isAdmin = false
-              } else {
-                isAdmin = undefined
-              }
-
-              updateParams({ ...params, isAdmin })
-            }}
-            ariaName=""
+            items={Object.keys(RoleStates).map((key) => RoleStates[key]?.value)}
+            onChange={(value) =>
+              updateParams({
+                ...params,
+                isAdmin:
+                  RoleStates[
+                    Object.keys(RoleStates).find(
+                      (key) => RoleStates[key]?.value === value
+                    )
+                  ]?.state,
+              })
+            }
+            ariaName="role selector"
           />
         </div>
         <div className="w-4/12">
