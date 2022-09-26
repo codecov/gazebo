@@ -12,8 +12,8 @@ import CommitDetailsSummary from './Summary'
 import UploadsCard from './UploadsCard'
 import YamlErrorBanner from './YamlErrorBanner'
 
-const CommitFileView = lazy(() => import('./subroute/CommitFileView.jsx'))
-const CommitsTable = lazy(() => import('./subroute/CommitsTable.jsx'))
+const CommitFileView = lazy(() => import('./subroute/CommitFileView'))
+const CommitsTable = lazy(() => import('./subroute/CommitsTable'))
 const NotFound = lazy(() => import('pages/NotFound'))
 
 function CommitPage() {

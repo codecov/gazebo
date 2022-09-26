@@ -6,7 +6,7 @@ import A from 'ui/A'
 import Modal from 'ui/Modal'
 import Spinner from 'ui/Spinner'
 
-import YamlErrorBanner from './YamlErrorBanner'
+import YamlErrorBanner from './YamlModalErrorBanner'
 
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 

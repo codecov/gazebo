@@ -7,7 +7,10 @@ import { useCommitErrors } from 'services/commitErrors'
 import { useUploads } from './hooks'
 import UploadsCard from './UploadsCard'
 
-jest.mock('../YamlModal/YamlErrorBanner', () => () => 'YamlErrorBanner')
+jest.mock(
+  '../YamlModal/YamlModalErrorBanner',
+  () => () => 'YamlModalErrorBanner'
+)
 jest.mock('./hooks')
 jest.mock('services/commitErrors')
 

@@ -1,1 +1,1 @@
-export { default } from './BotErrorBanner.jsx'
+export { default } from './BotErrorBanner'

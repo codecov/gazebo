@@ -1,6 +1,5 @@
 import { render, screen } from 'custom-testing-library'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
@@ -20,14 +19,6 @@ jest.mock(
   './Summary/CommitDetailsSummary.jsx',
   () => () => 'Commit Details Summary'
 )
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
 
 const dataReturned = {
   commit: {
@@ -114,13 +105,11 @@ describe('CommitPage', () => {
     })
 
     render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            <CommitPage />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+        <Route path="/:provider/:owner/:repo/commit/:commit">
+          <CommitPage />
+        </Route>
+      </MemoryRouter>
     )
   }
 
@@ -164,13 +153,11 @@ describe('CommitPage', () => {
       })
 
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-            <Route path="/:provider/:owner/:repo/commit/:commit">
-              <CommitPage />
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
+        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            <CommitPage />
+          </Route>
+        </MemoryRouter>
       )
     }
 
@@ -205,17 +192,15 @@ describe('CommitPage', () => {
       })
 
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter
-            initialEntries={[
-              '/gh/test/test-repo/commit/fc3d5cbddd90689344dc77f49b6ae6ef9ebdf7ec',
-            ]}
-          >
-            <Route path="/:provider/:owner/:repo/commit/:commit">
-              <CommitPage />
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
+        <MemoryRouter
+          initialEntries={[
+            '/gh/test/test-repo/commit/fc3d5cbddd90689344dc77f49b6ae6ef9ebdf7ec',
+          ]}
+        >
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            <CommitPage />
+          </Route>
+        </MemoryRouter>
       )
     }
 
@@ -271,15 +256,13 @@ describe('CommitPage', () => {
         isSuccess: true,
       })
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter
-            initialEntries={['/gh/test/test-repo/commit/abcd/file/index.js']}
-          >
-            <Route path="/:provider/:owner/:repo/commit/:commit/file/:path+">
-              <CommitPage />
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
+        <MemoryRouter
+          initialEntries={['/gh/test/test-repo/commit/abcd/file/index.js']}
+        >
+          <Route path="/:provider/:owner/:repo/commit/:commit/file/:path+">
+            <CommitPage />
+          </Route>
+        </MemoryRouter>
       )
     }
 
