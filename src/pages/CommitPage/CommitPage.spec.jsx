@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -290,9 +290,8 @@ describe('CommitPage', () => {
 
       it('the impacted file', () => {
         expect(screen.getByTestId('spinner')).toBeInTheDocument()
-        return waitFor(() =>
-          expect(screen.getByText(/index.js/)).toBeInTheDocument()
-        )
+        expect(screen.getByText(/abcd/)).toBeInTheDocument()
+        expect(screen.getByText(/test-repo/)).toBeInTheDocument()
       })
     })
 
