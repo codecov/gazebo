@@ -1,13 +1,20 @@
-import { fireEvent, render, screen } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
+
+import userEvent from '@testing-library/user-event'
+
+import { useCommitErrors } from 'services/commitErrors'
 
 import { useUploads } from './hooks'
 import UploadsCard from './UploadsCard'
 
+jest.mock('../YamlModal/YamlErrorBanner', () => () => 'YamlErrorBanner')
 jest.mock('./hooks')
+jest.mock('services/commitErrors')
 
 describe('UploadsCard', () => {
   function setup(mockUploads) {
     useUploads.mockReturnValue(mockUploads)
+    useCommitErrors.mockReturnValue({ data: { yamlErrors: [], botErrors: [] } })
     render(<UploadsCard />)
   }
 
@@ -157,12 +164,12 @@ describe('UploadsCard', () => {
       })
     })
     it('opens & close YAMl modal', () => {
-      fireEvent.click(screen.getByText('view yml file'))
+      userEvent.click(screen.getByText('view yml file'))
       expect(
         screen.getByText('Includes default yaml, global yaml, and repo')
       ).toBeInTheDocument()
-      fireEvent.click(screen.getByText('view yml file'))
-      fireEvent.click(screen.getByLabelText('Close'))
+      userEvent.click(screen.getByText('view yml file'))
+      userEvent.click(screen.getByLabelText('Close'))
     })
   })
 })

@@ -1,13 +1,23 @@
 import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
 
+import { useCommitErrors } from 'services/commitErrors'
 import A from 'ui/A'
 import Modal from 'ui/Modal'
 import Spinner from 'ui/Spinner'
 
+import YamlErrorBanner from './YamlErrorBanner'
+
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
 function YamlModal({ showYAMLModal, setShowYAMLModal }) {
+  const {
+    data: { yamlErrors },
+  } = useCommitErrors()
+  const invalidYaml = yamlErrors?.find(
+    (err) => err?.errorCode === 'invalid_yaml'
+  )
+
   return (
     <Modal
       isOpen={showYAMLModal}
@@ -15,7 +25,10 @@ function YamlModal({ showYAMLModal, setShowYAMLModal }) {
       title="Yaml"
       body={
         <Suspense fallback={<Spinner size={40} />}>
-          <YAMLViewer />
+          <div className="flex flex-col gap-3">
+            {invalidYaml && <YamlErrorBanner />}
+            <YAMLViewer />
+          </div>
         </Suspense>
       }
       footer={
