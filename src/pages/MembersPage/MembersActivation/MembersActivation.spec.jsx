@@ -9,7 +9,7 @@ import MembersActivation from './MembersActivation'
 
 jest.mock('./AutoActivate/AutoActivate', () => () => 'Auto Activate')
 jest.mock('./Activation/Activation', () => () => 'Activation')
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 
 const queryClient = new QueryClient()
 
