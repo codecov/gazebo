@@ -4,7 +4,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRegenerateRepoUploadToken } from './hooks'
+import { useRegenerateRepoUploadToken } from './useRegenerateRepoUploadToken'
 
 const repoDetails = {
   can_edit: true,

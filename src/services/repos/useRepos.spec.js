@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepos } from './hooks'
+import { useRepos } from './useRepos'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (

@@ -6,7 +6,7 @@ import { formatTimeToNow } from 'shared/utils/dates'
 
 import Title from '.'
 
-jest.mock('services/repo/hooks')
+jest.mock('services/repo')
 
 describe('Title', () => {
   const author = { username: 'RulaKhaled', avatarUrl: 'random' }

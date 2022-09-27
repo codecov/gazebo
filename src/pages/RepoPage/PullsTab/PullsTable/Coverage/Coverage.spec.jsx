@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import Coverage from '.'
 
-jest.mock('services/repo/hooks')
+jest.mock('services/repo')
 
 describe('Coverage', () => {
   function setup({ head, pullId, state }) {

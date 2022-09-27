@@ -6,7 +6,7 @@ import { useUploadsNumber } from 'services/uploadsNumber'
 
 import Usage from '.'
 
-jest.mock('services/uploadsNumber/hooks')
+jest.mock('services/uploadsNumber/useUploadsNumber')
 
 const defaultAccountDetails = {
   activatedStudentCount: 0,
