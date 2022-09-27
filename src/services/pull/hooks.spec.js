@@ -7,7 +7,7 @@ import {
   useImpactedFilesComparison,
   usePull,
   useSingularImpactedFileComparison,
-} from './hooks'
+} from './index'
 
 const queryClient = new QueryClient({
   defaultOptions: {
