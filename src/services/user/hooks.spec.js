@@ -12,7 +12,7 @@ import {
   useResyncUser,
   useUpdateProfile,
   useUser,
-} from './hooks'
+} from './index'
 
 const user = {
   username: 'TerrySmithDC',
