@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useActivateFlagMeasurements } from 'services/repo/hooks'
+import { useActivateFlagMeasurements } from 'services/repo'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { useUser } from 'services/user'
 
@@ -13,7 +13,7 @@ import TriggerSyncBanner from './TriggerSyncBanner'
 jest.mock('services/tracking/segment')
 jest.mock('services/user')
 
-jest.mock('services/repo/hooks')
+jest.mock('services/repo/useActivateFlagMeasurements')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),

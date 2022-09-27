@@ -21,9 +21,12 @@ function regenerateRepoUploadToken({ provider, owner, repo }) {
 export function useRegenerateRepoUploadToken() {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
-  return useMutation(() => regenerateRepoUploadToken({ provider, owner, repo }), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['GetRepo'])
-    },
-  })
+  return useMutation(
+    () => regenerateRepoUploadToken({ provider, owner, repo }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['GetRepo'])
+      },
+    }
+  )
 }
