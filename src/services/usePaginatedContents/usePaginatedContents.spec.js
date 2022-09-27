@@ -1,20 +1,6 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
-import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePaginatedContents } from './usePaginatedContents'
-
-jest.mock('services/user')
-
-const queryClient = new QueryClient({})
-
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/']}>
-    <Route path="/:provider/:owner">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
 
 const mockData = [
   {
@@ -52,9 +38,7 @@ const mockData = [
 describe('useShouldRenderTabs', () => {
   let hookData
   function setup({ data = mockData }) {
-    hookData = renderHook(() => usePaginatedContents({ data }), {
-      wrapper,
-    })
+    hookData = renderHook(() => usePaginatedContents({ data }))
   }
 
   describe('When renderering less than 25 items', () => {
