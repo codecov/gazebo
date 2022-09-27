@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useFlagsForComparePage } from './hooks'
+import { useFlagsForComparePage } from './useFlagsForComparePage'
 
 const queryClient = new QueryClient()
 
