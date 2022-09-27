@@ -19,6 +19,7 @@ export const useSelfActivationMutation = ({ queryClient, canChange }) =>
 
         const prevUser = queryClient.getQueryData(['SelfHostedCurrentUser'])
         const prevSeat = queryClient.getQueryData(['Seats'])
+
         if (canChange) {
           queryClient.setQueryData(['SelfHostedCurrentUser'], (user) => ({
             ...user,
