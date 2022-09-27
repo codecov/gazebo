@@ -7,7 +7,7 @@ import { useAutoActivate } from 'services/account'
 
 import AutoActivate from './AutoActivate'
 
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 
 const queryClient = new QueryClient()
 

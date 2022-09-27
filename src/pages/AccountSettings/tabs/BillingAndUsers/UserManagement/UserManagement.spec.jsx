@@ -11,7 +11,7 @@ import { useUpdateUser, useUsers } from 'services/users'
 import UserManagerment from './UserManagement'
 
 jest.mock('services/users/hooks')
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 jest.mock('services/user/hooks')
 
 const queryClient = new QueryClient()

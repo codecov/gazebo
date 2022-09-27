@@ -14,7 +14,7 @@ jest.mock(
   () => () => 'InfoMessageStripeCallback'
 )
 jest.mock('./LegacyUser', () => () => 'LegacyUser')
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 
 const provider = 'gh'
 const owner = 'codecov'
