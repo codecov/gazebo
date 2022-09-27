@@ -11,7 +11,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(),
 }))
-jest.mock('services/user/hooks')
+jest.mock('services/user')
 
 describe('ResyncButton', () => {
   function setup(returnValueResync, provider) {

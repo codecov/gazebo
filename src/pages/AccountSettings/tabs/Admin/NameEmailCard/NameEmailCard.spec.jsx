@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { useAddNotification } from 'services/toastNotification'
@@ -6,7 +6,7 @@ import { useUpdateProfile } from 'services/user'
 
 import NameEmailCard from './NameEmailCard'
 
-jest.mock('services/user/hooks')
+jest.mock('services/user')
 jest.mock('services/toastNotification')
 
 const currentUser = {
@@ -75,16 +75,12 @@ describe('NameEmailCard', () => {
       const nameField = screen.getByRole('textbox', {
         name: /name/i,
       })
-      act(() => {
-        userEvent.type(nameField, '{selectall}{backspace}')
-      })
-      return act(async () => {
-        userEvent.click(
-          screen.getByRole('button', {
-            name: /save changes/i,
-          })
-        )
-      })
+      userEvent.type(nameField, '{selectall}{backspace}')
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /save changes/i,
+        })
+      )
     })
 
     it('renders an error message', () => {
@@ -98,16 +94,12 @@ describe('NameEmailCard', () => {
       const emailField = screen.getByRole('textbox', {
         name: /email/i,
       })
-      act(() => {
-        userEvent.type(emailField, '{selectall}{backspace}')
-      })
-      return act(async () => {
-        userEvent.click(
-          screen.getByRole('button', {
-            name: /save changes/i,
-          })
-        )
-      })
+      userEvent.type(emailField, '{selectall}{backspace}')
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /save changes/i,
+        })
+      )
     })
 
     it('renders an error message', () => {
@@ -121,16 +113,12 @@ describe('NameEmailCard', () => {
       const emailField = screen.getByRole('textbox', {
         name: /email/i,
       })
-      act(() => {
-        userEvent.type(emailField, '{selectall}{backspace}blaabla')
-      })
-      return act(async () => {
-        userEvent.click(
-          screen.getByRole('button', {
-            name: /save changes/i,
-          })
-        )
-      })
+      userEvent.type(emailField, '{selectall}{backspace}blaabla')
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /save changes/i,
+        })
+      )
     })
 
     it('renders an error message', () => {
@@ -144,17 +132,13 @@ describe('NameEmailCard', () => {
       const nameField = screen.getByRole('textbox', {
         name: /name/i,
       })
-      act(() => {
-        userEvent.type(nameField, '{selectall}{backspace}picsou')
-      })
-      return act(() => {
-        userEvent.click(
-          screen.getByRole('button', {
-            name: /save changes/i,
-          })
-        )
-        return Promise.resolve()
-      })
+      userEvent.type(nameField, '{selectall}{backspace}picsou')
+      userEvent.click(
+        screen.getByRole('button', {
+          name: /save changes/i,
+        })
+      )
+      return Promise.resolve()
     })
 
     it('calls the mutation', () => {
@@ -164,13 +148,11 @@ describe('NameEmailCard', () => {
     describe('when mutation is successful', () => {
       beforeEach(() => {
         // simulating the onSuccess callback given to mutate
-        act(() => {
-          mutate.mock.calls[0][1].onSuccess({
-            user: {
-              name: 'picsou',
-            },
-            email: 'picsou@gmail.com',
-          })
+        mutate.mock.calls[0][1].onSuccess({
+          user: {
+            name: 'picsou',
+          },
+          email: 'picsou@gmail.com',
         })
       })
 
