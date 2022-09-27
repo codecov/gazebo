@@ -11,7 +11,7 @@ import { useUpdateUser, useUsers } from 'services/users'
 import MembersList from './MembersList'
 
 jest.mock('services/users/hooks')
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 jest.mock('services/user/hooks')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities

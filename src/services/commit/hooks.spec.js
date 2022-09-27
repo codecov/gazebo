@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommit, useCommitYaml } from './hooks'
+import { useCommit, useCommitYaml } from './index'
 
 const queryClient = new QueryClient({
   defaultOptions: {

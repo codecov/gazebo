@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { useRepos } from 'services/repos/hooks'
+import { useRepos } from 'services/repos'
 import DateRangePicker from 'ui/DateRangePicker'
 import MultiSelect from 'ui/MultiSelect'
 

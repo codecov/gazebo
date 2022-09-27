@@ -10,7 +10,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
 }))
-jest.mock('services/commit/hooks')
+jest.mock('services/commit')
 
 const data = {
   commit: {

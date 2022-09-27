@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react'
 
 import Spinner from 'ui/Spinner'
-
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
     <Spinner />
@@ -9,6 +8,7 @@ const Loader = () => (
 )
 
 const ActivationInfo = lazy(() => import('./ActivationInfo'))
+const MemberList = lazy(() => import('./MemberList'))
 
 function AdminMembers() {
   return (
@@ -21,6 +21,7 @@ function AdminMembers() {
         <hr />
         <ActivationInfo />
         <hr />
+        <MemberList />
       </Suspense>
     </div>
   )

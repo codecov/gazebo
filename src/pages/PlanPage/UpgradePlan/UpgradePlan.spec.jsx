@@ -5,7 +5,7 @@ import { useAccountDetails, usePlans } from 'services/account'
 
 import UpgradePlan from './UpgradePlan'
 
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 jest.mock('./UpgradePlanForm', () => () => 'UpgradePlanForm')
 
 describe('UpgradePlanPage', () => {

@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useIsUploadsNumberExceeded, useUploadsNumber } from './hooks'
+import { useIsUploadsNumberExceeded, useUploadsNumber } from './index'
 
 const queryClient = new QueryClient({
   defaultOptions: {

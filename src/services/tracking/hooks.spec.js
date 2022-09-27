@@ -4,8 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useTracking } from './hooks'
 import { useSegmentPage } from './segment'
+import { useTracking } from './useTracking'
 
 jest.mock('./segment')
 

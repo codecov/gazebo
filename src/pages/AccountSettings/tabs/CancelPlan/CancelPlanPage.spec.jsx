@@ -7,7 +7,7 @@ import { useAddNotification } from 'services/toastNotification'
 
 import CancelPlanPage from './CancelPlanPage'
 
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 jest.mock('services/toastNotification')
 jest.mock('./CancelButton', () => () => 'Cancel Card')
 

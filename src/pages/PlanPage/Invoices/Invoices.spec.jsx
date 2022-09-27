@@ -5,7 +5,7 @@ import { useInvoices } from 'services/account'
 
 import Invoices from './Invoices'
 
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 
 const invoices = [
   {

@@ -8,7 +8,7 @@ import { useAddNotification } from 'services/toastNotification'
 
 import DeletionCard from './DeletionCard'
 
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 jest.mock('services/toastNotification')
 
 describe('DeletionCard', () => {

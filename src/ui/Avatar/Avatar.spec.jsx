@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import * as hooks from 'services/image/hooks'
+import * as hooks from 'services/image/useImage'
 
 import Avatar from '.'
 

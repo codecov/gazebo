@@ -1,12 +1,13 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepos } from 'services/repos/hooks'
+import { useRepos } from 'services/repos'
 
 import ChartSelectors from './ChartSelectors'
 
-jest.mock('services/repos/hooks')
+jest.mock('services/repos')
 
 describe('ChartSelectors', () => {
   let props
@@ -81,12 +82,12 @@ describe('ChartSelectors', () => {
         expect(window.location.search).toBe('')
 
         const picker = screen.getByRole('textbox')
-        fireEvent.click(picker)
+        userEvent.click(picker)
 
         const selectedDate = screen.getByRole('option', {
           name: 'Choose Wednesday, March 23rd, 2022',
         })
-        fireEvent.click(selectedDate)
+        userEvent.click(selectedDate)
 
         await waitFor(() => expect(picker.value).toBe('03/23/2022 - '))
       })
@@ -100,16 +101,16 @@ describe('ChartSelectors', () => {
       const button = screen.getByRole('button', {
         name: 'Select repos to choose',
       })
-      fireEvent.click(button)
+      userEvent.click(button)
       const allRepos = screen.getAllByRole('option')[0]
-      fireEvent.click(allRepos)
+      userEvent.click(allRepos)
       expect(screen.queryByText(/2 Repos selected/)).not.toBeInTheDocument()
       expect(screen.getByText(/All Repos/)).toBeInTheDocument()
     })
 
     it('clears filters when clear filters button is clicked', () => {
       const button = screen.getByRole('button', { name: 'Clear filters' })
-      fireEvent.click(button)
+      userEvent.click(button)
       expect(props.updateParams).toHaveBeenCalledWith({
         endDate: null,
         repositories: [],

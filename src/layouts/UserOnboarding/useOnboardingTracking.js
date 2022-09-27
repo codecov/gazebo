@@ -1,6 +1,6 @@
 import isArray from 'lodash/isArray'
 
-import { useOnboardingLocation } from 'services/location/hooks'
+import { useOnboardingLocation } from 'services/location'
 import {
   identifySegmentEvent,
   pageSegmentEvent,

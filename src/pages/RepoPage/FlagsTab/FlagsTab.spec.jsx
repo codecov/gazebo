@@ -3,12 +3,14 @@ import { render, screen } from 'custom-testing-library'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useRepoBackfilled } from 'services/repo/hooks'
-import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
+import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 
 import FlagsTab from './FlagsTab'
 
 import { useLocationParams } from '../../../services/navigation'
+
+jest.mock('services/repo/useRepoBackfilled')
+jest.mock('services/repo/useRepoFlagsSelect')
 
 jest.mock(
   './BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.jsx',
@@ -23,7 +25,6 @@ jest.mock('./Header', () => ({ children }) => (
   <p>Flags Header Component {children}</p>
 ))
 
-jest.mock('services/repo/hooks')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
@@ -32,8 +33,6 @@ jest.mock('services/navigation', () => ({
   ...jest.requireActual('services/navigation'),
   useLocationParams: jest.fn(),
 }))
-
-jest.mock('services/repo/useRepoFlagsSelect')
 
 const flagsData = [
   {

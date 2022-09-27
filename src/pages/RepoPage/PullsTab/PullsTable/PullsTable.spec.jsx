@@ -6,7 +6,7 @@ import { formatTimeToNow } from 'shared/utils/dates'
 
 import PullsTable from '.'
 
-jest.mock('services/repo/hooks')
+jest.mock('services/repo')
 
 describe('Pulls Table', () => {
   function setup({ modifiedProps = {}, overridePulls = {} }) {

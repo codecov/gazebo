@@ -1,15 +1,17 @@
+import userEvent from '@testing-library/user-event'
+
 import { useBranches } from 'services/branches'
 import { useCommits } from 'services/commits'
-import { useRepo } from 'services/repo/hooks'
+import { useRepo } from 'services/repo'
 import { useOwner } from 'services/user'
 
-import { fireEvent, repoPageRender, screen, waitFor } from './repo-jest-setup'
+import { repoPageRender, screen, waitFor } from './repo-jest-setup'
 
 import { useFlags } from '../../shared/featureFlags'
 
 import RepoPage from '.'
 
-jest.mock('services/repo/hooks')
+jest.mock('services/repo/useRepo')
 jest.mock('services/commits')
 jest.mock('services/branches')
 jest.mock('services/user')
@@ -217,7 +219,7 @@ describe('RepoPage', () => {
           name: 'Select branch',
         })
       })
-      fireEvent.click(select)
+      userEvent.click(select)
     })
 
     it('renders the options of select branch', () => {
@@ -246,10 +248,10 @@ describe('RepoPage', () => {
           name: 'Select branch',
         })
       })
-      fireEvent.click(select)
+      userEvent.click(select)
 
       const branch = screen.getByText(/test1/)
-      fireEvent.click(branch)
+      userEvent.click(branch)
     })
 
     it('renders the name of the branch in the breadcrumb', () => {
