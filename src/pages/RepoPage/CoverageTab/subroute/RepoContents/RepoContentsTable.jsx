@@ -1,3 +1,4 @@
+import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
@@ -9,20 +10,39 @@ const Loader = () => (
   </div>
 )
 
+// eslint-disable-next-line complexity
 function RepoContentsTable() {
-  const { data, headers, handleSort, isLoading, isSearching } =
-    useRepoContentsTable()
+  const {
+    paginatedData,
+    headers,
+    handleSort,
+    isLoading,
+    isSearching,
+    handlePaginationClick,
+    hasNextPage,
+  } = useRepoContentsTable()
 
   return (
     <>
-      <Table data={data} columns={headers} onSort={handleSort} />
+      <Table data={paginatedData} columns={headers} onSort={handleSort} />
       {isLoading && <Loader />}
-      {data?.length === 0 && !isLoading && (
+      {paginatedData?.length === 0 && !isLoading && (
         <p className="flex justify-center flex-1">
           {isSearching
             ? 'No results found'
             : 'There was a problem getting repo contents from your provider'}
         </p>
+      )}
+      {hasNextPage && (
+        <div className="w-full mt-4 flex justify-center">
+          <Button
+            hook="load-more"
+            variant="primary"
+            onClick={handlePaginationClick}
+          >
+            Load More
+          </Button>
+        </div>
       )}
     </>
   )

@@ -6,7 +6,7 @@ import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
 import { SortingDirection } from 'ui/Table/constants'
 
-import { displayTypeParameter } from '../../../constants'
+import { displayTypeParameter, ITEMS_PER_PAGE } from '../../../constants'
 import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
@@ -135,11 +135,16 @@ const getQueryFilters = ({ params, sortBy }) => {
   }
 }
 
+// eslint-disable-next-line complexity, max-statements
 function useRepoContentsTable() {
   const { provider, owner, repo, path, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
 
   const [sortBy, setSortBy] = useState([])
+
+  // Frontend Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE)
 
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
@@ -171,6 +176,9 @@ function useRepoContentsTable() {
     [repoContents, branch, defaultBranch, path, isSearching, params, sortBy]
   )
 
+  // Frontend pagination of data
+  const paginatedData = data.slice(0, itemsPerPage)
+
   const handleSort = useCallback(
     (tableSortBy) => {
       if (!isEqual(sortBy, tableSortBy)) {
@@ -180,12 +188,20 @@ function useRepoContentsTable() {
     [sortBy]
   )
 
+  function handlePaginationClick() {
+    setItemsPerPage((prevItems) => prevItems + ITEMS_PER_PAGE)
+    setCurrentPage((prevPage) => prevPage + 1)
+  }
+
   return {
     data,
+    paginatedData,
     headers,
     handleSort,
     isLoading: isLoadingRepo || isLoading,
     isSearching,
+    handlePaginationClick,
+    hasNextPage: currentPage * ITEMS_PER_PAGE < data?.length,
   }
 }
 

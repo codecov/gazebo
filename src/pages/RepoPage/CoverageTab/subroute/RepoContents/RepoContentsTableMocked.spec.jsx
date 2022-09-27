@@ -26,7 +26,7 @@ const repoContents = [
 ]
 
 const useRepoOverviewMock = {
-  data: {
+  paginatedData: {
     defaultBranch: 'default-branch',
     private: true,
   },
@@ -86,9 +86,9 @@ describe('RepoContentsTableMocked', () => {
   const branch = 'default-branch'
   const path = 'src/flags'
 
-  function setup({ data = repoContents, isSearching = false } = {}) {
+  function setup({ paginatedData = repoContents, isSearching = false } = {}) {
     useRepoContents.mockReturnValue({
-      data,
+      paginatedData,
       isLoading: false,
     })
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
@@ -101,7 +101,12 @@ describe('RepoContentsTableMocked', () => {
     })
 
     useRepoContentsTable.mockReturnValue({
-      data: createTable({ tableData: data, branch, path, isSearching }),
+      paginatedData: createTable({
+        tableData: paginatedData,
+        branch,
+        path,
+        isSearching,
+      }),
       headers,
       handleSort,
       isLoading: false,
@@ -146,7 +151,7 @@ describe('RepoContentsTableMocked', () => {
 
     describe('when there are no results', () => {
       it('shows correct empty state message', () => {
-        setup({ data: [], isSearching: true })
+        setup({ paginatedData: [], isSearching: true })
         expect(screen.getByText(/No results found/)).toBeInTheDocument()
       })
     })
