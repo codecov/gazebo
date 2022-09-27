@@ -75,7 +75,7 @@ const Summary = () => {
         {data?.head?.totals?.percentCovered && (
           <SummaryField>
             <h3 className="text-ds-gray-octonary text-sm font-semibold  min-w-[16rem]">
-              Branch Coverage
+              Coverage on branch
             </h3>
             <Progress
               label
