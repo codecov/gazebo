@@ -249,7 +249,7 @@ describe('MembersList', () => {
     describe.each([
       [/All users/, defaultQuery],
       [/Active users/, { ...defaultQuery, activated: 'True' }],
-      [/In-active users/, { ...defaultQuery, activated: 'False' }],
+      [/Inactive users/, { ...defaultQuery, activated: 'False' }],
     ])('All others', (label, expected) => {
       beforeEach(() => {
         setup({ isAdmin: true })
