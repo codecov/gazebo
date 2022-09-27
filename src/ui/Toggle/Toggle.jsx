@@ -14,7 +14,7 @@ const ToggleClasses = {
 function Toggle({ label, value = false, onClick }) {
   const ID = uniqueId('toggle')
   return (
-    <div onClick={() => onClick()} className="flex gap-1.5 items-center">
+    <div onClick={onClick} className="flex gap-1.5 items-center">
       {label && (
         <label htmlFor={ID} className="cursor-pointer xl:whitespace-nowrap ">
           {label}
