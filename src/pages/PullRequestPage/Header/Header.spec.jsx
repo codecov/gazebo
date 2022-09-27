@@ -16,7 +16,7 @@ const pull = {
   },
 }
 
-jest.mock('services/pull/hooks')
+jest.mock('services/pull')
 
 describe('Header', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
