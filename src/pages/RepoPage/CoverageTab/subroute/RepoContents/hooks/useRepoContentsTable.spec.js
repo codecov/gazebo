@@ -213,7 +213,7 @@ describe('useRepoContentsTable', () => {
   })
 
   describe('when handlePaginationClick is triggered', () => {
-    it('calls useRepoContents with correct filters value', async () => {
+    it('renders the correct amount of data', async () => {
       setup({
         repoData: manyFilesMock,
       })
