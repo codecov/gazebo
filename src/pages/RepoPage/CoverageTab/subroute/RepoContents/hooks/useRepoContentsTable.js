@@ -4,9 +4,10 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
+import { usePaginatedContents } from 'services/usePaginatedContents'
 import { SortingDirection } from 'ui/Table/constants'
 
-import { displayTypeParameter, ITEMS_PER_PAGE } from '../../../constants'
+import { displayTypeParameter } from '../../../constants'
 import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
@@ -135,30 +136,24 @@ const getQueryFilters = ({ params, sortBy }) => {
   }
 }
 
-// eslint-disable-next-line complexity, max-statements
 function useRepoContentsTable() {
   const { provider, owner, repo, path, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
 
   const [sortBy, setSortBy] = useState([])
 
-  // Frontend Pagination
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE)
-
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
     repo,
     owner,
   })
-  const { defaultBranch } = repoOverview
   const isSearching = Boolean(params?.search)
 
   const { data: repoContents, isLoading } = useRepoContents({
     provider,
     owner,
     repo,
-    branch: branch || defaultBranch,
+    branch: branch || repoOverview?.defaultBranch,
     path: path || '',
     filters: getQueryFilters({ params, sortBy: sortBy[0] }),
     suspense: false,
@@ -168,21 +163,24 @@ function useRepoContentsTable() {
     () =>
       createTableData({
         tableData: repoContents,
-        branch: branch || defaultBranch,
+        branch: branch || repoOverview?.defaultBranch,
         path: path || '',
         isSearching,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
       }),
-    [repoContents, branch, defaultBranch, path, isSearching, params, sortBy]
+    [
+      repoContents,
+      branch,
+      repoOverview?.defaultBranch,
+      path,
+      isSearching,
+      params,
+      sortBy,
+    ]
   )
 
-  // Frontend pagination of data
-  const paginatedData = data.slice(0, itemsPerPage)
-
-  function handlePaginationClick() {
-    setItemsPerPage((prevItems) => prevItems + ITEMS_PER_PAGE)
-    setCurrentPage((prevPage) => prevPage + 1)
-  }
+  const { paginatedData, handlePaginationClick, hasNextPage } =
+    usePaginatedContents({ data })
 
   const handleSort = useCallback(
     (tableSortBy) => {
@@ -201,7 +199,7 @@ function useRepoContentsTable() {
     isLoading: isLoadingRepo || isLoading,
     isSearching,
     handlePaginationClick,
-    hasNextPage: currentPage * ITEMS_PER_PAGE < data?.length,
+    hasNextPage,
   }
 }
 

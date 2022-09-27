@@ -1,16 +1,25 @@
+import PropType from 'prop-types'
+
 import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
 import useRepoContentsTable from './hooks'
 
-const Loader = () => (
-  <div className="flex-1 flex justify-center">
-    <Spinner size={60} />
-  </div>
-)
+const Loader = ({ isLoading }) => {
+  return (
+    isLoading && (
+      <div className="flex-1 flex justify-center">
+        <Spinner size={60} />
+      </div>
+    )
+  )
+}
 
-// eslint-disable-next-line complexity
+Loader.propTypes = {
+  isLoading: PropType.bool,
+}
+
 function RepoContentsTable() {
   const {
     paginatedData,
@@ -25,7 +34,7 @@ function RepoContentsTable() {
   return (
     <>
       <Table data={paginatedData} columns={headers} onSort={handleSort} />
-      {isLoading && <Loader />}
+      <Loader isLoading />
       {paginatedData?.length === 0 && !isLoading && (
         <p className="flex justify-center flex-1">
           {isSearching
@@ -35,11 +44,7 @@ function RepoContentsTable() {
       )}
       {hasNextPage && (
         <div className="w-full mt-4 flex justify-center">
-          <Button
-            hook="load-more"
-            variant="primary"
-            onClick={handlePaginationClick}
-          >
+          <Button hook="load-more" onClick={handlePaginationClick}>
             Load More
           </Button>
         </div>
