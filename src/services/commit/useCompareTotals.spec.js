@@ -55,9 +55,6 @@ describe('CompareTotals', () => {
           provider,
           owner,
           repo,
-          opts: {
-            enabled: true,
-          },
         }),
       {
         wrapper,
