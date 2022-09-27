@@ -2,7 +2,7 @@ import cs from 'classnames'
 import capitalize from 'lodash/capitalize'
 import { useParams } from 'react-router-dom'
 
-import { usePull } from 'services/pull/hooks'
+import { usePull } from 'services/pull'
 import { formatTimeToNow } from 'shared/utils/dates'
 import { getProviderPullURL } from 'shared/utils/provider'
 import A from 'ui/A'

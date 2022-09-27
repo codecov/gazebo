@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks'
 
-import { useOnboardingLocation } from './hooks'
+import { useOnboardingLocation } from './useOnboardingLocation'
 
 describe('useOnboardingLocation', () => {
   let hookData

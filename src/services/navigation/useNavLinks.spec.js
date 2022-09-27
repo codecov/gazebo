@@ -977,18 +977,6 @@ describe('useNavLinks', () => {
       })
     })
   })
-
-  describe('profile', () => {
-    beforeAll(() => {
-      setup(['/gh/codecov-user'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.profile.path()).toBe(
-        '/account/gh/codecov-user'
-      )
-    })
-  })
 })
 
 describe('useStaticNavLinks', () => {
@@ -1031,8 +1019,6 @@ describe('useStaticNavLinks', () => {
     ${links.ciProviderWorkflow} | ${'https://circleci.com/blog/what-is-continuous-integration'}
     ${links.exampleRepos}       | ${'https://docs.codecov.com/docs/supported-languages'}
     ${links.prCommentLayout}    | ${'https://docs.codecov.com/docs/pull-request-comments#layout'}
-    ${links.repoConfigFeedback} | ${'https://github.com/codecov/Codecov-user-feedback/issues/18'}
-    ${links.repoYaml}           | ${'https://docs.codecov.com/docs/codecov-yaml#repository-yaml'}
   `('static links return path', ({ link, outcome }) => {
     it('Returns the correct link', () => {
       expect(link.path()).toBe(outcome)

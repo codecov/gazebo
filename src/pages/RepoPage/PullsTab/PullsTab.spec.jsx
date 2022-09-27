@@ -1,10 +1,12 @@
-import { usePulls } from 'services/pulls/hooks'
+import userEvent from '@testing-library/user-event'
 
-import { fireEvent, repoPageRender, screen } from '../repo-jest-setup'
+import { usePulls } from 'services/pulls'
+
+import { repoPageRender, screen } from '../repo-jest-setup'
 
 import PullsTab from '.'
 
-jest.mock('services/pulls/hooks')
+jest.mock('services/pulls')
 
 describe('Pulls Pab', () => {
   afterAll(() => {
@@ -114,7 +116,7 @@ describe('Pulls Pab', () => {
     beforeEach(() => {
       setup({ hasNextPage: true })
       const select = screen.getByText('All')
-      fireEvent.click(select)
+      userEvent.click(select)
     })
 
     it('renders all options', () => {
@@ -128,7 +130,7 @@ describe('Pulls Pab', () => {
     beforeEach(() => {
       setup({ hasNextPage: true })
       const select = screen.getByText('Newest')
-      fireEvent.click(select)
+      userEvent.click(select)
     })
 
     it('renders all options', () => {
@@ -140,9 +142,9 @@ describe('Pulls Pab', () => {
     beforeEach(() => {
       setup({ hasNextPage: true })
       const select = screen.getByText('Newest')
-      fireEvent.click(select)
+      userEvent.click(select)
       const state = screen.getAllByRole('option')[1]
-      fireEvent.click(state)
+      userEvent.click(state)
     })
 
     it('renders the selected option', () => {
@@ -155,9 +157,9 @@ describe('Pulls Pab', () => {
     beforeEach(() => {
       setup({ hasNextPage: false })
       const select = screen.getByText('All')
-      fireEvent.click(select)
+      userEvent.click(select)
       const state = screen.getAllByRole('option')[2]
-      fireEvent.click(state)
+      userEvent.click(state)
     })
 
     it('renders the number of selected options', () => {
