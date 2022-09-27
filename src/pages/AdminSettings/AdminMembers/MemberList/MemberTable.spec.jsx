@@ -3,12 +3,16 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter } from 'react-router-dom'
 
-import AdminAccessTable from './AdminAccessTable'
+import MemberTable from './MemberTable'
 
-const mockFirstResponse = {
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const mockedFirstResponse = {
   count: 1,
-  next: 'http://localhost/internal/users?is_admin=true&page=2',
+  next: 'http://localhost/internal/users?page=2',
   previous: null,
   results: [
     {
@@ -17,10 +21,10 @@ const mockFirstResponse = {
       email: 'user1@codecov.io',
       name: 'User 1',
       isAdmin: true,
-      activated: true,
+      activated: false,
     },
   ],
-  total_pages: 2,
+  totalPages: 2,
 }
 
 const mockSecondResponse = {
@@ -33,16 +37,13 @@ const mockSecondResponse = {
       username: 'user2-codecov',
       email: 'user2@codecov.io',
       name: null,
-      isAdmin: true,
+      isAdmin: false,
       activated: true,
     },
   ],
   total_pages: 2,
 }
 
-const queryClient = new QueryClient()
-
-const server = setupServer()
 beforeAll(() => server.listen())
 beforeEach(() => {
   server.resetHandlers()
@@ -50,7 +51,7 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-describe('AdminAccessTable', () => {
+describe('MemberTable', () => {
   function setup({ noData = false }) {
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
@@ -62,7 +63,7 @@ describe('AdminAccessTable', () => {
               next: null,
               previous: null,
               results: [],
-              total_pages: 0,
+              totalPages: 0,
             })
           )
         }
@@ -76,15 +77,31 @@ describe('AdminAccessTable', () => {
         if (pageNumber > 1) {
           return res(ctx.status(200), ctx.json(mockSecondResponse))
         }
+        return res(ctx.status(200), ctx.json(mockedFirstResponse))
+      }),
+      rest.patch('/internal/users/:id', (req, res, ctx) => {
+        const { id: idString } = req.params
 
-        return res(ctx.status(200), ctx.json(mockFirstResponse))
+        const id = Number(idString)
+
+        if (id === 1) {
+          mockedFirstResponse.results[0].activated =
+            !mockedFirstResponse.results[0].activated
+        } else if (id === 2) {
+          mockSecondResponse.results[0].activated =
+            !mockSecondResponse.results[0].activated
+        }
+
+        return res(ctx.status(200))
       })
     )
 
     render(
-      <QueryClientProvider client={queryClient}>
-        <AdminAccessTable />
-      </QueryClientProvider>
+      <MemoryRouter initialEntries={['/admin/gh/members']}>
+        <QueryClientProvider client={queryClient}>
+          <MemberTable />
+        </QueryClientProvider>
+      </MemoryRouter>
     )
   }
 
@@ -93,9 +110,25 @@ describe('AdminAccessTable', () => {
       setup({})
     })
 
-    it('displays the table heading', async () => {
-      const admin = await screen.findByText('Admin')
-      expect(admin).toBeInTheDocument()
+    it('displays header', async () => {
+      const header = await screen.findByText('User Name')
+      expect(header).toBeInTheDocument()
+    })
+
+    it('displays initial user set', async () => {
+      const user = await screen.findByText('User 1')
+      expect(user).toBeInTheDocument()
+    })
+
+    it('displays extended list after loading more', async () => {
+      const button = await screen.findByText('Load More')
+      userEvent.click(button)
+
+      const user1 = screen.getByText('User 1')
+      expect(user1).toBeInTheDocument()
+
+      const user2 = await screen.findByText('user2-codecov')
+      expect(user2).toBeInTheDocument()
     })
   })
 
@@ -110,28 +143,21 @@ describe('AdminAccessTable', () => {
     })
   })
 
-  describe('table displays users', () => {
+  describe('activating a user', () => {
     beforeEach(() => {
       setup({})
     })
 
-    it('displays an initial user set', async () => {
-      const user = await screen.findByText('User 1')
-      expect(user).toBeInTheDocument()
-    })
+    it('updates the users activation', async () => {
+      let toggle = await screen.findByRole('button', { name: 'Non-Active' })
 
-    it('displays extended list after button click', async () => {
-      const button = await screen.findByText('Load More')
-      await userEvent.click(button)
+      userEvent.click(toggle)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
-      const user1 = await screen.findByText('User 1')
-      expect(user1).toBeInTheDocument()
-
-      const user2 = await screen.findByText('user2-codecov')
-      expect(user2).toBeInTheDocument()
+      toggle = await screen.findByRole('button', { name: 'Activated' })
+      expect(toggle).toBeInTheDocument()
     })
   })
 
@@ -139,7 +165,6 @@ describe('AdminAccessTable', () => {
     beforeEach(() => {
       setup({ noData: true })
     })
-
     it('displays an empty table', async () => {
       const table = await screen.findByTestId('body-row')
       expect(table).toBeEmptyDOMElement()
