@@ -64,6 +64,7 @@ function ActivationBanner() {
             value={!!currentUser?.activated}
             label=""
             onClick={() => mutate(!currentUser?.activated)}
+            disabled={!canChange}
           />
 
           {canChange &&

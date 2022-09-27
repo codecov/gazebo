@@ -176,6 +176,24 @@ describe('ActivationBanner', () => {
           )
           expect(noSeatMsg).toBeInTheDocument()
         })
+
+        it('sets toggle to disabled', async () => {
+          render(
+            <QueryClientProvider client={queryClient}>
+              <MemoryRouter initialEntries={['/gh']}>
+                <Route path="/:provider">
+                  <ActivationBanner />
+                </Route>
+              </MemoryRouter>
+            </QueryClientProvider>
+          )
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const button = await screen.findByRole('button')
+          expect(button).toHaveClass('cursor-not-allowed')
+        })
       })
     })
   })
