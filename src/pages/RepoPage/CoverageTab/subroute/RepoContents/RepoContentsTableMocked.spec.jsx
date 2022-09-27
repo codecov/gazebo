@@ -83,10 +83,15 @@ function createTable({ tableData, branch, path, isSearching }) {
 
 describe('RepoContentsTableMocked', () => {
   let handleSort = jest.fn()
+  let handlePaginationClick = jest.fn()
   const branch = 'default-branch'
   const path = 'src/flags'
 
-  function setup({ paginatedData = repoContents, isSearching = false } = {}) {
+  function setup({
+    paginatedData = repoContents,
+    isSearching = false,
+    hasNextPage = true,
+  } = {}) {
     useRepoContents.mockReturnValue({
       paginatedData,
       isLoading: false,
@@ -109,8 +114,10 @@ describe('RepoContentsTableMocked', () => {
       }),
       headers,
       handleSort,
+      handlePaginationClick,
       isLoading: false,
       isSearching,
+      hasNextPage,
     })
 
     render(
@@ -140,6 +147,18 @@ describe('RepoContentsTableMocked', () => {
           { desc: true, id: 'coverage' },
         ])
       )
+    })
+  })
+
+  describe('when clicking on more data', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('calls handlePaginationClick', async () => {
+      expect(screen.getByText(/Load More/)).toBeInTheDocument()
+      screen.getByText(/Load More/).click()
+      await waitFor(() => expect(handlePaginationClick).toHaveBeenCalled())
     })
   })
 

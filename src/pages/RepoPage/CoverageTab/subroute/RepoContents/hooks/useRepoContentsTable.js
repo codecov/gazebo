@@ -179,6 +179,11 @@ function useRepoContentsTable() {
   // Frontend pagination of data
   const paginatedData = data.slice(0, itemsPerPage)
 
+  function handlePaginationClick() {
+    setItemsPerPage((prevItems) => prevItems + ITEMS_PER_PAGE)
+    setCurrentPage((prevPage) => prevPage + 1)
+  }
+
   const handleSort = useCallback(
     (tableSortBy) => {
       if (!isEqual(sortBy, tableSortBy)) {
@@ -187,11 +192,6 @@ function useRepoContentsTable() {
     },
     [sortBy]
   )
-
-  function handlePaginationClick() {
-    setItemsPerPage((prevItems) => prevItems + ITEMS_PER_PAGE)
-    setCurrentPage((prevPage) => prevPage + 1)
-  }
 
   return {
     data,
