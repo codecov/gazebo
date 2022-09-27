@@ -34,7 +34,7 @@ function RepoContentsTable() {
   return (
     <>
       <Table data={paginatedData} columns={headers} onSort={handleSort} />
-      <Loader isLoading />
+      <Loader isLoading={isLoading} />
       {paginatedData?.length === 0 && !isLoading && (
         <p className="flex justify-center flex-1">
           {isSearching
