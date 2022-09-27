@@ -11,7 +11,7 @@ import {
   useRepoBackfilled,
   useRepoContents,
   useUpdateRepo,
-} from './hooks'
+} from './index'
 
 const queryClient = new QueryClient()
 

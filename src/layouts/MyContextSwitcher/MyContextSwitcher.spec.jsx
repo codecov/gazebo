@@ -5,7 +5,7 @@ import { useMyContexts } from 'services/user'
 
 import MyContextSwitcher from './MyContextSwitcher'
 
-jest.mock('services/user/hooks')
+jest.mock('services/user')
 
 const currentUser = {
   username: 'dorianamouroux',
@@ -39,10 +39,10 @@ describe('MyContextSwitcher', () => {
       ...over,
     }
     wrapper = render(<MyContextSwitcher {...props} />, {
-      wrapper: (props) => (
+      wrapper: ({ children }) => (
         <MemoryRouter initialEntries={['/gh']}>
           <Route path="/:provider" exact>
-            {props.children}
+            {children}
           </Route>
         </MemoryRouter>
       ),

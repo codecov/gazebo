@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useContext } from 'react'
 
-import { useRepos } from 'services/repos/hooks'
+import { useRepos } from 'services/repos'
 import AppLink from 'shared/AppLink'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'

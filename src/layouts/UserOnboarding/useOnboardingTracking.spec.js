@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-hooks'
 
-import { useOnboardingLocation } from 'services/location/hooks'
+import { useOnboardingLocation } from 'services/location'
 import {
   identifySegmentEvent,
   pageSegmentEvent,
@@ -11,7 +11,7 @@ import { useUser } from 'services/user'
 import { useOnboardingTracking } from './useOnboardingTracking'
 
 jest.mock('services/tracking/segment')
-jest.mock('services/location/hooks')
+jest.mock('services/location')
 jest.mock('services/user')
 
 const user = {

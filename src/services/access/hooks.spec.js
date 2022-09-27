@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { mapEdges } from 'shared/utils/graphql'
 
-import { useDeleteSession, useGenerateToken, useSessions } from './hooks'
+import { useDeleteSession, useGenerateToken, useSessions } from './index'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (

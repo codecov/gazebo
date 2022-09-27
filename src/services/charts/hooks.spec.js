@@ -2,8 +2,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { setupServer } from 'msw/node'
 
-import { useLegacyRepoCoverage, useOrgCoverage } from './hooks'
 import { orgCoverageHandler, repoCoverageHandler } from './mocks'
+
+import { useLegacyRepoCoverage, useOrgCoverage } from './index'
 
 const queryClient = new QueryClient({
   defaultOptions: {

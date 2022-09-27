@@ -9,7 +9,7 @@ import AccountSettings from './AccountSettings'
 
 jest.mock('config')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-jest.mock('services/user/hooks')
+jest.mock('services/user')
 
 jest.mock('./tabs/Admin', () => () => 'AdminTab')
 jest.mock('./tabs/Access', () => () => 'AccessTab')
