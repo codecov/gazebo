@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import AdminMembers from './AdminMembers'
 
 jest.mock('./ActivationInfo', () => () => 'ActivationInfo')
+jest.mock('./MemberList', () => () => 'MemberList')
 
 describe('AdminMembers', () => {
   function setup() {
@@ -21,6 +22,11 @@ describe('AdminMembers', () => {
 
     it('renders ActivationInfo', async () => {
       const text = await screen.findByText(/ActivationInfo/)
+      expect(text).toBeInTheDocument()
+    })
+
+    it('renders MemberList', async () => {
+      const text = await screen.findByText(/MemberList/)
       expect(text).toBeInTheDocument()
     })
   })
