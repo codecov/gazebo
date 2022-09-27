@@ -6,7 +6,7 @@ import config from 'config'
 
 import { useUser } from 'services/user'
 
-import { useShouldRenderBillingTabs } from './hooks'
+import { useShouldRenderBillingTabs } from './useShouldRenderBillingTabs'
 
 jest.mock('services/user')
 
