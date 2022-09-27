@@ -7,7 +7,7 @@ import { useAddNotification } from 'services/toastNotification'
 
 import UpgradePlanForm from './UpgradePlanForm'
 
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 jest.mock('services/toastNotification')
 
 const freePlan = {

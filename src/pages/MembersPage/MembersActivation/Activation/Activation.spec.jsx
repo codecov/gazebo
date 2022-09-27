@@ -7,7 +7,7 @@ import { useAccountDetails } from 'services/account'
 
 import Activation from './Activation'
 
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 
 const queryClient = new QueryClient()
 

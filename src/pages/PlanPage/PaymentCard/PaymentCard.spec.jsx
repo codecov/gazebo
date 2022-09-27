@@ -5,7 +5,7 @@ import { useUpdateCard } from 'services/account'
 
 import PaymentCard from './PaymentCard'
 
-jest.mock('services/account/hooks')
+jest.mock('services/account')
 
 const subscriptionDetail = {
   defaultPaymentMethod: {
