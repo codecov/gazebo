@@ -4,12 +4,12 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRegenerateOrgUploadToken } from './hooks'
+import { useRegenerateProfilingToken } from './useRegenerateProfilingToken'
 
 const data = {
   data: {
-    regenerateOrgUploadToken: {
-      orgUploadToken: 'new token',
+    regenerateProfilingToken: {
+      profilingToken: 'new token',
     },
   },
 }
@@ -29,16 +29,16 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('useRegenerateOrgUploadToken', () => {
+describe('useRegenerateProfilingToken', () => {
   let hookData
 
   function setup() {
     server.use(
-      graphql.mutation('regenerateOrgUploadToken', (req, res, ctx) => {
+      graphql.mutation('regenerateProfilingToken', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ data }))
       })
     )
-    hookData = renderHook(() => useRegenerateOrgUploadToken(), {
+    hookData = renderHook(() => useRegenerateProfilingToken(), {
       wrapper,
     })
   }
