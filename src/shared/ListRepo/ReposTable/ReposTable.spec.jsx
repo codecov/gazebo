@@ -1,15 +1,15 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { orderingOptions } from 'services/repos'
-import { useRepos } from 'services/repos/hooks'
+import { orderingOptions, useRepos } from 'services/repos'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
 
 import ReposTable from './ReposTable'
 
-jest.mock('services/repos/hooks')
+jest.mock('services/repos/useRepos')
 jest.mock('shared/featureFlags')
 
 describe('ReposTable', () => {
@@ -359,7 +359,7 @@ describe('ReposTable', () => {
       expect(button).toBeInTheDocument()
     })
     it('fires next page button click', () => {
-      fireEvent.click(screen.getByText(/Load More/))
+      userEvent.click(screen.getByText(/Load More/))
       expect(fetchNextPage).toHaveBeenCalled()
     })
   })

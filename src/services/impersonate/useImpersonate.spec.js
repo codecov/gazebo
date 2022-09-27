@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import Cookie from 'js-cookie'
 import { useLocation } from 'react-router-dom'
 
-import { useImpersonate } from './hooks'
+import { useImpersonate } from './useImpersonate'
 
 jest.mock('react-router-dom', () => ({
   useLocation: jest.fn(),

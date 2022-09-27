@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useIsUploadsNumberExceeded, useUploadsNumber } from './index'
+import { useCompareTotals } from './useCompareTotals'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,31 +25,44 @@ afterAll(() => server.close())
 
 const dataReturned = {
   owner: {
-    numberOfUploads: 252,
+    repository: {
+      commit: {
+        compareWithParent: {
+          state: 'processed',
+        },
+      },
+    },
   },
 }
 
 const provider = 'gh'
 const owner = 'codecov'
+const repo = 'gazebo'
 
-describe('GetUploadsNumber', () => {
+describe('CompareTotals', () => {
   let hookData
 
   function setup() {
     server.use(
-      graphql.query('GetUploadsNumber', (req, res, ctx) => {
+      graphql.query('CompareTotals', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
 
-    hookData = renderHook(() => useUploadsNumber({ provider, owner }), {
-      wrapper,
-    })
+    hookData = renderHook(
+      () =>
+        useCompareTotals({
+          provider,
+          owner,
+          repo,
+        }),
+      {
+        wrapper,
+      }
+    )
   }
 
   describe('when called', () => {
-    const expectedResponse = 252
-
     beforeEach(() => {
       setup()
     })
@@ -64,33 +77,7 @@ describe('GetUploadsNumber', () => {
       })
 
       it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(expectedResponse)
-      })
-    })
-  })
-
-  describe('when calling useIsUploadsNumberExceeded', () => {
-    function secondarySetup() {
-      hookData = renderHook(
-        () => useIsUploadsNumberExceeded({ provider, owner }),
-        {
-          wrapper,
-        }
-      )
-    }
-
-    beforeEach(async () => {
-      setup()
-      secondarySetup()
-    })
-
-    describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
-
-      it('returns true value', () => {
-        expect(hookData.result.current.data).toEqual(true)
+        expect(hookData.result.current.data).toEqual({ state: 'processed' })
       })
     })
   })

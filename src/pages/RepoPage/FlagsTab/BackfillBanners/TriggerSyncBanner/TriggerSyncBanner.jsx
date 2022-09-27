@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useActivateFlagMeasurements } from 'services/repo/hooks'
+import { useActivateFlagMeasurements } from 'services/repo'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { useUser } from 'services/user'
 import Banner from 'ui/Banner'

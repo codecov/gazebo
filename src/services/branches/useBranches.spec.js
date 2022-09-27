@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useBranches } from './hooks'
+import { useBranches } from './useBranches'
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks'
 
-import { useImage } from './hooks'
+import { useImage } from './useImage'
 
 describe('useImage', () => {
   let hookData

@@ -6,7 +6,7 @@ import { usePull } from 'services/pull'
 
 import { useCompareCommits } from './hooks'
 
-jest.mock('services/pull/hooks')
+jest.mock('services/pull')
 
 const pull = {
   pullId: 5,

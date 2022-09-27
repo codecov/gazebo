@@ -1,37 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRegenerateRepoUploadToken } from './hooks'
+import { useRegenerateOrgUploadToken } from './useRegenerateOrgUploadToken'
 
-const repoDetails = {
-  can_edit: true,
-  can_view: true,
-  latest_commit: {
-    report: {
-      files: [
-        {
-          name: 'src/App.js',
-          totals: {
-            files: 0,
-            lines: 13,
-            hits: 13,
-            misses: 0,
-            partials: 0,
-            coverage: 100.0,
-            branches: 0,
-            methods: 10,
-            sessions: 0,
-            complexity: 0.0,
-            complexity_total: 0.0,
-            complexity_ratio: 0,
-            diff: null,
-          },
-        },
-      ],
-      uploadToken: 'random',
+const data = {
+  data: {
+    regenerateOrgUploadToken: {
+      orgUploadToken: 'new token',
     },
   },
 }
@@ -51,19 +29,16 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('useRegenerateRepoUploadToken', () => {
+describe('useRegenerateOrgUploadToken', () => {
   let hookData
 
   function setup() {
     server.use(
-      rest.patch(
-        `internal/github/codecov/repos/gazebo/regenerate-upload-token/`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(repoDetails))
-        }
-      )
+      graphql.mutation('regenerateOrgUploadToken', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({ data }))
+      })
     )
-    hookData = renderHook(() => useRegenerateRepoUploadToken(), {
+    hookData = renderHook(() => useRegenerateOrgUploadToken(), {
       wrapper,
     })
   }
@@ -88,9 +63,9 @@ describe('useRegenerateRepoUploadToken', () => {
       })
     })
 
-    describe('When success', () => {
+    describe('When mutation is a success', () => {
       beforeEach(async () => {
-        hookData.result.current.mutate({})
+        hookData.result.current.mutate()
         await hookData.waitFor(() => hookData.result.current.isLoading)
         await hookData.waitFor(() => !hookData.result.current.isLoading)
       })

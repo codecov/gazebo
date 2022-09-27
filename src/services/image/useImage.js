@@ -1,6 +1,6 @@
 import { useLayoutEffect, useReducer } from 'react'
 
-function imagePromiseFactory({ src }) {
+export function imagePromiseFactory({ src }) {
   return new Promise((resolveSource, rejectSource) => {
     return new Promise((resolveImage, rejectImage) => {
       const image = new Image()
