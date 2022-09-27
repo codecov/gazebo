@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import CommitsTable from './CommitsTable'
 
-jest.mock('services/commits/hooks')
+jest.mock('services/commits')
 
 describe('CommitsTable', () => {
   function setup({ commits }) {

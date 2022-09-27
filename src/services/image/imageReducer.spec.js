@@ -1,4 +1,4 @@
-import { imageReducer } from './hooks'
+import { imageReducer } from './useImage'
 
 describe('imageReducer', () => {
   describe('type set to pending', () => {

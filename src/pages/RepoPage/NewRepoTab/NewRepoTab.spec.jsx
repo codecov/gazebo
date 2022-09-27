@@ -15,7 +15,7 @@ const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 
 jest.mock('shared/utils/exceptions')
 jest.mock('services/repo/useRepo')
-jest.mock('services/commits/hooks')
+jest.mock('services/commits')
 jest.mock('services/user')
 jest.mock('shared/featureFlags')
 
