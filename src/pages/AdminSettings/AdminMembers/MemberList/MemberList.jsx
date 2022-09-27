@@ -87,7 +87,7 @@ function MemberList() {
         </div>
         <div className="w-4/12">
           <SearchField
-            placeholder={'Search'}
+            placeholder="Search"
             searchValue={params?.search || ''}
             setSearchValue={(search) => updateParams({ ...params, search })}
           />
