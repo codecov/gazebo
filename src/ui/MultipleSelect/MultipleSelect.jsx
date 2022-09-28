@@ -4,7 +4,7 @@ import pluralize from 'pluralize'
 import PropTypes from 'prop-types'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 
-import { useMultiSelect } from './hooks'
+import { useMultiSelect } from './useMultiSelect'
 
 import Icon from '../Icon'
 import SearchField from '../SearchField'
@@ -74,6 +74,8 @@ const MultipleSelect = forwardRef(function MultipleSelect(
     getToggleButtonProps,
     isAllButton,
     isItemSelected,
+    getInputProps,
+    getComboboxProps,
   } = useMultiSelect({ value, onChange, items, intersectionRef })
 
   useImperativeHandle(ref, () => ({
@@ -96,7 +98,7 @@ const MultipleSelect = forwardRef(function MultipleSelect(
 
   return (
     <div className="flex-1 relative">
-      <div>
+      <div {...getComboboxProps()}>
         <button
           disabled={disabled}
           className={cs(SelectClasses.button, VariantClasses[variant])}
@@ -109,6 +111,14 @@ const MultipleSelect = forwardRef(function MultipleSelect(
           {renderSelectedItems()}
           <Icon variant="solid" name={isOpen ? 'chevron-up' : 'chevron-down'} />
         </button>
+        <div className={cs(!isOpen && 'hidden')}>
+          <SearchField
+            placeholder={getSearchPlaceholder(resourceName)}
+            searchValue={''}
+            setSearchValue={(search) => onSearch(search)}
+            {...getInputProps()}
+          />
+        </div>
       </div>
       <ul
         className={cs(SelectClasses.listContainer, {
@@ -119,13 +129,6 @@ const MultipleSelect = forwardRef(function MultipleSelect(
       >
         {isOpen && (
           <>
-            {onSearch && (
-              <SearchField
-                placeholder={getSearchPlaceholder(resourceName)}
-                searchValue={''}
-                setSearchValue={(search) => onSearch(search)}
-              />
-            )}
             {listItems.map((item, index) => (
               <li
                 className={cs(SelectClasses.listItem, {
