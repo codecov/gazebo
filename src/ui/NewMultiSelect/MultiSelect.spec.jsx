@@ -8,152 +8,224 @@ import MultiSelect from './MultiSelect'
 jest.mock('react-use/lib/useIntersection')
 
 describe('MultiSelect', () => {
-  let props
-  let multipleSelectRef
-
   const onChange = jest.fn()
+
+  let multipleSelectRef
+  let props = {}
   const defaultProps = {
     items: ['item1', 'item2', 'item3'],
     onChange,
   }
 
-  function setup(overProps, isIntersecting = false) {
-    props = {
-      ...defaultProps,
-      ...overProps,
-    }
-
-    useIntersection.mockReturnValue({ isIntersecting })
-
-    render(
-      <MultiSelect
-        {...props}
-        ref={(ref) => {
-          multipleSelectRef = ref
-        }}
-      />
-    )
-  }
+  beforeEach(() => {
+    props = { ...defaultProps }
+  })
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the default placeholder', () => {
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
       const button = screen.getByText(/All/)
       expect(button).toBeInTheDocument()
     })
 
-    it('doesnt render the dropdown and its items', () => {
-      expect(screen.getByRole('listbox')).toBeEmptyDOMElement()
+    it('does not render the dropdown and its items', () => {
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const listbox = screen.getByRole('listbox')
+      expect(listbox).toBeEmptyDOMElement()
     })
   })
 
   describe('when rendering with a resourceName', () => {
     beforeEach(() => {
-      setup({ resourceName: 'item' })
+      props = {
+        ...defaultProps,
+        resourceName: 'item',
+      }
     })
 
     it('renders the correct placeholder', () => {
-      expect(screen.getByText('All items')).toBeInTheDocument()
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const allItems = screen.getByText('All items')
+      expect(allItems).toBeInTheDocument()
     })
   })
 
   describe('when rendering with a value', () => {
     beforeEach(() => {
-      setup({ value: ['item1'] })
+      props = {
+        ...defaultProps,
+        value: ['item1'],
+        resourceName: 'item',
+      }
     })
 
     it('renders the default selected items count', () => {
-      expect(screen.getByText(/1 selected/)).toBeInTheDocument()
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const itemSelected = screen.getByText('1 item selected')
+      expect(itemSelected).toBeInTheDocument()
     })
   })
 
   describe('when select button is triggered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('when triggered with a click', () => {
-      beforeEach(() => {
+      it('renders the items', () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
         const button = screen.getByText('All')
         userEvent.click(button)
-      })
 
-      it('renders the items', () => {
-        expect(screen.getByRole('listbox')).not.toBeEmptyDOMElement()
-        expect(screen.getByText(/item1/)).toBeInTheDocument()
-        expect(screen.getByText(/item2/)).toBeInTheDocument()
-        expect(screen.getByText(/item3/)).toBeInTheDocument()
+        const listbox = screen.getByRole('listbox')
+        expect(listbox).not.toBeEmptyDOMElement()
+
+        const item1 = screen.getByText('item1')
+        expect(item1).toBeInTheDocument()
+
+        const item2 = screen.getByText('item2')
+        expect(item2).toBeInTheDocument()
+
+        const item3 = screen.getByText('item3')
+        expect(item3).toBeInTheDocument()
       })
     })
 
     describe('when triggered enter', () => {
-      beforeEach(() => {
+      it('renders the items', () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
         const button = screen.getByText('All')
         userEvent.type(button, '{enter}')
-      })
 
-      it('renders the items', () => {
-        expect(screen.getByRole('listbox')).not.toBeEmptyDOMElement()
-      })
-    })
-
-    describe('when triggered with space button', () => {
-      beforeEach(() => {
-        const button = screen.getByText('All')
-        userEvent.type(button, '{space}')
-      })
-
-      it('renders the items', () => {
-        expect(screen.getByRole('listbox')).not.toBeEmptyDOMElement()
+        const listbox = screen.getByRole('listbox')
+        expect(listbox).not.toBeEmptyDOMElement()
       })
     })
   })
 
   describe('when selecting an item from the list', () => {
-    beforeEach(() => {
-      setup()
-      const button = screen.getByText('All')
-      userEvent.click(button)
-    })
-
     describe('when selected with a click', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByText(/item1/))
-      })
       it('highlights the selected item', () => {
-        expect(screen.getByText(/item1/)).toHaveClass('font-bold')
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText('All')
+        userEvent.click(button)
+
+        const item1Click = screen.getByText('item1')
+        userEvent.click(item1Click)
+
+        const item1 = screen.getByText('item1')
+        expect(item1).toHaveClass('font-bold')
       })
 
       it('calls onChange with the item', () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText('All')
+        userEvent.click(button)
+
+        const item1Click = screen.getByText('item1')
+        userEvent.click(item1Click)
+
         expect(onChange).toHaveBeenCalledWith(['item1'])
       })
 
       it('renders the all button', () => {
-        expect(screen.getByText('All')).toBeInTheDocument()
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText('All')
+        userEvent.click(button)
+
+        const item1Click = screen.getByText('item1')
+        userEvent.click(item1Click)
+
+        const all = screen.getByText('All')
+        expect(all).toBeInTheDocument()
       })
     })
 
     describe('when selected with enter key', () => {
-      beforeEach(() => {
+      it('calls onChange with the item', () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText('All')
+        userEvent.click(button)
+
         const item = screen.getByText(/item1/)
         userEvent.type(item, '{enter}')
-      })
 
-      it('calls onChange with the item', () => {
-        expect(onChange).toHaveBeenCalledWith(['item1'])
-      })
-    })
-
-    describe('when selected with space key', () => {
-      beforeEach(() => {
-        const item = screen.getByText(/item1/)
-        userEvent.type(item, '{space}')
-      })
-
-      it('calls onChange with the item', () => {
         expect(onChange).toHaveBeenCalledWith(['item1'])
       })
     })
@@ -162,34 +234,57 @@ describe('MultiSelect', () => {
   describe('when rendered with complex items and custom item rendered', () => {
     beforeEach(() => {
       const items = [{ name: 'item1' }, { name: 'item2' }, { name: 'item3' }]
-
       const value = [items[0]]
-
       const renderItem = ({ name }) => <p>{name}</p>
 
-      setup({
+      props = {
+        ...defaultProps,
         items,
         value,
-        resourceName: 'item',
         renderItem,
-      })
+        resourceName: 'item',
+      }
     })
 
     it('renders the default selected items count', () => {
-      expect(screen.getByText('1 item selected')).toBeInTheDocument()
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const itemSelected = screen.getByText('1 item selected')
+      expect(itemSelected).toBeInTheDocument()
     })
 
     describe('when clicking on the button', () => {
-      beforeEach(() => {
+      it('renders the option user the custom rendered', () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
         const button = screen.getByText('1 item selected')
         userEvent.click(button)
-      })
 
-      it('renders the option user the custom rendered', () => {
-        expect(screen.getByRole('listbox')).not.toBeEmptyDOMElement()
-        expect(screen.getByText(/item1/)).toBeInTheDocument()
-        expect(screen.getByText(/item2/)).toBeInTheDocument()
-        expect(screen.getByText(/item3/)).toBeInTheDocument()
+        const listbox = screen.getByRole('listbox')
+        expect(listbox).not.toBeEmptyDOMElement()
+
+        const item1 = screen.getByText(/item1/)
+        expect(item1).toBeInTheDocument()
+
+        const item2 = screen.getByText(/item2/)
+        expect(item2).toBeInTheDocument()
+
+        const item3 = screen.getByText(/item3/)
+        expect(item3).toBeInTheDocument()
       })
     })
   })
@@ -198,14 +293,26 @@ describe('MultiSelect', () => {
     beforeEach(() => {
       const value = ['item1']
       const renderSelected = (item) => <p>Selected: {item}</p>
-      setup({
+
+      props = {
+        ...defaultProps,
         value,
         renderSelected,
-      })
+      }
     })
 
     it('renders the custom selected item', () => {
-      expect(screen.getByText(/Selected: item1/)).toBeInTheDocument()
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const selectedCount = screen.getByText(/Selected: item1/)
+      expect(selectedCount).toBeInTheDocument()
     })
   })
 
@@ -213,17 +320,26 @@ describe('MultiSelect', () => {
     const onSearch = jest.fn()
 
     beforeEach(() => {
-      setup({
+      props = {
+        ...defaultProps,
         onSearch,
-      })
-      const button = screen.getByText(/All/)
-      userEvent.click(button)
+      }
     })
 
     it('renders a search input with the correct placeholder', () => {
-      const searchField = screen.getByRole('textbox', {
-        name: 'Search',
-      })
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const button = screen.getByText(/All/)
+      userEvent.click(button)
+
+      const searchField = screen.getByRole('textbox')
       expect(searchField).toBeInTheDocument()
     })
   })
@@ -232,29 +348,47 @@ describe('MultiSelect', () => {
     const onSearch = jest.fn()
 
     beforeEach(() => {
-      setup({
+      props = {
+        ...defaultProps,
         onSearch,
         resourceName: 'item',
-      })
-      const button = screen.getByText(/All items/)
-      userEvent.click(button)
+      }
     })
 
     it('renders a search input', () => {
-      const searchField = screen.getByRole('textbox', {
-        name: 'Search for items',
-      })
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const button = screen.getByText(/All items/)
+      userEvent.click(button)
+
+      const searchField = screen.getByRole('textbox')
       expect(searchField).toBeInTheDocument()
     })
 
     describe('when typing in the search field', () => {
-      beforeEach(() => {
-        const searchField = screen.getByRole('textbox', {
-          name: 'Search for items',
-        })
+      it('calls onSearch with the search value', async () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText(/All items/)
+        userEvent.click(button)
+
+        const searchField = screen.getByRole('textbox')
         userEvent.type(searchField, 'item1')
-      })
-      it('calls onSeardch with the search value', async () => {
+
         await waitFor(() => expect(onSearch).toHaveBeenCalledWith('item1'))
       })
     })
@@ -264,22 +398,43 @@ describe('MultiSelect', () => {
     const onLoadMore = jest.fn()
 
     beforeEach(() => {
-      setup(
-        {
-          onLoadMore,
-        },
-        true
-      )
-      const button = screen.getByText('All')
-      userEvent.click(button)
+      props = {
+        ...defaultProps,
+        onLoadMore,
+      }
+      useIntersection.mockReturnValue({ isIntersecting: true })
     })
 
     it('renders an invisible load more trigger', () => {
-      expect(screen.getByText(/Loading more items/)).toBeInTheDocument()
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+      const button = screen.getByText('All')
+      userEvent.click(button)
+
+      const loadingMsg = screen.getByText(/Loading more items/)
+      expect(loadingMsg).toBeInTheDocument()
     })
 
     describe('when load more trigger span is intersecting', () => {
       it('calls onLoadMore with the search value', async () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText('All')
+        userEvent.click(button)
+
         await waitFor(() => expect(onLoadMore).toHaveBeenCalled())
       })
     })
@@ -287,50 +442,93 @@ describe('MultiSelect', () => {
 
   describe('when selecting a selected item from the list', () => {
     beforeEach(() => {
-      setup({ value: ['item1', 'item2', 'item3'], resourceName: 'item' })
-      const button = screen.getByText(/3 items selected/)
-      userEvent.click(button)
+      props = {
+        ...defaultProps,
+        value: ['item1', 'item2', 'item3'],
+        resourceName: 'item',
+      }
     })
 
     describe('when the item is clicked', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByText('item1'))
-      })
       it('No longer highlights the selected item', () => {
-        expect(screen.getByText('item1')).not.toHaveClass('font-bold')
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText(/3 items selected/)
+        userEvent.click(button)
+
+        const item1Click = screen.getByText('item1')
+        userEvent.click(item1Click)
+
+        const item1 = screen.getByText('item1')
+        expect(item1).not.toHaveClass('font-bold')
       })
 
       it('calls onChange without the item', () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText(/3 items selected/)
+        userEvent.click(button)
+
+        const item1Click = screen.getByText('item1')
+        userEvent.click(item1Click)
+
         expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
       })
     })
 
     describe('when the item is selected with enter key', () => {
-      beforeEach(() => {
+      it('No longer highlights the selected item', () => {
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
+
+        const button = screen.getByText(/3 items selected/)
+        userEvent.click(button)
+
         userEvent.keyboard('{ArrowDown}')
         userEvent.keyboard('{ArrowDown}')
         userEvent.keyboard('{enter}')
-      })
-      it('No longer highlights the selected item', () => {
-        expect(screen.getByText('item1')).not.toHaveClass('font-bold')
+
+        const item1 = screen.getByText('item1')
+        expect(item1).not.toHaveClass('font-bold')
       })
 
       it('calls onChange without the item', () => {
-        expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
-      })
-    })
+        render(
+          <MultiSelect
+            {...props}
+            ref={(ref) => {
+              multipleSelectRef = ref
+            }}
+          />
+        )
 
-    describe('when the item is selected with space key', () => {
-      beforeEach(() => {
+        const button = screen.getByText(/3 items selected/)
+        userEvent.click(button)
+
         userEvent.keyboard('{ArrowDown}')
         userEvent.keyboard('{ArrowDown}')
-        userEvent.keyboard('{space}')
-      })
-      it('No longer highlights the selected item', () => {
-        expect(screen.getByText('item1')).not.toHaveClass('font-bold')
-      })
+        userEvent.keyboard('{enter}')
 
-      it('calls onChange without the item', () => {
         expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
       })
     })
@@ -338,42 +536,87 @@ describe('MultiSelect', () => {
 
   describe('when selecting all button', () => {
     beforeEach(() => {
-      setup({ value: ['item1', 'item2', 'item3'], resourceName: 'item' })
-      const button = screen.getByText(/3 items selected/)
-      userEvent.click(button)
-      const allButton = screen.getByText(/All items/)
-      userEvent.click(allButton)
+      props = {
+        ...defaultProps,
+        value: ['item1', 'item2', 'item3'],
+        resourceName: 'item',
+      }
     })
 
     it('calls onChange with an empty array', () => {
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const button = screen.getByText(/3 items selected/)
+      userEvent.click(button)
+
+      const allButton = screen.getByText(/All items/)
+      userEvent.click(allButton)
+
       expect(onChange).toHaveBeenCalledWith([])
     })
   })
 
   describe('when forward ref is passed', () => {
     beforeEach(() => {
-      setup({ value: ['item1', 'item2', 'item3'], resourceName: 'item' })
-      const button = screen.getByText(/3 items selected/)
-      userEvent.click(button)
-      act(() => {
-        multipleSelectRef.resetSelected()
-      })
+      props = {
+        ...defaultProps,
+        value: ['item1', 'item2', 'item3'],
+        resourceName: 'item',
+      }
     })
 
     it('reset selected function is defined', () => {
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const button = screen.getByText(/3 items selected/)
+      userEvent.click(button)
+
+      act(() => {
+        multipleSelectRef.resetSelected()
+      })
+
       expect(multipleSelectRef.resetSelected).toBeDefined()
     })
   })
 
   describe('when isLoading is true', () => {
     beforeEach(() => {
-      setup({ items: [], isLoading: true })
-      const button = screen.getByText(/All/)
-      userEvent.click(button)
+      props = {
+        ...defaultProps,
+        items: [],
+        isLoading: true,
+      }
     })
 
     it('a spinner is rendered', async () => {
-      expect(screen.getByRole('presentation')).toBeInTheDocument()
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multipleSelectRef = ref
+          }}
+        />
+      )
+
+      const button = screen.getByText(/All/)
+      userEvent.click(button)
+
+      const presentation = screen.getByRole('presentation')
+      expect(presentation).toBeInTheDocument()
     })
   })
 })

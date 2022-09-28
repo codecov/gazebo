@@ -123,7 +123,7 @@ const MultiSelect = forwardRef(
           <div className={cs(!isOpen && 'hidden')}>
             <SearchField
               placeholder={getSearchPlaceholder(resourceName)}
-              searchValue={''}
+              searchValue=""
               setSearchValue={(search) => onSearch(search)}
               {...getInputProps()}
             />
