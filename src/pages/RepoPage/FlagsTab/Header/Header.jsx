@@ -46,7 +46,7 @@ const Header = ({ controlsDisabled, children }) => {
             renderSelected={({ label }) => label}
           />
         </div>
-        <p className="w-1/5 text-xs pl-4">
+        <p className="w-1/5 text-xs pl-4 h-min">
           Please drop us a comment{' '}
           <A to={{ pageName: 'flagsFeedback' }}>here</A> and let us know what
           you think of our new Flags page.
