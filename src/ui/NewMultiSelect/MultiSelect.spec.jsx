@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { act } from 'react-dom/test-utils'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import MultiSelect from './MultiSelect'
@@ -10,7 +9,6 @@ jest.mock('react-use/lib/useIntersection')
 describe('MultiSelect', () => {
   const onChange = jest.fn()
 
-  let multipleSelectRef
   let props = {}
   const defaultProps = {
     items: ['item1', 'item2', 'item3'],
@@ -23,28 +21,14 @@ describe('MultiSelect', () => {
 
   describe('when rendered', () => {
     it('renders the default placeholder', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const button = screen.getByText(/All/)
       expect(button).toBeInTheDocument()
     })
 
     it('does not render the dropdown and its items', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const listbox = screen.getByRole('listbox')
       expect(listbox).toBeEmptyDOMElement()
@@ -60,14 +44,7 @@ describe('MultiSelect', () => {
     })
 
     it('renders the correct placeholder', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const allItems = screen.getByText('All items')
       expect(allItems).toBeInTheDocument()
@@ -84,14 +61,7 @@ describe('MultiSelect', () => {
     })
 
     it('renders the default selected items count', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const itemSelected = screen.getByText('1 item selected')
       expect(itemSelected).toBeInTheDocument()
@@ -101,14 +71,7 @@ describe('MultiSelect', () => {
   describe('when select button is triggered', () => {
     describe('when triggered with a click', () => {
       it('renders the items', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
         userEvent.click(button)
@@ -129,14 +92,7 @@ describe('MultiSelect', () => {
 
     describe('when triggered enter', () => {
       it('renders the items', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
         userEvent.type(button, '{enter}')
@@ -150,14 +106,7 @@ describe('MultiSelect', () => {
   describe('when selecting an item from the list', () => {
     describe('when selected with a click', () => {
       it('highlights the selected item', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
         userEvent.click(button)
@@ -170,14 +119,7 @@ describe('MultiSelect', () => {
       })
 
       it('calls onChange with the item', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
         userEvent.click(button)
@@ -189,14 +131,7 @@ describe('MultiSelect', () => {
       })
 
       it('renders the all button', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
         userEvent.click(button)
@@ -211,14 +146,7 @@ describe('MultiSelect', () => {
 
     describe('when selected with enter key', () => {
       it('calls onChange with the item', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
         userEvent.click(button)
@@ -247,14 +175,7 @@ describe('MultiSelect', () => {
     })
 
     it('renders the default selected items count', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const itemSelected = screen.getByText('1 item selected')
       expect(itemSelected).toBeInTheDocument()
@@ -262,14 +183,7 @@ describe('MultiSelect', () => {
 
     describe('when clicking on the button', () => {
       it('renders the option user the custom rendered', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText('1 item selected')
         userEvent.click(button)
@@ -302,14 +216,7 @@ describe('MultiSelect', () => {
     })
 
     it('renders the custom selected item', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const selectedCount = screen.getByText(/Selected: item1/)
       expect(selectedCount).toBeInTheDocument()
@@ -327,14 +234,7 @@ describe('MultiSelect', () => {
     })
 
     it('renders a search input with the correct placeholder', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const button = screen.getByText(/All/)
       userEvent.click(button)
@@ -356,14 +256,7 @@ describe('MultiSelect', () => {
     })
 
     it('renders a search input', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const button = screen.getByText(/All items/)
       userEvent.click(button)
@@ -374,14 +267,7 @@ describe('MultiSelect', () => {
 
     describe('when typing in the search field', () => {
       it('calls onSearch with the search value', async () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText(/All items/)
         userEvent.click(button)
@@ -406,14 +292,7 @@ describe('MultiSelect', () => {
     })
 
     it('renders an invisible load more trigger', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
       const button = screen.getByText('All')
       userEvent.click(button)
 
@@ -423,14 +302,7 @@ describe('MultiSelect', () => {
 
     describe('when load more trigger span is intersecting', () => {
       it('calls onLoadMore with the search value', async () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
         userEvent.click(button)
@@ -451,14 +323,7 @@ describe('MultiSelect', () => {
 
     describe('when the item is clicked', () => {
       it('No longer highlights the selected item', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText(/3 items selected/)
         userEvent.click(button)
@@ -471,14 +336,7 @@ describe('MultiSelect', () => {
       })
 
       it('calls onChange without the item', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText(/3 items selected/)
         userEvent.click(button)
@@ -492,14 +350,7 @@ describe('MultiSelect', () => {
 
     describe('when the item is selected with enter key', () => {
       it('No longer highlights the selected item', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText(/3 items selected/)
         userEvent.click(button)
@@ -513,14 +364,7 @@ describe('MultiSelect', () => {
       })
 
       it('calls onChange without the item', () => {
-        render(
-          <MultiSelect
-            {...props}
-            ref={(ref) => {
-              multipleSelectRef = ref
-            }}
-          />
-        )
+        render(<MultiSelect {...props} />)
 
         const button = screen.getByText(/3 items selected/)
         userEvent.click(button)
@@ -544,14 +388,7 @@ describe('MultiSelect', () => {
     })
 
     it('calls onChange with an empty array', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const button = screen.getByText(/3 items selected/)
       userEvent.click(button)
@@ -560,36 +397,6 @@ describe('MultiSelect', () => {
       userEvent.click(allButton)
 
       expect(onChange).toHaveBeenCalledWith([])
-    })
-  })
-
-  describe('when forward ref is passed', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        value: ['item1', 'item2', 'item3'],
-        resourceName: 'item',
-      }
-    })
-
-    it('reset selected function is defined', () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
-
-      const button = screen.getByText(/3 items selected/)
-      userEvent.click(button)
-
-      act(() => {
-        multipleSelectRef.resetSelected()
-      })
-
-      expect(multipleSelectRef.resetSelected).toBeDefined()
     })
   })
 
@@ -603,14 +410,7 @@ describe('MultiSelect', () => {
     })
 
     it('a spinner is rendered', async () => {
-      render(
-        <MultiSelect
-          {...props}
-          ref={(ref) => {
-            multipleSelectRef = ref
-          }}
-        />
-      )
+      render(<MultiSelect {...props} />)
 
       const button = screen.getByText(/All/)
       userEvent.click(button)
