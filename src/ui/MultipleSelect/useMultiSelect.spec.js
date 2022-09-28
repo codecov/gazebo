@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { useMultipleSelection, useSelect } from 'downshift'
 import useIntersection from 'react-use/lib/useIntersection'
 
-import { useMultiSelect } from './hooks'
+import { useMultiSelect } from './useMultiSelect'
 
 jest.mock('downshift')
 jest.mock('react-use/lib/useIntersection')

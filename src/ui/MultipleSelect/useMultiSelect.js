@@ -1,4 +1,4 @@
-import { useMultipleSelection, useSelect } from 'downshift'
+import { useCombobox, useMultipleSelection, useSelect } from 'downshift'
 import isEqual from 'lodash/isEqual'
 import useIntersection from 'react-use/lib/useIntersection'
 
@@ -37,17 +37,16 @@ export function useMultiSelect({ value, onChange, items, intersectionRef }) {
     isOpen,
     getToggleButtonProps,
     getMenuProps,
+    getInputProps,
+    getComboboxProps,
     highlightedIndex,
     getItemProps,
-  } = useSelect({
+  } = useCombobox({
     selectedItem: null,
     items: listItems,
-    stateReducer: (state, actionAndChanges) => {
-      const { changes, type } = actionAndChanges
+    stateReducer: (_state, { changes, type }) => {
       switch (type) {
-        case useSelect.stateChangeTypes.MenuKeyDownEnter:
-        case useSelect.stateChangeTypes.MenuKeyDownSpaceButton:
-        case useSelect.stateChangeTypes.ItemClick:
+        case useCombobox.stateChangeTypes.ItemClick:
           return {
             ...changes,
             isOpen: true, // keep the menu open after selection.
@@ -59,8 +58,6 @@ export function useMultiSelect({ value, onChange, items, intersectionRef }) {
     },
     onStateChange: ({ type, selectedItem }) => {
       switch (type) {
-        case useSelect.stateChangeTypes.MenuKeyDownEnter:
-        case useSelect.stateChangeTypes.MenuKeyDownSpaceButton:
         case useSelect.stateChangeTypes.ItemClick:
           isAllButton(selectedItem) ? reset() : toggleItem(selectedItem)
           break
@@ -89,5 +86,7 @@ export function useMultiSelect({ value, onChange, items, intersectionRef }) {
     isIntersecting: intersection?.isIntersecting,
     isAllButton,
     isItemSelected,
+    getInputProps,
+    getComboboxProps,
   }
 }
