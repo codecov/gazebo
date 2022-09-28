@@ -4,11 +4,69 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  @apply h-full font-sans;
-}
+@layer base {
+  html,
+  body {
+    @apply h-full font-sans;
+  }
 
-#root {
-  @apply flex flex-col h-full;
+  :root {
+    @apply flex flex-col h-full;
+
+    --color-ds-pink-default: #f01f7a;
+    --color-ds-pink-secondary: #ff4a89;
+    --color-ds-pink-tertiary: #d10d62;
+
+    --color-ds-blue-default: #0088e9;
+    --color-ds-blue-light: #52b7ff;
+    --color-ds-blue-medium: #0095ff;
+    --color-ds-blue-darker: #0071c2;
+    --color-ds-blue-quinary: #015896;
+    --color-ds-blue-senary: #002d4d;
+    --color-ds-blue-selected: #e6f1ff;
+
+    --color-ds-gray-default: #0e1b29;
+    --color-ds-gray-primary: #f7f8fb;
+    --color-ds-gray-secondary: #eaebef;
+    --color-ds-gray-tertiary: #d8dce2;
+    --color-ds-gray-quaternary: #999fa7;
+    --color-ds-gray-quinary: #68737e;
+    --color-ds-gray-senary: #394754;
+    --color-ds-gray-octonary: #222f3d;
+
+    --color-gray-300: #c7cbd1;
+
+    --color-orange-100: #ffedd5;
+    --color-orange-500: #f97316;
+
+    --color-ds-primary-green: #27b340;
+    --color-ds-primary-red: #ce2019;
+    --color-ds-primary-purple: #ac39cf;
+    --color-ds-primary-yellow: #ca8e00;
+
+    --color-ds-coverage-partial: #fff9d8;
+
+    --color-ds-error-quinary: #ff9b9b;
+    --color-ds-error-nonary: #590808;
+
+    --color-codecov-red: #ce2019;
+    --color-codecov-orange: #ffc273;
+    --color-codecov-footer: #07111b;
+
+    --color-warning-100: #ffebd2;
+    --color-warning-900: #473610;
+
+    --color-success-500: #73ff9e;
+    --color-success-100: #deffe8;
+
+    --color-error-100: #ffedf0;
+
+    --color-info-100: #dff2ff;
+    --color-info-500: #a3d9ff;
+    --color-info-900: #013b65;
+
+    --color-github: #333333;
+    --color-gitlab: #fc6d26;
+    --color-bitbucket: #0052cc;
+  }
 }
