@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
+import A from 'ui/A'
 import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 
@@ -45,6 +46,11 @@ const Header = ({ controlsDisabled, children }) => {
             renderSelected={({ label }) => label}
           />
         </div>
+        <p className="w-1/5 text-xs pl-4">
+          Please drop us a comment{' '}
+          <A to={{ pageName: 'flagsFeedback' }}>here</A> and let us know what
+          you think of these new changes.
+        </p>
       </div>
       {children}
       <div className="flex justify-end pt-4">
