@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import SeatDetails from './SeatDetails'
 
@@ -38,7 +39,11 @@ describe('SeatDetails', () => {
 
     renderData = render(
       <QueryClientProvider client={queryClient}>
-        <SeatDetails />
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path={'/:provider'}>
+            <SeatDetails />
+          </Route>
+        </MemoryRouter>
       </QueryClientProvider>
     )
   }
