@@ -49,7 +49,7 @@ const Header = ({ controlsDisabled, children }) => {
         <p className="w-1/5 text-xs pl-4">
           Please drop us a comment{' '}
           <A to={{ pageName: 'flagsFeedback' }}>here</A> and let us know what
-          you think of these new changes.
+          you think of our new Flags page.
         </p>
       </div>
       {children}
