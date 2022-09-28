@@ -1,4 +1,4 @@
-import { useCombobox, useMultipleSelection, useSelect } from 'downshift'
+import { useCombobox, useMultipleSelection } from 'downshift'
 import isEqual from 'lodash/isEqual'
 import useIntersection from 'react-use/lib/useIntersection'
 
@@ -46,6 +46,9 @@ export function useMultiSelect({ value, onChange, items, intersectionRef }) {
     items: listItems,
     stateReducer: (_state, { changes, type }) => {
       switch (type) {
+        case useCombobox.stateChangeTypes.InputKeyDownArrowDown:
+        case useCombobox.stateChangeTypes.InputKeyDownArrowUp:
+        case useCombobox.stateChangeTypes.InputKeyDownEnter:
         case useCombobox.stateChangeTypes.ItemClick:
           return {
             ...changes,
@@ -57,8 +60,10 @@ export function useMultiSelect({ value, onChange, items, intersectionRef }) {
       return changes
     },
     onStateChange: ({ type, selectedItem }) => {
+      console.log(type)
       switch (type) {
-        case useSelect.stateChangeTypes.ItemClick:
+        case useCombobox.stateChangeTypes.InputKeyDownEnter:
+        case useCombobox.stateChangeTypes.ItemClick:
           isAllButton(selectedItem) ? reset() : toggleItem(selectedItem)
           break
         default:

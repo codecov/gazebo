@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { act } from 'react-dom/test-utils'
 import useIntersection from 'react-use/lib/useIntersection'
 
-import MultipleSelect from './MultipleSelect'
+import MultiSelect from './MultiSelect'
 
 jest.mock('react-use/lib/useIntersection')
 
-describe('MultipleSelect', () => {
+describe('MultiSelect', () => {
   let props
   let multipleSelectRef
 
@@ -26,7 +26,7 @@ describe('MultipleSelect', () => {
     useIntersection.mockReturnValue({ isIntersecting })
 
     render(
-      <MultipleSelect
+      <MultiSelect
         {...props}
         ref={(ref) => {
           multipleSelectRef = ref

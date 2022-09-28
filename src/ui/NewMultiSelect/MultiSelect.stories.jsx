@@ -2,7 +2,7 @@ import identity from 'lodash/identity'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import MultipleSelect from './MultipleSelect'
+import MultiSelect from './MultiSelect'
 
 const Template = ({ renderItem, renderSelected, onChange, ...args }) => {
   const [value, setValue] = useState()
@@ -17,7 +17,7 @@ const Template = ({ renderItem, renderSelected, onChange, ...args }) => {
   }
 
   return (
-    <MultipleSelect
+    <MultiSelect
       {...args}
       {...functionArgs}
       onChange={onChangeHandler}
@@ -89,8 +89,8 @@ SelectWithLoader.args = {
 }
 
 export default {
-  title: 'Components/MultipleSelect',
-  component: MultipleSelect,
+  title: 'Components/NewMultiSelect',
+  component: MultiSelect,
   argTypes: {
     onChange: { action: 'onChange' },
     onSearch: { action: 'onSearch' },
