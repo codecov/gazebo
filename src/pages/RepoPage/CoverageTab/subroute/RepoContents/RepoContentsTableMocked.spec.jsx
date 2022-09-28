@@ -26,7 +26,7 @@ const repoContents = [
 ]
 
 const useRepoOverviewMock = {
-  data: {
+  paginatedData: {
     defaultBranch: 'default-branch',
     private: true,
   },
@@ -83,12 +83,17 @@ function createTable({ tableData, branch, path, isSearching }) {
 
 describe('RepoContentsTableMocked', () => {
   let handleSort = jest.fn()
+  let handlePaginationClick = jest.fn()
   const branch = 'default-branch'
   const path = 'src/flags'
 
-  function setup({ data = repoContents, isSearching = false } = {}) {
+  function setup({
+    paginatedData = repoContents,
+    isSearching = false,
+    hasNextPage = true,
+  } = {}) {
     useRepoContents.mockReturnValue({
-      data,
+      paginatedData,
       isLoading: false,
     })
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
@@ -101,11 +106,18 @@ describe('RepoContentsTableMocked', () => {
     })
 
     useRepoContentsTable.mockReturnValue({
-      data: createTable({ tableData: data, branch, path, isSearching }),
+      paginatedData: createTable({
+        tableData: paginatedData,
+        branch,
+        path,
+        isSearching,
+      }),
       headers,
       handleSort,
+      handlePaginationClick,
       isLoading: false,
       isSearching,
+      hasNextPage,
     })
 
     render(
@@ -138,6 +150,18 @@ describe('RepoContentsTableMocked', () => {
     })
   })
 
+  describe('when clicking on more data', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('calls handlePaginationClick', async () => {
+      expect(screen.getByText(/Load More/)).toBeInTheDocument()
+      screen.getByText(/Load More/).click()
+      await waitFor(() => expect(handlePaginationClick).toHaveBeenCalled())
+    })
+  })
+
   describe('when searching', () => {
     it('renders path in the table', () => {
       setup({ isSearching: true })
@@ -146,7 +170,7 @@ describe('RepoContentsTableMocked', () => {
 
     describe('when there are no results', () => {
       it('shows correct empty state message', () => {
-        setup({ data: [], isSearching: true })
+        setup({ paginatedData: [], isSearching: true })
         expect(screen.getByText(/No results found/)).toBeInTheDocument()
       })
     })

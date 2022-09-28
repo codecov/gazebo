@@ -110,7 +110,7 @@ function NameEmailCard({ currentUser, provider }) {
 NameEmailCard.propTypes = {
   currentUser: PropTypes.shape({
     email: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
+    name: PropTypes.string,
   }),
   provider: PropTypes.string.isRequired,
 }

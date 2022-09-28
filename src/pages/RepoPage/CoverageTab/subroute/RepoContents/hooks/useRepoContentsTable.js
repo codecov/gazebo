@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
+import { usePaginatedContents } from 'services/usePaginatedContents'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../../../constants'
@@ -146,14 +147,13 @@ function useRepoContentsTable() {
     repo,
     owner,
   })
-  const { defaultBranch } = repoOverview
   const isSearching = Boolean(params?.search)
 
   const { data: repoContents, isLoading } = useRepoContents({
     provider,
     owner,
     repo,
-    branch: branch || defaultBranch,
+    branch: branch || repoOverview?.defaultBranch,
     path: path || '',
     filters: getQueryFilters({ params, sortBy: sortBy[0] }),
     suspense: false,
@@ -163,13 +163,24 @@ function useRepoContentsTable() {
     () =>
       createTableData({
         tableData: repoContents,
-        branch: branch || defaultBranch,
+        branch: branch || repoOverview?.defaultBranch,
         path: path || '',
         isSearching,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
       }),
-    [repoContents, branch, defaultBranch, path, isSearching, params, sortBy]
+    [
+      repoContents,
+      branch,
+      repoOverview?.defaultBranch,
+      path,
+      isSearching,
+      params,
+      sortBy,
+    ]
   )
+
+  const { paginatedData, handlePaginationClick, hasNextPage } =
+    usePaginatedContents({ data })
 
   const handleSort = useCallback(
     (tableSortBy) => {
@@ -182,10 +193,13 @@ function useRepoContentsTable() {
 
   return {
     data,
+    paginatedData,
     headers,
     handleSort,
     isLoading: isLoadingRepo || isLoading,
     isSearching,
+    handlePaginationClick,
+    hasNextPage,
   }
 }
 

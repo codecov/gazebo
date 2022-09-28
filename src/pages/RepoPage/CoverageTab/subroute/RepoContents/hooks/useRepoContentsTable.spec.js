@@ -70,6 +70,21 @@ const manyFilesAndDirsMock = {
   isLoading: false,
 }
 
+const bigArray = new Array(26).fill({
+  name: 'flag2',
+  filepath: 'flag2',
+  percentCovered: 92.78,
+  __typename: 'PathContentFile',
+  hits: 4,
+  misses: 2,
+  lines: 7,
+  partials: 1,
+})
+
+const manyFilesMock = {
+  data: bigArray,
+}
+
 const emptyRepoContentsMock = {
   data: [],
   isLoading: false,
@@ -194,6 +209,20 @@ describe('useRepoContentsTable', () => {
           suspense: false,
         })
       )
+    })
+  })
+
+  describe('when handlePaginationClick is triggered', () => {
+    it('renders the correct amount of data', async () => {
+      setup({
+        repoData: manyFilesMock,
+      })
+
+      act(() => {
+        hookData.result.current.handlePaginationClick()
+      })
+
+      expect(hookData.result.current.data).toHaveLength(26)
     })
   })
 })

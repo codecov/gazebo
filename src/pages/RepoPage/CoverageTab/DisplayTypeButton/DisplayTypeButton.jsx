@@ -43,7 +43,7 @@ function DisplayTypeButton() {
         onChange={(option) => handleOnChange(option)}
       />
       {active?.displayType === displayTypeParameter.list && data && (
-        <span>{data?.length} files</span>
+        <span>{data?.length} total files</span>
       )}
     </div>
   )

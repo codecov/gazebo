@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import config from 'config'
+
 import Api from 'shared/api'
 
 const currentUserFragment = `
@@ -46,18 +48,18 @@ fragment CurrentUserFragment on Me {
 export function useUpdateProfile({ provider }) {
   const queryClient = useQueryClient()
   const mutation = `
-      mutation UpdateProfile($input: UpdateProfileInput!) {
-        updateProfile(input: $input) {
-          me {
-            ...CurrentUserFragment
-          }
-          error {
-            __typename
-          }
+    mutation UpdateProfile($input: UpdateProfileInput!) {
+      updateProfile(input: $input) {
+        me {
+          ...CurrentUserFragment
+        }
+        error {
+          __typename
         }
       }
-      ${currentUserFragment}
-    `
+    }
+    ${currentUserFragment}
+  `
 
   return useMutation(
     ({ name, email }) => {
@@ -76,6 +78,10 @@ export function useUpdateProfile({ provider }) {
     {
       onSuccess: (user) => {
         queryClient.setQueryData(['currentUser', provider], () => user)
+
+        if (config.IS_ENTERPRISE) {
+          queryClient.invalidateQueries(['SelfHostedCurrentUser'])
+        }
       },
     }
   )
