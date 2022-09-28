@@ -111,9 +111,9 @@ describe('CommitDetailsSummary', () => {
 
       const sourceCardTitle = screen.getByText('Source')
       expect(sourceCardTitle).toBeInTheDocument()
-      expect(screen.getByText(/Coverage data is based on/i)).toBeInTheDocument()
+      expect(screen.getByText(/This commit/i)).toBeInTheDocument()
       expect(
-        screen.getAllByText(commit.commitid.slice(0, 7))[1]
+        screen.getAllByText(commit.commitid.slice(0, 7))[0]
       ).toBeInTheDocument()
       expect(
         screen.getByText(commit.parent.commitid.slice(0, 7))
