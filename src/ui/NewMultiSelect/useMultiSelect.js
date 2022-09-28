@@ -60,7 +60,6 @@ export function useMultiSelect({ value, onChange, items, intersectionRef }) {
       return changes
     },
     onStateChange: ({ type, selectedItem }) => {
-      console.log(type)
       switch (type) {
         case useCombobox.stateChangeTypes.InputKeyDownEnter:
         case useCombobox.stateChangeTypes.ItemClick:
