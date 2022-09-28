@@ -62,7 +62,7 @@ function CommitPage() {
       />
       <Header />
       <CommitDetailsSummary />
-      {botErrors?.length && <BotErrorBanner />}{' '}
+      {botErrors?.length > 0 && <BotErrorBanner />}{' '}
       {/**we are currently capturing a single error*/}
       {invalidYaml && <YamlErrorBanner />}
       <div className="flex pt-6 flex-col gap-8 md:flex-row-reverse">
