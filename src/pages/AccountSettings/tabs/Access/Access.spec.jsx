@@ -6,7 +6,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
   useDeleteSession,
-  useGenerateToken,
   useGenerateUserToken,
   useRevokeUserToken,
   useSessions,
@@ -43,7 +42,6 @@ describe('AccessTab', () => {
     })
     useDeleteSession.mockReturnValue({})
     useRevokeUserToken.mockReturnValue({})
-    useGenerateToken.mockReturnValue({})
     useGenerateUserToken.mockReturnValue({})
     const _props = { ...defaultProps, ...props }
     render(
