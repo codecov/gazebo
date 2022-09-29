@@ -51,10 +51,7 @@ const tokens = {
   edges: [
     {
       node: {
-        sessionid: 23,
-        ip: '172.21.0.1',
-        lastseen: '2021-04-19T18:35:05.451136Z',
-        useragent: null,
+        lastFour: '1234',
         owner: 2,
         type: 'api',
         name: 'token1',
@@ -62,10 +59,7 @@ const tokens = {
     },
     {
       node: {
-        sessionid: 22,
-        ip: '172.21.0.1',
-        lastseen: '2021-04-19T18:35:05.451136Z',
-        useragent: null,
+        lastFour: '4254',
         owner: 2,
         type: 'api',
         name: 'token2',
@@ -123,7 +117,10 @@ describe('useSessions', () => {
       setup({
         me: {
           sessions: {
-            edges: [...sessions.edges, ...tokens.edges],
+            edges: [...sessions.edges],
+          },
+          tokens: {
+            edges: [...tokens.edges],
           },
         },
       })
