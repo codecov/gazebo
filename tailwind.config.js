@@ -56,7 +56,7 @@ module.exports = {
           coverage: {
             covered: 'var(--color-success-100)',
             uncovered: 'var(--color-error-100)',
-            partial: 'var(--color-ds-coverage-partia)',
+            partial: 'var(--color-ds-coverage-partial)',
           },
           error: {
             quinary: 'var(--color-ds-error-quinary)',

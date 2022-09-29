@@ -10,9 +10,11 @@
     @apply h-full font-sans;
   }
 
-  :root {
+  #root {
     @apply flex flex-col h-full;
+  }
 
+  :root {
     --color-ds-pink-default: #f01f7a;
     --color-ds-pink-secondary: #ff4a89;
     --color-ds-pink-tertiary: #d10d62;
