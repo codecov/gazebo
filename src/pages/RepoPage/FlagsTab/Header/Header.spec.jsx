@@ -68,7 +68,6 @@ describe('Header', () => {
       })
 
       it('updates the location params on select', async () => {
-        expect(await screen.findByText('Last 6 months')).toBeInTheDocument()
         const item = screen.getByText('Last 7 days')
         userEvent.click(item)
 

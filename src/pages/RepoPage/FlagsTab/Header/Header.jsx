@@ -21,8 +21,8 @@ const Header = ({ controlsDisabled, children }) => {
 
   return (
     <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
-      <div className="flex divide-x divide-solid divide-ds-gray-secondary">
-        <div className="mr-4 mb-4 px-4 flex flex-col justify-between gap-2">
+      <div className="grid md:grid-cols-3 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x mb-4 divide-solid divide-ds-gray-secondary w-2/3 sm:w-full lg:w-2/3">
+        <div className="mr-4 flex flex-col justify-between gap-2 p-4 sm:py-0">
           <h3 className="text-sm text-ds-gray-octonary font-semibold">
             Configured flags
           </h3>
@@ -30,7 +30,7 @@ const Header = ({ controlsDisabled, children }) => {
             {flagsData.length}
           </p>
         </div>
-        <div className="mb-4 px-4 flex flex-col justify-between gap-2 min-w-[15rem]">
+        <div className="flex flex-col p-4 justify-between gap-2 min-w-[15rem] sm:py-0">
           <h3 className="text-sm text-ds-gray-octonary font-semibold">
             Historical trend
           </h3>
@@ -46,7 +46,7 @@ const Header = ({ controlsDisabled, children }) => {
             renderSelected={({ label }) => label}
           />
         </div>
-        <p className="w-1/5 text-xs pl-4 h-min">
+        <p className="text-xs p-4 md:py-0">
           Please drop us a comment{' '}
           <A to={{ pageName: 'flagsFeedback' }}>here</A> and let us know what
           you think of our new Flags page.
