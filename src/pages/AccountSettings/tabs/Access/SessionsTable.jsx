@@ -53,12 +53,12 @@ function SessionsTable({ sessions }) {
         {s.ip}
       </p>
     ),
-    lastSeen: s.lastseen ? formatTimeToNow(s.lastseen) : '-',
-    userAgent: s.useragent,
+    lastSeen: s?.lastseen ? formatTimeToNow(s?.lastseen) : '-',
+    userAgent: s?.useragent,
     revokeBtn: (
       <Button
         hook="revoke-session"
-        onClick={() => handleRevoke(s.sessionid)}
+        onClick={() => handleRevoke(s?.sessionid)}
         variant="danger"
       >
         Revoke

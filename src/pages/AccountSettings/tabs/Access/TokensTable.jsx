@@ -41,15 +41,15 @@ function TokensTable({ tokens }) {
   }
 
   const dataTable = tokens.map((t) => ({
-    name: t.name,
+    name: t?.name,
     lastFour: (
-      <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">{`xxxx ${t.lastFour}`}</p>
+      <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">{`xxxx ${t?.lastFour}`}</p>
     ),
-    lastSeen: t.lastseen ? formatTimeToNow(t.lastseen) : '-',
+    lastSeen: t?.lastseen ? formatTimeToNow(t?.lastseen) : '-',
     revokeBtn: (
       <Button
         hook="revoke-sesson"
-        onClick={() => handleRevoke(t.id)}
+        onClick={() => handleRevoke(t?.id)}
         variant="danger"
       >
         Revoke
