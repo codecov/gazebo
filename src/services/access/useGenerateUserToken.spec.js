@@ -30,8 +30,8 @@ describe('useGenerateUserToken', () => {
 
   function setup(dataReturned) {
     server.use(
-      graphql.mutation(`/graphql/gh`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ data: dataReturned }))
+      graphql.mutation(`createUserToken`, (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({ data: dataReturned }))
       })
     )
     hookData = renderHook(() => useGenerateUserToken({ provider }), {
