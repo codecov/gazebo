@@ -9,7 +9,7 @@ export function useGenerateUserToken({ provider, opts = {} }) {
   return useMutation(
     ({ name }) => {
       const query = `
-        mutation($input: CreateUserTokenInput!) {
+        mutation CreateUserToken($input: CreateUserTokenInput!) {
           createUserToken(input: $input) {
             error {
               __typename

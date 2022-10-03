@@ -30,7 +30,7 @@ describe('useGenerateUserToken', () => {
 
   function setup(dataReturned) {
     server.use(
-      graphql.mutation(`createUserToken`, (req, res, ctx) => {
+      graphql.mutation(`CreateUserToken`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ data: dataReturned }))
       })
     )
