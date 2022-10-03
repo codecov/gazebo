@@ -2,11 +2,15 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useDeleteSession, useSessions } from 'services/access'
+import { useFlags } from 'shared/featureFlags'
 import Button from 'ui/Button'
+import Toggle from 'ui/Toggle'
 
 import CreateTokenModal from './CreateTokenModal'
 import SessionsTable from './SessionsTable'
 import TokensTable from './TokensTable'
+
+const colorblindTheme = 'color-blind'
 
 function Access({ provider }) {
   const { data } = useSessions({
@@ -17,6 +21,19 @@ function Access({ provider }) {
 
   const { mutate } = useDeleteSession({ provider })
 
+  const theme = localStorage.getItem('current-theme')
+  const [themeValue, setThemeValue] = useState(theme === colorblindTheme)
+  const { showThemeToggle } = useFlags({ showThemeToggle: false })
+
+  const handleThemeChange = () => {
+    if (theme !== colorblindTheme) {
+      localStorage.setItem('current-theme', colorblindTheme)
+    } else {
+      localStorage.setItem('current-theme', '')
+    }
+    setThemeValue(!themeValue)
+  }
+
   const handleRevoke = (id) => {
     if (window.confirm('Are you sure you want to revoke this token?')) {
       mutate({ sessionid: id })
@@ -24,7 +41,16 @@ function Access({ provider }) {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className={`flex flex-col ${theme}`}>
+      {showThemeToggle && (
+        <div className="flex justify-end mb-6">
+          <Toggle
+            label="Colorblind Friendly"
+            value={themeValue}
+            onClick={handleThemeChange}
+          />
+        </div>
+      )}
       <h2 className="text-lg font-semibold">API Tokens</h2>
       <div className="flex justify-between items-center">
         <p data-testid="tokens-summary">

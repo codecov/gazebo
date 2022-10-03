@@ -8,10 +8,13 @@ import {
   useGenerateToken,
   useSessions,
 } from 'services/access'
+import { useFlags } from 'shared/featureFlags'
+
 
 import Access from './Access'
 
 jest.mock('services/access')
+jest.mock('shared/featureFlags')
 
 window.confirm = jest.fn(() => true)
 
@@ -21,7 +24,7 @@ describe('AccessTab', () => {
     owner: 'codecov',
   }
 
-  function setup(props) {
+  function setup({ props, showThemeToggle = false } = {}) {
     useSessions.mockReturnValue({
       data: {
         sessions: [
@@ -40,6 +43,7 @@ describe('AccessTab', () => {
     })
     useDeleteSession.mockReturnValue({})
     useGenerateToken.mockReturnValue({})
+    useFlags.mockReturnValue({ showThemeToggle })
     const _props = { ...defaultProps, ...props }
     render(<Access {..._props} />)
   }
@@ -87,6 +91,37 @@ describe('AccessTab', () => {
         ).toBeInTheDocument()
         userEvent.click(screen.getByText(/Cancel/))
         expect(screen.getByText('Generate Token')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('when show theme toggle flag is set to true', () => {
+    beforeEach(() => {
+      setup({ showThemeToggle: true })
+    })
+
+    it('renders colorblind label', () => {
+      const label = screen.getByText(/Colorblind Friendly/)
+      expect(label).toBeInTheDocument()
+    })
+
+    it('renders colorblind toggle', () => {
+      const button = screen.getByTestId('switch')
+      expect(button).toBeInTheDocument()
+    })
+
+    describe('on toggle switch', () => {
+      window.localStorage.__proto__.setItem = jest.fn()
+
+      beforeEach(() => {
+        screen.getByTestId('switch').click()
+      })
+
+      it('sets color-blind theme in local storage', () => {
+        expect(localStorage.setItem).toBeCalledWith(
+          'current-theme',
+          'color-blind'
+        )
       })
     })
   })
