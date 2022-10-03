@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -30,7 +30,7 @@ describe('useGenerateUserToken', () => {
 
   function setup(dataReturned) {
     server.use(
-      rest.post(`/graphql/gh`, (req, res, ctx) => {
+      graphql.mutation(`/graphql/gh`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({ data: dataReturned }))
       })
     )
