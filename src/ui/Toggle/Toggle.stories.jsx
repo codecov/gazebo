@@ -13,6 +13,13 @@ NormalToggle.args = {
   labelClass: '',
 }
 
+export const DisabledToggle = Template.bind({ disabled: true })
+DisabledToggle.args = {
+  label: 'sr label',
+  labelClass: '',
+  disabled: true,
+}
+
 export default {
   title: 'Components/Toggle',
   component: Toggle,

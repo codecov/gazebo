@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
@@ -11,8 +12,11 @@ query Seats {
 }
 `
 
-export const useSelfHostedSeatsConfig = (options = {}) =>
-  useQuery(['Seats'], () => Api.graphql({ query }), {
+export const useSelfHostedSeatsConfig = (options = {}) => {
+  const { provider } = useParams()
+
+  return useQuery(['Seats'], () => Api.graphql({ provider, query }), {
     select: ({ data }) => data?.config,
     ...options,
   })
+}
