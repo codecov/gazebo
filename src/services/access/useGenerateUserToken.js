@@ -2,13 +2,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-export function useGenerateToken({ provider, opts = {} }) {
+import { USER_TOKEN_TYPE } from './constants'
+
+export function useGenerateUserToken({ provider, opts = {} }) {
   const queryClient = useQueryClient()
   return useMutation(
     ({ name }) => {
       const query = `
-        mutation($input: CreateApiTokenInput!) {
-          createApiToken(input: $input) {
+        mutation CreateUserToken($input: CreateUserTokenInput!) {
+          createUserToken(input: $input) {
             error {
               __typename
             }
@@ -16,12 +18,12 @@ export function useGenerateToken({ provider, opts = {} }) {
           }
         }
       `
-      const variables = { input: { name } }
+      const variables = { input: { name, tokenType: USER_TOKEN_TYPE.API } }
       return Api.graphqlMutation({
         provider,
         query,
         variables,
-        mutationPath: 'createApiToken',
+        mutationPath: 'createUserToken',
       })
     },
     {
