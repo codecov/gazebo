@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import Commits from './Commits'
 import { useCompareCommits } from './useCompareCommits'
 
-jest.mock('./useCompareCommits.js')
+jest.mock('./useCompareCommits')
 
 const queryClient = new QueryClient()
 
