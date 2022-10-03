@@ -4,9 +4,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Commits from './Commits'
-import { useCompareCommits } from './hooks'
+import { useCompareCommits } from './useCompareCommits'
 
-jest.mock('./hooks')
+jest.mock('./useCompareCommits.js')
 
 const queryClient = new QueryClient()
 

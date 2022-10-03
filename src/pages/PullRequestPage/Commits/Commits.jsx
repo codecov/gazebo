@@ -2,7 +2,7 @@ import { CommitStateEnum } from 'shared/utils/commit'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-import { useCompareCommits } from './hooks'
+import { useCompareCommits } from './useCompareCommits'
 
 import Card from '../Card'
 
