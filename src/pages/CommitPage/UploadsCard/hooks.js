@@ -16,28 +16,24 @@ function humanReadableOverview(state, count) {
   if (state === UploadStateEnum.complete) return 'carried forward'
 }
 
-export function useUploads() {
-  const { provider, owner, repo, commit } = useParams()
+export function useExtractUploads({ uploads }) {
   const [sortedUploads, setSortedUploads] = useState({})
   const [uploadsProviderList, setUploadsProviderList] = useState([])
+  const [erroredUploads, setrroredUploads] = useState([])
   const [uploadsOverview, setUploadsOverview] = useState('')
-  const { data } = useCommit({
-    provider,
-    owner,
-    repo,
-    commitid: commit,
-  })
+  const hasNoUploads = !uploads || uploads.length === 0
 
-  const uploads = data?.commit?.uploads
-
+  // Sorted Uploads
   useEffect(() => {
     setSortedUploads(groupBy(uploads, 'provider'))
   }, [uploads])
 
+  // Uploads Providers
   useEffect(() => {
     setUploadsProviderList(Object.keys(sortedUploads))
   }, [uploads, sortedUploads])
 
+  // Uploads Overview Summary
   useEffect(() => {
     const countedStates = countBy(uploads, (upload) => upload.state)
     const errorCount = Object.entries(countedStates)
@@ -48,10 +44,39 @@ export function useUploads() {
     setUploadsOverview(errorCount)
   }, [uploads, uploadsProviderList])
 
+  // Uploads Errors Per Provider
+  useEffect(() => {
+    const errorList = uploads?.filter(
+      (upload) => upload.state === UploadStateEnum.error
+    )
+    setrroredUploads(groupBy(errorList, 'provider'))
+  }, [uploads])
+
   return {
     uploadsOverview,
     sortedUploads,
     uploadsProviderList,
-    hasNoUploads: !uploads || uploads.length === 0,
+    hasNoUploads,
+    erroredUploads,
+  }
+}
+
+export function useUploads() {
+  const { provider, owner, repo, commit } = useParams()
+  const { data } = useCommit({
+    provider,
+    owner,
+    repo,
+    commitid: commit,
+  })
+  const uploads = data?.commit?.uploads
+  const { uploadsOverview, sortedUploads, uploadsProviderList, hasNoUploads } =
+    useExtractUploads({ uploads })
+
+  return {
+    uploadsOverview,
+    sortedUploads,
+    uploadsProviderList,
+    hasNoUploads,
   }
 }

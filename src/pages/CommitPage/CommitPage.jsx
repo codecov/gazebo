@@ -1,3 +1,4 @@
+import isEmpty from 'lodash/isEmpty'
 import { lazy, Suspense } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 
@@ -7,15 +8,18 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
+import ErroredUploads from './ErroredUploads'
 import Header from './Header'
 import CommitDetailsSummary from './Summary'
 import UploadsCard from './UploadsCard'
+import { useExtractUploads } from './UploadsCard/hooks'
 import YamlErrorBanner from './YamlErrorBanner'
 
 const CommitFileView = lazy(() => import('./subroute/CommitFileView'))
 const CommitsTable = lazy(() => import('./subroute/CommitsTable'))
 const NotFound = lazy(() => import('pages/NotFound'))
 
+// eslint-disable-next-line complexity
 function CommitPage() {
   const { provider, owner, repo, commit: commitSHA, path } = useParams()
   const { data, isLoading } = useCommit({
@@ -24,6 +28,8 @@ function CommitPage() {
     repo,
     commitid: commitSHA,
   })
+  const commit = data?.commit
+  const { erroredUploads } = useExtractUploads({ uploads: commit?.uploads })
 
   const {
     data: { yamlErrors, botErrors },
@@ -32,7 +38,6 @@ function CommitPage() {
     (err) => err?.errorCode === 'invalid_yaml'
   )
 
-  const commit = data?.commit
   const loadingState = (
     <div className="flex-1 flex justify-center m-4">
       <Spinner size={60} />
@@ -78,13 +83,17 @@ function CommitPage() {
             </Route>
             <Route path="/:provider/:owner/:repo/commit/:commit">
               <h2 className="text-base font-semibold">Impacted files</h2>
-              <Suspense fallback={loadingState}>
-                <CommitsTable
-                  commit={commitSHA}
-                  state={commit?.state}
-                  data={commit?.compareWithParent?.impactedFiles}
-                />
-              </Suspense>
+              {!isEmpty(erroredUploads) ? (
+                <ErroredUploads erroredUploads={erroredUploads} />
+              ) : (
+                <Suspense fallback={loadingState}>
+                  <CommitsTable
+                    commit={commitSHA}
+                    state={commit?.state}
+                    data={commit?.compareWithParent?.impactedFiles}
+                  />
+                </Suspense>
+              )}
             </Route>
           </Switch>
         </article>
