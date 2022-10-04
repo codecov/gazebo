@@ -21,9 +21,9 @@ const Template = ({ renderItem, renderSelected, onChange, ...args }) => {
       {...args}
       {...functionArgs}
       onChange={onChangeHandler}
-      onSearch={(term) => console.log(term)}
       value={value}
       resourceName="item"
+      ariaName="multi select dropdown"
     />
   )
 }
@@ -74,18 +74,12 @@ SelectWithLoadMore.args = {
     `Item15`,
     `Item16`,
   ],
-  onLoadMore: () => {
-    console.log('Load more')
-  },
 }
 
 export const SelectWithLoader = Template.bind({})
 SelectWithLoader.args = {
   items: [`Item1`, `Item2`, `Item3`],
   isLoading: true,
-  onLoadMore: () => {
-    console.log('Load more')
-  },
 }
 
 export default {
