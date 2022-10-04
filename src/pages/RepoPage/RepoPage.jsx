@@ -69,7 +69,7 @@ function RepoPage() {
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
 
-  const repoHasCommits = data?.commits?.length > 0
+  const repoHasCommits = data?.commits && data?.commits?.length > 0
 
   return (
     <RepoBreadcrumbProvider>

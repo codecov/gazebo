@@ -126,7 +126,7 @@ function transformPullToTable(commits) {
   })
 }
 
-function CommitsTable({ commits }) {
+function CommitsTable({ commits = [] }) {
   const dataTable = transformPullToTable(commits)
   return <Table data={dataTable} columns={headers} />
 }

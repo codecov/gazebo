@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import Table from './Table'
 
@@ -124,7 +125,8 @@ describe('Table', () => {
     it('onSort is called', async () => {
       const onSort = jest.fn()
       render(<Table data={data} columns={columns} onSort={onSort} />)
-      screen.getByText('Header 1').click()
+      const header = screen.getByText('Header 1')
+      userEvent.click(header)
       expect(onSort).toHaveBeenCalled()
     })
 
@@ -132,11 +134,11 @@ describe('Table', () => {
       const onSort = jest.fn()
       render(<Table data={data} columns={columns} onSort={onSort} />)
       const header = screen.getByText('Header 1')
-      header.click()
+      userEvent.click(header)
       expect(within(header).getByText('arrow-up.svg')).toBeInTheDocument()
-      header.click()
+      userEvent.click(header)
       expect(within(header).getByText('arrow-down.svg')).toBeInTheDocument()
-      header.click()
+      userEvent.click(header)
       expect(within(header).queryByText('arrow-up.svg')).toBeNull()
       expect(within(header).queryByText('arrow-down.svg')).toBeNull()
     })
