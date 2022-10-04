@@ -13,9 +13,9 @@ import Spinner from '../Spinner'
 
 const SelectClasses = {
   button:
-    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded-md bg-white text-left px-3 h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
+    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded bg-white text-left px-3 h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
   listContainer:
-    'overflow-scroll rounded-md bg-white border-ds-gray-tertiary absolute w-full z-10 max-h-80 min-w-fit',
+    'overflow-hidden rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute w-full z-10 max-h-80 min-w-fit',
   listItem: 'block cursor-pointer py-1 px-3 text-sm',
   loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
@@ -178,6 +178,7 @@ const MultiSelect = ({
         </button>
         <div className={cs(!isOpen && 'hidden')}>
           <SearchField
+            variant="topRounded"
             placeholder={getSearchPlaceholder(resourceName)}
             searchValue=""
             setSearchValue={(search) => onSearch(search)}
@@ -236,7 +237,7 @@ MultiSelect.propTypes = {
   value: PropTypes.any,
   renderItem: PropTypes.func,
   renderSelected: PropTypes.func,
-  ariaName: PropTypes.string,
+  ariaName: PropTypes.string.isRequired,
   variant: PropTypes.oneOf(['default', 'gray']),
   disabled: PropTypes.bool,
   isLoading: PropTypes.bool,
