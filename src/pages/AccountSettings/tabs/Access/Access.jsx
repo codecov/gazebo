@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useContext, useState } from 'react'
 
-import { useDeleteSession, useSessions } from 'services/access'
+import { useSessions } from 'services/access'
 import { useFlags } from 'shared/featureFlags'
 import { ThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'
@@ -19,16 +19,9 @@ function Access({ provider }) {
   })
 
   const [showModal, setShowModal] = useState(false)
-  const { mutate } = useDeleteSession({ provider })
 
   const { showThemeToggle } = useFlags({ showThemeToggle: false })
   const { theme, setTheme } = useContext(ThemeContext)
-
-  const handleRevoke = (id) => {
-    if (window.confirm('Are you sure you want to revoke this token?')) {
-      mutate({ sessionid: id })
-    }
-  }
 
   return (
     <div className="flex flex-col">
@@ -55,7 +48,7 @@ function Access({ provider }) {
             data-testid="tokens-docs-link"
             rel="noreferrer"
             target="_blank"
-            href="https://docs.codecov.io/reference/authorization"
+            href="https://docs.codecov.com/reference/overview-v2"
             className="text-ds-blue"
           >
             learn more
@@ -72,10 +65,10 @@ function Access({ provider }) {
           />
         )}
       </div>
-      <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
+      <TokensTable tokens={data?.tokens} />
       <h2 className="mt-8 mb-4 text-lg font-semibold">Login Sessions</h2>
       <div className="max-w-screen-md">
-        <SessionsTable onRevoke={handleRevoke} sessions={data.sessions} />
+        <SessionsTable sessions={data?.sessions} />
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import isNil from 'lodash/isNil'
 import { Suspense } from 'react'
 
+import { CommitStateEnum } from 'shared/utils/commit'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
@@ -40,7 +41,12 @@ const Root = () => {
           flagData={null}
           coverageIsLoading={false}
         />
-        {hasImpactedFiles(data?.impactedFiles) ? (
+        {data?.headState === CommitStateEnum.ERROR ? (
+          <p>
+            Cannot display Impacted Files because most recent commit is in an
+            error state.
+          </p>
+        ) : hasImpactedFiles(data?.impactedFiles) ? (
           <Suspense fallback={Loader}>
             <ImpactedFiles />
           </Suspense>

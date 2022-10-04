@@ -2,10 +2,12 @@ import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
   useDeleteSession,
-  useGenerateToken,
+  useGenerateUserToken,
+  useRevokeUserToken,
   useSessions,
 } from 'services/access'
 import { useFlags } from 'shared/featureFlags'
@@ -42,13 +44,18 @@ describe('AccessTab', () => {
       },
     })
     useDeleteSession.mockReturnValue({})
-    useGenerateToken.mockReturnValue({})
+    useRevokeUserToken.mockReturnValue({})
+    useGenerateUserToken.mockReturnValue({})
     useFlags.mockReturnValue({ showThemeToggle })
     const _props = { ...defaultProps, ...props }
     render(
-      <ThemeContextProvider>
-        <Access {..._props} />
-      </ThemeContextProvider>
+      <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+        <Route path="/:provider/:owner/:repo">
+          <ThemeContextProvider>
+            <Access {..._props} />
+          </ThemeContextProvider>
+        </Route>
+      </MemoryRouter>
     )
   }
 

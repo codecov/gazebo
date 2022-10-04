@@ -9,7 +9,7 @@ const SelectClasses = {
   root: 'relative',
   item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
   button: 'flex justify-between items-center text-left outline-none',
-  ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute z-10 max-h-72 overflow-scroll',
+  ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute z-10 max-h-72',
 }
 
 const UlVariantClass = {
@@ -95,7 +95,7 @@ function Select({
       <ul
         aria-label={ariaName}
         className={cs(SelectClasses.ul, UlVariantClass[variant], {
-          border: isOpen,
+          'border overflow-scroll': isOpen,
         })}
         {...getMenuProps()}
       >
