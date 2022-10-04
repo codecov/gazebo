@@ -5,7 +5,7 @@ import { useDebounce } from 'react-use'
 import TextInput from 'ui/TextInput'
 
 const SearchField = forwardRef(
-  ({ searchValue, setSearchValue, ...rest }, ref) => {
+  ({ searchValue, setSearchValue, variant = 'default', ...rest }, ref) => {
     const [search, setSearch] = useState(searchValue)
     // eslint-disable-next-line no-unused-vars
     const { className, value, onChange, icon, ...newProps } = rest
@@ -30,6 +30,7 @@ const SearchField = forwardRef(
         value={search}
         onChange={onChangeHandler}
         icon={icon ?? 'search'}
+        variant={variant}
         {...newProps}
         ref={ref}
       />
@@ -42,6 +43,7 @@ SearchField.displayName = 'SearchField'
 SearchField.propTypes = {
   searchValue: PropTypes.string.isRequired,
   setSearchValue: PropTypes.func.isRequired,
+  variant: PropTypes.oneOf(['default', 'topRounded']),
 }
 
 export default SearchField
