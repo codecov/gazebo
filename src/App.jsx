@@ -9,6 +9,7 @@ import BaseLayout from 'layouts/BaseLayout'
 // not lazy loading because is first page user sees
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
+import { ThemeContextProvider } from 'shared/ThemeContext'
 
 // Not lazy loading because the page is very small and is accessed often
 
@@ -44,113 +45,115 @@ function App() {
     <ToastNotificationProvider>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
-        <BrowserRouter>
-          <Switch>
-            <Route path="/login/:provider">
-              <BaseLayout>
-                {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
-              </BaseLayout>
-            </Route>
-            <Route path="/login">
-              <BaseLayout>
-                {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
-              </BaseLayout>
-            </Route>
-            <Route path="/account/:provider/:owner/">
-              <BaseLayout>
-                <AccountSettings />
-              </BaseLayout>
-            </Route>
-            {config.IS_ENTERPRISE && (
-              <Route path="/admin/:provider">
+        <ThemeContextProvider>
+          <BrowserRouter>
+            <Switch>
+              <Route path="/login/:provider">
                 <BaseLayout>
-                  <AdminSettings />
+                  {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
                 </BaseLayout>
               </Route>
-            )}
-            <Route path="/analytics/:provider/:owner/" exact>
-              <BaseLayout>
-                <AnalyticsPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/feedback">
-              <BaseLayout>
-                <FeedbackPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/members/:provider/:owner/">
-              <BaseLayout>
-                <MembersPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/plan/:provider/:owner/">
-              <BaseLayout>
-                <PlanPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/+" exact>
-              <BaseLayout>
-                <HomePage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/" exact>
-              <BaseLayout>
-                <HomePage active={true} />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/" exact>
-              <BaseLayout>
-                <OwnerPage active={true} />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/+" exact>
-              <BaseLayout>
-                <OwnerPage />
-              </BaseLayout>
-            </Route>
-            <Redirect
-              from="/:provider/:owner/:repo/compare/*"
-              to="/:provider/:owner/:repo/pull/*"
-            />
-            <Route
-              path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
-              exact
-            >
-              <BaseLayout>
-                <PullRequestPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo/pull/:pullId">
-              <BaseLayout>
-                <PullRequestPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
-              <BaseLayout>
-                <CommitPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo/commit/:commit" exact>
-              <BaseLayout>
-                <CommitPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo">
-              <BaseLayout>
-                <RepoPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/">
-              {config.IS_ENTERPRISE ? (
+              <Route path="/login">
                 <BaseLayout>
-                  <EnterpriseLandingPage />
+                  {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
                 </BaseLayout>
-              ) : (
-                <Redirect to="/gh" />
+              </Route>
+              <Route path="/account/:provider/:owner/">
+                <BaseLayout>
+                  <AccountSettings />
+                </BaseLayout>
+              </Route>
+              {config.IS_ENTERPRISE && (
+                <Route path="/admin/:provider">
+                  <BaseLayout>
+                    <AdminSettings />
+                  </BaseLayout>
+                </Route>
               )}
-            </Route>
-          </Switch>
-        </BrowserRouter>
+              <Route path="/analytics/:provider/:owner/" exact>
+                <BaseLayout>
+                  <AnalyticsPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/feedback">
+                <BaseLayout>
+                  <FeedbackPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/members/:provider/:owner/">
+                <BaseLayout>
+                  <MembersPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/plan/:provider/:owner/">
+                <BaseLayout>
+                  <PlanPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/+" exact>
+                <BaseLayout>
+                  <HomePage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/" exact>
+                <BaseLayout>
+                  <HomePage active={true} />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/" exact>
+                <BaseLayout>
+                  <OwnerPage active={true} />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/+" exact>
+                <BaseLayout>
+                  <OwnerPage />
+                </BaseLayout>
+              </Route>
+              <Redirect
+                from="/:provider/:owner/:repo/compare/*"
+                to="/:provider/:owner/:repo/pull/*"
+              />
+              <Route
+                path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
+                exact
+              >
+                <BaseLayout>
+                  <PullRequestPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/:repo/pull/:pullId">
+                <BaseLayout>
+                  <PullRequestPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
+                <BaseLayout>
+                  <CommitPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/:repo/commit/:commit" exact>
+                <BaseLayout>
+                  <CommitPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/:provider/:owner/:repo">
+                <BaseLayout>
+                  <RepoPage />
+                </BaseLayout>
+              </Route>
+              <Route path="/">
+                {config.IS_ENTERPRISE ? (
+                  <BaseLayout>
+                    <EnterpriseLandingPage />
+                  </BaseLayout>
+                ) : (
+                  <Redirect to="/gh" />
+                )}
+              </Route>
+            </Switch>
+          </BrowserRouter>
+        </ThemeContextProvider>
       </QueryClientProvider>
     </ToastNotificationProvider>
   )

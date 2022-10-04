@@ -9,7 +9,7 @@ import {
   useSessions,
 } from 'services/access'
 import { useFlags } from 'shared/featureFlags'
-
+import { ThemeContextProvider } from 'shared/ThemeContext'
 
 import Access from './Access'
 
@@ -45,7 +45,11 @@ describe('AccessTab', () => {
     useGenerateToken.mockReturnValue({})
     useFlags.mockReturnValue({ showThemeToggle })
     const _props = { ...defaultProps, ...props }
-    render(<Access {..._props} />)
+    render(
+      <ThemeContextProvider>
+        <Access {..._props} />
+      </ThemeContextProvider>
+    )
   }
 
   describe('when rendering on base url', () => {

@@ -12,7 +12,6 @@ import UserOnboarding from '../UserOnboarding'
 
 function BaseLayout({ children }) {
   useTracking()
-  const theme = localStorage.getItem('current-theme')
 
   const fullPageLoader = (
     <div className="flex-1 flex items-center justify-center mt-16">
@@ -24,7 +23,7 @@ function BaseLayout({ children }) {
     <>
       <Header />
       <Suspense fallback={fullPageLoader}>
-        <main className={`container grow mt-4 mb-8 md:p-0 ${theme}`}>
+        <main className="container grow mt-4 mb-8 md:p-0">
           <ErrorBoundary sentryScopes={[['layout', 'base']]}>
             <NetworkErrorBoundary>
               {children}

@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 
 import { useDeleteSession, useSessions } from 'services/access'
 import { useFlags } from 'shared/featureFlags'
+import { ThemeContext } from 'shared/ThemeContext'
 import Button from 'ui/Button'
 import Toggle from 'ui/Toggle'
 
@@ -18,21 +19,10 @@ function Access({ provider }) {
   })
 
   const [showModal, setShowModal] = useState(false)
-
   const { mutate } = useDeleteSession({ provider })
 
-  const theme = localStorage.getItem('current-theme')
-  const [themeValue, setThemeValue] = useState(theme === colorblindTheme)
   const { showThemeToggle } = useFlags({ showThemeToggle: false })
-
-  const handleThemeChange = () => {
-    if (theme !== colorblindTheme) {
-      localStorage.setItem('current-theme', colorblindTheme)
-    } else {
-      localStorage.setItem('current-theme', '')
-    }
-    setThemeValue(!themeValue)
-  }
+  const { theme, setTheme } = useContext(ThemeContext)
 
   const handleRevoke = (id) => {
     if (window.confirm('Are you sure you want to revoke this token?')) {
@@ -41,13 +31,19 @@ function Access({ provider }) {
   }
 
   return (
-    <div className={`flex flex-col ${theme}`}>
+    <div className="flex flex-col">
       {showThemeToggle && (
         <div className="flex justify-end mb-6">
           <Toggle
             label="Colorblind Friendly"
-            value={themeValue}
-            onClick={handleThemeChange}
+            value={theme === colorblindTheme}
+            onClick={() => {
+              if (theme !== colorblindTheme) {
+                setTheme(colorblindTheme)
+              } else {
+                setTheme('')
+              }
+            }}
           />
         </div>
       )}
