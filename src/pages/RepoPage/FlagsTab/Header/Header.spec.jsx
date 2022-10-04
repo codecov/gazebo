@@ -3,12 +3,12 @@ import { render, screen, waitFor } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
+import { useRepoFlagsCount } from 'services/repo'
 
 import Header from './Header'
 
 jest.mock('services/navigation')
-jest.mock('services/repo/useRepoFlagsSelect')
+jest.mock('services/repo/useRepoFlagsCount')
 
 describe('Header', () => {
   const updateLocationMock = jest.fn()
@@ -17,8 +17,8 @@ describe('Header', () => {
       params: { search: '', historicalTrend: '' },
       updateParams: updateLocationMock,
     })
-    useRepoFlagsSelect.mockReturnValue({
-      data: new Array(99),
+    useRepoFlagsCount.mockReturnValue({
+      data: { flagsCount: 99 },
     })
 
     render(<Header />)
@@ -61,7 +61,6 @@ describe('Header', () => {
       })
 
       it('updates the location params on select', async () => {
-        await screen.findByText('Last 6 months')
         const item = screen.getByText('Last 7 days')
         userEvent.click(item)
 
