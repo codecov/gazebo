@@ -121,7 +121,7 @@ describe('AccessTab', () => {
       expect(button).toBeInTheDocument()
     })
 
-    describe('on toggle switch', () => {
+    describe('on toggle switch to true', () => {
       window.localStorage.__proto__.setItem = jest.fn()
 
       beforeEach(() => {
@@ -133,6 +133,19 @@ describe('AccessTab', () => {
           'current-theme',
           'color-blind'
         )
+      })
+    })
+
+    describe('on toggle switch to false', () => {
+      window.localStorage.__proto__.setItem = jest.fn()
+
+      beforeEach(() => {
+        screen.getByTestId('switch').click()
+        screen.getByTestId('switch').click()
+      })
+
+      it('sets root theme back in local storage', () => {
+        expect(localStorage.setItem).toBeCalledWith('current-theme', '')
       })
     })
   })
