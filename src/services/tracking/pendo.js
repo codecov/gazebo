@@ -28,15 +28,20 @@ export function useUpdatePendoWithOwner(user) {
     if (oldOwner.current !== owner) {
       window?.pendo?.updateOptions({
         visitor: getCurUserInfo(currentUser),
-        account: {
+        account: snakeifyKeys({
           id: ownerData?.hashOwnerid,
           name: ownerData?.username,
           isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
           isAdmin: ownerData?.isAdmin,
-        },
+        }),
       })
     }
-    ownerData ? (oldOwner.current = owner) : (oldOwner.current = undefined)
+
+    if (ownerData) {
+      oldOwner.current = owner
+    } else {
+      oldOwner.current = undefined
+    }
   }, [oldOwner, owner, currentUser, ownerData])
 }
 
