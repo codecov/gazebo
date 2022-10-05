@@ -190,22 +190,29 @@ const MultiSelect = forwardRef(
               variant="solid"
             />
           </button>
-
-          <div className={cs(!isOpen && 'hidden')}>
-            <SearchField
-              variant="topRounded"
-              placeholder={getSearchPlaceholder(resourceName)}
-              searchValue=""
-              setSearchValue={(search) => onSearch(search)}
-              {...getInputProps()}
-            />
+          <div
+            className={cs(!onSearch && 'invisible', 'absolute', 'inset-x-0')}
+          >
+            <div className={cs(!isOpen && 'invisible')}>
+              <SearchField
+                variant="topRounded"
+                placeholder={getSearchPlaceholder(resourceName)}
+                searchValue=""
+                setSearchValue={(search) => onSearch(search)}
+                {...getInputProps()}
+              />
+            </div>
           </div>
         </div>
         <ul
           aria-label={ariaName}
-          className={cs(SelectClasses.listContainer, {
-            'border border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
-          })}
+          className={cs(
+            SelectClasses.listContainer,
+            {
+              'border border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
+            },
+            onSearch ? 'top-16' : 'top-8'
+          )}
           {...getMenuProps()}
         >
           {isOpen && (
