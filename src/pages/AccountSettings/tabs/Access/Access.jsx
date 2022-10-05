@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-import { useDeleteSession, useSessions } from 'services/access'
+import { useSessions } from 'services/access'
 import Button from 'ui/Button'
 
 import CreateTokenModal from './CreateTokenModal'
@@ -15,14 +15,6 @@ function Access({ provider }) {
 
   const [showModal, setShowModal] = useState(false)
 
-  const { mutate } = useDeleteSession({ provider })
-
-  const handleRevoke = (id) => {
-    if (window.confirm('Are you sure you want to revoke this token?')) {
-      mutate({ sessionid: id })
-    }
-  }
-
   return (
     <div className="flex flex-col">
       <h2 className="text-lg font-semibold">API Tokens</h2>
@@ -33,7 +25,7 @@ function Access({ provider }) {
             data-testid="tokens-docs-link"
             rel="noreferrer"
             target="_blank"
-            href="https://docs.codecov.io/reference/authorization"
+            href="https://docs.codecov.com/reference/overview-v2"
             className="text-ds-blue"
           >
             learn more
@@ -50,10 +42,10 @@ function Access({ provider }) {
           />
         )}
       </div>
-      <TokensTable onRevoke={handleRevoke} tokens={data.tokens} />
+      <TokensTable tokens={data?.tokens} />
       <h2 className="mt-8 mb-4 text-lg font-semibold">Login Sessions</h2>
       <div className="max-w-screen-md">
-        <SessionsTable onRevoke={handleRevoke} sessions={data.sessions} />
+        <SessionsTable sessions={data?.sessions} />
       </div>
     </div>
   )

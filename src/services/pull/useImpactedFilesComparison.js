@@ -15,6 +15,9 @@ export function useImpactedFilesComparison({
       owner(username: $owner) {
         repository(name: $repo) {
           pull(id: $pullId) {
+            head {
+              state
+            }
             compareWithBase: compareWithBaseTemp {
               patchTotals {
                 percentCovered
@@ -61,7 +64,8 @@ export function useImpactedFilesComparison({
     })
   }
 
-  function transformImpactedFilesData(compareWithBase) {
+  function transformImpactedFilesData({ pull }) {
+    const compareWithBase = pull?.compareWithBase
     const impactedFiles = compareWithBase?.impactedFiles?.map(
       (impactedFile) => {
         const headCoverage = impactedFile?.headCoverage?.percentCovered
@@ -86,6 +90,7 @@ export function useImpactedFilesComparison({
       }
     )
     return {
+      headState: pull?.head?.state,
       impactedFiles,
       pullHeadCoverage: compareWithBase?.headTotals?.percentCovered,
       pullPatchCoverage: compareWithBase?.patchTotals?.percentCovered,
@@ -98,9 +103,7 @@ export function useImpactedFilesComparison({
     fetchImpactedFiles,
     {
       select: ({ data }) =>
-        transformImpactedFilesData(
-          data?.owner?.repository?.pull?.compareWithBase
-        ),
+        transformImpactedFilesData({ pull: data?.owner?.repository?.pull }),
       staleTime: 1000 * 60 * 5,
     }
   )

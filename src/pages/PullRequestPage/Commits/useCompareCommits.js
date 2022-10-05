@@ -9,6 +9,7 @@ export function getCompareCommitsData({ commits }) {
     message: commit?.message,
     commitid: commit?.commitid,
     author: commit?.author?.username,
+    state: commit?.state,
   }))
 }
 
