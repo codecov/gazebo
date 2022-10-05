@@ -6,16 +6,24 @@ import { forwardRef } from 'react'
 
 import Icon from 'ui/Icon'
 
+const VariantClasses = {
+  default: 'rounded border',
+  topRounded: 'border-t border-r border-l focus:border rounded-tl rounded-tr',
+}
+
 const styles = {
   input:
-    'block rounded border border-ds-gray-tertiary px-3 text-sm w-full h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary',
+    'block border-ds-gray-tertiary px-3 text-sm w-full h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary',
   label: 'block font-semibold mb-2',
   iconWrapper:
     'absolute text-ds-gray-quaternary left-2 h-full flex items-center',
 }
 
 const TextInput = forwardRef(
-  ({ type = 'text', icon, label, placeholder, ...props }, ref) => {
+  (
+    { type = 'text', icon, label, placeholder, variant = 'default', ...props },
+    ref
+  ) => {
     const id = uniqueId('text-input')
     const { className, ...newProps } = props
 
@@ -42,7 +50,7 @@ const TextInput = forwardRef(
             ref={ref}
             id={id}
             type={type}
-            className={cs(styles.input, {
+            className={cs(styles.input, VariantClasses[variant], {
               'pl-7': Boolean(icon),
             })}
             placeholder={placeholder}
@@ -63,6 +71,7 @@ TextInput.propTypes = {
   placeholder: PropTypes.string,
   onChange: PropTypes.func,
   value: PropTypes.string,
+  variant: PropTypes.oneOf(['default', 'topRounded']),
 }
 
 export default TextInput
