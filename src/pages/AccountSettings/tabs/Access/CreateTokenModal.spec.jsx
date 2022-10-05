@@ -2,7 +2,7 @@ import { act, render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 
-import { useGenerateToken } from 'services/access'
+import { useGenerateUserToken } from 'services/access'
 
 import CreateTokenModal from './CreateTokenModal'
 
@@ -18,7 +18,7 @@ describe('CreateTokenModal', () => {
   const mutate = jest.fn()
 
   function setup(props) {
-    useGenerateToken.mockReturnValue({
+    useGenerateUserToken.mockReturnValue({
       mutate,
     })
 
@@ -65,7 +65,7 @@ describe('CreateTokenModal', () => {
         return act(() => {
           mutate.mock.calls[0][1].onSuccess({
             data: {
-              createApiToken: {
+              createUserToken: {
                 fullToken: '111-222-333',
               },
             },

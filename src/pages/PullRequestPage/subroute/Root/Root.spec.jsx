@@ -2,6 +2,8 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { CommitStateEnum } from 'shared/utils/commit'
+
 import useImpactedFilesTable from './ImpactedFiles/hooks'
 import Root from './Root'
 
@@ -13,6 +15,7 @@ jest.mock(
 
 const mockImpactedFiles = {
   data: {
+    headState: CommitStateEnum.COMPLETE,
     pullBaseCoverage: 41.66667,
     pullHeadCoverage: 92.30769,
     pullPatchCoverage: 1,
@@ -118,6 +121,25 @@ describe('Root', () => {
       expect(
         screen.queryByText('ImpactedFiles Component')
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with head commit errored out', () => {
+    beforeEach(() => {
+      const impactedFiles = {
+        data: {
+          headState: CommitStateEnum.ERROR,
+        },
+        isLoading: false,
+      }
+      setup({ impactedFiles })
+    })
+    it('renders no head commit error text', () => {
+      expect(
+        screen.getByText(
+          'Cannot display Impacted Files because most recent commit is in an error state.'
+        )
+      ).toBeInTheDocument()
     })
   })
 })

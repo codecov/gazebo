@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
+import { useRevokeUserToken } from 'services/access'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Table from 'ui/Table'
@@ -16,14 +18,7 @@ const tableColumns = [
     id: 'lastFour',
     header: 'Token',
     accessorKey: 'lastFour',
-    width: 'w-2/12',
-    cell: (info) => info.getValue(),
-  },
-  {
-    id: 'lastSeen',
-    header: 'Last access',
-    accessorKey: 'lastSeen',
-    width: 'w-7/12',
+    width: 'w-9/12',
     cell: (info) => info.getValue(),
   },
   {
@@ -35,17 +30,26 @@ const tableColumns = [
   },
 ]
 
-function TokensTable({ tokens, onRevoke }) {
+function TokensTable({ tokens }) {
+  const { provider } = useParams()
+  const { mutate } = useRevokeUserToken({ provider })
+
+  const handleRevoke = (id) => {
+    if (window.confirm('Are you sure you want to revoke this token?')) {
+      mutate({ tokenid: id })
+    }
+  }
+
   const dataTable = tokens.map((t) => ({
-    name: t.name,
+    name: t?.name,
     lastFour: (
-      <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">{`xxxx ${t.lastFour}`}</p>
+      <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">{`xxxx ${t?.lastFour}`}</p>
     ),
-    lastSeen: t.lastseen ? formatTimeToNow(t.lastseen) : '-',
+    lastSeen: t?.lastseen ? formatTimeToNow(t?.lastseen) : '-',
     revokeBtn: (
       <Button
         hook="revoke-sesson"
-        onClick={() => onRevoke(t.sessionid)}
+        onClick={() => handleRevoke(t?.id)}
         variant="danger"
       >
         Revoke
