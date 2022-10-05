@@ -8,7 +8,7 @@ import Icon from 'ui/Icon'
 
 const VariantClasses = {
   default: 'rounded border',
-  topRounded: 'border-l border-r border-t rounded-tl rounded-tr',
+  topRounded: 'border-t border-r border-l focus:border rounded-tl rounded-tr',
 }
 
 const styles = {
