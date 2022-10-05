@@ -1,0 +1,44 @@
+.coverageOverTimeChart title {
+  pointer-events: none;
+}
+
+.coverageOverTimeChart {
+  @apply max-h-[110px] md:max-h-[140px] lg:max-h-[190px] xl:max-h-[230px]  2xl:max-h-[265px] !important;
+}
+
+.coverageOverTimeChart .coverage-line path {
+  @apply text-ds-pink stroke-current !important;
+}
+
+.coverageOverTimeChart .chart-tooltip path {
+  @apply text-ds-gray-tertiary stroke-current !important;
+  fill: white !important;
+}
+
+.coverageOverTimeChart .chart-tooltip tspan {
+  @apply font-sans !important;
+  @apply text-ds-gray-octonary font-extralight stroke-current;
+}
+
+.coverageOverTimeChart .date-axis tspan {
+  text-anchor: start !important;
+}
+
+.coverageOverTimeChart .date-axis:last-child tspan {
+  text-anchor: middle !important;
+}
+
+.coverageOverTimeChart .coverage-axis tspan {
+  text-anchor: end !important;
+}
+
+.coverageOverTimeChart .date-axis line,
+.coverageOverTimeChart .coverage-axis line {
+  @apply text-ds-gray-tertiary stroke-current !important;
+}
+
+.coverageOverTimeChart .date-axis tspan,
+.coverageOverTimeChart .coverage-axis tspan {
+  @apply font-sans !important;
+  @apply font-light text-ds-gray-quinary stroke-current;
+}

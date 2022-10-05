@@ -398,6 +398,12 @@ function useNavLinks() {
       },
       isExternalLink: false,
     },
+    profile: {
+      text: 'Profile',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}`,
+      isExternalLink: false,
+    },
   }
 }
 
@@ -576,6 +582,42 @@ function useStaticNavLinks() {
     graphsSunburst: {
       text: 'Graphs Sunburst',
       path: () => 'https://docs.codecov.com/reference/sunburst',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    repoYaml: {
+      text: 'Repository Yaml',
+      path: () => 'https://docs.codecov.com/docs/codecov-yaml#repository-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    ciProviderWorkflow: {
+      text: 'CI provider workflow',
+      path: () => 'https://circleci.com/blog/what-is-continuous-integration',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    exampleRepos: {
+      text: 'Codecov uploader and supported languages',
+      path: () => 'https://docs.codecov.com/docs/supported-languages',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    prCommentLayout: {
+      text: 'Pull request comment layout',
+      path: () => 'https://docs.codecov.com/docs/pull-request-comments#layout',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    repoConfigFeedback: {
+      text: 'New repo set up feedback',
+      path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/18',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    flagsFeedback: {
+      text: 'New repo set up feedback',
+      path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/27',
       isExternalLink: true,
       openNewTab: true,
     },

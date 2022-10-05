@@ -4,6 +4,8 @@ import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import {
   useIsCurrentUserAnAdmin,
   useMyContexts,
@@ -12,7 +14,9 @@ import {
   useResyncUser,
   useUpdateProfile,
   useUser,
-} from './hooks'
+} from './index'
+
+jest.mock('config')
 
 const user = {
   username: 'TerrySmithDC',
@@ -100,34 +104,77 @@ describe('useUpdateProfile', () => {
     })
   }
 
-  describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('is not loading yet', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
-    describe('when calling the mutation', () => {
-      const newData = {
-        email: 'newemail@test.com',
-        name: 'new name',
-      }
-      beforeEach(async () => {
-        hookData.result.current.mutate(newData)
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
+  describe('when running in self-hosted', () => {
+    describe('when called', () => {
+      beforeEach(() => {
+        setup()
+        config.IS_ENTERPRISE = true
       })
 
-      it('returns success', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+      it('is not loading yet', () => {
+        expect(hookData.result.current.isLoading).toBeFalsy()
       })
 
-      it('updates the local cache', () => {
-        expect(queryClient.getQueryData(['currentUser', 'gh'])).toMatchObject({
-          ...user,
-          ...newData,
+      describe('when calling the mutation', () => {
+        const newData = {
+          email: 'newemail@test.com',
+          name: 'new name',
+        }
+        beforeEach(async () => {
+          hookData.result.current.mutate(newData)
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
+        })
+
+        it('returns success', () => {
+          expect(hookData.result.current.isSuccess).toBeTruthy()
+        })
+
+        it('updates the local cache', () => {
+          expect(queryClient.getQueryData(['currentUser', 'gh'])).toMatchObject(
+            {
+              ...user,
+              ...newData,
+            }
+          )
+        })
+      })
+    })
+  })
+
+  describe('when not running in self-hosted', () => {
+    describe('when called', () => {
+      beforeEach(() => {
+        setup()
+        config.IS_ENTERPRISE = false
+      })
+
+      it('is not loading yet', () => {
+        expect(hookData.result.current.isLoading).toBeFalsy()
+      })
+
+      describe('when calling the mutation', () => {
+        const newData = {
+          email: 'newemail@test.com',
+          name: 'new name',
+        }
+        beforeEach(async () => {
+          hookData.result.current.mutate(newData)
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
+        })
+
+        it('returns success', () => {
+          expect(hookData.result.current.isSuccess).toBeTruthy()
+        })
+
+        it('updates the local cache', () => {
+          expect(queryClient.getQueryData(['currentUser', 'gh'])).toMatchObject(
+            {
+              ...user,
+              ...newData,
+            }
+          )
         })
       })
     })

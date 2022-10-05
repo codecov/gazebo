@@ -1,0 +1,13 @@
+import Breadcrumb from 'ui/Breadcrumb'
+
+import { useCrumbs } from './context'
+
+export default function RepoBreadcrumb() {
+  const crumbs = useCrumbs()
+
+  return (
+    <div className="mx-6 sm:mx-0 flex flex-row">
+      <Breadcrumb paths={crumbs} />
+    </div>
+  )
+}
