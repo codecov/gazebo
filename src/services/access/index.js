@@ -1,3 +1,4 @@
 export * from './useSessions'
 export * from './useDeleteSession'
-export * from './useGenerateToken'
+export * from './useRevokeUserToken'
+export * from './useGenerateUserToken'

@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
 
-import { useCompareCommits } from './hooks'
+import { useCompareCommits } from './useCompareCommits'
 
 jest.mock('services/pull')
 

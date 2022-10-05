@@ -2,8 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-
-import { useGenerateToken } from 'services/access'
+import { useGenerateUserToken } from 'services/access'
 import Button from 'ui/Button'
 import CopyClipboard from 'ui/CopyClipboard'
 import Modal from 'ui/Modal'
@@ -19,14 +18,14 @@ function CreateTokenModal({ closeModal, provider }) {
 
   const [token, setToken] = useState(null)
 
-  const { mutate, isLoading } = useGenerateToken({ provider })
+  const { mutate, isLoading } = useGenerateUserToken({ provider })
 
   const submit = ({ name }) => {
     mutate(
       { name },
       {
         onSuccess: ({ data }) => {
-          setToken(data.createApiToken.fullToken)
+          setToken(data?.createUserToken?.fullToken)
         },
       }
     )
@@ -58,7 +57,7 @@ function CreateTokenModal({ closeModal, provider }) {
             isLoading={isLoading}
             type="submit"
             variant="primary"
-            disabled={nameValue.length === 0}
+            disabled={nameValue?.length === 0}
           >
             Generate Token
           </Button>

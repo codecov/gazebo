@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
+import { useDeleteSession } from 'services/access'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Table from 'ui/Table'
@@ -35,19 +37,28 @@ const tableColumns = [
   },
 ]
 
-function SessionsTable({ sessions, onRevoke }) {
+function SessionsTable({ sessions }) {
+  const { provider } = useParams()
+  const { mutate } = useDeleteSession({ provider })
+
+  const handleRevoke = (id) => {
+    if (window.confirm('Are you sure you want to revoke this token?')) {
+      mutate({ sessionid: id })
+    }
+  }
+
   const dataTable = sessions.map((s) => ({
     ip: (
       <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">
         {s.ip}
       </p>
     ),
-    lastSeen: s.lastseen ? formatTimeToNow(s.lastseen) : '-',
-    userAgent: s.useragent,
+    lastSeen: s?.lastseen ? formatTimeToNow(s?.lastseen) : '-',
+    userAgent: s?.useragent,
     revokeBtn: (
       <Button
         hook="revoke-session"
-        onClick={() => onRevoke(s.sessionid)}
+        onClick={() => handleRevoke(s?.sessionid)}
         variant="danger"
       >
         Revoke
