@@ -12,10 +12,9 @@ function ErroredUploads({ erroredUploads }) {
           return (
             <div key={provider}>
               <p className="capitalize font-semibold">{provider}</p>
-              {uploads?.map((upload) => {
-                const { buildCode, ciUrl, createdAt } = upload
+              {uploads?.map(({ buildCode, ciUrl, createdAt }) => {
                 return (
-                  <div key={createdAt} className="flex gap-1">
+                  <div key={`${buildCode}-${createdAt}`} className="flex gap-1">
                     <p>{buildCode}</p>
                     {ciUrl && (
                       <A href={ciUrl} hook="ci job" isExternal={true}>
