@@ -11,7 +11,7 @@ jest.mock(
   '../YamlModal/YamlModalErrorBanner',
   () => () => 'YamlModalErrorBanner'
 )
-jest.mock('./hooks')
+jest.mock('./useUploads')
 jest.mock('services/commitErrors')
 
 describe('UploadsCard', () => {
