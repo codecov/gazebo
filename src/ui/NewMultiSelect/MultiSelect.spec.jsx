@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { act } from 'react-test-renderer'
+import { act } from 'react-dom/test-utils'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import MultiSelect from './MultiSelect'
@@ -35,6 +35,15 @@ describe('MultiSelect', () => {
 
       const listbox = screen.getByRole('listbox')
       expect(listbox).toBeEmptyDOMElement()
+    })
+
+    describe('when no items are passed', () => {
+      it('uses default items value', () => {
+        render(<MultiSelect ariaName="multi-select test" onChange={onChange} />)
+
+        const listbox = screen.getByRole('listbox')
+        expect(listbox).toBeEmptyDOMElement()
+      })
     })
   })
 
@@ -432,7 +441,7 @@ describe('MultiSelect', () => {
       }
     })
 
-    it('reset selected function is defined', async () => {
+    it('reset selected function is defined', () => {
       render(
         <MultiSelect
           {...props}
@@ -445,7 +454,7 @@ describe('MultiSelect', () => {
       const button = screen.getByText(/3 items selected/)
       userEvent.click(button)
 
-      await act(() => {
+      act(() => {
         multiSelectRef.resetSelected()
       })
 

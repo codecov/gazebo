@@ -73,7 +73,7 @@ const MultiSelect = forwardRef(
       ariaName,
       disabled,
       isLoading,
-      items,
+      items = [],
       onChange,
       onLoadMore,
       onSearch,
