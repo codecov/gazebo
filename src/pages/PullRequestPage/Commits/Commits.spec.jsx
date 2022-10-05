@@ -4,9 +4,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Commits from './Commits'
-import { useCompareCommits } from './hooks'
+import { useCompareCommits } from './useCompareCommits'
 
-jest.mock('./hooks')
+jest.mock('./useCompareCommits')
 
 const queryClient = new QueryClient()
 
@@ -16,11 +16,13 @@ const mockPullCommits = {
       author: 'chetney',
       message: `You're awfully nice. I mean, I could be fucking armed to the teeth. You don't know me.`,
       commitid: '1234',
+      state: 'complete',
     },
     {
       author: 'laudna',
       message: `I was alive, but then I was dead, and now I'm alive again. I'm originally from Whitestone and this is Pâté, my pet rat. (as Pâté) "Hello, Chetney!"`,
       commitid: '456789',
+      state: 'complete',
     },
   ],
 }
@@ -80,6 +82,49 @@ describe('Commits Card', () => {
     it('renders a card for every commit', () => {
       const notFound = screen.getByText(/no commits/)
       expect(notFound).toBeInTheDocument()
+    })
+  })
+
+  describe('when commits dont have author or message', () => {
+    beforeEach(() => {
+      setup({
+        data: [
+          {
+            author: null,
+            message: null,
+            commitid: '456789',
+            state: 'complete',
+          },
+        ],
+      })
+    })
+
+    it('renders the missing message title', () => {
+      expect(screen.getByText(/Commit Title Unknown/)).toBeInTheDocument()
+    })
+
+    it('renders the missing author message', () => {
+      expect(screen.getByText(/Author Unknown/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when commits are in error state', () => {
+    beforeEach(() => {
+      setup({
+        data: [
+          {
+            author: 'Otohan Thull3',
+            message:
+              'Youre missing the party. Run all you want. Youre just running and leaving them to die',
+            commitid: '456789',
+            state: 'error',
+          },
+        ],
+      })
+    })
+
+    it('renders the error message', () => {
+      expect(screen.getByText(/processing failed/)).toBeInTheDocument()
     })
   })
 })

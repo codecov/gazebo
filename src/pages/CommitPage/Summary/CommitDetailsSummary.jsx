@@ -40,12 +40,11 @@ const getSourceSummaryCards = ({ headCommitId, parentCommitId, state }) =>
           title: 'Source',
           value: headCommitId && parentCommitId && (
             <p className="text-ds-gray-octonary text-sm mt-2">
-              Coverage data is based on{' '}
-              <span className="uppercase font-medium">head</span>{' '}
-              <A to={{ pageName: 'commit', options: { commit: headCommitId } }}>
+              This commit{' '}
+              <span className="font-mono font-semibold">
                 {headCommitId?.slice(0, 7)}
-              </A>{' '}
-              compared to <span className="uppercase font-medium">parent</span>{' '}
+              </span>{' '}
+              compared to{' '}
               <A
                 to={{ pageName: 'commit', options: { commit: parentCommitId } }}
               >

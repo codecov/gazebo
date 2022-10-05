@@ -100,7 +100,7 @@ describe('Coverage Tab', () => {
 
     it('renders length of files if data is not empty', () => {
       expect(
-        screen.getByText(`${mockRepoContents.data.length} files`)
+        screen.getByText(`${mockRepoContents.data.length} total files`)
       ).toBeInTheDocument()
     })
   })

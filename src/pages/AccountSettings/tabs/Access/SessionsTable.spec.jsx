@@ -1,12 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useDeleteSession } from 'services/access'
 
 import SessionsTable from './SessionsTable'
 
-const onRevoke = jest.fn(() => true)
+jest.mock('services/access')
+window.confirm = () => true
 
 describe('SessionsTable', () => {
+  let mutate = jest.fn()
   const defaultProps = {
     provider: 'gh',
     owner: 'codecov',
@@ -45,8 +50,16 @@ describe('SessionsTable', () => {
       ],
     }
 
+    useDeleteSession.mockReturnValue({ mutate })
+
     const _props = { ...defaultProps, ...props, ...data }
-    render(<SessionsTable {..._props} />)
+    render(
+      <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+        <Route path="/:provider/:owner/:repo">
+          <SessionsTable {..._props} />
+        </Route>
+      </MemoryRouter>
+    )
   }
 
   describe('when rendering SessionsTable', () => {
@@ -83,14 +96,14 @@ describe('SessionsTable', () => {
 
   describe('when revoking sessions', () => {
     beforeEach(() => {
-      setup({ onRevoke: onRevoke })
+      setup({})
     })
 
     describe('renders triggers a revoke event', () => {
       it('triggers revoke on click', () => {
         userEvent.click(screen.getAllByText(/Revoke/)[0])
-        expect(onRevoke).toBeCalled()
-        expect(onRevoke).toBeCalledWith(32)
+        expect(mutate).toBeCalled()
+        expect(mutate).toBeCalledWith({ sessionid: 32 })
       })
     })
   })

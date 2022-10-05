@@ -9,7 +9,7 @@ export const AdminItems = [
 export const ActivatedItems = [
   { label: 'All users', value: ApiFilterEnum.none },
   { label: 'Active users', value: ApiFilterEnum.true },
-  { label: 'In-active users', value: ApiFilterEnum.false },
+  { label: 'Inactive users', value: ApiFilterEnum.false },
 ]
 
 export const OrderItems = [

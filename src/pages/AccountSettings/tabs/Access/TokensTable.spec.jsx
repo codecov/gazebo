@@ -1,39 +1,30 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { subDays } from 'date-fns'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useRevokeUserToken } from 'services/access'
 
 import TokensTable from './TokensTable'
 
-const onTokenRevoke = jest.fn(() => true)
+jest.mock('services/access')
+window.confirm = () => true
 
 const data = {
   tokens: [
     {
-      sessionid: 32,
-      ip: null,
-      lastseen: subDays(new Date(), 3).toISOString(),
-      useragent: null,
-      owner: 2,
+      id: 32,
       type: 'api',
       name: 'token name 1',
       lastFour: 'aaaa',
     },
     {
-      sessionid: 6,
-      ip: null,
-      lastseen: subDays(new Date(), 1).toISOString(),
-      useragent: null,
-      owner: 2,
+      id: 6,
       type: 'api',
       name: 'token name 2',
       lastFour: 'bbbb',
     },
     {
-      sessionid: 8,
-      ip: null,
-      lastseen: null,
-      useragent: null,
-      owner: 2,
+      id: 8,
       type: 'api',
       name: 'token name 3',
       lastFour: 'cccc',
@@ -41,16 +32,29 @@ const data = {
   ],
 }
 
+const defaultProps = {
+  provider: 'gh',
+  owner: 'codecov',
+}
+
 describe('TokensTable', () => {
-  const defaultProps = {
-    provider: 'gh',
-    owner: 'codecov',
-    onRevoke: onTokenRevoke,
-  }
+  let mutate = jest.fn()
   function setup(props) {
+    useRevokeUserToken.mockReturnValue({ mutate })
+
     const _props = { ...defaultProps, ...props }
-    render(<TokensTable {..._props} />)
+    render(
+      <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+        <Route path="/:provider/:owner/:repo">
+          <TokensTable {..._props} />
+        </Route>
+      </MemoryRouter>
+    )
   }
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   describe('when rendering TokensTable', () => {
     beforeEach(() => {
@@ -68,13 +72,6 @@ describe('TokensTable', () => {
         const name2 = screen.getByText(/token name 2/)
         expect(name2).toBeInTheDocument()
       })
-      it('renders tokens table lastseen', () => {
-        const lastseen1 = screen.getByText(/3 days/)
-        const lastseen2 = screen.getByText(/1 day/)
-
-        expect(lastseen1).toBeInTheDocument()
-        expect(lastseen2).toBeInTheDocument()
-      })
       it('renders tokens table ips', () => {
         const lastFour1 = screen.getByText(/xxxx aaaa/)
         const lastFour2 = screen.getByText(/xxxx bbbb/)
@@ -88,12 +85,10 @@ describe('TokensTable', () => {
         setup(data)
       })
 
-      describe('renders triggers a revoke event', () => {
-        it('triggers revoke on click', () => {
-          userEvent.click(screen.getAllByText(/Revoke/)[0])
-          expect(onTokenRevoke).toBeCalled()
-          expect(onTokenRevoke).toBeCalledWith(32)
-        })
+      it('triggers revoke on click', () => {
+        userEvent.click(screen.getAllByText(/Revoke/)[0])
+        expect(mutate).toBeCalled()
+        expect(mutate).toBeCalledWith({ tokenid: 32 })
       })
     })
 

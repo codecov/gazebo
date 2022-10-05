@@ -93,7 +93,6 @@ function RepositoriesList({ organization, onSubmit }) {
                 <div className="w-full mt-4 flex justify-center">
                   <Button
                     hook="load-more"
-                    variant="primary"
                     isLoading={isFetchingNextPage}
                     onClick={fetchNextPage}
                   >
