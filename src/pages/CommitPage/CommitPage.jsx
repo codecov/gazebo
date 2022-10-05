@@ -12,7 +12,7 @@ import ErroredUploads from './ErroredUploads'
 import Header from './Header'
 import CommitDetailsSummary from './Summary'
 import UploadsCard from './UploadsCard'
-import { useExtractUploads } from './UploadsCard/hooks'
+import { useExtractUploads } from './UploadsCard/useUploads'
 import YamlErrorBanner from './YamlErrorBanner'
 
 const CommitFileView = lazy(() => import('./subroute/CommitFileView'))

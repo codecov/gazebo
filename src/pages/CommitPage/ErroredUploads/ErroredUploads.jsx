@@ -1,10 +1,11 @@
+import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
 
 import A from 'ui/A'
 
 function ErroredUploads({ erroredUploads }) {
   return (
-    erroredUploads && (
+    !isEmpty(erroredUploads) && (
       <>
         <p>The following uploads failed to process:</p>
         {Object.entries(erroredUploads)?.map(([provider, uploads]) => {
