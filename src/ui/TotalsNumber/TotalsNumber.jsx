@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 
 const getNumberClasses = ({ value, plain, showChange }) =>
   cs({
-    'bg-ds-coverage-covered font-lato': value > 0 && !plain,
-    'bg-ds-coverage-uncovered font-lato': value < 0 && !plain,
-    "before:content-['+'] font-lato": value > 0 && showChange,
+    'bg-ds-coverage-covered': value > 0 && !plain,
+    'bg-ds-coverage-uncovered': value < 0 && !plain,
+    "before:content-['+']": value > 0 && showChange,
   })
 
 const validateValue = (value) => (value && !isNaN(value)) || value === 0
@@ -17,7 +17,7 @@ const TotalsNumber = ({ value, plain, light, showChange, large, ...props }) => {
   const { className, ...rest } = props
 
   return (
-    <div {...rest}>
+    <div className="font-lato" {...rest}>
       {isValid ? (
         <span data-testid="number-value" className={numberClass}>
           {numberValue}%
