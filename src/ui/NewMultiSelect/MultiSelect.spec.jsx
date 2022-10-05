@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { act } from 'react-test-renderer'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import MultiSelect from './MultiSelect'
@@ -7,10 +8,12 @@ import MultiSelect from './MultiSelect'
 jest.mock('react-use/lib/useIntersection')
 
 describe('MultiSelect', () => {
+  let multiSelectRef
   const onChange = jest.fn()
 
   let props = {}
   const defaultProps = {
+    ariaName: 'multi-select test',
     items: ['item1', 'item2', 'item3'],
     onChange,
   }
@@ -417,6 +420,36 @@ describe('MultiSelect', () => {
 
       const presentation = screen.getByRole('presentation')
       expect(presentation).toBeInTheDocument()
+    })
+  })
+
+  describe('when forward ref is passed', () => {
+    beforeEach(() => {
+      props = {
+        ...defaultProps,
+        value: ['item1', 'item2', 'item3'],
+        resourceName: 'item',
+      }
+    })
+
+    it('reset selected function is defined', async () => {
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multiSelectRef = ref
+          }}
+        />
+      )
+
+      const button = screen.getByText(/3 items selected/)
+      userEvent.click(button)
+
+      await act(() => {
+        multiSelectRef.resetSelected()
+      })
+
+      expect(multiSelectRef.resetSelected).toBeDefined()
     })
   })
 })
