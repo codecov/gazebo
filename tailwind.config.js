@@ -37,7 +37,7 @@ module.exports = {
             quinary: withOpacity('--color-ds-pink-default'),
           },
           blue: {
-            DEFAULT: withOpacity('--color-ds-blue-default'),
+            DEFAULT: withOpacity('--color-ds-blue-darker'),
             light: withOpacity('--color-ds-blue-light'),
             medium: withOpacity('--color-ds-blue-medium'),
             darker: withOpacity('--color-ds-blue-darker'),
