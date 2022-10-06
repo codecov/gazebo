@@ -19,6 +19,7 @@ jest.mock(
   './Summary/CommitDetailsSummary.jsx',
   () => () => 'Commit Details Summary'
 )
+jest.mock('./ErroredUploads', () => () => 'Errored Uploads')
 
 const dataReturned = {
   commit: {
@@ -103,7 +104,6 @@ describe('CommitPage', () => {
         botErrors: [{ errorCode: 'repo_bot_invalid' }],
       },
     })
-
     render(
       <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
         <Route path="/:provider/:owner/:repo/commit/:commit">
@@ -112,29 +112,66 @@ describe('CommitPage', () => {
       </MemoryRouter>
     )
   }
-
   describe('renders', () => {
     beforeEach(() => {
       setup({ data: dataReturned, isSuccess: true })
     })
-
     it('the Uploads', () => {
       expect(screen.getByText(/Uploads/)).toBeInTheDocument()
     })
-
     it('the Header', () => {
       expect(screen.getByText(/The Header/)).toBeInTheDocument()
     })
-
     it('Commit Details Summary', () => {
       expect(screen.getByText(/Commit Details Summary/)).toBeInTheDocument()
     })
-
-    it('the impacted files', () => {
+    it('the impacted files, and not the errored uploads', () => {
       expect(screen.getByText(/Impacted files/)).toBeInTheDocument()
+      expect(screen.queryByText(/Errored Uploads/)).not.toBeInTheDocument()
     })
   })
-
+  describe('Errored Uploads', () => {
+    function setup(data) {
+      useCommit.mockReturnValue(data)
+      useAccountDetails.mockReturnValue({ data: {} })
+      useCommitErrors.mockReturnValue({
+        data: { yamlErrors: [], botErrors: [] },
+      })
+      render(
+        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            <CommitPage />
+          </Route>
+        </MemoryRouter>
+      )
+    }
+    describe('when uploads have errors', () => {
+      beforeEach(() => {
+        const dataReturned = {
+          commit: {
+            state: 'COMPLETE',
+            uploads: [
+              {
+                state: 'ERROR',
+                provider: 'travis',
+                createdAt: '2020-08-25T16:36:19.559474+00:00',
+                updatedAt: '2020-08-25T16:36:19.679868+00:00',
+                flags: ['flagone'],
+                downloadUrl:
+                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+                uploadType: 'uploaded',
+              },
+            ],
+          },
+        }
+        setup({ data: dataReturned, isSuccess: true })
+      })
+      it('renders the errored uploads', async () => {
+        expect(screen.getByText(/Errored Uploads/)).toBeInTheDocument()
+      })
+    })
+  })
   describe('Not Found', () => {
     function setup(data) {
       useCommit.mockReturnValue(data)
@@ -145,7 +182,6 @@ describe('CommitPage', () => {
           botErrors: [{ errorCode: 'repo_bot_invalid' }],
         },
       })
-
       render(
         <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
           <Route path="/:provider/:owner/:repo/commit/:commit">
@@ -154,7 +190,6 @@ describe('CommitPage', () => {
         </MemoryRouter>
       )
     }
-
     describe('renders 404', () => {
       beforeEach(() => {
         setup({ data: null, isLoading: false })
@@ -163,7 +198,6 @@ describe('CommitPage', () => {
         expect(await screen.findByText(/Not found/)).toBeInTheDocument()
       })
     })
-
     describe('renders empty data', () => {
       beforeEach(() => {
         setup({ data: { commit: {} }, isSuccess: true })
@@ -173,7 +207,6 @@ describe('CommitPage', () => {
       })
     })
   })
-
   describe('Commits Table', () => {
     function setup(data) {
       useCommit.mockReturnValue(data)
@@ -184,7 +217,6 @@ describe('CommitPage', () => {
           botErrors: [{ errorCode: 'repo_bot_invalid' }],
         },
       })
-
       render(
         <MemoryRouter
           initialEntries={[
@@ -197,12 +229,10 @@ describe('CommitPage', () => {
         </MemoryRouter>
       )
     }
-
     it('renders spinner if state is pending', async () => {
       setup({ data: { commit: { state: 'pending' } }, isLoading: false })
       expect(screen.getByTestId('spinner')).toBeInTheDocument()
     })
-
     it('renders no files if there impacted files is empty', async () => {
       setup({ data: { commit: { compareWithParent: {} } }, isLoading: false })
       const coverage = screen.getByText(
@@ -210,7 +240,6 @@ describe('CommitPage', () => {
       )
       expect(coverage).toBeInTheDocument()
     })
-
     it('renders table data if data is populated', async () => {
       setup({ data: dataReturned, isLoading: false })
       const impactedFile =
@@ -223,7 +252,6 @@ describe('CommitPage', () => {
       const changeValue = screen.getByText(formattedChange)
       expect(changeValue).toBeInTheDocument()
       expect(changeValue).toHaveClass("before:content-['+']")
-
       const formattedPatch = `${impactedFile.patchCoverage.coverage.toFixed(
         2
       )}%`
@@ -234,7 +262,6 @@ describe('CommitPage', () => {
       expect(screen.getByText(formattedHeadCoverage)).toBeInTheDocument()
     })
   })
-
   describe('FileViewer', () => {
     function setup(data) {
       useCommitErrors.mockReturnValue({
@@ -259,22 +286,18 @@ describe('CommitPage', () => {
         </MemoryRouter>
       )
     }
-
     describe('renders with correct data', () => {
       beforeEach(() => {
         setup({ data: dataReturned, isSuccess: true })
       })
-
       it('the impacted file', () => {
         expect(screen.getByTestId('spinner')).toBeInTheDocument()
         expect(screen.getByText(/abcd/)).toBeInTheDocument()
         expect(screen.getByText(/test-repo/)).toBeInTheDocument()
       })
     })
-
     describe('handles when a path is not part of the impacted files', () => {
       useAccountDetails.mockReturnValue({ data: {} })
-
       const data = {
         commit: {
           compareWithParent: {
@@ -289,41 +312,33 @@ describe('CommitPage', () => {
       beforeEach(() => {
         setup({ data, isSuccess: true })
       })
-
       it('the Commit File View', () => {
         expect(screen.getByText(/The Commit File View/)).toBeInTheDocument()
       })
     })
-
     describe('renders without availble commit data', () => {
       beforeEach(() => {
         setup({ data: {}, isSuccess: true })
       })
-
       it('without change values', () => {
         expect(screen.getByText(/Error 404/)).toBeInTheDocument()
         expect(screen.getByText(/Not found/)).toBeInTheDocument()
       })
     })
-
     describe('renders with commit errors', () => {
       beforeEach(() => {
         setup({ data: dataReturned, isSuccess: true })
       })
-
       it('renders yaml warning banner', () => {
         const banner = screen.getByText(/Commit YAML is invalid/)
         expect(banner).toBeInTheDocument()
       })
-
       it('renders bot warning banner', () => {
         expect(screen.getByText(/Team bot/)).toBeInTheDocument()
       })
-
       it('renders yaml modal warning banner', () => {
         const viewYaml = screen.getByText('view yml file')
         viewYaml.click()
-
         expect(screen.getByText(/When the commit-level/)).toBeInTheDocument()
       })
     })

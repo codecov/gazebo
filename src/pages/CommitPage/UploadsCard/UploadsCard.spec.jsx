@@ -4,14 +4,14 @@ import userEvent from '@testing-library/user-event'
 
 import { useCommitErrors } from 'services/commitErrors'
 
-import { useUploads } from './hooks'
 import UploadsCard from './UploadsCard'
+import { useUploads } from './useUploads'
 
 jest.mock(
   '../YamlModal/YamlModalErrorBanner',
   () => () => 'YamlModalErrorBanner'
 )
-jest.mock('./hooks')
+jest.mock('./useUploads')
 jest.mock('services/commitErrors')
 
 describe('UploadsCard', () => {
