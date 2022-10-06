@@ -1,24 +1,28 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { useRepos } from 'services/repos'
 import DateRangePicker from 'ui/DateRangePicker'
-import MultiSelect from 'ui/MultiSelect'
+import MultiSelect from 'ui/NewMultiSelect'
 
 function formatDataForMultiselect(repos) {
-  return repos.map((repo) => repo.name)
+  return repos?.map((repo) => repo.name)
 }
 
 function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
-  const { search, repositories, startDate, endDate } = params
+  const { repositories, startDate, endDate } = params
   const [selectedRepos, setSelectedRepos] = useState(repositories)
-  const { data } = useRepos({
+  const [search, setSearch] = useState()
+  const { data, isLoading, fetchNextPage, hasNextPage } = useRepos({
     active,
     sortItem,
     term: search,
     owner,
     first: Infinity,
+    suspense: false,
   })
+  const resetRef = useRef(null)
+
   const items = formatDataForMultiselect(data?.repos)
 
   const onSelectChangeHandler = (item) => {
@@ -36,6 +40,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
       endDate: null,
       repositories: [],
     })
+    resetRef?.current?.resetSelected()
     setSelectedRepos([])
   }
 
@@ -57,6 +62,10 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           onChange={onSelectChangeHandler}
           resourceName="Repo"
           selectedItems={selectedRepos}
+          isLoading={isLoading}
+          onLoadMore={() => hasNextPage && fetchNextPage()}
+          onSearch={(search) => setSearch(search)}
+          ref={resetRef}
         />
       </div>
       <button
