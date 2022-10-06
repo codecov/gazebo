@@ -9,7 +9,7 @@ export const orderingEnum = {
   Newest: { order: 'DESC', name: 'Newest' },
 }
 
-export const fitlerItems = [
+export const filterItems = [
   stateEnum.Open.name,
   stateEnum.Merged.name,
   stateEnum.Closed.name,
