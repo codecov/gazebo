@@ -4,7 +4,7 @@ import identity from 'lodash/identity'
 import isEqual from 'lodash/isEqual'
 import pluralize from 'pluralize'
 import PropTypes from 'prop-types'
-import { useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import Icon from '../Icon'
@@ -66,170 +66,195 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
-const MultiSelect = ({
-  ariaName,
-  disabled,
-  isLoading,
-  items,
-  onChange,
-  onLoadMore,
-  onSearch,
-  renderItem = identity,
-  renderSelected,
-  resourceName = '',
-  value = [],
-  variant,
-}) => {
-  const intersectionRef = useRef(null)
-
-  const {
-    getDropdownProps,
-    addSelectedItem,
-    removeSelectedItem,
-    selectedItems,
-    reset,
-  } = useMultipleSelection({
-    initialSelectedItems: value,
-    onSelectedItemsChange: ({ selectedItems }) => onChange(selectedItems),
-  })
-
-  const toggleItem = (selectedItem) => {
-    isItemSelected(selectedItem, selectedItems)
-      ? removeSelectedItem(selectedItem)
-      : addSelectedItem(selectedItem)
-  }
-
-  const listItems = [
-    SELECT_ALL_BUTTON,
-    ...selectedItems,
-    ...items?.filter((item) => !isItemSelected(item, selectedItems)),
-  ]
-
-  const {
-    isOpen,
-    getToggleButtonProps,
-    getMenuProps,
-    getInputProps,
-    getComboboxProps,
-    highlightedIndex,
-    getItemProps,
-  } = useCombobox({
-    selectedItem: null,
-    items: listItems,
-    stateReducer: (_state, { changes, type }) => {
-      switch (type) {
-        case useCombobox.stateChangeTypes.InputKeyDownArrowDown:
-        case useCombobox.stateChangeTypes.InputKeyDownArrowUp:
-        case useCombobox.stateChangeTypes.InputKeyDownEnter:
-        case useCombobox.stateChangeTypes.ItemClick:
-          return {
-            ...changes,
-            isOpen: true, // keep the menu open after selection.
-          }
-        default:
-          break
-      }
-      return changes
+const MultiSelect = forwardRef(
+  // eslint-disable-next-line complexity
+  (
+    {
+      ariaName,
+      disabled,
+      isLoading,
+      items = [],
+      onChange,
+      onLoadMore,
+      onSearch,
+      renderItem = identity,
+      renderSelected,
+      resourceName = '',
+      value = [],
+      variant,
     },
-    onStateChange: ({ type, selectedItem }) => {
-      switch (type) {
-        case useCombobox.stateChangeTypes.InputKeyDownEnter:
-        case useCombobox.stateChangeTypes.ItemClick:
-          isAllButton(selectedItem) ? reset() : toggleItem(selectedItem)
-          break
-        default:
-          break
-      }
-    },
-  })
+    ref
+  ) => {
+    const intersectionRef = useRef(null)
 
-  const intersection = useIntersection(intersectionRef, {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-  })
+    const {
+      getDropdownProps,
+      addSelectedItem,
+      removeSelectedItem,
+      selectedItems,
+      reset,
+    } = useMultipleSelection({
+      initialSelectedItems: value,
+      onSelectedItemsChange: ({ selectedItems }) => onChange(selectedItems),
+    })
 
-  useEffect(() => {
-    if (intersection?.isIntersecting && onLoadMore) {
-      onLoadMore()
+    useImperativeHandle(ref, () => ({
+      resetSelected: () => {
+        reset()
+      },
+    }))
+
+    const toggleItem = (selectedItem) => {
+      isItemSelected(selectedItem, selectedItems)
+        ? removeSelectedItem(selectedItem)
+        : addSelectedItem(selectedItem)
     }
-  }, [intersection?.isIntersecting, onLoadMore])
 
-  function renderSelectedItems() {
-    return renderSelected
-      ? renderSelected(selectedItems)
-      : getDefaultButtonPlaceholder(selectedItems, resourceName)
-  }
+    const listItems = [
+      SELECT_ALL_BUTTON,
+      ...selectedItems,
+      ...items?.filter((item) => !isItemSelected(item, selectedItems)),
+    ]
 
-  return (
-    <div className="flex-1 relative">
-      <div {...getComboboxProps()}>
-        <button
-          aria-label={ariaName}
-          className={cs(SelectClasses.button, VariantClasses[variant])}
-          disabled={disabled}
-          {...getDropdownProps()}
-          {...getToggleButtonProps(
-            getDropdownProps({ preventKeyAction: isOpen })
-          )}
-        >
-          {renderSelectedItems()}
-          <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} variant="solid" />
-        </button>
-        <div className={cs(!isOpen && 'hidden')}>
-          <SearchField
-            variant="topRounded"
-            placeholder={getSearchPlaceholder(resourceName)}
-            searchValue=""
-            setSearchValue={(search) => onSearch(search)}
-            {...getInputProps()}
-          />
-        </div>
-      </div>
-      <ul
-        aria-label={ariaName}
-        className={cs(SelectClasses.listContainer, {
-          'border border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
-        })}
-        {...getMenuProps()}
-      >
-        {isOpen && (
-          <>
-            {listItems.map((item, index) => (
-              <li
-                className={cs(SelectClasses.listItem, {
-                  'px-2 font-bold border-l-4 border-l-black':
-                    isItemSelected(item, selectedItems) ||
-                    (isAllButton(item) && selectedItems.length === 0),
-                  'bg-ds-gray-secondary': highlightedIndex === index,
-                  'py-2 border-b border-ds-gray-tertiary': isAllButton(item),
-                })}
-                key={`${item}_${index}`}
-                {...getItemProps({ item, index })}
-              >
-                {isAllButton(item)
-                  ? `All ${pluralize(resourceName)}`
-                  : renderItem(item)}
-              </li>
-            ))}
-            {isLoading && (
-              <span className="flex py-2 px-3">
-                <Spinner />
-              </span>
+    const {
+      isOpen,
+      getToggleButtonProps,
+      getMenuProps,
+      getInputProps,
+      getComboboxProps,
+      highlightedIndex,
+      getItemProps,
+    } = useCombobox({
+      selectedItem: null,
+      items: listItems,
+      stateReducer: (_state, { changes, type }) => {
+        switch (type) {
+          case useCombobox.stateChangeTypes.InputKeyDownArrowDown:
+          case useCombobox.stateChangeTypes.InputKeyDownArrowUp:
+          case useCombobox.stateChangeTypes.InputKeyDownEnter:
+          case useCombobox.stateChangeTypes.ItemClick:
+            return {
+              ...changes,
+              isOpen: true, // keep the menu open after selection.
+            }
+          default:
+            break
+        }
+        return changes
+      },
+      onStateChange: ({ type, selectedItem }) => {
+        switch (type) {
+          case useCombobox.stateChangeTypes.InputKeyDownEnter:
+          case useCombobox.stateChangeTypes.ItemClick:
+            isAllButton(selectedItem) ? reset() : toggleItem(selectedItem)
+            break
+          default:
+            break
+        }
+      },
+    })
+
+    const intersection = useIntersection(intersectionRef, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0,
+    })
+
+    useEffect(() => {
+      if (intersection?.isIntersecting && onLoadMore) {
+        onLoadMore()
+      }
+    }, [intersection?.isIntersecting, onLoadMore])
+
+    function renderSelectedItems() {
+      return renderSelected
+        ? renderSelected(selectedItems)
+        : getDefaultButtonPlaceholder(selectedItems, resourceName)
+    }
+
+    return (
+      <div className="flex-1 relative">
+        <div {...getComboboxProps()}>
+          <button
+            aria-label={ariaName}
+            className={cs(SelectClasses.button, VariantClasses[variant])}
+            disabled={disabled}
+            {...getDropdownProps()}
+            {...getToggleButtonProps(
+              getDropdownProps({ preventKeyAction: isOpen })
             )}
-            <LoadMoreTrigger
-              intersectionRef={intersectionRef}
-              onLoadMore={onLoadMore}
+          >
+            {renderSelectedItems()}
+            <Icon
+              name={isOpen ? 'chevron-up' : 'chevron-down'}
+              variant="solid"
             />
-          </>
-        )}
-      </ul>
-    </div>
-  )
-}
+          </button>
+          <div
+            className={cs(!onSearch && 'invisible', 'absolute', 'inset-x-0')}
+          >
+            <div className={cs(!isOpen && 'invisible')}>
+              <SearchField
+                variant="topRounded"
+                placeholder={getSearchPlaceholder(resourceName)}
+                searchValue=""
+                setSearchValue={(search) => onSearch(search)}
+                {...getInputProps()}
+              />
+            </div>
+          </div>
+        </div>
+        <ul
+          aria-label={ariaName}
+          className={cs(
+            SelectClasses.listContainer,
+            {
+              'border border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
+            },
+            onSearch ? 'top-16' : 'top-8'
+          )}
+          {...getMenuProps()}
+        >
+          {isOpen && (
+            <>
+              {listItems.map((item, index) => (
+                <li
+                  className={cs(SelectClasses.listItem, {
+                    'px-2 font-bold border-l-4 border-l-black':
+                      isItemSelected(item, selectedItems) ||
+                      (isAllButton(item) && selectedItems.length === 0),
+                    'bg-ds-gray-secondary': highlightedIndex === index,
+                    'py-2 border-b border-ds-gray-tertiary': isAllButton(item),
+                  })}
+                  key={`${item}_${index}`}
+                  {...getItemProps({ item, index })}
+                >
+                  {isAllButton(item)
+                    ? `All ${pluralize(resourceName)}`
+                    : renderItem(item)}
+                </li>
+              ))}
+              {isLoading && (
+                <span className="flex py-2 px-3">
+                  <Spinner />
+                </span>
+              )}
+              <LoadMoreTrigger
+                intersectionRef={intersectionRef}
+                onLoadMore={onLoadMore}
+              />
+            </>
+          )}
+        </ul>
+      </div>
+    )
+  }
+)
+
+MultiSelect.displayName = 'MultiSelect'
 
 MultiSelect.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.any).isRequired,
+  items: PropTypes.arrayOf(PropTypes.any),
   onChange: PropTypes.func.isRequired,
   resourceName: PropTypes.string,
   onSearch: PropTypes.func,

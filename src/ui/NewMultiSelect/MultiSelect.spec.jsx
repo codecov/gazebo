@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { act } from 'react-dom/test-utils'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import MultiSelect from './MultiSelect'
@@ -7,10 +8,12 @@ import MultiSelect from './MultiSelect'
 jest.mock('react-use/lib/useIntersection')
 
 describe('MultiSelect', () => {
+  let multiSelectRef
   const onChange = jest.fn()
 
   let props = {}
   const defaultProps = {
+    ariaName: 'multi-select test',
     items: ['item1', 'item2', 'item3'],
     onChange,
   }
@@ -32,6 +35,15 @@ describe('MultiSelect', () => {
 
       const listbox = screen.getByRole('listbox')
       expect(listbox).toBeEmptyDOMElement()
+    })
+
+    describe('when no items are passed', () => {
+      it('uses default items value', () => {
+        render(<MultiSelect ariaName="multi-select test" onChange={onChange} />)
+
+        const listbox = screen.getByRole('listbox')
+        expect(listbox).toBeEmptyDOMElement()
+      })
     })
   })
 
@@ -417,6 +429,36 @@ describe('MultiSelect', () => {
 
       const presentation = screen.getByRole('presentation')
       expect(presentation).toBeInTheDocument()
+    })
+  })
+
+  describe('when forward ref is passed', () => {
+    beforeEach(() => {
+      props = {
+        ...defaultProps,
+        value: ['item1', 'item2', 'item3'],
+        resourceName: 'item',
+      }
+    })
+
+    it('reset selected function is defined', () => {
+      render(
+        <MultiSelect
+          {...props}
+          ref={(ref) => {
+            multiSelectRef = ref
+          }}
+        />
+      )
+
+      const button = screen.getByText(/3 items selected/)
+      userEvent.click(button)
+
+      act(() => {
+        multiSelectRef.resetSelected()
+      })
+
+      expect(multiSelectRef.resetSelected).toBeDefined()
     })
   })
 })
