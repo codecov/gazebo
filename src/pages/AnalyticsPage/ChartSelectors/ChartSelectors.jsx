@@ -13,7 +13,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
   const { repositories, startDate, endDate } = params
   const [selectedRepos, setSelectedRepos] = useState(repositories)
   const [search, setSearch] = useState()
-  const { data, isLoading, fetchNextPage } = useRepos({
+  const { data, isLoading, fetchNextPage, hasNextPage } = useRepos({
     active,
     sortItem,
     term: search,
@@ -63,7 +63,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           resourceName="Repo"
           selectedItems={selectedRepos}
           isLoading={isLoading}
-          onLoadMore={() => fetchNextPage()}
+          onLoadMore={() => hasNextPage && fetchNextPage()}
           onSearch={(search) => setSearch(search)}
           ref={resetRef}
         />
