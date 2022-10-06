@@ -164,7 +164,6 @@ describe('Pulls Pab', () => {
 
     it('renders the number of selected options', () => {
       expect(screen.getByText(/1 selected/)).toBeInTheDocument()
-      expect(screen.queryByText('All')).not.toBeInTheDocument()
     })
   })
 
