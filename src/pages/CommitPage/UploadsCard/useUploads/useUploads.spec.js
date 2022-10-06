@@ -11,7 +11,7 @@ import {
   compareTotalsEmpty,
 } from 'services/commit/mocks'
 
-import { useUploads } from './hooks'
+import { useUploads } from './useUploads'
 
 const queryClient = new QueryClient({
   defaultOptions: {

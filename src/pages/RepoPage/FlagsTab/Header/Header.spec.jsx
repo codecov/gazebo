@@ -1,13 +1,14 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
 import Header from './Header'
 
-jest.mock('services/navigation')
+jest.mock('services/navigation/useLocationParams')
 jest.mock('services/repo/useRepoFlagsSelect')
 
 describe('Header', () => {
@@ -21,7 +22,13 @@ describe('Header', () => {
       data: new Array(99),
     })
 
-    render(<Header />)
+    render(
+      <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
+        <Route path="/:provider/:owner/:repo/flags" exact={true}>
+          <Header />
+        </Route>
+      </MemoryRouter>
+    )
   }
   describe('Configured Flags', () => {
     beforeEach(() => {
@@ -61,7 +68,6 @@ describe('Header', () => {
       })
 
       it('updates the location params on select', async () => {
-        await screen.findByText('Last 6 months')
         const item = screen.getByText('Last 7 days')
         userEvent.click(item)
 
@@ -71,6 +77,25 @@ describe('Header', () => {
           })
         )
       })
+    })
+  })
+
+  describe('Flags feedback link', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('Renders the right copy', () => {
+      expect(screen.getByText(/Please drop us a comment/)).toBeInTheDocument()
+    })
+    it('Renders the right link', () => {
+      const link = screen.getByRole('link', {
+        name: /here/i,
+      })
+      expect(link).toBeInTheDocument()
+      expect(link.href).toBe(
+        'https://github.com/codecov/Codecov-user-feedback/issues/27'
+      )
     })
   })
 

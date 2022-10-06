@@ -59,13 +59,13 @@ const branches = [
 describe('RepoPage', () => {
   function setup({
     repository,
-    commits = [],
+    commits,
     initialEntries,
     isCurrentUserPartOfOrg = true,
     flagValue = false,
   }) {
     useRepo.mockReturnValue({ data: { repository } })
-    useCommits.mockReturnValue({ data: { commits } })
+    useCommits.mockReturnValue({ data: commits })
     useBranches.mockReturnValue({ data: branches })
     useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
     useFlags.mockReturnValue({
@@ -135,7 +135,7 @@ describe('RepoPage', () => {
           private: true,
           activated: true,
         },
-        commits,
+        commits: { commits },
       })
     })
 
@@ -149,6 +149,26 @@ describe('RepoPage', () => {
     })
   })
 
+  describe('when rendered with a repo that has errored on the commits res', () => {
+    beforeEach(() => {
+      setup({
+        repository: {
+          private: true,
+          activated: true,
+        },
+      })
+    })
+
+    it('renders the coverage tab', () => {
+      const tab = screen.queryByText('Coverage')
+      expect(tab).not.toBeInTheDocument()
+    })
+    it('renders the commits tab', () => {
+      const tab = screen.queryByText(/Commits/)
+      expect(tab).not.toBeInTheDocument()
+    })
+  })
+
   describe('when rendered with a repo that has no commits', () => {
     beforeEach(() => {
       setup({
@@ -156,6 +176,7 @@ describe('RepoPage', () => {
           private: true,
           activated: true,
         },
+        commits: { commits: [] },
       })
     })
 
@@ -178,7 +199,7 @@ describe('RepoPage', () => {
           activated: true,
         },
         path: 'commits',
-        commits,
+        commits: { commits },
         initialEntries: ['/gh/codecov/test-repo/commits'],
       })
     })
@@ -210,7 +231,7 @@ describe('RepoPage', () => {
           activated: true,
         },
         path: 'commits',
-        commits,
+        commits: { commits },
         initialEntries: ['/gh/codecov/test/commits'],
       })
       let select
@@ -239,7 +260,7 @@ describe('RepoPage', () => {
           activated: true,
         },
         path: 'commits',
-        commits,
+        commits: { commits },
         initialEntries: ['/gh/codecov/test/commits'],
       })
       let select
@@ -267,7 +288,7 @@ describe('RepoPage', () => {
           private: false,
           activated: true,
         },
-        commits,
+        commits: { commits },
         isCurrentUserPartOfOrg: false,
       })
     })
@@ -284,7 +305,7 @@ describe('RepoPage', () => {
           private: true,
           activated: false,
         },
-        commits,
+        commits: { commits },
       })
     })
 
@@ -312,7 +333,7 @@ describe('RepoPage', () => {
           private: true,
           activated: true,
         },
-        commits,
+        commits: { commits },
         flagValue: true,
       })
     })
