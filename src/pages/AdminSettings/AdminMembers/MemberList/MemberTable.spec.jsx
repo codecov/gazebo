@@ -44,6 +44,17 @@ const mockSecondResponse = {
   total_pages: 2,
 }
 
+const mockAllSeatsTaken = {
+  planAutoActivate: true,
+  seatsUsed: 10,
+  seatsLimit: 10,
+}
+const mockOpenSeatsTaken = {
+  planAutoActivate: true,
+  seatsUsed: 5,
+  seatsLimit: 10,
+}
+
 beforeAll(() => server.listen())
 beforeEach(() => {
   server.resetHandlers()
@@ -52,7 +63,7 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('MemberTable', () => {
-  function setup({ noData = false }) {
+  function setup({ noData = false, seatsOpen = true }) {
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
         if (noData) {
@@ -93,6 +104,12 @@ describe('MemberTable', () => {
         }
 
         return res(ctx.status(200))
+      }),
+      rest.get('/internal/settings', (req, res, ctx) => {
+        if (seatsOpen) {
+          return res(ctx.status(200), ctx.json(mockOpenSeatsTaken))
+        }
+        return res(ctx.status(200), ctx.json(mockAllSeatsTaken))
       })
     )
 
@@ -144,20 +161,36 @@ describe('MemberTable', () => {
   })
 
   describe('activating a user', () => {
-    beforeEach(() => {
-      setup({})
+    describe('there are no seats open', () => {
+      beforeEach(() => {
+        setup({ seatsOpen: false })
+      })
+
+      it('disables the toggle', async () => {
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const toggle = await screen.findByRole('button', { name: 'Non-Active' })
+        expect(toggle).toBeInTheDocument()
+      })
     })
 
-    it('updates the users activation', async () => {
-      let toggle = await screen.findByRole('button', { name: 'Non-Active' })
+    describe('there are open seats', () => {
+      beforeEach(() => {
+        setup({})
+      })
 
-      userEvent.click(toggle)
+      it('updates the users activation', async () => {
+        let toggle = await screen.findByRole('button', { name: 'Non-Active' })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+        userEvent.click(toggle)
 
-      toggle = await screen.findByRole('button', { name: 'Activated' })
-      expect(toggle).toBeInTheDocument()
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        toggle = await screen.findByRole('button', { name: 'Activated' })
+        expect(toggle).toBeInTheDocument()
+      })
     })
   })
 
