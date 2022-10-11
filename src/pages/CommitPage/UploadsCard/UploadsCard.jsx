@@ -2,8 +2,8 @@ import { Fragment, useState } from 'react'
 
 import A from 'ui/A'
 
-import { useUploads } from './hooks'
 import Upload from './Upload'
+import { useUploads } from './useUploads'
 
 import YamlModal from '../YamlModal'
 

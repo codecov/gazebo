@@ -4,6 +4,7 @@ export const UploadStateEnum = Object.freeze({
   processed: 'PROCESSED',
   complete: 'COMPLETE',
   pending: 'PENDING',
+  started: 'STARTED',
 })
 
 export const CommitStateEnum = Object.freeze({

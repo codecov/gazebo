@@ -64,7 +64,7 @@ function CancelPlanPage() {
               </p>
               {/* This is a weird component that is both a button and a modal, hence why it's imported this way. Defs not a good practice but I feel the overhaul of this component will be for another time */}
               <CancelCard
-                customerId={accountDetails?.subscriptionDetail?.customer}
+                customerId={accountDetails?.subscriptionDetail?.customer?.id}
                 planCost={accountDetails?.plan?.value}
                 upComingCancelation={
                   accountDetails?.subscriptionDetail?.cancelAtPeriodEnd

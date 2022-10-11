@@ -97,7 +97,7 @@ describe('usePull', () => {
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
           hasAccess: true,
-          ...pull,
+          pull,
         })
       })
     })
@@ -127,7 +127,7 @@ describe('usePull', () => {
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
           hasAccess: false,
-          ...pull,
+          pull,
         })
       })
     })

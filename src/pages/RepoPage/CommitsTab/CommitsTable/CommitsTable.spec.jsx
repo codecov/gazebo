@@ -86,11 +86,22 @@ describe('CommitsTable', () => {
     })
   })
 
-  describe('when rendered with no commits', () => {
+  describe('when rendered with no commits (length)', () => {
     beforeEach(() => {
       setup({
         commits: [],
       })
+    })
+
+    it('renders no result found message', () => {
+      const text = screen.getByText('no results found')
+      expect(text).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with no commits', () => {
+    beforeEach(() => {
+      setup({})
     })
 
     it('renders no result found message', () => {

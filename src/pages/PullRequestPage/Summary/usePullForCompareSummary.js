@@ -32,12 +32,12 @@ export function getPullDataForCompareSummary({
 
 export function usePullForCompareSummary() {
   const { provider, owner, repo, pullId } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullId })
+  const { data } = usePull({ provider, owner, repo, pullId })
 
-  const head = pull?.head
-  const base = pull?.comparedTo
-  const compareWithBase = pull?.compareWithBase
-  const commits = mapEdges(pull?.commits)
+  const head = data?.pull?.head
+  const base = data?.pull?.comparedTo
+  const compareWithBase = data?.pull?.compareWithBase
+  const commits = mapEdges(data?.pull?.commits)
 
   return useMemo(
     () =>
