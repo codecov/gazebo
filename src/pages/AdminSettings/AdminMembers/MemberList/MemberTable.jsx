@@ -2,7 +2,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { useLocationParams } from 'services/navigation'
-import { useSelfHostedUserList } from 'services/selfHosted'
+import {
+  useSelfHostedSettings,
+  useSelfHostedUserList,
+} from 'services/selfHosted'
 import Api from 'shared/api'
 import Button from 'ui/Button'
 import Table from 'ui/Table'
@@ -39,7 +42,7 @@ const columns = [
   },
 ]
 
-const createTable = ({ tableData, mutate }) =>
+const createTable = ({ tableData, mutate, disableToggle }) =>
   tableData?.length > 0
     ? tableData?.map(
         ({ activated, email, isAdmin, name, ownerid, username }) => ({
@@ -54,6 +57,7 @@ const createTable = ({ tableData, mutate }) =>
                 onClick={() => {
                   mutate({ ownerid, activated: !activated })
                 }}
+                disabled={!activated && disableToggle}
               />
             </div>
           ),
@@ -63,6 +67,9 @@ const createTable = ({ tableData, mutate }) =>
 
 function MemberTable() {
   const queryClient = useQueryClient()
+  const { data: seatData } = useSelfHostedSettings()
+  const disableToggle = seatData?.seatsUsed === seatData?.seatsLimit
+
   const { params } = useLocationParams({
     activated: undefined,
     isAdmin: undefined,
@@ -89,7 +96,7 @@ function MemberTable() {
     }
   )
 
-  const tableContent = createTable({ tableData: data, mutate })
+  const tableContent = createTable({ tableData: data, mutate, disableToggle })
 
   return (
     <>
