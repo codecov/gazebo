@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
+import NotFound from 'pages/NotFound'
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
 import { useOwner } from 'services/user'
@@ -50,6 +51,7 @@ const Loader = (
   </div>
 )
 
+// eslint-disable-next-line max-statements
 function RepoPage() {
   const { provider, owner, repo } = useParams()
   const { data: repoData } = useRepo({
@@ -57,19 +59,24 @@ function RepoPage() {
     owner,
     repo,
   })
+  const isRepoPrivate = repoData?.repository?.private
 
   const { gazeboFlagsTab } = useFlags({
     gazeboFlagsTab: false,
   })
 
   const { data: currentOwner } = useOwner({ username: owner })
-  const { isCurrentUserPartOfOrg } = currentOwner
+  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
 
   const { data } = useCommits({ provider, owner, repo })
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
 
   const repoHasCommits = data?.commits && data?.commits?.length > 0
+
+  if (isRepoPrivate && !isCurrentUserPartOfOrg) {
+    return <NotFound />
+  }
 
   return (
     <RepoBreadcrumbProvider>
