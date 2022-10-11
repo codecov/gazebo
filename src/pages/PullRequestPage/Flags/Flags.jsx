@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import flagManagement from 'assets/svg/flagManagement.svg'
-import { useFlagsForComparePage } from 'services/flags'
+import { usePull } from 'services/pull'
 import A from 'ui/A'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -127,18 +127,14 @@ function getTableInfo({ tableData, isTableDataEmpty, setIsCardDismissed }) {
 }
 
 function Flags() {
-  const { owner, provider, repo, pullId: pullid } = useParams()
-  const { data } = useFlagsForComparePage({
-    provider,
-    owner,
-    repo,
-    pullId: pullid,
-  })
+  const { owner, repo, pullId, provider } = useParams()
+  const { data } = usePull({ provider, owner, repo, pullId })
+  const flagComparison = data?.pull?.compareWithBase?.flagComparisons || []
 
   const [isCardDismissed, setIsCardDismissed] = useState(
     !!JSON.parse(localStorage.getItem(localStorageKey))
   )
-  const tableData = getTableData(data)
+  const tableData = getTableData(flagComparison)
   const isTableDataEmpty = tableData && tableData?.length <= 0
   const { title, value } = getTableInfo({
     tableData,
