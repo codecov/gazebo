@@ -78,12 +78,17 @@ describe('Toggle', () => {
       expect(button).toHaveClass('cursor-not-allowed')
     })
 
-    it('does not trigger onClick', async () => {
+    it('does not trigger onClick', () => {
       const button = screen.getByRole('button')
 
-      await userEvent.click(button)
+      userEvent.click(button)
 
       expect(mockFn).not.toBeCalled()
+    })
+
+    it('has disabled state on button', () => {
+      const button = screen.getByRole('button')
+      expect(button).toHaveAttribute('disabled')
     })
   })
 
