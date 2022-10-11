@@ -5,13 +5,14 @@ import A from 'ui/A'
 const UploadReference = ({ ciUrl, name, buildCode }) => {
   const uploadRef = name || buildCode
 
-  return ciUrl ? (
-    <A href={ciUrl} hook="ci job" isExternal={true}>
-      {uploadRef}
-    </A>
-  ) : (
-    uploadRef
-  )
+  if (ciUrl) {
+    return (
+      <A href={ciUrl} hook="ci job" isExternal={true}>
+        {uploadRef}
+      </A>
+    )
+  }
+  return <p>{uploadRef}</p>
 }
 
 UploadReference.propTypes = {
