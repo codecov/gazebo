@@ -5,7 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import CompareSummary from './CompareSummary'
 import { usePullForCompareSummary } from './usePullForCompareSummary'
 
-jest.mock('./hooks')
+jest.mock('./usePullForCompareSummary')
 
 const pull = {
   pullId: 5,
