@@ -18,44 +18,46 @@ const pullStateToColor = {
 function Header() {
   // TODO: When we update the cicd link and branch link to mobe this to a hook to match the rest of the page.
   const { provider, owner, repo, pullId } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullId })
+  const { data: pullData } = usePull({ provider, owner, repo, pullId })
 
   return (
     <div className="border-b border-ds-gray-secondary pb-4 text-xs">
       <h1 className="flex items-center gap-2 text-lg font-semibold">
-        {pull?.title}
+        {pullData?.pull?.title}
         <span
           className={cs(
             'text-white font-bold px-3 py-0.5 text-xs rounded',
-            pullStateToColor[pull?.state]
+            pullStateToColor[pullData?.pull?.state]
           )}
         >
-          {capitalize(pull?.state)}
+          {capitalize(pullData?.pull?.state)}
         </span>
       </h1>
       <p className="flex items-center gap-2">
         <span>
-          {pull?.updatestamp && formatTimeToNow(pull.updatestamp)}{' '}
-          <span className="bold">{pull?.author?.username}</span> authored{' '}
-          {pull?.pullId && (
+          {pullData?.pull?.updatestamp &&
+            formatTimeToNow(pullData?.pull?.updatestamp)}{' '}
+          <span className="bold">{pullData?.pull?.author?.username}</span>{' '}
+          authored{' '}
+          {pullData?.pull?.pullId && (
             <A
               href={getProviderPullURL({
                 provider,
                 owner,
                 repo,
-                pullId: pull?.pullId,
+                pullId: pullData?.pull?.pullId,
               })}
               hook="provider-pr-link"
               isExternal={true}
             >
-              #{pull?.pullId}
+              #{pullData?.pull?.pullId}
             </A>
           )}
         </span>
-        <CIStatusLabel ciPassed={pull?.head?.ciPassed} />
+        <CIStatusLabel ciPassed={pullData?.pull?.head?.ciPassed} />
         <span className="flex items-center">
           <Icon name="branch" variant="developer" size="sm" />
-          {pull?.head?.branchName}
+          {pullData?.pull?.head?.branchName}
         </span>
       </p>
     </div>
