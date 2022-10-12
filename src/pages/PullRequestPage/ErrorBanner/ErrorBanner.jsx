@@ -5,10 +5,10 @@ import Banner from 'ui/Banner'
 
 import { ComparisonReturnType } from './constants'
 
+// eslint-disable-next-line complexity
 function BannerContent({ errorType }) {
-  errorType = ComparisonReturnType.MISSING_BASE_REPORT
-  return {
-    [ComparisonReturnType.MISSING_BASE_COMMIT]: (
+  if (errorType === ComparisonReturnType.MISSING_BASE_COMMIT) {
+    return (
       <>
         {' '}
         <h1 className="font-semibold">Missing Base Commit</h1>
@@ -26,8 +26,10 @@ function BannerContent({ errorType }) {
           </A>
         </div>
       </>
-    ),
-    [ComparisonReturnType.MISSING_HEAD_COMMIT]: (
+    )
+  }
+  if (errorType === ComparisonReturnType.MISSING_HEAD_COMMIT) {
+    return (
       <>
         {' '}
         <h1 className="font-semibold">Missing Head Commit</h1>
@@ -45,8 +47,11 @@ function BannerContent({ errorType }) {
           </A>
         </div>
       </>
-    ),
-    [ComparisonReturnType.MISSING_BASE_REPORT]: (
+    )
+  }
+
+  if (errorType === ComparisonReturnType.MISSING_BASE_REPORT) {
+    return (
       <>
         {' '}
         <h1 className="font-semibold">Missing Base Report</h1>
@@ -64,8 +69,11 @@ function BannerContent({ errorType }) {
           </A>
         </div>
       </>
-    ),
-    [ComparisonReturnType.MISSING_HEAD_REPORT]: (
+    )
+  }
+
+  if (errorType === ComparisonReturnType.MISSING_HEAD_REPORT) {
+    return (
       <>
         {' '}
         <h1 className="font-semibold">Missing Head Report</h1>
@@ -83,8 +91,11 @@ function BannerContent({ errorType }) {
           </A>
         </div>
       </>
-    ),
-    [ComparisonReturnType.MISSING_COMPARISON]: (
+    )
+  }
+
+  if (errorType === ComparisonReturnType.MISSING_COMPARISON) {
+    return (
       <>
         {' '}
         <h1 className="font-semibold">Missing Comparison</h1>
@@ -99,15 +110,19 @@ function BannerContent({ errorType }) {
           </A>
         </div>
       </>
-    ),
-  }[errorType]
+    )
+  }
+}
+
+BannerContent.propTypes = {
+  errorType: PropTypes.oneOf(Object.values(ComparisonReturnType)),
 }
 
 function ErrorBanner({ errorType }) {
   return (
     <Banner variant="warning">
       <div className="flex flex-col gap-6 text-sm">
-        {BannerContent({ errorType })}
+        <BannerContent errorType={errorType} />
       </div>
     </Banner>
   )
