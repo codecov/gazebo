@@ -71,6 +71,7 @@ export function useCommit({
                       ciUrl
                       uploadType
                       buildCode
+                      name
                       errors {
                         edges {
                           node {
