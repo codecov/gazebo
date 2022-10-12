@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -11,10 +11,8 @@ import { useMyContexts } from 'services/user'
 import { useOnboardingTracking } from './useOnboardingTracking'
 import UserOnboardingModal from './UserOnboardingModal'
 
-import { useRepos } from '../../services/repos'
 import { useFlags } from '../../shared/featureFlags'
 
-jest.mock('services/repos')
 jest.mock('./useOnboardingTracking.js')
 jest.mock('services/user', () => ({
   ...jest.requireActual('services/user'), // import and retain the original functionalities
@@ -24,8 +22,8 @@ jest.mock('shared/featureFlags')
 
 const orgsData = {
   currentUser: {
-    username: 'Rabee-AbuBaker',
-    avatarUrl: 'https://avatars0.githubusercontent.com/u/99655254?v=3&s=55',
+    username: 'codecov-user',
+    avatarUrl: 'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
   },
   myOrganizations: [
     {
@@ -42,38 +40,6 @@ beforeEach(() => {
   queryClient.clear()
 })
 afterAll(() => server.close())
-
-const reposData = {
-  repos: [
-    {
-      name: 'opentelem-ruby',
-      active: false,
-      private: false,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-    {
-      name: 'impact-analysis',
-      active: true,
-      private: true,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-    {
-      name: 'codecov-gateway',
-      active: false,
-      private: true,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-  ],
-}
 
 const mockHistoryReplace = jest.fn()
 
@@ -139,13 +105,6 @@ describe('UserOnboardingModal', () => {
       data: orgsData,
       refetch: jest.fn(),
     })
-    useRepos.mockReturnValue({
-      data: reposData,
-      fetchNextPage: jest.fn(),
-      hasNextPage: true,
-      isFetchingNextPage: false,
-      isLoading: false,
-    })
     useFlags.mockReturnValue({
       onboardingOrganizationSelector: flagValue,
     })
@@ -164,7 +123,7 @@ describe('UserOnboardingModal', () => {
     return screen.getByRole('checkbox', { name })
   }
 
-  function clickNext() {
+  async function clickNext() {
     screen
       .getByRole('button', {
         name: /next/i,
@@ -175,9 +134,9 @@ describe('UserOnboardingModal', () => {
   }
 
   function selectOrg() {
-    const organization = screen.getByText(/codecov/i)
+    const organization = screen.getByText('codecov')
     expect(organization).toBeInTheDocument()
-    fireEvent.click(organization)
+    userEvent.click(organization)
     // make sure the form updates properly
     return act(() => Promise.resolve())
   }
@@ -230,7 +189,7 @@ describe('UserOnboardingModal', () => {
       })
 
       it('renders organizations list', () => {
-        expect(screen.getByText('Rabee-AbuBaker')).toBeInTheDocument()
+        expect(screen.getByText('codecov-user')).toBeInTheDocument()
         expect(screen.getByText('codecov')).toBeInTheDocument()
       })
     })
@@ -241,24 +200,8 @@ describe('UserOnboardingModal', () => {
         await selectOrg()
       })
 
-      it('renders repos list', () => {
-        expect(screen.getByText('opentelem-ruby')).toBeInTheDocument()
-      })
-
       it('calls selectOrganization', () => {
         expect(selectOrganization).toHaveBeenCalled()
-      })
-    })
-
-    describe('when the user selects a repo', () => {
-      beforeEach(async () => {
-        await clickNext()
-        await selectOrg()
-        screen.getByText(/opentelem-ruby/i).click()
-      })
-
-      it('calls selectRepository', () => {
-        expect(selectRepository).toHaveBeenCalled()
       })
     })
 
@@ -282,27 +225,13 @@ describe('UserOnboardingModal', () => {
       })
 
       it('calls completedUserOnboarding and redirects user', async () => {
-        screen.getByText(/impact-analysis/i).click()
+        const codecov = screen.getByText('codecov')
+        userEvent.click(codecov)
+
         await waitFor(() => expect(completedUserOnboarding).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockHistoryReplace).toHaveBeenCalledWith(
-            '/gh/codecov/impact-analysis'
-          )
+          expect(mockHistoryReplace).toHaveBeenCalledWith('/gh/codecov')
         )
-      })
-
-      describe('when selecting an inactive repo', () => {
-        beforeEach(async () => {
-          screen.getByText(/opentelem-ruby/i).click()
-        })
-
-        it('redirects user to url ending with new', async () => {
-          await waitFor(() =>
-            expect(mockHistoryReplace).toHaveBeenCalledWith(
-              '/gh/codecov/opentelem-ruby/new'
-            )
-          )
-        })
       })
     })
   })
@@ -312,11 +241,16 @@ describe('UserOnboardingModal', () => {
     })
 
     describe('after submitting the form', () => {
-      beforeEach(() => {
-        getCheckbox(/educational/i).click()
-        getCheckbox(/just starting to write tests/i).click()
-        return clickNext()
+      beforeEach(async () => {
+        const educationalCheck = getCheckbox(/educational/i)
+        userEvent.click(educationalCheck)
+
+        const startingTests = getCheckbox(/just starting to write tests/i)
+        userEvent.click(startingTests)
+
+        await clickNext()
       })
+
       it('has the next button enabled', async () => {
         await waitFor(() => expect(completedUserOnboarding).toHaveBeenCalled())
         await waitFor(() => expect(mockHistoryReplace).not.toHaveBeenCalled())

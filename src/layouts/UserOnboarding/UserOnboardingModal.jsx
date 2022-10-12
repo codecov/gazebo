@@ -23,27 +23,22 @@ function UserOnboardingModal({ currentUser }) {
 
   const [formData, setFormData] = useState(false)
   const [selectedOrg, setSelectedOrg] = useState()
-  const [selectedRepo, setSelectedRepo] = useState()
 
   const { mutate, isLoading } = useOnboardUser({
     onSuccess: (user, data) => {
       completedOnboarding(user, data)
-      if (selectedOrg && selectedRepo) {
-        history.replace(
-          `/${provider}/${selectedOrg.username}/${selectedRepo.name}${
-            selectedRepo.active ? '' : '/new'
-          }`
-        )
+      if (selectedOrg) {
+        history.replace(`/${provider}/${selectedOrg.username}`)
       }
     },
     data: formData,
   })
 
   useEffect(() => {
-    if (Boolean(selectedRepo)) {
+    if (Boolean(selectedOrg)) {
       mutate(formData)
     }
-  }, [selectedRepo, formData, mutate])
+  }, [selectedOrg, formData, mutate])
 
   return (
     <ReactModal
@@ -57,9 +52,8 @@ function UserOnboardingModal({ currentUser }) {
         {Boolean(formData) ? (
           <OrganizationSelector
             currentUser={currentUser}
-            onSelect={({ selectedOrg, selectedRepo }) => {
+            onSelect={({ selectedOrg }) => {
               setSelectedOrg(selectedOrg)
-              setSelectedRepo(selectedRepo)
             }}
             onOnboardingSkip={() => {
               skipOnboarding()
