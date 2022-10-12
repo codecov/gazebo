@@ -50,7 +50,7 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
   )
 
   return (
-    <div className="text-ds-gray-quaternary overflow-x-auto">
+    <div className="overflow-x-auto">
       <table className="flex flex-col mx-4 sm:mx-0">
         <thead data-testid="header-row">
           {

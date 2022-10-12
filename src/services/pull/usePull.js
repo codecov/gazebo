@@ -83,7 +83,7 @@ export function usePull({ provider, owner, repo, pullId }) {
           privateRepo: res?.data?.owner?.repository?.private,
           isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
         }),
-        ...res?.data?.owner?.repository?.pull,
+        pull: res?.data?.owner?.repository?.pull,
       }
     })
   })

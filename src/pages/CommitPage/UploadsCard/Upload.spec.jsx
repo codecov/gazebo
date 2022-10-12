@@ -171,4 +171,14 @@ describe('UploadsCard', () => {
       expect(screen.queryByText('carry-forward')).not.toBeInTheDocument()
     })
   })
+
+  describe('Upload reference when upload name exists', () => {
+    beforeEach(() => {
+      setup({ name: 'upload name', ciUrl: 'ciUrl.com' })
+    })
+
+    it('renders upload name instead of buildCode', () => {
+      expect(screen.getByText('upload name')).toBeInTheDocument()
+    })
+  })
 })
