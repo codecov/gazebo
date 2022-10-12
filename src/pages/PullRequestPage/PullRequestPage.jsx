@@ -24,7 +24,9 @@ function PullRequestPage() {
     </div>
   )
 
-  if (!data?.hasAccess && !isLoading) {
+  if (!isLoading && !data?.hasAccess) {
+    return <NotFound />
+  } else if (!isLoading && !data?.pull) {
     return <NotFound />
   }
 
