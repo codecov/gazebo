@@ -10,9 +10,7 @@ jest.mock('./Header', () => () => 'Header')
 jest.mock('./Summary', () => () => 'CompareSummary')
 jest.mock('./Flags', () => () => 'Flags')
 jest.mock('./Commits', () => () => 'Commits')
-
 jest.mock('./subroute/Root', () => () => 'Root')
-
 jest.mock('services/pull')
 
 describe('PullRequestPage', () => {

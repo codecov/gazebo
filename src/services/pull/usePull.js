@@ -43,7 +43,7 @@ export function usePull({
     `
 
   return useQuery(
-    ['pull', provider, owner, repo, pullId],
+    ['pull', provider, owner, repo, pullId, filters],
     () => {
       return Api.graphql({
         provider,
