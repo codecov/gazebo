@@ -11,7 +11,7 @@ import StudentCard from './StudentCard'
 function Admin({ provider, owner }) {
   const { data: currentUser } = useUser({ provider })
   const isPersonalSettings =
-    currentUser.user.username.toLowerCase() === owner.toLowerCase()
+    currentUser?.user?.username?.toLowerCase() === owner.toLowerCase()
 
   return (
     <div>
