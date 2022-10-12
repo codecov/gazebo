@@ -63,7 +63,7 @@ function RepoPage() {
   })
 
   const { data: currentOwner } = useOwner({ username: owner })
-  const { isCurrentUserPartOfOrg } = currentOwner
+  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
 
   const { data } = useCommits({ provider, owner, repo })
   const matchTree = useMatchTreePath()
