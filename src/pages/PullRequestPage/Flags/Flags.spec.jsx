@@ -2,7 +2,7 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useFlagsForComparePage } from 'services/flags'
+import { usePull } from 'services/pull'
 
 import Flags from './Flags'
 
@@ -10,26 +10,32 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
 }))
-jest.mock('services/flags')
+jest.mock('services/pull')
 
 jest.spyOn(window.localStorage.__proto__, 'setItem')
 window.localStorage.__proto__.setItem = jest.fn()
 
 const mockFlagsData = {
-  data: [
-    {
-      name: 'secondTest',
-      headTotals: {
-        percentCovered: 82.71,
-      },
-      baseTotals: {
-        percentCovered: 80.0,
-      },
-      patchTotals: {
-        percentCovered: 59.0,
+  data: {
+    pull: {
+      compareWithBase: {
+        flagComparisons: [
+          {
+            name: 'secondTest',
+            headTotals: {
+              percentCovered: 82.71,
+            },
+            baseTotals: {
+              percentCovered: 80.0,
+            },
+            patchTotals: {
+              percentCovered: 59.0,
+            },
+          },
+        ],
       },
     },
-  ],
+  },
 }
 
 const initialEntries = ['/gh/test-org/test-repo/pull/5']
@@ -42,7 +48,7 @@ describe('Flags Card', () => {
       repo: 'bells-hells',
       pullId: 5,
     })
-    useFlagsForComparePage.mockReturnValue(data)
+    usePull.mockReturnValue(data)
 
     render(
       <MemoryRouter initialEntries={initialEntries}>
