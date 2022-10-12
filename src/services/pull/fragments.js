@@ -30,12 +30,15 @@ fragment SummaryOnPullFragment on Pull {
       totalCount
     }
   }
-  compareWithBase: compareWithBaseTemp {
-    patchTotals {
-      percentCovered
+  compareWithBase {
+    __typename
+    ... on Comparison {
+      patchTotals {
+        percentCovered
+      }
+      changeWithParent
+      hasDifferentNumberOfHeadAndBaseReports
     }
-    changeWithParent
-    hasDifferentNumberOfHeadAndBaseReports
   }
   commits {
     edges {
@@ -66,17 +69,20 @@ fragment CommitsOnPullFragment on Pull {
 
 export const FlagComparisonsOnPull = `
 fragment FlagComparisonsOnPull on Pull {
-  compareWithBase: compareWithBaseTemp {
-    flagComparisons {
-      name
-      patchTotals {
-        percentCovered
-      }
-      headTotals {
-        percentCovered
-      }
-      baseTotals {
-        percentCovered
+  compareWithBase {
+    __typename
+    ... on Comparison {
+      flagComparisons {
+        name
+        patchTotals {
+          percentCovered
+        }
+        headTotals {
+          percentCovered
+        }
+        baseTotals {
+          percentCovered
+        }
       }
     }
   }
@@ -88,30 +94,33 @@ fragment ImpactedFilesOnPull on Pull {
   head {
     state
   }
-  compareWithBase: compareWithBaseTemp {
-    patchTotals {
-      percentCovered
-    }
-    baseTotals {
-      percentCovered
-    }
-    headTotals {
-      percentCovered
-    }
-    impactedFiles(filters:$filters) {
-      fileName
-      headName
-      isCriticalFile
-      baseCoverage {
+  compareWithBase {
+    __typename
+    ... on Comparison {
+      patchTotals {
         percentCovered
       }
-      headCoverage {
+      baseTotals {
         percentCovered
       }
-      patchCoverage {
+      headTotals {
         percentCovered
       }
-      changeCoverage
+      impactedFiles(filters:$filters) {
+        fileName
+        headName
+        isCriticalFile
+        baseCoverage {
+          percentCovered
+        }
+        headCoverage {
+          percentCovered
+        }
+        patchCoverage {
+          percentCovered
+        }
+        changeCoverage
+      }
     }
   }
 }

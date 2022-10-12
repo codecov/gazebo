@@ -19,7 +19,6 @@ export function usePull({
   filters = {},
   options = {},
 }) {
-  // TODO: We should revisit this hook cause I'm almost confident we don't need all this info, specially the filecomparisons part
   const query = `
     query Pull($owner: String!, $repo: String!, $pullId: Int!, $filters: ImpactedFilesFilters!) {
         owner(username: $owner) {
