@@ -3,7 +3,10 @@ import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
 
-import { getPullDataForCompareSummary, usePullForCompareSummary } from './hooks'
+import {
+  getPullDataForCompareSummary,
+  usePullForCompareSummary,
+} from './usePullForCompareSummary'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
@@ -91,7 +94,7 @@ describe('usePullForCompareSummary', () => {
       repo: 'mighty-nein',
       pullId: '9',
     })
-    usePull.mockReturnValue({ data: pull })
+    usePull.mockReturnValue({ data: { pull } })
     hookData = renderHook(() => usePullForCompareSummary())
   }
 

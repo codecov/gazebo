@@ -2,7 +2,7 @@ import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import user from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAccountDetails, useAutoActivate } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
@@ -84,7 +84,9 @@ describe('UserManagerment', () => {
     render(<UserManagerment provider="gh" owner="radient" />, {
       wrapper: ({ children }) => (
         <QueryClientProvider client={queryClient}>
-          <MemoryRouter>{children}</MemoryRouter>
+          <MemoryRouter initialEntries={['/gh/codecov']}>
+            <Route path="/:provider/:owner">{children}</Route>
+          </MemoryRouter>
         </QueryClientProvider>
       ),
     })
@@ -489,6 +491,17 @@ describe('UserManagerment', () => {
           name: 'Upgrade to Pro',
         })
       ).not.toBeInTheDocument()
+    })
+
+    it('links to the plan upgrade page', () => {
+      const ActivateBtn = screen.getByRole('button', {
+        name: 'Not yet activated',
+      })
+      user.click(ActivateBtn)
+
+      const upgradeBtn = screen.getByText('Upgrade now')
+      expect(upgradeBtn).toBeInTheDocument()
+      expect(upgradeBtn).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
     })
 
     it('Clicking "close" button will close up the modal', () => {

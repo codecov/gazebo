@@ -44,6 +44,17 @@ const mockSecondResponse = {
   total_pages: 2,
 }
 
+const mockAllSeatsTaken = {
+  planAutoActivate: true,
+  seatsUsed: 10,
+  seatsLimit: 10,
+}
+const mockOpenSeatsTaken = {
+  planAutoActivate: true,
+  seatsUsed: 5,
+  seatsLimit: 10,
+}
+
 beforeAll(() => server.listen())
 beforeEach(() => {
   server.resetHandlers()
@@ -52,7 +63,15 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('MemberTable', () => {
-  function setup({ noData = false }) {
+  function setup({
+    noData = false,
+    seatsOpen = true,
+    returnActivated = false,
+  }) {
+    // resetting mock response values
+    mockedFirstResponse.results[0].activated = false
+    mockSecondResponse.results[0].activated = true
+
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
         if (noData) {
@@ -76,6 +95,8 @@ describe('MemberTable', () => {
 
         if (pageNumber > 1) {
           return res(ctx.status(200), ctx.json(mockSecondResponse))
+        } else if (returnActivated) {
+          return res(ctx.status(200), ctx.json(mockSecondResponse))
         }
         return res(ctx.status(200), ctx.json(mockedFirstResponse))
       }),
@@ -93,15 +114,13 @@ describe('MemberTable', () => {
         }
 
         return res(ctx.status(200))
+      }),
+      rest.get('/internal/settings', (req, res, ctx) => {
+        if (seatsOpen) {
+          return res(ctx.status(200), ctx.json(mockOpenSeatsTaken))
+        }
+        return res(ctx.status(200), ctx.json(mockAllSeatsTaken))
       })
-    )
-
-    render(
-      <MemoryRouter initialEntries={['/admin/gh/members']}>
-        <QueryClientProvider client={queryClient}>
-          <MemberTable />
-        </QueryClientProvider>
-      </MemoryRouter>
     )
   }
 
@@ -111,16 +130,40 @@ describe('MemberTable', () => {
     })
 
     it('displays header', async () => {
+      render(
+        <MemoryRouter initialEntries={['/admin/gh/members']}>
+          <QueryClientProvider client={queryClient}>
+            <MemberTable />
+          </QueryClientProvider>
+        </MemoryRouter>
+      )
+
       const header = await screen.findByText('User Name')
       expect(header).toBeInTheDocument()
     })
 
     it('displays initial user set', async () => {
+      render(
+        <MemoryRouter initialEntries={['/admin/gh/members']}>
+          <QueryClientProvider client={queryClient}>
+            <MemberTable />
+          </QueryClientProvider>
+        </MemoryRouter>
+      )
+
       const user = await screen.findByText('User 1')
       expect(user).toBeInTheDocument()
     })
 
     it('displays extended list after loading more', async () => {
+      render(
+        <MemoryRouter initialEntries={['/admin/gh/members']}>
+          <QueryClientProvider client={queryClient}>
+            <MemberTable />
+          </QueryClientProvider>
+        </MemoryRouter>
+      )
+
       const button = await screen.findByText('Load More')
       userEvent.click(button)
 
@@ -138,26 +181,118 @@ describe('MemberTable', () => {
     })
 
     it('displays the button', async () => {
+      render(
+        <MemoryRouter initialEntries={['/admin/gh/members']}>
+          <QueryClientProvider client={queryClient}>
+            <MemberTable />
+          </QueryClientProvider>
+        </MemoryRouter>
+      )
+
       const button = await screen.findByText('Load More')
       expect(button).toBeInTheDocument()
     })
   })
 
   describe('activating a user', () => {
+    describe('there are no seats open', () => {
+      beforeEach(() => {
+        setup({ seatsOpen: false })
+      })
+
+      it('disables the toggle', async () => {
+        render(
+          <MemoryRouter initialEntries={['/admin/gh/members']}>
+            <QueryClientProvider client={queryClient}>
+              <MemberTable />
+            </QueryClientProvider>
+          </MemoryRouter>
+        )
+
+        let toggles = await screen.findAllByRole('button', {
+          name: 'Non-Active',
+        })
+        expect(toggles.length).toBe(1)
+
+        let toggle = await screen.findByRole('button', { name: 'Non-Active' })
+        userEvent.click(toggle)
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        toggle = await screen.findByRole('button', { name: 'Non-Active' })
+        expect(toggle).toBeInTheDocument()
+
+        toggles = await screen.findAllByRole('button', { name: 'Non-Active' })
+        expect(toggles.length).toBe(1)
+      })
+    })
+
+    describe('there are open seats', () => {
+      beforeEach(() => {
+        setup({})
+      })
+
+      it('updates the users activation', async () => {
+        render(
+          <MemoryRouter initialEntries={['/admin/gh/members']}>
+            <QueryClientProvider client={queryClient}>
+              <MemberTable />
+            </QueryClientProvider>
+          </MemoryRouter>
+        )
+
+        const nonActiveToggleClick = await screen.findByRole('button', {
+          name: 'Non-Active',
+        })
+
+        userEvent.click(nonActiveToggleClick)
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const activeToggle = await screen.findByRole('button', {
+          name: 'Activated',
+        })
+        expect(activeToggle).toBeInTheDocument()
+
+        const nonActiveToggle = screen.queryByRole('button', {
+          name: 'Non-Active',
+        })
+        expect(nonActiveToggle).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('deactivating a user', () => {
     beforeEach(() => {
-      setup({})
+      setup({ returnActivated: true })
     })
 
     it('updates the users activation', async () => {
-      let toggle = await screen.findByRole('button', { name: 'Non-Active' })
+      render(
+        <MemoryRouter initialEntries={['/admin/gh/members']}>
+          <QueryClientProvider client={queryClient}>
+            <MemberTable />
+          </QueryClientProvider>
+        </MemoryRouter>
+      )
 
-      userEvent.click(toggle)
+      const activeToggleClick = await screen.findByRole('button', {
+        name: 'Activated',
+      })
+      userEvent.click(activeToggleClick)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
-      toggle = await screen.findByRole('button', { name: 'Activated' })
-      expect(toggle).toBeInTheDocument()
+      const nonActiveToggle = await screen.findByRole('button', {
+        name: 'Non-Active',
+      })
+      expect(nonActiveToggle).toBeInTheDocument()
+
+      const activeToggle = screen.queryByRole('button', { name: 'Activated' })
+      expect(activeToggle).not.toBeInTheDocument()
     })
   })
 
@@ -165,7 +300,16 @@ describe('MemberTable', () => {
     beforeEach(() => {
       setup({ noData: true })
     })
+
     it('displays an empty table', async () => {
+      render(
+        <MemoryRouter initialEntries={['/admin/gh/members']}>
+          <QueryClientProvider client={queryClient}>
+            <MemberTable />
+          </QueryClientProvider>
+        </MemoryRouter>
+      )
+
       const table = await screen.findByTestId('body-row')
       expect(table).toBeEmptyDOMElement()
     })

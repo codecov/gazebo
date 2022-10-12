@@ -21,9 +21,8 @@ const tabLoading = (
 function SettingsTab() {
   const { owner } = useParams()
   const { data: currentOwner } = useOwner({ username: owner })
-  const { isCurrentUserPartOfOrg } = currentOwner
 
-  if (!isCurrentUserPartOfOrg) return <NotFound />
+  if (!currentOwner?.isCurrentUserPartOfOrg) return <NotFound />
 
   return (
     <SidebarLayout sidebar={<SideMenuSettings />}>
