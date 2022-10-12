@@ -18,10 +18,11 @@ jest.mock('services/pull')
 describe('PullRequestPage', () => {
   function setup({
     hasAccess = false,
+    pullData = {},
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
   }) {
     usePull.mockReturnValue({
-      data: { hasAccess },
+      data: { hasAccess, pull: pullData },
     })
 
     render(
@@ -68,6 +69,53 @@ describe('PullRequestPage', () => {
       beforeEach(async () => {
         setup({
           hasAccess: false,
+          initialEntries: ['/gh/test-org/test-repo/pull/12'],
+        })
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+      })
+
+      it('renders a 404', () => {
+        expect(screen.getByText(/Error 404/i)).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('show 404 if no pull request data', () => {
+    describe('the main breadcrumb', () => {
+      beforeEach(() => {
+        setup({
+          hasAccess: true,
+          pullData: null,
+          initialEntries: ['/gh/test-org/test-repo/pull/12'],
+        })
+      })
+
+      it('does not render the breadcrumbs', () => {
+        expect(
+          screen.queryByRole('link', {
+            name: /test-org/i,
+          })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('link', {
+            name: /test-repo/i,
+          })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('link', {
+            name: /pulls/i,
+          })
+        ).not.toBeInTheDocument()
+      })
+    })
+
+    describe('root', () => {
+      beforeEach(async () => {
+        setup({
+          hasAccess: true,
+          pullData: null,
           initialEntries: ['/gh/test-org/test-repo/pull/12'],
         })
         await waitFor(() =>
