@@ -3,7 +3,7 @@ import Icon from 'ui/Icon'
 import Summary from 'ui/Summary'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import { usePullForCompareSummary } from './hooks'
+import { usePullForCompareSummary } from './usePullForCompareSummary'
 
 function totalsCards({
   headCoverage,

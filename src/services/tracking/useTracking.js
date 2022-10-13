@@ -40,8 +40,12 @@ function handleOnError(guest) {
 
 export function useTracking() {
   const { data: user, ...all } = useUser({
-    onSuccess: (user) => handleOnSuccess(user),
-    onError: () => handleOnError({ guest: true }),
+    onSuccess: (user) => {
+      if (!user) {
+        return handleOnError({ guest: true })
+      }
+      return handleOnSuccess(user)
+    },
     suspense: false,
   })
 

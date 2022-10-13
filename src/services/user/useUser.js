@@ -66,7 +66,8 @@ export function useUser(options = {}) {
         if (currentUser) return currentUser
         throw new Error('Unauthenticated')
       } catch (e) {
-        console.error(e)
+        console.error(`Error at useUser: ${e.message}`)
+        return null
       }
     },
     {

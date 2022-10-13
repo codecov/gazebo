@@ -2,8 +2,8 @@ import { Fragment, useState } from 'react'
 
 import A from 'ui/A'
 
-import { useUploads } from './hooks'
 import Upload from './Upload'
+import { useUploads } from './useUploads'
 
 import YamlModal from '../YamlModal'
 
@@ -45,6 +45,7 @@ function UploadsCard() {
                     errors,
                     uploadType,
                     state,
+                    name,
                   },
                   i
                 ) => (
@@ -58,6 +59,7 @@ function UploadsCard() {
                     key={i}
                     uploadType={uploadType}
                     state={state}
+                    name={name}
                   />
                 )
               )}

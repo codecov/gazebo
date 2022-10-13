@@ -69,9 +69,9 @@ function DesktopMenu() {
         <A to={{ pageName: 'blog' }} variant="header" showExternalIcon={false}>
           Blog
         </A>
-        {currentUser && <FeedbackLink />}
+        {!!currentUser && <FeedbackLink />}
       </div>
-      {currentUser ? (
+      {!!currentUser ? (
         <div className="flex items-center space-between mx-2 md:mx-4 gap-4">
           {config.IS_ENTERPRISE && (
             <>

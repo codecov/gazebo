@@ -49,6 +49,7 @@ const commitData = {
           ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
           uploadType: 'uploaded',
           errors: [],
+          name: 'upload name',
         },
       },
       {
@@ -63,6 +64,7 @@ const commitData = {
           ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
           uploadType: 'uploaded',
           errors: [],
+          name: 'upload name',
         },
       },
     ],
