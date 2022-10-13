@@ -33,7 +33,7 @@ const orgsData = {
   ],
 }
 
-const mockHistoryReplace = jest.fn()
+let mockHistoryReplace = jest.fn()
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -75,6 +75,14 @@ describe('UserOnboardingModal', () => {
   let selectOrganization = jest.fn()
   let selectRepository = jest.fn()
   let skipOnboarding = jest.fn()
+
+  beforeEach(() => {
+    mockHistoryReplace = jest.fn()
+    completedUserOnboarding = jest.fn()
+    selectOrganization = jest.fn()
+    selectRepository = jest.fn()
+    skipOnboarding = jest.fn()
+  })
 
   function setup(currentUserPassedIn = defaultCurrentUser, flagValue = true) {
     currentUser = currentUserPassedIn
@@ -293,7 +301,7 @@ describe('UserOnboardingModal', () => {
         userEvent.click(skipBtn)
 
         await waitFor(() => expect(skipOnboarding).toHaveBeenCalled())
-        await waitFor(() => expect(mockHistoryReplace).toHaveBeenCalled())
+        await waitFor(() => expect(mockHistoryReplace).not.toHaveBeenCalled())
       })
     })
 
