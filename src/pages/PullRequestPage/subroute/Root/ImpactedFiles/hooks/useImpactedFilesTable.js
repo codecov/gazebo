@@ -32,6 +32,8 @@ function transformImpactedFilesData({ pull }) {
     const headCoverage = impactedFile?.headCoverage?.percentCovered
     const patchCoverage = impactedFile?.patchCoverage?.percentCovered
     const baseCoverage = impactedFile?.baseCoverage?.percentCovered
+    console.log('here')
+    console.log(impactedFile)
     const changeCoverage =
       isNumber(headCoverage) && isNumber(baseCoverage)
         ? headCoverage - baseCoverage
