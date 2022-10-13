@@ -47,10 +47,10 @@ afterAll(() => server.close())
 describe('useUser', () => {
   let hookData
 
-  function setup() {
+  function setup(userData) {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ me: user }))
+        return res(ctx.status(200), ctx.data({ me: userData }))
       })
     )
     hookData = renderHook(() => useUser(), { wrapper })
@@ -58,7 +58,10 @@ describe('useUser', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup()
+      const spy = jest.spyOn(console, 'error')
+      spy.mockImplementation(jest.fn())
+
+      setup(user)
     })
 
     it('returns isLoading', () => {
@@ -66,14 +69,33 @@ describe('useUser', () => {
     })
   })
 
-  describe('when data is loaded', () => {
-    beforeEach(() => {
-      setup()
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
+  describe('when query resolves', () => {
+    describe('there is user data', () => {
+      beforeEach(() => {
+        const spy = jest.spyOn(console, 'error')
+        spy.mockImplementation(jest.fn())
+
+        setup(user)
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the user', () => {
+        expect(hookData.result.current.data).toEqual(user)
+      })
     })
 
-    it('returns the user', () => {
-      expect(hookData.result.current.data).toEqual(user)
+    describe('there is no user data', () => {
+      beforeEach(() => {
+        const spy = jest.spyOn(console, 'error')
+        spy.mockImplementation(jest.fn())
+
+        setup(null)
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the user', () => {
+        expect(hookData.result.current.data).toEqual(null)
+      })
     })
   })
 })

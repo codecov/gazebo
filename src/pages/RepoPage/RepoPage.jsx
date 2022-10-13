@@ -36,7 +36,7 @@ const getRepoTabs = ({
   {
     pageName: 'overview',
     children: 'Coverage',
-    exact: !matchTree && !matchBlobs,
+    exact: `${!matchTree && !matchBlobs}`,
   },
   ...(shouldShowFlagsTab({ gazeboFlagsTab, isRepoActivated })
     ? [{ pageName: 'flagsTab' }]
