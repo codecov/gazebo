@@ -63,20 +63,19 @@ function useImpactedFilesTable() {
   const [sortBy, setSortBy] = useState([{ desc: true, id: 'change' }])
   const filters = getFilters({ sortBy: sortBy[0] })
 
-  const { data, isLoading } = usePull({
+  const { data: pullData, isLoading } = usePull({
     provider,
     owner,
     repo,
     pullId,
     filters,
     options: {
-      select: (data) => {
-        return transformImpactedFilesData({
-          pull: data?.pull,
-        })
-      },
       staleTime: 1000 * 60 * 5,
     },
+  })
+
+  const data = transformImpactedFilesData({
+    pull: pullData?.pull,
   })
 
   const handleSort = useCallback(
