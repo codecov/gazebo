@@ -63,21 +63,28 @@ export function useOnboardUser(opts) {
 
   return useMutation(
     (input) => {
+      const formData = input?.formData
+      const selectedOrg = input?.selectedOrg
+
       return Api.graphqlMutation({
         provider,
         query: mutation,
         mutationPath: 'onboardUser',
         variables: {
-          input,
+          input: formData,
         },
-      }).then((res) => res?.data?.onboardUser?.me)
+      }).then((res) => ({
+        user: res?.data?.onboardUser?.me,
+        selectedOrg: selectedOrg,
+      }))
     },
     {
-      onSuccess: (user) => {
+      onSuccess: (data) => {
+        const user = data?.user
         queryClient.setQueryData(['currentUser', provider], () => user)
 
         if (user && typeof opts?.onSuccess === 'function') {
-          opts.onSuccess(user, opts?.data)
+          opts.onSuccess(data, opts?.data)
         }
       },
     }
