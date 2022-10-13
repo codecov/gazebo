@@ -8,7 +8,7 @@ import deactivatedRepo from './assets/deactivatedRepo.svg'
 function DeactivatedRepo() {
   const { owner } = useParams()
   const { data: currentOwner } = useOwner({ username: owner })
-  const { isCurrentUserPartOfOrg } = currentOwner
+  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
 
   // TODO: Add a link to 'our docs' page in the non-org user case once it's available.
   return (

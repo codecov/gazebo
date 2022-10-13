@@ -18,7 +18,8 @@ const pullStateToColor = {
 function Header() {
   // TODO: When we update the cicd link and branch link to mobe this to a hook to match the rest of the page.
   const { provider, owner, repo, pullId } = useParams()
-  const { data: pull } = usePull({ provider, owner, repo, pullId })
+  const { data: pullData } = usePull({ provider, owner, repo, pullId })
+  const pull = pullData?.pull
 
   return (
     <div className="border-b border-ds-gray-secondary pb-4 text-xs">
@@ -35,7 +36,7 @@ function Header() {
       </h1>
       <p className="flex items-center gap-2">
         <span>
-          {pull?.updatestamp && formatTimeToNow(pull.updatestamp)}{' '}
+          {pull?.updatestamp && formatTimeToNow(pull?.updatestamp)}{' '}
           <span className="bold">{pull?.author?.username}</span> authored{' '}
           {pull?.pullId && (
             <A

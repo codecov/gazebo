@@ -13,7 +13,11 @@ function HomePage({ active = false }) {
   const { push } = useHistory()
   const { provider } = useParams()
   const { data: currentUser, isLoading } = useUser({
-    onError: (data) => push(`/login/${provider}`),
+    onSuccess: (data) => {
+      if (!data) {
+        push(`/login/${provider}`)
+      }
+    },
     suspense: false,
   })
 
@@ -29,7 +33,7 @@ function HomePage({ active = false }) {
     <div className="flex flex-col gap-4">
       <Header />
       <div>
-        <Tabs currentUsername={currentUser.user.username} />
+        <Tabs currentUsername={currentUser?.user?.username} />
         <ActiveContext.Provider value={active}>
           <ListRepo canRefetch />
         </ActiveContext.Provider>

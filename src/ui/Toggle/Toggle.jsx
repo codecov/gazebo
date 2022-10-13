@@ -38,6 +38,7 @@ function Toggle({ label, value = false, onClick, disabled = false }) {
         })}
         aria-pressed="false"
         type="button"
+        disabled={disabled}
       >
         <span
           data-testid="switch"

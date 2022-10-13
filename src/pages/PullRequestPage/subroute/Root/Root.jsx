@@ -6,7 +6,7 @@ import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './ImpactedFiles'
-import useImpactedFilesTable from './ImpactedFiles/hooks'
+import { useImpactedFilesTable } from './ImpactedFiles/hooks'
 
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0

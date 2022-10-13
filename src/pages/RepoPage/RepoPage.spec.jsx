@@ -104,27 +104,45 @@ describe('RepoPage', () => {
   })
 
   describe('when rendered with private repo', () => {
-    beforeEach(() => {
-      setup({
-        repository: {
-          private: true,
-        },
+    describe('user is part of org', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: true,
+          },
+        })
+      })
+
+      it('renders the title with the owner name', () => {
+        const owner = screen.getByText(/codecov/)
+        expect(owner).toBeInTheDocument()
+      })
+
+      it('renders the title with the repo name', () => {
+        const repo = screen.getByText(/test-repo/)
+        expect(repo).toBeInTheDocument()
+      })
+
+      it('renders the block private', () => {
+        const privateSpan = screen.getByText('lock-closed.svg')
+        expect(privateSpan).toBeInTheDocument()
       })
     })
 
-    it('renders the title with the owner name', () => {
-      const owner = screen.getByText(/codecov/)
-      expect(owner).toBeInTheDocument()
-    })
+    describe('user is not part of org', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: true,
+          },
+          isCurrentUserPartOfOrg: false,
+        })
+      })
 
-    it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/test-repo/)
-      expect(repo).toBeInTheDocument()
-    })
-
-    it('renders the block private', () => {
-      const privateSpan = screen.getByText('lock-closed.svg')
-      expect(privateSpan).toBeInTheDocument()
+      it('renders 404 page', () => {
+        const notFound = screen.getByText(/404/)
+        expect(notFound).toBeInTheDocument()
+      })
     })
   })
 
