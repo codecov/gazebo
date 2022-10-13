@@ -115,4 +115,17 @@ describe('ErrorBanner Card', () => {
       )
     })
   })
+
+  describe('when rendered with unknown error type', () => {
+    beforeEach(() => {
+      setup({ errorType: 'hyuck hyuck!' })
+    })
+
+    it('doesn not display any error message', () => {
+      expect(screen.queryByText('Missing')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: /learn more/i })
+      ).not.toBeInTheDocument()
+    })
+  })
 })
