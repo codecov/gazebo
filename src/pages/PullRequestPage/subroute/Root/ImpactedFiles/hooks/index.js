@@ -1,1 +1,1 @@
-export { default } from './useImpactedFilesTable'
+export * from './useImpactedFilesTable'

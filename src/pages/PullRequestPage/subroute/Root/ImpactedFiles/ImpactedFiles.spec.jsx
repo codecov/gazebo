@@ -3,7 +3,7 @@ import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import useImpactedFilesTable from './hooks'
+import { useImpactedFilesTable } from './hooks'
 import ImpactedFiles from './ImpactedFiles'
 
 jest.mock('../FileDiff', () => () => 'FileDiff Component')

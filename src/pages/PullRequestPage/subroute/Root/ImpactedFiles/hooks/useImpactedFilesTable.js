@@ -32,8 +32,6 @@ function transformImpactedFilesData({ pull }) {
     const headCoverage = impactedFile?.headCoverage?.percentCovered
     const patchCoverage = impactedFile?.patchCoverage?.percentCovered
     const baseCoverage = impactedFile?.baseCoverage?.percentCovered
-    console.log('here')
-    console.log(impactedFile)
     const changeCoverage =
       isNumber(headCoverage) && isNumber(baseCoverage)
         ? headCoverage - baseCoverage
@@ -60,7 +58,7 @@ function transformImpactedFilesData({ pull }) {
   }
 }
 
-function useImpactedFilesTable() {
+export function useImpactedFilesTable() {
   const { provider, owner, repo, pullId } = useParams()
   const [sortBy, setSortBy] = useState([{ desc: true, id: 'change' }])
   const filters = getFilters({ sortBy: sortBy[0] })
@@ -91,5 +89,3 @@ function useImpactedFilesTable() {
 
   return { data, isLoading, handleSort }
 }
-
-export default useImpactedFilesTable

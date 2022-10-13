@@ -5,7 +5,7 @@ import { act } from 'react-test-renderer'
 
 import { usePull } from 'services/pull'
 
-import useImpactedFilesTable from './useImpactedFilesTable'
+import { useImpactedFilesTable } from './useImpactedFilesTable'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
