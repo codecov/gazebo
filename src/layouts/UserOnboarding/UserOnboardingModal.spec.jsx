@@ -266,7 +266,7 @@ describe('UserOnboardingModal', () => {
         const codecov = await screen.findByText('codecov')
         userEvent.click(codecov)
 
-        expect(selectOrganization).toHaveBeenCalled()
+        await waitFor(() => expect(selectOrganization).toHaveBeenCalled())
       })
     })
 
