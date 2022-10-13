@@ -55,6 +55,7 @@ const Header = ({ controlsDisabled, children }) => {
       {children}
       <div className="flex justify-end pt-4">
         <SearchField
+          hook="flags-search"
           disabled={controlsDisabled}
           placeholder={'Search for flags'}
           searchValue={params?.search}

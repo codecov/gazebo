@@ -3,6 +3,7 @@ import { useSelect } from 'downshift'
 import identity from 'lodash/identity'
 import PropTypes from 'prop-types'
 
+import { marketingHookType } from 'shared/propTypes'
 import Icon from 'ui/Icon'
 
 const SelectClasses = {
@@ -41,6 +42,7 @@ function Select({
   ariaName,
   variant = 'default',
   disabled = false,
+  hook,
 }) {
   const {
     isOpen,
@@ -83,6 +85,7 @@ function Select({
   return (
     <div className={SelectClasses.root}>
       <button
+        data-marketing={hook}
         disabled={disabled}
         aria-label={ariaName}
         type="button"
@@ -115,6 +118,7 @@ Select.propTypes = {
   ariaName: PropTypes.string.isRequired,
   variant: PropTypes.oneOf(['default', 'gray', 'text']),
   disabled: PropTypes.bool,
+  hook: marketingHookType,
 }
 
 export default Select

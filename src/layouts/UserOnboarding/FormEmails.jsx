@@ -13,6 +13,7 @@ function FormEmails({ form, currentUser }) {
       <div>
         {!currentUser.email && (
           <TextInput
+            hook="personal-email-user-onboarding"
             label="Personal email"
             placeholder="example@email.com"
             {...form.register('email')}
@@ -25,6 +26,7 @@ function FormEmails({ form, currentUser }) {
       <div>
         {typeProjects.includes(TYPE_PROJECTS.YOUR_ORG) && (
           <TextInput
+            hook="work-email-user-onboarding"
             label="Work email"
             placeholder="example@email.com"
             {...form.register('businessEmail')}

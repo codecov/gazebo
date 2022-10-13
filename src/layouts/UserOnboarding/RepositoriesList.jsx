@@ -72,6 +72,7 @@ function RepositoriesList({ organization, onSubmit }) {
           </div>
         </div>
         <TextInput
+          hook="repos-list-search"
           value={search}
           autoFocus
           placeholder="Search"

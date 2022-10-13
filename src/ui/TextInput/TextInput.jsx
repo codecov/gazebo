@@ -4,6 +4,7 @@ import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 import { forwardRef } from 'react'
 
+import { marketingHookType } from 'shared/propTypes'
 import Icon from 'ui/Icon'
 
 const VariantClasses = {
@@ -25,7 +26,7 @@ const TextInput = forwardRef(
     ref
   ) => {
     const id = uniqueId('text-input')
-    const { className, ...newProps } = props
+    const { className, hook, ...newProps } = props
 
     // If no label, the placeholder is used as a hidden label for a11y
     const textLabel = defaultTo(label, placeholder)
@@ -72,6 +73,7 @@ TextInput.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.string,
   variant: PropTypes.oneOf(['default', 'topRounded']),
+  hook: marketingHookType,
 }
 
 export default TextInput

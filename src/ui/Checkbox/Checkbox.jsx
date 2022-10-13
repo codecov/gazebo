@@ -6,7 +6,7 @@ import { forwardRef } from 'react'
 const Checkbox = forwardRef(
   ({ label, showLabel = true, disabled, ...props }, ref) => {
     const id = uniqueId('radio-input')
-    const { className, ...newProps } = props
+    const { className, hook, ...newProps } = props
 
     return (
       <div
@@ -16,6 +16,7 @@ const Checkbox = forwardRef(
         })}
       >
         <input
+          data-marketing={`${hook}-checkbox`}
           id={id}
           ref={ref}
           disabled={disabled}
@@ -40,6 +41,11 @@ Checkbox.propTypes = {
   label: PropTypes.string,
   disabled: PropTypes.bool,
   showLabel: PropTypes.bool,
+  hook: (props, propName) => {
+    if (props[propName] === undefined || typeof props[propName] != 'string') {
+      return new Error('You must provide prop "hook" of type string.')
+    }
+  },
 }
 
 export default Checkbox

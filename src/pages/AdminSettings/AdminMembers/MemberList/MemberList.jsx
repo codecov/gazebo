@@ -37,6 +37,7 @@ function MemberList() {
       <div className="flex flex-row grow justify-between items-center">
         <div className="w-3/12">
           <Select
+            hook="members-status-selector"
             value={
               ActivationStates[
                 Object.keys(ActivationStates).find(
@@ -63,6 +64,7 @@ function MemberList() {
         </div>
         <div className="w-3/12">
           <Select
+            hook="members-role-selector"
             value={
               RoleStates[
                 Object.keys(RoleStates).find(
@@ -87,6 +89,7 @@ function MemberList() {
         </div>
         <div className="w-4/12">
           <SearchField
+            hook="members-search"
             placeholder="Search"
             searchValue={params?.search || ''}
             setSearchValue={(search) => updateParams({ ...params, search })}

@@ -175,6 +175,7 @@ function MembersList() {
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Toggle
+                    hook="handle-members-activation"
                     label={user.activated ? 'Activated' : 'Not yet activated'}
                     value={user.activated}
                     onClick={() => handleActivate(user)}
