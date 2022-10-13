@@ -4,12 +4,12 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoFlagsCount } from 'services/repo'
+import { useRepoBackfilled } from 'services/repo'
 
 import Header from './Header'
 
 jest.mock('services/navigation/useLocationParams')
-jest.mock('services/repo/useRepoFlagsCount')
+jest.mock('services/repo/useRepoBackfilled')
 
 describe('Header', () => {
   const updateLocationMock = jest.fn()
@@ -18,7 +18,7 @@ describe('Header', () => {
       params: { search: '', historicalTrend: '' },
       updateParams: updateLocationMock,
     })
-    useRepoFlagsCount.mockReturnValue({
+    useRepoBackfilled.mockReturnValue({
       data: { flagsCount: 99 },
     })
 
