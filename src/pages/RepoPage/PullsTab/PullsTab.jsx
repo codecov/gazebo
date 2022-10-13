@@ -4,11 +4,11 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
 import Button from 'ui/Button'
-import MultiSelect from 'ui/MultiSelect'
+import MultiSelect from 'ui/NewMultiSelect'
 import Select from 'ui/Select'
 
 import {
-  fitlerItems,
+  filterItems,
   orderingEnum,
   orderItems,
   orderNames,
@@ -114,7 +114,7 @@ function PullsTab() {
             <MultiSelect
               ariaName="Filter by state"
               selectedItems={selectedStates}
-              items={fitlerItems}
+              items={filterItems}
               onChange={handleStatesChange}
               resourceName=""
             />
