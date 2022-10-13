@@ -615,6 +615,20 @@ function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    missingComparisonCommit: {
+      text: 'comparison commit troubleshooting',
+      path: () =>
+        'https://docs.codecov.com/docs/error-reference#section-missing-head-commit',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    missingComparisonReport: {
+      text: 'comparison report troubleshooting',
+      path: () =>
+        'https://docs.codecov.com/docs/error-reference#missing-base-report',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     flagsFeedback: {
       text: 'New repo set up feedback',
       path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/27',
