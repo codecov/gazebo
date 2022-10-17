@@ -3,6 +3,8 @@ import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 import { forwardRef } from 'react'
 
+import { marketingHookType } from 'shared/propTypes'
+
 const Checkbox = forwardRef(
   ({ label, showLabel = true, disabled, ...props }, ref) => {
     const id = uniqueId('radio-input')
@@ -41,11 +43,7 @@ Checkbox.propTypes = {
   label: PropTypes.string,
   disabled: PropTypes.bool,
   showLabel: PropTypes.bool,
-  hook: (props, propName) => {
-    if (props[propName] === undefined || typeof props[propName] != 'string') {
-      return new Error('You must provide prop "hook" of type string.')
-    }
-  },
+  hook: marketingHookType,
 }
 
 export default Checkbox
