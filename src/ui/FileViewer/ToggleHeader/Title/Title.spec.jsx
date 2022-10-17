@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import Title, { TitleFlags } from './Title'
 
-const onChange = jest.fn(() => {})
+const onChange = jest.fn()
 
 describe('TitleFlags', () => {
   function setup(props) {
@@ -12,9 +12,8 @@ describe('TitleFlags', () => {
   describe('shows the loading spinner', () => {
     beforeEach(() => {
       setup({
-        list: ['hi', 'more'],
-        current: [],
-        onChange,
+        flags: ['hi', 'more'],
+        onFlagsChange: onChange,
         flagsIsLoading: true,
       })
     })
@@ -27,9 +26,8 @@ describe('TitleFlags', () => {
   describe('hides the spinner', () => {
     beforeEach(() => {
       setup({
-        list: ['hi', 'more'],
-        current: [],
-        onChange,
+        flags: ['hi', 'more'],
+        onFlagsChange: onChange,
         flagsIsLoading: false,
       })
     })
@@ -42,9 +40,8 @@ describe('TitleFlags', () => {
   describe('defaults to no spinner', () => {
     beforeEach(() => {
       setup({
-        list: ['hi', 'more'],
-        current: [],
-        onChange,
+        flags: ['hi', 'more'],
+        onFlagsChange: onChange,
       })
     })
 

@@ -22,25 +22,11 @@ function ErrorDisplayMessage() {
   )
 }
 
-// This function solely done to eliminate max-statements complexity
-// TODO: probably move this to some sort of context; think of a solution with useReducer
-function useCoverageAndFlagsStates() {
-  const [selectedFlags, setSelectedFlags] = useState([])
-
-  return {
-    flagsState: { selectedFlags, setSelectedFlags },
-  }
-}
-
 function CommitFileView({ diff }) {
   const { owner, repo, provider, commit, path } = useParams()
   const change = diff?.headCoverage?.coverage - diff?.baseCoverage?.coverage
   const fileName = getFilenameFromFilePath(path)
-
-  // *********** This is temporary code that will be here in the meantime *********** //
-  const {
-    flagsState: { selectedFlags, setSelectedFlags },
-  } = useCoverageAndFlagsStates()
+  const [selectedFlags, setSelectedFlags] = useState([])
 
   const {
     isLoading: coverageIsLoading,
@@ -56,14 +42,6 @@ function CommitFileView({ diff }) {
     path,
     selectedFlags,
   })
-
-  const flagData = {
-    flagNames,
-    selectedFlags,
-    setSelectedFlags,
-  }
-
-  // *********** This is temporary code that will be here in the meantime *********** //
 
   const title = (
     <Breadcrumb
@@ -82,8 +60,9 @@ function CommitFileView({ diff }) {
     <div className="flex flex-col gap-4">
       <ToggleHeader
         title={title}
-        flagData={flagData}
+        flagNames={flagNames}
         coverageIsLoading={coverageIsLoading}
+        onFlagsChange={setSelectedFlags}
       />
       <div>
         <CodeRendererProgressHeader

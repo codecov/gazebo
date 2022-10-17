@@ -10,6 +10,7 @@ function fetchRepoBackfilledContents({ provider, owner, repo }) {
           repository(name:$repo){
             flagsMeasurementsActive
             flagsMeasurementsBackfilled
+            flagsCount
           }
         }
       }
