@@ -1,4 +1,4 @@
-import { act, render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 
@@ -14,15 +14,23 @@ jest.mock('./useOnboardingTracking.js')
 jest.mock('shared/featureFlags')
 
 describe('UserOnboardingFrom', () => {
+  let currentUser
   const defaultCurrentUser = {
     email: 'user@gmail.com',
   }
   let mutate
-  let completedUserOnboarding = jest.fn()
-  let onFormSubmit = jest.fn()
-  const secondPage = jest.fn()
+  let completedUserOnboarding
+  let onFormSubmit
+  let secondPage
 
-  function setup(currentUser = defaultCurrentUser, flagValue = true) {
+  beforeEach(() => {
+    completedUserOnboarding = jest.fn()
+    onFormSubmit = jest.fn()
+    secondPage = jest.fn()
+  })
+
+  function setup(currentUserPassedIn = defaultCurrentUser, flagValue = true) {
+    currentUser = currentUserPassedIn
     mutate = jest.fn()
     useOnboardingTracking.mockReturnValue({
       startedOnboarding: jest.fn(),
@@ -37,26 +45,6 @@ describe('UserOnboardingFrom', () => {
     useFlags.mockReturnValue({
       onboardingOrganizationSelector: flagValue,
     })
-    render(
-      <UserOnboardingForm
-        currentUser={currentUser}
-        onFormSubmit={onFormSubmit}
-      />
-    )
-  }
-
-  function getCheckbox(name) {
-    return screen.getByRole('checkbox', { name })
-  }
-
-  function clickNext() {
-    screen
-      .getByRole('button', {
-        name: /next/i,
-      })
-      .click()
-    // make sure the form updates properly
-    return act(() => Promise.resolve())
   }
 
   describe('when rendered', () => {
@@ -64,20 +52,33 @@ describe('UserOnboardingFrom', () => {
       setup()
     })
 
-    it('has the form with the basic questions', () => {
-      expect(
-        screen.getByRole('heading', {
-          name: /what type of projects brings you here\?/i,
-        })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('heading', {
-          name: /What is your goal we can help with\?/i,
-        })
-      ).toBeInTheDocument()
+    it('has the form with the basic questions', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const bringsYouHereHeading = await screen.findByRole('heading', {
+        name: /what type of projects brings you here\?/i,
+      })
+      expect(bringsYouHereHeading).toBeInTheDocument()
+
+      const helpWithHeading = await screen.findByRole('heading', {
+        name: /What is your goal we can help with\?/i,
+      })
+      expect(helpWithHeading).toBeInTheDocument()
     })
 
     it('has the next button disabled', () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
       const button = screen.getByRole('button', {
         name: /next/i,
       })
@@ -89,15 +90,38 @@ describe('UserOnboardingFrom', () => {
   describe('when the user picks a type of projects', () => {
     beforeEach(() => {
       setup()
-      getCheckbox(/educational/i).click()
     })
 
-    it('selects the checkbox', () => {
-      expect(getCheckbox(/educational/i)).toBeChecked()
+    it('selects the checkbox', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /educational/i,
+      })
+      userEvent.click(checkbox)
+
+      expect(checkbox).toBeChecked()
     })
 
-    it('still has the next button disabled', () => {
-      const button = screen.getByRole('button', {
+    it('still has the next button disabled', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /educational/i,
+      })
+      userEvent.click(checkbox)
+
+      const button = await screen.findByRole('button', {
         name: /next/i,
       })
       expect(button).toBeInTheDocument()
@@ -105,12 +129,21 @@ describe('UserOnboardingFrom', () => {
     })
 
     describe('when the user clicks again', () => {
-      beforeEach(() => {
-        getCheckbox(/educational/i).click()
-      })
+      it('unselects the checkbox', async () => {
+        render(
+          <UserOnboardingForm
+            currentUser={currentUser}
+            onFormSubmit={onFormSubmit}
+          />
+        )
 
-      it('unselects the checkbox', () => {
-        expect(getCheckbox(/educational/i)).not.toBeChecked()
+        const checkbox = await screen.findByRole('checkbox', {
+          name: /educational/i,
+        })
+        userEvent.click(checkbox)
+        userEvent.click(checkbox)
+
+        expect(checkbox).not.toBeChecked()
       })
     })
   })
@@ -118,15 +151,38 @@ describe('UserOnboardingFrom', () => {
   describe('when the user picks a goal', () => {
     beforeEach(() => {
       setup()
-      getCheckbox(/just starting to write tests/i).click()
     })
 
-    it('selects the checkbox', () => {
-      expect(getCheckbox(/just starting to write tests/i)).toBeChecked()
+    it('selects the checkbox', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      expect(justStartingCheckbox).toBeChecked()
     })
 
-    it('still has the next button disabled', () => {
-      const button = screen.getByRole('button', {
+    it('still has the next button disabled', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      const button = await screen.findByRole('button', {
         name: /next/i,
       })
       expect(button).toBeInTheDocument()
@@ -137,85 +193,176 @@ describe('UserOnboardingFrom', () => {
   describe('when the user selects a goal and type of projects', () => {
     beforeEach(() => {
       setup()
-      getCheckbox(/educational/i).click()
-      getCheckbox(/just starting to write tests/i).click()
     })
 
-    it('has the next button enabled', () => {
-      expect(
-        screen.getByRole('button', {
-          name: /next/i,
-        })
-      ).not.toBeDisabled()
+    it('has the next button enabled', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /educational/i,
+      })
+      userEvent.click(checkbox)
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      const nextBtn = await screen.findByRole('button', {
+        name: /next/i,
+      })
+      expect(nextBtn).not.toBeDisabled()
     })
 
     describe('when the user clicks next', () => {
-      beforeEach(() => {
-        return clickNext()
-      })
+      it('calls onFormSubmit with the form information', async () => {
+        render(
+          <UserOnboardingForm
+            currentUser={currentUser}
+            onFormSubmit={onFormSubmit}
+          />
+        )
 
-      it('calls onFormSubmit with the form information', () => {
-        expect(onFormSubmit).toHaveBeenCalledWith({
-          typeProjects: ['EDUCATIONAL'],
-          businessEmail: '',
-          email: defaultCurrentUser.email,
-          goals: ['STARTING_WITH_TESTS'],
-          otherGoal: '',
+        const checkbox = await screen.findByRole('checkbox', {
+          name: /educational/i,
         })
+        userEvent.click(checkbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
+        await waitFor(() =>
+          expect(onFormSubmit).toHaveBeenCalledWith({
+            typeProjects: ['EDUCATIONAL'],
+            businessEmail: '',
+            email: defaultCurrentUser.email,
+            goals: ['STARTING_WITH_TESTS'],
+            otherGoal: '',
+          })
+        )
       })
     })
   })
 
-  describe('when the user doesnt have an email and fill the form', () => {
+  describe('when the user does not have an email and fill the form', () => {
     beforeEach(() => {
       setup({
         email: '',
       })
-      getCheckbox(/educational/i).click()
-      getCheckbox(/just starting to write tests/i).click()
-      return clickNext()
     })
 
-    it('doesnt render the basic questions anymore', () => {
-      expect(
-        screen.queryByRole('heading', {
-          name: /what type of projects brings you here\?/i,
-        })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('heading', {
-          name: /What is your goal we can help with\?/i,
-        })
-      ).not.toBeInTheDocument()
+    it('does not render the basic questions anymore', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /educational/i,
+      })
+      userEvent.click(checkbox)
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      const nextBtn = await screen.findByRole('button', {
+        name: /next/i,
+      })
+      userEvent.click(nextBtn)
+
+      const youHereHeading = screen.queryByRole('heading', {
+        name: /what type of projects brings you here\?/i,
+      })
+      await waitFor(() => expect(youHereHeading).not.toBeInTheDocument())
+
+      const helpHeading = screen.queryByRole('heading', {
+        name: /What is your goal we can help with\?/i,
+      })
+      await waitFor(() => expect(helpHeading).not.toBeInTheDocument())
     })
 
-    it('renders an input for the email', () => {
-      expect(
-        screen.getByRole('textbox', {
-          name: /personal email/i,
-        })
-      ).toBeInTheDocument()
+    it('renders an input for the email', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /educational/i,
+      })
+      userEvent.click(checkbox)
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      const nextBtn = await screen.findByRole('button', {
+        name: /next/i,
+      })
+      userEvent.click(nextBtn)
+
+      const emailTxtBox = await screen.findByRole('textbox', {
+        name: /personal email/i,
+      })
+      expect(emailTxtBox).toBeInTheDocument()
     })
 
     describe('when the user puts a wrong email and submits', () => {
-      beforeEach(() => {
-        userEvent.type(
-          screen.getByRole('textbox', {
-            name: /personal email/i,
-          }),
-          'blablabla'
+      it('puts an error message', async () => {
+        render(
+          <UserOnboardingForm
+            currentUser={currentUser}
+            onFormSubmit={onFormSubmit}
+          />
         )
-        screen
-          .getByRole('button', {
-            name: /next/i,
-          })
-          .click()
-        // make sure the form updates properly
-        return act(() => Promise.resolve())
-      })
 
-      it('puts an error message', () => {
-        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
+        const checkbox = await screen.findByRole('checkbox', {
+          name: /educational/i,
+        })
+        userEvent.click(checkbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
+        const emailTxtBox = await screen.findByRole('textbox', {
+          name: /personal email/i,
+        })
+
+        userEvent.type(emailTxtBox, 'not an email')
+
+        const nextBtn2 = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn2)
+
+        const errMsg = await screen.findByText(/not a valid email/i)
+        expect(errMsg).toBeInTheDocument()
       })
     })
   })
@@ -223,92 +370,184 @@ describe('UserOnboardingFrom', () => {
   describe('when the user picked "Your organization" type of project', () => {
     beforeEach(() => {
       setup()
-      getCheckbox(/your organization/i).click()
-      getCheckbox(/just starting to write tests/i).click()
-      return clickNext()
     })
 
-    it('calls secondPage function', () => {
-      expect(secondPage).toHaveBeenCalled()
+    it('calls secondPage function', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /your organization/i,
+      })
+      userEvent.click(checkbox)
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      const nextBtn = await screen.findByRole('button', {
+        name: /next/i,
+      })
+      userEvent.click(nextBtn)
+
+      await waitFor(() => expect(secondPage).toHaveBeenCalled())
     })
 
-    it('renders a field to enter business email', () => {
-      expect(
-        screen.getByRole('textbox', {
-          name: /work email/i,
-        })
-      ).toBeInTheDocument()
+    it('renders a field to enter business email', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /your organization/i,
+      })
+      userEvent.click(checkbox)
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      const nextBtn = await screen.findByRole('button', {
+        name: /next/i,
+      })
+      userEvent.click(nextBtn)
+
+      const emailTxtBox = await screen.findByRole('textbox', {
+        name: /work email/i,
+      })
+      expect(emailTxtBox).toBeInTheDocument()
     })
 
     describe('when the user submits a valid email', () => {
-      beforeEach(() => {
-        userEvent.type(
-          screen.getByRole('textbox', {
-            name: /work email/i,
-          }),
-          'rabee@codecov.io'
+      it('calls onFormSubmit with the correct form information', async () => {
+        render(
+          <UserOnboardingForm
+            currentUser={currentUser}
+            onFormSubmit={onFormSubmit}
+          />
         )
-        screen
-          .getByRole('button', {
-            name: /next/i,
-          })
-          .click()
-        // make sure the form updates properly
-        return act(() => Promise.resolve())
-      })
 
-      it('calls onFormSubmit with the correct form information', () => {
-        expect(onFormSubmit).toHaveBeenCalledWith({
-          typeProjects: ['YOUR_ORG'],
-          businessEmail: 'rabee@codecov.io',
-          email: defaultCurrentUser.email,
-          goals: ['STARTING_WITH_TESTS'],
-          otherGoal: '',
+        const checkbox = await screen.findByRole('checkbox', {
+          name: /your organization/i,
         })
+        userEvent.click(checkbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
+        const emailTxtBox = await screen.findByRole('textbox', {
+          name: /work email/i,
+        })
+        userEvent.type(emailTxtBox, 'codecov-user@codecov.io')
+
+        const nextBtn2 = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn2)
+
+        await waitFor(() =>
+          expect(onFormSubmit).toHaveBeenCalledWith({
+            typeProjects: ['YOUR_ORG'],
+            businessEmail: 'codecov-user@codecov.io',
+            email: defaultCurrentUser.email,
+            goals: ['STARTING_WITH_TESTS'],
+            otherGoal: '',
+          })
+        )
       })
     })
 
     describe('when the user puts a wrong email and submits', () => {
-      beforeEach(() => {
-        userEvent.type(
-          screen.getByRole('textbox', {
-            name: /work email/i,
-          }),
-          'blablabla'
+      it('puts an error message', async () => {
+        render(
+          <UserOnboardingForm
+            currentUser={currentUser}
+            onFormSubmit={onFormSubmit}
+          />
         )
-        screen
-          .getByRole('button', {
-            name: /next/i,
-          })
-          .click()
-        // make sure the form updates properly
-        return act(() => Promise.resolve())
-      })
 
-      it('puts an error message', () => {
-        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
+        const checkbox = await screen.findByRole('checkbox', {
+          name: /your organization/i,
+        })
+        userEvent.click(checkbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
+        const emailTxtBox = await screen.findByRole('textbox', {
+          name: /work email/i,
+        })
+        userEvent.type(emailTxtBox, 'not an email')
+
+        const nextBtn2 = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn2)
+
+        const errMsg = await screen.findByText(/not a valid email/i)
+        expect(errMsg).toBeInTheDocument()
       })
     })
 
     describe('when users submit an invalid email', () => {
-      beforeEach(() => {
-        userEvent.type(
-          screen.getByRole('textbox', {
-            name: /work email/i,
-          }),
-          'abc@ama-trade.de'
+      it('puts an error message', async () => {
+        render(
+          <UserOnboardingForm
+            currentUser={currentUser}
+            onFormSubmit={onFormSubmit}
+          />
         )
-        screen
-          .getByRole('button', {
-            name: /next/i,
-          })
-          .click()
-        // make sure the form updates properly
-        return act(() => Promise.resolve())
-      })
 
-      it('puts an error message', () => {
-        expect(screen.getByText(/not a valid email/i)).toBeInTheDocument()
+        const checkbox = await screen.findByRole('checkbox', {
+          name: /your organization/i,
+        })
+        userEvent.click(checkbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
+        const emailTxtBox = await screen.findByRole('textbox', {
+          name: /work email/i,
+        })
+        userEvent.type(emailTxtBox, 'abc@ama-trade.de')
+
+        const nextBtn2 = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn2)
+
+        const errMsg = await screen.findByText(/not a valid email/i)
+        expect(errMsg).toBeInTheDocument()
       })
     })
   })
@@ -316,33 +555,60 @@ describe('UserOnboardingFrom', () => {
   describe('when the user types in the other field', () => {
     beforeEach(() => {
       setup()
-      userEvent.type(
-        screen.getByRole('textbox', {
-          name: /other/i,
-        }),
-        'experimenting'
-      )
     })
 
-    it('selects the checkbox "Other"', () => {
-      expect(getCheckbox(/other/i)).toBeChecked()
+    it('selects the checkbox "Other"', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const otherTxtBox = await screen.findByRole('textbox', {
+        name: /other/i,
+      })
+      userEvent.type(otherTxtBox, 'experimenting')
+
+      const otherCheckBox = await screen.findByRole('checkbox', {
+        name: /other/i,
+      })
+      expect(otherCheckBox).toBeChecked()
     })
   })
 
   describe('when feature flag is false', () => {
     beforeEach(() => {
       setup(defaultCurrentUser, false)
-      getCheckbox(/your organization/i).click()
-      getCheckbox(/just starting to write tests/i).click()
-      return clickNext()
     })
 
-    it('shows button with submit text', () => {
-      expect(
-        screen.getByRole('button', {
-          name: /submit/i,
-        })
-      ).toBeInTheDocument()
+    it('shows button with submit text', async () => {
+      render(
+        <UserOnboardingForm
+          currentUser={currentUser}
+          onFormSubmit={onFormSubmit}
+        />
+      )
+
+      const checkbox = await screen.findByRole('checkbox', {
+        name: /your organization/i,
+      })
+      userEvent.click(checkbox)
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      const nextBtn = await screen.findByRole('button', {
+        name: /next/i,
+      })
+      userEvent.click(nextBtn)
+
+      const submitBtn = await screen.findByRole('button', {
+        name: /submit/i,
+      })
+      expect(submitBtn).toBeInTheDocument()
     })
   })
 })

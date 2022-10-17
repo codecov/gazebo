@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 
-import useImpactedFilesTable from './ImpactedFiles/hooks'
+import { useImpactedFilesTable } from './ImpactedFiles/hooks'
 import Root from './Root'
 
 jest.mock('./ImpactedFiles/hooks')

@@ -15,7 +15,9 @@ export function getCompareCommitsData({ commits }) {
 
 export function useCompareCommits() {
   const { provider, owner, repo, pullId } = useParams()
-  const { data: pull, ...rest } = usePull({ provider, owner, repo, pullId })
+  const { data, ...rest } = usePull({ provider, owner, repo, pullId })
+
+  const pull = data?.pull
 
   // Can likely replace with react-query's select.
   const commits = useMemo(

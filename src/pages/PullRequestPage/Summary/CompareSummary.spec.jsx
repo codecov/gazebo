@@ -93,6 +93,25 @@ describe('CompareSummary', () => {
     })
   })
 
+  describe('When there isnt a head and base commit', () => {
+    beforeEach(() => {
+      setup({
+        pullData: {
+          head: undefined,
+          base: undefined,
+          headCoverage: undefined,
+          patchCoverage: undefined,
+          changeCoverage: undefined,
+        },
+      })
+    })
+
+    it('renders a coverage unknown card', () => {
+      const card = screen.getByText('Coverage data is unknown')
+      expect(card).toBeInTheDocument()
+    })
+  })
+
   describe('Error render', () => {
     beforeEach(() => {
       setup({
