@@ -12,6 +12,6 @@ RUN apk -U add git
 RUN npm install
 RUN npm run build && rm -f build/mockServiceWorker.js
 
-FROM alpine:3.15.4
+FROM alpine:3.15.6
 RUN mkdir -p /var/www/app
 COPY --from=build  /home/workspace/build/ /var/www/app/gazebo
