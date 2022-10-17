@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form'
 import Button from 'ui/Button'
 import BaseModal from 'ui/Modal/BaseModal'
 
-
 import { getInitialDataForm, getSchema, shouldGoToEmailStep } from './config'
 import FormEmails from './FormEmails'
 import FormInformation from './FormInformation'
@@ -70,7 +69,7 @@ function usePerStepProp({ currentUser, onFormSubmit, isSubmitting }) {
       onSubmit,
       body: <FormEmails form={form} currentUser={currentUser} />,
       footer: onboardingOrganizationSelector ? (
-        <Button variant="primary" type="submit">
+        <Button hook="submit form" variant="primary" type="submit">
           Next
         </Button>
       ) : (

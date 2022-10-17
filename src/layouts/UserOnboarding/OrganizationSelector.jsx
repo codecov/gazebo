@@ -7,7 +7,6 @@ import BaseModal from 'ui/Modal/BaseModal'
 import Spinner from 'ui/Spinner'
 
 import OrganizationsList from './OrganizationsList'
-import RepositoriesList from './RepositoriesList'
 import { useOnboardingTracking } from './useOnboardingTracking'
 
 const loadingState = (
@@ -24,7 +23,7 @@ const getOrgStepProps = ({
   helpFindingOrganization,
 }) => ({
   title: isHelpFindingOrg
-    ? 'Don’t see your organization?'
+    ? "Don't see your organization?"
     : 'Select organization',
   subtitle: isHelpFindingOrg ? (
     <span>
@@ -39,7 +38,7 @@ const getOrgStepProps = ({
       </A>
     </span>
   ) : (
-    'To set up your first repo, tell us which organization it’s in:'
+    'This will help improve your experience'
   ),
   body: (
     <Suspense fallback={loadingState}>
@@ -58,7 +57,7 @@ const getOrgStepProps = ({
   ) : (
     <div className="flex flex-1 justify-between">
       <span>
-        Don’t see your org?
+        Don&apos;t see your org?
         <button
           className="text-blue-400 pl-2"
           onClick={() => {
@@ -75,42 +74,22 @@ const getOrgStepProps = ({
 })
 
 function usePerStepProp({ onSelect, onOnboardingSkip, currentUser }) {
-  const { helpFindingOrganization, selectOrganization, selectRepository } =
+  const { helpFindingOrganization, selectOrganization } =
     useOnboardingTracking()
 
-  const [step, setStep] = useState(0)
   const [isHelpFindingOrg, setIsHelpFindingOrg] = useState(false)
-  const [selectedOrg, setSelectedOrg] = useState()
 
   const handleOrgSubmit = (org) => {
     selectOrganization(currentUser, org.username)
-    setSelectedOrg(org)
-    setStep(1)
+    onSelect({ selectedOrg: org })
   }
-
-  const propsPerStep = {
-    0: getOrgStepProps({
-      isHelpFindingOrg,
-      handleOrgSubmit,
-      setIsHelpFindingOrg,
-      onOnboardingSkip,
-      helpFindingOrganization,
-    }),
-    1: {
-      title: 'Which repo are you working with today?',
-      body: selectedOrg && (
-        <RepositoriesList
-          organization={selectedOrg}
-          onSubmit={(selectedRepo) => {
-            selectRepository(currentUser, selectedRepo)
-            onSelect({ selectedOrg, selectedRepo })
-          }}
-        />
-      ),
-      footer: <button onClick={onOnboardingSkip}>Skip &gt;</button>,
-    },
-  }
-  return propsPerStep[step]
+  return getOrgStepProps({
+    isHelpFindingOrg,
+    handleOrgSubmit,
+    setIsHelpFindingOrg,
+    onOnboardingSkip,
+    helpFindingOrganization,
+  })
 }
 
 function OrganizationSelector({ onSelect, onOnboardingSkip, currentUser }) {

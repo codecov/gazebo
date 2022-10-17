@@ -1,7 +1,7 @@
-import { act, render, screen, waitFor } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -11,10 +11,8 @@ import { useMyContexts } from 'services/user'
 import { useOnboardingTracking } from './useOnboardingTracking'
 import UserOnboardingModal from './UserOnboardingModal'
 
-import { useRepos } from '../../services/repos'
 import { useFlags } from '../../shared/featureFlags'
 
-jest.mock('services/repos')
 jest.mock('./useOnboardingTracking.js')
 jest.mock('services/user', () => ({
   ...jest.requireActual('services/user'), // import and retain the original functionalities
@@ -24,8 +22,8 @@ jest.mock('shared/featureFlags')
 
 const orgsData = {
   currentUser: {
-    username: 'Rabee-AbuBaker',
-    avatarUrl: 'https://avatars0.githubusercontent.com/u/99655254?v=3&s=55',
+    username: 'codecov-user',
+    avatarUrl: 'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
   },
   myOrganizations: [
     {
@@ -35,47 +33,7 @@ const orgsData = {
   ],
 }
 
-const server = setupServer()
-beforeAll(() => server.listen())
-beforeEach(() => {
-  server.resetHandlers()
-  queryClient.clear()
-})
-afterAll(() => server.close())
-
-const reposData = {
-  repos: [
-    {
-      name: 'opentelem-ruby',
-      active: false,
-      private: false,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-    {
-      name: 'impact-analysis',
-      active: true,
-      private: true,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-    {
-      name: 'codecov-gateway',
-      active: false,
-      private: true,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-  ],
-}
-
-const mockHistoryReplace = jest.fn()
+let mockHistoryReplace = jest.fn()
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -100,15 +58,35 @@ const user = {
   onboardingCompleted: false,
 }
 
+const server = setupServer()
+beforeAll(() => server.listen())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+afterAll(() => server.close())
+
 describe('UserOnboardingModal', () => {
+  let currentUser
   const defaultCurrentUser = {
     email: 'user@gmail.com',
   }
-  const completedUserOnboarding = jest.fn()
-  const selectOrganization = jest.fn()
-  const selectRepository = jest.fn()
-  const skipOnboarding = jest.fn()
-  function setup(currentUser = defaultCurrentUser, flagValue = true) {
+  let completedUserOnboarding = jest.fn()
+  let selectOrganization = jest.fn()
+  let selectRepository = jest.fn()
+  let skipOnboarding = jest.fn()
+
+  beforeEach(() => {
+    mockHistoryReplace = jest.fn()
+    completedUserOnboarding = jest.fn()
+    selectOrganization = jest.fn()
+    selectRepository = jest.fn()
+    skipOnboarding = jest.fn()
+  })
+
+  function setup(currentUserPassedIn = defaultCurrentUser, flagValue = true) {
+    currentUser = currentUserPassedIn
+
     server.use(
       graphql.mutation('OnboardUser', (req, res, ctx) => {
         const newUser = {
@@ -139,47 +117,10 @@ describe('UserOnboardingModal', () => {
       data: orgsData,
       refetch: jest.fn(),
     })
-    useRepos.mockReturnValue({
-      data: reposData,
-      fetchNextPage: jest.fn(),
-      hasNextPage: true,
-      isFetchingNextPage: false,
-      isLoading: false,
-    })
+
     useFlags.mockReturnValue({
       onboardingOrganizationSelector: flagValue,
     })
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh']}>
-          <Route path="/:provider">
-            <UserOnboardingModal currentUser={currentUser} />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-  }
-
-  function getCheckbox(name) {
-    return screen.getByRole('checkbox', { name })
-  }
-
-  function clickNext() {
-    screen
-      .getByRole('button', {
-        name: /next/i,
-      })
-      .click()
-    // make sure the form updates properly
-    return act(() => Promise.resolve())
-  }
-
-  function selectOrg() {
-    const organization = screen.getByText(/codecov/i)
-    expect(organization).toBeInTheDocument()
-    fireEvent.click(organization)
-    // make sure the form updates properly
-    return act(() => Promise.resolve())
   }
 
   describe('when rendered', () => {
@@ -187,21 +128,40 @@ describe('UserOnboardingModal', () => {
       setup()
     })
 
-    it('has the form with the basic questions', () => {
-      expect(
-        screen.getByRole('heading', {
-          name: /what type of projects brings you here\?/i,
-        })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('heading', {
-          name: /What is your goal we can help with\?/i,
-        })
-      ).toBeInTheDocument()
+    it('has the form with the basic questions', async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/gh']}>
+            <Route path="/:provider">
+              <UserOnboardingModal currentUser={currentUser} />
+            </Route>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+
+      const bringsYouHereHeading = await screen.findByRole('heading', {
+        name: /what type of projects brings you here\?/i,
+      })
+      expect(bringsYouHereHeading).toBeInTheDocument()
+
+      const yourGoalHeading = await screen.findByRole('heading', {
+        name: /What is your goal we can help with\?/i,
+      })
+      expect(yourGoalHeading).toBeInTheDocument()
     })
 
-    it('has the next button disabled', () => {
-      const button = screen.getByRole('button', {
+    it('has the next button disabled', async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/gh']}>
+            <Route path="/:provider">
+              <UserOnboardingModal currentUser={currentUser} />
+            </Route>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+
+      const button = await screen.findByRole('button', {
         name: /next/i,
       })
       expect(button).toBeInTheDocument()
@@ -212,112 +172,209 @@ describe('UserOnboardingModal', () => {
   describe('when the user selects a goal and type of project', () => {
     beforeEach(() => {
       setup()
-      getCheckbox(/educational/i).click()
-      getCheckbox(/just starting to write tests/i).click()
     })
 
-    it('has the next button enabled', () => {
-      expect(
-        screen.getByRole('button', {
-          name: /next/i,
-        })
-      ).not.toBeDisabled()
+    it('has the next button enabled', async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/gh']}>
+            <Route path="/:provider">
+              <UserOnboardingModal currentUser={currentUser} />
+            </Route>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+
+      const educationalCheckbox = await screen.findByRole('checkbox', {
+        name: /educational/i,
+      })
+      userEvent.click(educationalCheckbox)
+
+      const justStartingCheckbox = await screen.findByRole('checkbox', {
+        name: /just starting to write tests/i,
+      })
+      userEvent.click(justStartingCheckbox)
+
+      const nextBtn = await screen.findByRole('button', {
+        name: /next/i,
+      })
+      expect(nextBtn).not.toBeDisabled()
     })
 
     describe('when the user clicks next', () => {
-      beforeEach(() => {
-        return clickNext()
-      })
+      it('renders organizations list', async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/gh']}>
+              <Route path="/:provider">
+                <UserOnboardingModal currentUser={currentUser} />
+              </Route>
+            </MemoryRouter>
+          </QueryClientProvider>
+        )
 
-      it('renders organizations list', () => {
-        expect(screen.getByText('Rabee-AbuBaker')).toBeInTheDocument()
-        expect(screen.getByText('codecov')).toBeInTheDocument()
+        const educationalCheckbox = await screen.findByRole('checkbox', {
+          name: /educational/i,
+        })
+        userEvent.click(educationalCheckbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
+        const codecovUser = await screen.findByText('codecov-user')
+        expect(codecovUser).toBeInTheDocument()
+
+        const codecov = await screen.findByText('codecov')
+        expect(codecov).toBeInTheDocument()
       })
     })
 
     describe('when the user selects an org', () => {
-      beforeEach(async () => {
-        await clickNext()
-        await selectOrg()
-      })
+      it('calls selectOrganization', async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/gh']}>
+              <Route path="/:provider">
+                <UserOnboardingModal currentUser={currentUser} />
+              </Route>
+            </MemoryRouter>
+          </QueryClientProvider>
+        )
 
-      it('renders repos list', () => {
-        expect(screen.getByText('opentelem-ruby')).toBeInTheDocument()
-      })
+        const educationalCheckbox = await screen.findByRole('checkbox', {
+          name: /educational/i,
+        })
+        userEvent.click(educationalCheckbox)
 
-      it('calls selectOrganization', () => {
-        expect(selectOrganization).toHaveBeenCalled()
-      })
-    })
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
 
-    describe('when the user selects a repo', () => {
-      beforeEach(async () => {
-        await clickNext()
-        await selectOrg()
-        screen.getByText(/opentelem-ruby/i).click()
-      })
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
 
-      it('calls selectRepository', () => {
-        expect(selectRepository).toHaveBeenCalled()
+        const codecov = await screen.findByText('codecov')
+        userEvent.click(codecov)
+
+        await waitFor(() => expect(selectOrganization).toHaveBeenCalled())
       })
     })
 
     describe('when the user skips', () => {
-      beforeEach(async () => {
-        await clickNext()
-        await selectOrg()
-        screen.getByText(/skip/i).click()
-      })
+      it('calls skipOnboarding and does redirect user', async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/gh']}>
+              <Route path="/:provider">
+                <UserOnboardingModal currentUser={currentUser} />
+              </Route>
+            </MemoryRouter>
+          </QueryClientProvider>
+        )
 
-      it('calls skipOnboarding and does not redirect user', async () => {
-        expect(skipOnboarding).toHaveBeenCalled()
+        const educationalCheckbox = await screen.findByRole('checkbox', {
+          name: /educational/i,
+        })
+        userEvent.click(educationalCheckbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
+        const skipBtn = await screen.findByRole('button', { name: /skip/i })
+        userEvent.click(skipBtn)
+
+        await waitFor(() => expect(skipOnboarding).toHaveBeenCalled())
         await waitFor(() => expect(mockHistoryReplace).not.toHaveBeenCalled())
       })
     })
 
     describe('when mutation is successful', () => {
-      beforeEach(async () => {
-        await clickNext()
-        await selectOrg()
-      })
-
       it('calls completedUserOnboarding and redirects user', async () => {
-        screen.getByText(/impact-analysis/i).click()
+        render(
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/gh']}>
+              <Route path="/:provider">
+                <UserOnboardingModal currentUser={currentUser} />
+              </Route>
+            </MemoryRouter>
+          </QueryClientProvider>
+        )
+
+        const educationalCheckbox = await screen.findByRole('checkbox', {
+          name: /educational/i,
+        })
+        userEvent.click(educationalCheckbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
+        const codecov = await screen.findByText('codecov')
+        userEvent.click(codecov)
+
         await waitFor(() => expect(completedUserOnboarding).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockHistoryReplace).toHaveBeenCalledWith(
-            '/gh/codecov/impact-analysis'
-          )
+          expect(mockHistoryReplace).toHaveBeenCalledWith('/gh/codecov')
         )
-      })
-
-      describe('when selecting an inactive repo', () => {
-        beforeEach(async () => {
-          screen.getByText(/opentelem-ruby/i).click()
-        })
-
-        it('redirects user to url ending with new', async () => {
-          await waitFor(() =>
-            expect(mockHistoryReplace).toHaveBeenCalledWith(
-              '/gh/codecov/opentelem-ruby/new'
-            )
-          )
-        })
       })
     })
   })
+
   describe('when the feature flag is false', () => {
     beforeEach(() => {
       setup(defaultCurrentUser, false)
     })
 
     describe('after submitting the form', () => {
-      beforeEach(() => {
-        getCheckbox(/educational/i).click()
-        getCheckbox(/just starting to write tests/i).click()
-        return clickNext()
-      })
       it('has the next button enabled', async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/gh']}>
+              <Route path="/:provider">
+                <UserOnboardingModal currentUser={currentUser} />
+              </Route>
+            </MemoryRouter>
+          </QueryClientProvider>
+        )
+
+        const educationalCheckbox = await screen.findByRole('checkbox', {
+          name: /educational/i,
+        })
+        userEvent.click(educationalCheckbox)
+
+        const justStartingCheckbox = await screen.findByRole('checkbox', {
+          name: /just starting to write tests/i,
+        })
+        userEvent.click(justStartingCheckbox)
+
+        const nextBtn = await screen.findByRole('button', {
+          name: /next/i,
+        })
+        userEvent.click(nextBtn)
+
         await waitFor(() => expect(completedUserOnboarding).toHaveBeenCalled())
         await waitFor(() => expect(mockHistoryReplace).not.toHaveBeenCalled())
       })
