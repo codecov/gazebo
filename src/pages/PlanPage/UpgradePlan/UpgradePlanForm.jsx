@@ -165,7 +165,7 @@ function UpgradePlanForm({
         render={({ field }) => (
           // TODO: Still need to change this select to New UI Select
           <Select
-            hook="plan-pricing-selector"
+            dataMarketing="plan-pricing-selector"
             data-cy="plan-pricing"
             items={planOptions}
             renderItem={(plan) => (

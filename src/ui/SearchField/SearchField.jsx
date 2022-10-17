@@ -2,12 +2,18 @@ import PropTypes from 'prop-types'
 import { forwardRef, useState } from 'react'
 import { useDebounce } from 'react-use'
 
-import { marketingHookType } from 'shared/propTypes'
+import { dataMarketingType } from 'shared/propTypes'
 import TextInput from 'ui/TextInput'
 
 const SearchField = forwardRef(
   (
-    { searchValue, setSearchValue, variant = 'default', hook, ...rest },
+    {
+      searchValue,
+      setSearchValue,
+      variant = 'default',
+      dataMarketing,
+      ...rest
+    },
     ref
   ) => {
     const [search, setSearch] = useState(searchValue)
@@ -31,7 +37,7 @@ const SearchField = forwardRef(
 
     return (
       <TextInput
-        hook="select-serach"
+        dataMarketing={dataMarketing}
         value={search}
         onChange={onChangeHandler}
         icon={icon ?? 'search'}
@@ -49,7 +55,7 @@ SearchField.propTypes = {
   searchValue: PropTypes.string.isRequired,
   setSearchValue: PropTypes.func.isRequired,
   variant: PropTypes.oneOf(['default', 'topRounded']),
-  hook: marketingHookType,
+  dataMarketing: dataMarketingType,
 }
 
 export default SearchField

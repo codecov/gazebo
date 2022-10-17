@@ -84,7 +84,7 @@ export function FormControls({
             control={control}
             render={() => (
               <Select
-                hook="activated-members-selector"
+                dataMarketing="activated-members-selector"
                 ariaName="activated"
                 className={FormClasses.firstFilter}
                 control={control}
@@ -105,7 +105,7 @@ export function FormControls({
             control={control}
             render={() => (
               <Select
-                hook="isAdmin-members-selector"
+                dataMarketing="isAdmin-members-selector"
                 ariaName="isAdmin"
                 className={FormClasses.filter}
                 control={control}
@@ -127,7 +127,7 @@ export function FormControls({
               control={control}
               render={() => (
                 <Select
-                  hook="members-ordering-selector"
+                  dataMarketing="members-ordering-selector"
                   ariaName="ordering"
                   className={FormClasses.filter}
                   control={control}
@@ -145,7 +145,7 @@ export function FormControls({
             />
           )}
           <TextInput
-            hook="search-users"
+            dataMarketing="search-users"
             variant="light"
             aria-label="search users"
             className={cs(FormClasses.search, {

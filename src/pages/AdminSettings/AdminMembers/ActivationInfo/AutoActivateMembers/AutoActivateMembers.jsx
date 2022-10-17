@@ -35,6 +35,7 @@ function AutoActivateMembers() {
       <div className="flex flex-row gap-2 items-center">
         <h3 className="font-semibold">Auto-activate members: </h3>
         <Toggle
+          dataMarketing="auto-acitvate-members"
           label={data?.planAutoActivate ? 'On' : 'Off'}
           value={data?.planAutoActivate}
           onClick={() =>

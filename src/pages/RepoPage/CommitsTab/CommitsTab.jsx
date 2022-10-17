@@ -78,7 +78,7 @@ function CommitsTab() {
           </h2>
           <div>
             <Select
-              hook="branch-selector-commits-page"
+              dataMarketing="branch-selector-commits-page"
               ariaName="Select branch"
               variant="gray"
               items={branchesNames}

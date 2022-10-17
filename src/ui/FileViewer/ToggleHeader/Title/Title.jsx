@@ -38,6 +38,7 @@ export const TitleFlags = ({
       <>
         {flagsIsLoading && <Spinner />}
         <MultiSelect
+          dataMarketing="fileviwer-filter-by-flags"
           ariaName="Filter by flags"
           selectedItems={current}
           items={list}

@@ -3,12 +3,12 @@ import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 import { forwardRef } from 'react'
 
-import { marketingHookType } from 'shared/propTypes'
+import { dataMarketingType } from 'shared/propTypes'
 
 const Checkbox = forwardRef(
   ({ label, showLabel = true, disabled, ...props }, ref) => {
     const id = uniqueId('radio-input')
-    const { className, hook, ...newProps } = props
+    const { className, dataMarketing, ...newProps } = props
 
     return (
       <div
@@ -18,7 +18,7 @@ const Checkbox = forwardRef(
         })}
       >
         <input
-          data-marketing={`${hook}-checkbox`}
+          data-marketing={`${dataMarketing}-checkbox`}
           id={id}
           ref={ref}
           disabled={disabled}
@@ -43,7 +43,7 @@ Checkbox.propTypes = {
   label: PropTypes.string,
   disabled: PropTypes.bool,
   showLabel: PropTypes.bool,
-  hook: marketingHookType,
+  dataMarketing: dataMarketingType,
 }
 
 export default Checkbox

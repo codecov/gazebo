@@ -38,7 +38,7 @@ function CreateTokenModal({ closeModal, provider }) {
       title="Generate new API access token"
       body={
         <TextInput
-          hook="access-token-name"
+          dataMarketing="access-token-name"
           label="Token Name"
           id="token-name"
           name="name"

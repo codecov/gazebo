@@ -49,7 +49,7 @@ function DefaultBranch({ defaultBranch }) {
           </h2>
           <div className="grid grid-cols-2">
             <Select
-              hook="branch-selector-settings-tab"
+              dataMarketing="branch-selector-settings-tab"
               ariaName="Branch selector"
               variant="gray"
               items={branchesNames}

@@ -2,7 +2,7 @@ import cs from 'classnames'
 import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 
-import { marketingHookType } from 'shared/propTypes'
+import { dataMarketingType } from 'shared/propTypes'
 import Icon from 'ui/Icon'
 
 const ToggleClasses = {
@@ -12,12 +12,18 @@ const ToggleClasses = {
     'pointer-events-none translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200',
 }
 
-function Toggle({ label, value = false, onClick, disabled = false, hook }) {
+function Toggle({
+  label,
+  value = false,
+  onClick,
+  disabled = false,
+  dataMarketing,
+}) {
   const ID = uniqueId('toggle')
 
   return (
     <div
-      data-marketing={`${ID}-${hook}`}
+      data-marketing={`${ID}-${dataMarketing}`}
       onClick={() => {
         if (!disabled) {
           onClick()
@@ -70,7 +76,7 @@ Toggle.propTypes = {
   label: PropTypes.string,
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
-  hook: marketingHookType,
+  dataMarketing: dataMarketingType,
 }
 
 export default Toggle

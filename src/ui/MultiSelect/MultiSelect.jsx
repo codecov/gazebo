@@ -4,6 +4,7 @@ import identity from 'lodash/identity'
 import pluralize from 'pluralize'
 import PropTypes from 'prop-types'
 
+import { dataMarketingType } from 'shared/propTypes'
 import Icon from 'ui/Icon'
 
 const SelectClasses = {
@@ -29,6 +30,7 @@ function MultiSelect({
   renderSelected,
   ariaName,
   variant = 'default',
+  dataMarketing,
 }) {
   const itemsWithReset = [SELECT_ALL_OPTION, ...items]
   const {
@@ -90,6 +92,7 @@ function MultiSelect({
   return (
     <div className={SelectClasses.root}>
       <button
+        data-marketing={dataMarketing}
         aria-label={ariaName}
         type="button"
         className={cs(SelectClasses.button, variantClasses[variant])}
@@ -123,6 +126,7 @@ MultiSelect.propTypes = {
   ariaName: PropTypes.string.isRequired,
   resourceName: PropTypes.string.isRequired,
   variant: PropTypes.oneOf(['default']),
+  dataMarketing: dataMarketingType,
 }
 
 export default MultiSelect

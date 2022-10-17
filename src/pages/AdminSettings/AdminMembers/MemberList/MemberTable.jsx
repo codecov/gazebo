@@ -52,7 +52,7 @@ const createTable = ({ tableData, mutate, disableToggle }) =>
           activationStatus: (
             <div className="flex flex-row-reverse grow">
               <Toggle
-                hook="handle-members-activation"
+                dataMarketing="handle-members-activation"
                 label={activated ? 'Activated' : 'Non-Active'}
                 value={activated}
                 onClick={() => {

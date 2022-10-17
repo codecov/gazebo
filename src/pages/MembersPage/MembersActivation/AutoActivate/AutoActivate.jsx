@@ -12,7 +12,7 @@ function AutoActivate({ planAutoActivate }) {
     <div className="flex flex-col p-4 gap-2">
       <div className="font-semibold">
         <Toggle
-          hook="Auto-activate-members"
+          dataMarketing="Auto-activate-members"
           onClick={() => autoActivate(!planAutoActivate)}
           value={planAutoActivate}
           label="Auto-activate members"

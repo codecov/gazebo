@@ -132,7 +132,7 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
     <div className="relative" ref={wrapperRef}>
       <div {...getComboboxProps()}>
         <TextInput
-          hook="add-admin"
+          dataMarketing="add-admin"
           placeholder="Search to add administrator"
           className={styles.input(isOpen)}
           {...getInputProps()}
