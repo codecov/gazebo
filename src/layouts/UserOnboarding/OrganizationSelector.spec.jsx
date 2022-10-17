@@ -1,12 +1,11 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
 import { useMyContexts, useUser } from 'services/user'
 
 import OrganizationSelector from './OrganizationSelector'
-
-import { useRepos } from '../../services/repos'
 
 jest.spyOn(window.localStorage.__proto__, 'setItem')
 window.localStorage.__proto__.setItem = jest.fn()
@@ -16,7 +15,7 @@ jest.mock('services/repos')
 
 const contextData = {
   currentUser: {
-    username: 'Rabee-AbuBaker',
+    username: 'codecov-user',
     avatarUrl: 'https://avatars0.githubusercontent.com/u/99655254?v=3&s=55',
   },
   myOrganizations: [
@@ -32,48 +31,6 @@ const selectedOrg = {
   avatarUrl: 'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
 }
 
-const selectedRepo = {
-  name: 'opentelem-ruby',
-  active: false,
-  private: false,
-  coverage: null,
-  updatedAt: null,
-  latestCommitAt: null,
-  author: { username: 'codecov' },
-}
-
-const reposData = {
-  repos: [
-    {
-      name: 'opentelem-ruby',
-      active: false,
-      private: false,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-    {
-      name: 'impact-analysis',
-      active: false,
-      private: true,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-    {
-      name: 'codecov-gateway',
-      active: false,
-      private: true,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    },
-  ],
-}
-
 const loggedInUser = {
   username: 'Cerrit Agrupnin',
   trackingMetadata: {
@@ -82,27 +39,28 @@ const loggedInUser = {
 }
 
 describe('OrganizationSelector', () => {
-  let container
   const onSelect = jest.fn()
   const onOnboardingSkip = jest.fn()
   const refetch = jest.fn()
   const currentUser = {
     email: 'user@gmail.com',
   }
+
   function setup() {
     useUser.mockReturnValue({ data: loggedInUser })
     useMyContexts.mockReturnValue({
       data: contextData,
       refetch: refetch,
     })
-    useRepos.mockReturnValue({
-      data: reposData,
-      fetchNextPage: jest.fn(),
-      hasNextPage: true,
-      isFetchingNextPage: false,
-      isLoading: false,
-    })(
-      ({ container } = render(
+  }
+
+  describe('when rendered', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('renders title', () => {
+      const { container } = render(
         <MemoryRouter initialEntries={['/gh']}>
           <Route path="/:provider">
             <OrganizationSelector
@@ -112,164 +70,288 @@ describe('OrganizationSelector', () => {
             />
           </Route>
         </MemoryRouter>
-      ))
-    )
-  }
+      )
 
-  describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('renders title', () => {
       expect(container).toBeInTheDocument()
-      expect(screen.getByText(/Select organization/)).toBeInTheDocument()
+
+      const selectOrg = screen.getByText('Select organization')
+      expect(selectOrg).toBeInTheDocument()
     })
 
     it('renders subtitle', () => {
-      expect(
-        screen.getByText(
-          /To set up your first repo, tell us which organization it’s in/
-        )
-      ).toBeInTheDocument()
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
+
+      const subTitle = screen.getByText(
+        'This will help improve your experience'
+      )
+      expect(subTitle).toBeInTheDocument()
     })
 
     it('renders organizations list', () => {
-      expect(screen.getByText('Rabee-AbuBaker')).toBeInTheDocument()
-      expect(screen.getByText('codecov')).toBeInTheDocument()
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
+
+      const codecovUser = screen.getByText('codecov-user')
+      expect(codecovUser).toBeInTheDocument()
+
+      const codecov = screen.getByText('codecov')
+      expect(codecov).toBeInTheDocument()
     })
 
     it('renders footer', () => {
-      expect(screen.getByText(/Don’t see your org?/)).toBeInTheDocument()
-      expect(screen.getByText(/Help finding org/)).toBeInTheDocument()
-      expect(
-        screen.getByRole('button', {
-          name: /skip/i,
-        })
-      ).toBeInTheDocument()
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
+
+      const doNotSeeOrg = screen.getByText(/Don't see your org?/)
+      expect(doNotSeeOrg).toBeInTheDocument()
+
+      const helpFinding = screen.getByText(/Help finding org/i)
+      expect(helpFinding).toBeInTheDocument()
+
+      const skipBtn = screen.getByRole('button', { name: /skip/i })
+      expect(skipBtn).toBeInTheDocument()
     })
   })
 
   describe('when user selects help finding org', () => {
     beforeEach(() => {
       setup()
-      screen.getByText(/Help finding org/).click()
     })
 
     it('renders help title', () => {
-      expect(
-        screen.getByText(/Don’t see your organization?/)
-      ).toBeInTheDocument()
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
+
+      const helpFindOrgBtn = screen.getByText(/Help finding org/)
+      userEvent.click(helpFindOrgBtn)
+
+      const doNotSeeOrg = screen.getByText(/Don't see your organization?/)
+
+      expect(doNotSeeOrg).toBeInTheDocument()
     })
 
     it('renders help subtitle', () => {
-      expect(
-        screen.getByText(/Your organization may need to grant access/)
-      ).toBeInTheDocument()
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
 
-      expect(screen.queryByText('learn more')).toHaveAttribute(
+      const helpFindOrgBtn = screen.getByText(/Help finding org/)
+      userEvent.click(helpFindOrgBtn)
+
+      const orgAccess = screen.getByText(
+        /Your organization may need to grant access/
+      )
+      expect(orgAccess).toBeInTheDocument()
+
+      const learnMoreLink = screen.queryByText('learn more')
+      expect(learnMoreLink).toHaveAttribute(
         'href',
         'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'
       )
     })
 
     it('renders help body', () => {
-      expect(screen.getByText(/Enable org access/)).toBeInTheDocument()
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
+
+      const helpFindOrgBtn = screen.getByText(/Help finding org/)
+      userEvent.click(helpFindOrgBtn)
+
+      const orgAccess = screen.getByText(/Enable org access/)
+      expect(orgAccess).toBeInTheDocument()
     })
 
     it('renders help footer buttons', () => {
-      expect(
-        screen.getByRole('button', {
-          name: /back/i,
-        })
-      ).toBeInTheDocument()
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
 
-      expect(
-        screen.getByRole('button', {
-          name: /skip/i,
-        })
-      ).toBeInTheDocument()
+      const helpFindOrgBtn = screen.getByText(/Help finding org/)
+      userEvent.click(helpFindOrgBtn)
+
+      const backBtn = screen.getByRole('button', {
+        name: /back/i,
+      })
+      expect(backBtn).toBeInTheDocument()
+
+      const skipBtn = screen.getByRole('button', {
+        name: /skip/i,
+      })
+      expect(skipBtn).toBeInTheDocument()
     })
 
     it('refresh list redirects user to org list after refetching', async () => {
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
+
+      const helpFindOrgBtn = screen.getByText(/Help finding org/)
+      userEvent.click(helpFindOrgBtn)
+
       await act(() => {
         refetch.mockResolvedValue({ status: 'success' })
         return Promise.resolve()
       })
-      screen
-        .getByRole('button', {
-          name: /refresh list/i,
-        })
-        .click()
 
-      expect(await screen.findByText('Rabee-AbuBaker')).toBeInTheDocument()
-      expect(await screen.findByText('codecov')).toBeInTheDocument()
+      const refreshList = screen.getByRole('button', {
+        name: /refresh list/i,
+      })
+      userEvent.click(refreshList)
+
+      const codecovUser = await screen.findByText('codecov-user')
+      expect(codecovUser).toBeInTheDocument()
+
+      const codecov = await screen.findByText('codecov')
+      expect(codecov).toBeInTheDocument()
     })
 
     it('clicking back sets needs help false and renders org list', async () => {
-      screen
-        .getByRole('button', {
-          name: /back/i,
-        })
-        .click()
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
 
-      expect(await screen.findByText('Rabee-AbuBaker')).toBeInTheDocument()
-      expect(await screen.findByText('codecov')).toBeInTheDocument()
+      const helpFindOrgBtn = screen.getByText(/Help finding org/)
+      userEvent.click(helpFindOrgBtn)
+
+      const backBtn = screen.getByRole('button', {
+        name: /back/i,
+      })
+      userEvent.click(backBtn)
+
+      const codecovUser = await screen.findByText('codecov-user')
+      expect(codecovUser).toBeInTheDocument()
+
+      const codecov = await screen.findByText('codecov')
+      expect(codecov).toBeInTheDocument()
     })
   })
 
   describe('when user selects an organization', () => {
     beforeEach(() => {
       setup()
-      screen.getByText(/codecov/i).click()
     })
 
-    it('renders repos list', () => {
-      expect(screen.getByText('opentelem-ruby')).toBeInTheDocument()
-      expect(screen.getByText('impact-analysis')).toBeInTheDocument()
-      expect(screen.getByText('codecov-gateway')).toBeInTheDocument()
-    })
-  })
+    it('calls onSelect with org', () => {
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
 
-  describe('when user selects an organization and a repo', () => {
-    beforeEach(() => {
-      setup()
-      screen.getByText(/codecov/i).click()
-      screen.getByText(/opentelem-ruby/i).click()
-    })
+      const codecov = screen.getByText('codecov')
+      userEvent.click(codecov)
 
-    it('calls onSelect with correct data', () => {
-      expect(onSelect).toHaveBeenCalledWith({ selectedOrg, selectedRepo })
+      expect(onSelect).toHaveBeenCalledWith({ selectedOrg })
     })
   })
 
   describe('when user skips org selection', () => {
     beforeEach(() => {
       setup()
-      screen
-        .getByRole('button', {
-          name: /skip/i,
-        })
-        .click()
     })
 
     it('calls onOnboardingSkip', () => {
-      expect(onOnboardingSkip).toHaveBeenCalled()
-    })
-  })
+      render(
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <OrganizationSelector
+              onSelect={onSelect}
+              onOnboardingSkip={onOnboardingSkip}
+              currentUser={currentUser}
+            />
+          </Route>
+        </MemoryRouter>
+      )
 
-  describe('when user skips repo selection', () => {
-    beforeEach(() => {
-      setup()
-      screen.getByText(/codecov/i).click()
-      screen
-        .getByRole('button', {
-          name: /skip/i,
-        })
-        .click()
-    })
+      const skipBtn = screen.getByRole('button', {
+        name: /skip/i,
+      })
+      userEvent.click(skipBtn)
 
-    it('calls onOnboardingSkip', () => {
       expect(onOnboardingSkip).toHaveBeenCalled()
     })
   })
