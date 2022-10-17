@@ -198,7 +198,7 @@ const MultiSelect = forwardRef(
                 variant="topRounded"
                 placeholder={getSearchPlaceholder(resourceName)}
                 searchValue=""
-                setSearchValue={(search) => onSearch(search)}
+                setSearchValue={(search) => onSearch && onSearch(search)}
                 {...getInputProps()}
               />
             </div>

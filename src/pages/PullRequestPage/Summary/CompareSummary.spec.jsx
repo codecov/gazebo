@@ -3,9 +3,9 @@ import { render, screen } from 'custom-testing-library'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CompareSummary from './CompareSummary'
-import { usePullForCompareSummary } from './hooks'
+import { usePullForCompareSummary } from './usePullForCompareSummary'
 
-jest.mock('./hooks')
+jest.mock('./usePullForCompareSummary')
 
 const pull = {
   pullId: 5,
@@ -89,6 +89,25 @@ describe('CompareSummary', () => {
 
     it('renders a pending card', () => {
       const card = screen.getByText('Why is there no coverage data?')
+      expect(card).toBeInTheDocument()
+    })
+  })
+
+  describe('When there isnt a head and base commit', () => {
+    beforeEach(() => {
+      setup({
+        pullData: {
+          head: undefined,
+          base: undefined,
+          headCoverage: undefined,
+          patchCoverage: undefined,
+          changeCoverage: undefined,
+        },
+      })
+    })
+
+    it('renders a coverage unknown card', () => {
+      const card = screen.getByText('Coverage data is unknown')
       expect(card).toBeInTheDocument()
     })
   })

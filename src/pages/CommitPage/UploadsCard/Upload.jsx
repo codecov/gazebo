@@ -10,6 +10,7 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 
 import RenderError from './RenderError'
+import UploadReference from './UploadReference'
 
 const Upload = ({
   ciUrl,
@@ -20,6 +21,7 @@ const Upload = ({
   errors = [],
   uploadType,
   state,
+  name,
 }) => {
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
 
@@ -27,13 +29,7 @@ const Upload = ({
     <div className="py-2 px-4 flex flex-col gap-1">
       <div className="flex justify-between ">
         <div className="flex-1 flex gap-1 flex-wrap">
-          {ciUrl ? (
-            <A href={ciUrl} hook="ci job" isExternal={true}>
-              {buildCode}
-            </A>
-          ) : (
-            buildCode
-          )}
+          <UploadReference ciUrl={ciUrl} name={name} buildCode={buildCode} />
           <RenderError errors={errors} state={state} />
         </div>
         {createdAt && (
@@ -77,6 +73,7 @@ Upload.propTypes = {
   flags: PropTypes.arrayOf(PropTypes.string),
   buildCode: PropTypes.string,
   uploadType: PropTypes.string,
+  name: PropTypes.string,
   errors: PropTypes.arrayOf(
     PropTypes.shape({
       errorCode: PropTypes.oneOf([

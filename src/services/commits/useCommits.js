@@ -61,11 +61,11 @@ function fetchRepoCommits({ provider, owner, repo, variables, after }) {
       after,
     },
   }).then((res) => {
-    const { commits } = res?.data?.owner?.repository
+    const commits = res?.data?.owner?.repository?.commits
 
     return {
       commits: mapEdges(commits),
-      pageInfo: commits.pageInfo,
+      pageInfo: commits?.pageInfo,
     }
   })
 }

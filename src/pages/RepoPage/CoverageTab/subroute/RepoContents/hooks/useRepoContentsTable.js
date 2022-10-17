@@ -48,11 +48,21 @@ function createTableData({ tableData, branch, path, isSearching, filters }) {
                 isCriticalFile={isCriticalFile}
               />
             ),
-          lines: <div className="flex w-full justify-end">{lines}</div>,
-          misses: <div className="flex w-full justify-end">{misses}</div>,
-          hits: <div className="flex w-full justify-end">{hits}</div>,
-          partials: <div className="flex w-full justify-end">{partials}</div>,
-          coverage: <CoverageEntry percentCovered={percentCovered} />,
+          lines: (
+            <div className="flex w-full justify-end font-lato">{lines}</div>
+          ),
+          misses: (
+            <div className="flex w-full justify-end font-lato">{misses}</div>
+          ),
+          hits: <div className="flex w-full justify-end font-lato">{hits}</div>,
+          partials: (
+            <div className="flex w-full justify-end font-lato">{partials}</div>
+          ),
+          coverage: (
+            <span className="font-lato w-full">
+              <CoverageEntry percentCovered={percentCovered} />
+            </span>
+          ),
         })
       )
     : []

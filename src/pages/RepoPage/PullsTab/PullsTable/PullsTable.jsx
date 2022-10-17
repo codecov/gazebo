@@ -77,7 +77,11 @@ function transformPullToTable(pulls) {
           updatestamp={updatestamp}
         />
       ),
-      coverage: <Coverage head={head} state={state} pullId={pullId} />,
+      coverage: (
+        <span className="font-lato w-full">
+          <Coverage head={head} state={state} pullId={pullId} />
+        </span>
+      ),
       change: (
         <div className="w-full flex justify-end">
           <TotalsNumber value={change} showChange data-testid="change-value" />

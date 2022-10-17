@@ -20,7 +20,7 @@ jest.mock('services/pull')
 
 describe('Header', () => {
   function setup({ initialEntries = ['/gh/test-org/test-repo/pull/12'] }) {
-    usePull.mockReturnValue({ data: pull })
+    usePull.mockReturnValue({ data: { pull } })
 
     render(
       <MemoryRouter initialEntries={initialEntries}>

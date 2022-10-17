@@ -36,7 +36,7 @@ describe('useCompareCommits', () => {
   let hookData
 
   function setup() {
-    usePull.mockReturnValue({ data: pull, isSuccess: true })
+    usePull.mockReturnValue({ data: { pull }, isSuccess: true })
     hookData = renderHook(() => useCompareCommits(), { wrapper })
   }
 

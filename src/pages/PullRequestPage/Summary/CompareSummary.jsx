@@ -3,7 +3,7 @@ import Icon from 'ui/Icon'
 import Summary from 'ui/Summary'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import { usePullForCompareSummary } from './hooks'
+import { usePullForCompareSummary } from './usePullForCompareSummary'
 
 function totalsCards({
   headCoverage,
@@ -53,57 +53,69 @@ function compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }) {
     {
       name: 'source',
       title: 'Source',
-      value: headCommit && baseCommit && (
-        <>
-          {hasDifferentNumberOfHeadAndBaseReports ? (
-            <>
+      value:
+        headCommit && baseCommit ? (
+          <>
+            {hasDifferentNumberOfHeadAndBaseReports ? (
+              <>
+                <p className="text-ds-gray-octonary text-sm">
+                  Coverage data based on{' '}
+                  <span className="uppercase font-medium">head</span>{' '}
+                  <A
+                    to={{ pageName: 'commit', options: { commit: headCommit } }}
+                  >
+                    {headCommit?.slice(0, 7)}
+                    <span>({head?.uploads?.totalCount} uploads)</span>
+                  </A>{' '}
+                  compared to{' '}
+                  <span className="uppercase font-medium">base</span>{' '}
+                  <A
+                    to={{ pageName: 'commit', options: { commit: baseCommit } }}
+                  >
+                    {baseCommit?.slice(0, 7)}
+                    <span>({base?.uploads?.totalCount} uploads)</span>
+                  </A>{' '}
+                </p>
+                <div className="flex gap-1 text-sm">
+                  <div className="text-warning-500">
+                    <Icon
+                      name="exclamation-circle"
+                      size="sm"
+                      variant="outline"
+                    />
+                  </div>
+                  <p className="text-xs">
+                    Commits have different number of coverage report uploads{' '}
+                    <A
+                      variant="semibold"
+                      hook="learn-more"
+                      href={
+                        'https://docs.codecov.com/docs/unexpected-coverage-changes#mismatching-base-and-head-commit-upload-counts'
+                      }
+                      isExternal
+                    >
+                      learn more
+                    </A>{' '}
+                  </p>
+                </div>
+              </>
+            ) : (
               <p className="text-ds-gray-octonary text-sm">
                 Coverage data based on{' '}
                 <span className="uppercase font-medium">head</span>{' '}
                 <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
                   {headCommit?.slice(0, 7)}
-                  <span>({head?.uploads?.totalCount} uploads)</span>
                 </A>{' '}
                 compared to <span className="uppercase font-medium">base</span>{' '}
                 <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
                   {baseCommit?.slice(0, 7)}
-                  <span>({base?.uploads?.totalCount} uploads)</span>
                 </A>{' '}
               </p>
-              <div className="flex gap-1 text-sm">
-                <div className="text-warning-500">
-                  <Icon name="exclamation-circle" size="sm" variant="outline" />
-                </div>
-                <p className="text-xs">
-                  Commits have different number of coverage report uploads{' '}
-                  <A
-                    variant="semibold"
-                    hook="learn-more"
-                    href={
-                      'https://docs.codecov.com/docs/unexpected-coverage-changes#mismatching-base-and-head-commit-upload-counts'
-                    }
-                    isExternal
-                  >
-                    learn more
-                  </A>{' '}
-                </p>
-              </div>
-            </>
-          ) : (
-            <p className="text-ds-gray-octonary text-sm">
-              Coverage data based on{' '}
-              <span className="uppercase font-medium">head</span>{' '}
-              <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
-                {headCommit?.slice(0, 7)}
-              </A>{' '}
-              compared to <span className="uppercase font-medium">base</span>{' '}
-              <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
-                {baseCommit?.slice(0, 7)}
-              </A>{' '}
-            </p>
-          )}
-        </>
-      ),
+            )}
+          </>
+        ) : (
+          <span className="text-sm">Coverage data is unknown</span>
+        ),
     },
   ]
 }

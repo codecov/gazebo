@@ -44,7 +44,7 @@ function createTableData({ tableData }) {
         ({ name, percentCovered, percentChange, measurements }) => ({
           name: <span>{name}</span>,
           coverage: (
-            <div className="flex flex-1 gap-2 items-center">
+            <div className="flex flex-1 gap-2 items-center font-lato">
               <Progress amount={percentCovered} label />
             </div>
           ),
