@@ -6,7 +6,7 @@ import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import useImpactedFilesTable from './hooks'
+import { useImpactedFilesTable } from './hooks'
 
 import FileDiff from '../FileDiff'
 

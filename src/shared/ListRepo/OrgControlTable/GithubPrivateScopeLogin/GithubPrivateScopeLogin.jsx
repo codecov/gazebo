@@ -11,7 +11,7 @@ function GithubPrivateScopeLogin() {
     suspense: false,
   })
 
-  if (!currentUser || provider !== 'gh' || currentUser.privateAccess) {
+  if (!currentUser || provider !== 'gh' || currentUser?.privateAccess) {
     return null
   }
 

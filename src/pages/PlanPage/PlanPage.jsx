@@ -40,7 +40,7 @@ function PlanPage() {
       <Elements stripe={stripePromise}>
         <PlanBreadcrumbProvider>
           <PlanBreadcrumb />
-          <hr className="w-10/12" />
+          <hr className="md:w-10/12" />
           <Suspense fallback={Loader}>
             <Switch>
               {!shouldRenderTabs && <Redirect to="/:provider/:owner" />}

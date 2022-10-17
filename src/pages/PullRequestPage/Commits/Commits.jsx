@@ -8,7 +8,6 @@ import Card from '../Card'
 
 function Commits() {
   const { data: commits } = useCompareCommits()
-
   return (
     <Card title="Commits">
       {commits?.map(({ message, commitid, author, state }) => (

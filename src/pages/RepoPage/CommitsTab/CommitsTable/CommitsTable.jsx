@@ -107,7 +107,11 @@ function transformPullToTable(commits) {
           ciPassed={ciPassed}
         />
       ),
-      coverage: <Coverage totals={totals} />,
+      coverage: (
+        <span className="font-lato w-full">
+          <Coverage totals={totals} />
+        </span>
+      ),
       /*
           The container div fot TotalsNumber is added due to the current state of table cells styling,
           shouldn't be necessary in the future if fixed/updated

@@ -67,7 +67,7 @@ describe('HomePage', () => {
         isLoading: true,
       })
       setup()
-      useUser.mock.calls[0][0].onError()
+      useUser.mock.calls[0][0].onSuccess()
     })
 
     it('redirects to login', () => {

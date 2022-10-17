@@ -3,12 +3,11 @@ import { render, screen } from 'custom-testing-library'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useImpactedFilesComparison } from 'services/pull'
-
+import { useImpactedFilesTable } from './hooks'
 import ImpactedFiles from './ImpactedFiles'
 
 jest.mock('../FileDiff', () => () => 'FileDiff Component')
-jest.mock('services/pull')
+jest.mock('./hooks')
 
 const mockImpactedFiles = {
   data: {
@@ -34,7 +33,7 @@ describe('ImpactedFiles', () => {
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
     impactedFiles = mockImpactedFiles,
   }) {
-    useImpactedFilesComparison.mockReturnValue(impactedFiles)
+    useImpactedFilesTable.mockReturnValue(impactedFiles)
     render(
       <MemoryRouter initialEntries={initialEntries}>
         <Route path="/:provider/:owner/:repo/pull/:pullId">

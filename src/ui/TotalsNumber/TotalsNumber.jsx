@@ -26,7 +26,7 @@ const TotalsNumber = ({ value, plain, light, showChange, large, ...props }) => {
   return (
     <div className={containerClass} {...rest}>
       {isValid ? (
-        <span data-testid="number-value" className={numberClass}>
+        <span data-testid="number-value" className={`font-lato ${numberClass}`}>
           {numberValue}%
         </span>
       ) : (
