@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
@@ -48,7 +49,7 @@ describe('CallToAction', () => {
       })
       expect(screen.getByRole('link', { name: /upgrade/i })).toHaveAttribute(
         'href',
-        '/account/gh/widogast/billing/upgrade'
+        '/plan/gh/widogast/upgrade'
       )
     })
 
@@ -79,7 +80,7 @@ describe('CallToAction', () => {
       })
 
       const button = screen.getByRole('link', { name: /request/i })
-      fireEvent.click(button)
+      userEvent.click(button)
       expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
     })
 
@@ -92,7 +93,7 @@ describe('CallToAction', () => {
       })
 
       const button = screen.getByRole('link', { name: /upgrade/i })
-      fireEvent.click(button)
+      userEvent.click(button)
       expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
     })
   })
