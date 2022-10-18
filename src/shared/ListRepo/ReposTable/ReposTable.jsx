@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import { useContext } from 'react'
 
 import { useRepos } from 'services/repos'
+import { useOwner, useUser } from 'services/user'
 import AppLink from 'shared/AppLink'
 import { ActiveContext } from 'shared/context'
-import { useFlags } from 'shared/featureFlags'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Progress from 'ui/Progress'
@@ -58,11 +58,11 @@ function transformRepoToTable({
   repos,
   owner,
   searchValue,
-  linkToOnboardingWithGazebo,
   isSetup,
+  isCurrentUserPartOfOrg,
 }) {
   // if there are no repos show empty message
-  if (repos.length <= 0) {
+  if (!repos?.length || repos?.length <= 0) {
     return [
       {
         title: (
@@ -75,9 +75,8 @@ function transformRepoToTable({
     ]
   }
 
-  const repoPageName = !isSetup && linkToOnboardingWithGazebo ? 'new' : 'repo'
-
-  return repos.map((repo) => ({
+  const repoPageName = !isSetup ? 'new' : 'repo'
+  return repos?.map((repo) => ({
     title: (
       <RepoTitleLink
         repo={repo}
@@ -87,37 +86,45 @@ function transformRepoToTable({
     ),
     lastUpdated: (
       <span className="w-full text-right text-ds-gray-quinary">
-        {repo.latestCommitAt ? formatTimeToNow(repo.latestCommitAt) : ''}
+        {repo?.latestCommitAt ? formatTimeToNow(repo?.latestCommitAt) : ''}
       </span>
     ),
     coverage:
-      typeof repo.coverage === 'number' ? (
+      typeof repo?.coverage === 'number' ? (
         <div className="w-full flex gap-2 justify-end items-center">
-          <Progress amount={repo.coverage} label={true} />
+          <Progress amount={repo?.coverage} label={true} />
         </div>
       ) : (
         <span className="text-ds-gray-quinary text-sm">No data available</span>
       ),
     notEnabled: (
-      <span>
+      <span className="flex w-full justify-end gap-1">
         Not yet enabled{' '}
-        <AppLink
-          className="text-ds-blue font-semibold"
-          pageName={linkToOnboardingWithGazebo ? 'new' : 'repo'}
-          options={{
-            owner: repo.author.username,
-            repo: repo.name,
-          }}
-        >
-          setup repo
-        </AppLink>
+        {isCurrentUserPartOfOrg && (
+          <AppLink
+            className="text-ds-blue font-semibold"
+            pageName="new"
+            options={{
+              owner: repo?.author.username,
+              repo: repo?.name,
+            }}
+          >
+            setup repo
+          </AppLink>
+        )}
       </span>
     ),
   }))
 }
 
+// eslint-disable-next-line complexity
 function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const active = useContext(ActiveContext)
+  const { data: userData } = useUser()
+  const { data: ownerData } = useOwner({
+    username: owner || userData?.user?.username,
+  })
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
     active,
     sortItem,
@@ -126,13 +133,12 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
     owner,
   })
 
-  const { newRepoSetupLink } = useFlags({ newRepoSetupLink: false })
   const dataTable = transformRepoToTable({
     repos: data.repos,
     owner,
     searchValue,
-    linkToOnboardingWithGazebo: newRepoSetupLink,
     isSetup: active,
+    isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
   })
 
   return (

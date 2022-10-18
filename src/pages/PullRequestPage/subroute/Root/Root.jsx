@@ -6,7 +6,7 @@ import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './ImpactedFiles'
-import useImpactedFilesTable from './ImpactedFiles/hooks'
+import { useImpactedFilesTable } from './ImpactedFiles/hooks'
 
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0
@@ -36,11 +36,7 @@ const Root = () => {
   return (
     !isLoading && (
       <div className="flex flex-col gap-4">
-        <ToggleHeader
-          title="Impacted Files"
-          flagData={null}
-          coverageIsLoading={false}
-        />
+        <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
         {data?.headState === CommitStateEnum.ERROR ? (
           <p>
             Cannot display Impacted Files because most recent commit is in an

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
+import { useRepoBackfilled } from 'services/repo'
 import A from 'ui/A'
 import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
@@ -13,7 +13,7 @@ const Header = ({ controlsDisabled, children }) => {
     search: '',
     historicalTrend: '',
   })
-  const { data: flagsData } = useRepoFlagsSelect()
+  const { data } = useRepoBackfilled()
 
   const value = TimeOptions.find(
     (item) => item.value === params.historicalTrend
@@ -27,7 +27,7 @@ const Header = ({ controlsDisabled, children }) => {
             Configured flags
           </h3>
           <p className="text-xl text-ds-gray-octonary font-light">
-            {flagsData.length}
+            {data?.flagsCount}
           </p>
         </div>
         <div className="flex flex-col p-4 justify-between gap-2 min-w-[15rem] sm:py-0">

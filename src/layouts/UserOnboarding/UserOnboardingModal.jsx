@@ -1,6 +1,6 @@
 import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import ReactModal from 'react-modal'
 import { useHistory, useParams } from 'react-router-dom'
 
@@ -22,28 +22,18 @@ function UserOnboardingModal({ currentUser }) {
   })
 
   const [formData, setFormData] = useState(false)
-  const [selectedOrg, setSelectedOrg] = useState()
-  const [selectedRepo, setSelectedRepo] = useState()
 
   const { mutate, isLoading } = useOnboardUser({
-    onSuccess: (user, data) => {
+    onSuccess: (successData, data) => {
+      const user = successData?.user
+      const selectedOrg = successData?.selectedOrg
       completedOnboarding(user, data)
-      if (selectedOrg && selectedRepo) {
-        history.replace(
-          `/${provider}/${selectedOrg.username}/${selectedRepo.name}${
-            selectedRepo.active ? '' : '/new'
-          }`
-        )
+      if (selectedOrg) {
+        history.replace(`/${provider}/${selectedOrg.username}`)
       }
     },
     data: formData,
   })
-
-  useEffect(() => {
-    if (Boolean(selectedRepo)) {
-      mutate(formData)
-    }
-  }, [selectedRepo, formData, mutate])
 
   return (
     <ReactModal
@@ -57,13 +47,12 @@ function UserOnboardingModal({ currentUser }) {
         {Boolean(formData) ? (
           <OrganizationSelector
             currentUser={currentUser}
-            onSelect={({ selectedOrg, selectedRepo }) => {
-              setSelectedOrg(selectedOrg)
-              setSelectedRepo(selectedRepo)
+            onSelect={({ selectedOrg }) => {
+              mutate({ formData, selectedOrg })
             }}
             onOnboardingSkip={() => {
               skipOnboarding()
-              mutate(formData)
+              mutate({ formData })
             }}
           />
         ) : (
@@ -72,7 +61,7 @@ function UserOnboardingModal({ currentUser }) {
             onFormSubmit={(formData) =>
               onboardingOrganizationSelector
                 ? setFormData(formData)
-                : mutate(formData)
+                : mutate({ formData })
             }
             isSubmitting={isLoading}
           />

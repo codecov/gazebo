@@ -8,12 +8,15 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import Commits from './Commits'
+import ErrorBanner from './ErrorBanner'
+import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Flags from './Flags'
 import Header from './Header'
 import CompareSummary from './Summary'
 
 const Root = lazy(() => import('./subroute/Root'))
 
+// eslint-disable-next-line complexity
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePull({ provider, owner, repo, pullId })
@@ -24,11 +27,11 @@ function PullRequestPage() {
     </div>
   )
 
-  if (!isLoading && !data?.hasAccess) {
-    return <NotFound />
-  } else if (!isLoading && !data?.pull) {
+  if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
     return <NotFound />
   }
+
+  const resultType = data?.pull?.compareWithBase?.__typename
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
@@ -47,27 +50,31 @@ function PullRequestPage() {
       />
       <Header />
       <CompareSummary />
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
-        <article className="col-span-2">
-          <Switch>
-            <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
-              <Suspense fallback={Loader}>
-                <Root />
-              </Suspense>
-            </Route>
-            <Redirect
-              from="/:provider/:owner/:repo/pull/:pullId/*"
-              to="/:provider/:owner/:repo/pull/:pullId"
-            />
-          </Switch>
-        </article>
-        <aside className="flex flex-col gap-4 self-start sticky top-1.5">
-          <Commits />
-          <SilentNetworkErrorWrapper>
-            <Flags />
-          </SilentNetworkErrorWrapper>
-        </aside>
-      </div>
+      {resultType !== ComparisonReturnType.SUCCESFUL_COMPARISON ? (
+        <ErrorBanner errorType={resultType} />
+      ) : (
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
+          <article className="col-span-2">
+            <Switch>
+              <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
+                <Suspense fallback={Loader}>
+                  <Root />
+                </Suspense>
+              </Route>
+              <Redirect
+                from="/:provider/:owner/:repo/pull/:pullId/*"
+                to="/:provider/:owner/:repo/pull/:pullId"
+              />
+            </Switch>
+          </article>
+          <aside className="flex flex-col gap-4 self-start sticky top-1.5">
+            <Commits />
+            <SilentNetworkErrorWrapper>
+              <Flags />
+            </SilentNetworkErrorWrapper>
+          </aside>
+        </div>
+      )}
     </div>
   )
 }
