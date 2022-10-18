@@ -157,7 +157,6 @@ function UpgradePlanForm({
     register,
     handleSubmit,
     isPerYear,
-    planOptions,
     setValue,
     formState: { isValid, errors },
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
@@ -174,39 +173,42 @@ function UpgradePlanForm({
       </h3>
       <div className="flex flex-col gap-4">
         <RadioInput
-          key={planOptions[0].billingRate}
-          data-cy={`select-${planOptions[0].billingRate}`}
+          key={proPlanYear.billingRate}
+          data-cy={`select-${proPlanYear.billingRate}`}
+          dataMarketing={`plan-pricing-option-${proPlanYear.billingRate}`}
           label={
             <>
               <span className="font-semibold">
-                ${planOptions[0].baseUnitPrice}
+                ${proPlanYear.baseUnitPrice}
               </span>
-              /month, billed {planOptions[0].billingRate}
+              /month, billed {proPlanYear.billingRate}
             </>
           }
           name="billing-options"
-          value={planOptions[0].value}
+          value={proPlanYear.value}
           {...register('newPlan')}
         />
         <RadioInput
-          key={planOptions[1].billingRate}
-          data-cy={`select-${planOptions[0].billingRate}`}
+          key={proPlanMonth.billingRate}
+          data-cy={`select-${proPlanMonth.billingRate}`}
+          dataMarketing={`plan-pricing-option-${proPlanMonth.billingRate}`}
           label={
             <>
               <span className="font-semibold">
-                ${planOptions[1].baseUnitPrice}
+                ${proPlanMonth.baseUnitPrice}
               </span>
-              /month, billed {planOptions[1].billingRate}
+              /month, billed {proPlanMonth.billingRate}
             </>
           }
           name="billing-options"
-          value={planOptions[1].value}
+          value={proPlanMonth.value}
           {...register('newPlan')}
         />
       </div>
       <div className="flex flex-col gap-2">
         <TextInput
           data-cy="seats"
+          dataMarketing="plan-pricing-seats"
           {...register('seats')}
           id="nb-seats"
           size="20"
