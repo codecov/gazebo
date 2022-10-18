@@ -4,7 +4,7 @@ import { LINE_STATE } from 'shared/utils/fileviewer'
 
 import Title, { TitleCoverage, TitleFlags } from './Title/Title'
 
-function ToggleHeader({ title, flagData, coverageIsLoading }) {
+function ToggleHeader({ title, flagNames, onFlagsChange, coverageIsLoading }) {
   /**
    * Header component that toggles covered, partial and uncovered lines for the File Viewer page.
    * This component can also filter coverage by flag name
@@ -13,30 +13,26 @@ function ToggleHeader({ title, flagData, coverageIsLoading }) {
    */
 
   return (
-    <Title
-      title={title}
-      Flags={() =>
-        flagData && (
-          <TitleFlags
-            list={flagData?.flagNames}
-            current={flagData?.selectedFlags}
-            onChange={flagData?.setSelectedFlags}
-            flagsIsLoading={coverageIsLoading}
-          />
-        )
-      }
-    >
+    <Title title={title}>
       <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
       <TitleCoverage coverage={LINE_STATE.PARTIAL} />
       <TitleCoverage coverage={LINE_STATE.COVERED} />
+      {flagNames && flagNames?.length > 1 && (
+        <TitleFlags
+          flags={flagNames}
+          onFlagsChange={onFlagsChange}
+          flagsIsLoading={coverageIsLoading}
+        />
+      )}
     </Title>
   )
 }
 
 ToggleHeader.propTypes = {
-  flagData: PropTypes.object,
+  flagNames: PropTypes.arrayOf(PropTypes.string),
   coverageIsLoading: PropTypes.bool.isRequired,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  onFlagsChange: PropTypes.func,
 }
 
 export default ToggleHeader

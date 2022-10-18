@@ -78,6 +78,7 @@ function CommitsTab() {
           </h2>
           <div>
             <Select
+              dataMarketing="branch-selector-commits-page"
               ariaName="Select branch"
               variant="gray"
               items={branchesNames}
@@ -90,6 +91,7 @@ function CommitsTab() {
         </div>
 
         <Checkbox
+          dataMarketing="hide-commits-with-failed-CI"
           label="Hide commits with failed CI"
           name="filter commits"
           onChange={(e) => {

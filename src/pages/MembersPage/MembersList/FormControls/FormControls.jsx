@@ -84,6 +84,7 @@ export function FormControls({
             control={control}
             render={() => (
               <Select
+                dataMarketing="activated-members-selector"
                 ariaName="activated"
                 className={FormClasses.firstFilter}
                 control={control}
@@ -104,6 +105,7 @@ export function FormControls({
             control={control}
             render={() => (
               <Select
+                dataMarketing="is-admin-members-selector"
                 ariaName="isAdmin"
                 className={FormClasses.filter}
                 control={control}
@@ -125,6 +127,7 @@ export function FormControls({
               control={control}
               render={() => (
                 <Select
+                  dataMarketing="members-ordering-selector"
                   ariaName="ordering"
                   className={FormClasses.filter}
                   control={control}
@@ -142,6 +145,7 @@ export function FormControls({
             />
           )}
           <TextInput
+            dataMarketing="search-users"
             variant="light"
             aria-label="search users"
             className={cs(FormClasses.search, {
