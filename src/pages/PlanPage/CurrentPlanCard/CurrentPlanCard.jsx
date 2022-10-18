@@ -1,4 +1,3 @@
-import BenefitList from 'pages/AccountSettings/shared/BenefitList'
 import { accountDetailsPropType } from 'services/account'
 import A from 'ui/A'
 import Card from 'ui/Card'
@@ -7,6 +6,8 @@ import PlanControls from './PlanControls'
 import PlanPricing from './PlanPricing'
 import ScheduledPlanDetails from './ScheduledPlanDetails'
 import Usage from './Usage'
+
+import BenefitList from '../shared/BenefitList'
 
 function CurrentPlanCard({ accountDetails }) {
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
