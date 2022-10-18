@@ -2,7 +2,6 @@ import difference from 'lodash/difference'
 import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
-import BenefitList from 'pages/AccountSettings/shared/BenefitList'
 import { useAccountDetails, usePlans } from 'services/account'
 import { isFreePlan } from 'shared/utils/billing'
 import Card from 'ui/Card'
@@ -12,6 +11,7 @@ import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
 
 import { useSetCrumbs } from '../context'
+import BenefitList from '../shared/BenefitList'
 
 function CancelPlanPage() {
   const { provider, owner } = useParams()
