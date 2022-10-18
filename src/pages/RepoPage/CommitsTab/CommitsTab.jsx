@@ -91,7 +91,7 @@ function CommitsTab() {
         </div>
 
         <Checkbox
-          hook="hide-commits-with-failed-CI"
+          dataMarketing="hide-commits-with-failed-CI"
           label="Hide commits with failed CI"
           name="filter commits"
           onChange={(e) => {

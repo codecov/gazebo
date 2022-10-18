@@ -64,7 +64,7 @@ function MemberList() {
         </div>
         <div className="w-3/12">
           <Select
-            hook="members-role-selector"
+            dataMarketing="members-role-selector"
             value={
               RoleStates[
                 Object.keys(RoleStates).find(

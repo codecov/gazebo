@@ -105,7 +105,7 @@ export function FormControls({
             control={control}
             render={() => (
               <Select
-                dataMarketing="isAdmin-members-selector"
+                dataMarketing="is-admin-members-selector"
                 ariaName="isAdmin"
                 className={FormClasses.filter}
                 control={control}
