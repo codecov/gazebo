@@ -48,7 +48,7 @@ function Usage({ accountDetails, isBasicPlan }) {
               <p>
                 <span className="font-semibold">Tip:</span> upgrade to 6 users
                 for unlimited uploads{' '}
-                <A to={{ pageName: 'upgradePlan' }}> upgrade today </A>
+                <A to={{ pageName: 'upgradeOrgPlan' }}> upgrade today </A>
               </p>
             </>
           )}

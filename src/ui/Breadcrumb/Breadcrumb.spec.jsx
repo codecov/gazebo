@@ -14,7 +14,7 @@ describe('Breadcrumb', () => {
     beforeEach(() => {
       setup({
         paths: [
-          { pageName: 'invoiceTab' },
+          { pageName: 'invoicesPage' },
           { pageName: 'commits' },
           { pageName: 'readonly', readOnly: true, text: 'readonly' },
         ],
@@ -22,9 +22,8 @@ describe('Breadcrumb', () => {
     })
 
     it('renders a link with the right URL', () => {
-      expect(screen.getByText('Invoice overview')).toBeInTheDocument()
+      expect(screen.getByText('Invoices')).toBeInTheDocument()
       expect(screen.getByText('Commits')).toBeInTheDocument()
-      expect(screen.getByText('Invoice overview')).toBeInTheDocument()
     })
   })
 })
