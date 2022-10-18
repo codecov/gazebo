@@ -91,7 +91,7 @@ function MembersList() {
   })
   const { activate } = useActivateUser({ owner, provider })
   const { data: accountDetails } = useAccountDetails({ owner, provider })
-  const { upgradePlan } = useNavLinks()
+  const { upgradeOrgPlan } = useNavLinks()
   const [isOpen, setIsOpen] = useState(false)
 
   const maxActivatedUsers = 5
@@ -139,8 +139,8 @@ function MembersList() {
             </Button>
             <Button
               Component={Link}
-              to={upgradePlan.path()}
-              useRouter={!upgradePlan.isExternalLink}
+              to={upgradeOrgPlan.path()}
+              useRouter={!upgradeOrgPlan.isExternalLink}
             >
               Upgrade now
             </Button>
