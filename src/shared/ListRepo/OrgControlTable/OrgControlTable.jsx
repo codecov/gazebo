@@ -43,6 +43,7 @@ function OrgControlTable({
       <div className="flex flex-wrap justify-center sm:flex-nowrap">
         <div className="w-52 mr-2">
           <Select
+            dataMarketing="repo-list-order-selector"
             ariaName="Sort Order"
             value={sortItem}
             items={active ? orderingOptions : nonActiveOrderingOptions}
@@ -52,6 +53,7 @@ function OrgControlTable({
         </div>
         <div className="w-52 mr-2">
           <TextInput
+            dataMarketing="search-repos-list"
             value={search}
             placeholder="Search"
             onChange={(e) => setSearch(e.target.value)}
