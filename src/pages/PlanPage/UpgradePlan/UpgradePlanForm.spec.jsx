@@ -280,7 +280,41 @@ describe('UpgradePlanForm', () => {
       })
     })
   })
-  describe('if there is are students', () => {
+
+  describe('display student info', () => {
+    describe('when there are no students', () => {
+      beforeEach(() => {
+        const accountDetails = {
+          activatedUserCount: 9,
+          inactiveUserCount: 0,
+          plan: null,
+          latestInvoice: null,
+          activatedStudentCount: 0,
+        }
+        setup(freePlan, null, accountDetails)
+      })
+
+      it('renders text for 1 student not taking active seats', async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/my/initial/route']}>
+              <UpgradePlanForm {...props} />
+            </MemoryRouter>
+          </QueryClientProvider>
+        )
+
+        const singleStudentText = screen.queryByText(
+          /\*You have 1 active student that does not count towards the number of active users./
+        )
+        expect(singleStudentText).not.toBeInTheDocument()
+
+        const multiStudentText = screen.queryByText(
+          /\*You have 3 active students that do not count towards the number of active users./
+        )
+        expect(multiStudentText).not.toBeInTheDocument()
+      })
+    })
+
     describe('when there is a single student', () => {
       beforeEach(() => {
         const accountDetails = {
