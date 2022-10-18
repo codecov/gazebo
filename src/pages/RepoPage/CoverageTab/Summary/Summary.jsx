@@ -50,6 +50,7 @@ const Summary = () => {
           </h3>
           <span className="text-sm min-w-[16rem]">
             <Select
+              dataMarketing="branch-selector-repo-page"
               {...branchSelectorProps}
               ariaName="select branch"
               onChange={onChangeHandler}

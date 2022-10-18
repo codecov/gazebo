@@ -34,6 +34,7 @@ const GenerateSecretStringModal = ({
           <p>Please type the information you would like encrypted:</p>
           <TextInput
             value={value}
+            dataMarketing="generate-secret-string"
             {...register('string', { required: true })}
             placeholder="Secret String"
             autoFocus

@@ -7,6 +7,8 @@ import PropTypes from 'prop-types'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import useIntersection from 'react-use/lib/useIntersection'
 
+import { dataMarketingType } from 'shared/propTypes'
+
 import Icon from '../Icon'
 import SearchField from '../SearchField'
 import Spinner from '../Spinner'
@@ -70,6 +72,7 @@ const MultiSelect = forwardRef(
   // eslint-disable-next-line complexity
   (
     {
+      dataMarketing,
       ariaName,
       disabled,
       isLoading,
@@ -176,6 +179,7 @@ const MultiSelect = forwardRef(
       <div className="flex-1 relative">
         <div {...getComboboxProps()}>
           <button
+            data-marketing={dataMarketing}
             aria-label={ariaName}
             className={cs(SelectClasses.button, VariantClasses[variant])}
             disabled={disabled}
@@ -195,6 +199,7 @@ const MultiSelect = forwardRef(
           >
             <div className={cs(!isOpen && 'invisible')}>
               <SearchField
+                dataMarketing="multiselect-search"
                 variant="topRounded"
                 placeholder={getSearchPlaceholder(resourceName)}
                 searchValue=""
@@ -266,6 +271,7 @@ MultiSelect.propTypes = {
   variant: PropTypes.oneOf(['default', 'gray']),
   disabled: PropTypes.bool,
   isLoading: PropTypes.bool,
+  dataMarketing: dataMarketingType,
 }
 
 export default MultiSelect

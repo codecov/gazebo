@@ -74,6 +74,7 @@ function NameEmailCard({ currentUser, provider }) {
               Name
             </label>
             <TextInput
+              dataMarketing="self-hosted-email-card-edit-name"
               id="name-edit"
               placeholder="Your name"
               disabled={isLoading}
@@ -90,6 +91,7 @@ function NameEmailCard({ currentUser, provider }) {
               Email
             </label>
             <TextInput
+              dataMarketing="self-hosted-email-card-edit-email"
               id="email-edit"
               placeholder="Your email"
               disabled={isLoading}

@@ -76,6 +76,7 @@ function CoverageTab() {
                 <FileBreadcrumb />
               </div>
               <SearchField
+                dataMarketing="files-search"
                 placeholder="Search for files"
                 searchValue={params?.search}
                 setSearchValue={(search) => updateParams({ search })}

@@ -4,3 +4,4 @@
 */
 
 export * from './commitRequestType'
+export * from './dataMarketingType'
