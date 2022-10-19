@@ -42,7 +42,7 @@ function CoverageTab() {
   const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
   const isRepoPrivate = repoData?.repository?.private
   const isRepoActivated = repoData?.repository?.activated
-  const repoHasNoCommits = !commits?.commits && commits?.commits?.length > 0
+  const repoHasNoCommits = !!commits?.commits && commits?.commits?.length <= 0
 
   const Loader = (
     <div className="flex items-center justify-center py-16">
