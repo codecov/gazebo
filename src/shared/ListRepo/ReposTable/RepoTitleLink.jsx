@@ -23,8 +23,6 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
 
   const { private: isRepoPrivate, activated, active } = repo
 
-  console.debug(active, activated, active && !activated)
-
   if (disabledLink) {
     return (
       <div className="flex items-center">
