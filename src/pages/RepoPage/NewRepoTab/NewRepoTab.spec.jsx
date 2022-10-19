@@ -5,7 +5,6 @@ import { useRepo } from 'services/repo'
 import * as Segment from 'services/tracking/segment'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
-import { NotFoundException } from 'shared/utils'
 
 import NewRepoTab from './NewRepoTab'
 
@@ -22,6 +21,7 @@ jest.mock('shared/featureFlags')
 describe('New Repo Tab', () => {
   let mockError
   let originalLocation
+  let location
 
   const loggedInUser = {
     username: 'Nydas Okiro',
@@ -45,7 +45,7 @@ describe('New Repo Tab', () => {
 
   function setup({ repoData, commitsData = [] }) {
     useRepo.mockReturnValue({ data: repoData })
-    useCommits.mockReturnValue({ data: commitsData })
+    useCommits.mockReturnValue({ data: { commits: commitsData } })
     useUser.mockReturnValue({ data: loggedInUser })
     useFlags.mockReturnValue({ newRepoGhContent: false })
 
@@ -53,10 +53,11 @@ describe('New Repo Tab', () => {
     const spy = jest.spyOn(console, 'error')
     spy.mockImplementation(mockError)
 
-    repoPageRender({
+    const { testLocation } = repoPageRender({
       initialEntries: ['/gh/codecov/Test/new'],
       renderNew: () => <NewRepoTab />,
     })
+    location = testLocation
   }
 
   describe('repo is private and user is part of org', () => {
@@ -122,16 +123,17 @@ describe('New Repo Tab', () => {
   })
 
   describe('when repo is private and user is not a part of the org', () => {
-    it('throws 404', () => {
-      expect(() => {
-        setup({
-          repoData: {
-            repository: { private: true },
-            isCurrentUserPartOfOrg: false,
-          },
-        })
-      }).toThrow(NotFoundException)
-      expect(mockError).toBeCalled()
+    beforeEach(() => {
+      setup({
+        repoData: {
+          repository: { private: true },
+          isCurrentUserPartOfOrg: false,
+        },
+      })
+    })
+    it('throws 404', async () => {
+      const notFound = await screen.findByText('Not found')
+      expect(notFound).toBeInTheDocument()
     })
   })
 
@@ -140,6 +142,7 @@ describe('New Repo Tab', () => {
       setup({
         repoData: {
           repository: { uploadToken: 'randomToken', private: false },
+          isCurrentUserPartOfOrg: true,
         },
         commitsData: [{}, {}, {}],
       })
@@ -149,8 +152,28 @@ describe('New Repo Tab', () => {
       jest.resetAllMocks()
     })
 
-    it('location replace was called (redirected)', () => {
-      expect(window.location.replace).toHaveBeenCalledTimes(1)
+    it('redirects to repo setup page', () => {
+      expect(location.pathname).toBe('/gh/codecov/Test')
+    })
+  })
+
+  describe('there is no repo data', () => {
+    beforeEach(() => {
+      setup({
+        repoData: {
+          repository: null,
+          isCurrentUserPartOfOrg: true,
+        },
+      })
+    })
+
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('renders 404', () => {
+      const notFound = screen.getByText('Not found')
+      expect(notFound).toBeInTheDocument()
     })
   })
 
@@ -174,14 +197,15 @@ describe('New Repo Tab', () => {
   })
 
   describe('when the user clicks on the uploader link', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setup({
         repoData: {
           isCurrentUserPartOfOrg: true,
-          repository: { private: false },
+          repository: { private: false, uploadToken: 'token' },
         },
       })
-      userEvent.click(screen.getByTestId('uploader'))
+      const uploader = await screen.findByTestId('uploader')
+      userEvent.click(uploader)
     })
 
     it('calls the trackSegmentEvent', () => {
