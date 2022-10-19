@@ -1,9 +1,12 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
+import NotFound from 'pages/NotFound'
+import { useCommits } from 'services/commits'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
+import { useOwner } from 'services/user'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
@@ -21,6 +24,7 @@ const defaultQueryParams = {
   search: '',
 }
 
+// eslint-disable-next-line max-statements, complexity
 function CoverageTab() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { provider, owner, repo } = useParams()
@@ -29,8 +33,13 @@ function CoverageTab() {
     owner,
     repo,
   })
+  const { data: currentOwner } = useOwner({ username: owner })
+  const { data: commits } = useCommits({ provider, owner, repo })
 
+  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
+  const isRepoPrivate = repoData?.repository?.private
   const isRepoActivated = repoData?.repository?.activated
+  const repoHasCommits = commits?.commits && commits?.commits?.length > 0
 
   const Loader = (
     <div className="flex items-center justify-center py-16">
@@ -38,7 +47,17 @@ function CoverageTab() {
     </div>
   )
 
-  return isRepoActivated ? (
+  if (isRepoPrivate && !isCurrentUserPartOfOrg) {
+    return <NotFound />
+  } else if (!isRepoActivated && !isCurrentUserPartOfOrg) {
+    return <NotFound />
+  } else if (!repoHasCommits) {
+    return <Redirect to={`/${provider}/${owner}/${repo}/new`} />
+  } else if (!isRepoActivated) {
+    return <DeactivatedRepo />
+  }
+
+  return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       <Summary />
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
@@ -89,8 +108,6 @@ function CoverageTab() {
         </Switch>
       </div>
     </div>
-  ) : (
-    <DeactivatedRepo />
   )
 }
 
