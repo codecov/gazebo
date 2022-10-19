@@ -14,13 +14,36 @@ function Badge({ children }) {
 const getRepoIconName = ({ activated, isRepoPrivate, active }) =>
   !activated && active ? 'ban' : isRepoPrivate ? 'lock-closed' : 'globe-alt'
 
-function RepoTitleLink({ repo, showRepoOwner, pageName }) {
+// eslint-disable-next-line complexity
+function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
   const options = {
     owner: repo.author.username,
     repo: repo.name,
   }
 
   const { private: isRepoPrivate, activated, active } = repo
+
+  console.debug(active, activated, active && !activated)
+
+  if (disabledLink) {
+    return (
+      <div className="flex items-center">
+        <div className="flex text-ds-gray-quinary items-center cursor-default">
+          <Icon
+            size="sm"
+            variant="solid"
+            name={getRepoIconName({ activated, isRepoPrivate, active })}
+          />
+          <span className="ml-2.5 text-sm text-black">
+            {showRepoOwner && `${repo?.author?.username} / `}
+            <span className="font-semibold">{repo.name}</span>
+          </span>
+        </div>
+        {isRepoPrivate && <Badge>Private</Badge>}
+        {active && !activated && <Badge>Deactivated</Badge>}
+      </div>
+    )
+  }
 
   return (
     <div className="flex items-center">
@@ -57,6 +80,7 @@ RepoTitleLink.propTypes = {
   }),
   showRepoOwner: PropTypes.bool.isRequired,
   pageName: PropTypes.string.isRequired,
+  disabledLink: PropTypes.bool.isRequired,
 }
 
 export default RepoTitleLink

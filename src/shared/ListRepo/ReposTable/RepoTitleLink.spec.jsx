@@ -34,6 +34,7 @@ describe('RepoTitleLink', () => {
         },
         showRepoOwner: false,
         pageName: 'repo',
+        disabledLink: false,
       })
     })
 
@@ -55,6 +56,7 @@ describe('RepoTitleLink', () => {
         },
         showRepoOwner: false,
         pageName: 'repo',
+        disabledLink: false,
       })
     })
 
@@ -62,7 +64,7 @@ describe('RepoTitleLink', () => {
       expect(screen.getByText(/repo1/)).toBeInTheDocument()
     })
 
-    it('doesnt render the private tag', () => {
+    it('does not render the private tag', () => {
       expect(screen.queryByText(/Private/)).not.toBeInTheDocument()
     })
   })
@@ -77,6 +79,7 @@ describe('RepoTitleLink', () => {
         },
         showRepoOwner: false,
         pageName: 'repo',
+        disabledLink: false,
       })
     })
 
@@ -100,6 +103,7 @@ describe('RepoTitleLink', () => {
         },
         showRepoOwner: false,
         pageName: 'repo',
+        disabledLink: false,
       })
     })
 
@@ -112,12 +116,96 @@ describe('RepoTitleLink', () => {
     })
   })
 
+  describe('when the repo is not setup and the user does not belong to the org', () => {
+    describe('the repo is active', () => {
+      describe('the repo is activated', () => {
+        beforeEach(() => {
+          setup({
+            repo: {
+              ...repo,
+              private: false,
+              active: true,
+              activated: true,
+            },
+            showRepoOwner: false,
+            pageName: 'repo',
+            disabledLink: true,
+          })
+        })
+
+        it('renders the title', () => {
+          expect(screen.getByText(/repo1/)).toBeInTheDocument()
+        })
+
+        it('does not provide an href', () => {
+          const entry = screen.getByText(/repo1/)
+          expect(entry).not.toHaveAttribute('href')
+        })
+      })
+
+      describe('the repo is deactivated', () => {
+        beforeEach(() => {
+          setup({
+            repo: {
+              ...repo,
+              private: false,
+              active: true,
+              activated: false,
+            },
+            showRepoOwner: false,
+            pageName: 'repo',
+            disabledLink: true,
+          })
+        })
+
+        it('renders the title', () => {
+          expect(screen.getByText(/repo1/)).toBeInTheDocument()
+        })
+
+        it('does not provide an href', () => {
+          const entry = screen.getByText(/repo1/)
+          expect(entry).not.toHaveAttribute('href')
+        })
+
+        it('renders the deactivated tag', () => {
+          expect(screen.getByText(/Deactivated/)).toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('the repo is not active', () => {
+      beforeEach(() => {
+        setup({
+          repo: {
+            ...repo,
+            private: false,
+            active: false,
+            activated: true,
+          },
+          showRepoOwner: false,
+          pageName: 'repo',
+          disabledLink: true,
+        })
+      })
+
+      it('renders the title', () => {
+        expect(screen.getByText(/repo1/)).toBeInTheDocument()
+      })
+
+      it('does not provide an href', () => {
+        const entry = screen.getByText(/repo1/)
+        expect(entry).not.toHaveAttribute('href')
+      })
+    })
+  })
+
   describe('when showRepoOwner is true', () => {
     beforeEach(() => {
       setup({
         repo,
         showRepoOwner: true,
         pageName: 'repo',
+        disabledLink: false,
       })
     })
 
@@ -132,6 +220,7 @@ describe('RepoTitleLink', () => {
         repo,
         showRepoOwner: false,
         pageName: 'repo',
+        disabledLink: false,
       })
     })
 
