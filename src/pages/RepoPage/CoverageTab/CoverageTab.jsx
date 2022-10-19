@@ -7,6 +7,7 @@ import { useCommits } from 'services/commits'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useOwner } from 'services/user'
+import { useRedirect } from 'shared/useRedirect'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
@@ -28,6 +29,8 @@ const defaultQueryParams = {
 function CoverageTab() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { provider, owner, repo } = useParams()
+  const href = `/${provider}`
+  const { hardRedirect } = useRedirect({ href })
   const { data: repoData } = useRepo({
     provider,
     owner,
@@ -39,7 +42,7 @@ function CoverageTab() {
   const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
   const isRepoPrivate = repoData?.repository?.private
   const isRepoActivated = repoData?.repository?.activated
-  const repoHasCommits = commits?.commits && commits?.commits?.length > 0
+  const repoHasNoCommits = !commits?.commits && commits?.commits?.length > 0
 
   const Loader = (
     <div className="flex items-center justify-center py-16">
@@ -47,13 +50,24 @@ function CoverageTab() {
     </div>
   )
 
+  // if the repo is private and the user is not associated
+  // then hard redirect to provider
   if (isRepoPrivate && !isCurrentUserPartOfOrg) {
+    hardRedirect()
     return <NotFound />
-  } else if (!isRepoActivated && !isCurrentUserPartOfOrg) {
+  }
+  // if the repo is not active and the user is not associated h
+  // then ard redirect to provider
+  else if (!isRepoActivated && !isCurrentUserPartOfOrg) {
+    hardRedirect()
     return <NotFound />
-  } else if (!repoHasCommits) {
+  }
+  // if the repo has no commits redirect to new repo page
+  else if (repoHasNoCommits) {
     return <Redirect to={`/${provider}/${owner}/${repo}/new`} />
-  } else if (!isRepoActivated) {
+  }
+  // if the repo is not activated show deactivation
+  else if (!isRepoActivated) {
     return <DeactivatedRepo />
   }
 

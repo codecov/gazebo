@@ -41,6 +41,20 @@ const queryClient = new QueryClient({
 describe('Coverage Tab', () => {
   const mockUpdateParams = jest.fn()
   let testLocation
+  let originalLocation
+
+  beforeAll(() => {
+    originalLocation = global.window.location
+    delete global.window.location
+    global.window.location = {
+      replace: jest.fn(),
+    }
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+    window.location = originalLocation
+  })
 
   function setup({
     initialEntries,
@@ -224,6 +238,11 @@ describe('Coverage Tab', () => {
       const notFound = await screen.findByText('Not found')
       expect(notFound).toBeInTheDocument()
     })
+
+    it('redirects the user', () => {
+      expect(window.location.replace).toHaveBeenCalledTimes(1)
+      expect(window.location.replace).toBeCalledWith('/gh')
+    })
   })
 
   describe('when repo is disabled', () => {
@@ -252,6 +271,11 @@ describe('Coverage Tab', () => {
       it('renders 404', async () => {
         const notFound = await screen.findByText('Not found')
         expect(notFound).toBeInTheDocument()
+      })
+
+      it('redirects the user', () => {
+        expect(window.location.replace).toHaveBeenCalledTimes(1)
+        expect(window.location.replace).toBeCalledWith('/gh')
       })
     })
   })
