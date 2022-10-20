@@ -33,7 +33,12 @@ function RepoContentsTable() {
 
   return (
     <>
-      <Table data={paginatedData} columns={headers} onSort={handleSort} />
+      <Table
+        data={paginatedData}
+        columns={headers}
+        onSort={handleSort}
+        defaultSort={{ id: 'coverage', desc: false }}
+      />
       <Loader isLoading={isLoading} />
       {paginatedData?.length === 0 && !isLoading && (
         <p className="flex justify-center flex-1">

@@ -15,13 +15,14 @@ const headers = [
     accessorKey: 'title',
     width: 'w-6/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'coverage',
     header: (
-      <span className="w-full text-right">
+      <>
         Coverage on <span className="font-light">HEAD</span>
-      </span>
+      </>
     ),
     accessorKey: 'coverage',
     width: 'w-3/12',
@@ -30,9 +31,9 @@ const headers = [
   {
     id: 'change',
     header: (
-      <span className="w-full text-sm text-right">
+      <>
         Change from <span className="font-light">BASE</span>
-      </span>
+      </>
     ),
     accessorKey: 'change',
     width: 'w-3/12',
