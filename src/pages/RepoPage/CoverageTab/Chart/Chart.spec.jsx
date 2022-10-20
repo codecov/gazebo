@@ -1,12 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useBranches } from 'services/branches'
 import { useRepoOverview } from 'services/repo'
 
 import Chart from './Chart'
 
 import { useBranchSelector, useRepoCoverageTimeseries } from '../hooks'
 
+jest.mock('services/branches')
 jest.mock('services/repo')
 jest.mock('../hooks')
 
@@ -20,6 +22,7 @@ describe('Coverage Tab chart', () => {
   function setup({ chartData }) {
     useRepoCoverageTimeseries.mockReturnValue(chartData)
     useRepoOverview.mockReturnValue({})
+    useBranches.mockReturnValue({})
     useBranchSelector.mockReturnValue({ selection: { name: 'bells-hells' } })
     render(<Chart />, {
       wrapper,

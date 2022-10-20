@@ -12,6 +12,7 @@ import {
   VictoryTooltip,
 } from 'victory'
 
+import { useBranches } from 'services/branches'
 import { useRepoOverview } from 'services/repo'
 
 import { useBranchSelector, useRepoCoverageTimeseries } from '../hooks'
@@ -57,8 +58,9 @@ function Chart() {
     repo,
     owner,
   })
+  const { data: branchesData } = useBranches({ repo, provider, owner })
   const { selection } = useBranchSelector(
-    overview?.branches,
+    branchesData?.branches,
     overview?.defaultBranch
   )
   const { data, isPreviousData, isSuccess } = useRepoCoverageTimeseries(
