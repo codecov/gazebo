@@ -25,7 +25,9 @@ const renderCoverageTab = () => render(<CoverageTrend />, { wrapper })
 describe('CoverageTrend', () => {
   function setup({ coverageData }) {
     useRepoCoverageTimeseries.mockReturnValue(coverageData)
-    useBranches.mockReturnValue({ branches: [{ name: 'bells-hells' }] })
+    useBranches.mockReturnValue({
+      data: { branches: [{ name: 'bells-hells' }] },
+    })
     useBranchSelector.mockReturnValue({
       selection: { name: 'bells-hells' },
     })
