@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@harnessio/ff-javascript-client-sdk": "^1.4.12",
     "@hookform/resolvers": "^2.8.5",
     "@reach/menu-button": "^0.16.2",
     "@sentry/react": "^7.13.0",

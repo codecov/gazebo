@@ -125,7 +125,12 @@
   "overrides": [
     // UI Rules
     {
-      "files": ["src/ui/**/*.js", "src/ui/*.js", "src/ui/**/*.jsx", "src/ui/*.jsx"],
+      "files": [
+        "src/ui/**/*.js",
+        "src/ui/*.js",
+        "src/ui/**/*.jsx",
+        "src/ui/*.jsx"
+      ],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -151,7 +156,12 @@
     },
     // Services Rules
     {
-      "files": ["src/services/**/*.js", "src/services/*.js", "src/services/**/*.jsx", "src/services/*.jsx"],
+      "files": [
+        "src/services/**/*.js",
+        "src/services/*.js",
+        "src/services/**/*.jsx",
+        "src/services/*.jsx"
+      ],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -185,7 +195,7 @@
             "paths": [
               {
                 "name": "Launch Darkly",
-                "message": "Always access Launch Darkly through 'shared/featureFlags instead"
+                "message": "Always access Launch Darkly through 'shared/featureFlags"
               }
             ],
             "patterns": ["launchdarkly-react-client-sdk"]
@@ -193,9 +203,33 @@
         ]
       }
     },
+    {
+      "files": ["src/**/*.js", "src/**/*.jsx"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "Harness",
+                "message": "Always access Harness flags through 'shared/featureFlags"
+              }
+            ],
+            "patterns": ["@harnessio/ff-javascript-client-sdk"]
+          }
+        ]
+      }
+    },
     // Testing Rules
     {
-      "files": ["*-test.js", "*.spec.js", "*.test.js", "*-test.jsx", "*.spec.jsx", "*.test.jsx"],
+      "files": [
+        "*-test.js",
+        "*.spec.js",
+        "*.test.js",
+        "*-test.jsx",
+        "*.spec.jsx",
+        "*.test.jsx"
+      ],
       "rules": {
         "max-nested-callbacks": "off",
         "max-statements": "off",
@@ -213,10 +247,7 @@
     }
   ],
   "settings": {
-    "import/extensions": [
-      ".js",
-      ".jsx"
-    ],
+    "import/extensions": [".js", ".jsx"],
     "import/resolver": {
       "alias": {
         "map": [
