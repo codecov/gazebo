@@ -70,7 +70,10 @@ describe('useSummary', () => {
         useRepoCoverageMock: { data: {}, isLoading: true },
         useBranchesMock: {
           data: {
-            branches: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
+            branches: [
+              { node: { name: 'fcg', head: { commitid: '1' } } },
+              { node: { name: 'imogen', head: { commitid: '2' } } },
+            ],
           },
         },
       })
@@ -100,7 +103,10 @@ describe('useSummary', () => {
         },
         useBranchesMock: {
           data: {
-            branches: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
+            branches: [
+              { node: { name: 'fcg', head: { commitid: '1' } } },
+              { node: { name: 'imogen', head: { commitid: '2' } } },
+            ],
           },
         },
       })

@@ -28,12 +28,21 @@ describe('DefaultBranch', () => {
         branches: [
           {
             name: 'master',
+            head: {
+              commitid: '1',
+            },
           },
           {
             name: 'dummy',
+            head: {
+              commitid: '2',
+            },
           },
           {
             name: 'dummy2',
+            head: {
+              commitid: '3',
+            },
           },
         ],
       },
@@ -153,7 +162,7 @@ describe('DefaultBranch', () => {
       beforeEach(() => {
         setup()
         useBranches.mockReturnValue({
-          data: { branches: [{ name: 'master' }] },
+          data: { branches: [{ name: 'master', head: { commitid: '1' } }] },
           fetchNextPage,
           hasNextPage: false,
         })

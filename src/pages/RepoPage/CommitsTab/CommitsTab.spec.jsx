@@ -23,7 +23,7 @@ describe('Commits Tab', () => {
   function setup({ hasNextPage }) {
     useRepo.mockReturnValue({ repository: { defaultBranch: 'main' } })
     useBranches.mockReturnValue({
-      data: { branches: [{ name: 'main' }] },
+      data: { branches: [{ name: 'main', head: { commitid: '1' } }] },
       fetchNextPage,
       hasNextPage: true,
     })
@@ -150,7 +150,7 @@ describe('Commits Tab', () => {
       beforeEach(() => {
         setup({ hasNextPage: false })
         useBranches.mockReturnValue({
-          data: { branches: [{ name: 'main' }] },
+          data: { branches: [{ name: 'main', head: { commitid: '1' } }] },
           fetchNextPage,
           hasNextPage: false,
         })

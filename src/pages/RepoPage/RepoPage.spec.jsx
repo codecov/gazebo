@@ -47,12 +47,21 @@ const commits = [
 const branches = [
   {
     name: 'main',
+    head: {
+      commitid: '1',
+    },
   },
   {
     name: 'test1',
+    head: {
+      commitid: '2',
+    },
   },
   {
     name: 'test2',
+    head: {
+      commitid: '3',
+    },
   },
 ]
 

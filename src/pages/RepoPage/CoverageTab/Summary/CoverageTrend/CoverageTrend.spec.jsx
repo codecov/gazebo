@@ -26,7 +26,7 @@ describe('CoverageTrend', () => {
   function setup({ coverageData }) {
     useRepoCoverageTimeseries.mockReturnValue(coverageData)
     useBranches.mockReturnValue({
-      data: { branches: [{ name: 'bells-hells' }] },
+      data: { branches: [{ name: 'bells-hells', head: { commitid: '1' } }] },
     })
     useBranchSelector.mockReturnValue({
       selection: { name: 'bells-hells' },
