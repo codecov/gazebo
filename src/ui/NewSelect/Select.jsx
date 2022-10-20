@@ -9,12 +9,15 @@ import { useIntersection } from 'react-use'
 import { dataMarketingType } from 'shared/propTypes'
 import Icon from 'ui/Icon'
 import SearchField from 'ui/SearchField'
+import Spinner from 'ui/Spinner'
 
 const SelectClasses = {
   root: 'relative',
-  item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
-  button: 'flex justify-between items-center text-left outline-none',
-  ul: 'overflow-hidden rounded-md bg-white border-ds-gray-tertiary outline-none absolute z-10 max-h-72',
+  item: 'block cursor-pointer py-1 px-3 text-sm',
+  button:
+    'flex justify-between items-center w-full border border-ds-gray-tertiary rounded bg-white text-left px-3 h-8 disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
+  ul: 'overflow-hidden rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute w-full z-10 max-h-80 min-w-fit',
+  loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
 
 const UlVariantClass = {
@@ -58,7 +61,7 @@ const Select = forwardRef(
   (
     {
       placeholder = 'Select',
-      items = [],
+      items,
       onChange,
       value,
       /* renderItem props:
@@ -77,6 +80,7 @@ const Select = forwardRef(
       onSearch,
       resourceName = '',
       onLoadMore,
+      isLoading,
     },
     ref
   ) => {
@@ -111,9 +115,7 @@ const Select = forwardRef(
     } = useCombobox({
       items,
       initialSelectedItem: value,
-      onSelectedItemsChange: ({ selectedItems }) => {
-        onChange(selectedItems)
-      },
+      onSelectedItemChange: ({ selectedItem }) => onChange(selectedItem),
     })
 
     function renderButton() {
@@ -167,19 +169,37 @@ const Select = forwardRef(
                 variant="topRounded"
                 placeholder={getSearchPlaceholder(resourceName)}
                 searchValue=""
-                setSearchValue={(search) => onSearch && onSearch(search)}
+                setSearchValue={(search) => !!onSearch && onSearch(search)}
                 {...getInputProps()}
               />
             </div>
           </div>
           <ul
             aria-label={ariaName}
-            className={cs(SelectClasses.ul, UlVariantClass[variant], {
-              'border overflow-scroll': isOpen,
-            })}
+            className={cs(
+              SelectClasses.ul,
+              UlVariantClass[variant],
+              {
+                'border overflow-scroll': isOpen,
+              },
+              !!onSearch ? 'top-16' : 'top-8'
+            )}
             {...getMenuProps()}
           >
-            {isOpen && items.map(_renderItem)}
+            {isOpen && (
+              <>
+                {items.map(_renderItem)}
+                {isLoading && (
+                  <span className="flex py-2 px-3">
+                    <Spinner />
+                  </span>
+                )}
+                <LoadMoreTrigger
+                  intersectionRef={intersectionRef}
+                  onLoadMore={onLoadMore}
+                />
+              </>
+            )}
           </ul>
         </div>
       </div>
@@ -203,6 +223,7 @@ Select.propTypes = {
   onSearch: PropTypes.func,
   resourceName: PropTypes.string,
   onLoadMore: PropTypes.func,
+  isLoading: PropTypes.bool,
 }
 
 export default Select
