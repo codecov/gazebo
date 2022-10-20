@@ -15,7 +15,7 @@ function fetchRepoFlags({ provider, owner: name, repo, filters, after }) {
     ) {
       owner(username: $name) {
         repository(name: $repo) {
-          flags(filters: $filters, after: $after) {
+          flags(filters: $filters, after: $after, first: 20) {
             pageInfo {
               hasNextPage
               endCursor
@@ -49,7 +49,7 @@ function fetchRepoFlags({ provider, owner: name, repo, filters, after }) {
   })
 }
 
-export function useRepoFlagsSelect({ filters } = { filters: {} }) {
+export function useRepoFlagsSelect({ filters, ...options } = { filters: {} }) {
   const { provider, owner, repo } = useParams()
 
   const { data, ...rest } = useInfiniteQuery(
@@ -65,6 +65,7 @@ export function useRepoFlagsSelect({ filters } = { filters: {} }) {
     {
       getNextPageParam: (data) =>
         data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+      ...options,
     }
   )
   return {
