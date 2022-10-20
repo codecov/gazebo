@@ -2,12 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useBranches } from 'services/branches'
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
 import { useSummary } from './useSummary'
 
 import { useBranchSelector } from '../../hooks'
 
+jest.mock('services/branches')
 jest.mock('services/repo')
 jest.mock('../../hooks')
 
@@ -23,9 +25,14 @@ const wrapper = ({ children }) => (
 describe('useSummary', () => {
   let hookData
 
-  function setup({ useRepoOverviewMock = {}, useRepoCoverageMock = {} }) {
+  function setup({
+    useRepoOverviewMock = {},
+    useRepoCoverageMock = {},
+    useBranchesMock = {},
+  }) {
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
     useRepoCoverage.mockReturnValue(useRepoCoverageMock)
+    useBranches.mockReturnValue(useBranchesMock)
     useBranchSelector.mockReturnValue({
       selection: { name: 'my branch', head: { commitid: '1234' } },
       branchSelectorProps: { someProps: 1 },
@@ -41,6 +48,7 @@ describe('useSummary', () => {
       setup({
         useRepoOverviewMock: { data: {}, isLoading: true },
         useRepoCoverageMock: { data: {}, isLoading: true },
+        useBranchesMock: { data: {}, isLoading: true },
       })
     })
 
@@ -60,6 +68,9 @@ describe('useSummary', () => {
           isLoading: false,
         },
         useRepoCoverageMock: { data: {}, isLoading: true },
+        useBranchesMock: {
+          branches: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
+        },
       })
     })
 
@@ -84,6 +95,9 @@ describe('useSummary', () => {
         useRepoCoverageMock: {
           data: { show: 'Critical Role' },
           isLoading: false,
+        },
+        useBranchesMock: {
+          branches: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
         },
       })
 
