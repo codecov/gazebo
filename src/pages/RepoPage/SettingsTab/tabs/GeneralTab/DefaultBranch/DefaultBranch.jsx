@@ -33,7 +33,7 @@ function DefaultBranch({ defaultBranch }) {
 
   const {
     data: branchesData,
-    isLoading,
+    isFetching,
     hasNextPage,
     fetchNextPage,
   } = useBranches({ provider, owner, repo })
@@ -59,7 +59,7 @@ function DefaultBranch({ defaultBranch }) {
               ariaName="Branch selector"
               variant="gray"
               items={branchesNames}
-              isLoading={isLoading}
+              isLoading={isFetching}
               onChange={(branch) => {
                 updateDefaultBranch(branch)
               }}

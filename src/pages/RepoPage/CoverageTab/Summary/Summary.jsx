@@ -20,7 +20,7 @@ const Summary = () => {
     branchSelectorProps,
     branchesFetchNextPage,
     branchesHasNextPage,
-    branchesIsLoading,
+    branchesIsFetching,
   } = useSummary()
   useLayoutEffect(() => {
     setCrumbs([
@@ -63,7 +63,7 @@ const Summary = () => {
               onChange={onChangeHandler}
               variant="gray"
               renderItem={(item) => <span>{item?.name}</span>}
-              isLoading={branchesIsLoading}
+              isLoading={branchesIsFetching}
               onLoadMore={() => branchesHasNextPage && branchesFetchNextPage()}
             />
           </span>

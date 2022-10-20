@@ -33,7 +33,7 @@ function CommitsTab() {
 
   const {
     data: branchesData,
-    isLoading: branchesIsLoading,
+    isFetching: branchesIsFetching,
     fetchNextPage: branchesFetchNextPage,
     hasNextPage: branchesHasNextPage,
   } = useBranches({ provider, owner, repo })
@@ -88,7 +88,7 @@ function CommitsTab() {
               ariaName="Select branch"
               variant="gray"
               items={branchesNames}
-              isLoading={branchesIsLoading}
+              isLoading={branchesIsFetching}
               onChange={(branch) => {
                 updateParams({ branch })
               }}
