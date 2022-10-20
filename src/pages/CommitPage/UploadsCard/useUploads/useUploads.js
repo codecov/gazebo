@@ -12,7 +12,9 @@ export function useUploads() {
     repo,
     commitid: commit,
   })
-  const uploads = data?.commit?.uploads
+  const uploads = data?.commit?.uploads?.sort(
+    (a, b) => a.uploadType < b.uploadType
+  )
   const { uploadsOverview, sortedUploads, uploadsProviderList, hasNoUploads } =
     useExtractUploads({ uploads })
 
