@@ -11,6 +11,9 @@ const query = `
           edges {
             node {
               name
+              head {
+                commitid
+              }
             }
           }
           pageInfo {

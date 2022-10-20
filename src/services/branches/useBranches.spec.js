@@ -28,10 +28,16 @@ afterAll(() => server.close())
 
 const branch1 = {
   name: 'branch1',
+  head: {
+    commitid: '1',
+  },
 }
 
 const branch2 = {
   name: 'branch2',
+  head: {
+    commitid: '2',
+  },
 }
 
 const provider = 'gh'
@@ -100,6 +106,9 @@ describe('GetBranches', () => {
           branches: [
             {
               name: 'branch1',
+              head: {
+                commitid: '1',
+              },
             },
           ],
         }
@@ -128,7 +137,20 @@ describe('GetBranches', () => {
       await waitFor(() => !result.current.isFetching)
 
       const expectedData = {
-        branches: [{ name: 'branch1' }, { name: 'branch2' }],
+        branches: [
+          {
+            name: 'branch1',
+            head: {
+              commitid: '1',
+            },
+          },
+          {
+            name: 'branch2',
+            head: {
+              commitid: '2',
+            },
+          },
+        ],
       }
 
       expect(result.current.data).toStrictEqual(expectedData)
