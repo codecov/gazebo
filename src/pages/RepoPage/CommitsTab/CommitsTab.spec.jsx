@@ -1,5 +1,7 @@
 import userEvent from '@testing-library/user-event'
+import useIntersection from 'react-use/lib/useIntersection'
 
+import { useBranches } from 'services/branches'
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
 
@@ -7,16 +9,24 @@ import CommitsTab from './CommitsTab'
 
 import { repoPageRender, screen } from '../repo-jest-setup'
 
+jest.mock('services/branches')
 jest.mock('services/commits')
 jest.mock('services/repo')
+jest.mock('react-use/lib/useIntersection')
 
 describe('Commits Tab', () => {
   afterAll(() => {
     jest.resetAllMocks()
   })
+  const fetchNextPage = jest.fn()
 
   function setup({ hasNextPage }) {
     useRepo.mockReturnValue({ repository: { defaultBranch: 'main' } })
+    useBranches.mockReturnValue({
+      data: { branches: [{ name: 'main' }] },
+      fetchNextPage,
+      hasNextPage: true,
+    })
     useCommits.mockReturnValue({
       hasNextPage,
       data: {
@@ -115,6 +125,46 @@ describe('Commits Tab', () => {
     it('does not display load more pagination button', () => {
       const btn = screen.queryByText(/Load More/)
       expect(btn).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when onLoadMore is triggered', () => {
+    describe('when there is a next page', () => {
+      beforeEach(() => {
+        setup({ hasNextPage: false })
+        useIntersection.mockReturnValue({
+          isIntersecting: true,
+        })
+      })
+
+      it('calls fetchNextPage', async () => {
+        const select = await screen.findByText('Select')
+        userEvent.click(select)
+
+        expect(fetchNextPage).toBeCalled()
+      })
+    })
+
+    describe('when there is not a next page', () => {
+      const fetchNextPage = jest.fn()
+      beforeEach(() => {
+        setup({ hasNextPage: false })
+        useBranches.mockReturnValue({
+          data: { branches: [{ name: 'main' }] },
+          fetchNextPage,
+          hasNextPage: false,
+        })
+        useIntersection.mockReturnValue({
+          isIntersecting: true,
+        })
+      })
+
+      it('does not call fetchNextPage', async () => {
+        const select = await screen.findByRole('button')
+        userEvent.click(select)
+
+        expect(fetchNextPage).not.toBeCalled()
+      })
     })
   })
 })
