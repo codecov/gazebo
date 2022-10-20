@@ -66,7 +66,7 @@ describe('RepoPage', () => {
   }) {
     useRepo.mockReturnValue({ data: { repository } })
     useCommits.mockReturnValue({ data: commits })
-    useBranches.mockReturnValue({ data: branches })
+    useBranches.mockReturnValue({ data: { branches } })
     useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
     useFlags.mockReturnValue({
       gazeboFlagsTab: flagValue,
