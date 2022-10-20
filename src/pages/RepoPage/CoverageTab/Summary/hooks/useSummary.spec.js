@@ -48,7 +48,7 @@ describe('useSummary', () => {
       setup({
         useRepoOverviewMock: { data: {}, isLoading: true },
         useRepoCoverageMock: { data: {}, isLoading: true },
-        useBranchesMock: { data: {}, isLoading: true },
+        useBranchesMock: { data: {}, isFetching: true },
       })
     })
 

@@ -15,7 +15,7 @@ export function useSummary() {
 
   const {
     data: branchesData,
-    isLoading: branchesIsLoading,
+    isFetching: branchesIsFetching,
     hasNextPage: branchesHasNextPage,
     fetchNextPage: branchesFetchNextPage,
   } = useBranches({ repo, owner, provider })
@@ -39,7 +39,7 @@ export function useSummary() {
     currentBranchSelected: selection,
     defaultBranch: overview?.defaultBranch,
     privateRepo: overview?.private,
-    branchesIsLoading,
+    branchesIsFetching,
     branchesHasNextPage,
     branchesFetchNextPage,
   }
