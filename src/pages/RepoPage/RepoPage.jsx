@@ -73,20 +73,20 @@ function RepoPage() {
     commitsData?.commits && commitsData?.commits?.length > 0
   const isRepoActivated = repoData?.repository?.activated
   const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
-  const isRepoPrivate = repoData?.repository?.private
+  const isRepoPrivate = !!repoData?.repository?.private
 
+  // if there is no repo data
+  if (!repoData?.repository) {
+    return <Redirect to={`/${provider}`} />
+  }
   // if the repo is private and the user is not associated
   // then hard redirect to provider
-  if (isRepoPrivate && !isCurrentUserPartOfOrg) {
+  else if (isRepoPrivate && !isCurrentUserPartOfOrg) {
     return <Redirect to={`/${provider}`} />
   }
   // if the repo has no commits redirect to new repo page
   else if (!repoHasCommits) {
     return <Redirect to={`/${provider}/${owner}/${repo}/new`} />
-  }
-  // if there is no repo data
-  else if (!repoData?.repository) {
-    return <Redirect to={`/${provider}`} />
   }
 
   return (
