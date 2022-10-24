@@ -4,10 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useCommits } from 'services/commits'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
-import { useOwner } from 'services/user'
 
 import CoverageTab from './CoverageTab'
 
@@ -40,7 +38,6 @@ const queryClient = new QueryClient({
 
 describe('Coverage Tab', () => {
   const mockUpdateParams = jest.fn()
-  let testLocation
   let originalLocation
 
   beforeAll(() => {
@@ -56,41 +53,16 @@ describe('Coverage Tab', () => {
     window.location = originalLocation
   })
 
-  function setup({
-    initialEntries,
-    repoActivated = true,
-    repoIsUndefined = false,
-    repoIsPrivate = false,
-    isPartOfOrg = true,
-    hasCommits = true,
-  }) {
+  function setup({ initialEntries, repoActivated = true }) {
     useParams.mockReturnValue({
       owner: 'test-org',
       provider: 'gh',
       repo: 'test-repo',
     })
 
-    if (repoIsUndefined) {
-      useRepo.mockReturnValue({
-        data: { repository: null },
-      })
-    } else if (repoIsPrivate) {
-      useRepo.mockReturnValue({
-        data: { repository: { private: true } },
-      })
-    } else {
-      useRepo.mockReturnValue({
-        data: { repository: { activated: repoActivated } },
-      })
-    }
-
-    if (hasCommits) {
-      useCommits.mockReturnValue({ data: { commits: [{}, {}] } })
-    } else {
-      useCommits.mockReturnValue({ data: { commits: [] } })
-    }
-
-    useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: isPartOfOrg } })
+    useRepo.mockReturnValue({
+      data: { repository: { activated: repoActivated } },
+    })
 
     useLocationParams.mockReturnValue({
       params: { search: '' },
@@ -112,13 +84,6 @@ describe('Coverage Tab', () => {
           <Route path="/:provider/:owner/:repo" exact={true}>
             <CoverageTab />
           </Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -209,74 +174,6 @@ describe('Coverage Tab', () => {
       await waitFor(() =>
         expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
       )
-    })
-  })
-
-  describe('when repo has no commits', () => {
-    beforeEach(() => {
-      setup({
-        initialEntries: ['/gh/test-org/test-repo/'],
-        hasCommits: false,
-      })
-    })
-
-    it('redirects to the new repo page', async () => {
-      expect(testLocation.pathname).toBe('/gh/test-org/test-repo/new')
-    })
-  })
-
-  describe('when user does not belong to org and repo is private', () => {
-    beforeEach(() => {
-      setup({
-        initialEntries: ['/gh/test-org/test-repo/'],
-        repoIsPrivate: true,
-        isPartOfOrg: false,
-      })
-    })
-
-    it('renders 404', async () => {
-      const notFound = await screen.findByText('Not found')
-      expect(notFound).toBeInTheDocument()
-    })
-
-    it('redirects the user', () => {
-      expect(window.location.replace).toHaveBeenCalledTimes(1)
-      expect(window.location.replace).toBeCalledWith('/gh')
-    })
-  })
-
-  describe('when repo is disabled', () => {
-    describe('user belongs to the org', () => {
-      beforeEach(() => {
-        setup({
-          initialEntries: ['/gh/test-org/test-repo/'],
-          repoActivated: false,
-        })
-      })
-
-      it('renders Disabled Repo component', () => {
-        expect(screen.getByText(/Disabled Repo Component/)).toBeInTheDocument()
-      })
-    })
-
-    describe('user is not part of org', () => {
-      beforeEach(() => {
-        setup({
-          initialEntries: ['/gh/test-org/test-repo/'],
-          repoActivated: false,
-          isPartOfOrg: false,
-        })
-      })
-
-      it('renders 404', async () => {
-        const notFound = await screen.findByText('Not found')
-        expect(notFound).toBeInTheDocument()
-      })
-
-      it('redirects the user', () => {
-        expect(window.location.replace).toHaveBeenCalledTimes(1)
-        expect(window.location.replace).toBeCalledWith('/gh')
-      })
     })
   })
 })
