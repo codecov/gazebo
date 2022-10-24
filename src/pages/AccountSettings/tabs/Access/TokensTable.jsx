@@ -13,6 +13,7 @@ const tableColumns = [
     accessorKey: 'name',
     width: 'w-2/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'lastFour',
@@ -20,6 +21,7 @@ const tableColumns = [
     accessorKey: 'lastFour',
     width: 'w-9/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'revokeBtn',
