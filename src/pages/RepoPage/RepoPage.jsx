@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
+import NotFound from 'pages/NotFound'
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
 import { useOwner } from 'services/user'
@@ -77,12 +78,12 @@ function RepoPage() {
 
   // if there is no repo data
   if (!repoData?.repository) {
-    return <Redirect to={`/${provider}`} />
+    return <NotFound />
   }
   // if the repo is private and the user is not associated
   // then hard redirect to provider
   else if (isRepoPrivate && !isCurrentUserPartOfOrg) {
-    return <Redirect to={`/${provider}`} />
+    return <NotFound />
   }
   // if the repo has no commits redirect to new repo page
   else if (!repoHasCommits) {

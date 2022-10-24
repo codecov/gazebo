@@ -147,8 +147,9 @@ describe('RepoPage', () => {
         })
       })
 
-      it('redirects the user', () => {
-        expect(testLocation.pathname).toBe('/gh')
+      it('shows users not found', () => {
+        const notFound = screen.getByText(/not found/i)
+        expect(notFound).toBeInTheDocument()
       })
     })
   })
@@ -388,8 +389,9 @@ describe('RepoPage', () => {
           })
         })
 
-        it('redirects to the provider', () => {
-          expect(testLocation.pathname).toBe('/gh')
+        it('shows not found', () => {
+          const notFound = screen.getByText(/not found/i)
+          expect(notFound).toBeInTheDocument()
         })
       })
     })
@@ -421,8 +423,9 @@ describe('RepoPage', () => {
       })
     })
 
-    it('redirects to provider page', () => {
-      expect(testLocation.pathname).toBe('/gh')
+    it('shows not found', () => {
+      const notFound = screen.getByText(/not found/i)
+      expect(notFound).toBeInTheDocument()
     })
   })
 })
