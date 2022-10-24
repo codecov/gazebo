@@ -52,23 +52,6 @@ const Loader = (
   </div>
 )
 
-const useGenFailConditions = ({ currentOwner, repoData, commitsData }) => {
-  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
-  const isRepoPrivate = repoData?.repository?.private
-
-  // if the repo is private and the user is not associated
-  // then hard redirect to provider
-  const privateRepo = isRepoPrivate && !isCurrentUserPartOfOrg
-
-  // if there is no repo data
-  const noRepoData = !repoData?.repository
-
-  return {
-    privateRepo,
-    noRepoData,
-  }
-}
-
 // eslint-disable-next-line max-statements, complexity
 function RepoPage() {
   const { provider, owner, repo } = useParams()
@@ -85,20 +68,16 @@ function RepoPage() {
 
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
+
   const repoHasCommits =
     commitsData?.commits && commitsData?.commits?.length > 0
   const isRepoActivated = repoData?.repository?.activated
   const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
-
-  const { privateRepo, noRepoData } = useGenFailConditions({
-    currentOwner,
-    repoData,
-    commitsData,
-  })
+  const isRepoPrivate = repoData?.repository?.private
 
   // if the repo is private and the user is not associated
   // then hard redirect to provider
-  if (privateRepo) {
+  if (isRepoPrivate && !isCurrentUserPartOfOrg) {
     return <Redirect to={`/${provider}`} />
   }
   // if the repo has no commits redirect to new repo page
@@ -106,7 +85,7 @@ function RepoPage() {
     return <Redirect to={`/${provider}/${owner}/${repo}/new`} />
   }
   // if there is no repo data
-  else if (noRepoData) {
+  else if (!repoData?.repository) {
     return <Redirect to={`/${provider}`} />
   }
 
