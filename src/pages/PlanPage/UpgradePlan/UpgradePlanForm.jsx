@@ -144,6 +144,30 @@ function renderStudentText(activatedStudents) {
   )
 }
 
+function UpdateButton({ isValid, getValues, accountDetails }) {
+  return (
+    <Button
+      data-cy="update"
+      disabled={
+        !isValid ||
+        (getValues()?.newPlan === accountDetails?.plan?.value &&
+          getValues()?.seats === accountDetails?.plan?.quantity)
+      }
+      type="submit"
+      variant="primary"
+      hook="submit-upgrade"
+    >
+      Update
+    </Button>
+  )
+}
+
+UpdateButton.propTypes = {
+  isValid: PropType.bool,
+  getValues: PropType.func,
+  accountDetails: PropType.object,
+}
+
 function UpgradePlanForm({
   proPlanYear,
   proPlanMonth,
@@ -285,17 +309,11 @@ function UpgradePlanForm({
         </p>
       )}
       <div className="w-min">
-        <Button
-          data-cy="update"
-          disabled={
-            !isValid || getValues()?.newPlan === accountDetails?.plan?.value
-          }
-          type="submit"
-          variant="primary"
-          hook="submit-upgrade"
-        >
-          Update
-        </Button>
+        <UpdateButton
+          isValid={isValid}
+          getValues={getValues}
+          accountDetails={accountDetails}
+        />
       </div>
     </form>
   )
