@@ -238,6 +238,19 @@ describe('UpgradePlanForm', () => {
       expect(price).toBeInTheDocument()
     })
 
+    it('has the update button disabled', async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/my/initial/route']}>
+            <UpgradePlanForm {...props} />
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+
+      const update = await screen.findByText(/Update/)
+      expect(update).toBeDisabled()
+    })
+
     describe('when updating to a month plan', () => {
       it('has the price for the month', async () => {
         render(

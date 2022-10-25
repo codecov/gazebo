@@ -66,11 +66,12 @@ function getSchema(accountDetails) {
 
 function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const planOptions = [proPlanYear, proPlanMonth]
-  const { register, handleSubmit, watch, formState, setValue } = useForm({
-    defaultValues: getInitialDataForm(planOptions, accountDetails),
-    resolver: yupResolver(getSchema(accountDetails)),
-    mode: 'onChange',
-  })
+  const { register, handleSubmit, watch, formState, setValue, getValues } =
+    useForm({
+      defaultValues: getInitialDataForm(planOptions, accountDetails),
+      resolver: yupResolver(getSchema(accountDetails)),
+      mode: 'onChange',
+    })
 
   const seats = watch('seats')
   const newPlan = watch('newPlan')
@@ -91,6 +92,7 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
     planOptions,
     formState,
     setValue,
+    getValues,
   }
 }
 
@@ -158,6 +160,7 @@ function UpgradePlanForm({
     handleSubmit,
     isPerYear,
     setValue,
+    getValues,
     formState: { isValid, errors },
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
 
@@ -284,7 +287,9 @@ function UpgradePlanForm({
       <div className="w-min">
         <Button
           data-cy="update"
-          disabled={!isValid}
+          disabled={
+            !isValid || getValues()?.newPlan === accountDetails?.plan?.value
+          }
           type="submit"
           variant="primary"
           hook="submit-upgrade"
