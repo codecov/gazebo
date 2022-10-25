@@ -126,7 +126,7 @@ describe('CommitPage', () => {
       expect(screen.getByText(/Commit Details Summary/)).toBeInTheDocument()
     })
     it('the impacted files, and not the errored uploads', () => {
-      expect(screen.getByText(/Impacted files/)).toBeInTheDocument()
+      expect(screen.getByText(/Impacted Files/)).toBeInTheDocument()
       expect(screen.queryByText(/Errored Uploads/)).not.toBeInTheDocument()
     })
   })
