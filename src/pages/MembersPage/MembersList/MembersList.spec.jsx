@@ -1,12 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import MembersList from './MembersList'
-
-const { rest } = require('msw')
-const { setupServer } = require('msw/node')
 
 const mockUsersRequest = {
   count: 1,
@@ -55,13 +54,16 @@ describe('MembersList', () => {
     </QueryClientProvider>
   )
 
-  function setup() {
+  function setup({ accountDetails = {} }) {
     server.use(
       rest.get('/internal/gh/codecov/account-details', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json({}))
+        res(ctx.status(200), ctx.json({ data: accountDetails }))
       ),
       rest.get('/internal/gh/codecov/users', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(mockUsersRequest))
+      ),
+      rest.patch('/gh/codecov/users/:ownerid/', (req, res, ctx) =>
+        res(ctx.status(200))
       )
     )
   }
@@ -99,12 +101,16 @@ describe('MembersList', () => {
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
       const tableEntry = await screen.findByText('codecov')
       expect(tableEntry).toBeInTheDocument()
     })
   })
 
-  describe.skip('interacting with the status selector', () => {
+  describe('interacting with the status selector', () => {
     beforeEach(() => setup())
     describe('selecting Active Users', () => {
       it('updates select text', () => {
@@ -160,7 +166,7 @@ describe('MembersList', () => {
     })
   })
 
-  describe.skip('interacting with the role selector', () => {
+  describe('interacting with the role selector', () => {
     beforeEach(() => setup())
     describe('selecting Admins Users', () => {
       it('updates select text', () => {
@@ -215,4 +221,6 @@ describe('MembersList', () => {
       })
     })
   })
+
+  describe('interacting with user toggles', () => {})
 })
