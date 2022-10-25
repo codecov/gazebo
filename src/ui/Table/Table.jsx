@@ -7,7 +7,7 @@ import {
 import cs from 'classnames'
 import { uniqueId } from 'lodash/util'
 import PropTypes from 'prop-types'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, memo, useEffect, useState } from 'react'
 
 import Icon from 'ui/Icon'
 
@@ -22,7 +22,7 @@ const TableClasses = {
 }
 
 // TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it. Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page imapcted files table
-function Table({
+const Table = memo(function ({
   data,
   columns,
   onSort,
@@ -73,6 +73,7 @@ function Table({
               <tr key={key} className={TableClasses.headerRow}>
                 {
                   // Loop over the headers in each row
+                  // eslint-disable-next-line max-nested-callbacks
                   headerGroup.headers.map((header, key) => {
                     return (
                       <th
@@ -126,6 +127,7 @@ function Table({
                   <tr className={TableClasses.tableRow}>
                     {
                       // Loop over the rows cells
+                      // eslint-disable-next-line max-nested-callbacks
                       row.getVisibleCells().map((cell) => {
                         return (
                           <td
@@ -154,7 +156,9 @@ function Table({
       </table>
     </div>
   )
-}
+})
+
+Table.displayName = 'Table'
 
 Table.propTypes = {
   data: PropTypes.array.isRequired,
