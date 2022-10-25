@@ -30,7 +30,7 @@ function UploadsCard() {
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
               {title !== NULL && (
-                <span className="text-sm font-semibold flex-1 py-1 px-4">
+                <span className="sticky top-0 bg-ds-gray-primary text-sm font-semibold flex-1 py-1 px-4">
                   {title}
                 </span>
               )}

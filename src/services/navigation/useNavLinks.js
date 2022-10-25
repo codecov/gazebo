@@ -166,29 +166,6 @@ function useNavLinks() {
         `/account/${provider}/${owner}/billing`,
       isExternalLink: false,
     },
-    // this and many other /account/ routes can be deleted after C4T is done
-    upgradePlan: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/billing/upgrade`,
-      isExternalLink: false,
-    },
-    cancelPlan: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/billing/cancel`,
-      isExternalLink: false,
-    },
-    invoiceTab: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/invoices`,
-      isExternalLink: false,
-      text: 'Invoice overview',
-    },
-    invoiceDetail: {
-      path: (
-        { provider = p, owner = o, id = i } = { provider: p, owner: o, id: i }
-      ) => `/account/${provider}/${owner}/invoices/${id}`,
-      isExternalLink: false,
-    },
     commits: {
       path: (
         { provider = p, owner = o, repo = r } = {

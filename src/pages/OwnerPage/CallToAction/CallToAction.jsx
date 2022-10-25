@@ -20,7 +20,7 @@ function CallToAction({ provider, owner }) {
         <span>
           Looks like you&#39;re up to 5 users.{' '}
           <A
-            to={{ pageName: 'upgradePlan' }}
+            to={{ pageName: 'upgradeOrgPlan' }}
             options={{ owner: owner }}
             variant="link"
             onClick={() =>

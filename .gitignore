@@ -39,3 +39,9 @@ storybook-static
 # stryker temp files
 .stryker-tmp
 stryker.log
+
+# uploader binary
+codecov
+
+# VSCode
+.vscode
