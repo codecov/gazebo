@@ -41,9 +41,9 @@ describe('CommitFileView', () => {
           '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
         ]}
       >
-        <Route path="/:provider/:owner/:repo/commit/:commit/:path">
+        <Route path="/:provider/:owner/:repo/commit/:commit">
           <QueryClientProvider client={queryClient}>
-            <CommitFileView diff={diff} />
+            <CommitFileView diff={diff} path="api/core/commit/123" />
           </QueryClientProvider>
         </Route>
       </MemoryRouter>
@@ -73,13 +73,7 @@ describe('CommitFileView', () => {
       })
     })
 
-    it('renders the FileViewer Header, Coderenderer Header, and Coderenderer', () => {
-      expect(
-        screen.getByText(/The FileViewer Toggle Header/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(/The Progress Header for Coderenderer/)
-      ).toBeInTheDocument()
+    it('does not render the error message', () => {
       expect(
         screen.queryByText(
           /There was a problem getting the source code from your provider./
@@ -112,13 +106,7 @@ describe('CommitFileView', () => {
       })
     })
 
-    it('renders the FileViewer Header, Coderenderer Header, and error message', () => {
-      expect(
-        screen.getByText(/The FileViewer Toggle Header/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(/The Progress Header for Coderenderer/)
-      ).toBeInTheDocument()
+    it('renders error message', () => {
       expect(
         screen.getByText(
           /There was a problem getting the source code from your provider./
