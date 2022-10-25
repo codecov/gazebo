@@ -1,5 +1,6 @@
 import { render, screen } from 'custom-testing-library'
 
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
@@ -291,7 +292,6 @@ describe('CommitPage', () => {
         setup({ data: dataReturned, isSuccess: true })
       })
       it('the impacted file', () => {
-        expect(screen.getByTestId('spinner')).toBeInTheDocument()
         expect(screen.getByText(/abcd/)).toBeInTheDocument()
         expect(screen.getByText(/test-repo/)).toBeInTheDocument()
       })
@@ -313,6 +313,8 @@ describe('CommitPage', () => {
         setup({ data, isSuccess: true })
       })
       it('the Commit File View', () => {
+        const headName = screen.getByText('src/notInUrl.py')
+        userEvent.click(headName)
         expect(screen.getByText(/The Commit File View/)).toBeInTheDocument()
       })
     })
