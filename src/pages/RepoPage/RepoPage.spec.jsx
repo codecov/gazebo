@@ -66,6 +66,8 @@ const branches = [
 ]
 
 describe('RepoPage', () => {
+  let testLocation
+
   function setup({
     repository,
     commits,
@@ -83,14 +85,18 @@ describe('RepoPage', () => {
 
     // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.
     if (initialEntries) {
-      repoPageRender({
+      const view = repoPageRender({
         renderCommits: () => <RepoPage />,
         initialEntries,
       })
+
+      testLocation = view.testLocation
     } else {
-      repoPageRender({
+      const view = repoPageRender({
         renderRoot: () => <RepoPage />,
       })
+
+      testLocation = view.testLocation
     }
   }
 
@@ -98,6 +104,7 @@ describe('RepoPage', () => {
     beforeEach(() => {
       setup({
         repository: { private: false, defaultBranch: 'main', activated: true },
+        commits: { commits },
       })
     })
 
@@ -119,6 +126,7 @@ describe('RepoPage', () => {
           repository: {
             private: true,
           },
+          commits: { commits },
         })
       })
 
@@ -148,8 +156,8 @@ describe('RepoPage', () => {
         })
       })
 
-      it('renders 404 page', () => {
-        const notFound = screen.getByText(/404/)
+      it('shows users not found', () => {
+        const notFound = screen.getByText(/not found/i)
         expect(notFound).toBeInTheDocument()
       })
     })
@@ -176,26 +184,6 @@ describe('RepoPage', () => {
     })
   })
 
-  describe('when rendered with a repo that has errored on the commits res', () => {
-    beforeEach(() => {
-      setup({
-        repository: {
-          private: true,
-          activated: true,
-        },
-      })
-    })
-
-    it('renders the coverage tab', () => {
-      const tab = screen.queryByText('Coverage')
-      expect(tab).not.toBeInTheDocument()
-    })
-    it('renders the commits tab', () => {
-      const tab = screen.queryByText(/Commits/)
-      expect(tab).not.toBeInTheDocument()
-    })
-  })
-
   describe('when rendered with a repo that has no commits', () => {
     beforeEach(() => {
       setup({
@@ -214,6 +202,9 @@ describe('RepoPage', () => {
     it('renders the commits tab', () => {
       const tab = screen.queryByText(/Commits/)
       expect(tab).not.toBeInTheDocument()
+    })
+    it('redirects to the setup repo page', () => {
+      expect(testLocation.pathname).toBe('/gh/codecov/test-repo/new')
     })
   })
 
@@ -242,10 +233,10 @@ describe('RepoPage', () => {
     })
 
     it('renders the branch context selector', async () => {
-      const select = screen.getByRole('button', {
+      const select = await screen.findByRole('button', {
         name: 'Select branch',
       })
-      await waitFor(() => expect(select).toBeInTheDocument())
+      expect(select).toBeInTheDocument()
     })
   })
 
@@ -261,18 +252,17 @@ describe('RepoPage', () => {
         commits: { commits },
         initialEntries: ['/gh/codecov/test/commits'],
       })
-      let select
-      await waitFor(() => {
-        select = screen.getByRole('button', {
-          name: 'Select branch',
-        })
+      const select = await screen.findByRole('button', {
+        name: 'Select branch',
       })
+
       userEvent.click(select)
     })
 
     it('renders the options of select branch', () => {
       const branch = screen.getByText(/test1/)
       expect(branch).toBeInTheDocument()
+
       const branch2 = screen.getByText(/test2/)
       expect(branch2).toBeInTheDocument()
     })
@@ -290,15 +280,12 @@ describe('RepoPage', () => {
         commits: { commits },
         initialEntries: ['/gh/codecov/test/commits'],
       })
-      let select
-      await waitFor(() => {
-        select = screen.getByRole('button', {
-          name: 'Select branch',
-        })
+      const select = await screen.findByRole('button', {
+        name: 'Select branch',
       })
       userEvent.click(select)
 
-      const branch = screen.getByText(/test1/)
+      const branch = await screen.findByText(/test1/)
       userEvent.click(branch)
     })
 
@@ -321,35 +308,101 @@ describe('RepoPage', () => {
     })
 
     it('does not render the settings tab', () => {
-      expect(screen.queryByText(/Settings/)).not.toBeInTheDocument()
+      const settings = screen.queryByText(/Settings/)
+      expect(settings).not.toBeInTheDocument()
     })
   })
 
   describe('when rendered with a disabled repo', () => {
-    beforeEach(() => {
-      setup({
-        repository: {
-          private: true,
-          activated: false,
-        },
-        commits: { commits },
+    describe('when the repo is public', () => {
+      describe('when the user belongs to the org', () => {
+        beforeEach(() => {
+          setup({
+            repository: {
+              private: false,
+              activated: false,
+            },
+            commits: { commits },
+          })
+        })
+
+        it('renders deactivated repo component', () => {
+          const deactivated = screen.getByText('This repo has been deactivated')
+          expect(deactivated).toBeInTheDocument()
+        })
+
+        it('renders link to settings tab', () => {
+          const link = screen.getByText('Settings')
+          expect(link).toBeInTheDocument()
+          expect(link).toHaveAttribute('href', '/gh/codecov/test-repo/settings')
+        })
+      })
+
+      describe('when the user does not belong to the org', () => {
+        beforeEach(() => {
+          setup({
+            repository: {
+              private: false,
+              activated: false,
+            },
+            commits: { commits },
+            isCurrentUserPartOfOrg: false,
+          })
+        })
+
+        it('renders deactivated repo component', () => {
+          const deactivated = screen.getByText('This repo has been deactivated')
+          expect(deactivated).toBeInTheDocument()
+        })
+
+        it('does not render link to settings tab', () => {
+          const link = screen.queryByText('Settings')
+          expect(link).not.toBeInTheDocument()
+        })
       })
     })
 
-    it('renders coverage tab', () => {
-      expect(screen.getByText('Coverage')).toBeInTheDocument()
-    })
+    describe('when the repo is private', () => {
+      describe('when the user belongs to the org', () => {
+        beforeEach(() => {
+          setup({
+            repository: {
+              private: true,
+              activated: false,
+            },
+            commits: { commits },
+          })
+        })
 
-    it('renders settings tab', () => {
-      expect(screen.getByText('Settings')).toBeInTheDocument()
-    })
+        it('renders deactivated repo component', () => {
+          const deactivated = screen.getByText('This repo has been deactivated')
+          expect(deactivated).toBeInTheDocument()
+        })
 
-    it('does not render commits tab', () => {
-      expect(screen.queryByText(/Commits/)).not.toBeInTheDocument()
-    })
+        it('renders link to settings tab', () => {
+          const link = screen.getByText('Settings')
+          expect(link).toBeInTheDocument()
+          expect(link).toHaveAttribute('href', '/gh/codecov/test-repo/settings')
+        })
+      })
 
-    it('does not render pulls tab', () => {
-      expect(screen.queryByText(/pulls/)).not.toBeInTheDocument()
+      describe('when the user does not belong to the org', () => {
+        beforeEach(() => {
+          setup({
+            repository: {
+              private: true,
+              activated: false,
+            },
+            commits: { commits },
+            isCurrentUserPartOfOrg: false,
+          })
+        })
+
+        it('shows not found', () => {
+          const notFound = screen.getByText(/not found/i)
+          expect(notFound).toBeInTheDocument()
+        })
+      })
     })
   })
 
@@ -366,7 +419,22 @@ describe('RepoPage', () => {
     })
 
     it('renders coverage tab', () => {
-      expect(screen.getByText('Flags')).toBeInTheDocument()
+      const flags = screen.getByText('Flags')
+      expect(flags).toBeInTheDocument()
+    })
+  })
+
+  describe('when there is no repo data', () => {
+    beforeEach(() => {
+      setup({
+        repository: null,
+        commits: { commits },
+      })
+    })
+
+    it('shows not found', () => {
+      const notFound = screen.getByText(/not found/i)
+      expect(notFound).toBeInTheDocument()
     })
   })
 })
