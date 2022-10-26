@@ -21,17 +21,19 @@ describe('DefaultBranch', () => {
 
   function setup(branch) {
     useBranches.mockReturnValue({
-      data: [
-        {
-          name: 'master',
-        },
-        {
-          name: 'dummy',
-        },
-        {
-          name: 'dummy2',
-        },
-      ],
+      data: {
+        branches: [
+          {
+            name: 'master',
+          },
+          {
+            name: 'dummy',
+          },
+          {
+            name: 'dummy2',
+          },
+        ],
+      },
     })
     useAddNotification.mockReturnValue(addNotification)
     useUpdateRepo.mockReturnValue({

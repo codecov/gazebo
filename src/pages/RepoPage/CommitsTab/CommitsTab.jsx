@@ -31,9 +31,10 @@ function CommitsTab() {
   const setCrumbs = useSetCrumbs()
   const { provider, owner, repo } = useParams()
 
-  const { data: branches } = useBranches({ provider, owner, repo })
+  const { data: branchesData } = useBranches({ provider, owner, repo })
   const { data: repoData } = useRepo({ provider, owner, repo })
-  const branchesNames = branches?.map((branch) => branch.name) || []
+  const branchesNames =
+    branchesData?.branches?.map((branch) => branch.name) || []
 
   const { branch, paramCIStatus, updateParams } = useParamsFilters(
     repoData?.repository?.defaultBranch

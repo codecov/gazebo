@@ -31,8 +31,9 @@ function useUpdateDefaultBranch() {
 function DefaultBranch({ defaultBranch }) {
   const { provider, owner, repo } = useParams()
 
-  const { data: branches } = useBranches({ provider, owner, repo })
-  const branchesNames = branches?.map((branch) => branch.name) || []
+  const { data: branchesData } = useBranches({ provider, owner, repo })
+  const branchesNames =
+    branchesData?.branches?.map((branch) => branch.name) || []
   const { updateDefaultBranch, data } = useUpdateDefaultBranch()
 
   const branch = data?.branch || defaultBranch
