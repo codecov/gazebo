@@ -19,12 +19,12 @@ function Tabs({ currentUsername }) {
             owner: currentUsername,
           },
         },
-        ...(!config.IS_ENTERPRISE
-          ? [
+        ...(config.IS_ENTERPRISE
+          ? []
+          : [
               { pageName: 'membersTab', options: { owner: currentUsername } },
               { pageName: 'planTab', options: { owner: currentUsername } },
-            ]
-          : []),
+            ]),
         {
           pageName: 'accountAdmin',
           children: 'Settings',

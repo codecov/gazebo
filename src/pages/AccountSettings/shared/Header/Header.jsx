@@ -16,9 +16,9 @@ function Header() {
           tabs={[
             { pageName: 'owner', children: 'Repos' },
             { pageName: 'analytics', children: 'Analytics' },
-            ...(!config.IS_ENTERPRISE
-              ? [{ pageName: 'membersTab' }, { pageName: 'planTab' }]
-              : []),
+            ...(config.IS_ENTERPRISE
+              ? []
+              : [{ pageName: 'membersTab' }, { pageName: 'planTab' }]),
             {
               pageName: 'accountAdmin',
               children: 'Settings',
