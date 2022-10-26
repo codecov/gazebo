@@ -40,7 +40,7 @@ const RadioInput = forwardRef(
 RadioInput.displayName = 'RadioInput'
 
 RadioInput.propTypes = {
-  label: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   disabled: PropTypes.bool,
   showLabel: PropTypes.bool,
   dataMarketing: dataMarketingType,
