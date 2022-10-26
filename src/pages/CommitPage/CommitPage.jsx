@@ -5,7 +5,6 @@ import { Route, Switch, useParams } from 'react-router-dom'
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
 import Breadcrumb from 'ui/Breadcrumb'
-import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
@@ -83,7 +82,7 @@ function CommitPage() {
               </Suspense>
             </Route>
             <Route path="/:provider/:owner/:repo/commit/:commit">
-              <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
+              <h2 className="text-base font-semibold">Impacted files</h2>
               {!isEmpty(erroredUploads) ? (
                 <ErroredUploads erroredUploads={erroredUploads} />
               ) : (

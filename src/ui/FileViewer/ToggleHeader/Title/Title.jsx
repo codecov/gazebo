@@ -31,7 +31,7 @@ export const TitleFlags = ({
   flagsIsLoading = false,
 }) => {
   return (
-    <div className="flex items-center gap-2">
+    <>
       {flagsIsLoading && <Spinner />}
       <MultiSelect
         dataMarketing="fileviwer-filter-by-flags"
@@ -40,7 +40,7 @@ export const TitleFlags = ({
         onChange={onFlagsChange}
         resourceName="Flag"
       />
-    </div>
+    </>
   )
 }
 
