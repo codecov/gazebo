@@ -148,7 +148,6 @@ function CommitsTable({ data = [], commit, state }) {
       (file) => file.headName === path
     )
 
-    // TODO: this component has a nested table and needs to be reworked as it is used inside the Table component, which leads to an accessibilty issue
     return (
       <Suspense fallback={<Loader />}>
         <CommitFileView diff={diff} path={path} />

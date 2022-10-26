@@ -88,7 +88,7 @@ function CommitPage() {
               )}
             </Route>
             <Redirect
-              from="/:provider/:owner/:repo/commit/:commit/:path+"
+              from="/:provider/:owner/:repo/commit/:commit/*"
               to="/:provider/:owner/:repo/commit/:commit"
             />
           </Switch>

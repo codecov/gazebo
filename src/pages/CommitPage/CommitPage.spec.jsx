@@ -313,8 +313,8 @@ describe('CommitPage', () => {
         setup({ data, isSuccess: true })
       })
       it('the Commit File View', () => {
-        const headName = screen.getByText('src/notInUrl.py')
-        userEvent.click(headName)
+        userEvent.click(screen.getByText('src/notInUrl.py'))
+
         expect(screen.getByText(/The Commit File View/)).toBeInTheDocument()
       })
     })
