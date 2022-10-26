@@ -24,9 +24,11 @@ const queryClient = new QueryClient({
   },
 })
 
+let testLocation
 describe('MembersPage', () => {
   function setup({ owner = null, isEnterprise = false }) {
     config.IS_ENTERPRISE = isEnterprise
+
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -37,6 +39,13 @@ describe('MembersPage', () => {
             <MembersPage />
           </QueryClientProvider>
         </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
       </MemoryRouter>
     )
   }
@@ -90,6 +99,18 @@ describe('MembersPage', () => {
 
     it('doesnt render Tabs', () => {
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when user is an enterprise account', () => {
+    beforeEach(() => {
+      setup({
+        isEnterprise: true,
+      })
+    })
+
+    it('redirects to owner page', () => {
+      expect(testLocation.pathname).toBe('/gh/codecov')
     })
   })
 })
