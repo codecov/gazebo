@@ -76,7 +76,7 @@ function UpgradePlan() {
             )}
           </div>
         </Card>
-        <Card variant="large">
+        <Card variant="upgradeForm">
           <UpgradePlanForm
             proPlanYear={proPlanYear}
             proPlanMonth={proPlanMonth}

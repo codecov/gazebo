@@ -66,7 +66,7 @@ export const commitOneCarriedForward = graphql.query(
                       updatedAt: '2020-08-25T16:36:19.679868+00:00',
                       downloadUrl: '/test.txt',
                       ciUrl: 'https://example.com',
-                      uploadType: 'CARRYFORWARDED',
+                      uploadType: 'CARRIEDFORWARD',
                       jobCode: '1234',
                       buildCode: '1234',
                       flags: ['unit'],
@@ -143,7 +143,7 @@ const commitDataError = {
       },
       {
         node: {
-          state: 'UPLOADED',
+          state: 'PENDING',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -156,7 +156,7 @@ const commitDataError = {
       },
       {
         node: {
-          state: 'UPLOADED',
+          state: 'PENDING',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -169,7 +169,7 @@ const commitDataError = {
       },
       {
         node: {
-          state: 'UPLOADED',
+          state: 'PENDING',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -230,7 +230,7 @@ const commitDataError = {
           createdAt: '2020-08-25T16:36:25.820340+00:00',
           updatedAt: '2020-08-25T16:36:25.859889+00:00',
           flags: ['front-end'],
-          uploadType: 'CARRYFORWARDED',
+          uploadType: 'CARRIEDFORWARD',
           jobCode: '1234',
         },
       },

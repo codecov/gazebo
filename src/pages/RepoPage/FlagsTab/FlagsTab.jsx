@@ -23,7 +23,7 @@ function FlagsTab() {
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
-      {flagsData && flagsData.length > 0 ? (
+      {flagsData && flagsData?.length > 0 ? (
         <>
           <Header
             controlsDisabled={isDisabled({

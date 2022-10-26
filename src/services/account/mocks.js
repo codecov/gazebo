@@ -78,7 +78,7 @@ const accountDetailsObject = {
         brand: 'mastercard',
         exp_month: 4,
         exp_year: 2023,
-        last4: 8091,
+        last4: '8091',
       },
       billing_details: {
         address: {

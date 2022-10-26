@@ -83,6 +83,20 @@ function createPills({ isAdmin, email, student, lastPullTimestamp }) {
   ]
 }
 
+const handleActivate = (user, activate, accountDetails, setIsOpen) => {
+  const maxActivatedUsers = 5
+
+  if (
+    accountDetails?.activatedUserCount >= maxActivatedUsers &&
+    !user.activated &&
+    isFreePlan(accountDetails?.plan?.value)
+  ) {
+    setIsOpen(true)
+  } else {
+    activate(user.ownerid, !user.activated)
+  }
+}
+
 function MembersList() {
   const { owner, provider } = useParams()
   const { params, updateParams, data, isSuccess } = useUsersData({
@@ -94,19 +108,10 @@ function MembersList() {
   const { upgradeOrgPlan } = useNavLinks()
   const [isOpen, setIsOpen] = useState(false)
 
-  const maxActivatedUsers = 5
   const isEnterprise = isEnterprisePlan(accountDetails?.plan?.value) || false
 
-  const handleActivate = (user) => {
-    if (
-      accountDetails?.activatedUserCount >= maxActivatedUsers &&
-      !user.activated &&
-      isFreePlan(accountDetails?.plan?.value)
-    ) {
-      setIsOpen(true)
-    } else {
-      activate(user.ownerid, !user.activated)
-    }
+  if (data?.results?.length === 0) {
+    return null
   }
 
   return (
@@ -178,7 +183,9 @@ function MembersList() {
                     dataMarketing="handle-members-activation"
                     label={user.activated ? 'Activated' : 'Not yet activated'}
                     value={user.activated}
-                    onClick={() => handleActivate(user)}
+                    onClick={() =>
+                      handleActivate(user, activate, accountDetails, setIsOpen)
+                    }
                   />
                 </div>
               </div>
