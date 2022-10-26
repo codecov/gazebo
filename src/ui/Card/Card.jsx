@@ -9,6 +9,7 @@ const baseStyles = {
 const variantClasses = {
   default: 'border border-ds-gray-secondary rounded p-6',
   large: 'border border-ds-gray-secondary rounded p-12',
+  upgradeForm: 'border border-ds-gray-secondary rounded p-12 md:w-5/12',
   cancel: 'border border-codecov-red px-12 py-10',
 }
 
@@ -26,7 +27,7 @@ function Card({ children, header, footer, variant = 'default' }) {
 Card.propTypes = {
   header: PropTypes.node,
   footer: PropTypes.node,
-  variant: PropTypes.oneOf(['default', 'large', 'cancel']),
+  variant: PropTypes.oneOf(['default', 'large', 'cancel', 'upgradeForm']),
 }
 
 export default Card

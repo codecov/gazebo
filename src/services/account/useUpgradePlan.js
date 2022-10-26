@@ -23,8 +23,8 @@ export function useUpgradePlan({ provider, owner }) {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
         plan: {
-          quantity: formData.seats,
-          value: formData.newPlan.value,
+          quantity: formData?.seats,
+          value: formData?.newPlan,
         },
       }
       return Api.patch({ path, provider, body }).then((data) => {
