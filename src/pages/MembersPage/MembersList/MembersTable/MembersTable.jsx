@@ -38,7 +38,7 @@ const columns = [
   },
   {
     id: 'activationStatus',
-    header: () => <span className="w-full text-right">Activation Status</span>,
+    header: () => <span className="w-full text-right">Activation status</span>,
     accessorKey: 'activationStatus',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-win-min',
