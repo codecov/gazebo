@@ -20,9 +20,7 @@ describe('useBranchSelector', () => {
   describe('with default branch', () => {
     beforeEach(() => {
       setup({
-        branches: {
-          edges: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
-        },
+        branches: [{ name: 'fcg' }, { name: 'imogen' }],
         defaultBranch: 'imogen',
       })
 
@@ -64,9 +62,7 @@ describe('useBranchSelector', () => {
   describe('with branch set', () => {
     beforeEach(() => {
       setup({
-        branches: {
-          edges: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
-        },
+        branches: [{ name: 'fcg' }, { name: 'imogen' }],
         defaultBranch: 'imogen',
         useParamsValue: { branch: 'fcg' },
       })
@@ -109,9 +105,7 @@ describe('useBranchSelector', () => {
   describe('with ref set', () => {
     beforeEach(() => {
       setup({
-        branches: {
-          edges: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
-        },
+        branches: [{ name: 'fcg' }, { name: 'imogen' }],
         defaultBranch: 'imogen',
         useParamsValue: { ref: 'fcg' },
       })

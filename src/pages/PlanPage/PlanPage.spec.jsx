@@ -2,14 +2,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useOwner } from 'services/user'
-import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import PlanPage from './PlanPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
-jest.mock('services/useShouldRenderBillingTabs')
+jest.mock('config')
 
 jest.mock('./Tabs', () => () => 'Tabs')
 
@@ -22,8 +23,9 @@ const queryClient = new QueryClient({
 })
 
 describe('PlanPage', () => {
-  function setup({ owner = null, show = true }) {
-    useShouldRenderBillingTabs.mockReturnValue(show)
+  function setup({ owner = null, isEnterprise = false }) {
+    config.IS_ENTERPRISE = isEnterprise
+
     useOwner.mockReturnValue({
       data: owner,
     })

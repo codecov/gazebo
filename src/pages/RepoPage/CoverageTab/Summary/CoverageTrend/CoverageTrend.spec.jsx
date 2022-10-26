@@ -2,10 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useBranches } from 'services/branches'
+
 import CoverageTrend from './CoverageTrend'
 
 import { useBranchSelector, useRepoCoverageTimeseries } from '../../hooks'
 
+jest.mock('services/branches')
 jest.mock('../../hooks')
 jest.mock('../TrendDropdown', () => () => 'TrendDropdown')
 
@@ -22,6 +25,9 @@ const renderCoverageTab = () => render(<CoverageTrend />, { wrapper })
 describe('CoverageTrend', () => {
   function setup({ coverageData }) {
     useRepoCoverageTimeseries.mockReturnValue(coverageData)
+    useBranches.mockReturnValue({
+      data: { branches: [{ name: 'bells-hells', head: { commitid: '1' } }] },
+    })
     useBranchSelector.mockReturnValue({
       selection: { name: 'bells-hells' },
     })

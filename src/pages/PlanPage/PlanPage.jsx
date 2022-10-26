@@ -7,7 +7,6 @@ import config from 'config'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
-import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import CancelPlanPage from './CancelPlan'
 import { PlanBreadcrumbProvider } from './context'
@@ -31,7 +30,6 @@ const Loader = (
 function PlanPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  const shouldRenderTabs = useShouldRenderBillingTabs()
 
   return (
     <div className="flex flex-col gap-4">
@@ -43,7 +41,7 @@ function PlanPage() {
           <hr className="md:w-10/12" />
           <Suspense fallback={Loader}>
             <Switch>
-              {!shouldRenderTabs && <Redirect to="/:provider/:owner" />}
+              {config.IS_ENTERPRISE && <Redirect to="/:provider/:owner" />}
               <Route path={path} exact>
                 <CurrentOrgPlan />
               </Route>

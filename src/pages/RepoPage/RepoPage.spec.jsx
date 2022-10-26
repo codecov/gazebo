@@ -47,12 +47,21 @@ const commits = [
 const branches = [
   {
     name: 'main',
+    head: {
+      commitid: '1',
+    },
   },
   {
     name: 'test1',
+    head: {
+      commitid: '2',
+    },
   },
   {
     name: 'test2',
+    head: {
+      commitid: '3',
+    },
   },
 ]
 
@@ -68,7 +77,7 @@ describe('RepoPage', () => {
   }) {
     useRepo.mockReturnValue({ data: { repository } })
     useCommits.mockReturnValue({ data: commits })
-    useBranches.mockReturnValue({ data: branches })
+    useBranches.mockReturnValue({ data: { branches } })
     useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
     useFlags.mockReturnValue({
       gazeboFlagsTab: flagValue,
