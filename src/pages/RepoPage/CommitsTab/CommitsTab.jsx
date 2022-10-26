@@ -8,7 +8,7 @@ import { useRepo } from 'services/repo'
 import Button from 'ui/Button'
 import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
-import Select from 'ui/Select'
+import Select from 'ui/NewSelect'
 
 import CommitsTable from './CommitsTable'
 
@@ -31,7 +31,12 @@ function CommitsTab() {
   const setCrumbs = useSetCrumbs()
   const { provider, owner, repo } = useParams()
 
-  const { data: branchesData } = useBranches({ provider, owner, repo })
+  const {
+    data: branchesData,
+    isFetching: branchesIsFetching,
+    fetchNextPage: branchesFetchNextPage,
+    hasNextPage: branchesHasNextPage,
+  } = useBranches({ provider, owner, repo })
   const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames =
     branchesData?.branches?.map((branch) => branch.name) || []
@@ -83,8 +88,12 @@ function CommitsTab() {
               ariaName="Select branch"
               variant="gray"
               items={branchesNames}
+              isLoading={branchesIsFetching}
               onChange={(branch) => {
                 updateParams({ branch })
+              }}
+              onLoadMore={() => {
+                branchesHasNextPage && branchesFetchNextPage()
               }}
               value={branch}
             />

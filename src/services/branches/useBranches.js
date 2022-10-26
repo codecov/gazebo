@@ -11,6 +11,9 @@ const query = `
           edges {
             node {
               name
+              head {
+                commitid
+              }
             }
           }
           pageInfo {
@@ -49,7 +52,6 @@ export function useBranches({ provider, owner, repo, filters }) {
         const pageParam = data?.pageInfo?.hasNextPage
           ? data?.pageInfo?.endCursor
           : undefined
-        // console.debug(pageParam)
         return pageParam
       },
     }

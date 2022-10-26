@@ -2,12 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useBranches } from 'services/branches'
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
 import { useSummary } from './useSummary'
 
 import { useBranchSelector } from '../../hooks'
 
+jest.mock('services/branches')
 jest.mock('services/repo')
 jest.mock('../../hooks')
 
@@ -23,9 +25,14 @@ const wrapper = ({ children }) => (
 describe('useSummary', () => {
   let hookData
 
-  function setup({ useRepoOverviewMock = {}, useRepoCoverageMock = {} }) {
+  function setup({
+    useRepoOverviewMock = {},
+    useRepoCoverageMock = {},
+    useBranchesMock = {},
+  }) {
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
     useRepoCoverage.mockReturnValue(useRepoCoverageMock)
+    useBranches.mockReturnValue(useBranchesMock)
     useBranchSelector.mockReturnValue({
       selection: { name: 'my branch', head: { commitid: '1234' } },
       branchSelectorProps: { someProps: 1 },
@@ -41,6 +48,7 @@ describe('useSummary', () => {
       setup({
         useRepoOverviewMock: { data: {}, isLoading: true },
         useRepoCoverageMock: { data: {}, isLoading: true },
+        useBranchesMock: { data: {}, isFetching: true },
       })
     })
 
@@ -60,6 +68,14 @@ describe('useSummary', () => {
           isLoading: false,
         },
         useRepoCoverageMock: { data: {}, isLoading: true },
+        useBranchesMock: {
+          data: {
+            branches: [
+              { node: { name: 'fcg', head: { commitid: '1' } } },
+              { node: { name: 'imogen', head: { commitid: '2' } } },
+            ],
+          },
+        },
       })
     })
 
@@ -84,6 +100,14 @@ describe('useSummary', () => {
         useRepoCoverageMock: {
           data: { show: 'Critical Role' },
           isLoading: false,
+        },
+        useBranchesMock: {
+          data: {
+            branches: [
+              { node: { name: 'fcg', head: { commitid: '1' } } },
+              { node: { name: 'imogen', head: { commitid: '2' } } },
+            ],
+          },
         },
       })
 

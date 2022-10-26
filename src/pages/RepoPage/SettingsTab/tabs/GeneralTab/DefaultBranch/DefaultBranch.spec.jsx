@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
+import useIntersection from 'react-use/lib/useIntersection'
 
 import { useBranches } from 'services/branches'
 import { useUpdateRepo } from 'services/repo'
@@ -12,12 +13,14 @@ import DefaultBranch from './DefaultBranch'
 jest.mock('services/branches')
 jest.mock('services/repo')
 jest.mock('services/toastNotification')
+jest.mock('react-use/lib/useIntersection')
 
 const queryClient = new QueryClient()
 
 describe('DefaultBranch', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
+  const fetchNextPage = jest.fn()
 
   function setup(branch) {
     useBranches.mockReturnValue({
@@ -25,15 +28,26 @@ describe('DefaultBranch', () => {
         branches: [
           {
             name: 'master',
+            head: {
+              commitid: '1',
+            },
           },
           {
             name: 'dummy',
+            head: {
+              commitid: '2',
+            },
           },
           {
             name: 'dummy2',
+            head: {
+              commitid: '3',
+            },
           },
         ],
       },
+      fetchNextPage,
+      hasNextPage: true,
     })
     useAddNotification.mockReturnValue(addNotification)
     useUpdateRepo.mockReturnValue({
@@ -123,6 +137,45 @@ describe('DefaultBranch', () => {
       expect(addNotification).toHaveBeenCalledWith({
         type: 'error',
         text: 'We were unable to update the default branch for this repo',
+      })
+    })
+  })
+
+  describe('when onLoadMore is triggered', () => {
+    describe('when there is a next page', () => {
+      beforeEach(() => {
+        setup()
+        useIntersection.mockReturnValue({
+          isIntersecting: true,
+        })
+      })
+      it('calls fetchNextPage', () => {
+        const select = screen.getByText('master')
+        userEvent.click(select)
+
+        expect(fetchNextPage).toBeCalled()
+      })
+    })
+
+    describe('when there is not a next page', () => {
+      const fetchNextPage = jest.fn()
+      beforeEach(() => {
+        setup()
+        useBranches.mockReturnValue({
+          data: { branches: [{ name: 'master', head: { commitid: '1' } }] },
+          fetchNextPage,
+          hasNextPage: false,
+        })
+        useIntersection.mockReturnValue({
+          isIntersecting: true,
+        })
+      })
+
+      it('does not call fetchNextPage', () => {
+        const select = screen.getByText('master')
+        userEvent.click(select)
+
+        expect(fetchNextPage).not.toBeCalled()
       })
     })
   })
