@@ -103,25 +103,6 @@ describe('New Repo Tab', () => {
     })
   })
 
-  describe('repo is public and user is not a part of the org', () => {
-    beforeEach(() => {
-      setup({
-        repoData: {
-          repository: { uploadToken: 'randomToken', private: false },
-          isCurrentUserPartOfOrg: false,
-        },
-      })
-    })
-
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
-
-    it('location replace was called (redirected)', () => {
-      expect(window.location.replace).toHaveBeenCalledTimes(1)
-    })
-  })
-
   describe('when repo is private and user is not a part of the org', () => {
     beforeEach(() => {
       setup({

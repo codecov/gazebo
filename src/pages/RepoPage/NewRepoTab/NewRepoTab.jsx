@@ -9,28 +9,15 @@ import { useRedirect } from 'shared/useRedirect'
 import NewRepoContent from './NewRepoContent'
 import NewRepoGithubContent from './NewRepoGithubContent'
 
-// eslint-disable-next-line complexity, max-statements
 function NewRepoTab() {
   const { provider, owner, repo } = useParams()
-  const href = `/${provider}`
-  const { hardRedirect } = useRedirect({ href })
+  const { hardRedirect } = useRedirect({ href: `/${provider}` })
   const { data } = useRepo({ provider, owner, repo })
   const { data: commitsData } = useCommits({ provider, owner, repo })
   const { newRepoGhContent } = useFlags({ newRepoGhContent: false })
 
-  const commits = commitsData?.commits
-
-  // if the user not part of the org redirect to provider
-  if (!data?.isCurrentUserPartOfOrg) {
-    hardRedirect()
-    return <NotFound />
-  }
-  // if there is no repository data show not found
-  else if (!data?.repository) {
-    return <NotFound />
-  }
   // if the repo has commits redirect to coverage tab
-  else if (Array.isArray(commits) && commits.length > 0) {
+  if (Array.isArray(commitsData?.commits) && commitsData?.commits.length > 0) {
     return <Redirect to={`/${provider}/${owner}/${repo}`} />
   }
   // if no upload token redirect
