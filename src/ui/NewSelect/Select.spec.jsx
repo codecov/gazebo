@@ -75,6 +75,26 @@ describe('Select', () => {
     })
   })
 
+  describe('when rendering with a searchValue', () => {
+    beforeEach(() => {
+      props = {
+        ...defaultProps,
+        resourceName: 'items',
+        searchValue: 'searching',
+      }
+    })
+
+    it('renders the default selected item', () => {
+      render(<Select {...props} />)
+
+      const button = screen.getByText('Select')
+      userEvent.click(button)
+
+      const searchField = screen.getByRole('textbox')
+      expect(searchField).toHaveValue('searching')
+    })
+  })
+
   describe('when select is triggered', () => {
     it('renders the items', () => {
       render(<Select {...props} />)

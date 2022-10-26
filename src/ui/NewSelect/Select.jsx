@@ -81,6 +81,7 @@ const Select = forwardRef(
       resourceName = '',
       onLoadMore,
       isLoading,
+      searchValue = '',
     },
     ref
   ) => {
@@ -168,7 +169,7 @@ const Select = forwardRef(
                 dataMarketing="select-search"
                 variant="topRounded"
                 placeholder={getSearchPlaceholder(resourceName)}
-                searchValue=""
+                searchValue={searchValue}
                 setSearchValue={(search) => !!onSearch && onSearch(search)}
                 {...getInputProps()}
               />
@@ -224,6 +225,7 @@ Select.propTypes = {
   resourceName: PropTypes.string,
   onLoadMore: PropTypes.func,
   isLoading: PropTypes.bool,
+  searchValue: PropTypes.string,
 }
 
 export default Select
