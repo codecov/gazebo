@@ -7,13 +7,32 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import MembersList from './MembersList'
 
-const mockUsersRequest = {
+const mockNonActiveUserRequest = {
   count: 1,
   next: null,
   previous: null,
   results: [
     {
       activated: false,
+      is_admin: false,
+      username: 'codecov-user',
+      email: 'user@codecov.io',
+      ownerid: 1,
+      student: false,
+      name: 'codecov',
+      last_pull_timestamp: null,
+    },
+  ],
+  total_pages: 1,
+}
+
+const mockActiveUserRequest = {
+  count: 1,
+  next: null,
+  previous: null,
+  results: [
+    {
+      activated: true,
       is_admin: false,
       username: 'codecov-user',
       email: 'user@codecov.io',
@@ -38,6 +57,7 @@ afterAll(() => server.close())
 
 describe('MembersList', () => {
   let testLocation
+  let sendActivatedUser = false
 
   const wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
@@ -57,19 +77,24 @@ describe('MembersList', () => {
   function setup({ accountDetails = {} }) {
     server.use(
       rest.get('/internal/gh/codecov/account-details', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ data: accountDetails }))
+        res(ctx.status(200), ctx.json(accountDetails))
       ),
-      rest.get('/internal/gh/codecov/users', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(mockUsersRequest))
-      ),
-      rest.patch('/gh/codecov/users/:ownerid/', (req, res, ctx) =>
-        res(ctx.status(200))
-      )
+      rest.get('/internal/gh/codecov/users', (req, res, ctx) => {
+        if (sendActivatedUser) {
+          sendActivatedUser = false
+          return res(ctx.status(200), ctx.json(mockActiveUserRequest))
+        }
+        return res(ctx.status(200), ctx.json(mockNonActiveUserRequest))
+      }),
+      rest.patch('/internal/gh/codecov/users/:ownerid', (req, res, ctx) => {
+        sendActivatedUser = true
+        return res(ctx.status(200))
+      })
     )
   }
 
   describe('rendering MembersList', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
 
     it('does not render UpgradeModal', () => {
       render(<MembersList />, { wrapper })
@@ -77,24 +102,28 @@ describe('MembersList', () => {
       const modal = screen.queryByText('UpgradeModal')
       expect(modal).not.toBeInTheDocument()
     })
+
     it('renders status selector', async () => {
       render(<MembersList />, { wrapper })
 
       const selector = await screen.findByText('All users')
       expect(selector).toBeInTheDocument()
     })
+
     it('renders role selector', async () => {
       render(<MembersList />, { wrapper })
 
       const selector = await screen.findByText('Everyone')
       expect(selector).toBeInTheDocument()
     })
+
     it('renders search text field', async () => {
       render(<MembersList />, { wrapper })
 
       const textfield = await screen.findByRole('textbox')
       expect(textfield).toBeInTheDocument()
     })
+
     it('renders MembersTable', async () => {
       render(<MembersList />, { wrapper })
 
@@ -105,13 +134,16 @@ describe('MembersList', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
+      const tableHeader = await screen.findByText('User name')
+      expect(tableHeader).toBeInTheDocument()
+
       const tableEntry = await screen.findByText('codecov')
       expect(tableEntry).toBeInTheDocument()
     })
   })
 
   describe('interacting with the status selector', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
     describe('selecting Active Users', () => {
       it('updates select text', () => {
         render(<MembersList />, { wrapper })
@@ -138,6 +170,7 @@ describe('MembersList', () => {
         expect(testLocation.search).toBe('?activated=True')
       })
     })
+
     describe('selecting Inactive Users', () => {
       it('updates select text', () => {
         render(<MembersList />, { wrapper })
@@ -166,8 +199,31 @@ describe('MembersList', () => {
     })
   })
 
+  describe('interacting with the search field', () => {
+    describe('user types into search field', () => {
+      beforeEach(() => {
+        setup({})
+        jest.useFakeTimers()
+      })
+      afterEach(() => jest.useRealTimers())
+
+      it('updates url params', async () => {
+        render(<MembersList />, { wrapper })
+
+        const searchField = await screen.findByRole('textbox')
+        expect(searchField).toBeInTheDocument()
+
+        userEvent.type(searchField, 'codecov')
+
+        jest.runAllTimers()
+
+        await waitFor(() => expect(testLocation.search).toBe('?search=codecov'))
+      })
+    })
+  })
+
   describe('interacting with the role selector', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
     describe('selecting Admins Users', () => {
       it('updates select text', () => {
         render(<MembersList />, { wrapper })
@@ -194,6 +250,7 @@ describe('MembersList', () => {
         expect(testLocation.search).toBe('?isAdmin=True')
       })
     })
+
     describe('selecting Developers', () => {
       it('updates select text', () => {
         render(<MembersList />, { wrapper })
@@ -222,5 +279,74 @@ describe('MembersList', () => {
     })
   })
 
-  describe('interacting with user toggles', () => {})
+  describe('interacting with user toggles', () => {
+    describe('user has reached max seats, and on a free plan', () => {
+      beforeEach(() => {
+        setup({
+          accountDetails: {
+            activatedUserCount: 100,
+            plan: { value: 'users-free' },
+          },
+        })
+      })
+
+      it('opens up upgrade modal', async () => {
+        render(<MembersList />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+
+        const tableHeader = await screen.findByText('User name')
+        expect(tableHeader).toBeInTheDocument()
+
+        const toggle = await screen.findByLabelText('Non-Active')
+        expect(toggle).toBeInTheDocument()
+        userEvent.click(toggle)
+
+        const modalHeader = await screen.findByText('Upgrade to Pro')
+        expect(modalHeader).toBeInTheDocument()
+      })
+    })
+
+    describe('user has not reached max seats', () => {
+      beforeEach(() => {
+        setup({
+          accountDetails: {
+            activatedUserCount: 0,
+            plan: { value: 'users-free' },
+          },
+        })
+      })
+
+      it('opens up upgrade modal', async () => {
+        render(<MembersList />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+
+        const tableHeader = await screen.findByText('User name')
+        expect(tableHeader).toBeInTheDocument()
+
+        const toggle = await screen.findByLabelText('Non-Active')
+        expect(toggle).toBeInTheDocument()
+        userEvent.click(toggle)
+
+        await waitFor(() => queryClient.isMutating)
+        await waitFor(() => !queryClient.isMutating)
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const activeToggle = await screen.findByText('Activated')
+        expect(activeToggle).toBeInTheDocument()
+      })
+    })
+  })
 })
