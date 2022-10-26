@@ -67,7 +67,7 @@ describe('Tabs', () => {
     })
   })
 
-  describe('when should render tabs is false', () => {
+  describe('when rendered with enterprise account', () => {
     beforeEach(() => {
       setup(true)
     })

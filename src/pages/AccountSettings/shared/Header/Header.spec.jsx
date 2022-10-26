@@ -67,7 +67,7 @@ describe('Header', () => {
     })
   })
 
-  describe('when feature flag is off', () => {
+  describe('when rendered with enterprise account', () => {
     beforeEach(() => {
       setup(true)
     })
