@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
+import config from 'config'
 
 import Header from './Header'
 
-jest.mock('services/useShouldRenderBillingTabs')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
+jest.mock('config')
 
 describe('Header', () => {
-  function setup(show = true) {
-    useShouldRenderBillingTabs.mockReturnValue(show)
+  function setup(isEnterprise = false) {
+    config.IS_ENTERPRISE = isEnterprise
 
     render(
       <MemoryRouter initialEntries={['/account/gh/codecov']}>
@@ -69,7 +69,7 @@ describe('Header', () => {
 
   describe('when feature flag is off', () => {
     beforeEach(() => {
-      setup(false)
+      setup(true)
     })
 
     it('does not render link to members page', () => {

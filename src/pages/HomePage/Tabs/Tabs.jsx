@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 
+import config from 'config'
+
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs({ currentUsername }) {
@@ -17,6 +19,12 @@ function Tabs({ currentUsername }) {
             owner: currentUsername,
           },
         },
+        ...(!config.IS_ENTERPRISE
+          ? [
+              { pageName: 'membersTab', options: { owner: currentUsername } },
+              { pageName: 'planTab', options: { owner: currentUsername } },
+            ]
+          : []),
         {
           pageName: 'accountAdmin',
           children: 'Settings',

@@ -1,17 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
+import config from 'config'
 
 import Tabs from './Tabs'
 
-jest.mock('services/useShouldRenderBillingTabs')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('../CallToAction', () => () => 'CallToAction')
+jest.mock('config')
 
 describe('Tabs', () => {
-  function setup({ props = {}, show = true }) {
-    useShouldRenderBillingTabs.mockReturnValue(show)
+  function setup({ props = {}, isEnterprise = false }) {
+    config.IS_ENTERPRISE = isEnterprise
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -52,11 +52,11 @@ describe('Tabs', () => {
     })
   })
 
-  describe('when should render billing tabs is false', () => {
+  describe('when user is enterprise account', () => {
     beforeEach(() => {
       setup({
         props: { owner: { username: 'kelly' }, provider: 'gh' },
-        show: false,
+        isEnterprise: true,
       })
     })
 

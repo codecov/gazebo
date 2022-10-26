@@ -1,9 +1,8 @@
-import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
+import config from 'config'
+
 import TabNavigation from 'ui/TabNavigation'
 
 function Tabs() {
-  const shouldRenderTabs = useShouldRenderBillingTabs()
-
   return (
     <TabNavigation
       tabs={[
@@ -15,7 +14,7 @@ function Tabs() {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(shouldRenderTabs
+        ...(!config.IS_ENTERPRISE
           ? [{ pageName: 'membersTab' }, { pageName: 'planTab' }]
           : []),
         {
