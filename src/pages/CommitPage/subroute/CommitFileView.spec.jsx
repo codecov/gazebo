@@ -21,6 +21,9 @@ const queryClient = new QueryClient()
 const diff = {
   headCoverage: { coverage: 40.23 },
   baseCoverage: { coverage: 14.12 },
+  compareWithParent: {
+    impactedFiles: [],
+  },
 }
 
 describe('CommitFileView', () => {

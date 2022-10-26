@@ -21,7 +21,7 @@ function ErrorDisplayMessage() {
   )
 }
 
-function CommitFileView({ diff, path }) {
+function CommitFileView({ path }) {
   const { owner, repo, provider, commit } = useParams()
   const fileName = getFilenameFromFilePath(path)
   const [selectedFlags, setSelectedFlags] = useState([])
@@ -77,14 +77,6 @@ function CommitFileView({ diff, path }) {
 }
 
 CommitFileView.propTypes = {
-  diff: PropTypes.shape({
-    baseCoverage: PropTypes.shape({
-      coverage: PropTypes.number,
-    }),
-    headCoverage: PropTypes.shape({
-      coverage: PropTypes.number,
-    }),
-  }),
   path: PropTypes.string,
 }
 

@@ -144,13 +144,10 @@ function CommitsTable({ data = [], commit, state }) {
     const nameColumn = row.getValue('name')
     const [, file] = nameColumn?.props?.children
     const path = file?.props?.children
-    const diff = commit?.compareWithParent?.impactedFiles?.find(
-      (file) => file.headName === path
-    )
 
     return (
       <Suspense fallback={<Loader />}>
-        <CommitFileView diff={diff} path={path} />
+        <CommitFileView path={path} />
       </Suspense>
     )
   }
