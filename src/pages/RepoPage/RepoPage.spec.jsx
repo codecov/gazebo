@@ -188,7 +188,7 @@ describe('RepoPage', () => {
       setup({
         repository: {
           private: true,
-          activated: true,
+          activated: false,
         },
         commits: { commits: [] },
       })
@@ -201,6 +201,9 @@ describe('RepoPage', () => {
     it('renders the commits tab', () => {
       const tab = screen.queryByText(/Commits/)
       expect(tab).not.toBeInTheDocument()
+    })
+    it('redirects to the setup repo page', () => {
+      expect(testLocation.pathname).toBe('/gh/codecov/test-repo/new')
     })
   })
 
@@ -431,22 +434,6 @@ describe('RepoPage', () => {
     it('shows not found', () => {
       const notFound = screen.getByText(/not found/i)
       expect(notFound).toBeInTheDocument()
-    })
-  })
-
-  describe('when rendered with a repo that has no commits and is not activated', () => {
-    beforeEach(() => {
-      setup({
-        repository: {
-          private: false,
-          activated: false,
-        },
-        commits: { commits: [] },
-      })
-    })
-
-    it('redirects to the setup repo page', () => {
-      expect(testLocation.pathname).toBe('/gh/codecov/test-repo/new')
     })
   })
 })
