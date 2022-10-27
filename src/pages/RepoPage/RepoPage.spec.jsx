@@ -19,6 +19,7 @@ jest.mock('shared/featureFlags')
 
 // This component is too complex for an integration test imo
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
+jest.mock('./NewRepoTab', () => () => 'NewRepoTab')
 
 const commits = [
   {
@@ -66,6 +67,8 @@ const branches = [
 ]
 
 describe('RepoPage', () => {
+  let testLocation
+
   function setup({
     repository,
     commits,
@@ -83,14 +86,16 @@ describe('RepoPage', () => {
 
     // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.
     if (initialEntries) {
-      repoPageRender({
+      const view = repoPageRender({
         renderCommits: () => <RepoPage />,
         initialEntries,
       })
+      testLocation = view.testLocation
     } else {
-      repoPageRender({
+      const view = repoPageRender({
         renderRoot: () => <RepoPage />,
       })
+      testLocation = view.testLocation
     }
   }
 
@@ -426,6 +431,22 @@ describe('RepoPage', () => {
     it('shows not found', () => {
       const notFound = screen.getByText(/not found/i)
       expect(notFound).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with a repo that has no commits and is not activated', () => {
+    beforeEach(() => {
+      setup({
+        repository: {
+          private: false,
+          activated: false,
+        },
+        commits: { commits: [] },
+      })
+    })
+
+    it('redirects to the setup repo page', () => {
+      expect(testLocation.pathname).toBe('/gh/codecov/test-repo/new')
     })
   })
 })
