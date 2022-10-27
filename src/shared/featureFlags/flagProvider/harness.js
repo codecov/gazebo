@@ -2,6 +2,9 @@
 
 import config from 'config'
 
+import { camelizeKeys } from 'shared/utils/camelizeKeys'
+import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
+
 import {
   useFlags,
   useHarnessInit,
@@ -10,11 +13,19 @@ import {
 
 function convertLDUserToHarness(user) {
   if (user) {
-    const { key, name, custom, email, avatar } = user
+    const { key, name, email, avatar } = user
+    const custom = camelizeKeys(user?.custom)
+
     return {
       identifier: key?.toString(),
       name: name,
-      attributes: { ...custom, email, avatar },
+      attributes: snakeifyKeys({
+        ...custom,
+        email,
+        avatar,
+        createdAt: new Date(custom?.createdAt).getTime(),
+        serviceId: new Date(custom?.serviceId).getTime(),
+      }),
     }
   }
   return
