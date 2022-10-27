@@ -4,12 +4,14 @@ import { useHistory, useParams } from 'react-router-dom'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
+import { useFlags } from 'shared/featureFlags'
 import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
 import Tabs from './Tabs'
 
 function HomePage({ active = false }) {
+  const { datetest } = useFlags({ datetest: new Date().getTime() })
   const { push } = useHistory()
   const { provider } = useParams()
   const { data: currentUser, isLoading } = useUser({
@@ -32,6 +34,8 @@ function HomePage({ active = false }) {
   return (
     <div className="flex flex-col gap-4">
       <Header />
+      <p>Hi {datetest}</p>
+      {datetest && <p>Conditional Render</p>}
       <div>
         <Tabs currentUsername={currentUser?.user?.username} />
         <ActiveContext.Provider value={active}>

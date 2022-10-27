@@ -9,13 +9,15 @@ import {
 } from './harness-react/HarnessReact'
 
 function convertLDUserToHarness(user) {
-  return {
-    identifier: user?.key?.toString(),
-    name: user?.name,
-    attributes: {
-      ...user,
-    },
+  if (user) {
+    const { key, name, custom, email, avatar } = user
+    return {
+      identifier: key?.toString(),
+      name: name,
+      attributes: { ...custom, email, avatar },
+    }
   }
+  return
 }
 
 export function withHarnessProvider(Component) {
@@ -45,6 +47,6 @@ export function useHarnessIdentifyUser(user) {
     key: config.HARNESS,
     user: convertLDUserToHarness(user),
     enabled: !!(config.HARNESS && !user?.guest && user?.key),
-    options: { debug: true }, // Log out harness for testing
+    options: { debug: config.NODE_ENV !== 'production' },
   })
 }
