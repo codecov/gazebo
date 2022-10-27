@@ -1,3 +1,4 @@
+// Asynchronous harness sdk helper
 /* eslint-disable no-restricted-imports */
 import { Event, initialize } from '@harnessio/ff-javascript-client-sdk'
 

@@ -1,4 +1,7 @@
-// This file would ideally be provided by harness, putting it in this sub folder to be clear.
+/*
+  This file would ideally be provided by harness, putting it in
+  this sub folder to be clearish.
+*/
 
 /* eslint-disable no-restricted-imports */
 import { Event } from '@harnessio/ff-javascript-client-sdk'
@@ -9,7 +12,7 @@ import { camelizeKeys } from 'shared/utils/camelizeKeys'
 import harnessReducer from './harnessReducer'
 import { initHarnessAsync } from './initHarness'
 
-const HarnessFlags = createContext(null)
+const HarnessFlags = createContext({ flags: {}, client: null })
 const HarnessSet = createContext(null)
 
 export function useHarness() {
@@ -24,17 +27,15 @@ export function useHarnessInit({ key, user, enabled = false, options = {} }) {
   const dispatch = useHarnessSet()
   const client = useRef()
   useEffect(() => {
-    if (!client.current && enabled) {
+    if (!client.current && enabled && key) {
       client.current = initHarnessAsync({ key, user, options }).then(
         (harness) => {
           dispatch({ type: 'setupHarness', harness })
         }
       )
     }
-
     return null
   }, [enabled, key, client, user, options, dispatch])
-  // I had trouble getting the above to only run once.
 }
 
 export function useFlags() {

@@ -1,3 +1,5 @@
+// Gazebo harness integration layer
+
 import config from 'config'
 
 import {
