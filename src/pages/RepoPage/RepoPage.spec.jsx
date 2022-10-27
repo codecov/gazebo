@@ -19,6 +19,7 @@ jest.mock('shared/featureFlags')
 
 // This component is too complex for an integration test imo
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
+jest.mock('./NewRepoTab', () => () => 'NewRepoTab')
 
 const commits = [
   {
@@ -89,13 +90,11 @@ describe('RepoPage', () => {
         renderCommits: () => <RepoPage />,
         initialEntries,
       })
-
       testLocation = view.testLocation
     } else {
       const view = repoPageRender({
         renderRoot: () => <RepoPage />,
       })
-
       testLocation = view.testLocation
     }
   }
@@ -189,7 +188,7 @@ describe('RepoPage', () => {
       setup({
         repository: {
           private: true,
-          activated: true,
+          activated: false,
         },
         commits: { commits: [] },
       })

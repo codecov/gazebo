@@ -85,10 +85,6 @@ function RepoPage() {
   else if (isRepoPrivate && !isCurrentUserPartOfOrg) {
     return <NotFound />
   }
-  // if the repo has no commits redirect to new repo page
-  else if (!repoHasCommits) {
-    return <Redirect to={`/${provider}/${owner}/${repo}/new`} />
-  }
 
   return (
     <RepoBreadcrumbProvider>
@@ -110,10 +106,6 @@ function RepoPage() {
             <Switch>
               <Route path={path} exact>
                 <CoverageTab />
-              </Route>
-              {/* TODO: Move to it's own layout */}
-              <Route path={`${path}/new`} exact>
-                <NewRepoTab />
               </Route>
               <Route path={`${path}/flags`} exact>
                 <FlagsTab />
@@ -143,14 +135,26 @@ function RepoPage() {
               />
             </Switch>
           ) : (
-            <Switch>
-              <Route path={`${path}/settings`}>
-                <SettingsTab />
-              </Route>
-              <Route path={`${path}`}>
-                <DeactivatedRepo />
-              </Route>
-            </Switch>
+            <>
+              {repoHasCommits ? (
+                <Switch>
+                  <Route path={path}>
+                    <DeactivatedRepo />
+                  </Route>
+                  <Route path={`${path}/settings`}>
+                    <SettingsTab />
+                  </Route>
+                </Switch>
+              ) : (
+                <Switch>
+                  <Route path={`${path}/new`} exact>
+                    <NewRepoTab />
+                  </Route>
+                  <Redirect from={path} to={`${path}/new`} />
+                  <Redirect from={`${path}/*`} to={`${path}/new`} />
+                </Switch>
+              )}
+            </>
           )}
         </Suspense>
       </div>
