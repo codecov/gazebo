@@ -3,8 +3,10 @@ import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 import { forwardRef } from 'react'
 
+import { dataMarketingType } from 'shared/propTypes'
+
 const RadioInput = forwardRef(
-  ({ label, showLabel = true, disabled, ...props }, ref) => {
+  ({ label, showLabel = true, disabled, dataMarketing, ...props }, ref) => {
     const id = uniqueId('radio-input')
     const { className, ...newProps } = props
 
@@ -16,6 +18,7 @@ const RadioInput = forwardRef(
         })}
       >
         <input
+          data-marketing={dataMarketing}
           id={id}
           ref={ref}
           disabled={disabled}
@@ -37,9 +40,10 @@ const RadioInput = forwardRef(
 RadioInput.displayName = 'RadioInput'
 
 RadioInput.propTypes = {
-  label: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   disabled: PropTypes.bool,
   showLabel: PropTypes.bool,
+  dataMarketing: dataMarketingType,
 }
 
 export default RadioInput

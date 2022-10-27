@@ -35,6 +35,7 @@ const Header = ({ controlsDisabled, children }) => {
             Historical trend
           </h3>
           <Select
+            dataMarketing="select-historical-trend"
             disabled={controlsDisabled}
             ariaName="Select Historical Trend"
             items={TimeOptions}
@@ -55,6 +56,7 @@ const Header = ({ controlsDisabled, children }) => {
       {children}
       <div className="flex justify-end pt-4">
         <SearchField
+          dataMarketing="flags-search"
           disabled={controlsDisabled}
           placeholder={'Search for flags'}
           searchValue={params?.search}

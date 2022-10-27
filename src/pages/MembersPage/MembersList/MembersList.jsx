@@ -83,6 +83,20 @@ function createPills({ isAdmin, email, student, lastPullTimestamp }) {
   ]
 }
 
+const handleActivate = (user, activate, accountDetails, setIsOpen) => {
+  const maxActivatedUsers = 5
+
+  if (
+    accountDetails?.activatedUserCount >= maxActivatedUsers &&
+    !user.activated &&
+    isFreePlan(accountDetails?.plan?.value)
+  ) {
+    setIsOpen(true)
+  } else {
+    activate(user.ownerid, !user.activated)
+  }
+}
+
 function MembersList() {
   const { owner, provider } = useParams()
   const { params, updateParams, data, isSuccess } = useUsersData({
@@ -91,22 +105,13 @@ function MembersList() {
   })
   const { activate } = useActivateUser({ owner, provider })
   const { data: accountDetails } = useAccountDetails({ owner, provider })
-  const { upgradePlan } = useNavLinks()
+  const { upgradeOrgPlan } = useNavLinks()
   const [isOpen, setIsOpen] = useState(false)
 
-  const maxActivatedUsers = 5
   const isEnterprise = isEnterprisePlan(accountDetails?.plan?.value) || false
 
-  const handleActivate = (user) => {
-    if (
-      accountDetails?.activatedUserCount >= maxActivatedUsers &&
-      !user.activated &&
-      isFreePlan(accountDetails?.plan?.value)
-    ) {
-      setIsOpen(true)
-    } else {
-      activate(user.ownerid, !user.activated)
-    }
+  if (data?.results?.length === 0) {
+    return null
   }
 
   return (
@@ -139,8 +144,8 @@ function MembersList() {
             </Button>
             <Button
               Component={Link}
-              to={upgradePlan.path()}
-              useRouter={!upgradePlan.isExternalLink}
+              to={upgradeOrgPlan.path()}
+              useRouter={!upgradeOrgPlan.isExternalLink}
             >
               Upgrade now
             </Button>
@@ -175,9 +180,12 @@ function MembersList() {
                 />
                 <div className={UserManagementClasses.ctaWrapper}>
                   <Toggle
+                    dataMarketing="handle-members-activation"
                     label={user.activated ? 'Activated' : 'Not yet activated'}
                     value={user.activated}
-                    onClick={() => handleActivate(user)}
+                    onClick={() =>
+                      handleActivate(user, activate, accountDetails, setIsOpen)
+                    }
                   />
                 </div>
               </div>

@@ -12,6 +12,7 @@ function AutoActivate({ planAutoActivate }) {
     <div className="flex flex-col p-4 gap-2">
       <div className="font-semibold">
         <Toggle
+          dataMarketing="auto-activate-members"
           onClick={() => autoActivate(!planAutoActivate)}
           value={planAutoActivate}
           label="Auto-activate members"

@@ -61,6 +61,7 @@ function ActivationBanner() {
       <BannerContent>
         <div className="flex flex-col gap-2">
           <Toggle
+            dataMarketing="self-hosted-activation-status"
             value={!!currentUser?.activated}
             label=""
             onClick={() => mutate(!currentUser?.activated)}

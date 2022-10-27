@@ -2,18 +2,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useOwner } from 'services/user'
-import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import MembersPage from './MembersPage'
 
 jest.mock('services/user')
-jest.mock('services/useShouldRenderBillingTabs')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./MembersActivation', () => () => 'MemberActivation')
 jest.mock('./MissingMemberBanner', () => () => 'MissingMemberBanner')
 jest.mock('./MembersList', () => () => 'MembersList')
+jest.mock('config')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,9 +24,11 @@ const queryClient = new QueryClient({
   },
 })
 
+let testLocation
 describe('MembersPage', () => {
-  function setup({ owner = null, show = true }) {
-    useShouldRenderBillingTabs.mockReturnValue(show)
+  function setup({ owner = null, isEnterprise = false }) {
+    config.IS_ENTERPRISE = isEnterprise
+
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -36,6 +39,13 @@ describe('MembersPage', () => {
             <MembersPage />
           </QueryClientProvider>
         </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
       </MemoryRouter>
     )
   }
@@ -92,21 +102,15 @@ describe('MembersPage', () => {
     })
   })
 
-  describe('when user is personal account', () => {
+  describe('when user is an enterprise account', () => {
     beforeEach(() => {
       setup({
-        owner: null,
-        show: false,
+        isEnterprise: true,
       })
     })
 
-    it('doesnt render the members page', () => {
-      expect(screen.queryByText(/Manage members/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/Header/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/MemberActivation/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/MissingMemberBanner/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/MembersList/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+    it('redirects to owner page', () => {
+      expect(testLocation.pathname).toBe('/gh/codecov')
     })
   })
 })

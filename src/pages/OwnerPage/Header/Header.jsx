@@ -23,11 +23,11 @@ const ExceededUploadsAlert = () => (
         This org is currently on the free plan; which includes 250 free uploads
         on a rolling monthly basis. This limit has been reached and the reports
         will not generate. To resolve this,{' '}
-        <A to={{ pageName: 'upgradePlan' }}>upgrade plan</A> and you’ll have
+        <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade plan</A> and you’ll have
         unlimited uploads.
       </p>
       <div className="w-36 my-6">
-        <Button to={{ pageName: 'upgradePlan' }} variant="primary">
+        <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
           Upgrade plan
         </Button>
       </div>

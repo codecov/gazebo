@@ -112,6 +112,7 @@ function PullsTab() {
           <label className="font-semibold text-sm">View:</label>
           <div>
             <MultiSelect
+              dataMarketing="pulls-filter-by-state"
               ariaName="Filter by state"
               selectedItems={selectedStates}
               items={filterItems}
@@ -124,6 +125,7 @@ function PullsTab() {
           <label className="font-semibold text-sm ">Sort by:</label>
           <div>
             <Select
+              dataMarketing="pulls-sort-by-selector"
               ariaName="Sort order"
               value={selectedOrder}
               items={orderItems}

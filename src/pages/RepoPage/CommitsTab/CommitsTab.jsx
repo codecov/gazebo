@@ -8,7 +8,7 @@ import { useRepo } from 'services/repo'
 import Button from 'ui/Button'
 import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
-import Select from 'ui/Select'
+import Select from 'ui/NewSelect'
 
 import CommitsTable from './CommitsTable'
 
@@ -31,9 +31,15 @@ function CommitsTab() {
   const setCrumbs = useSetCrumbs()
   const { provider, owner, repo } = useParams()
 
-  const { data: branches } = useBranches({ provider, owner, repo })
+  const {
+    data: branchesData,
+    isFetching: branchesIsFetching,
+    fetchNextPage: branchesFetchNextPage,
+    hasNextPage: branchesHasNextPage,
+  } = useBranches({ provider, owner, repo })
   const { data: repoData } = useRepo({ provider, owner, repo })
-  const branchesNames = branches?.map((branch) => branch.name) || []
+  const branchesNames =
+    branchesData?.branches?.map((branch) => branch.name) || []
 
   const { branch, paramCIStatus, updateParams } = useParamsFilters(
     repoData?.repository?.defaultBranch
@@ -78,11 +84,16 @@ function CommitsTab() {
           </h2>
           <div>
             <Select
+              dataMarketing="branch-selector-commits-page"
               ariaName="Select branch"
               variant="gray"
               items={branchesNames}
+              isLoading={branchesIsFetching}
               onChange={(branch) => {
                 updateParams({ branch })
+              }}
+              onLoadMore={() => {
+                branchesHasNextPage && branchesFetchNextPage()
               }}
               value={branch}
             />
@@ -90,6 +101,7 @@ function CommitsTab() {
         </div>
 
         <Checkbox
+          dataMarketing="hide-commits-with-failed-CI"
           label="Hide commits with failed CI"
           name="filter commits"
           onChange={(e) => {

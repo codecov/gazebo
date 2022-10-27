@@ -64,6 +64,7 @@ function FormInformation({ form }) {
       <div className="space-y-0.5 p-4 pb-6 text-base">
         {TYPE_PROJECTS_CHECKBOXES.map(({ label, value }) => (
           <Checkbox
+            dataMarketing="user-onboarding-project-type"
             label={label}
             key={value}
             onChange={updateState('typeProjects', typeProjects, value)}
@@ -78,6 +79,7 @@ function FormInformation({ form }) {
         {GOALS_CHECKOXES.map(({ label, value }) => (
           <div key={label} className="mt-0.5">
             <Checkbox
+              dataMarketing="user-onboarding-set-goals"
               label={label}
               onChange={updateState('goals', goals, value)}
               checked={goals.includes(value)}
@@ -86,12 +88,17 @@ function FormInformation({ form }) {
         ))}
         <div className="flex items-start mt-2">
           <Checkbox
+            dataMarketing="user-onboarding-other-goals"
             label="Other"
             showLabel={false}
             onChange={updateState('goals', goals, GOALS.OTHER)}
             checked={goals.includes(GOALS.OTHER) || otherGoal.length > 0}
           />
-          <TextInput placeholder="Other" {...form.register('otherGoal')} />
+          <TextInput
+            placeholder="Other"
+            {...form.register('otherGoal')}
+            dataMarketing="other-goals-user-onboarding"
+          />
         </div>
       </div>
     </div>
