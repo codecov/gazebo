@@ -11,7 +11,10 @@ import Header from './Header'
 import Tabs from './Tabs'
 
 function HomePage({ active = false }) {
-  const { datetest } = useFlags({ datetest: new Date().getTime() })
+  const { datetest, onboardingCreatedAtTarget } = useFlags({
+    datetest: new Date().getTime(),
+    onboardingCreatedAtTarget: false,
+  })
   const { push } = useHistory()
   const { provider } = useParams()
   const { data: currentUser, isLoading } = useUser({
@@ -35,7 +38,7 @@ function HomePage({ active = false }) {
     <div className="flex flex-col gap-4">
       <Header />
       <p>Hi {datetest}</p>
-      {datetest && <p>Conditional Render</p>}
+      {onboardingCreatedAtTarget && <p>Conditional Render</p>}
       <div>
         <Tabs currentUsername={currentUser?.user?.username} />
         <ActiveContext.Provider value={active}>

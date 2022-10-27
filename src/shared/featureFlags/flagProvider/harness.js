@@ -24,7 +24,7 @@ function convertLDUserToHarness(user) {
         email,
         avatar,
         createdAt: new Date(custom?.createdAt).getTime(),
-        serviceId: new Date(custom?.serviceId).getTime(),
+        updatedAt: new Date(custom?.updatedAt).getTime(),
       }),
     }
   }
