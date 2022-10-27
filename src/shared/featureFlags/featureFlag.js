@@ -1,8 +1,6 @@
-import flowRight from 'lodash/flowRight'
-
 import {
   useHarnessFlags,
-  useIdentifyHarnessUser,
+  useHarnessIdentifyUser,
   withHarnessProvider,
 } from './flagProvider/harness'
 import {
@@ -12,7 +10,7 @@ import {
 } from './flagProvider/launchdarkly'
 
 export const withFeatureFlagProvider = (Component) => {
-  return flowRight(withHarnessProvider, withLaunchDarklyProvider, Component)
+  return withHarnessProvider(withLaunchDarklyProvider(Component))
 }
 
 // We need to be careful about duplicate flag names per service while we migrate.
@@ -22,5 +20,5 @@ export function useFlags(fallback) {
 
 export function useIdentifyUser(user) {
   useIdentifyLDUser(user)
-  useIdentifyHarnessUser(user)
+  useHarnessIdentifyUser(user)
 }
