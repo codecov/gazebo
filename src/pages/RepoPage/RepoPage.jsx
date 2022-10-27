@@ -141,6 +141,9 @@ function RepoPage() {
                   <Route path={path}>
                     <DeactivatedRepo />
                   </Route>
+                  <Route path={`${path}/settings`}>
+                    <SettingsTab />
+                  </Route>
                 </Switch>
               ) : (
                 <Switch>
