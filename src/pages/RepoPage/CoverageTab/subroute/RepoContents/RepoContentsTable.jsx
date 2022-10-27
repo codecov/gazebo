@@ -39,7 +39,7 @@ function RepoContentsTable() {
         <p className="flex justify-center flex-1">
           {isSearching
             ? 'No results found'
-            : 'There was a problem getting repo contents from your provider'}
+            : 'No coverage reports uploaded for this branch'}
         </p>
       )}
       {hasNextPage && (

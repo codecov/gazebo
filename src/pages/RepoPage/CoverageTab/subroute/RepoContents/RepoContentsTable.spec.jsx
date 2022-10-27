@@ -167,11 +167,9 @@ describe('RepoContentsTable', () => {
       setup({ data: [] })
     })
 
-    it('renders empty state message', () => {
+    it('renders No coverage reports uploaded message', () => {
       expect(
-        screen.getByText(
-          /There was a problem getting repo contents from your provider/
-        )
+        screen.getByText(/No coverage reports uploaded for this branch/)
       ).toBeInTheDocument()
     })
   })
