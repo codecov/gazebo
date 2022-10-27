@@ -66,8 +66,6 @@ const branches = [
 ]
 
 describe('RepoPage', () => {
-  let testLocation
-
   function setup({
     repository,
     commits,
@@ -85,18 +83,14 @@ describe('RepoPage', () => {
 
     // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.
     if (initialEntries) {
-      const view = repoPageRender({
+      repoPageRender({
         renderCommits: () => <RepoPage />,
         initialEntries,
       })
-
-      testLocation = view.testLocation
     } else {
-      const view = repoPageRender({
+      repoPageRender({
         renderRoot: () => <RepoPage />,
       })
-
-      testLocation = view.testLocation
     }
   }
 
@@ -202,9 +196,6 @@ describe('RepoPage', () => {
     it('renders the commits tab', () => {
       const tab = screen.queryByText(/Commits/)
       expect(tab).not.toBeInTheDocument()
-    })
-    it('redirects to the setup repo page', () => {
-      expect(testLocation.pathname).toBe('/gh/codecov/test-repo/new')
     })
   })
 
