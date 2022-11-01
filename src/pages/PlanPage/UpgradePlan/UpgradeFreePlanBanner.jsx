@@ -8,7 +8,7 @@ function UpgradeFreePlanBanner({ owner }) {
   return (
     <Banner>
       <BannerHeading>
-        <span className="font-semibold">Updating {owner}</span>
+        <p className="font-semibold">Updating {owner}</p>
       </BannerHeading>
       <BannerContent>
         You are choosing to upgrade {owner} to a paid plan. Please be sure this
