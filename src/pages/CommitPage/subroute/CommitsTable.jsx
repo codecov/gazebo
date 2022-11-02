@@ -2,6 +2,7 @@ import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { useMemo } from 'react'
 
+import { getFilenameFromFilePath } from 'shared/utils/url'
 import A from 'ui/A'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
@@ -81,8 +82,11 @@ function createTable({ tableData }) {
               options: { commit, path: headName },
             }}
           >
-            {headName}
+            <span>{getFilenameFromFilePath(headName)}</span>
           </A>
+          <span className="text-xs mt-0.5 text-ds-gray-quinary">
+            {headName}
+          </span>
         </div>
       ),
       coverage: (
