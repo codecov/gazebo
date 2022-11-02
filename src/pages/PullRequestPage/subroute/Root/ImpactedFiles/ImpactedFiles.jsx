@@ -75,13 +75,19 @@ function createTable({ tableData }) {
           changeCoverage,
           hasHeadOrPatchCoverage,
           headName,
+          fileName,
           isCriticalFile,
         } = row
 
         return {
           name: (
             <div className="flex gap-4">
-              <span className="text-ds-blue">{headName}</span>
+              <div className="flex flex-col">
+                <span className="text-ds-blue">{fileName}</span>
+                <span className="text-xs mt-0.5 text-ds-gray-quinary break-all">
+                  {headName}
+                </span>
+              </div>
               {isCriticalFile && (
                 <span className="p-1 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary self-center">
                   Critical File
@@ -126,7 +132,8 @@ const Loader = (
 const renderSubComponent = ({ row }) => {
   const nameColumn = row.getValue('name')
   const [fileNames] = nameColumn?.props?.children
-  const path = fileNames?.props?.children
+  const [, pathItem] = fileNames?.props?.children
+  const path = pathItem?.props?.children
   // TODO: this component has a nested table and needs to be reworked as it is used inside the Table component, which leads to an accessibilty issue
   return (
     <Suspense fallback={Loader}>

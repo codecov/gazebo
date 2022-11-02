@@ -55,6 +55,7 @@ describe('ImpactedFiles', () => {
       expect(screen.getByText('Change')).toBeInTheDocument()
     })
     it('renders the impacted files content', () => {
+      expect(screen.getByText('mafs.js')).toBeInTheDocument()
       expect(screen.getByText('flag1/mafs.js')).toBeInTheDocument()
       expect(screen.getByText(/90.23%/i)).toBeInTheDocument()
       expect(screen.getByText(/27.43%/i)).toBeInTheDocument()
