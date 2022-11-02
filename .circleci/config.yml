@@ -93,6 +93,20 @@ jobs:
           name: Deploy to Chromatic
           command: npm run chromatic
 
+  fossa:
+    docker:
+      - image: cimg/node:18.8.0
+    steps:
+      - checkout
+      - run:
+          name: Install FOSSA CLI
+          command: curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
+      - run:
+          name: Analze and upload dependency reports
+          command: fossa analyze
+          env:
+            FOSSA_API_KEY: ${FOSSA_API_KEY}
+
 workflows:
   version: 2
   test-and-build:
@@ -111,5 +125,8 @@ workflows:
           requires:
             - install
       - sentry:
+          requires:
+            - install
+      - fossa:
           requires:
             - install
