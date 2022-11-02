@@ -195,6 +195,11 @@ function UpgradePlanForm({
       className="text-ds-gray-nonary flex flex-col gap-6"
       onSubmit={handleSubmit(upgradePlan)}
     >
+      <div className="flex flex-col gap-2">
+        <h3 className="font-semibold">Organization</h3>
+        <span>{owner}</span>
+      </div>
+
       <h3 className="text-2xl text-ds-pink-quinary bold">
         {proPlanMonth.marketingName}
       </h3>
