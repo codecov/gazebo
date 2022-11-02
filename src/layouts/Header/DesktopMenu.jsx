@@ -14,8 +14,12 @@ import RequestButton from './RequestButton'
 import SeatDetails from './SeatDetails'
 
 export function LoginPrompt() {
+  const { provider } = useParams()
+
   const to = window.location.href
   const { pathname } = useLocation()
+
+  if (!provider) return null
 
   // different page if login
   if (pathname.startsWith('/login')) {
