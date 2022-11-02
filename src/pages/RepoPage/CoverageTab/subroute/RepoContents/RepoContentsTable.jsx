@@ -27,14 +27,15 @@ function RepoContentsResult({ isSearching, isMissingHeadReport }) {
         No coverage report uploaded for this branch head commit
       </p>
     )
+  } else if (isSearching) {
+    return <p className="flex justify-center flex-1">No results found</p>
+  } else {
+    return (
+      <p className="flex justify-center flex-1">
+        There was a problem getting repo contents from your provider
+      </p>
+    )
   }
-  return (
-    <p className="flex justify-center flex-1">
-      {isSearching
-        ? 'No results found'
-        : 'There was a problem getting repo contents from your provider'}
-    </p>
-  )
 }
 
 RepoContentsResult.propTypes = {
