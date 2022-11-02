@@ -24,6 +24,7 @@ const headers = [
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
     enableSorting: false,
+    justifyStart: true,
   },
   {
     id: 'trend',
