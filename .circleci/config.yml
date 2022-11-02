@@ -100,7 +100,8 @@ jobs:
       - checkout
       - run:
           name: Install FOSSA CLI
-          command: curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
+          command: |
+            curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
       - run:
           name: Analze and upload dependency reports
           command: fossa analyze
