@@ -7,21 +7,6 @@ import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
 
 import { displayTypeParameter } from '../../../constants'
 
-const FileHeader = ({ displayAsList, filePath, name }) => {
-  return (
-    <>
-      {!displayAsList && <Icon name="document" size="md" />}
-      {displayAsList ? filePath : name}
-    </>
-  )
-}
-
-FileHeader.propTypes = {
-  filePath: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  displayAsList: PropTypes.string.isRequired,
-}
-
 function FileEntry({
   branch,
   filePath,
@@ -54,11 +39,8 @@ function FileEntry({
             },
           }}
         >
-          <FileHeader
-            displayAsList={displayAsList}
-            filePath={filePath}
-            name={name}
-          />
+          <Icon name="document" size="md" />
+          {name}
         </A>
         {isCriticalFile && (
           <span className="ml-2 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
@@ -66,6 +48,11 @@ function FileEntry({
           </span>
         )}
       </div>
+      {displayAsList && (
+        <span className="text-xs pl-1 text-ds-gray-quinary break-all">
+          {filePath}
+        </span>
+      )}
     </div>
   )
 }
