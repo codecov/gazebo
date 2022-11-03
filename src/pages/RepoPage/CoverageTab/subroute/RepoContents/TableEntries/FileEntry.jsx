@@ -9,7 +9,7 @@ import { displayTypeParameter } from '../../../constants'
 
 const FileHeader = ({ displayAsList, filePath, name }) => {
   return (
-    <div className="break-all">
+    <div className="break-all flex gap-1 items-center">
       {!displayAsList && <Icon name="document" size="md" />}
       {displayAsList ? filePath : name}
     </div>
@@ -19,7 +19,7 @@ const FileHeader = ({ displayAsList, filePath, name }) => {
 FileHeader.propTypes = {
   filePath: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  displayAsList: PropTypes.string.isRequired,
+  displayAsList: PropTypes.bool.isRequired,
 }
 
 function FileEntry({
