@@ -245,7 +245,6 @@ describe('CommitPage', () => {
       setup({ data: dataReturned, isLoading: false })
       const impactedFile =
         dataReturned.commit.compareWithParent.impactedFiles[0]
-      expect(screen.getByText('index2.py')).toBeInTheDocument()
       expect(screen.getByText(impactedFile.headName)).toBeInTheDocument()
       const change =
         impactedFile.headCoverage.coverage - impactedFile.baseCoverage.coverage
@@ -297,24 +296,24 @@ describe('CommitPage', () => {
       })
     })
     describe('handles when a path is not part of the impacted files', () => {
-      useAccountDetails.mockReturnValue({ data: {} })
-      const data = {
-        commit: {
-          compareWithParent: {
-            impactedFiles: [
-              {
-                headName: 'src/notInUrl.py',
-              },
-            ],
-          },
-        },
-      }
       beforeEach(() => {
+        useAccountDetails.mockReturnValue({ data: {} })
+
+        const data = {
+          commit: {
+            compareWithParent: {
+              impactedFiles: [
+                {
+                  headName: 'src/notInUrl.py',
+                },
+              ],
+            },
+          },
+        }
         setup({ data, isSuccess: true })
       })
       it('the Commit File View', () => {
-        userEvent.click(screen.getByText('src/notInUrl.py'))
-
+        userEvent.click(screen.getByText('chevron-right.svg'))
         expect(screen.getByText(/The Commit File View/)).toBeInTheDocument()
       })
     })

@@ -2,7 +2,7 @@ import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { Suspense, useMemo } from 'react'
 
-import { getFilenameFromFilePath } from 'shared/utils/url'
+import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
@@ -93,17 +93,20 @@ function createTable({ tableData }) {
   }
 
   return tableData.map((row) => {
-    const { headName, headCoverage, hasData, change, patchCoverage } = row
+    const { headName, headCoverage, hasData, change, patchCoverage, commit } =
+      row
 
     return {
       name: (
-        <div className="flex flex-col">
-          <span className="text-ds-blue">
-            {getFilenameFromFilePath(headName)}
-          </span>
-          <span className="text-xs mt-0.5 text-ds-gray-quinary">
+        <div className="flex flex-col break-all">
+          <A
+            to={{
+              pageName: 'commitFile',
+              options: { commit, path: headName },
+            }}
+          >
             {headName}
-          </span>
+          </A>
         </div>
       ),
       coverage: (
@@ -141,7 +144,7 @@ const Loader = () => (
 
 const RenderSubComponent = ({ row }) => {
   const nameColumn = row.getValue('name')
-  const [, file] = nameColumn?.props?.children
+  const file = nameColumn?.props?.children
   const path = file?.props?.children
 
   return (
