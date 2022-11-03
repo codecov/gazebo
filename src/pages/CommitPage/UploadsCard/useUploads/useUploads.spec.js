@@ -87,7 +87,7 @@ describe('useUploads', () => {
         )
 
         expect(hookData.result.current.uploadsOverview).toEqual(
-          '2 errored, 3 are pending, 1 successful, 1 carried forward'
+          '2 errored, 3 are pending, 1 successful'
         )
       })
 
@@ -132,16 +132,6 @@ describe('useUploads', () => {
               state: 'PROCESSED',
               updatedAt: '2020-08-25T16:36:25.859889+00:00',
               uploadType: 'UPLOADED',
-            },
-            {
-              createdAt: '2020-08-25T16:36:25.820340+00:00',
-              errors: [],
-              flags: ['front-end'],
-              jobCode: '1234',
-              provider: 'github actions',
-              state: 'COMPLETE',
-              updatedAt: '2020-08-25T16:36:25.859889+00:00',
-              uploadType: 'CARRIEDFORWARD',
             },
           ],
           travis: [

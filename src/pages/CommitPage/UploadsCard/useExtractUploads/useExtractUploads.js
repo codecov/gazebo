@@ -2,7 +2,7 @@ import countBy from 'lodash/countBy'
 import groupBy from 'lodash/groupBy'
 import { useEffect, useState } from 'react'
 
-import { UploadStateEnum } from 'shared/utils/commit'
+import { UploadStateEnum, UploadTypeEnum } from 'shared/utils/commit'
 
 // eslint-disable-next-line complexity
 function humanReadableOverview(state, count) {
@@ -15,12 +15,45 @@ function humanReadableOverview(state, count) {
   if (state === UploadStateEnum.started) return 'started'
 }
 
+function deleteDuplicateCFFUploads({ uploads }) {
+  let nonCFFFlags = []
+
+  // Get all the non cff flags
+  uploads?.forEach((upload) => {
+    if (
+      upload?.uploadType !== UploadTypeEnum.CARRIED_FORWARD &&
+      upload?.flags
+    ) {
+      nonCFFFlags.push(...upload.flags)
+    }
+  })
+
+  // Filter out cff uploads with repeated flags
+  uploads?.forEach((upload) => {
+    if (
+      upload?.uploadType === UploadTypeEnum.CARRIED_FORWARD &&
+      upload?.flags
+    ) {
+      upload.flags.forEach((flag) => {
+        if (nonCFFFlags.includes(flag)) {
+          uploads.pop()
+        }
+      })
+    }
+  })
+
+  return uploads
+}
+
+// eslint-disable-next-line max-statements
 export function useExtractUploads({ uploads }) {
   const [sortedUploads, setSortedUploads] = useState({})
   const [uploadsProviderList, setUploadsProviderList] = useState([])
   const [erroredUploads, setErroredUploads] = useState([])
   const [uploadsOverview, setUploadsOverview] = useState('')
   const hasNoUploads = !uploads || uploads.length === 0
+
+  uploads = deleteDuplicateCFFUploads({ uploads })
 
   // Sorted Uploads
   useEffect(() => {
