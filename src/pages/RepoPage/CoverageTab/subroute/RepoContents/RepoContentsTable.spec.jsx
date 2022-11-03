@@ -121,12 +121,6 @@ describe('RepoContentsTable', () => {
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/default-branch/flag2'
       )
-
-      const file = screen.getByText('app.js')
-      expect(file).toHaveAttribute(
-        'href',
-        '/gh/Rabee-AbuBaker/another-test/blob/default-branch/app.js'
-      )
     })
   })
 
@@ -142,12 +136,6 @@ describe('RepoContentsTable', () => {
       expect(flag2Link).toHaveAttribute(
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/main/src/flag2'
-      )
-
-      const file = screen.getByText('app.js')
-      expect(file).toHaveAttribute(
-        'href',
-        '/gh/Rabee-AbuBaker/another-test/blob/main/src/app.js'
       )
     })
   })
