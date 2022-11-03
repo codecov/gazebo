@@ -139,19 +139,23 @@ const Loader = () => (
   </div>
 )
 
+const RenderSubComponent = ({ row }) => {
+  const nameColumn = row.getValue('name')
+  const [, file] = nameColumn?.props?.children
+  const path = file?.props?.children
+
+  return (
+    <Suspense fallback={<Loader />}>
+      <CommitFileView path={path} />
+    </Suspense>
+  )
+}
+
+RenderSubComponent.propTypes = {
+  row: PropTypes.object.isRequired,
+}
+
 function CommitsTable({ data = [], commit, state }) {
-  const renderSubComponent = ({ row }) => {
-    const nameColumn = row.getValue('name')
-    const [, file] = nameColumn?.props?.children
-    const path = file?.props?.children
-
-    return (
-      <Suspense fallback={<Loader />}>
-        <CommitFileView path={path} />
-      </Suspense>
-    )
-  }
-
   const formattedData = useMemo(
     () => data.map((row) => getFileData(row, commit)),
     [data, commit]
@@ -168,7 +172,7 @@ function CommitsTable({ data = [], commit, state }) {
         <Table
           data={tableContent}
           columns={table}
-          renderSubComponent={renderSubComponent}
+          renderSubComponent={RenderSubComponent}
         />
       )}
     </>
