@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useAccountDetails } from 'services/account'
 import * as Segment from 'services/tracking/segment'
 
@@ -9,6 +11,7 @@ import CallToAction from './CallToAction'
 
 const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 jest.mock('services/account')
+jest.mock('config')
 
 describe('CallToAction', () => {
   let container
@@ -125,6 +128,40 @@ describe('CallToAction', () => {
 
     it('does not render the call to action', () => {
       expect(container).toBeEmptyDOMElement()
+    })
+  })
+
+  describe('when built on enterprise', () => {
+    beforeAll(() => {
+      config.IS_ENTERPRISE = true
+    })
+    afterAll(() => {
+      jest.clearAllMocks()
+    })
+    describe('when user is under free trial', () => {
+      it('does not render a free trial CTA', () => {
+        setup({
+          activatedUserCount: 2,
+          plan: {
+            value: 'users-free',
+          },
+        })
+        expect(
+          screen.queryByRole('link', { name: /request/i })
+        ).not.toBeInTheDocument()
+      })
+
+      it('does not prompt user to upgrade', () => {
+        setup({
+          activatedUserCount: 5,
+          plan: {
+            value: 'users-free',
+          },
+        })
+        expect(
+          screen.queryByRole('link', { name: /upgrade/i })
+        ).not.toBeInTheDocument()
+      })
     })
   })
 })
