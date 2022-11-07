@@ -35,20 +35,18 @@ const mockData = {
     repository: {
       branch: {
         head: {
-          pathContents: {
-            results: [
-              {
-                __typename: 'PathContentDir',
-                name: 'src',
-                path: null,
-                percentCovered: 0.0,
-                hits: 4,
-                misses: 2,
-                lines: 7,
-                partials: 1,
-              },
-            ],
-          },
+          pathContents: [
+            {
+              __typename: 'PathContentDir',
+              name: 'src',
+              path: null,
+              percentCovered: 0.0,
+              hits: 4,
+              misses: 2,
+              lines: 7,
+              partials: 1,
+            },
+          ],
         },
       },
     },
@@ -89,19 +87,17 @@ describe('usePrefetchFileEntry', () => {
     await hookData.result.current.runPrefetch()
     await waitFor(() => queryClient.getQueryState().isFetching)
 
-    expect(queryClient.getQueryState().data).toStrictEqual({
-      results: [
-        {
-          __typename: 'PathContentDir',
-          name: 'src',
-          path: null,
-          percentCovered: 0,
-          hits: 4,
-          misses: 2,
-          lines: 7,
-          partials: 1,
-        },
-      ],
-    })
+    expect(queryClient.getQueryState().data).toStrictEqual([
+      {
+        __typename: 'PathContentDir',
+        name: 'src',
+        path: null,
+        percentCovered: 0,
+        hits: 4,
+        misses: 2,
+        lines: 7,
+        partials: 1,
+      },
+    ])
   })
 })

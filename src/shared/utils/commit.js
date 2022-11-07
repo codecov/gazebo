@@ -24,10 +24,3 @@ export const UploadTypeEnum = Object.freeze({
   UPLOADED: 'UPLOADED',
   CARRIED_FORWARD: 'CARRIEDFORWARD',
 })
-
-export const CommitErrorTypes = Object.freeze({
-  MISSING_BASE_COMMIT: 'MissingBaseCommit',
-  MISSING_HEAD_COMMIT: 'MissingHeadCommit',
-  MISSING_HEAD_REPORT: 'MissingHeadReport',
-  MISSING_BASE_REPORT: 'MissingBaseReport',
-})
