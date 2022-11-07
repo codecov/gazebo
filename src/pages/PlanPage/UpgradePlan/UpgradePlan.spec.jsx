@@ -9,10 +9,10 @@ jest.mock('services/account')
 jest.mock('./UpgradePlanForm', () => () => 'UpgradePlanForm')
 
 describe('UpgradePlanPage', () => {
-  function setup() {
+  function setup({ planValue = 'Pro Team' }) {
     useAccountDetails.mockReturnValue({
       data: {
-        plan: null,
+        plan: { value: planValue },
         activatedUserCount: 2,
         inactiveUserCount: 1,
       },
@@ -27,7 +27,7 @@ describe('UpgradePlanPage', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('renders the basic plan title', () => {
@@ -38,6 +38,22 @@ describe('UpgradePlanPage', () => {
     it('renders a cancel plan link', () => {
       const cancelLink = screen.getByText('Cancel plan')
       expect(cancelLink).toBeInTheDocument()
+    })
+
+    it('does not render upgrade banner', () => {
+      const banner = screen.queryByText(/You are choosing to upgrade/)
+      expect(banner).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with free plan', () => {
+    beforeEach(() => {
+      setup({ planValue: 'users-basic' })
+    })
+
+    it('renders upgrade banner', () => {
+      const banner = screen.getByText(/You are choosing to upgrade/)
+      expect(banner).toBeInTheDocument()
     })
   })
 })

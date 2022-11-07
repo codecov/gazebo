@@ -1,10 +1,11 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import FileEntry from './FileEntry'
 import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
 
-import {displayTypeParameter} from '../../../constants'
+import { displayTypeParameter } from '../../../constants'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -16,7 +17,10 @@ jest.mock('./hooks/usePrefetchFileEntry')
 describe('FileEntry', () => {
   const runPrefetchMock = jest.fn()
 
-  function setup({ isCriticalFile = false, displayType = displayTypeParameter.tree }) {
+  function setup({
+    isCriticalFile = false,
+    displayType = displayTypeParameter.tree,
+  }) {
     useParams.mockReturnValue({
       owner: 'codecov',
       provider: 'gh',
@@ -45,20 +49,27 @@ describe('FileEntry', () => {
     )
   }
 
-  describe('checking properties', () => {
+  describe('checking properties on list display', () => {
     beforeEach(() => {
-      setup({ isCriticalFile: false, isSearching: displayTypeParameter.tree })
+      setup({ isCriticalFile: false, displayType: displayTypeParameter.list })
+    })
+
+    it('displays the file path', () => {
+      expect(screen.getByText('dir/file.js')).toBeInTheDocument()
+    })
+  })
+
+  describe('checking properties on tree display', () => {
+    beforeEach(() => {
+      setup({ isCriticalFile: false, displayType: displayTypeParameter.tree })
     })
 
     it('displays the file name', () => {
       expect(screen.getByText('file.js')).toBeInTheDocument()
     })
 
-    it('sets the correct href', () => {
-      expect(screen.getByText('file.js')).toHaveAttribute(
-        'href',
-        '/gh/codecov/test-repo/blob/main/dir/file.js'
-      )
+    it('does not display the file name', () => {
+      expect(screen.queryByText('dir/file.js')).not.toBeInTheDocument()
     })
   })
 
@@ -74,7 +85,7 @@ describe('FileEntry', () => {
 
   describe('is displaying a list', () => {
     beforeEach(() => {
-      setup({ displayType: "LIST" })
+      setup({ displayType: 'LIST' })
     })
 
     it('displays the file path label', () => {
@@ -88,7 +99,7 @@ describe('FileEntry', () => {
     })
 
     it('fires the prefetch function on hover', async () => {
-      fireEvent.mouseOver(screen.getByText('file.js'))
+      userEvent.hover(screen.getByText('file.js'))
 
       await waitFor(() => expect(runPrefetchMock).toHaveBeenCalled())
     })

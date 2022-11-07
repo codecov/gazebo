@@ -9,6 +9,7 @@ import Icon from 'ui/Icon'
 
 import { useProPlans } from './hooks'
 import parasolImg from './parasol.png'
+import UpgradeFreePlanBanner from './UpgradeFreePlanBanner'
 import UpgradePlanForm from './UpgradePlanForm'
 
 import { useSetCrumbs } from '../context'
@@ -46,7 +47,7 @@ function UpgradePlan() {
   return (
     <>
       {/* TODO: Refactor this layout to be it's own reusable component (also used in CurrentPlanCard and the CancelPlan card) */}
-      <div className="flex flex-col md:flex-row gap-8 mt-6">
+      <div className="flex flex-col md:flex-row gap-8 mt-6  md:w-10/12">
         <Card variant="large">
           <div className="flex flex-col gap-4">
             <div className="-mt-16">
@@ -76,15 +77,18 @@ function UpgradePlan() {
             )}
           </div>
         </Card>
-        <Card variant="upgradeForm">
-          <UpgradePlanForm
-            proPlanYear={proPlanYear}
-            proPlanMonth={proPlanMonth}
-            accountDetails={accountDetails}
-            provider={provider}
-            owner={owner}
-          />
-        </Card>
+        <div className="flex flex-col gap-4 w-2/3">
+          {isFreePlan(plan?.value) && <UpgradeFreePlanBanner owner={owner} />}
+          <Card variant="upgradeForm">
+            <UpgradePlanForm
+              proPlanYear={proPlanYear}
+              proPlanMonth={proPlanMonth}
+              accountDetails={accountDetails}
+              provider={provider}
+              owner={owner}
+            />
+          </Card>
+        </div>
       </div>
     </>
   )
