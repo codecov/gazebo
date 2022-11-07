@@ -21,7 +21,7 @@ const headers = [
     id: 'coverage',
     header: (
       <>
-        Coverage on <span className="font-light">HEAD</span>
+        Coverage on <span className="font-light ml-1">HEAD</span>
       </>
     ),
     accessorKey: 'coverage',
@@ -32,7 +32,7 @@ const headers = [
     id: 'change',
     header: (
       <>
-        Change from <span className="font-light">BASE</span>
+        Change from <span className="font-light ml-1">BASE</span>
       </>
     ),
     accessorKey: 'change',
