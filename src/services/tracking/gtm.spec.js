@@ -1,23 +1,9 @@
 import { setDataLayer } from './gtm'
 
 describe('setDataLayer', () => {
-  let dataLayerCopy = window.dataLayer
   function setup(user) {
-    window.dataLayer = [
-      {
-        codecov: {
-          app: {
-            version: 'react-app',
-          },
-        },
-      },
-    ]
-
     setDataLayer(user)
   }
-  afterAll(() => {
-    window.dataLayer = dataLayerCopy
-  })
 
   describe('when user has all the data', () => {
     const user = {
