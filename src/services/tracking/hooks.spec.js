@@ -34,7 +34,6 @@ describe('useTracking', () => {
   let dataLayerCopy = window.dataLayer
 
   afterAll(() => {
-    // Cleanup window "mocks"
     window.pendo = pendoCopy
     window.dataLayer = dataLayerCopy
   })
