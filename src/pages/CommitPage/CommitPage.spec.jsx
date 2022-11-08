@@ -1,5 +1,6 @@
 import { render, screen } from 'custom-testing-library'
 
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
@@ -126,7 +127,7 @@ describe('CommitPage', () => {
       expect(screen.getByText(/Commit Details Summary/)).toBeInTheDocument()
     })
     it('the impacted files, and not the errored uploads', () => {
-      expect(screen.getByText(/Impacted files/)).toBeInTheDocument()
+      expect(screen.getByText(/Impacted Files/)).toBeInTheDocument()
       expect(screen.queryByText(/Errored Uploads/)).not.toBeInTheDocument()
     })
   })
@@ -290,28 +291,29 @@ describe('CommitPage', () => {
         setup({ data: dataReturned, isSuccess: true })
       })
       it('the impacted file', () => {
-        expect(screen.getByTestId('spinner')).toBeInTheDocument()
         expect(screen.getByText(/abcd/)).toBeInTheDocument()
         expect(screen.getByText(/test-repo/)).toBeInTheDocument()
       })
     })
     describe('handles when a path is not part of the impacted files', () => {
-      useAccountDetails.mockReturnValue({ data: {} })
-      const data = {
-        commit: {
-          compareWithParent: {
-            impactedFiles: [
-              {
-                headName: 'src/notInUrl.py',
-              },
-            ],
-          },
-        },
-      }
       beforeEach(() => {
+        useAccountDetails.mockReturnValue({ data: {} })
+
+        const data = {
+          commit: {
+            compareWithParent: {
+              impactedFiles: [
+                {
+                  headName: 'src/notInUrl.py',
+                },
+              ],
+            },
+          },
+        }
         setup({ data, isSuccess: true })
       })
       it('the Commit File View', () => {
+        userEvent.click(screen.getByText('chevron-right.svg'))
         expect(screen.getByText(/The Commit File View/)).toBeInTheDocument()
       })
     })
