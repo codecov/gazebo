@@ -5,7 +5,7 @@ import { useBranches } from 'services/branches'
 import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
-import Select from 'ui/Select'
+import Select from 'ui/NewSelect'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 
 function useUpdateDefaultBranch() {
@@ -31,8 +31,14 @@ function useUpdateDefaultBranch() {
 function DefaultBranch({ defaultBranch }) {
   const { provider, owner, repo } = useParams()
 
-  const { data: branches } = useBranches({ provider, owner, repo })
-  const branchesNames = branches?.map((branch) => branch.name) || []
+  const {
+    data: branchesData,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useBranches({ provider, owner, repo })
+  const branchesNames =
+    branchesData?.branches?.map((branch) => branch.name) || []
   const { updateDefaultBranch, data } = useUpdateDefaultBranch()
 
   const branch = data?.branch || defaultBranch
@@ -53,9 +59,11 @@ function DefaultBranch({ defaultBranch }) {
               ariaName="Branch selector"
               variant="gray"
               items={branchesNames}
+              isLoading={isFetching}
               onChange={(branch) => {
                 updateDefaultBranch(branch)
               }}
+              onLoadMore={() => hasNextPage && fetchNextPage()}
               value={branch}
             />
           </div>

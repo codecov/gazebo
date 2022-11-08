@@ -85,7 +85,7 @@ describe('DesktopMenu', () => {
     const provider = 'gh'
 
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
+    useParams.mockReturnValue({ owner: 'fjord', provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
     setup({ provider })
 
@@ -130,7 +130,7 @@ describe('DesktopMenu', () => {
   it('renders the dropdown when user is logged in', () => {
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
+    useParams.mockReturnValue({ owner: 'fjord', provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
     setup({ provider })
 
@@ -141,7 +141,7 @@ describe('DesktopMenu', () => {
   it('renders request demo button when there is owner with free plan is logged in', () => {
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider: provider })
+    useParams.mockReturnValue({ owner: 'fjord', provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
     setup({ provider })
 
@@ -161,7 +161,7 @@ describe('DesktopMenu', () => {
   it('renders the login prompt when user not logged in', () => {
     const provider = 'gh'
     useUser.mockReturnValue({ data: null })
-    useParams.mockReturnValue({ owner: undefined, provider: provider })
+    useParams.mockReturnValue({ owner: undefined, provider })
     setup({ provider })
     const login = screen.getByTestId('login-prompt')
     expect(login).toBeInTheDocument()
@@ -170,16 +170,17 @@ describe('DesktopMenu', () => {
   it('does not render the feedback link when user is not logged in', () => {
     const provider = 'gh'
     useUser.mockReturnValue({ data: undefined })
-    useParams.mockReturnValue({ owner: undefined, provider: provider })
+    useParams.mockReturnValue({ owner: undefined, provider })
     setup({ provider })
 
     expect(screen.queryByText('feedback')).toBeNull()
   })
 
   it('renders the feedback link when user is logged in', () => {
+    config.IS_ENTERPRISE = false
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: undefined, provider: provider })
+    useParams.mockReturnValue({ owner: undefined, provider })
     useAccountDetails.mockReturnValue({ data: accountDetails })
     setup({ provider })
 
@@ -189,38 +190,63 @@ describe('DesktopMenu', () => {
 })
 
 describe('LoginPrompt', () => {
-  it('renders a login button and a sign up button', () => {
-    useParams.mockReturnValue({ provider: '' })
-    render(<LoginPrompt />, { wrapper: MemoryRouter })
+  describe('with a provider available', () => {
+    it('renders a login button and a sign up button', () => {
+      useParams.mockReturnValue({ provider: 'gh' })
+      render(<LoginPrompt />, { wrapper: MemoryRouter })
 
-    const expectedLinks = [
-      {
-        label: 'Log in',
-        to: 'https://stage-web.codecov.dev/login/?to=http%3A%2F%2Flocalhost%2F',
-      },
-      { label: 'Sign up', to: 'https://about.codecov.io/sign-up/' },
-    ]
+      const expectedLinks = [
+        {
+          label: 'Log in',
+          to: 'https://stage-web.codecov.dev/login/gh?to=http%3A%2F%2Flocalhost%2F',
+        },
+        { label: 'Sign up', to: 'https://about.codecov.io/sign-up/' },
+      ]
 
-    expectedLinks.forEach((expectedLink) => {
-      const a = within(screen.getByTestId('login-prompt')).getByText(
-        expectedLink.label
+      expectedLinks.forEach((expectedLink) => {
+        const a = within(screen.getByTestId('login-prompt')).getByText(
+          expectedLink.label
+        )
+        expect(a).toHaveAttribute('href', expectedLink.to)
+      })
+    })
+
+    it('renders link to marketing if url starts with /login', () => {
+      useParams.mockReturnValue({ provider: 'gh' })
+      render(
+        <MemoryRouter initialEntries={['/login']}>
+          <LoginPrompt />
+        </MemoryRouter>
       )
-      expect(a).toHaveAttribute('href', expectedLink.to)
+      expect(screen.getByText(/new to codecov\?/i)).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: /learn more/i,
+        })
+      ).toBeInTheDocument()
     })
   })
+  describe('without a provider', () => {
+    it('does not render a login button and a sign up button', () => {
+      useParams.mockReturnValue({ provider: undefined })
+      render(<LoginPrompt />, { wrapper: MemoryRouter })
 
-  it('renders link to marketing if url starts with /login', () => {
-    useParams.mockReturnValue({ provider: '' })
-    render(
-      <MemoryRouter initialEntries={['/login']}>
-        <LoginPrompt />
-      </MemoryRouter>
-    )
-    expect(screen.getByText(/new to codecov\?/i)).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', {
-        name: /learn more/i,
-      })
-    ).toBeInTheDocument()
+      expect(screen.queryByTestId('login-prompt')).not.toBeInTheDocument()
+    })
+
+    it('does not render a link to marketing if url starts with /login', () => {
+      useParams.mockReturnValue({ provider: undefined })
+      render(
+        <MemoryRouter initialEntries={['/login']}>
+          <LoginPrompt />
+        </MemoryRouter>
+      )
+      expect(screen.queryByText(/new to codecov\?/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {
+          name: /learn more/i,
+        })
+      ).not.toBeInTheDocument()
+    })
   })
 })

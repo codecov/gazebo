@@ -1,7 +1,8 @@
 import { Redirect, useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { useOwner } from 'services/user'
-import { useShouldRenderBillingTabs } from 'services/useShouldRenderBillingTabs'
 
 import Header from './Header'
 import MemberActivation from './MembersActivation'
@@ -12,9 +13,8 @@ import Tabs from './Tabs'
 function MembersPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  const shouldRenderTabs = useShouldRenderBillingTabs()
 
-  if (!shouldRenderTabs) {
+  if (config.IS_ENTERPRISE) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
 

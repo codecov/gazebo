@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
 import { usePaginatedContents } from 'services/usePaginatedContents'
+import { CommitErrorTypes } from 'shared/utils/commit'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../../../constants'
@@ -75,6 +76,7 @@ const headers = [
     accessorKey: 'name',
     cell: (info) => info.getValue(),
     width: 'w-9/12 min-w-min',
+    justifyStart: true,
   },
   {
     id: 'lines',
@@ -106,11 +108,7 @@ const headers = [
   },
   {
     id: 'coverage',
-    header: (
-      <span className="flex flex-row-reverse grow text-right">
-        file coverage %
-      </span>
-    ),
+    header: 'file coverage %',
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
@@ -159,7 +157,7 @@ function useRepoContentsTable() {
   })
   const isSearching = Boolean(params?.search)
 
-  const { data: repoContents, isLoading } = useRepoContents({
+  const { data: pathContentData, isLoading } = useRepoContents({
     provider,
     owner,
     repo,
@@ -172,14 +170,14 @@ function useRepoContentsTable() {
   const data = useMemo(
     () =>
       createTableData({
-        tableData: repoContents,
+        tableData: pathContentData?.results,
         branch: branch || repoOverview?.defaultBranch,
         path: path || '',
         isSearching,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
       }),
     [
-      repoContents,
+      pathContentData?.results,
       branch,
       repoOverview?.defaultBranch,
       path,
@@ -210,6 +208,8 @@ function useRepoContentsTable() {
     isSearching,
     handlePaginationClick,
     hasNextPage,
+    isMissingHeadReport:
+      pathContentData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
   }
 }
 

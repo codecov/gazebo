@@ -18,8 +18,9 @@ function repoPageRender({
   renderSettings = noop,
   options = {},
 }) {
+  let testLocation
   const entries = initialEntries ?? ['/gh/codecov/test-repo']
-  return render(
+  const renderOutput = render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={entries}>
         <Route path="/:provider/:owner/:repo/new">
@@ -40,10 +41,22 @@ function repoPageRender({
         <Route path="/:provider/:owner/:repo" exact>
           <RepoBreadcrumbProvider>{renderRoot()}</RepoBreadcrumbProvider>
         </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
       </MemoryRouter>
     </QueryClientProvider>,
     options
   )
+
+  return {
+    testLocation,
+    render: renderOutput,
+  }
 }
 
 // re-export everything

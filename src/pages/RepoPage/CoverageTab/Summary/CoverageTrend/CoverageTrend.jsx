@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { useBranches } from 'services/branches'
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 import { SummaryField } from 'ui/Summary'
@@ -15,8 +16,9 @@ function CoverageTrend() {
     repo,
     owner,
   })
+  const { data: branchesData } = useBranches({ provider, repo, owner })
   const { selection } = useBranchSelector(
-    overview?.branches,
+    branchesData?.branches,
     overview?.defaultBranch
   )
 

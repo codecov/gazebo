@@ -18,6 +18,7 @@ const columns = [
     accessorKey: 'userName',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'type',
@@ -25,6 +26,7 @@ const columns = [
     accessorKey: 'type',
     cell: (info) => info.getValue(),
     width: 'w-2/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'email',
@@ -32,6 +34,7 @@ const columns = [
     accessorKey: 'email',
     cell: (info) => info.getValue(),
     width: 'w-4/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'activationStatus',

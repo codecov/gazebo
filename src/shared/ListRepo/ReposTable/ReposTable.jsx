@@ -20,17 +20,18 @@ const tableActive = [
     accessorKey: 'title',
     width: 'w-7/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'lastUpdated',
-    header: <span className="w-full text-right">Last Updated</span>,
+    header: 'Last Updated',
     accessorKey: 'lastUpdated',
     width: 'w-2/12',
     cell: (info) => info.getValue(),
   },
   {
     id: 'coverage',
-    header: <span className="w-full text-sm text-right">Test Coverage</span>,
+    header: 'Test Coverage',
     accessorKey: 'coverage',
     width: 'w-3/12',
     cell: (info) => info.getValue(),
@@ -44,6 +45,7 @@ const tableInactive = [
     accessorKey: 'title',
     width: 'w-9/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'notEnabled',
@@ -54,6 +56,7 @@ const tableInactive = [
   },
 ]
 
+// eslint-disable-next-line complexity
 function transformRepoToTable({
   repos,
   owner,
@@ -76,12 +79,15 @@ function transformRepoToTable({
   }
 
   const repoPageName = !isSetup ? 'new' : 'repo'
+  const disableLink = !isCurrentUserPartOfOrg && !isSetup
+
   return repos?.map((repo) => ({
     title: (
       <RepoTitleLink
         repo={repo}
         showRepoOwner={!owner}
         pageName={repoPageName}
+        disabledLink={disableLink}
       />
     ),
     lastUpdated: (

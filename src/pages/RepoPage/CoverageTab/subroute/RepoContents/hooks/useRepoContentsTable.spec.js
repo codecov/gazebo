@@ -19,54 +19,58 @@ jest.mock('services/navigation', () => ({
 }))
 
 const repoContentsMock = {
-  data: [
-    {
-      name: 'flag2',
-      filepath: '',
-      percentCovered: 92.78,
-      __typename: 'PathContentDir',
-      hits: 4,
-      misses: 2,
-      lines: 7,
-      partials: 1,
-    },
-  ],
+  data: {
+    results: [
+      {
+        name: 'flag2',
+        filepath: '',
+        percentCovered: 92.78,
+        __typename: 'PathContentDir',
+        hits: 4,
+        misses: 2,
+        lines: 7,
+        partials: 1,
+      },
+    ],
+  },
   isLoading: false,
 }
 
 const manyFilesAndDirsMock = {
-  data: [
-    {
-      name: 'flag2',
-      filepath: 'flag2',
-      percentCovered: 92.78,
-      __typename: 'PathContentFile',
-      hits: 4,
-      misses: 2,
-      lines: 7,
-      partials: 1,
-    },
-    {
-      name: 'flag',
-      filepath: 'subfolder/folder/flag1',
-      percentCovered: 92.78,
-      __typename: 'PathContentFile',
-      hits: 2,
-      misses: 5,
-      lines: 6,
-      partials: 1,
-    },
-    {
-      name: 'flag3',
-      filepath: 'a/b/c/d/e/f/g/flag3',
-      percentCovered: 92.78,
-      __typename: 'PathContentFile',
-      hits: 4,
-      misses: 2,
-      lines: 7,
-      partials: 1,
-    },
-  ],
+  data: {
+    results: [
+      {
+        name: 'flag2',
+        filepath: 'flag2',
+        percentCovered: 92.78,
+        __typename: 'PathContentFile',
+        hits: 4,
+        misses: 2,
+        lines: 7,
+        partials: 1,
+      },
+      {
+        name: 'flag',
+        filepath: 'subfolder/folder/flag1',
+        percentCovered: 92.78,
+        __typename: 'PathContentFile',
+        hits: 2,
+        misses: 5,
+        lines: 6,
+        partials: 1,
+      },
+      {
+        name: 'flag3',
+        filepath: 'a/b/c/d/e/f/g/flag3',
+        percentCovered: 92.78,
+        __typename: 'PathContentFile',
+        hits: 4,
+        misses: 2,
+        lines: 7,
+        partials: 1,
+      },
+    ],
+  },
   isLoading: false,
 }
 
@@ -82,7 +86,7 @@ const bigArray = new Array(26).fill({
 })
 
 const manyFilesMock = {
-  data: bigArray,
+  data: { results: bigArray },
 }
 
 const emptyRepoContentsMock = {

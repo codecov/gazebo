@@ -59,13 +59,14 @@ const table = [
         </div>
       )
     },
+    justifyStart: true,
   },
   {
     id: 'coverage',
     header: (
-      <span className="w-full text-right">
-        <span className="font-mono">HEAD</span> file coverage %
-      </span>
+      <>
+        <span className="font-mono mr-2">HEAD</span> file coverage %
+      </>
     ),
     accessorKey: 'coverage',
     width: 'w-3/12 min-w-min',
@@ -73,14 +74,14 @@ const table = [
   },
   {
     id: 'patch',
-    header: <span className="w-full text-sm text-right">Patch %</span>,
+    header: 'Patch %',
     accessorKey: 'patch',
     width: 'w-28 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
-    header: <span className="w-full text-right">Change</span>,
+    header: 'Change',
     accessorKey: 'change',
     width: 'w-28 min-w-min',
     cell: (info) => info.getValue(),
