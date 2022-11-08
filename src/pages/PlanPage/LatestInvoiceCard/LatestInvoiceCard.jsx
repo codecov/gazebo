@@ -10,7 +10,7 @@ import Icon from 'ui/Icon'
 function LatestInvoiceCard() {
   const { provider, owner } = useParams()
   const { data: invoices } = useInvoices({ provider, owner })
-  const lastestInvoice = !!invoices.length && invoices[0]
+  const lastestInvoice = !!invoices?.length && invoices[0]
 
   if (!lastestInvoice || !lastestInvoice?.dueDate || !lastestInvoice?.created)
     return null
