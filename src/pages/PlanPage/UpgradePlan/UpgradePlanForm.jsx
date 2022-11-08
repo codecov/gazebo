@@ -1,11 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { format, fromUnixTime } from 'date-fns'
 import PropType from 'prop-types'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 
-import Select from 'old_ui/Select'
 import {
   accountDetailsPropType,
   planPropType,
@@ -13,18 +12,21 @@ import {
 } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
+import Icon from 'ui/Icon'
+import RadioInput from 'ui/RadioInput/RadioInput'
+import TextInput from 'ui/TextInput'
 
 const MIN_NB_SEATS = 6
 
 function getInitialDataForm(planOptions, accountDetails) {
   const currentPlan = accountDetails.plan
-  const proPlan = planOptions.find((plan) => plan.value === currentPlan?.value)
+  const proPlan = planOptions?.find((plan) => plan.value === currentPlan?.value)
 
   const currentNbSeats = accountDetails.plan?.quantity ?? MIN_NB_SEATS
 
   return {
     // if the current plan is a proplan, we return it, otherwise select by default the first pro plan
-    newPlan: proPlan ? proPlan : planOptions[0],
+    newPlan: proPlan ? proPlan.value : planOptions[0].value,
     // get the number of seats of the current plan, but minimum 6 seats
     seats: Math.max(currentNbSeats, MIN_NB_SEATS),
   }
@@ -64,11 +66,12 @@ function getSchema(accountDetails) {
 
 function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const planOptions = [proPlanYear, proPlanMonth]
-  const { register, handleSubmit, watch, control, formState } = useForm({
-    defaultValues: getInitialDataForm(planOptions, accountDetails),
-    resolver: yupResolver(getSchema(accountDetails)),
-    mode: 'onChange',
-  })
+  const { register, handleSubmit, watch, formState, setValue, getValues } =
+    useForm({
+      defaultValues: getInitialDataForm(planOptions, accountDetails),
+      resolver: yupResolver(getSchema(accountDetails)),
+      mode: 'onChange',
+    })
 
   const seats = watch('seats')
   const newPlan = watch('newPlan')
@@ -76,7 +79,7 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const perYearPrice = Math.floor(seats) * proPlanYear.baseUnitPrice * 12
   const perMonthPrice = Math.floor(seats) * proPlanMonth.baseUnitPrice * 12
 
-  const isPerYear = newPlan?.value === 'users-pr-inappy'
+  const isPerYear = newPlan === 'users-pr-inappy'
 
   return {
     seats,
@@ -85,10 +88,11 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
     perMonthPrice,
     register,
     handleSubmit,
-    control,
     isPerYear,
     planOptions,
     formState,
+    setValue,
+    getValues,
   }
 }
 
@@ -97,29 +101,40 @@ function useSubmit({ owner, provider }) {
   const addToast = useAddNotification()
   const { mutate, ...rest } = useUpgradePlan({ provider, owner })
 
-  function upgradePlan(newPlan) {
-    return mutate(newPlan, {
-      onSuccess: () => {
-        addToast({
-          type: 'success',
-          text: 'Plan successfully upgraded',
-        })
-        redirect(`/plan/${provider}/${owner}/`)
+  function upgradePlan({ seats, newPlan }) {
+    return mutate(
+      {
+        seats,
+        newPlan,
       },
-      onError: (error) =>
-        addToast({
-          type: 'error',
-          text: error?.data?.detail || 'Something went wrong',
-        }),
-    })
+      {
+        onSuccess: () => {
+          addToast({
+            type: 'success',
+            text: 'Plan successfully upgraded',
+          })
+          redirect(`/plan/${provider}/${owner}`)
+        },
+        onError: (error) => {
+          addToast({
+            type: 'error',
+            text: error?.data?.detail || 'Something went wrong',
+          })
+        },
+      }
+    )
   }
 
   return { upgradePlan, ...rest }
 }
 
 function renderStudentText(activatedStudents) {
+  if (activatedStudents < 1) {
+    return null
+  }
+
   return (
-    <p className="mb-4 text-xs">
+    <p className="mb-4 text-xs text-ds-gray-quinary">
       {activatedStudents === 1
         ? `*You have ${activatedStudents} active student that
         does not count towards the number of active users.`
@@ -127,6 +142,30 @@ function renderStudentText(activatedStudents) {
         do not count towards the number of active users.`}
     </p>
   )
+}
+
+function UpdateButton({ isValid, getValues, accountDetails }) {
+  return (
+    <Button
+      data-cy="update"
+      disabled={
+        !isValid ||
+        (getValues()?.newPlan === accountDetails?.plan?.value &&
+          getValues()?.seats === accountDetails?.plan?.quantity)
+      }
+      type="submit"
+      variant="primary"
+      hook="submit-upgrade"
+    >
+      Update
+    </Button>
+  )
+}
+
+UpdateButton.propTypes = {
+  isValid: PropType.bool,
+  getValues: PropType.func,
+  accountDetails: PropType.object,
 }
 
 function UpgradePlanForm({
@@ -139,101 +178,128 @@ function UpgradePlanForm({
   const nextBillingDate = getNextBillingDate(accountDetails)
 
   const {
-    seats,
     perYearPrice,
     perMonthPrice,
     register,
     handleSubmit,
-    control,
     isPerYear,
-    planOptions,
+    setValue,
+    getValues,
     formState: { isValid, errors },
   } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
 
   const { upgradePlan } = useSubmit({ owner, provider })
+
   return (
     <form
-      className="text-ds-gray-nonary flex flex-col gap-8"
+      className="text-ds-gray-nonary flex flex-col gap-6"
       onSubmit={handleSubmit(upgradePlan)}
     >
+      <div className="flex flex-col gap-2">
+        <h3 className="font-semibold">Organization</h3>
+        <span>{owner}</span>
+      </div>
+
       <h3 className="text-2xl text-ds-pink-quinary bold">
         {proPlanMonth.marketingName}
       </h3>
-      <Controller
-        name="newPlan"
-        control={control}
-        render={({ field }) => (
-          // TODO: Still need to change this select to New UI Select
-          <Select
-            dataMarketing="plan-pricing-selector"
-            data-cy="plan-pricing"
-            items={planOptions}
-            renderItem={(plan) => (
-              <div
-                className="flex justify-between flex-1 p-2 text-base w-full"
-                data-cy={`select-${plan.billingRate}`}
-              >
-                <span className="capitalize text-gray-600">
-                  {plan.billingRate} User Pricing
-                </span>
-                <span>${plan.baseUnitPrice} /month</span>
-              </div>
-            )}
-            onChange={field.onChange}
-            value={field.value}
-          />
-        )}
-      />
-      <hr />
+      <div className="flex flex-col gap-4">
+        <RadioInput
+          key={proPlanYear.billingRate}
+          data-cy={`select-${proPlanYear.billingRate}`}
+          dataMarketing={`plan-pricing-option-${proPlanYear.billingRate}`}
+          label={
+            <>
+              <span className="font-semibold">
+                ${proPlanYear.baseUnitPrice}
+              </span>
+              /month, billed {proPlanYear.billingRate}
+            </>
+          }
+          name="billing-options"
+          value={proPlanYear.value}
+          {...register('newPlan')}
+        />
+        <RadioInput
+          key={proPlanMonth.billingRate}
+          data-cy={`select-${proPlanMonth.billingRate}`}
+          dataMarketing={`plan-pricing-option-${proPlanMonth.billingRate}`}
+          label={
+            <>
+              <span className="font-semibold">
+                ${proPlanMonth.baseUnitPrice}
+              </span>
+              /month, billed {proPlanMonth.billingRate}
+            </>
+          }
+          name="billing-options"
+          value={proPlanMonth.value}
+          {...register('newPlan')}
+        />
+      </div>
       <div className="flex flex-col gap-2">
-        <p>
-          {accountDetails.activatedUserCount} active users.{' '}
-          {accountDetails.inactiveUserCount} seats needed to activate all users.
-        </p>
-        {renderStudentText(accountDetails.activatedStudentCount)}
-        <div className="flex gap-4 items-center">
-          <label htmlFor="nb-seats" className="flex-none cursor-pointer">
-            User Seats:
-          </label>
-          <input
-            data-cy="seats"
-            {...register('seats')}
-            id="nb-seats"
-            size="20"
-            className="bg-ds-gray-secondary p-2 rounded border w-full"
-            type="number"
-          />
+        <TextInput
+          data-cy="seats"
+          dataMarketing="plan-pricing-seats"
+          {...register('seats')}
+          id="nb-seats"
+          size="20"
+          className="bg-ds-gray-secondary p-2 rounded border w-full"
+          type="number"
+          label="User Seats"
+        />
+        <div className="pl-2 border-l-2">
+          <p>
+            Currently {accountDetails.activatedUserCount} users activated out of{' '}
+            {accountDetails.activatedUserCount +
+              accountDetails.inactiveUserCount}{' '}
+            users.
+          </p>
+          {renderStudentText(accountDetails.activatedStudentCount)}
         </div>
       </div>
-      {isPerYear && (
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between">
-            <p>
-              {' '}
-              Per month pricing ({seats} users x{proPlanMonth.baseUnitPrice})
-            </p>
-            <p data-test="normal-price-month">${formatNumber(perMonthPrice)}</p>
-          </div>
-          <div className="flex justify-between">
-            <p> - 16.67% Annual Discount </p>
-            <p data-test="year-discount-value">
-              ${formatNumber(perMonthPrice - perYearPrice)}
-            </p>
-          </div>
-        </div>
-      )}
-      <hr />
-      <div className="border-gray-200">
+      <div className="bg-ds-gray-primary p-4">
         {isPerYear ? (
-          <p className="flex">
-            Annual price
-            <span className="ml-auto">${formatNumber(perYearPrice)}</span>
-          </p>
+          <div className="flex flex-col gap-3">
+            <p>
+              <span className="font-semibold">
+                ${formatNumber(perYearPrice)}
+              </span>
+              /per year
+            </p>
+            <p>
+              &#127881; You{' '}
+              <span className="font-semibold">
+                save ${formatNumber(perMonthPrice - perYearPrice)}
+              </span>{' '}
+              with the annual plan
+            </p>
+          </div>
         ) : (
-          <p className="flex">
-            Monthly price
-            <span className="ml-auto">${formatNumber(perMonthPrice / 12)}</span>
-          </p>
+          <div className="flex flex-col gap-3">
+            <p>
+              <span className="font-semibold">
+                ${formatNumber(perMonthPrice / 12)}
+              </span>
+              /total monthly
+            </p>
+            <div className="flex flex-row gap-1">
+              <Icon size="sm" name="light-bulb" variant="solid" />
+              <p>
+                You could save{' '}
+                <span className="font-semibold">
+                  ${formatNumber(perMonthPrice - perYearPrice)}
+                </span>{' '}
+                a year with the annual plan,{' '}
+                <span
+                  className="text-ds-blue-darker font-semibold hover:underline cursor-pointer"
+                  onClick={() => setValue('newPlan', 'users-pr-inappy')}
+                >
+                  switch to annual
+                </span>
+              </p>
+            </div>
+          </div>
         )}
       </div>
       {nextBillingDate && (
@@ -247,15 +313,13 @@ function UpgradePlanForm({
           {errors.seats?.message}
         </p>
       )}
-      <hr />
-      <Button
-        data-cy="update"
-        disabled={!isValid}
-        type="submit"
-        variant="primary"
-      >
-        Update
-      </Button>
+      <div className="w-min">
+        <UpdateButton
+          isValid={isValid}
+          getValues={getValues}
+          accountDetails={accountDetails}
+        />
+      </div>
     </form>
   )
 }

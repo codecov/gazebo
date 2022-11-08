@@ -1,12 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
+import useIntersection from 'react-use/lib/useIntersection'
 
 import { useCoverageRedirect, useSummary } from './hooks'
 import Summary from './Summary'
 
 jest.mock('./hooks')
 jest.mock('./CoverageTrend', () => () => 'CoverageTrend')
+jest.mock('react-use/lib/useIntersection')
 
 describe('Summary', () => {
   const mockOnChange = jest.fn()
@@ -18,6 +20,7 @@ describe('Summary', () => {
     },
     setNewPath: mockSetNewPath,
   }
+
   function setup({ useSummaryData, useCoverageRedirectData }) {
     useSummary.mockReturnValue(useSummaryData)
     useCoverageRedirect.mockReturnValue(useCoverageRedirectData)
@@ -250,6 +253,111 @@ describe('Summary', () => {
 
     it('updates the location', () => {
       expect(mockSetNewPath).toHaveBeenCalled()
+    })
+  })
+
+  describe('when onLoadMore is triggered', () => {
+    describe('there is a next page', () => {
+      const fetchNextPage = jest.fn()
+      beforeEach(() => {
+        const selectedBranch = {
+          name: 'something-else',
+          head: {
+            commitid: 'abs890dasf809',
+          },
+        }
+
+        setup({
+          useCoverageRedirectData: {
+            redirectState: {
+              newPath: '/some/new/location',
+              isRedirectionEnabled: true,
+            },
+            setNewPath: mockSetNewPath,
+          },
+          useSummaryData: {
+            isLoading: false,
+            data: {},
+            branchSelectorProps: {
+              items: [
+                { name: 'foo', head: { commitid: '1234' } },
+                selectedBranch,
+              ],
+              onChange: mockOnChange,
+              value: selectedBranch,
+            },
+            currentBranchSelected: selectedBranch,
+            defaultBranch: 'main',
+            privateRepo: false,
+            coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
+            coverageChange: 40,
+            legacyApiIsSuccess: true,
+            branchesFetchNextPage: fetchNextPage,
+            branchesHasNextPage: true,
+          },
+        })
+
+        useIntersection.mockReturnValue({
+          isIntersecting: true,
+        })
+      })
+      it('calls fetchNextPage', async () => {
+        const select = screen.getByRole('button', { name: 'select branch' })
+        userEvent.click(select)
+
+        await waitFor(() => expect(fetchNextPage).toBeCalled())
+      })
+    })
+    describe('when there is not a next page', () => {
+      const fetchNextPage = jest.fn()
+      beforeEach(() => {
+        const selectedBranch = {
+          name: 'something-else',
+          head: {
+            commitid: 'abs890dasf809',
+          },
+        }
+
+        setup({
+          useCoverageRedirectData: {
+            redirectState: {
+              newPath: '/some/new/location',
+              isRedirectionEnabled: true,
+            },
+            setNewPath: mockSetNewPath,
+          },
+          useSummaryData: {
+            isLoading: false,
+            data: {},
+            branchSelectorProps: {
+              items: [
+                { name: 'foo', head: { commitid: '1234' } },
+                selectedBranch,
+              ],
+              onChange: mockOnChange,
+              value: selectedBranch,
+            },
+            currentBranchSelected: selectedBranch,
+            defaultBranch: 'main',
+            privateRepo: false,
+            coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
+            coverageChange: 40,
+            legacyApiIsSuccess: true,
+            branchesFetchNextPage: fetchNextPage,
+            branchesHasNextPage: false,
+          },
+        })
+
+        useIntersection.mockReturnValue({
+          isIntersecting: true,
+        })
+      })
+      it('does not calls fetchNextPage', async () => {
+        const select = screen.getByRole('button', { name: 'select branch' })
+        userEvent.click(select)
+
+        await waitFor(() => expect(fetchNextPage).not.toBeCalled())
+      })
     })
   })
 })

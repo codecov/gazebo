@@ -1,13 +1,15 @@
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 
-import { getFilenameFromFilePath } from 'shared/utils/url'
 import A from 'ui/A'
+import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
+
+import CommitFileView from './CommitFileView'
 
 const getFileData = (row, commit) => {
   const headCov = row?.headCoverage?.coverage
@@ -35,7 +37,28 @@ const table = [
     header: 'Name',
     accessorKey: 'name',
     width: 'w-7/12 min-w-min',
-    cell: (info) => info.getValue(),
+    cell: ({ row, getValue }) => {
+      return (
+        <div
+          className="flex gap-2 cursor-pointer items-center"
+          data-testid="name-expand"
+          onClick={() => row.toggleExpanded()}
+        >
+          <span
+            className={
+              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
+            }
+          >
+            <Icon
+              size="md"
+              name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
+              variant="solid"
+            />
+          </span>
+          {getValue()}
+        </div>
+      )
+    },
     justifyStart: true,
   },
   {
@@ -71,23 +94,20 @@ function createTable({ tableData }) {
   }
 
   return tableData.map((row) => {
-    const { headName, headCoverage, hasData, change, commit, patchCoverage } =
+    const { headName, headCoverage, hasData, change, patchCoverage, commit } =
       row
 
     return {
       name: (
-        <div className="flex flex-col">
+        <div className="flex flex-col break-all">
           <A
             to={{
               pageName: 'commitFile',
               options: { commit, path: headName },
             }}
           >
-            <span>{getFilenameFromFilePath(headName)}</span>
-          </A>
-          <span className="text-xs mt-0.5 text-ds-gray-quinary">
             {headName}
-          </span>
+          </A>
         </div>
       ),
       coverage: (
@@ -117,6 +137,28 @@ function createTable({ tableData }) {
   })
 }
 
+const Loader = () => (
+  <div className="flex justify-center mb-4">
+    <Spinner size={60} />
+  </div>
+)
+
+const RenderSubComponent = ({ row }) => {
+  const nameColumn = row.getValue('name')
+  const file = nameColumn?.props?.children
+  const path = file?.props?.children
+
+  return (
+    <Suspense fallback={<Loader />}>
+      <CommitFileView path={path} />
+    </Suspense>
+  )
+}
+
+RenderSubComponent.propTypes = {
+  row: PropTypes.object.isRequired,
+}
+
 function CommitsTable({ data = [], commit, state }) {
   const formattedData = useMemo(
     () => data.map((row) => getFileData(row, commit)),
@@ -124,20 +166,18 @@ function CommitsTable({ data = [], commit, state }) {
   )
   const tableContent = createTable({ tableData: formattedData })
 
-  if (state === 'pending') {
-    return (
-      <div className="flex-1 flex justify-center">
-        <Spinner size={60} />
-      </div>
-    )
-  }
+  if (state === 'pending') return <Loader />
 
   return (
     <>
       {data?.length === 0 ? (
         <p className="mx-4">No Files covered by tests were changed</p>
       ) : (
-        <Table data={tableContent} columns={table} />
+        <Table
+          data={tableContent}
+          columns={table}
+          renderSubComponent={RenderSubComponent}
+        />
       )}
     </>
   )

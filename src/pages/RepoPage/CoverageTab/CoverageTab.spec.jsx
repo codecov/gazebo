@@ -16,6 +16,8 @@ jest.mock('./Chart', () => () => 'Chart Component')
 jest.mock('./DeactivatedRepo', () => () => 'Disabled Repo Component')
 jest.mock('./DisplayTypeButton', () => () => 'Display Type Button')
 jest.mock('services/repo')
+jest.mock('services/user')
+jest.mock('services/commits')
 
 jest.mock('services/navigation', () => ({
   ...jest.requireActual('services/navigation'),
@@ -36,15 +38,32 @@ const queryClient = new QueryClient({
 
 describe('Coverage Tab', () => {
   const mockUpdateParams = jest.fn()
+  let originalLocation
+
+  beforeAll(() => {
+    originalLocation = global.window.location
+    delete global.window.location
+    global.window.location = {
+      replace: jest.fn(),
+    }
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+    window.location = originalLocation
+  })
+
   function setup({ initialEntries, repoActivated = true }) {
     useParams.mockReturnValue({
-      owner: 'Rabee-AbuBaker',
+      owner: 'test-org',
       provider: 'gh',
-      repo: 'another-test',
+      repo: 'test-repo',
     })
+
     useRepo.mockReturnValue({
       data: { repository: { activated: repoActivated } },
     })
+
     useLocationParams.mockReturnValue({
       params: { search: '' },
       updateParams: mockUpdateParams,
@@ -155,19 +174,6 @@ describe('Coverage Tab', () => {
       await waitFor(() =>
         expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
       )
-    })
-  })
-
-  describe('when repo is disabled', () => {
-    beforeEach(() => {
-      setup({
-        initialEntries: ['/gh/test-org/test-repo/'],
-        repoActivated: false,
-      })
-    })
-
-    it('renders Disabled Repo component', () => {
-      expect(screen.getByText(/Disabled Repo Component/)).toBeInTheDocument()
     })
   })
 })
