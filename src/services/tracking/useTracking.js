@@ -49,7 +49,7 @@ export function useTracking() {
     suspense: false,
   })
 
-  useTrackFeatureFlags(user) // TODO: Can probably delete
+  useTrackFeatureFlags(user)
   useSegmentPage()
   useUpdatePendoWithOwner(user)
 
