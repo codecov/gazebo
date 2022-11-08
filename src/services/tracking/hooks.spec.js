@@ -55,7 +55,7 @@ describe('useTracking', () => {
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ me: user }))
+        return res(ctx.status(200), ctx.data(user))
       }),
       graphql.query('DetailOwner', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ owner: 'codecov' }))
@@ -65,7 +65,7 @@ describe('useTracking', () => {
     hookData = renderHook(() => useTracking(), { wrapper })
   }
 
-  xdescribe('when the user is logged-in and has all data', () => {
+  describe('when the user is logged-in and has all data', () => {
     const user = {
       trackingMetadata: {
         ownerid: 1,
@@ -139,7 +139,7 @@ describe('useTracking', () => {
     })
   })
 
-  xdescribe('when the user is logged-in but missing data', () => {
+  describe('when the user is logged-in but missing data', () => {
     const user = {
       trackingMetadata: {
         ownerid: 3,
