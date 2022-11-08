@@ -1,0 +1,128 @@
+import { render, screen } from 'custom-testing-library'
+
+import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useImpactedFilesTable } from './hooks'
+import ImpactedFiles from './ImpactedFiles'
+
+jest.mock('../FileDiff', () => () => 'FileDiff Component')
+jest.mock('./hooks')
+
+const mockImpactedFiles = {
+  data: {
+    pullBaseCoverage: 41.66667,
+    pullHeadCoverage: 92.30769,
+    pullPatchCoverage: 1,
+    impactedFiles: [
+      {
+        changeCoverage: 58.333333333333336,
+        hasHeadOrPatchCoverage: true,
+        headCoverage: 90.23,
+        headName: 'flag1/mafs.js',
+        fileName: 'mafs.js',
+        patchCoverage: 27.43,
+        isCriticalFile: true,
+      },
+    ],
+  },
+}
+
+describe('ImpactedFiles', () => {
+  function setup({
+    initialEntries = ['/gh/test-org/test-repo/pull/12'],
+    impactedFiles = mockImpactedFiles,
+  }) {
+    useImpactedFilesTable.mockReturnValue(impactedFiles)
+    render(
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">
+          <ImpactedFiles />
+        </Route>
+      </MemoryRouter>
+    )
+  }
+
+  describe('when rendered with impacted files', () => {
+    beforeEach(() => {
+      setup({})
+    })
+    it('renders the headers of the impacted file table', () => {
+      expect(screen.getByText('Name')).toBeInTheDocument()
+      expect(screen.getByText('HEAD')).toBeInTheDocument()
+      expect(screen.getByText('file coverage %')).toBeInTheDocument()
+      expect(screen.getByText('Patch %')).toBeInTheDocument()
+      expect(screen.getByText('Change')).toBeInTheDocument()
+    })
+    it('renders the impacted files content', () => {
+      expect(screen.getByText('flag1/mafs.js')).toBeInTheDocument()
+      expect(screen.getByText(/90.23%/i)).toBeInTheDocument()
+      expect(screen.getByText(/27.43%/i)).toBeInTheDocument()
+      expect(screen.getByText(/58.33%/i)).toBeInTheDocument()
+      expect(screen.getByText(/Critical File/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('when expanding the name column', () => {
+    beforeEach(() => {
+      setup({})
+      userEvent.click(screen.getByTestId('name-expand'))
+    })
+    it('renders the headers of the impacted file table', () => {
+      expect(screen.getByText('Name')).toBeInTheDocument()
+      expect(screen.getByText('HEAD')).toBeInTheDocument()
+      expect(screen.getByText('file coverage %')).toBeInTheDocument()
+      expect(screen.getByText('Patch %')).toBeInTheDocument()
+      expect(screen.getByText('Change')).toBeInTheDocument()
+    })
+    it('renders the FileDiff component', () => {
+      expect(screen.getByText('FileDiff Component')).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered without change', () => {
+    beforeEach(() => {
+      const impactedFiles = {
+        data: {
+          pullBaseCoverage: 41.66667,
+          pullHeadCoverage: 92.30769,
+          pullPatchCoverage: 1,
+          impactedFiles: [
+            {
+              changeCoverage: 58.333333333333336,
+              headCoverage: null,
+              hasHeadOrPatchCoverage: false,
+              headName: 'flag1/mafs.js',
+              patchCoverage: 27.43,
+            },
+          ],
+        },
+      }
+      setup({ impactedFiles })
+    })
+    it('renders no data available for the change', () => {
+      expect(screen.getByText('No data available')).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with an empty list of impacted files', () => {
+    beforeEach(() => {
+      const impactedFiles = {
+        data: {
+          pullBaseCoverage: 41.66667,
+          pullHeadCoverage: 92.30769,
+          pullPatchCoverage: 1,
+          impactedFiles: [],
+        },
+      }
+      setup({ impactedFiles })
+    })
+    it('renders headers without data', () => {
+      expect(screen.getByText('Name')).toBeInTheDocument()
+      expect(screen.getByText('HEAD')).toBeInTheDocument()
+      expect(screen.getByText('file coverage %')).toBeInTheDocument()
+      expect(screen.getByText('Patch %')).toBeInTheDocument()
+      expect(screen.getByText('Change')).toBeInTheDocument()
+    })
+  })
+})

@@ -1,7 +1,8 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { useLocation, useParams } from 'react-router-dom'
+import React from 'react'
+import { useParams } from 'react-router-dom'
 
-import { useOwner, useUser } from 'services/user'
+import { useOwner } from 'services/user'
 
 import { firePendo, useUpdatePendoWithOwner } from './pendo'
 
@@ -50,15 +51,15 @@ describe('initialize pendo', () => {
   })
 })
 
-describe('update pendo', () => {
+describe('update pendo on owner change', () => {
   function setup() {
     window.pendo = {
       updateOptions: jest.fn(),
     }
-    useUser.mockReturnValue({ data: curUser })
+    jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: 'rula' })
+
     useParams.mockReturnValue({ owner: 'codecov' })
     useOwner.mockReturnValue({ data: ownerData })
-    useLocation.mockReturnValue({ pathname: '/gh/codecov' })
     renderHook(() => useUpdatePendoWithOwner(curUser))
   }
 
@@ -66,7 +67,28 @@ describe('update pendo', () => {
     setup()
   })
 
-  it('does not fire pendo update options when pathname is the same', () => {
+  it('fires pendo update options when pathname is different', () => {
+    expect(window.pendo.updateOptions).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('update pendo when owner is not changed', () => {
+  function setup() {
+    window.pendo = {
+      updateOptions: jest.fn(),
+    }
+    jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: 'codecov' })
+
+    useParams.mockReturnValue({ owner: 'codecov' })
+    useOwner.mockReturnValue({ data: ownerData })
+    renderHook(() => useUpdatePendoWithOwner(curUser))
+  }
+
+  beforeEach(() => {
+    setup()
+  })
+
+  it('does not fire pendo update', () => {
     expect(window.pendo.updateOptions).toHaveBeenCalledTimes(0)
   })
 })

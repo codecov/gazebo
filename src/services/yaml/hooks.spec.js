@@ -4,7 +4,7 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useUpdateYaml, useYamlConfig } from './hooks'
+import { useUpdateYaml, useYamlConfig } from './index'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (

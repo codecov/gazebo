@@ -4,12 +4,12 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useTracking } from './hooks'
 import { useSegmentPage } from './segment'
+import { useTracking } from './useTracking'
 
 jest.mock('./segment')
 
-const queryClient = new QueryClient({})
+const queryClient = new QueryClient()
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -41,6 +41,7 @@ describe('useTracking', () => {
   function setup(user) {
     window.pendo = {
       initialize: jest.fn(),
+      updateOptions: jest.fn(),
     }
     window.dataLayer = [
       {
@@ -94,7 +95,7 @@ describe('useTracking', () => {
     }
 
     beforeEach(async () => {
-      setup(user)
+      setup({ me: user })
       await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
@@ -168,7 +169,7 @@ describe('useTracking', () => {
     }
 
     beforeEach(async () => {
-      setup(user)
+      setup({ me: user })
       await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
@@ -210,8 +211,10 @@ describe('useTracking', () => {
 
   describe('when user is not logged in', () => {
     beforeEach(async () => {
-      setup(null)
-      await hookData.waitFor(() => hookData.result.current.isFetching)
+      const spy = jest.spyOn(console, 'error')
+      spy.mockImplementation(jest.fn())
+
+      setup({ me: null })
       await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 

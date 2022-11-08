@@ -3,7 +3,7 @@ version: 2.1 # using 2.1 provides access to orbs and other features
 jobs:
   install:
     docker:
-      - image: cimg/node:16.14.2
+      - image: cimg/node:18.8.0
     steps:
       - checkout
       - run:
@@ -15,7 +15,7 @@ jobs:
             - node_modules
   eslint:
     docker:
-      - image: cimg/node:16.14.2
+      - image: cimg/node:18.8.0
     steps:
       - checkout
       - restore_cache:
@@ -26,7 +26,7 @@ jobs:
           command: npm run lint
   test:
     docker:
-      - image: cimg/node:16.14.2
+      - image: cimg/node:18.8.0
     parallelism: 6
     steps:
       - checkout
@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            TESTFILES=$(circleci tests glob "src/**/*.spec.js" "src/**/*.test.js" | circleci tests split --split-by=timings)
+            TESTFILES=$(circleci tests glob "src/**/*.spec.js" "src/**/*.test.js" "src/**/*.spec.jsx" "src/**/*.test.jsx" | circleci tests split --split-by=timings)
             CI=true npm run test:ci -- --maxWorkers=2 $TESTFILES
           # Set maxWorkers to reflect the number of cores on the Resource Class running this task.
           environment:
@@ -59,7 +59,7 @@ jobs:
 
   sentry:
     docker:
-      - image: cimg/node:16.14.2
+      - image: cimg/node:18.8.0
     steps:
       - checkout
       - restore_cache:
@@ -71,7 +71,7 @@ jobs:
 
   build:
     docker:
-      - image: cimg/node:16.14.2
+      - image: cimg/node:18.8.0
     steps:
       - checkout
       - restore_cache:
@@ -83,7 +83,7 @@ jobs:
 
   storybook:
     docker:
-      - image: cimg/node:16.14.2
+      - image: cimg/node:18.8.0
     steps:
       - checkout
       - restore_cache:
@@ -92,6 +92,21 @@ jobs:
       - run:
           name: Deploy to Chromatic
           command: npm run chromatic
+
+  fossa:
+    docker:
+      - image: cimg/node:18.8.0
+    steps:
+      - checkout
+      - run:
+          name: Install FOSSA CLI
+          command: |
+            curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
+      - run:
+          name: Analze and upload dependency reports
+          command: fossa analyze
+          env:
+            FOSSA_API_KEY: ${FOSSA_API_KEY}
 
 workflows:
   version: 2
@@ -111,5 +126,8 @@ workflows:
           requires:
             - install
       - sentry:
+          requires:
+            - install
+      - fossa:
           requires:
             - install

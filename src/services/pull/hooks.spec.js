@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useImpactedFilesComparison, usePull } from './hooks'
+import { usePull, useSingularImpactedFileComparison } from './index'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -93,7 +93,7 @@ describe('usePull', () => {
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
           hasAccess: true,
-          ...pull,
+          pull,
         })
       })
     })
@@ -123,80 +123,79 @@ describe('usePull', () => {
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
           hasAccess: false,
-          ...pull,
+          pull,
         })
       })
     })
   })
 })
 
-const mockImpactedFilesData = {
-  patchTotals: {
-    percentCovered: 1,
+const mockSingularImpactedFilesData = {
+  headName: 'file A',
+  isNewFile: true,
+  isRenamedFile: false,
+  isDeletedFile: false,
+  isCriticalFile: false,
+  headCoverage: {
+    percentCovered: 90.23,
   },
-  baseTotals: {
-    percentCovered: 41.66667,
+  baseCoverage: {
+    percentCovered: 23.42,
   },
-  headTotals: {
-    percentCovered: 92.30769,
+  patchCoverage: {
+    percentCovered: 27.43,
   },
-  impactedFiles: [
+  changeCoverage: 58.333333333333336,
+  segments: [
     {
-      headName: 'file A',
-      headCoverage: {
-        percentCovered: 90.23,
-      },
-      baseCoverage: {
-        percentCovered: 23.42,
-      },
-      patchCoverage: {
-        percentCovered: 27.43,
-      },
-      changeCoverage: 58.333333333333336,
+      header: '@@ -0,0 +1,45 @@',
+      lines: [
+        {
+          baseNumber: null,
+          headNumber: '1',
+          baseCoverage: null,
+          headCoverage: 'H',
+          content: '+export default class Calculator {',
+        },
+        {
+          baseNumber: null,
+          headNumber: '2',
+          baseCoverage: null,
+          headCoverage: 'H',
+          content: '+  private value = 0;',
+        },
+        {
+          baseNumber: null,
+          headNumber: '3',
+          baseCoverage: null,
+          headCoverage: 'H',
+          content: '+  private calcMode = ""',
+        },
+      ],
     },
   ],
 }
 
-const mockImpactedFilesWithEmptyHeadAndBaseCoverage = {
-  patchTotals: {
-    percentCovered: 1,
-  },
-  baseTotals: {
-    percentCovered: 41.66667,
-  },
-  headTotals: {
-    percentCovered: 92.30769,
-  },
-  impactedFiles: [
-    {
-      headName: 'file B',
-      headCoverage: {
-        percentCovered: undefined,
-      },
-      baseCoverage: {
-        percentCovered: undefined,
-      },
-      patchCoverage: {
-        percentCovered: 27.43,
-      },
-      changeCoverage: 58.333333333333336,
-    },
-  ],
-}
-
-describe('useImpactedFilesComparison', () => {
+describe('useSingularImpactedFileComparison', () => {
   afterEach(() => queryClient.clear())
   let hookData
 
   function setup(data) {
     server.use(
-      graphql.query('ImpactedFilesComparison', (req, res, ctx) => {
+      graphql.query('ImpactedFileComparison', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(data))
       })
     )
 
     hookData = renderHook(
-      () => useImpactedFilesComparison({ provider, owner, repo, pullId: 10 }),
+      () =>
+        useSingularImpactedFileComparison({
+          provider,
+          owner,
+          repo,
+          pullId: 10,
+          path: 'someFile.js',
+        }),
       {
         wrapper,
       }
@@ -209,7 +208,9 @@ describe('useImpactedFilesComparison', () => {
         owner: {
           repository: {
             pull: {
-              compareWithBase: mockImpactedFilesData,
+              compareWithBase: {
+                impactedFile: mockSingularImpactedFilesData,
+              },
             },
           },
         },
@@ -227,30 +228,57 @@ describe('useImpactedFilesComparison', () => {
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
-          impactedFiles: [
+          fileLabel: 'New',
+          headName: 'file A',
+          isCriticalFile: false,
+          segments: [
             {
-              changeCoverage: 66.81,
-              hasHeadAndPatchCoverage: true,
-              headCoverage: 90.23,
-              headName: 'file A',
-              patchCoverage: 27.43,
+              header: '@@ -0,0 +1,45 @@',
+              lines: [
+                {
+                  baseCoverage: null,
+                  baseNumber: null,
+                  content: '+export default class Calculator {',
+                  headCoverage: 'H',
+                  headNumber: '1',
+                },
+                {
+                  baseCoverage: null,
+                  baseNumber: null,
+                  content: '+  private value = 0;',
+                  headCoverage: 'H',
+                  headNumber: '2',
+                },
+                {
+                  baseCoverage: null,
+                  baseNumber: null,
+                  content: '+  private calcMode = ""',
+                  headCoverage: 'H',
+                  headNumber: '3',
+                },
+              ],
             },
           ],
-          pullBaseCoverage: 41.66667,
-          pullHeadCoverage: 92.30769,
-          pullPatchCoverage: 1,
         })
       })
     })
   })
 
-  describe('when called without a numeric base and head coverage', () => {
+  describe('when called with renamed file', () => {
     beforeEach(() => {
+      const renamedImpactedFile = {
+        headName: 'file A',
+        isRenamedFile: true,
+        isCriticalFile: false,
+        segments: [],
+      }
       setup({
         owner: {
           repository: {
             pull: {
-              compareWithBase: mockImpactedFilesWithEmptyHeadAndBaseCoverage,
+              compareWithBase: {
+                impactedFile: renamedImpactedFile,
+              },
             },
           },
         },
@@ -258,25 +286,92 @@ describe('useImpactedFilesComparison', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
       })
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
-          impactedFiles: [
-            {
-              headCoverage: undefined,
-              patchCoverage: 27.43,
-              changeCoverage: NaN,
-              hasHeadAndPatchCoverage: true,
-              headName: 'file B',
-              fileName: undefined,
+          fileLabel: 'Renamed',
+          headName: 'file A',
+          isCriticalFile: false,
+          segments: [],
+        })
+      })
+    })
+  })
+
+  describe('when called with deleted file', () => {
+    beforeEach(() => {
+      const renamedImpactedFile = {
+        headName: 'file A',
+        isDeletedFile: true,
+        isCriticalFile: false,
+        segments: [],
+      }
+      setup({
+        owner: {
+          repository: {
+            pull: {
+              compareWithBase: {
+                impactedFile: renamedImpactedFile,
+              },
             },
-          ],
-          pullHeadCoverage: 92.30769,
-          pullPatchCoverage: 1,
-          pullBaseCoverage: 41.66667,
+          },
+        },
+      })
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual({
+          fileLabel: 'Deleted',
+          headName: 'file A',
+          isCriticalFile: false,
+          segments: [],
+        })
+      })
+    })
+  })
+
+  describe('when called with an unchanged file label', () => {
+    beforeEach(() => {
+      const renamedImpactedFile = {
+        headName: 'file A',
+        isNewFile: false,
+        isRenamedFile: false,
+        isDeletedFile: false,
+        isCriticalFile: false,
+        segments: [],
+      }
+      setup({
+        owner: {
+          repository: {
+            pull: {
+              compareWithBase: {
+                impactedFile: renamedImpactedFile,
+              },
+            },
+          },
+        },
+      })
+    })
+
+    describe('when data is loaded', () => {
+      beforeEach(async () => {
+        await hookData.waitFor(() => !hookData.result.current.isFetching)
+      })
+
+      it('returns the data', () => {
+        expect(hookData.result.current.data).toEqual({
+          fileLabel: null,
+          headName: 'file A',
+          isCriticalFile: false,
+          segments: [],
         })
       })
     })

@@ -166,29 +166,6 @@ function useNavLinks() {
         `/account/${provider}/${owner}/billing`,
       isExternalLink: false,
     },
-    // this and many other /account/ routes can be deleted after C4T is done
-    upgradePlan: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/billing/upgrade`,
-      isExternalLink: false,
-    },
-    cancelPlan: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/billing/cancel`,
-      isExternalLink: false,
-    },
-    invoiceTab: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/invoices`,
-      isExternalLink: false,
-      text: 'Invoice overview',
-    },
-    invoiceDetail: {
-      path: (
-        { provider = p, owner = o, id = i } = { provider: p, owner: o, id: i }
-      ) => `/account/${provider}/${owner}/invoices/${id}`,
-      isExternalLink: false,
-    },
     commits: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -248,7 +225,7 @@ function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/blobs/${ref}/${tree}`,
+      ) => `/${provider}/${owner}/${repo}/blob/${ref}/${tree}`,
       isExternalLink: false,
       text: 'File Viewer',
     },
@@ -384,10 +361,30 @@ function useNavLinks() {
       },
       isExternalLink: false,
     },
+    access: {
+      text: 'Access',
+      path: ({ provider = p } = { provider: p }) => {
+        return `/admin/${provider}/access`
+      },
+      isExternalLink: false,
+    },
+    users: {
+      text: 'Users',
+      path: ({ provider = p } = { provider: p }) => {
+        return `/admin/${provider}/users`
+      },
+      isExternalLink: false,
+    },
+    profile: {
+      text: 'Profile',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}`,
+      isExternalLink: false,
+    },
   }
 }
 
-// Seperate function which doesn't unessisarily use the router.
+// Separate function which doesn't unnecessarily use the router.
 function useStaticNavLinks() {
   return {
     root: { path: () => `${config.MARKETING_BASE_URL}`, isExternalLink: true },
@@ -562,6 +559,56 @@ function useStaticNavLinks() {
     graphsSunburst: {
       text: 'Graphs Sunburst',
       path: () => 'https://docs.codecov.com/reference/sunburst',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    repoYaml: {
+      text: 'Repository Yaml',
+      path: () => 'https://docs.codecov.com/docs/codecov-yaml#repository-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    ciProviderWorkflow: {
+      text: 'CI provider workflow',
+      path: () => 'https://circleci.com/blog/what-is-continuous-integration',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    exampleRepos: {
+      text: 'Codecov uploader and supported languages',
+      path: () => 'https://docs.codecov.com/docs/supported-languages',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    prCommentLayout: {
+      text: 'Pull request comment layout',
+      path: () => 'https://docs.codecov.com/docs/pull-request-comments#layout',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    repoConfigFeedback: {
+      text: 'New repo set up feedback',
+      path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/18',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    missingComparisonCommit: {
+      text: 'comparison commit troubleshooting',
+      path: () =>
+        'https://docs.codecov.com/docs/error-reference#section-missing-head-commit',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    missingComparisonReport: {
+      text: 'comparison report troubleshooting',
+      path: () =>
+        'https://docs.codecov.com/docs/error-reference#missing-base-report',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    flagsFeedback: {
+      text: 'New repo set up feedback',
+      path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/27',
       isExternalLink: true,
       openNewTab: true,
     },

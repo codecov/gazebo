@@ -4,6 +4,14 @@ export const UploadStateEnum = Object.freeze({
   processed: 'PROCESSED',
   complete: 'COMPLETE',
   pending: 'PENDING',
+  started: 'STARTED',
+})
+
+export const CommitStateEnum = Object.freeze({
+  ERROR: 'error',
+  SKIPPED: 'skipped',
+  COMPLETE: 'complete',
+  PENDING: 'pending',
 })
 
 export const ErrorCodeEnum = Object.freeze({
@@ -15,4 +23,11 @@ export const ErrorCodeEnum = Object.freeze({
 export const UploadTypeEnum = Object.freeze({
   UPLOADED: 'UPLOADED',
   CARRIED_FORWARD: 'CARRIEDFORWARD',
+})
+
+export const CommitErrorTypes = Object.freeze({
+  MISSING_BASE_COMMIT: 'MissingBaseCommit',
+  MISSING_HEAD_COMMIT: 'MissingHeadCommit',
+  MISSING_HEAD_REPORT: 'MissingHeadReport',
+  MISSING_BASE_REPORT: 'MissingBaseReport',
 })

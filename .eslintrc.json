@@ -14,6 +14,12 @@
     "testing-library/no-unnecessary-act": "warn",
     "testing-library/await-async-utils": "warn",
     "testing-library/prefer-find-by": "warn",
+    "testing-library/await-fire-event": "warn",
+    "testing-library/no-global-regexp-flag-in-query": "warn",
+    "testing-library/no-manual-cleanup": "warn",
+    "testing-library/prefer-user-event": "warn",
+    "testing-library/prefer-wait-for": "warn",
+    "testing-library/prefer-explicit-assert": "warn",
     "complexity": ["error", 5],
     "max-statements": ["error", 10],
     "max-nested-callbacks": ["error", 2],
@@ -119,7 +125,7 @@
   "overrides": [
     // UI Rules
     {
-      "files": ["src/ui/**/*.js", "src/ui/*.js"],
+      "files": ["src/ui/**/*.js", "src/ui/*.js", "src/ui/**/*.jsx", "src/ui/*.jsx"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -145,7 +151,7 @@
     },
     // Services Rules
     {
-      "files": ["src/services/**/*.js", "src/services/*.js"],
+      "files": ["src/services/**/*.js", "src/services/*.js", "src/services/**/*.jsx", "src/services/*.jsx"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -171,7 +177,7 @@
     },
     // All
     {
-      "files": ["src/**/*.js"],
+      "files": ["src/**/*.js", "src/**/*.jsx"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -189,7 +195,7 @@
     },
     // Testing Rules
     {
-      "files": ["*-test.js", "*.spec.js", "*.test.js"],
+      "files": ["*-test.js", "*.spec.js", "*.test.js", "*-test.jsx", "*.spec.jsx", "*.test.jsx"],
       "rules": {
         "max-nested-callbacks": "off",
         "max-statements": "off",
@@ -200,13 +206,17 @@
     },
     // Story Rules
     {
-      "files": ["*.stories.js"],
+      "files": ["*.stories.jsx"],
       "rules": {
         "import/no-anonymous-default-export": "off"
       }
     }
   ],
   "settings": {
+    "import/extensions": [
+      ".js",
+      ".jsx"
+    ],
     "import/resolver": {
       "alias": {
         "map": [
@@ -220,7 +230,8 @@
           ["assets", "./src/assets"],
           ["custom-testing-library", "./src/custom-testing-library"],
           ["config", "./src/config"]
-        ]
+        ],
+        "extensions": [".js", ".jsx", ".json"]
       }
     }
   }

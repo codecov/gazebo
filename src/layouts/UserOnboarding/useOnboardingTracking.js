@@ -1,6 +1,6 @@
 import isArray from 'lodash/isArray'
 
-import { useOnboardingLocation } from 'services/location/hooks'
+import { useOnboardingLocation } from 'services/location'
 import {
   identifySegmentEvent,
   pageSegmentEvent,
@@ -61,16 +61,6 @@ export function useOnboardingTracking() {
         },
       })
       identifySegmentEvent({ id, organization })
-    },
-    selectRepository: (user, repo) => {
-      const id = user?.trackingMetadata?.ownerid
-      trackSegmentEvent({
-        event: 'User Onboarding Selected Repo',
-        data: {
-          category: 'Onboarding',
-        },
-      })
-      identifySegmentEvent({ id, repo })
     },
     completedOnboarding: (user, data) => {
       const id = user?.trackingMetadata?.ownerid

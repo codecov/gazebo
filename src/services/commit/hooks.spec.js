@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommit, useCommitYaml } from './hooks'
+import { useCommit, useCommitYaml } from './index'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +49,7 @@ const commitData = {
           ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
           uploadType: 'uploaded',
           errors: [],
+          name: 'upload name',
         },
       },
       {
@@ -63,6 +64,7 @@ const commitData = {
           ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
           uploadType: 'uploaded',
           errors: [],
+          name: 'upload name',
         },
       },
     ],

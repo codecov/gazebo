@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-hooks'
 
-import { useOnboardingLocation } from 'services/location/hooks'
+import { useOnboardingLocation } from 'services/location'
 import {
   identifySegmentEvent,
   pageSegmentEvent,
@@ -11,7 +11,7 @@ import { useUser } from 'services/user'
 import { useOnboardingTracking } from './useOnboardingTracking'
 
 jest.mock('services/tracking/segment')
-jest.mock('services/location/hooks')
+jest.mock('services/location')
 jest.mock('services/user')
 
 const user = {
@@ -125,37 +125,6 @@ describe('useOnboardingTracking', () => {
       })
       expect(identifySegmentEvent).toHaveBeenCalledWith({
         organization: 'codecov',
-        id: 4,
-      })
-    })
-  })
-
-  describe('selectRepository', () => {
-    const selectedRepo = {
-      name: 'opentelem-ruby',
-      active: false,
-      private: false,
-      coverage: null,
-      updatedAt: null,
-      latestCommitAt: null,
-      author: { username: 'codecov' },
-    }
-
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.selectRepository(user, selectedRepo)
-      })
-    })
-
-    it('calls segment event with specific information', () => {
-      expect(trackSegmentEvent).toHaveBeenCalledWith({
-        event: 'User Onboarding Selected Repo',
-        data: {
-          category: 'Onboarding',
-        },
-      })
-      expect(identifySegmentEvent).toHaveBeenCalledWith({
-        repo: selectedRepo,
         id: 4,
       })
     })

@@ -18,7 +18,7 @@ import {
   usePlans,
   useUpdateCard,
   useUpgradePlan,
-} from './hooks'
+} from './index'
 
 jest.mock('@stripe/react-stripe-js')
 jest.mock('js-cookie')
@@ -322,9 +322,7 @@ describe('useUpgradePlan', () => {
         return waitFor(async () => {
           hookData.result.current.mutate({
             seats: 12,
-            newPlan: {
-              value: 'users-pr-inappy',
-            },
+            newPlan: 'users-pr-inappy',
           })
           // one wait for isLoading: true, one for isLoading: false
           await hookData.waitFor(() => hookData.result.current.isLoading)
@@ -341,7 +339,7 @@ describe('useUpgradePlan', () => {
       })
     })
 
-    describe('when calling the mutation, which doesnt return a checkoutSessionId', () => {
+    describe('when calling the mutation, which does not return a checkoutSessionId', () => {
       beforeEach(() => {
         server.use(
           rest.patch(
@@ -360,15 +358,13 @@ describe('useUpgradePlan', () => {
         return waitFor(() => {
           hookData.result.current.mutate({
             seats: 12,
-            newPlan: {
-              value: 'users-pr-inappy',
-            },
+            newPlan: 'users-pr-inappy',
           })
           return hookData.waitFor(() => hookData.result.current.isSuccess)
         })
       })
 
-      it('doesnt call redirectToCheckout on the Stripe client', () => {
+      it('does not call redirectToCheckout on the Stripe client', () => {
         expect(redirectToCheckout).not.toHaveBeenCalled()
       })
     })

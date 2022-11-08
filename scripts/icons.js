@@ -33,6 +33,8 @@ const enabledIcons = [
   'download',
   'chevron-right',
   'printer',
+  'cog',
+  'light-bulb',
 ]
 
 console.log('Generating Icons import')

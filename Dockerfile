@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.3
-FROM node:16.14.2-alpine3.15 as build
+FROM node:18.8.0-alpine3.15 as build
 ARG REACT_APP_ENV_ARG
 ARG REACT_APP_IS_ENTERPRISE
 ENV REACT_APP_ENV=$REACT_APP_ENV_ARG
@@ -12,6 +12,6 @@ RUN apk -U add git
 RUN npm install
 RUN npm run build && rm -f build/mockServiceWorker.js
 
-FROM alpine:3.15.4
+FROM alpine:3.15.6
 RUN mkdir -p /var/www/app
 COPY --from=build  /home/workspace/build/ /var/www/app/gazebo

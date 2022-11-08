@@ -4,6 +4,8 @@ import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import {
   useIsCurrentUserAnAdmin,
   useMyContexts,
@@ -12,7 +14,9 @@ import {
   useResyncUser,
   useUpdateProfile,
   useUser,
-} from './hooks'
+} from './index'
+
+jest.mock('config')
 
 const user = {
   username: 'TerrySmithDC',
@@ -43,10 +47,10 @@ afterAll(() => server.close())
 describe('useUser', () => {
   let hookData
 
-  function setup() {
+  function setup(userData) {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ me: user }))
+        return res(ctx.status(200), ctx.data({ me: userData }))
       })
     )
     hookData = renderHook(() => useUser(), { wrapper })
@@ -54,7 +58,10 @@ describe('useUser', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup()
+      const spy = jest.spyOn(console, 'error')
+      spy.mockImplementation(jest.fn())
+
+      setup(user)
     })
 
     it('returns isLoading', () => {
@@ -62,14 +69,33 @@ describe('useUser', () => {
     })
   })
 
-  describe('when data is loaded', () => {
-    beforeEach(() => {
-      setup()
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
+  describe('when query resolves', () => {
+    describe('there is user data', () => {
+      beforeEach(() => {
+        const spy = jest.spyOn(console, 'error')
+        spy.mockImplementation(jest.fn())
+
+        setup(user)
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the user', () => {
+        expect(hookData.result.current.data).toEqual(user)
+      })
     })
 
-    it('returns the user', () => {
-      expect(hookData.result.current.data).toEqual(user)
+    describe('there is no user data', () => {
+      beforeEach(() => {
+        const spy = jest.spyOn(console, 'error')
+        spy.mockImplementation(jest.fn())
+
+        setup(null)
+        return hookData.waitFor(() => hookData.result.current.isSuccess)
+      })
+
+      it('returns the user', () => {
+        expect(hookData.result.current.data).toEqual(null)
+      })
     })
   })
 })
@@ -100,34 +126,77 @@ describe('useUpdateProfile', () => {
     })
   }
 
-  describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('is not loading yet', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
-    describe('when calling the mutation', () => {
-      const newData = {
-        email: 'newemail@test.com',
-        name: 'new name',
-      }
-      beforeEach(async () => {
-        hookData.result.current.mutate(newData)
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
+  describe('when running in self-hosted', () => {
+    describe('when called', () => {
+      beforeEach(() => {
+        setup()
+        config.IS_ENTERPRISE = true
       })
 
-      it('returns success', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+      it('is not loading yet', () => {
+        expect(hookData.result.current.isLoading).toBeFalsy()
       })
 
-      it('updates the local cache', () => {
-        expect(queryClient.getQueryData(['currentUser', 'gh'])).toMatchObject({
-          ...user,
-          ...newData,
+      describe('when calling the mutation', () => {
+        const newData = {
+          email: 'newemail@test.com',
+          name: 'new name',
+        }
+        beforeEach(async () => {
+          hookData.result.current.mutate(newData)
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
+        })
+
+        it('returns success', () => {
+          expect(hookData.result.current.isSuccess).toBeTruthy()
+        })
+
+        it('updates the local cache', () => {
+          expect(queryClient.getQueryData(['currentUser', 'gh'])).toMatchObject(
+            {
+              ...user,
+              ...newData,
+            }
+          )
+        })
+      })
+    })
+  })
+
+  describe('when not running in self-hosted', () => {
+    describe('when called', () => {
+      beforeEach(() => {
+        setup()
+        config.IS_ENTERPRISE = false
+      })
+
+      it('is not loading yet', () => {
+        expect(hookData.result.current.isLoading).toBeFalsy()
+      })
+
+      describe('when calling the mutation', () => {
+        const newData = {
+          email: 'newemail@test.com',
+          name: 'new name',
+        }
+        beforeEach(async () => {
+          hookData.result.current.mutate(newData)
+          await hookData.waitFor(() => hookData.result.current.isLoading)
+          await hookData.waitFor(() => !hookData.result.current.isLoading)
+        })
+
+        it('returns success', () => {
+          expect(hookData.result.current.isSuccess).toBeTruthy()
+        })
+
+        it('updates the local cache', () => {
+          expect(queryClient.getQueryData(['currentUser', 'gh'])).toMatchObject(
+            {
+              ...user,
+              ...newData,
+            }
+          )
         })
       })
     })
