@@ -15,10 +15,11 @@ const headers = [
     accessorKey: 'title',
     width: 'w-6/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'ciStatus',
-    header: <span className="w-full text-right">CI status</span>,
+    header: 'CI status',
     accessorKey: 'ciStatus',
     width: 'w-2/12 lg:w-3/12',
     cell: (info) => info.getValue(),
@@ -26,9 +27,9 @@ const headers = [
   {
     id: 'coverage',
     header: (
-      <span className="w-full text-right">
+      <>
         Coverage <span className="hidden lg:inline-block">%</span>
-      </span>
+      </>
     ),
     accessorKey: 'coverage',
     width: 'w-2/12 lg:w-3/12',
@@ -36,14 +37,14 @@ const headers = [
   },
   {
     id: 'patch',
-    header: <span className="w-full text-right">Patch %</span>,
+    header: 'Patch %',
     accessorKey: 'patch',
     width: 'w-1/12',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
-    header: <span className="w-full text-right">Change</span>,
+    header: 'Change',
     accessorKey: 'change',
     width: 'w-1/12',
     cell: (info) => info.getValue(),

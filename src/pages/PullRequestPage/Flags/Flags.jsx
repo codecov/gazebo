@@ -16,6 +16,7 @@ const tableColumns = [
     accessorKey: 'name',
     width: 'w-7/12 min-w-min',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'headCoverage',
