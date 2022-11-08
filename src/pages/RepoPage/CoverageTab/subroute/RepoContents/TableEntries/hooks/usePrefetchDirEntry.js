@@ -17,17 +17,22 @@ query BranchFiles(
       branch(name: $branch) {
         head {
           pathContents(path: $path, filters: $filters) {
-            __typename
-            hits
-            misses
-            partials
-            lines
-            name
-            path
-            percentCovered
+            ... on PathContents {
+              results {
+                __typename
+                hits
+                misses
+                partials
+                lines
+                name
+                path
+                percentCovered
             ... on PathContentFile {
               isCriticalFile
             }
+              }
+            }
+            __typename
           }
         }
       }

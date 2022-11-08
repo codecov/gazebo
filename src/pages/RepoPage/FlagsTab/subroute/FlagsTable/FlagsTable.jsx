@@ -15,22 +15,20 @@ const headers = [
     accessorKey: 'name',
     cell: (info) => info.getValue(),
     width: 'w-6/12 min-w-min',
+    justifyStart: true,
   },
   {
     id: 'coverage',
-    header: (
-      <span className="flex flex-row-reverse grow text-right">Coverage %</span>
-    ),
+    header: 'Coverage %',
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
     enableSorting: false,
+    justifyStart: true,
   },
   {
     id: 'trend',
-    header: (
-      <span className="flex flex-row-reverse grow text-right">Trend</span>
-    ),
+    header: 'Trend',
     accessorKey: 'trend',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
