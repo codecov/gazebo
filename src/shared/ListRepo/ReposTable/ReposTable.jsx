@@ -56,6 +56,7 @@ const tableInactive = [
   },
 ]
 
+// eslint-disable-next-line complexity
 function transformRepoToTable({
   repos,
   owner,
@@ -78,12 +79,15 @@ function transformRepoToTable({
   }
 
   const repoPageName = !isSetup ? 'new' : 'repo'
+  const disableLink = !isCurrentUserPartOfOrg && !isSetup
+
   return repos?.map((repo) => ({
     title: (
       <RepoTitleLink
         repo={repo}
         showRepoOwner={!owner}
         pageName={repoPageName}
+        disabledLink={disableLink}
       />
     ),
     lastUpdated: (

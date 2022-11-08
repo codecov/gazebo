@@ -23,7 +23,7 @@ const queryClient = new QueryClient()
 const users = {
   data: {
     totalPages: 1,
-    results: [],
+    results: ['rula', 'terry'],
   },
 }
 

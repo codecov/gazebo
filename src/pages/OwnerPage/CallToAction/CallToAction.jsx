@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 
+import config from 'config'
+
 import { useAccountDetails } from 'services/account'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { isFreePlan } from 'shared/utils/billing'
@@ -11,8 +13,11 @@ function CallToAction({ provider, owner }) {
     owner,
     opts: {
       suspense: false,
+      enabled: !config.IS_ENTERPRISE,
     },
   })
+
+  if (config.IS_ENTERPRISE) return null
 
   return isFreePlan(accountDetails?.plan?.value) ? (
     <div className="mx-4 self-center">
@@ -37,27 +42,29 @@ function CallToAction({ provider, owner }) {
           </A>{' '}
           plan today!
         </span>
-      ) : accountDetails?.activatedUserCount < 5 ? (
-        <span>
-          Need more than 5 users?{' '}
-          <A
-            to={{ pageName: 'freeTrial' }}
-            variant="link"
-            onClick={() =>
-              trackSegmentEvent({
-                event: 'clicked button',
-                data: {
-                  label: 'request free trial',
-                  category: 'repo list cta',
-                },
-              })
-            }
-          >
-            Request
-          </A>{' '}
-          free trial
-        </span>
-      ) : null}
+      ) : (
+        accountDetails?.activatedUserCount < 5 && (
+          <span>
+            Need more than 5 users?{' '}
+            <A
+              to={{ pageName: 'freeTrial' }}
+              variant="link"
+              onClick={() =>
+                trackSegmentEvent({
+                  event: 'clicked button',
+                  data: {
+                    label: 'request free trial',
+                    category: 'repo list cta',
+                  },
+                })
+              }
+            >
+              Request
+            </A>{' '}
+            free trial
+          </span>
+        )
+      )}
     </div>
   ) : null
 }

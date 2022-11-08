@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { useBranches } from 'services/branches'
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
 import { useBranchSelector } from '../../hooks'
@@ -11,8 +12,16 @@ export function useSummary() {
     repo,
     owner,
   })
+
+  const {
+    data: branchesData,
+    isFetching: branchesIsFetching,
+    hasNextPage: branchesHasNextPage,
+    fetchNextPage: branchesFetchNextPage,
+  } = useBranches({ repo, owner, provider })
+
   const { selection, branchSelectorProps } = useBranchSelector(
-    overview?.branches,
+    branchesData?.branches,
     overview?.defaultBranch
   )
   const { data, isLoading: isLoadingRepoCoverage } = useRepoCoverage({
@@ -30,5 +39,8 @@ export function useSummary() {
     currentBranchSelected: selection,
     defaultBranch: overview?.defaultBranch,
     privateRepo: overview?.private,
+    branchesIsFetching,
+    branchesHasNextPage,
+    branchesFetchNextPage,
   }
 }

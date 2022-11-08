@@ -15,29 +15,31 @@ jest.mock('react-router-dom', () => ({
 jest.mock('./TableEntries/hooks/usePrefetchDirEntry')
 jest.mock('./TableEntries/hooks/usePrefetchFileEntry')
 
-const repoContents = [
-  {
-    name: 'flag2',
-    path: '',
-    percentCovered: 92.78,
-    __typename: 'PathContentDir',
-    hits: 456,
-    misses: 234,
-    lines: 789,
-    partials: 123,
-  },
-  {
-    name: 'app.js',
-    path: '',
-    percentCovered: 62.53,
-    isCriticalFile: false,
-    __typename: 'PathContentFile',
-    hits: 567,
-    misses: 345,
-    lines: 891,
-    partials: 233,
-  },
-]
+const repoContents = {
+  results: [
+    {
+      name: 'flag2',
+      path: '',
+      percentCovered: 92.78,
+      __typename: 'PathContentDir',
+      hits: 456,
+      misses: 234,
+      lines: 789,
+      partials: 123,
+    },
+    {
+      name: 'app.js',
+      path: '',
+      percentCovered: 62.53,
+      isCriticalFile: false,
+      __typename: 'PathContentFile',
+      hits: 567,
+      misses: 345,
+      lines: 891,
+      partials: 233,
+    },
+  ],
+}
 
 const useRepoOverviewMock = {
   data: {
@@ -121,12 +123,6 @@ describe('RepoContentsTable', () => {
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/default-branch/flag2'
       )
-
-      const file = screen.getByText('app.js')
-      expect(file).toHaveAttribute(
-        'href',
-        '/gh/Rabee-AbuBaker/another-test/blob/default-branch/app.js'
-      )
     })
   })
 
@@ -142,12 +138,6 @@ describe('RepoContentsTable', () => {
       expect(flag2Link).toHaveAttribute(
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/main/src/flag2'
-      )
-
-      const file = screen.getByText('app.js')
-      expect(file).toHaveAttribute(
-        'href',
-        '/gh/Rabee-AbuBaker/another-test/blob/main/src/app.js'
       )
     })
   })
@@ -167,10 +157,24 @@ describe('RepoContentsTable', () => {
       setup({ data: [] })
     })
 
-    it('renders empty state message', () => {
+    it('renders error message', () => {
       expect(
         screen.getByText(
           /There was a problem getting repo contents from your provider/
+        )
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when head commit has no reports', () => {
+    beforeEach(() => {
+      setup({ data: { __typename: 'MissingHeadReport' } })
+    })
+
+    it('renders no report uploaded message', () => {
+      expect(
+        screen.getByText(
+          /No coverage report uploaded for this branch head commit/
         )
       ).toBeInTheDocument()
     })

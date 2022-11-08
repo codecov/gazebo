@@ -411,6 +411,32 @@ describe('ReposTable', () => {
         })
       })
 
+      it('does not link to setup repo from repo name', async () => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/gh']}>
+              <Route path="/:provider">
+                <ActiveContext.Provider value={active}>
+                  <ReposTable {...props} />
+                </ActiveContext.Provider>
+              </Route>
+            </MemoryRouter>
+          </QueryClientProvider>
+        )
+
+        await waitFor(() => queryClient.isFetching())
+        await waitFor(() => !queryClient.isFetching())
+
+        const repo1 = await screen.findByText('Repo name 1')
+        expect(repo1).not.toHaveAttribute('href')
+
+        const repo2 = await screen.findByText('Repo name 2')
+        expect(repo2).not.toHaveAttribute('href')
+
+        const repo3 = await screen.findByText('Repo name 3')
+        expect(repo3).not.toHaveAttribute('href')
+      })
+
       it('does not show setup repo link', async () => {
         render(
           <QueryClientProvider client={queryClient}>
@@ -430,9 +456,7 @@ describe('ReposTable', () => {
         const notEnabled = await screen.findAllByText('Not yet enabled')
         expect(notEnabled.length).toBe(3)
 
-        const repo1 = screen.queryByRole('link', {
-          name: '/gh/owner1/Repo name 1/new',
-        })
+        const repo1 = screen.queryByText('setup repo')
         expect(repo1).not.toBeInTheDocument()
       })
     })

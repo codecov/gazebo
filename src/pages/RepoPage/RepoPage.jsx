@@ -9,6 +9,7 @@ import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
+import DeactivatedRepo from './CoverageTab/DeactivatedRepo'
 import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
@@ -41,7 +42,8 @@ const getRepoTabs = ({
   ...(shouldShowFlagsTab({ gazeboFlagsTab, isRepoActivated })
     ? [{ pageName: 'flagsTab' }]
     : []),
-  ...(isRepoActivated ? [{ pageName: 'commits' }, { pageName: 'pulls' }] : []),
+  { pageName: 'commits' },
+  { pageName: 'pulls' },
   ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
 ]
 
@@ -51,7 +53,7 @@ const Loader = (
   </div>
 )
 
-// eslint-disable-next-line max-statements
+// eslint-disable-next-line max-statements, complexity
 function RepoPage() {
   const { provider, owner, repo } = useParams()
   const { data: repoData } = useRepo({
@@ -59,22 +61,28 @@ function RepoPage() {
     owner,
     repo,
   })
-  const isRepoPrivate = repoData?.repository?.private
-
   const { gazeboFlagsTab } = useFlags({
     gazeboFlagsTab: false,
   })
-
   const { data: currentOwner } = useOwner({ username: owner })
-  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
+  const { data: commitsData } = useCommits({ provider, owner, repo })
 
-  const { data } = useCommits({ provider, owner, repo })
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
 
-  const repoHasCommits = data?.commits && data?.commits?.length > 0
+  const repoHasCommits =
+    commitsData?.commits && commitsData?.commits?.length > 0
+  const isRepoActivated = repoData?.repository?.activated
+  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
+  const isRepoPrivate = !!repoData?.repository?.private
 
-  if (isRepoPrivate && !isCurrentUserPartOfOrg) {
+  // if there is no repo data
+  if (!repoData?.repository) {
+    return <NotFound />
+  }
+  // if the repo is private and the user is not associated
+  // then hard redirect to provider
+  else if (isRepoPrivate && !isCurrentUserPartOfOrg) {
     return <NotFound />
   }
 
@@ -82,7 +90,7 @@ function RepoPage() {
     <RepoBreadcrumbProvider>
       <div className="flex flex-col gap-4 h-full">
         <RepoBreadcrumb />
-        {repoHasCommits && (
+        {repoHasCommits && isRepoActivated && (
           <TabNavigation
             tabs={getRepoTabs({
               matchTree,
@@ -94,41 +102,60 @@ function RepoPage() {
           />
         )}
         <Suspense fallback={Loader}>
-          <Switch>
-            <Route path={path} exact>
-              <CoverageTab />
-            </Route>
-            {/* TODO: Move to it's own layout */}
-            <Route path={`${path}/new`} exact>
-              <NewRepoTab />
-            </Route>
-            <Route path={`${path}/flags`} exact>
-              <FlagsTab />
-            </Route>
-            <Route path={`${path}/commits`} exact>
-              <CommitsTab />
-            </Route>
-            <Route path={`${path}/pulls`} exact>
-              <PullsTab />
-            </Route>
-            <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
-            <Route path={`${path}/settings`}>
-              <SettingsTab />
-            </Route>
-            <Route path={`${path}/tree/:branch/:path+`} exact>
-              <CoverageTab />
-            </Route>
-            <Route path={`${path}/tree/:branch`} exact>
-              <CoverageTab />
-            </Route>
-            <Route path={`${path}/blob/:ref/:path+`} exact>
-              <CoverageTab />
-            </Route>
-            <Redirect
-              from="/:provider/:owner/:repo/*"
-              to="/:provider/:owner/:repo"
-            />
-          </Switch>
+          {isRepoActivated ? (
+            <Switch>
+              <Route path={path} exact>
+                <CoverageTab />
+              </Route>
+              <Route path={`${path}/flags`} exact>
+                <FlagsTab />
+              </Route>
+              <Route path={`${path}/commits`} exact>
+                <CommitsTab />
+              </Route>
+              <Route path={`${path}/pulls`} exact>
+                <PullsTab />
+              </Route>
+              <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
+              <Route path={`${path}/settings`}>
+                <SettingsTab />
+              </Route>
+              <Route path={`${path}/tree/:branch/:path+`} exact>
+                <CoverageTab />
+              </Route>
+              <Route path={`${path}/tree/:branch`} exact>
+                <CoverageTab />
+              </Route>
+              <Route path={`${path}/blob/:ref/:path+`} exact>
+                <CoverageTab />
+              </Route>
+              <Redirect
+                from="/:provider/:owner/:repo/*"
+                to="/:provider/:owner/:repo"
+              />
+            </Switch>
+          ) : (
+            <>
+              {repoHasCommits ? (
+                <Switch>
+                  <Route path={path}>
+                    <DeactivatedRepo />
+                  </Route>
+                  <Route path={`${path}/settings`}>
+                    <SettingsTab />
+                  </Route>
+                </Switch>
+              ) : (
+                <Switch>
+                  <Route path={`${path}/new`} exact>
+                    <NewRepoTab />
+                  </Route>
+                  <Redirect from={path} to={`${path}/new`} />
+                  <Redirect from={`${path}/*`} to={`${path}/new`} />
+                </Switch>
+              )}
+            </>
+          )}
         </Suspense>
       </div>
     </RepoBreadcrumbProvider>

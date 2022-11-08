@@ -4,8 +4,8 @@ import { Redirect } from 'react-router-dom'
 import { useSetCrumbs } from 'pages/RepoPage/context'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
+import Select from 'ui/NewSelect'
 import Progress from 'ui/Progress'
-import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
 import CoverageTrend from './CoverageTrend'
@@ -14,7 +14,14 @@ import { useCoverageRedirect, useSummary } from './hooks'
 const Summary = () => {
   const setCrumbs = useSetCrumbs()
   const { setNewPath, redirectState } = useCoverageRedirect()
-  const { data, currentBranchSelected, branchSelectorProps } = useSummary()
+  const {
+    data,
+    currentBranchSelected,
+    branchSelectorProps,
+    branchesFetchNextPage,
+    branchesHasNextPage,
+    branchesIsFetching,
+  } = useSummary()
   useLayoutEffect(() => {
     setCrumbs([
       {
@@ -56,6 +63,8 @@ const Summary = () => {
               onChange={onChangeHandler}
               variant="gray"
               renderItem={(item) => <span>{item?.name}</span>}
+              isLoading={branchesIsFetching}
+              onLoadMore={() => branchesHasNextPage && branchesFetchNextPage()}
             />
           </span>
 

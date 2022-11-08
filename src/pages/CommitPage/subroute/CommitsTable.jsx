@@ -2,7 +2,6 @@ import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { useMemo } from 'react'
 
-import { getFilenameFromFilePath } from 'shared/utils/url'
 import A from 'ui/A'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
@@ -76,18 +75,15 @@ function createTable({ tableData }) {
 
     return {
       name: (
-        <div className="flex flex-col">
+        <div className="flex flex-col break-all">
           <A
             to={{
               pageName: 'commitFile',
               options: { commit, path: headName },
             }}
           >
-            <span>{getFilenameFromFilePath(headName)}</span>
-          </A>
-          <span className="text-xs mt-0.5 text-ds-gray-quinary">
             {headName}
-          </span>
+          </A>
         </div>
       ),
       coverage: (
