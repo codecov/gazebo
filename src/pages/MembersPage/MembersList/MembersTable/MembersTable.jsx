@@ -21,6 +21,7 @@ const columns = [
     accessorKey: 'username',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'type',
