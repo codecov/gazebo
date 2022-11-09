@@ -21,6 +21,105 @@ const TableClasses = {
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
 
+function _renderHead({ table, columnsWidth, onSort, colJustifyStart }) {
+  return (
+    <thead data-testid="header-row">
+      {
+        // Loop over the header rows
+        table.getHeaderGroups().map((headerGroup, key) => (
+          <tr key={key} className={TableClasses.headerRow}>
+            {
+              // Loop over the headers in each row
+              headerGroup.headers.map((header, key) => {
+                return (
+                  <th
+                    key={key}
+                    className={cs(
+                      TableClasses.headerCell,
+                      columnsWidth[header.id]
+                    )}
+                  >
+                    <div
+                      className={cs('flex flex-row grow', {
+                        'gap-1 items-center cursor-pointer select-none':
+                          !!onSort,
+                        'justify-start': colJustifyStart[header.id],
+                        'justify-end': !colJustifyStart[header.id],
+                      })}
+                      {...(!!onSort && {
+                        onClick: header.column.getToggleSortingHandler(),
+                      })}
+                    >
+                      {header.column.getIsSorted() && (
+                        <span className="text-ds-blue-darker">
+                          {
+                            {
+                              asc: <Icon name="arrow-up" size="sm" />,
+                              desc: <Icon name="arrow-down" size="sm" />,
+                            }[header.column.getIsSorted()]
+                          }
+                        </span>
+                      )}
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </div>
+                  </th>
+                )
+              })
+            }
+          </tr>
+        ))
+      }
+    </thead>
+  )
+}
+
+function _renderBody({ table, columnsWidth, renderSubComponent, enableHover }) {
+  // Apply the table body props
+  return (
+    <tbody data-testid="body-row">
+      {
+        // Loop over the table rows
+        table.getRowModel().rows.map((row) => {
+          return (
+            <Fragment key={uniqueId(`row_${row.id}_`)}>
+              <tr
+                className={cs(TableClasses.tableRow, {
+                  'hover:bg-ds-gray-primary': enableHover,
+                })}
+              >
+                {
+                  // Loop over the rows cells
+                  row.getVisibleCells().map((cell) => {
+                    return (
+                      <td
+                        key={uniqueId(`cell_${cell.id}_`)}
+                        className={cs(
+                          TableClasses.tableCell,
+                          columnsWidth[cell.column.columnDef.accessorKey]
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    )
+                  })
+                }
+              </tr>
+              {/* TODO: add getCanExpand() condition here when tanstack table is updated at least to 8.5.13  */}
+              {row.getIsExpanded() && renderSubComponent({ row })}
+            </Fragment>
+          )
+        })
+      }
+    </tbody>
+  )
+}
+
 /*
  * TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it.
  * Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page impacted files table
@@ -70,97 +169,8 @@ const Table = memo(function ({
   return (
     <div className="overflow-x-auto">
       <table className="flex flex-col mx-4 sm:mx-0">
-        <thead data-testid="header-row">
-          {
-            // Loop over the header rows
-            table.getHeaderGroups().map((headerGroup, key) => (
-              <tr key={key} className={TableClasses.headerRow}>
-                {
-                  // Loop over the headers in each row
-                  // eslint-disable-next-line max-nested-callbacks
-                  headerGroup.headers.map((header, key) => {
-                    return (
-                      <th
-                        key={key}
-                        className={cs(
-                          TableClasses.headerCell,
-                          columnsWidth[header.id]
-                        )}
-                      >
-                        <div
-                          className={cs('flex flex-row grow', {
-                            'gap-1 items-center cursor-pointer select-none':
-                              !!onSort,
-                            'justify-start': colJustifyStart[header.id],
-                            'justify-end': !colJustifyStart[header.id],
-                          })}
-                          {...(!!onSort && {
-                            onClick: header.column.getToggleSortingHandler(),
-                          })}
-                        >
-                          {header.column.getIsSorted() && (
-                            <span className="text-ds-blue-darker">
-                              {
-                                {
-                                  asc: <Icon name="arrow-up" size="sm" />,
-                                  desc: <Icon name="arrow-down" size="sm" />,
-                                }[header.column.getIsSorted()]
-                              }
-                            </span>
-                          )}
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </div>
-                      </th>
-                    )
-                  })
-                }
-              </tr>
-            ))
-          }
-        </thead>
-        {/* Apply the table body props */}
-        <tbody data-testid="body-row">
-          {
-            // Loop over the table rows
-            table.getRowModel().rows.map((row) => {
-              return (
-                <Fragment key={uniqueId(`row_${row.id}_`)}>
-                  <tr
-                    className={cs(TableClasses.tableRow, {
-                      'hover:bg-ds-gray-primary': enableHover,
-                    })}
-                  >
-                    {
-                      // Loop over the rows cells
-                      // eslint-disable-next-line max-nested-callbacks
-                      row.getVisibleCells().map((cell) => {
-                        return (
-                          <td
-                            key={uniqueId(`cell_${cell.id}_`)}
-                            className={cs(
-                              TableClasses.tableCell,
-                              columnsWidth[cell.column.columnDef.accessorKey]
-                            )}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        )
-                      })
-                    }
-                  </tr>
-                  {/* TODO: add getCanExpan() condition here when tanstack table is updated at least to 8.5.13  */}
-                  {row.getIsExpanded() && renderSubComponent({ row })}
-                </Fragment>
-              )
-            })
-          }
-        </tbody>
+        {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
+        {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
       </table>
     </div>
   )
