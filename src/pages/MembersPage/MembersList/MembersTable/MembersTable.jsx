@@ -71,7 +71,7 @@ const createTable = ({
                 {name || username}
               </div>
             ),
-            type: <p>{isAdmin ? 'Admin' : 'Developer'}</p>,
+            type: <p className="truncate">{isAdmin ? 'Admin' : 'Developer'}</p>,
             email: <p className="truncate">{email}</p>,
             activationStatus: (
               <div className="flex flex-row-reverse grow">
