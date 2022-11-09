@@ -38,6 +38,7 @@ const columns = [
         </div>
       )
     },
+    justifyStart: true,
   },
   {
     id: 'head',

@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Switch } from 'react-router-dom'
+
+import { useInvoices } from 'services/account'
 
 import LatestInvoiceCard from './LatestInvoiceCard'
+
+jest.mock('services/account')
 
 const invoice = {
   created: 1595270468,
@@ -12,21 +16,23 @@ const invoice = {
 }
 
 describe('LatestInvoiceCard', () => {
-  let wrapper
-  function setup(invoice) {
-    const props = {
-      invoice,
-      provider: 'gh',
-      owner: 'codecov',
-    }
-    wrapper = render(<LatestInvoiceCard {...props} />, {
-      wrapper: MemoryRouter,
-    })
+  function setup({ invoices }) {
+    useInvoices.mockReturnValue({ data: invoices })
+
+    render(
+      <MemoryRouter initialEntries={['/plan/gh/codecov']}>
+        <Switch>
+          <Route path="/plan/:provider/:owner" exact>
+            <LatestInvoiceCard />
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    )
   }
 
   describe('when rendering with an invoice', () => {
     beforeEach(() => {
-      setup(invoice)
+      setup({ invoices: [invoice] })
     })
 
     it('renders the total of the invoice / 100', () => {
@@ -42,11 +48,11 @@ describe('LatestInvoiceCard', () => {
 
   describe('when rendering with no invoice', () => {
     beforeEach(() => {
-      setup(null)
+      setup({ invoices: [] })
     })
 
     it('renders nothing', () => {
-      expect(wrapper.container).toBeEmptyDOMElement()
+      expect(screen.queryByText(/See all invoices/)).not.toBeInTheDocument()
     })
   })
 })

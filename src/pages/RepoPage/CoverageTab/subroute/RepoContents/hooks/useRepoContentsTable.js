@@ -76,6 +76,7 @@ const headers = [
     accessorKey: 'name',
     cell: (info) => info.getValue(),
     width: 'w-9/12 min-w-min',
+    justifyStart: true,
   },
   {
     id: 'lines',
@@ -107,11 +108,7 @@ const headers = [
   },
   {
     id: 'coverage',
-    header: (
-      <span className="flex flex-row-reverse grow text-right">
-        file coverage %
-      </span>
-    ),
+    header: 'Coverage %',
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
