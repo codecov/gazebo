@@ -21,6 +21,44 @@ const TableClasses = {
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
 
+function _renderHeadColumn({ colJustifyStart, header }) {
+  // if we are setting to justify start render arrow after text
+  if (colJustifyStart[header.id]) {
+    return (
+      <>
+        {flexRender(header.column.columnDef.header, header.getContext())}
+        {header.column.getIsSorted() && (
+          <span className="text-ds-blue-darker">
+            {
+              {
+                asc: <Icon name="arrow-up" size="sm" />,
+                desc: <Icon name="arrow-down" size="sm" />,
+              }[header.column.getIsSorted()]
+            }
+          </span>
+        )}
+      </>
+    )
+  }
+
+  // if we are not setting justify start render arrow before text
+  return (
+    <>
+      {header.column.getIsSorted() && (
+        <span className="text-ds-blue-darker">
+          {
+            {
+              asc: <Icon name="arrow-up" size="sm" />,
+              desc: <Icon name="arrow-down" size="sm" />,
+            }[header.column.getIsSorted()]
+          }
+        </span>
+      )}
+      {flexRender(header.column.columnDef.header, header.getContext())}
+    </>
+  )
+}
+
 function _renderHead({ table, columnsWidth, onSort, colJustifyStart }) {
   return (
     <thead data-testid="header-row">
@@ -50,20 +88,7 @@ function _renderHead({ table, columnsWidth, onSort, colJustifyStart }) {
                         onClick: header.column.getToggleSortingHandler(),
                       })}
                     >
-                      {header.column.getIsSorted() && (
-                        <span className="text-ds-blue-darker">
-                          {
-                            {
-                              asc: <Icon name="arrow-up" size="sm" />,
-                              desc: <Icon name="arrow-down" size="sm" />,
-                            }[header.column.getIsSorted()]
-                          }
-                        </span>
-                      )}
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      {_renderHeadColumn({ colJustifyStart, header })}
                     </div>
                   </th>
                 )
