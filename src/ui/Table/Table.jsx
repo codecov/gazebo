@@ -21,17 +21,20 @@ const TableClasses = {
     'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
 }
 
-// TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it. Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page imapcted files table
+/*
+ * TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it.
+ * Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page impacted files table
+ */
 const Table = memo(function ({
   data,
   columns,
   onSort,
-  defaultSort = {},
+  defaultSort = [],
   renderSubComponent = null,
 }) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])
-  const [sorting, setSorting] = useState([defaultSort])
+  const [sorting, setSorting] = useState(defaultSort)
 
   const table = useReactTable({
     data: _data,
@@ -165,10 +168,12 @@ Table.propTypes = {
   columns: PropTypes.array.isRequired,
   onSort: PropTypes.func,
   renderSubComponent: PropTypes.func,
-  defaultSort: PropTypes.shape({
-    id: PropTypes.string,
-    desc: PropTypes.bool,
-  }),
+  defaultSort: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      desc: PropTypes.bool,
+    })
+  ),
 }
 
 export default Table
