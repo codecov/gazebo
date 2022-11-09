@@ -138,11 +138,11 @@ function RepoPage() {
             <>
               {repoHasCommits ? (
                 <Switch>
-                  <Route path={path}>
-                    <DeactivatedRepo />
-                  </Route>
                   <Route path={`${path}/settings`}>
                     <SettingsTab />
+                  </Route>
+                  <Route path={path}>
+                    <DeactivatedRepo />
                   </Route>
                 </Switch>
               ) : (
