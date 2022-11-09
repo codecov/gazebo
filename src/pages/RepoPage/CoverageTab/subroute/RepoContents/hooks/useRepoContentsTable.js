@@ -108,7 +108,7 @@ const headers = [
   },
   {
     id: 'coverage',
-    header: 'file coverage %',
+    header: 'coverage %',
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-w-min',
