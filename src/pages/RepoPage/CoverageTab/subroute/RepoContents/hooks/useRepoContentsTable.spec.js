@@ -129,6 +129,13 @@ describe('useRepoContentsTable', () => {
     expect(hookData.result.current.isLoading).toEqual(false)
   })
 
+  it('renders the correct headers', async () => {
+    expect(hookData.result.current.headers[0].header).toStrictEqual('Files')
+    expect(hookData.result.current.headers[5].header).toStrictEqual(
+      'Coverage %'
+    )
+  })
+
   describe('when there is no data', () => {
     it('returns an empty array', () => {
       setup({ repoData: emptyRepoContentsMock })
