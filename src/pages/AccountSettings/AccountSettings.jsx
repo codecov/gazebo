@@ -9,6 +9,7 @@ import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 import { isEnterprisePlan } from 'shared/utils/billing'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
@@ -39,9 +40,11 @@ function AccountSettings() {
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   const yamlTab = `/account/${provider}/${owner}/yaml/`
+  const { orgUploadToken } = useFlags({ orgUploadToken: false })
 
   const { data: accountDetails } = useAccountDetails({ owner, provider })
-  const isEnterprise = isEnterprisePlan(accountDetails?.plan?.value)
+  const showOrgUploadToken =
+    orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
 
   return (
     <Elements stripe={stripePromise}>
@@ -66,7 +69,7 @@ function AccountSettings() {
                 <AccessTab provider={provider} />
               </Route>
             )}
-            {isEnterprise && (
+            {showOrgUploadToken && (
               <Route path="/account/:provider/:owner/orgUploadToken" exact>
                 <OrgUploadToken />
               </Route>
