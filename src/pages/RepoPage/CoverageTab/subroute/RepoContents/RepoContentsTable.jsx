@@ -20,6 +20,29 @@ Loader.propTypes = {
   isLoading: PropType.bool,
 }
 
+function RepoContentsResult({ isSearching, isMissingHeadReport }) {
+  if (isMissingHeadReport) {
+    return (
+      <p className="flex justify-center flex-1">
+        No coverage report uploaded for this branch head commit
+      </p>
+    )
+  } else if (isSearching) {
+    return <p className="flex justify-center flex-1">No results found</p>
+  } else {
+    return (
+      <p className="flex justify-center flex-1">
+        There was a problem getting repo contents from your provider
+      </p>
+    )
+  }
+}
+
+RepoContentsResult.propTypes = {
+  isSearching: PropType.bool,
+  isMissingHeadReport: PropType.bool,
+}
+
 function RepoContentsTable() {
   const {
     paginatedData,
@@ -29,18 +52,23 @@ function RepoContentsTable() {
     isSearching,
     handlePaginationClick,
     hasNextPage,
+    isMissingHeadReport,
   } = useRepoContentsTable()
 
   return (
     <>
-      <Table data={paginatedData} columns={headers} onSort={handleSort} />
+      <Table
+        data={paginatedData}
+        columns={headers}
+        onSort={handleSort}
+        defaultSort={{ id: 'coverage', desc: false }}
+      />
       <Loader isLoading={isLoading} />
       {paginatedData?.length === 0 && !isLoading && (
-        <p className="flex justify-center flex-1">
-          {isSearching
-            ? 'No results found'
-            : 'There was a problem getting repo contents from your provider'}
-        </p>
+        <RepoContentsResult
+          isSearching={isSearching}
+          isMissingHeadReport={isMissingHeadReport}
+        />
       )}
       {hasNextPage && (
         <div className="w-full mt-4 flex justify-center">

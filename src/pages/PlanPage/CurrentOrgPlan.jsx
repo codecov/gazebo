@@ -32,9 +32,7 @@ function CurrentOrgPlan() {
                 provider={provider}
                 owner={owner}
               />
-              <LatestInvoiceCard
-                invoice={accountDetails?.subscriptionDetail?.latestInvoice}
-              />
+              <LatestInvoiceCard />
             </>
           )}
         </div>

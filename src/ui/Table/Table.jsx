@@ -22,10 +22,16 @@ const TableClasses = {
 }
 
 // TODO: the table component needs to be reworked to have the ability to embed any type of markup inside of it. Anything that doesn't follow the table syntax will lead to an accessibility error, e.g. compare page imapcted files table
-function Table({ data, columns, onSort, renderSubComponent = null }) {
+function Table({
+  data,
+  columns,
+  onSort,
+  defaultSort = {},
+  renderSubComponent = null,
+}) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])
-  const [sorting, setSorting] = useState([])
+  const [sorting, setSorting] = useState([defaultSort])
 
   const table = useReactTable({
     data: _data,
@@ -49,6 +55,14 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
     {}
   )
 
+  const colJustifyStart = columns.reduce(
+    (acc, current) => ({
+      ...acc,
+      [current.accessorKey]: current.justifyStart,
+    }),
+    {}
+  )
+
   return (
     <div className="overflow-x-auto">
       <table className="flex flex-col mx-4 sm:mx-0">
@@ -69,19 +83,16 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
                         )}
                       >
                         <div
-                          {...(!!onSort
-                            ? {
-                                className:
-                                  'flex flex-row grow gap-1 items-center cursor-pointer select-none',
-                                onClick:
-                                  header.column.getToggleSortingHandler(),
-                              }
-                            : { className: 'flex flex-row grow' })}
+                          className={cs('flex flex-row grow', {
+                            'gap-1 items-center cursor-pointer select-none':
+                              !!onSort,
+                            'justify-start': colJustifyStart[header.id],
+                            'justify-end': !colJustifyStart[header.id],
+                          })}
+                          {...(!!onSort && {
+                            onClick: header.column.getToggleSortingHandler(),
+                          })}
                         >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
                           {header.column.getIsSorted() && (
                             <span className="text-ds-blue-darker">
                               {
@@ -91,6 +102,10 @@ function Table({ data, columns, onSort, renderSubComponent = null }) {
                                 }[header.column.getIsSorted()]
                               }
                             </span>
+                          )}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
                           )}
                         </div>
                       </th>
@@ -146,6 +161,10 @@ Table.propTypes = {
   columns: PropTypes.array.isRequired,
   onSort: PropTypes.func,
   renderSubComponent: PropTypes.func,
+  defaultSort: PropTypes.shape({
+    id: PropTypes.string,
+    desc: PropTypes.bool,
+  }),
 }
 
 export default Table
