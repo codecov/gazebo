@@ -29,6 +29,7 @@ const columns = [
     accessorKey: 'type',
     cell: (info) => info.getValue(),
     width: 'w-2/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'email',
@@ -36,6 +37,7 @@ const columns = [
     accessorKey: 'email',
     cell: (info) => info.getValue(),
     width: 'w-4/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'activationStatus',
@@ -64,13 +66,13 @@ const createTable = ({
 
           return {
             username: (
-              <div className="flex flex-row gap-3 items-center">
+              <div className="flex flex-row gap-3 items-center truncate">
                 <Avatar user={user} />
                 {name || username}
               </div>
             ),
             type: <p>{isAdmin ? 'Admin' : 'Developer'}</p>,
-            email: <p>{email}</p>,
+            email: <p className="truncate">{email}</p>,
             activationStatus: (
               <div className="flex flex-row-reverse grow">
                 <Toggle
