@@ -11,12 +11,14 @@ let borderedClasses = 'border-ds-grey-secondary border-2'
 function Avatar({ user, bordered, ariaLabel }) {
   const classes = cs(baseClasses, bordered ? borderedClasses : '')
 
-  const { src, error } = useImage({
+  const { src, error, isLoading } = useImage({
     src: user.avatarUrl,
   })
 
   const letter = user.username ? user.username[0] : '?'
   const alt = 'avatar'
+
+  if (isLoading) return null
 
   return (
     <>
