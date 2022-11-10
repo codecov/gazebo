@@ -17,15 +17,17 @@ const queryClient = new QueryClient({
   },
 })
 
+const defaultProps = { botErrorsCount: 2 }
+
 describe('BotErrorBanner', () => {
-  function setup({ provider, integrationId = null }) {
+  function setup({ provider, integrationId = null, props = defaultProps }) {
     useAccountDetails.mockReturnValue({ data: { integrationId } })
 
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[`/${provider}/codecov`]}>
           <Route path="/:provider/:owner">
-            <BotErrorBanner />
+            <BotErrorBanner {...props} />
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -83,6 +85,16 @@ describe('BotErrorBanner', () => {
           /The bot posts the coverage report comment on merge request; since the bot is missing the report will not be visible./
         )
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered without errors', () => {
+    beforeEach(() => {
+      setup({ provider: 'gl', props: { botErrorsCount: 0 } })
+    })
+
+    it('renders heading of banner', () => {
+      expect(screen.queryByText(/Team bot/)).not.toBeInTheDocument()
     })
   })
 })

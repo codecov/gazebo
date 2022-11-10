@@ -1,3 +1,4 @@
+import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
@@ -32,8 +33,12 @@ function useProviderSetting() {
   return { ghWithNoApp, bbOrhasGhApp, glProvider }
 }
 
-function BotErrorBanner() {
+function BotErrorBanner({ botErrorsCount }) {
   const { ghWithNoApp, bbOrhasGhApp, glProvider } = useProviderSetting()
+
+  if (botErrorsCount === 0) {
+    return null
+  }
 
   return (
     <Banner variant="warning">
@@ -71,6 +76,10 @@ function BotErrorBanner() {
       </BannerContent>
     </Banner>
   )
+}
+
+BotErrorBanner.propTypes = {
+  botErrorsCount: PropType.number,
 }
 
 export default BotErrorBanner
