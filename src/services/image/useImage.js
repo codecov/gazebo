@@ -18,13 +18,13 @@ export function imagePromiseFactory({ src }) {
 }
 
 export function useImage({ src }) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['ImageUrl', src],
-    queryFn: async () => imagePromiseFactory({ src }),
-    options: {
+  const { data, isLoading, error } = useQuery(
+    ['ImageUrl', src],
+    async () => imagePromiseFactory({ src }),
+    {
       suspense: false,
-    },
-  })
+    }
+  )
 
   return {
     src: data,
