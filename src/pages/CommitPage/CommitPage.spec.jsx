@@ -216,7 +216,7 @@ describe('CommitPage', () => {
     })
   })
 
-  describe('When render on public repos', () => {
+  describe('When render on public repos and current user is not part of org', () => {
     function setup(data) {
       useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: false } })
       useCommit.mockReturnValue(data)
@@ -235,7 +235,7 @@ describe('CommitPage', () => {
         </MemoryRouter>
       )
     }
-    describe('current user is not a part of org', () => {
+    describe('renders the correct data', () => {
       const dataReturned = {
         commit: {
           state: 'COMPLETE',
@@ -265,14 +265,6 @@ describe('CommitPage', () => {
       })
       it('renders rest of the page', () => {
         expect(screen.getByText(/Commit YAML is invalid/)).toBeInTheDocument()
-      })
-    })
-    describe('renders empty data', () => {
-      beforeEach(() => {
-        setup({ data: { commit: {} }, isSuccess: true })
-      })
-      it('renders the Uploads', () => {
-        expect(screen.getByText(/Uploads/)).toBeInTheDocument()
       })
     })
   })
