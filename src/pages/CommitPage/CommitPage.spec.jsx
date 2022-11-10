@@ -7,6 +7,7 @@ import { useAccountDetails } from 'services/account'
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
 import { useFileWithMainCoverage } from 'services/file'
+import { useOwner } from 'services/user'
 
 import CommitPage from './CommitPage'
 
@@ -21,6 +22,7 @@ jest.mock(
   () => () => 'Commit Details Summary'
 )
 jest.mock('./ErroredUploads', () => () => 'Errored Uploads')
+jest.mock('services/user')
 
 const dataReturned = {
   commit: {
@@ -96,6 +98,7 @@ const fileData = {
 
 describe('CommitPage', () => {
   function setup(data) {
+    useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: true } })
     useCommit.mockReturnValue(data)
     useFileWithMainCoverage.mockReturnValue(fileData)
     useAccountDetails.mockReturnValue({ data: {} })
@@ -133,6 +136,7 @@ describe('CommitPage', () => {
   })
   describe('Errored Uploads', () => {
     function setup(data) {
+      useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: true } })
       useCommit.mockReturnValue(data)
       useAccountDetails.mockReturnValue({ data: {} })
       useCommitErrors.mockReturnValue({
@@ -175,6 +179,9 @@ describe('CommitPage', () => {
   })
   describe('Not Found', () => {
     function setup(data) {
+      useOwner.mockReturnValue({
+        data: { isCurrentUserPartOfOrg: true },
+      })
       useCommit.mockReturnValue(data)
       useAccountDetails.mockReturnValue({ data: {} })
       useCommitErrors.mockReturnValue({
@@ -208,8 +215,65 @@ describe('CommitPage', () => {
       })
     })
   })
+
+  describe('When render on public repos and current user is not part of org', () => {
+    function setup(data) {
+      useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: false } })
+      useCommit.mockReturnValue(data)
+      useAccountDetails.mockReturnValue({ data: {} })
+      useCommitErrors.mockReturnValue({
+        data: {
+          yamlErrors: [{ errorCode: 'invalid_yaml' }],
+          botErrors: [{ errorCode: 'repo_bot_invalid' }],
+        },
+      })
+      render(
+        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            <CommitPage />
+          </Route>
+        </MemoryRouter>
+      )
+    }
+    describe('renders the correct data', () => {
+      const dataReturned = {
+        commit: {
+          state: 'COMPLETE',
+          uploads: [
+            {
+              state: 'ERROR',
+              provider: 'travis',
+              createdAt: '2020-08-25T16:36:19.559474+00:00',
+              updatedAt: '2020-08-25T16:36:19.679868+00:00',
+              flags: ['flagone'],
+              downloadUrl:
+                '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+              ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+              uploadType: 'uploaded',
+            },
+          ],
+        },
+      }
+      beforeEach(() => {
+        setup({ data: dataReturned, isLoading: false })
+      })
+      it('does not render bot errors', () => {
+        expect(screen.queryByText(/Team bot/)).not.toBeInTheDocument()
+      })
+      it('does not render 404', () => {
+        expect(screen.queryByText(/Error 404/)).not.toBeInTheDocument()
+      })
+      it('renders rest of the page', () => {
+        expect(screen.getByText(/Commit YAML is invalid/)).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('Commits Table', () => {
     function setup(data) {
+      useOwner.mockReturnValue({
+        data: { isCurrentUserPartOfOrg: true },
+      })
       useCommit.mockReturnValue(data)
       useAccountDetails.mockReturnValue({ data: {} })
       useCommitErrors.mockReturnValue({
@@ -264,6 +328,7 @@ describe('CommitPage', () => {
   })
   describe('FileViewer', () => {
     function setup(data) {
+      useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: true } })
       useCommitErrors.mockReturnValue({
         data: {
           yamlErrors: [{ errorCode: 'invalid_yaml' }],
