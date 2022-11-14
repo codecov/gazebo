@@ -10,7 +10,7 @@ describe('config', () => {
       expect(removeReactAppPrefix(obj)).toEqual({ TEST_ENV: 'test env' })
     })
 
-    describe('sets IS_ENTERPRISE to boolean', () => {
+    describe('sets IS_SELF_HOSTED to boolean', () => {
       it('sets to true', () => {
         const obj = {
           ENV: 'enterprise',
@@ -18,7 +18,7 @@ describe('config', () => {
 
         expect(removeReactAppPrefix(obj)).toEqual({
           ENV: 'enterprise',
-          IS_ENTERPRISE: true,
+          IS_SELF_HOSTED: true,
         })
       })
       it('sets to false', () => {
@@ -28,7 +28,7 @@ describe('config', () => {
 
         expect(removeReactAppPrefix(obj)).toEqual({
           ENV: 'production',
-          IS_ENTERPRISE: false,
+          IS_SELF_HOSTED: false,
         })
       })
       it('sets skips if undefined', () => {

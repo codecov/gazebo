@@ -95,7 +95,7 @@ describe('App', () => {
   })
 
   describe('rendering admin settings page', () => {
-    describe('IS_ENTERPRISE is true', () => {
+    describe('IS_SELF_HOSTED is true', () => {
       beforeEach(() => {
         config.IS_SELF_HOSTED = true
       })
@@ -166,7 +166,7 @@ describe('App', () => {
   })
 
   describe('rendering enterprise landing page', () => {
-    describe('IS_ENTERPRISE is true', () => {
+    describe('IS_SELF_HOSTED is true', () => {
       beforeEach(() => {
         config.IS_SELF_HOSTED = true
       })
@@ -208,7 +208,7 @@ describe('App', () => {
   })
 
   describe('rendering home page', () => {
-    describe('IS_ENTERPRISE is false', () => {
+    describe('IS_SELF_HOSTED is false', () => {
       beforeAll(() => {
         config.IS_SELF_HOSTED = false
       })
@@ -230,7 +230,7 @@ describe('App', () => {
   })
 
   describe('rendering login page', () => {
-    describe('IS_ENTERPRISE is true', () => {
+    describe('IS_SELF_HOSTED is true', () => {
       beforeEach(() => {
         config.IS_SELF_HOSTED = true
       })
@@ -264,7 +264,7 @@ describe('App', () => {
       })
     })
 
-    describe('IS_ENTERPRISE is false', () => {
+    describe('IS_SELF_HOSTED is false', () => {
       beforeAll(() => {
         config.IS_SELF_HOSTED = false
       })
