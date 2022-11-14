@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 
+import config from 'config'
+
 import { useAccountDetails } from 'services/account'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { isFreePlan } from 'shared/utils/billing'
@@ -11,28 +13,37 @@ function RequestButton({ owner, provider }) {
     owner,
     opts: {
       suspense: false,
+      enabled: !config.IS_ENTERPRISE,
     },
   })
 
-  return isFreePlan(accountDetails?.plan?.value) ? (
-    <Button
-      to={{ pageName: 'demo' }}
-      showExternalIcon={false}
-      variant="secondary"
-      data-testid="request-demo"
-      onClick={() =>
-        trackSegmentEvent({
-          event: 'clicked button',
-          data: {
-            label: 'request demo',
-            category: 'header cta',
-          },
-        })
-      }
-    >
-      Request demo
-    </Button>
-  ) : null
+  if (config.IS_ENTERPRISE) {
+    return null
+  }
+
+  if (isFreePlan(accountDetails?.plan?.value)) {
+    return (
+      <Button
+        to={{ pageName: 'demo' }}
+        showExternalIcon={false}
+        variant="secondary"
+        data-testid="request-demo"
+        onClick={() =>
+          trackSegmentEvent({
+            event: 'clicked button',
+            data: {
+              label: 'request demo',
+              category: 'header cta',
+            },
+          })
+        }
+      >
+        Request demo
+      </Button>
+    )
+  }
+
+  return null
 }
 
 RequestButton.propTypes = {
