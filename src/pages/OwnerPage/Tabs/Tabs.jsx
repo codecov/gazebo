@@ -18,7 +18,7 @@ function Tabs({ provider, owner }) {
           pageName: 'analytics',
           children: 'Analytics',
         },
-        ...(config.IS_ENTERPRISE
+        ...(config.IS_SELF_HOSTED
           ? []
           : [{ pageName: 'membersTab' }, { pageName: 'planTab' }]),
         {

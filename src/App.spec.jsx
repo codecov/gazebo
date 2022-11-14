@@ -97,7 +97,7 @@ describe('App', () => {
   describe('rendering admin settings page', () => {
     describe('IS_ENTERPRISE is true', () => {
       beforeEach(() => {
-        config.IS_ENTERPRISE = true
+        config.IS_SELF_HOSTED = true
       })
 
       describe('/admin/gh/access', () => {
@@ -168,7 +168,7 @@ describe('App', () => {
   describe('rendering enterprise landing page', () => {
     describe('IS_ENTERPRISE is true', () => {
       beforeEach(() => {
-        config.IS_ENTERPRISE = true
+        config.IS_SELF_HOSTED = true
       })
 
       describe('/', () => {
@@ -210,7 +210,7 @@ describe('App', () => {
   describe('rendering home page', () => {
     describe('IS_ENTERPRISE is false', () => {
       beforeAll(() => {
-        config.IS_ENTERPRISE = false
+        config.IS_SELF_HOSTED = false
       })
 
       describe('/', () => {
@@ -232,7 +232,7 @@ describe('App', () => {
   describe('rendering login page', () => {
     describe('IS_ENTERPRISE is true', () => {
       beforeEach(() => {
-        config.IS_ENTERPRISE = true
+        config.IS_SELF_HOSTED = true
       })
 
       describe('/login/:provider', () => {
@@ -266,7 +266,7 @@ describe('App', () => {
 
     describe('IS_ENTERPRISE is false', () => {
       beforeAll(() => {
-        config.IS_ENTERPRISE = false
+        config.IS_SELF_HOSTED = false
       })
 
       describe('/login/:provider', () => {

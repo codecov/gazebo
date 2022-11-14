@@ -9,7 +9,7 @@ function FeedbackLink() {
 
   const header = pathname.includes('feedback') ? 'headerHighlight' : 'header'
 
-  if (config.IS_ENTERPRISE) return null
+  if (config.IS_SELF_HOSTED) return null
 
   return (
     <div className="border-l py-1 pl-4">

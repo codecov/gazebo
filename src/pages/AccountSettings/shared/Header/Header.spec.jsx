@@ -9,8 +9,8 @@ jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('config')
 
 describe('Header', () => {
-  function setup(isEnterprise = false) {
-    config.IS_ENTERPRISE = isEnterprise
+  function setup(isSelfHosted = false) {
+    config.IS_SELF_HOSTED = isSelfHosted
 
     render(
       <MemoryRouter initialEntries={['/account/gh/codecov']}>

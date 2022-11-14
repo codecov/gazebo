@@ -10,9 +10,9 @@ import styles from './NotFound.module.css'
 const NotFoundErrorMessage = () => {
   const { origin } = window.location
 
-  const href = config.IS_ENTERPRISE ? origin : 'https://app.codecov.io/'
+  const href = config.IS_SELF_HOSTED ? origin : 'https://app.codecov.io/'
 
-  if (config.IS_ENTERPRISE) {
+  if (config.IS_SELF_HOSTED) {
     return (
       <p className="my-4 px-3 sm:px-0">
         You may be able to locate this content by browsing for it from{' '}
