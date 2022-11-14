@@ -11,14 +11,14 @@ let borderedClasses = 'border-ds-grey-secondary border-2'
 function Avatar({ user, bordered, ariaLabel }) {
   const classes = cs(baseClasses, bordered ? borderedClasses : '')
 
-  const { src, isError, isFetching } = useImage({
+  const { src, isError, isLoading } = useImage({
     src: user.avatarUrl,
   })
 
   const letter = user.username ? user.username[0] : '?'
   const alt = 'avatar'
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div className="h-6 w-6 rounded-full motion-safe:animate-pulse bg-ds-gray-tertiary" />
     )

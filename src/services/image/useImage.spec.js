@@ -22,7 +22,7 @@ describe('useImage', () => {
   it('starts loading an image', () => {
     hookData = renderHook(() => useImage({ src: 'image.com' }), { wrapper })
 
-    expect(hookData.result.current.isFetching).toBeTruthy()
+    expect(hookData.result.current.isLoading).toBeTruthy()
   })
 
   describe('successful network request', () => {
@@ -46,10 +46,10 @@ describe('useImage', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isFetching).toBeTruthy())
-      await waitFor(() => expect(!result.current.isFetching).toBeTruthy())
+      await waitFor(() => expect(result.current.isLoading).toBeTruthy())
+      await waitFor(() => expect(!result.current.isLoading).toBeTruthy())
 
-      expect(result.current.isFetching).toBeFalsy()
+      expect(result.current.isLoading).toBeFalsy()
       expect(result.current.src).toEqual('https://api.backend.dev/image.png')
     })
   })

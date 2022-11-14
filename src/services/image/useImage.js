@@ -18,7 +18,7 @@ export function imagePromiseFactory({ src }) {
 }
 
 export function useImage({ src }) {
-  const { data, isFetching, isError } = useQuery(
+  const { data, isLoading, isError } = useQuery(
     ['ImageUrl', src],
     async () => imagePromiseFactory({ src }),
     {
@@ -28,7 +28,7 @@ export function useImage({ src }) {
 
   return {
     src: data,
-    isFetching,
+    isLoading,
     isError,
   }
 }
