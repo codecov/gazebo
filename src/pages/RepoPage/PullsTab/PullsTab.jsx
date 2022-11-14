@@ -4,8 +4,8 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
 import Button from 'ui/Button'
-import MultiSelect from 'ui/MultiSelect'
-import Select from 'ui/Select'
+import MultiSelect from 'ui/NewMultiSelect'
+import Select from 'ui/NewSelect'
 
 import {
   filterItems,
