@@ -23,8 +23,8 @@ const queryClient = new QueryClient({
 })
 
 describe('PlanPage', () => {
-  function setup({ owner = null, isEnterprise = false }) {
-    config.IS_ENTERPRISE = isEnterprise
+  function setup({ owner = null, isSelfHosted = false }) {
+    config.IS_SELF_HOSTED = isSelfHosted
 
     useOwner.mockReturnValue({
       data: owner,

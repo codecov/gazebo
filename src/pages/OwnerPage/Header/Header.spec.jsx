@@ -17,8 +17,8 @@ const queryClient = new QueryClient()
 describe('Header', () => {
   afterAll(() => jest.clearAllMocks())
 
-  function setup(props = {}, isUploadsExceeded = false, isEnterprise = false) {
-    config.IS_ENTERPRISE = isEnterprise
+  function setup(props = {}, isUploadsExceeded = false, isSelfHosted = false) {
+    config.IS_SELF_HOSTED = isSelfHosted
     useIsUploadsNumberExceeded.mockReturnValue({ data: isUploadsExceeded })
 
     render(
