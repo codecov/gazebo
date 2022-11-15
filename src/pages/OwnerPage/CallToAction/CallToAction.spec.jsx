@@ -133,7 +133,7 @@ describe('CallToAction', () => {
 
   describe('when built on enterprise', () => {
     beforeAll(() => {
-      config.IS_ENTERPRISE = true
+      config.IS_SELF_HOSTED = true
     })
     afterAll(() => {
       jest.clearAllMocks()

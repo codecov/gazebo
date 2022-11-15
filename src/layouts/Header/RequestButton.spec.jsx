@@ -86,7 +86,7 @@ describe('RequestButton', () => {
 
   describe('when the app is in enterprise mode', () => {
     beforeEach(() => {
-      config.IS_ENTERPRISE = true
+      config.IS_SELF_HOSTED = true
 
       setup(null)
     })

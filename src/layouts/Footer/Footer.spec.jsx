@@ -1,11 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { useUser } from 'services/user'
 
 import Footer from './Footer'
 
 jest.mock('services/user')
+jest.mock('config')
 
 const loggedInUser = {
   user: {
@@ -15,8 +18,14 @@ const loggedInUser = {
 }
 
 describe('Footer', () => {
-  function setup(userData = undefined) {
+  function setup(
+    { userData = undefined, selfHosted = false } = {
+      userData: undefined,
+      selfHosted: false,
+    }
+  ) {
     useUser.mockReturnValue({ data: userData })
+    config.IS_SELF_HOSTED = selfHosted
 
     render(
       <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
@@ -30,8 +39,9 @@ describe('Footer', () => {
   describe('rendering the feedback link', () => {
     describe('user is signed in', () => {
       beforeEach(() => {
-        setup(loggedInUser)
+        setup({ userData: loggedInUser })
       })
+      afterEach(() => jest.resetAllMocks())
       it('renders the link', () => {
         const feedback = screen.getByText('Feedback')
         expect(feedback).toBeInTheDocument()
@@ -41,6 +51,7 @@ describe('Footer', () => {
       beforeEach(() => {
         setup()
       })
+      afterEach(() => jest.resetAllMocks())
       it('does not render link with no signed in user', () => {
         expect(screen.queryByText('Feedback')).toBeNull()
       })
@@ -52,6 +63,7 @@ describe('Footer', () => {
       jest.useFakeTimers().setSystemTime(new Date('3301-01-01'))
       setup()
     })
+    afterEach(() => jest.resetAllMocks())
     afterAll(() => {
       jest.useRealTimers()
     })
@@ -59,6 +71,28 @@ describe('Footer', () => {
     it('renders a link', () => {
       const copywrite = screen.getByText(`© 3301 Codecov`)
       expect(copywrite).toBeInTheDocument()
+    })
+  })
+
+  describe('pricing link', () => {
+    describe('on cloud', () => {
+      beforeEach(() => {
+        setup()
+      })
+      afterEach(() => jest.resetAllMocks())
+      it('renders the link', () => {
+        const pricing = screen.getByText('Pricing')
+        expect(pricing).toBeInTheDocument()
+      })
+    })
+    describe('self hosted build', () => {
+      beforeEach(() => {
+        setup({ selfHosted: true })
+      })
+      afterEach(() => jest.resetAllMocks())
+      it('does not render pricing link', () => {
+        expect(screen.queryByText('Pricing')).not.toBeInTheDocument()
+      })
     })
   })
 })

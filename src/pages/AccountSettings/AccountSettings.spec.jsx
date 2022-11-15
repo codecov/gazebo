@@ -20,7 +20,7 @@ jest.mock('./AccountSettingsSideMenu', () => () => 'AccountSettingsSideMenu')
 
 describe('AccountSettings', () => {
   function setup({ url = [], isAdmin = false, isSelfHosted = false }) {
-    config.IS_ENTERPRISE = isSelfHosted
+    config.IS_SELF_HOSTED = isSelfHosted
     useUser.mockReturnValue({
       data: {
         user: {

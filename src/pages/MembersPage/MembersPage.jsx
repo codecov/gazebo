@@ -14,7 +14,7 @@ function MembersPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
-  if (config.IS_ENTERPRISE) {
+  if (config.IS_SELF_HOSTED) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
 
