@@ -120,7 +120,7 @@ describe('MembersList', () => {
     it('renders search text field', async () => {
       render(<MembersList />, { wrapper })
 
-      const textfield = await screen.findByRole('textbox')
+      const textfield = await screen.findByTestId('search-input-members')
       expect(textfield).toBeInTheDocument()
     })
 
@@ -210,7 +210,7 @@ describe('MembersList', () => {
       it('updates url params', async () => {
         render(<MembersList />, { wrapper })
 
-        const searchField = await screen.findByRole('textbox')
+        const searchField = await screen.findByTestId('search-input-members')
         expect(searchField).toBeInTheDocument()
 
         userEvent.type(searchField, 'codecov')
