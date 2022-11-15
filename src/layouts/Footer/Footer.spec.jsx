@@ -81,8 +81,8 @@ describe('Footer', () => {
       })
       afterEach(() => jest.resetAllMocks())
       it('renders the link', () => {
-        const feedback = screen.getByText('Pricing')
-        expect(feedback).toBeInTheDocument()
+        const pricing = screen.getByText('Pricing')
+        expect(pricing).toBeInTheDocument()
       })
     })
     describe('self hosted build', () => {
