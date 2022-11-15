@@ -11,7 +11,7 @@ let borderedClasses = 'border-ds-grey-secondary border-2'
 function Avatar({ user, bordered, ariaLabel }) {
   const classes = cs(baseClasses, bordered ? borderedClasses : '')
 
-  const { src, isError, isLoading } = useImage({
+  const { src, error, isLoading } = useImage({
     src: user.avatarUrl,
   })
 
@@ -24,7 +24,7 @@ function Avatar({ user, bordered, ariaLabel }) {
     )
   }
 
-  if (isError) {
+  if (error) {
     return <AvatarSVG letter={letter} ariaLabel={ariaLabel} />
   }
 

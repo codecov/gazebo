@@ -30,7 +30,7 @@ describe('Avatar', () => {
   it('renders the avatar SVG if theres an error', () => {
     jest.spyOn(hooks, 'useImage').mockImplementation(() => ({
       src: null,
-      isError: true,
+      error: true,
     }))
 
     render(<Avatar user={args.user} />)
