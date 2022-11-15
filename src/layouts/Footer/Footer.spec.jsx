@@ -75,7 +75,7 @@ describe('Footer', () => {
   })
 
   describe('pricing link', () => {
-    describe('user is signed in', () => {
+    describe('on cloud', () => {
       beforeEach(() => {
         setup()
       })
