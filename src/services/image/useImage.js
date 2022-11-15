@@ -23,6 +23,7 @@ export function useImage({ src }) {
     async () => imagePromiseFactory({ src }),
     {
       suspense: false,
+      retry: false,
     }
   )
 
