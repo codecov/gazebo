@@ -130,7 +130,7 @@ describe('useUpdateProfile', () => {
     describe('when called', () => {
       beforeEach(() => {
         setup()
-        config.IS_ENTERPRISE = true
+        config.IS_SELF_HOSTED = true
       })
 
       it('is not loading yet', () => {
@@ -168,7 +168,7 @@ describe('useUpdateProfile', () => {
     describe('when called', () => {
       beforeEach(() => {
         setup()
-        config.IS_ENTERPRISE = false
+        config.IS_SELF_HOSTED = false
       })
 
       it('is not loading yet', () => {

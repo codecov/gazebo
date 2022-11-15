@@ -10,8 +10,8 @@ jest.mock('../CallToAction', () => () => 'CallToAction')
 jest.mock('config')
 
 describe('Tabs', () => {
-  function setup({ props = {}, isEnterprise = false }) {
-    config.IS_ENTERPRISE = isEnterprise
+  function setup({ props = {}, isSelfHosted = false }) {
+    config.IS_SELF_HOSTED = isSelfHosted
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -56,7 +56,7 @@ describe('Tabs', () => {
     beforeEach(() => {
       setup({
         props: { owner: { username: 'kelly' }, provider: 'gh' },
-        isEnterprise: true,
+        isSelfHosted: true,
       })
     })
 

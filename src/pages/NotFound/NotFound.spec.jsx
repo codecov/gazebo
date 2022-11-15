@@ -7,8 +7,8 @@ import NotFound from './NotFound'
 jest.mock('config')
 
 describe('NotFound', () => {
-  function setup(ToRender, isEnterprise = false) {
-    config.IS_ENTERPRISE = isEnterprise
+  function setup(ToRender, isSelfHosted = false) {
+    config.IS_SELF_HOSTED = isSelfHosted
     render(<NotFound />)
   }
 
