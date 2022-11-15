@@ -5,8 +5,8 @@ import { useAccountDetails } from 'services/account'
 import { ApiFilterEnum, useLocationParams } from 'services/navigation'
 import { useUpdateUser } from 'services/users'
 import { isFreePlan } from 'shared/utils/billing'
+import Select from 'ui/NewSelect'
 import SearchField from 'ui/SearchField'
-import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
 import { ActivatedItems, AdminItems } from './enums'
@@ -116,6 +116,7 @@ function MembersList() {
             placeholder="Search"
             searchValue={params?.search || ''}
             setSearchValue={(search) => updateParams({ search })}
+            data-testid="search-input-members"
           />
         </div>
       </div>
