@@ -84,12 +84,9 @@ function MembersList() {
                 ?.label
             }
             onChange={(value) => {
-              if (value) {
-                updateParams({
-                  activated: ActivatedItems.find((v) => v.label === value)
-                    ?.value,
-                })
-              }
+              updateParams({
+                activated: ActivatedItems.find((v) => v.label === value)?.value,
+              })
             }}
           />
         </div>
@@ -102,11 +99,9 @@ function MembersList() {
               AdminItems.find((value) => value.value === params.isAdmin)?.label
             }
             onChange={(value) => {
-              if (value) {
-                updateParams({
-                  isAdmin: AdminItems.find((v) => v.label === value)?.value,
-                })
-              }
+              updateParams({
+                isAdmin: AdminItems.find((v) => v.label === value)?.value,
+              })
             }}
           />
         </div>
