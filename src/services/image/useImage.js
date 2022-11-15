@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 
 export function imagePromiseFactory({ src }) {
   return new Promise((resolveSource, rejectSource) => {
@@ -17,19 +17,43 @@ export function imagePromiseFactory({ src }) {
   })
 }
 
-export function useImage({ src }) {
-  const { data, isLoading, isError } = useQuery(
-    ['ImageUrl', src],
-    async () => imagePromiseFactory({ src }),
-    {
-      suspense: false,
-      retry: false,
-    }
-  )
+const imageExtCache = new Map()
 
-  return {
-    src: data,
-    isLoading,
-    isError,
+export function useImage({ src }) {
+  const [, setIsLoading] = useState(true)
+
+  let imageCache = imageExtCache ? imageExtCache : new Map()
+
+  if (!imageCache.get(src)) {
+    imageCache.set(src, {
+      promise: imagePromiseFactory({ src }),
+      cache: 'pending',
+      error: null,
+    })
   }
+
+  imageCache
+    .get(src)
+    .promise.then((src) => {
+      imageCache.set(src, { ...imageCache.get(src), cache: 'resolved', src })
+      setIsLoading(false)
+    })
+    .catch((error) => {
+      imageCache.set(src, { ...imageCache.get(src), cache: 'rejected', error })
+      setIsLoading(false)
+    })
+
+  if (imageCache.get(src).cache === 'resolved') {
+    return { src: imageCache.get(src).src, isLoading: false, error: null }
+  }
+
+  if (imageCache.get(src).cache === 'rejected') {
+    return {
+      isLoading: false,
+      error: imageCache.get(src).error,
+      src: undefined,
+    }
+  }
+
+  return { isLoading: true, src: undefined, error: null }
 }

@@ -1,28 +1,16 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 
 import { useImage } from './useImage'
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-  logger: {
-    error: () => {},
-  },
+afterEach(() => {
+  jest.resetAllMocks()
 })
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-)
-
-afterEach(() => queryClient.clear())
-
 describe('useImage', () => {
-  let hookData
+  it('starts loading an image', async () => {
+    const { result, waitFor } = renderHook(() => useImage({ src: 'image.com' }))
 
-  it('starts loading an image', () => {
-    hookData = renderHook(() => useImage({ src: 'image.com' }), { wrapper })
-
-    expect(hookData.result.current.isLoading).toBeTruthy()
+    await waitFor(() => expect(result.current.isLoading).toBeTruthy())
   })
 
   describe('successful network request', () => {
@@ -41,16 +29,16 @@ describe('useImage', () => {
     })
 
     it('successfully loads an image', async () => {
-      const { result, waitFor } = renderHook(
-        () => useImage({ src: 'https://api.backend.dev/image.png' }),
-        { wrapper }
+      const { result, waitFor } = renderHook(() =>
+        useImage({ src: 'https://api.backend.dev/image.png' })
       )
 
       await waitFor(() => expect(result.current.isLoading).toBeTruthy())
-      await waitFor(() => expect(!result.current.isLoading).toBeTruthy())
+      await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
-      expect(result.current.isLoading).toBeFalsy()
-      expect(result.current.src).toEqual('https://api.backend.dev/image.png')
+      await waitFor(() =>
+        expect(result.current.src).toEqual('https://api.backend.dev/image.png')
+      )
     })
   })
 
@@ -60,24 +48,22 @@ describe('useImage', () => {
         constructor() {
           setTimeout(() => {
             this.onload()
-          }, 1)
+          }, 100)
         }
 
         decode() {
-          return Promise.reject(new Error('Oh no!'))
+          return new Promise((_reject, reject) => reject('error'))
         }
       }
     })
 
     it('cannot successful load an image', async () => {
-      const { result, waitForNextUpdate } = renderHook(
-        () => useImage({ src: 'https://api.backend.dev/image.png' }),
-        { wrapper }
+      const { result, waitFor } = renderHook(() =>
+        useImage({ src: 'https://api.backend.dev/image2.png' })
       )
 
-      await waitForNextUpdate()
-
-      expect(result.current.isError).toBeTruthy()
+      await waitFor(() => expect(result.current.isLoading).toBeFalsy())
+      await waitFor(() => expect(result.current.error).not.toBeNull())
     })
   })
 })
