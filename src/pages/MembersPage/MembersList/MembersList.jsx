@@ -97,6 +97,8 @@ const handleActivate = (user, activate, accountDetails, setIsOpen) => {
   }
 }
 
+/* This comment is just to get the latest commit to be signed */
+
 function MembersList() {
   const { owner, provider } = useParams()
   const { params, updateParams, data, isSuccess } = useUsersData({
