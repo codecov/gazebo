@@ -11,22 +11,24 @@ let borderedClasses = 'border-ds-grey-secondary border-2'
 function Avatar({ user, bordered, ariaLabel }) {
   const classes = cs(baseClasses, bordered ? borderedClasses : '')
 
-  const { src, error } = useImage({
+  const { src, error, isLoading } = useImage({
     src: user.avatarUrl,
   })
 
   const letter = user.username ? user.username[0] : '?'
   const alt = 'avatar'
 
-  return (
-    <>
-      {error ? (
-        <AvatarSVG letter={letter} ariaLabel={ariaLabel} />
-      ) : (
-        <img src={src} alt={alt} className={classes} />
-      )}
-    </>
-  )
+  if (isLoading) {
+    return (
+      <div className="h-6 w-6 rounded-full motion-safe:animate-pulse bg-ds-gray-tertiary" />
+    )
+  }
+
+  if (error) {
+    return <AvatarSVG letter={letter} ariaLabel={ariaLabel} />
+  }
+
+  return <img src={src} alt={alt} className={classes} />
 }
 
 Avatar.propTypes = {
