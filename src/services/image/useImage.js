@@ -1,69 +1,59 @@
-import { useLayoutEffect, useReducer } from 'react'
+import { useState } from 'react'
 
 export function imagePromiseFactory({ src }) {
   return new Promise((resolveSource, rejectSource) => {
     return new Promise((resolveImage, rejectImage) => {
       const image = new Image()
       image.src = src
-      image.onload = () => image.decode().then(resolveImage).catch(rejectImage)
+      image.onload = () =>
+        image
+          .decode()
+          .then(() => resolveImage())
+          .catch(() => rejectImage())
       image.onerror = rejectImage
     })
-      .then(() => {
-        resolveSource(src)
-      })
-      .catch(() => {
-        rejectSource(true)
-      })
+      .then(() => resolveSource(src))
+      .catch(() => rejectSource('Unable to load image'))
   })
 }
 
-export function imageReducer(state, action) {
-  switch (action.type) {
-    case 'pending': {
-      return { status: action.type, src: undefined, error: null }
-    }
-    case 'resolved': {
-      return { status: action.type, src: action.src, error: null }
-    }
-    case 'rejected': {
-      return { status: action.type, src: undefined, error: action.error }
-    }
-    default: {
-      throw new Error(`Unhandled action type: ${action.type}`)
-    }
-  }
-}
+const imageExtCache = new Map()
 
 export function useImage({ src }) {
-  const [state, dispatch] = useReducer(imageReducer, {
-    status: 'pending',
-    src: undefined,
-    error: null,
-  })
+  const [, setIsLoading] = useState(true)
 
-  useLayoutEffect(() => {
-    dispatch({ type: 'pending' })
+  let imageCache = imageExtCache ? imageExtCache : new Map()
 
-    imagePromiseFactory({ decode: true, src })
-      .then((src) => {
-        dispatch({ type: 'resolved', src })
-      })
-      .catch((error) => {
-        dispatch({ type: 'rejected', error })
-      })
-  }, [src, dispatch])
-
-  if (state.status === 'resolved') {
-    return { src: state.src, isLoading: false, error: null }
+  if (!imageCache.get(src)) {
+    imageCache.set(src, {
+      promise: imagePromiseFactory({ src }),
+      cache: 'pending',
+      error: null,
+    })
   }
 
-  if (state.status === 'rejected') {
-    return { src: undefined, isLoading: false, error: state.error }
+  imageCache
+    .get(src)
+    .promise.then((src) => {
+      imageCache.set(src, { ...imageCache.get(src), cache: 'resolved', src })
+      setIsLoading(false)
+    })
+    .catch((error) => {
+      imageCache.set(src, { ...imageCache.get(src), cache: 'rejected', error })
+      setIsLoading(false)
+    })
+
+  if (imageCache.get(src).cache === 'resolved') {
+    return { src: imageCache.get(src).src, isLoading: false, error: null }
   }
 
-  return {
-    src: undefined,
-    isLoading: true,
-    error: null,
+  if (imageCache.get(src).cache === 'rejected') {
+    return {
+      isLoading: false,
+      error: imageCache.get(src).error,
+      src: undefined,
+    }
   }
+
+  return { isLoading: true, src: undefined, error: null }
 }
