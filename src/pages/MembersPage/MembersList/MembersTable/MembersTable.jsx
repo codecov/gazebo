@@ -48,6 +48,34 @@ const columns = [
   },
 ]
 
+function _renderUsername({ name, username, user }) {
+  return (
+    <div className="flex flex-row gap-3 items-center truncate">
+      <Avatar user={user} />
+      {name || username}
+    </div>
+  )
+}
+
+function _renderActivationStatus({
+  activated,
+  handleActivate,
+  maxSeatsReached,
+  ownerid,
+}) {
+  return (
+    <div className="flex flex-row-reverse grow">
+      <Toggle
+        dataMarketing="handle-members-activation"
+        label={activated ? 'Activated' : 'Non-Active'}
+        value={activated}
+        onClick={() => handleActivate({ ownerid, activated })}
+        disabled={maxSeatsReached && !activated}
+      />
+    </div>
+  )
+}
+
 const createTable = ({
   tableData,
   handleActivate,
@@ -56,7 +84,6 @@ const createTable = ({
 }) =>
   tableData?.length > 0
     ? tableData?.map(
-        // eslint-disable-next-line complexity
         ({ activated, email, isAdmin, name, ownerid, username }) => {
           const user = {
             avatarUrl:
@@ -65,25 +92,15 @@ const createTable = ({
           }
 
           return {
-            username: (
-              <div className="flex flex-row gap-3 items-center truncate">
-                <Avatar user={user} />
-                {name || username}
-              </div>
-            ),
+            username: _renderUsername({ name, username, user }),
             type: <p className="truncate">{isAdmin ? 'Admin' : 'Developer'}</p>,
             email: <p className="truncate">{email}</p>,
-            activationStatus: (
-              <div className="flex flex-row-reverse grow">
-                <Toggle
-                  dataMarketing="handle-members-activation"
-                  label={activated ? 'Activated' : 'Non-Active'}
-                  value={activated}
-                  onClick={() => handleActivate({ ownerid, activated })}
-                  disabled={maxSeatsReached && !activated}
-                />
-              </div>
-            ),
+            activationStatus: _renderActivationStatus({
+              activated,
+              handleActivate,
+              maxSeatsReached,
+              ownerid,
+            }),
           }
         }
       )
