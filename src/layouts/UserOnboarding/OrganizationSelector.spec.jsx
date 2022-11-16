@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
+import { useImage } from 'services/image'
 import { useMyContexts, useUser } from 'services/user'
 
 import OrganizationSelector from './OrganizationSelector'
@@ -10,6 +11,7 @@ import OrganizationSelector from './OrganizationSelector'
 jest.spyOn(window.localStorage.__proto__, 'setItem')
 window.localStorage.__proto__.setItem = jest.fn()
 
+jest.mock('services/image')
 jest.mock('services/user')
 jest.mock('services/repos')
 
@@ -48,6 +50,7 @@ describe('OrganizationSelector', () => {
 
   function setup() {
     useUser.mockReturnValue({ data: loggedInUser })
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     useMyContexts.mockReturnValue({
       data: contextData,
       refetch: refetch,

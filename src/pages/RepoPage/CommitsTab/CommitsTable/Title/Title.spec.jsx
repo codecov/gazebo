@@ -2,16 +2,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
+import { useImage } from 'services/image'
 import { formatTimeToNow } from 'shared/utils/dates'
 
 import Title from '.'
 
+jest.mock('services/image')
 jest.mock('services/user')
 jest.mock('services/repo')
 
 describe('Title', () => {
   function setup({ author, commitid, message, createdAt }) {
     const queryClient = new QueryClient()
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
 
     render(
       <MemoryRouter>

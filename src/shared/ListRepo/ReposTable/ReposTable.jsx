@@ -28,6 +28,7 @@ const tableActive = [
     accessorKey: 'lastUpdated',
     width: 'w-2/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'coverage',
@@ -91,7 +92,7 @@ function transformRepoToTable({
       />
     ),
     lastUpdated: (
-      <span className="w-full text-right text-ds-gray-quinary">
+      <span className="w-full text-ds-gray-quinary">
         {repo?.latestCommitAt ? formatTimeToNow(repo?.latestCommitAt) : ''}
       </span>
     ),

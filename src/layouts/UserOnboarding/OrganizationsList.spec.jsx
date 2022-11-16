@@ -1,7 +1,9 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
+import { useImage } from 'services/image'
 import { useMyContexts } from 'services/user'
 
 import OrganizationsList from './OrganizationsList'
@@ -9,6 +11,7 @@ import OrganizationsList from './OrganizationsList'
 jest.spyOn(window.localStorage.__proto__, 'setItem')
 window.localStorage.__proto__.setItem = jest.fn()
 
+jest.mock('services/image')
 jest.mock('services/user')
 
 const contextData = {
@@ -35,6 +38,7 @@ describe('OrganizationsList', () => {
   const refetch = jest.fn()
   const setIsHelpFindingOrg = jest.fn()
   function setup(isHelpFindingOrg) {
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     useMyContexts.mockReturnValue({
       data: contextData,
       refetch: refetch,
@@ -70,7 +74,7 @@ describe('OrganizationsList', () => {
       setup()
       const organization = screen.getByText(/codecov/i)
       expect(organization).toBeInTheDocument()
-      fireEvent.click(organization)
+      userEvent.click(organization)
     })
 
     it('stores organization name in localstorage', () => {
