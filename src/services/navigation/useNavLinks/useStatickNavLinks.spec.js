@@ -54,6 +54,7 @@ describe('useStaticNavLinks', () => {
       ${links.missingComparisonCommit} | ${'https://docs.codecov.com/docs/error-reference#section-missing-head-commit'}
       ${links.missingComparisonReport} | ${'https://docs.codecov.com/docs/error-reference#missing-base-report'}
       ${links.flagsFeedback}           | ${'https://github.com/codecov/Codecov-user-feedback/issues/27'}
+      ${links.orgUploadTokenDoc}       | ${'https://docs.codecov.com/codecov-uploader#organization-upload-token'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)

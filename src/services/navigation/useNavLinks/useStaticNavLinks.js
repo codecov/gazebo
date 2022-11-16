@@ -224,5 +224,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    orgUploadTokenDoc: {
+      text: 'Organization Upload Token',
+      path: () =>
+        'https://docs.codecov.com/codecov-uploader#organization-upload-token',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
