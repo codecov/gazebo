@@ -13,37 +13,35 @@ function RequestButton({ owner, provider }) {
     owner,
     opts: {
       suspense: false,
-      enabled: !config.IS_ENTERPRISE,
+      enabled: !config.IS_SELF_HOSTED,
     },
   })
+  const isAnPaidAccount = !isFreePlan(accountDetails?.plan?.value)
 
-  if (config.IS_ENTERPRISE) {
+  // Do not up sell if self hosted or org is all ready a paying customer.
+  if (config.IS_SELF_HOSTED || isAnPaidAccount) {
     return null
   }
 
-  if (isFreePlan(accountDetails?.plan?.value)) {
-    return (
-      <Button
-        to={{ pageName: 'demo' }}
-        showExternalIcon={false}
-        variant="secondary"
-        data-testid="request-demo"
-        onClick={() =>
-          trackSegmentEvent({
-            event: 'clicked button',
-            data: {
-              label: 'request demo',
-              category: 'header cta',
-            },
-          })
-        }
-      >
-        Request demo
-      </Button>
-    )
-  }
-
-  return null
+  return (
+    <Button
+      to={{ pageName: 'demo' }}
+      showExternalIcon={false}
+      variant="secondary"
+      data-testid="request-demo"
+      onClick={() =>
+        trackSegmentEvent({
+          event: 'clicked button',
+          data: {
+            label: 'request demo',
+            category: 'header cta',
+          },
+        })
+      }
+    >
+      Request demo
+    </Button>
+  )
 }
 
 RequestButton.propTypes = {
