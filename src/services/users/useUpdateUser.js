@@ -14,10 +14,9 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
     // The following cache busts will trigger react-query to retry the api call updating components depending on this data.
     queryClient.invalidateQueries(['users'])
     queryClient.invalidateQueries(['accountDetails'])
-    queryClient.invalidateQueries(['InfiniteUsers'])
 
     if (onSuccess) {
-      // Execute passed onSuccess after invalidating queries
+      // Exicute passed onSuccess after invalidating queries
       onSuccess.apply(null, args)
     }
   }
