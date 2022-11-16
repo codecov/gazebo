@@ -1,9 +1,11 @@
 import isEmpty from 'lodash/isEmpty'
+import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
+import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
@@ -19,7 +21,27 @@ import YamlErrorBanner from './YamlErrorBanner'
 const CommitsTable = lazy(() => import('./subroute/CommitsTable'))
 const NotFound = lazy(() => import('pages/NotFound'))
 
-// eslint-disable-next-line complexity
+function CommitErrorBanners({
+  isCurrentUserPartOfOrg,
+  invalidYaml,
+  botErrors,
+}) {
+  return (
+    <>
+      {isCurrentUserPartOfOrg && (
+        <BotErrorBanner botErrorsCount={botErrors?.length} />
+      )}
+      {invalidYaml && <YamlErrorBanner />}
+    </>
+  )
+}
+
+CommitErrorBanners.propTypes = {
+  isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
+  invalidYaml: PropTypes.shape({ errorCode: PropTypes.string }),
+  botErrors: PropTypes.arrayOf({ errorCode: PropTypes.string }),
+}
+
 function CommitPage() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
   const { data, isLoading } = useCommit({
@@ -37,6 +59,7 @@ function CommitPage() {
   const invalidYaml = yamlErrors?.find(
     (err) => err?.errorCode === 'invalid_yaml'
   )
+  const { data: ownerData } = useOwner({ username: owner })
 
   const loadingState = (
     <div className="flex-1 flex justify-center m-4">
@@ -65,8 +88,11 @@ function CommitPage() {
       <Header />
       <CommitDetailsSummary />
       {/**we are currently capturing a single error*/}
-      {botErrors?.length > 0 && <BotErrorBanner />}
-      {invalidYaml && <YamlErrorBanner />}
+      <CommitErrorBanners
+        isCurrentUserPartOfOrg={ownerData?.isCurrentUserPartOfOrg}
+        invalidYaml={invalidYaml}
+        botErrors={botErrors}
+      />
       <div className="flex pt-6 flex-col gap-8 md:flex-row-reverse">
         <aside className="flex flex-1 gap-6 md:max-w-sm flex-col self-start sticky top-1.5">
           <UploadsCard />

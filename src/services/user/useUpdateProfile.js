@@ -79,7 +79,7 @@ export function useUpdateProfile({ provider }) {
       onSuccess: (user) => {
         queryClient.setQueryData(['currentUser', provider], () => user)
 
-        if (config.IS_ENTERPRISE) {
+        if (config.IS_SELF_HOSTED) {
           queryClient.invalidateQueries(['SelfHostedCurrentUser'])
         }
       },

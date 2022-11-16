@@ -17,9 +17,7 @@ const Title = ({ author, pullId, title, updatestamp }) => {
       </span>
       <div className="flex flex-col w-5/6 lg:w-auto">
         <A to={{ pageName: 'pullDetail', options: { pullId } }}>
-          <h2 className="font-medium text-sm md:text-base text-black">
-            {title}
-          </h2>
+          <h2 className="font-semibold text-sm text-black">{title}</h2>
         </A>
         <p className="text-xs">
           <A to={{ pageName: 'owner' }}>

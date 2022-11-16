@@ -48,12 +48,12 @@ function App() {
           <Switch>
             <Route path="/login/:provider">
               <BaseLayout>
-                {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
+                {config.IS_SELF_HOSTED ? <Redirect to="/" /> : <LoginPage />}
               </BaseLayout>
             </Route>
             <Route path="/login">
               <BaseLayout>
-                {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
+                {config.IS_SELF_HOSTED ? <Redirect to="/" /> : <LoginPage />}
               </BaseLayout>
             </Route>
             <Route path="/account/:provider/:owner/">
@@ -61,7 +61,7 @@ function App() {
                 <AccountSettings />
               </BaseLayout>
             </Route>
-            {config.IS_ENTERPRISE && (
+            {config.IS_SELF_HOSTED && (
               <Route path="/admin/:provider">
                 <BaseLayout>
                   <AdminSettings />
@@ -141,7 +141,7 @@ function App() {
               </BaseLayout>
             </Route>
             <Route path="/">
-              {config.IS_ENTERPRISE ? (
+              {config.IS_SELF_HOSTED ? (
                 <BaseLayout>
                   <EnterpriseLandingPage />
                 </BaseLayout>
