@@ -15,7 +15,7 @@ const generateLinks = ({ isAdmin, isPersonalSettings }) => {
     { pageName: 'yamlTab' },
   ]
 
-  if (config?.IS_ENTERPRISE) {
+  if (config?.IS_SELF_HOSTED) {
     links = [
       { pageName: isPersonalSettings ? 'profile' : '', exact: true },
       { pageName: 'yamlTab' },

@@ -60,7 +60,7 @@ export function FormControls({
   const { register, control } = useForm({
     defaultValues,
   })
-  const isEnterprise = config.IS_INTERPRISE || isEnterprisePlan
+  const isEnterprise = config.IS_SELF_HOSTED || isEnterprisePlan
 
   const [searchText, setSearchText] = useState('')
 

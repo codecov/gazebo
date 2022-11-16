@@ -13,11 +13,11 @@ function CallToAction({ provider, owner }) {
     owner,
     opts: {
       suspense: false,
-      enabled: !config.IS_ENTERPRISE,
+      enabled: !config.IS_SELF_HOSTED,
     },
   })
 
-  if (config.IS_ENTERPRISE) return null
+  if (config.IS_SELF_HOSTED) return null
 
   return isFreePlan(accountDetails?.plan?.value) ? (
     <div className="mx-4 self-center">

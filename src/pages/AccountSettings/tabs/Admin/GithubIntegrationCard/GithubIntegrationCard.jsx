@@ -8,7 +8,7 @@ import { useAccountDetails } from 'services/account'
 import A from 'ui/A'
 
 function GithubIntegrationCard({ provider, owner }) {
-  const shouldRender = provider === 'gh' && !config.IS_ENTERPRISE
+  const shouldRender = provider === 'gh' && !config.IS_SELF_HOSTED
   const { data: accountDetails } = useAccountDetails({
     provider,
     owner,

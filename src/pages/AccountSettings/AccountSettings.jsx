@@ -44,9 +44,9 @@ function AccountSettings() {
         <Suspense fallback={Loader}>
           <Switch>
             <Route path="/account/:provider/:owner/" exact>
-              {config.IS_ENTERPRISE && isViewingPersonalSettings ? (
+              {config.IS_SELF_HOSTED && isViewingPersonalSettings ? (
                 <Profile provider={provider} owner={owner} />
-              ) : !config.IS_ENTERPRISE && isAdmin ? (
+              ) : !config.IS_SELF_HOSTED && isAdmin ? (
                 <AdminTab provider={provider} owner={owner} />
               ) : (
                 <Redirect to={yamlTab} />
@@ -55,7 +55,7 @@ function AccountSettings() {
             <Route path="/account/:provider/:owner/yaml/" exact>
               <YAMLTab provider={provider} owner={owner} />
             </Route>
-            {!config.IS_ENTERPRISE && (
+            {!config.IS_SELF_HOSTED && (
               <Route path="/account/:provider/:owner/access/" exact>
                 <AccessTab provider={provider} />
               </Route>
