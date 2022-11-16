@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { useLocationParams } from 'services/navigation'
 import { useRepoBackfilled } from 'services/repo'
 import A from 'ui/A'
+import Select from 'ui/NewSelect'
 import SearchField from 'ui/SearchField'
-import Select from 'ui/Select'
 
 import { TimeOptions } from '../constants'
 

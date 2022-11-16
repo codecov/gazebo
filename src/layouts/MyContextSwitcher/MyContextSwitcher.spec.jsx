@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useImage } from 'services/image'
 import { useMyContexts } from 'services/user'
 
 import MyContextSwitcher from './MyContextSwitcher'
 
+jest.mock('services/image')
 jest.mock('services/user')
 
 const currentUser = {
@@ -31,6 +33,7 @@ describe('MyContextSwitcher', () => {
   }
 
   function setup(over = {}, myContexts) {
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     useMyContexts.mockReturnValue({
       data: myContexts,
     })

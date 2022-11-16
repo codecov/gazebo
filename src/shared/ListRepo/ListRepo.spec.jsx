@@ -46,7 +46,7 @@ describe('ListRepo', () => {
   describe('reads URL parameters', () => {
     it('reads search parameter from URL', () => {
       setup(null, false, '?search=thisisaquery')
-      const input = screen.getByRole('textbox')
+      const input = screen.getByTestId('org-control-search')
       expect(input).toHaveValue('thisisaquery')
     })
     it('reads ordering & direction (ASC) parameter from URL', () => {

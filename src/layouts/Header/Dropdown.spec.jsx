@@ -1,5 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch, useParams } from 'react-router-dom'
+
+import { useImage } from 'services/image'
 
 import Dropdown from './Dropdown'
 
@@ -10,6 +13,7 @@ const currentUser = {
   },
 }
 
+jest.mock('services/image')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
@@ -17,7 +21,6 @@ jest.mock('react-router-dom', () => ({
 
 describe('Dropdown', () => {
   let links
-  const userAppManagePage = 'Manage GitHub org access'
   function setup({ provider }) {
     links = [
       {
@@ -31,6 +34,7 @@ describe('Dropdown', () => {
       },
     ]
 
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     useParams.mockReturnValue({ provider })
     render(
       <MemoryRouter initialEntries={[`/${provider}`]}>
@@ -51,51 +55,124 @@ describe('Dropdown', () => {
       expect(img).toHaveAttribute('alt', 'avatar')
     })
 
-    it('the links arent visible', () => {
-      setup({ provider: 'gh' })
+    describe('the links are not visible', () => {
+      beforeEach(() => setup({ provider: 'gh' }))
 
-      links.forEach((link) => {
-        const a = screen.getByText(link.label)
-        expect(a).not.toBeVisible()
+      it('does not show settings link', () => {
+        const link = screen.getByText('Settings')
+        expect(link).not.toBeVisible()
       })
-      const a = screen.getByText(userAppManagePage).closest('a')
-      expect(a).not.toBeVisible()
+
+      it('does not show organizations link', () => {
+        const link = screen.getByText('Organizations')
+        expect(link).not.toBeVisible()
+      })
+
+      it('does not sign out link', () => {
+        const link = screen.getByText('Sign Out')
+        expect(link).not.toBeVisible()
+      })
+
+      it('does not show manage app access link', () => {
+        const link = screen.getByText('Manage GitHub org access')
+        expect(link).not.toBeVisible()
+      })
     })
   })
 
   describe('when the avatar is clicked', () => {
-    it('the links become visible', () => {
-      setup({ provider: 'gh' })
+    describe('the links become visible', () => {
+      beforeEach(() => setup({ provider: 'gh' }))
 
-      fireEvent.mouseDown(screen.getByRole('button'))
-      links.forEach((link) => {
-        const a = screen.getByText(link.label).closest('a')
-        expect(a).toBeVisible()
-        expect(a).toHaveAttribute('href', link.to)
+      it('shows settings link', () => {
+        const link = screen.getByText('Settings')
+
+        expect(link).not.toBeVisible()
+
+        userEvent.click(screen.getByRole('button'))
+
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute('href', links[0].to)
       })
-      const a = screen.getByText(userAppManagePage).closest('a')
-      expect(a).toBeVisible()
+
+      it('shows organizations link', () => {
+        const link = screen.getByText('Organizations')
+
+        expect(link).not.toBeVisible()
+
+        userEvent.click(screen.getByRole('button'))
+
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute('href', links[1].to)
+      })
+
+      it('shows sign out link', () => {
+        const link = screen.getByText('Sign Out')
+
+        expect(link).not.toBeVisible()
+
+        userEvent.click(screen.getByRole('button'))
+
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute('href', links[2].to)
+      })
+
+      it('shows manage app access link', () => {
+        const link = screen.getByText('Manage GitHub org access')
+
+        expect(link).not.toBeVisible()
+
+        userEvent.click(screen.getByRole('button'))
+
+        expect(link).toBeVisible()
+      })
     })
   })
 
   describe('when rendered with a provider that is not github', () => {
-    it('renders the users avatar', () => {
-      setup({ provider: 'gl' })
+    beforeEach(() => setup({ provider: 'gl' }))
 
+    it('renders the users avatar', () => {
       const img = screen.getByRole('img')
       expect(img).toHaveAttribute('alt', 'avatar')
     })
 
-    it('does not render manage giithub org access', () => {
-      setup({ provider: 'gl' })
+    it('shows settings link', () => {
+      const link = screen.getByText('Settings')
 
-      fireEvent.mouseDown(screen.getByRole('button'))
-      links.forEach((link) => {
-        const a = screen.getByText(link.label).closest('a')
-        expect(a).toBeVisible()
-      })
-      const a = screen.queryByText(userAppManagePage)
-      expect(a).not.toBeInTheDocument()
+      expect(link).not.toBeVisible()
+
+      userEvent.click(screen.getByRole('button'))
+
+      expect(link).toBeVisible()
+      expect(link).toHaveAttribute('href', links[0].to)
+    })
+
+    it('shows organizations link', () => {
+      const link = screen.getByText('Organizations')
+
+      expect(link).not.toBeVisible()
+
+      userEvent.click(screen.getByRole('button'))
+
+      expect(link).toBeVisible()
+      expect(link).toHaveAttribute('href', links[1].to)
+    })
+
+    it('shows sign out link', () => {
+      const link = screen.getByText('Sign Out')
+
+      expect(link).not.toBeVisible()
+
+      userEvent.click(screen.getByRole('button'))
+
+      expect(link).toBeVisible()
+      expect(link).toHaveAttribute('href', links[2].to)
+    })
+
+    it('does not show manage app access link', () => {
+      const link = screen.queryByText('Manage GitHub org access')
+      expect(link).toBeNull()
     })
   })
 })

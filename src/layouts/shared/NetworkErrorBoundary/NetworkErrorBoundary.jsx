@@ -50,7 +50,7 @@ const graphQLErrorToUI = {
 }
 
 const NetworkErrorMessage = () => {
-  if (config.IS_ENTERPRISE) {
+  if (config.IS_SELF_HOSTED) {
     return (
       <p className="my-4 px-3 sm:px-0">
         Please see{' '}

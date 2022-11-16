@@ -56,7 +56,7 @@ function Header({ owner, provider }) {
       {isUploadsExceeded ? (
         <ExceededUploadsAlert />
       ) : (
-        !config.IS_ENTERPRISE && (
+        !config.IS_SELF_HOSTED && (
           <Banner>
             <BannerHeading>
               <div className="flex justify-center gap-2">

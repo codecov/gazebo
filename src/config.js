@@ -13,7 +13,7 @@ export function removeReactAppPrefix(obj) {
   const keys = mapKeys(obj, (_, key) => key.replace('REACT_APP_', ''))
 
   if ('ENV' in keys) {
-    keys['IS_ENTERPRISE'] = keys['ENV'].toLowerCase() === 'enterprise'
+    keys['IS_SELF_HOSTED'] = keys['ENV'].toLowerCase() === 'enterprise'
   }
 
   return keys

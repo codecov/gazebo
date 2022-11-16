@@ -1,7 +1,12 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import { useImage } from 'services/image'
+
 import ContextSwitcher from '.'
+
+jest.mock('services/image')
 
 const defaultProps = {
   activeContext: 'dorianamouroux',
@@ -31,24 +36,23 @@ const defaultProps = {
 }
 
 function fireClickAndMouseEvents(element) {
-  fireEvent.mouseDown(element)
-  fireEvent.mouseUp(element)
-  fireEvent.click(element)
+  userEvent.click(element)
 }
 
 describe('ContextSwitcher', () => {
-  let wrapper, props
+  let props
   function setup(over = {}) {
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     props = {
       ...defaultProps,
       ...over,
     }
-    wrapper = render(<ContextSwitcher {...props} />, {
-      wrapper: (props) => (
+    render(<ContextSwitcher {...props} />, {
+      wrapper: ({ children }) => (
         <MemoryRouter initialEntries={['/gh']}>
           <Switch>
             <Route path="/:provider" exact>
-              {props.children}
+              {children}
             </Route>
           </Switch>
         </MemoryRouter>
@@ -59,7 +63,7 @@ describe('ContextSwitcher', () => {
   describe('when rendered', () => {
     beforeEach(setup)
 
-    it('doesnt render any link', () => {
+    it('does not render any link', () => {
       expect(screen.queryAllByRole('link')).toHaveLength(0)
     })
   })
@@ -71,9 +75,7 @@ describe('ContextSwitcher', () => {
     })
 
     it('renders the menu', () => {
-      const popover = wrapper.baseElement.querySelector(
-        '[data-reach-menu-popover]'
-      )
+      const popover = screen.getByRole('menu')
       expect(popover).toBeVisible()
     })
   })
