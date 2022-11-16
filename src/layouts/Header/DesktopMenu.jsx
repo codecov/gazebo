@@ -77,7 +77,7 @@ function DesktopMenu() {
       </div>
       {!!currentUser ? (
         <div className="flex items-center space-between mx-2 md:mx-4 gap-4">
-          {config.IS_ENTERPRISE && (
+          {config.IS_SELF_HOSTED && (
             <>
               <SeatDetails />
               <AdminLink />

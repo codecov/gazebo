@@ -19,7 +19,7 @@ function Tabs({ currentUsername }) {
             owner: currentUsername,
           },
         },
-        ...(config.IS_ENTERPRISE
+        ...(config.IS_SELF_HOSTED
           ? []
           : [
               { pageName: 'membersTab', options: { owner: currentUsername } },
