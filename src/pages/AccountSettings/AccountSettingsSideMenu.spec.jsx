@@ -17,7 +17,7 @@ describe('AccountSettingsSideMenu', () => {
     user = {},
     isSelfHosted = false,
   }) {
-    config.IS_ENTERPRISE = isSelfHosted
+    config.IS_SELF_HOSTED = isSelfHosted
     useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
     useUser.mockReturnValue({ data: user })
 
