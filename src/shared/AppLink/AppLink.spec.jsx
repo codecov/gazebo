@@ -6,11 +6,11 @@ import AppLink from '.'
 describe('AppLink', () => {
   function setup(props = {}, location = '/gh/codecov') {
     render(<AppLink {...props} />, {
-      wrapper: (props) => (
+      wrapper: ({ children }) => (
         <MemoryRouter initialEntries={[location]} initialIndex={0}>
           <Switch>
-            <Route path="/account/:provider/:owner">{props.children}</Route>
-            <Route path="/:provider/:owner">{props.children}</Route>
+            <Route path="/account/:provider/:owner">{children}</Route>
+            <Route path="/:provider/:owner">{children}</Route>
           </Switch>
         </MemoryRouter>
       ),
@@ -50,7 +50,7 @@ describe('AppLink', () => {
   describe('when rendered to a link we dont have in gazebo', () => {
     beforeEach(() => {
       setup({
-        pageName: 'freshdesk',
+        pageName: 'support',
       })
     })
 

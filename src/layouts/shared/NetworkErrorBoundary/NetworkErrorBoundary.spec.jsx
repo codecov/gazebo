@@ -9,8 +9,8 @@ jest.spyOn(console, 'error').mockImplementation()
 jest.mock('config')
 
 describe('NetworkErrorBoundary', () => {
-  function setup(ToRender, isEnterprise = false) {
-    config.IS_ENTERPRISE = isEnterprise
+  function setup(ToRender, isSelfHosted = false) {
+    config.IS_SELF_HOSTED = isSelfHosted
 
     render(
       <NetworkErrorBoundary>

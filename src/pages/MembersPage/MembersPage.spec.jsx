@@ -26,8 +26,8 @@ const queryClient = new QueryClient({
 
 let testLocation
 describe('MembersPage', () => {
-  function setup({ owner = null, isEnterprise = false }) {
-    config.IS_ENTERPRISE = isEnterprise
+  function setup({ owner = null, isSelfHosted = false }) {
+    config.IS_SELF_HOSTED = isSelfHosted
 
     useOwner.mockReturnValue({
       data: owner,
@@ -105,7 +105,7 @@ describe('MembersPage', () => {
   describe('when user is an enterprise account', () => {
     beforeEach(() => {
       setup({
-        isEnterprise: true,
+        isSelfHosted: true,
       })
     })
 
