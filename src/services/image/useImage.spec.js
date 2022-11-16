@@ -2,14 +2,17 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { useImage } from './useImage'
 
+afterEach(() => {
+  jest.resetAllMocks()
+})
+
 describe('useImage', () => {
-  let hookData
+  it('starts loading an image', async () => {
+    const { result, waitFor } = renderHook(() => useImage({ src: 'image.com' }))
 
-  it('starts loading an image', () => {
-    hookData = renderHook(() => useImage({ src: 'image.com' }))
-
-    expect(hookData.result.current.isLoading).toBeTruthy()
+    await waitFor(() => expect(result.current.isLoading).toBeTruthy())
   })
+
   describe('successful network request', () => {
     beforeAll(() => {
       global.Image = class {
@@ -18,22 +21,27 @@ describe('useImage', () => {
             this.onload()
           }, 100)
         }
+
         decode() {
           return new Promise((resolve) => resolve())
         }
       }
     })
+
     it('successfully loads an image', async () => {
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result, waitFor } = renderHook(() =>
         useImage({ src: 'https://api.backend.dev/image.png' })
       )
 
-      await waitForNextUpdate()
+      await waitFor(() => expect(result.current.isLoading).toBeTruthy())
+      await waitFor(() => expect(result.current.isLoading).toBeFalsy())
 
-      expect(result.current.isLoading).toBeFalsy()
-      expect(result.current.src).toEqual('https://api.backend.dev/image.png')
+      await waitFor(() =>
+        expect(result.current.src).toEqual('https://api.backend.dev/image.png')
+      )
     })
   })
+
   describe('unsuccessful network request', () => {
     beforeAll(() => {
       global.Image = class {
@@ -42,20 +50,20 @@ describe('useImage', () => {
             this.onload()
           }, 100)
         }
+
         decode() {
-          return new Promise((_resolve, reject) => reject())
+          return new Promise((_reject, reject) => reject('error'))
         }
       }
     })
+
     it('cannot successful load an image', async () => {
-      const { result, waitForNextUpdate } = renderHook(() =>
-        useImage({ src: 'https://api.backend.dev/image.png' })
+      const { result, waitFor } = renderHook(() =>
+        useImage({ src: 'https://api.backend.dev/image2.png' })
       )
 
-      await waitForNextUpdate()
-
-      expect(result.current.isLoading).toBeFalsy()
-      expect(result.current.error).toBeTruthy()
+      await waitFor(() => expect(result.current.isLoading).toBeFalsy())
+      await waitFor(() => expect(result.current.error).not.toBeNull())
     })
   })
 })

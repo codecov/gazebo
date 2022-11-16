@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import { useImage } from 'services/image'
 import { useUser } from 'services/user'
 
 import Header from './Header'
 
+jest.mock('services/image')
 jest.mock('services/user')
 
 const loggedInUser = {
@@ -17,6 +19,7 @@ const loggedInUser = {
 describe('Header', () => {
   function setup({ provider }) {
     useUser.mockReturnValue({ data: loggedInUser })
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
 
     render(
       <MemoryRouter initialEntries={[`/${provider}`]}>
