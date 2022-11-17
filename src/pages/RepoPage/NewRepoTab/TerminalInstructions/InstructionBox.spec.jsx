@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import config from 'config'
+
 import * as Segment from 'services/tracking/segment'
 import { useUser } from 'services/user'
 
@@ -9,6 +11,7 @@ import InstructionBox from '.'
 const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 
 jest.mock('services/user')
+jest.mock('config')
 
 const loggedInUser = {
   username: "Patia Por'co",
@@ -18,7 +21,9 @@ const loggedInUser = {
 }
 
 describe('InstructionBox', () => {
-  function setup() {
+  function setup({ isSelfHosted = false } = {}) {
+    config.IS_SELF_HOSTED = isSelfHosted
+
     useUser.mockReturnValue({ data: loggedInUser })
     render(<InstructionBox />)
   }
@@ -74,6 +79,26 @@ describe('InstructionBox', () => {
       userEvent.click(screen.getByRole('button', { name: 'Windows' }))
       const instruction = screen.queryByText(/\$ProgressPreference/)
       expect(instruction).toBeInTheDocument()
+    })
+  })
+
+  describe('when click on windows an user is a self hosted user', () => {
+    beforeEach(() => {
+      config.BASE_URL = 'https://app.codecov.io/'
+      setup({ isSelfHosted: true })
+      userEvent.click(screen.getByRole('button', { name: 'Windows' }))
+    })
+
+    it('renders windows specific instruction', () => {
+      const widnowsInstruction = screen.getByText(/windows\/codecov/)
+      expect(widnowsInstruction).toBeInTheDocument()
+    })
+
+    it('renders self hosted specific instruction', () => {
+      const selfHostedInstruction = screen.getByText(
+        /\/codecov -u https:\/\/app.codecov.io/
+      )
+      expect(selfHostedInstruction).toBeInTheDocument()
     })
   })
 
