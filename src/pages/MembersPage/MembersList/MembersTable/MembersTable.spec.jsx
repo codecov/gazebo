@@ -361,6 +361,25 @@ describe('MembersTable', () => {
           expect(requestSearchParams.get('ordering')).toBe('name,username')
         })
       })
+
+      describe('setting in originally order', () => {
+        it('removes the request param', async () => {
+          render(<MembersTable />, { wrapper: wrapper() })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const userName = await screen.findByText('User name')
+          userEvent.click(userName)
+          userEvent.click(userName)
+          userEvent.click(userName)
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          expect(requestSearchParams.get('ordering')).toBe('')
+        })
+      })
     })
 
     describe('interacting with the type column', () => {
@@ -396,6 +415,25 @@ describe('MembersTable', () => {
           await waitFor(() => !queryClient.isFetching)
 
           expect(requestSearchParams.get('ordering')).toBe('type')
+        })
+      })
+
+      describe('setting in originally order', () => {
+        it('removes the request param', async () => {
+          render(<MembersTable />, { wrapper: wrapper() })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const type = await screen.findByText('Type')
+          userEvent.click(type)
+          userEvent.click(type)
+          userEvent.click(type)
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          expect(requestSearchParams.get('ordering')).toBe('')
         })
       })
     })
@@ -435,6 +473,25 @@ describe('MembersTable', () => {
           expect(requestSearchParams.get('ordering')).toBe('email')
         })
       })
+
+      describe('setting in originally order', () => {
+        it('removes the request param', async () => {
+          render(<MembersTable />, { wrapper: wrapper() })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const email = await screen.findByText('email')
+          userEvent.click(email)
+          userEvent.click(email)
+          userEvent.click(email)
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          expect(requestSearchParams.get('ordering')).toBe('')
+        })
+      })
     })
 
     describe('interacting with the activation status column', () => {
@@ -470,6 +527,25 @@ describe('MembersTable', () => {
           await waitFor(() => !queryClient.isFetching)
 
           expect(requestSearchParams.get('ordering')).toBe('activated')
+        })
+      })
+
+      describe('setting in originally order', () => {
+        it('removes the request param', async () => {
+          render(<MembersTable />, { wrapper: wrapper() })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const activationStatus = await screen.findByText('Activation status')
+          userEvent.click(activationStatus)
+          userEvent.click(activationStatus)
+          userEvent.click(activationStatus)
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          expect(requestSearchParams.get('ordering')).toBe('')
         })
       })
     })

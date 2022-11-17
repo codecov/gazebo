@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash'
+import { isEmpty, isEqual } from 'lodash'
 import PropTypes from 'prop-types'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -151,12 +151,15 @@ function MembersTable({ handleActivate, params }) {
   const handleSort = useCallback(
     (tableSortBy) => {
       if (!isEqual(sortBy, tableSortBy)) {
-        const [{ id, desc }] = tableSortBy
-        const { value } = OrderItems.find((iter) => {
-          return iter.name === id && iter.desc === desc
-        })
-
-        setSortBy(value)
+        if (isEmpty(tableSortBy)) {
+          setSortBy(null)
+        } else {
+          const [{ id, desc }] = tableSortBy
+          const { value } = OrderItems.find((iter) => {
+            return iter.name === id && iter.desc === desc
+          })
+          setSortBy(value)
+        }
       }
     },
     [sortBy]
