@@ -71,4 +71,22 @@ describe('PlanPage', () => {
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
     })
   })
+
+  describe('when the environment is self-hosted', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          owner: {
+            username: 'codecov',
+            isCurrentUserPartOfOrg: false,
+          },
+        },
+        isSelfHosted: true,
+      })
+    })
+
+    it('doesnt render tabs', () => {
+      expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+    })
+  })
 })
