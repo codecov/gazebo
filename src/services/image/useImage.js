@@ -45,6 +45,7 @@ export function useImage({ src }) {
         setIsLoading(false)
       })
       .catch((error) => {
+        if (cancel) return
         imageCache.set(src, {
           ...imageCache.get(src),
           cache: 'rejected',
