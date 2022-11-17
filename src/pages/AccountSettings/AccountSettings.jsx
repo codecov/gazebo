@@ -1,5 +1,3 @@
-import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
@@ -17,8 +15,6 @@ const AdminTab = lazy(() => import('./tabs/Admin'))
 const NotFound = lazy(() => import('../NotFound'))
 const Profile = lazy(() => import('./tabs/Profile'))
 const YAMLTab = lazy(() => import('./tabs/YAML'))
-
-const stripePromise = loadStripe(config.STRIPE_KEY)
 
 const Loader = (
   <div className="h-full w-full flex items-center justify-center">
@@ -38,7 +34,7 @@ function AccountSettings() {
   const yamlTab = `/account/${provider}/${owner}/yaml/`
 
   return (
-    <Elements stripe={stripePromise}>
+    <>
       <Header />
       <SidebarLayout sidebar={<AccountSettingsSideMenu />}>
         <Suspense fallback={Loader}>
@@ -66,7 +62,7 @@ function AccountSettings() {
           </Switch>
         </Suspense>
       </SidebarLayout>
-    </Elements>
+    </>
   )
 }
 
