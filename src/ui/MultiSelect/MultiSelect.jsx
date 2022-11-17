@@ -68,8 +68,84 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
+function DropdownList({
+  ariaName,
+  isOpen,
+  onSearch,
+  getMenuProps,
+  listItems,
+  selectedItems,
+  highlightedIndex,
+  getItemProps,
+  resourceName,
+  renderItem,
+  isLoading,
+  intersectionRef,
+  onLoadMore,
+}) {
+  return (
+    <ul
+      aria-label={ariaName}
+      className={cs(
+        SelectClasses.listContainer,
+        {
+          'border border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
+        },
+        onSearch ? 'top-16' : 'top-8'
+      )}
+      {...getMenuProps()}
+    >
+      {isOpen && (
+        <>
+          {listItems.map((item, index) => (
+            <li
+              className={cs(SelectClasses.listItem, {
+                'px-2 font-bold border-l-4 border-l-black':
+                  isItemSelected(item, selectedItems) ||
+                  (isAllButton(item) && selectedItems.length === 0),
+                'bg-ds-gray-secondary': highlightedIndex === index,
+                'py-2 border-b border-ds-gray-tertiary': isAllButton(item),
+              })}
+              key={`${item}_${index}`}
+              {...getItemProps({ item, index })}
+            >
+              {isAllButton(item)
+                ? `All ${pluralize(resourceName)}`
+                : renderItem(item)}
+            </li>
+          ))}
+          {isLoading && (
+            <span className="flex py-2 px-3">
+              <Spinner />
+            </span>
+          )}
+          <LoadMoreTrigger
+            intersectionRef={intersectionRef}
+            onLoadMore={onLoadMore}
+          />
+        </>
+      )}
+    </ul>
+  )
+}
+
+DropdownList.propTypes = {
+  ariaName: PropTypes.string,
+  isOpen: PropTypes.bool,
+  onSearch: PropTypes.func,
+  getMenuProps: PropTypes.func,
+  listItems: PropTypes.array,
+  selectedItems: PropTypes.array,
+  highlightedIndex: PropTypes.number,
+  getItemProps: PropTypes.func,
+  resourceName: PropTypes.string,
+  renderItem: PropTypes.func,
+  isLoading: PropTypes.bool,
+  intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+  onLoadMore: PropTypes.func,
+}
+
 const MultiSelect = forwardRef(
-  // eslint-disable-next-line complexity
   (
     {
       dataMarketing,
@@ -209,48 +285,21 @@ const MultiSelect = forwardRef(
             </div>
           </div>
         </div>
-        <ul
-          aria-label={ariaName}
-          className={cs(
-            SelectClasses.listContainer,
-            {
-              'border border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
-            },
-            onSearch ? 'top-16' : 'top-8'
-          )}
-          {...getMenuProps()}
-        >
-          {isOpen && (
-            <>
-              {listItems.map((item, index) => (
-                <li
-                  className={cs(SelectClasses.listItem, {
-                    'px-2 font-bold border-l-4 border-l-black':
-                      isItemSelected(item, selectedItems) ||
-                      (isAllButton(item) && selectedItems.length === 0),
-                    'bg-ds-gray-secondary': highlightedIndex === index,
-                    'py-2 border-b border-ds-gray-tertiary': isAllButton(item),
-                  })}
-                  key={`${item}_${index}`}
-                  {...getItemProps({ item, index })}
-                >
-                  {isAllButton(item)
-                    ? `All ${pluralize(resourceName)}`
-                    : renderItem(item)}
-                </li>
-              ))}
-              {isLoading && (
-                <span className="flex py-2 px-3">
-                  <Spinner />
-                </span>
-              )}
-              <LoadMoreTrigger
-                intersectionRef={intersectionRef}
-                onLoadMore={onLoadMore}
-              />
-            </>
-          )}
-        </ul>
+        <DropdownList
+          ariaName={ariaName}
+          isOpen={isOpen}
+          onSearch={onSearch}
+          getMenuProps={getMenuProps}
+          listItems={listItems}
+          selectedItems={selectedItems}
+          highlightedIndex={highlightedIndex}
+          getItemProps={getItemProps}
+          resourceName={resourceName}
+          renderItem={renderItem}
+          isLoading={isLoading}
+          intersectionRef={intersectionRef}
+          onLoadMore={onLoadMore}
+        />
       </div>
     )
   }

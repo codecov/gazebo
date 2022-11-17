@@ -14,6 +14,7 @@ describe('MultiSelect', () => {
   let props = {}
   const defaultProps = {
     ariaName: 'multi-select test',
+    dataMarketing: 'multi-select test',
     items: ['item1', 'item2', 'item3'],
     onChange,
   }
@@ -39,7 +40,13 @@ describe('MultiSelect', () => {
 
     describe('when no items are passed', () => {
       it('uses default items value', () => {
-        render(<MultiSelect ariaName="multi-select test" onChange={onChange} />)
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing={'multi-select test'}
+            onChange={onChange}
+          />
+        )
 
         const listbox = screen.getByRole('listbox')
         expect(listbox).toBeEmptyDOMElement()
