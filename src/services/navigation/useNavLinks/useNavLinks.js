@@ -361,6 +361,12 @@ export function useNavLinks() {
       },
       isExternalLink: false,
     },
+    orgUploadToken: {
+      text: 'Global Upload Token',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/account/${provider}/${owner}/orgUploadToken`,
+      isExternalLink: false,
+    },
     access: {
       text: 'Access',
       path: ({ provider = p } = { provider: p }) => {

@@ -874,4 +874,24 @@ describe('useNavLinks', () => {
       })
     })
   })
+
+  describe('general repo upload token link', () => {
+    beforeAll(() => {
+      setup(['/gh/codecov'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.orgUploadToken.path()).toBe(
+        '/account/gh/codecov/orgUploadToken'
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.orgUploadToken.path({ provider: 'bb' })
+      ).toBe('/account/bb/codecov/orgUploadToken')
+      expect(
+        hookData.result.current.orgUploadToken.path({ owner: 'cat' })
+      ).toBe('/account/gh/cat/orgUploadToken')
+    })
+  })
 })
