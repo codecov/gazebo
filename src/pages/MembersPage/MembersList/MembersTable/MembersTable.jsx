@@ -1,8 +1,9 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { isEqual } from 'lodash'
 import PropTypes from 'prop-types'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
-import { useIntersection } from 'react-use'
 
 import { useAccountDetails } from 'services/account'
 import { useInfiniteUsers } from 'services/users'
@@ -108,31 +109,25 @@ const createTable = ({
 
 function LoadMoreTrigger({ intersectionRef }) {
   return (
-    <>
-      <span
-        ref={intersectionRef}
-        className="relative top-[-65px] invisible block leading-[0]"
-      >
-        Loading
-      </span>
-    </>
+    <span
+      ref={intersectionRef}
+      className="relative top-[-65px] invisible block leading-[0]"
+    >
+      Loading
+    </span>
   )
 }
 
 LoadMoreTrigger.propTypes = {
-  intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+  intersectionRef: PropTypes.func,
 }
 
 // eslint-disable-next-line max-statements
 function MembersTable({ handleActivate, params }) {
+  const queryClient = useQueryClient()
   const [sortBy, setSortBy] = useState([])
   const { owner, provider } = useParams()
-  const intersectionRef = useRef(null)
-  const intersection = useIntersection(intersectionRef, {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-  })
+  const { ref, inView } = useInView()
 
   const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
     useInfiniteUsers(
@@ -150,10 +145,13 @@ function MembersTable({ handleActivate, params }) {
     )
 
   useEffect(() => {
-    if (intersection?.isIntersecting && hasNextPage) {
+    if (inView && hasNextPage) {
       fetchNextPage()
     }
-  }, [intersection?.isIntersecting, hasNextPage, fetchNextPage])
+    return () => {
+      queryClient.cancelQueries(['InfiniteUsers'])
+    }
+  }, [inView, hasNextPage, fetchNextPage, queryClient])
 
   const handleSort = useCallback(
     (tableSortBy) => {
@@ -190,7 +188,7 @@ function MembersTable({ handleActivate, params }) {
       <div className="flex flex-row justify-center">
         {(isLoading || isFetchingNextPage) && <Spinner />}
       </div>
-      <LoadMoreTrigger intersectionRef={intersectionRef} />
+      <LoadMoreTrigger intersectionRef={ref} />
     </>
   )
 }
