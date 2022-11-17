@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { isEqual } from 'lodash'
 import PropTypes from 'prop-types'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -124,7 +123,6 @@ LoadMoreTrigger.propTypes = {
 
 // eslint-disable-next-line max-statements
 function MembersTable({ handleActivate, params }) {
-  const queryClient = useQueryClient()
   const [sortBy, setSortBy] = useState([])
   const { owner, provider } = useParams()
   const { ref, inView } = useInView()
@@ -148,10 +146,7 @@ function MembersTable({ handleActivate, params }) {
     if (inView && hasNextPage) {
       fetchNextPage()
     }
-    return () => {
-      queryClient.cancelQueries(['InfiniteUsers'])
-    }
-  }, [inView, hasNextPage, fetchNextPage, queryClient])
+  }, [inView, hasNextPage, fetchNextPage])
 
   const handleSort = useCallback(
     (tableSortBy) => {
