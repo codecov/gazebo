@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import 'react-intersection-observer/test-utils'
 
 import MembersList from './MembersList'
 
