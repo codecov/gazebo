@@ -3,8 +3,8 @@ import { useState } from 'react'
 import useDebounce from 'react-use/lib/useDebounce'
 
 import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
-import Select from 'ui/NewSelect'
 import OptionButton from 'ui/OptionButton'
+import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
 
 import GithubPrivateScopeLogin from './GithubPrivateScopeLogin'
