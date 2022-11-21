@@ -130,6 +130,9 @@ describe('MembersTable', () => {
       it('has User name column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
         const userName = await screen.findByText('User name')
         expect(userName).toBeInTheDocument()
       })
