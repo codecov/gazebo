@@ -41,7 +41,7 @@ function PlanPage() {
           <hr className="md:w-10/12" />
           <Suspense fallback={Loader}>
             <Switch>
-              {config.IS_ENTERPRISE && <Redirect to="/:provider/:owner" />}
+              {config.IS_SELF_HOSTED && <Redirect to="/:provider/:owner" />}
               <Route path={path} exact>
                 <CurrentOrgPlan />
               </Route>

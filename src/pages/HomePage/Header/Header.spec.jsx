@@ -9,8 +9,8 @@ jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('config')
 
 describe('Header', () => {
-  function setup({ isEnterprise }) {
-    config.IS_ENTERPRISE = isEnterprise
+  function setup({ isSelfHosted }) {
+    config.IS_SELF_HOSTED = isSelfHosted
     render(
       <MemoryRouter initialEntries={['/gh']}>
         <Route path="/:provider">
@@ -22,7 +22,7 @@ describe('Header', () => {
 
   describe('render in cloud', () => {
     beforeEach(() => {
-      setup({ isEnterprise: false })
+      setup({ isSelfHosted: false })
     })
 
     it('renders the context switcher', () => {
@@ -39,7 +39,7 @@ describe('Header', () => {
   })
   describe('render on enterprise', () => {
     beforeEach(() => {
-      setup({ isEnterprise: true })
+      setup({ isSelfHosted: true })
     })
 
     it('Ask for feedback banner is rendered', () => {

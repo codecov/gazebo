@@ -3,8 +3,8 @@ import { useState } from 'react'
 import useDebounce from 'react-use/lib/useDebounce'
 
 import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
+import Select from 'ui/NewSelect'
 import OptionButton from 'ui/OptionButton'
-import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
 
 import GithubPrivateScopeLogin from './GithubPrivateScopeLogin'
@@ -57,6 +57,7 @@ function OrgControlTable({
             value={search}
             placeholder="Search"
             onChange={(e) => setSearch(e.target.value)}
+            data-testid="org-control-search"
           />
         </div>
       </div>

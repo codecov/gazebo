@@ -1,6 +1,6 @@
 import { useLocationParams } from 'services/navigation'
 import { Trend } from 'shared/utils/legacyCharts'
-import Select from 'ui/Select'
+import Select from 'ui/NewSelect'
 
 const defaultQueryParams = {
   trend: null,
