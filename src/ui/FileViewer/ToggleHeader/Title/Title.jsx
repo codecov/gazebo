@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import MultiSelect from 'ui/NewMultiSelect'
+import MultiSelect from 'ui/MultiSelect'
 import Spinner from 'ui/Spinner'
 
 import CoverageSelect from './CoverageSelect'
