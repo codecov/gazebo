@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react'
 
 import { useLocationParams } from 'services/navigation'
-import Select from 'ui/NewSelect'
 import SearchField from 'ui/SearchField'
+import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
 const MemberTable = lazy(() => import('./MemberTable'))
