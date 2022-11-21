@@ -7,10 +7,14 @@ import config from 'config'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
+import { isEnterprisePlan } from 'shared/utils/billing'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 import Header from './shared/Header'
+import OrgUploadToken from './tabs/OrgUploadToken'
 
 const AccessTab = lazy(() => import('./tabs/Access'))
 const AdminTab = lazy(() => import('./tabs/Admin'))
@@ -36,6 +40,11 @@ function AccountSettings() {
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   const yamlTab = `/account/${provider}/${owner}/yaml/`
+  const { orgUploadToken } = useFlags({ orgUploadToken: false })
+
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const showOrgUploadToken =
+    orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
 
   return (
     <Elements stripe={stripePromise}>
@@ -58,6 +67,11 @@ function AccountSettings() {
             {!config.IS_SELF_HOSTED && (
               <Route path="/account/:provider/:owner/access/" exact>
                 <AccessTab provider={provider} />
+              </Route>
+            )}
+            {showOrgUploadToken && (
+              <Route path="/account/:provider/:owner/orgUploadToken" exact>
+                <OrgUploadToken />
               </Route>
             )}
             <Route path="/account/:provider/:owner/*">
