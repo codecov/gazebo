@@ -5,7 +5,14 @@ import Api from 'shared/api'
 
 import { mapEdges } from '../../shared/utils/graphql'
 
-function fetchRepoFlags({ provider, owner: name, repo, filters, after }) {
+function fetchRepoFlags({
+  provider,
+  owner: name,
+  repo,
+  filters,
+  after,
+  signal,
+}) {
   const query = `
     query FlagsSelect(
       $name: String!
@@ -33,6 +40,7 @@ function fetchRepoFlags({ provider, owner: name, repo, filters, after }) {
   return Api.graphql({
     provider,
     query,
+    signal,
     variables: {
       name,
       repo,
@@ -54,13 +62,14 @@ export function useRepoFlagsSelect({ filters } = { filters: {} }) {
 
   const { data, ...rest } = useInfiniteQuery(
     ['RepoFlagsSelect', provider, owner, repo, filters],
-    ({ pageParam: after }) =>
+    ({ pageParam: after, signal }) =>
       fetchRepoFlags({
         provider,
         owner,
         repo,
         filters,
         after,
+        signal,
       }),
     {
       getNextPageParam: (data) =>
