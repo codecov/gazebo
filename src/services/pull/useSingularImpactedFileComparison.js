@@ -50,10 +50,11 @@ export function useSingularImpactedFileComparison({
     }
     `
 
-  const fetchSingularImpactedFile = () => {
+  const fetchSingularImpactedFile = ({ signal }) => {
     return Api.graphql({
       provider,
       query,
+      signal,
       variables: {
         provider,
         owner,
@@ -88,7 +89,7 @@ export function useSingularImpactedFileComparison({
 
   return useQuery(
     ['ImpactedFileComparison', provider, owner, repo, pullId, path],
-    fetchSingularImpactedFile,
+    ({ signal }) => fetchSingularImpactedFile({ signal }),
     {
       select: ({ data }) =>
         transformImpactedFileData(

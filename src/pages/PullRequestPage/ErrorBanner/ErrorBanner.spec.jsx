@@ -105,7 +105,7 @@ describe('ErrorBanner Card', () => {
       expect(screen.getByText('Missing Comparison')).toBeInTheDocument()
       expect(
         screen.getByText(
-          'Unable to compare head and base commits successfully.'
+          'There was an error computing the comparison for the head and base commit.'
         )
       ).toBeInTheDocument()
       const troubleshootLink = screen.getByRole('link', { name: /learn more/i })

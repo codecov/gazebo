@@ -9,9 +9,9 @@ function getRepoCoverage({ provider, owner }) {
   ).toLowerCase()}/${owner}/coverage/repository`
 }
 
-function fetchRepoCoverage({ provider, owner, body }) {
+function fetchRepoCoverage({ provider, owner, body, signal }) {
   const path = getRepoCoverage({ provider, owner })
-  return Api.post({ path, provider, body })
+  return Api.post({ path, provider, body, signal })
 }
 
 export function useLegacyRepoCoverage({
@@ -24,7 +24,7 @@ export function useLegacyRepoCoverage({
 }) {
   return useQuery(
     ['legacyRepo', 'coverage', provider, owner, branch, trend],
-    () => fetchRepoCoverage({ provider, owner, body }),
+    ({ signal }) => fetchRepoCoverage({ provider, owner, body, signal }),
     opts
   )
 }

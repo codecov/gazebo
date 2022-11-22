@@ -5,9 +5,10 @@ import Api from 'shared/api'
 export const useSelfHostedUserList = ({ activated, search, isAdmin }) =>
   useInfiniteQuery(
     ['SelfHostedUserList', activated, search, isAdmin],
-    ({ pageParam = 1 }) => {
+    ({ pageParam = 1, signal }) => {
       return Api.get({
         path: '/users',
+        signal,
         query: {
           activated,
           isAdmin,

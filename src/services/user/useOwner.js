@@ -24,11 +24,10 @@ export function useOwner({ username, opts = {} }) {
 
   return useQuery(
     ['owner', variables, provider],
-    () => {
-      return Api.graphql({ provider, query, variables }).then((res) => {
+    ({ signal }) =>
+      Api.graphql({ provider, query, variables, signal }).then((res) => {
         return res?.data?.owner
-      })
-    },
+      }),
     opts
   )
 }

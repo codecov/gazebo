@@ -3,7 +3,15 @@ import { useQuery } from '@tanstack/react-query'
 import Api from 'shared/api'
 
 // Repo contents hook
-function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
+function fetchRepoContents({
+  provider,
+  owner,
+  repo,
+  branch,
+  path,
+  filters,
+  signal,
+}) {
   const query = `
     query BranchFiles($name: String!, $repo: String!, $branch: String!, $path: String!, $filters: PathContentsFilters!) {
         owner(username:$name){
@@ -39,6 +47,7 @@ function fetchRepoContents({ provider, owner, repo, branch, path, filters }) {
   return Api.graphql({
     provider,
     query,
+    signal,
     variables: {
       name: owner,
       repo,
@@ -62,9 +71,16 @@ export function useRepoContents({
 }) {
   return useQuery(
     ['BranchFiles', provider, owner, repo, branch, path, filters],
-    () => {
-      return fetchRepoContents({ provider, owner, repo, branch, path, filters })
-    },
+    ({ signal }) =>
+      fetchRepoContents({
+        provider,
+        owner,
+        repo,
+        branch,
+        path,
+        filters,
+        signal,
+      }),
     {
       ...options,
     }
