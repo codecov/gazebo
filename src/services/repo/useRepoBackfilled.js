@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
-function fetchRepoBackfilledContents({ provider, owner, repo }) {
+function fetchRepoBackfilledContents({ provider, owner, repo, signal }) {
   const query = `
       query BackfillFlagMemberships($name: String!, $repo: String!) {
         owner(username:$name){
@@ -20,6 +20,7 @@ function fetchRepoBackfilledContents({ provider, owner, repo }) {
     provider,
     repo,
     query,
+    signal,
     variables: {
       name: owner,
       repo,
@@ -31,7 +32,9 @@ function fetchRepoBackfilledContents({ provider, owner, repo }) {
 
 export function useRepoBackfilled() {
   const { provider, owner, repo } = useParams()
-  return useQuery(['BackfillFlagMemberships', provider, owner, repo], () => {
-    return fetchRepoBackfilledContents({ provider, owner, repo })
-  })
+  return useQuery(
+    ['BackfillFlagMemberships', provider, owner, repo],
+    ({ signal }) =>
+      fetchRepoBackfilledContents({ provider, owner, repo, signal })
+  )
 }

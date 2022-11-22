@@ -45,10 +45,11 @@ export function usePull({
   // TODO: Find a way to only make 1 request per usePull call (there's 2 different calls based on the filters)
   return useQuery(
     ['pull', provider, owner, repo, pullId, filters],
-    () => {
+    ({ signal }) => {
       return Api.graphql({
         provider,
         query,
+        signal,
         variables: {
           provider,
           owner,
