@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-function fetchRepoOverviewInitial({ provider, owner, repo }) {
+function fetchRepoOverviewInitial({ provider, owner, repo, signal }) {
   const query = `
     query GetRepoOverview($name: String!, $repo: String!) {
       owner(username:$name){
@@ -28,6 +28,7 @@ function fetchRepoOverviewInitial({ provider, owner, repo }) {
     provider,
     repo,
     query,
+    signal,
     variables: {
       name: owner,
       repo,
@@ -36,7 +37,7 @@ function fetchRepoOverviewInitial({ provider, owner, repo }) {
 }
 
 export function useRepoOverview({ provider, owner, repo }) {
-  return useQuery(['overview init', provider, owner, repo], () => {
-    return fetchRepoOverviewInitial({ provider, owner, repo })
-  })
+  return useQuery(['overview init', provider, owner, repo], ({ signal }) =>
+    fetchRepoOverviewInitial({ provider, owner, repo, signal })
+  )
 }
