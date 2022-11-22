@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-function fetchOwnerUploadsNumber({ provider, owner }) {
+function fetchOwnerUploadsNumber({ provider, owner, signal }) {
   const query = `
     query GetUploadsNumber($owner: String!){
         owner(username:$owner){
@@ -14,6 +14,7 @@ function fetchOwnerUploadsNumber({ provider, owner }) {
   return Api.graphql({
     provider,
     query,
+    signal,
     variables: {
       owner,
     },
@@ -24,7 +25,7 @@ function fetchOwnerUploadsNumber({ provider, owner }) {
 }
 
 export function useUploadsNumber({ provider, owner }) {
-  return useQuery(['ownerUploads', provider, owner], () => {
-    return fetchOwnerUploadsNumber({ provider, owner })
-  })
+  return useQuery(['ownerUploads', provider, owner], ({ signal }) =>
+    fetchOwnerUploadsNumber({ provider, owner, signal })
+  )
 }
