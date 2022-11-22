@@ -5,10 +5,11 @@ import Api from 'shared/api'
 export const useInfiniteUsers = ({ provider, owner, query }, opts = {}) => {
   return useInfiniteQuery(
     ['InfiniteUsers', provider, owner, query],
-    ({ pageParam = 1 }) =>
+    ({ pageParam = 1, signal }) =>
       Api.get({
         path: `/${provider}/${owner}/users/`,
         provider,
+        signal,
         query: {
           ...query,
           pageSize: 25,
