@@ -14,6 +14,7 @@ function _fetch({
   body,
   provider = 'gh',
   extraHeaders = {},
+  signal,
 }) {
   const uri = generatePath({ path, query })
   const headers = {
@@ -26,6 +27,7 @@ function _fetch({
   return fetch(uri, {
     headers,
     method,
+    signal,
     credentials: 'include',
     body: body ? JSON.stringify(snakeifyKeys(body)) : null,
   }).then(async (res) => {
@@ -53,7 +55,7 @@ function prefillMethod(method) {
     })
 }
 
-function graphql({ provider, query, variables = {} }) {
+function graphql({ provider, query, variables = {}, signal }) {
   const uri = `${config.API_URL}/graphql/${provider}`
   const headers = {
     Accept: 'application/json',
@@ -70,6 +72,7 @@ function graphql({ provider, query, variables = {} }) {
   return fetch(uri, {
     headers,
     method: 'POST',
+    signal,
     credentials: 'include',
     body: JSON.stringify({
       query,
