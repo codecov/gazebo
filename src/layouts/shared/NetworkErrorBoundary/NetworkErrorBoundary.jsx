@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import { Component } from 'react'
+import { Component, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import config from 'config'
@@ -103,12 +103,26 @@ function ResetHandler({ reset }) {
   const queryClient = useQueryClient()
   const history = useHistory()
 
+  useEffect(() => {
+    let unMounted = false
+    const unListen = history.listen(() => {
+      if (unMounted) return
+      queryClient.clear()
+      reset()
+    })
+
+    return () => {
+      unMounted = true
+      unListen()
+    }
+  }, [history, queryClient, reset])
+
   return (
     <div className="my-4">
       <Button
         onClick={() => {
-          history.goBack()
           queryClient.clear()
+          history.goBack()
           reset()
         }}
       >
