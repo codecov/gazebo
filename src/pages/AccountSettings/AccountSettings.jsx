@@ -1,5 +1,3 @@
-import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useParams } from 'react-router-dom'
 
@@ -7,18 +5,20 @@ import config from 'config'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
+import { isEnterprisePlan } from 'shared/utils/billing'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 import Header from './shared/Header'
+import OrgUploadToken from './tabs/OrgUploadToken'
 
 const AccessTab = lazy(() => import('./tabs/Access'))
 const AdminTab = lazy(() => import('./tabs/Admin'))
 const NotFound = lazy(() => import('../NotFound'))
 const Profile = lazy(() => import('./tabs/Profile'))
 const YAMLTab = lazy(() => import('./tabs/YAML'))
-
-const stripePromise = loadStripe(config.STRIPE_KEY)
 
 const Loader = (
   <div className="h-full w-full flex items-center justify-center">
@@ -36,9 +36,14 @@ function AccountSettings() {
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   const yamlTab = `/account/${provider}/${owner}/yaml/`
+  const { orgUploadToken } = useFlags({ orgUploadToken: false })
+
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const showOrgUploadToken =
+    orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
 
   return (
-    <Elements stripe={stripePromise}>
+    <>
       <Header />
       <SidebarLayout sidebar={<AccountSettingsSideMenu />}>
         <Suspense fallback={Loader}>
@@ -60,13 +65,18 @@ function AccountSettings() {
                 <AccessTab provider={provider} />
               </Route>
             )}
+            {showOrgUploadToken && (
+              <Route path="/account/:provider/:owner/orgUploadToken" exact>
+                <OrgUploadToken />
+              </Route>
+            )}
             <Route path="/account/:provider/:owner/*">
               <NotFound />
             </Route>
           </Switch>
         </Suspense>
       </SidebarLayout>
-    </Elements>
+    </>
   )
 }
 

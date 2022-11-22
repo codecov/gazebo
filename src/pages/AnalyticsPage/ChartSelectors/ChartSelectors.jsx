@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 
 import { useRepos } from 'services/repos'
 import DateRangePicker from 'ui/DateRangePicker'
-import MultiSelect from 'ui/NewMultiSelect'
+import MultiSelect from 'ui/MultiSelect'
 
 function formatDataForMultiselect(repos) {
   return repos?.map((repo) => repo.name)

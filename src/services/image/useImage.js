@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export function imagePromiseFactory({ src }) {
   return new Promise((resolveSource, rejectSource) => {
@@ -22,7 +22,10 @@ const imageExtCache = new Map()
 export function useImage({ src }) {
   const [, setIsLoading] = useState(true)
 
-  let imageCache = imageExtCache ? imageExtCache : new Map()
+  let imageCache = useMemo(
+    () => (imageExtCache ? imageExtCache : new Map()),
+    []
+  )
 
   if (!imageCache.get(src)) {
     imageCache.set(src, {
@@ -32,16 +35,28 @@ export function useImage({ src }) {
     })
   }
 
-  imageCache
-    .get(src)
-    .promise.then((src) => {
-      imageCache.set(src, { ...imageCache.get(src), cache: 'resolved', src })
-      setIsLoading(false)
-    })
-    .catch((error) => {
-      imageCache.set(src, { ...imageCache.get(src), cache: 'rejected', error })
-      setIsLoading(false)
-    })
+  useEffect(() => {
+    let cancel = false
+    imageCache
+      .get(src)
+      .promise.then((src) => {
+        if (cancel) return
+        imageCache.set(src, { ...imageCache.get(src), cache: 'resolved', src })
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        if (cancel) return
+        imageCache.set(src, {
+          ...imageCache.get(src),
+          cache: 'rejected',
+          error,
+        })
+        setIsLoading(false)
+      })
+    return () => {
+      cancel = true
+    }
+  }, [imageCache, src])
 
   if (imageCache.get(src).cache === 'resolved') {
     return { src: imageCache.get(src).src, isLoading: false, error: null }
