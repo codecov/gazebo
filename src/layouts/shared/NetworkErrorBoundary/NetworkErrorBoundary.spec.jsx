@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useHistory } from 'react-router-dom'
 
 import config from 'config'
 
@@ -36,6 +36,8 @@ describe('NetworkErrorBoundary', () => {
   // eslint-disable-next-line react/prop-types
   function App({ status, detail, typename }) {
     const [text, setText] = useState('')
+    const history = useHistory()
+
     function handleChange(e) {
       setText(e.target.value)
     }
@@ -47,6 +49,13 @@ describe('NetworkErrorBoundary', () => {
           <input type="text" id="text" onChange={handleChange} />
         </div>
         <div>{text === 'fail' ? 'Oh no' : 'things are good'}</div>
+        <button
+          onClick={() => {
+            history.goBack()
+          }}
+        >
+          Go back
+        </button>
         <div>
           <NetworkErrorBoundary>
             {text === 'fail' ? (
@@ -290,17 +299,34 @@ describe('NetworkErrorBoundary', () => {
       setup({ status: 403, detail: 'you not admin' })
     })
 
-    it('renders a things are good', async () => {
-      const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+    describe('user clicks on reset button', () => {
+      it('renders a things are good', async () => {
+        const textBox = await screen.findByRole('textbox')
+        userEvent.type(textBox, 'fail')
 
-      const button = await screen.findByText('Return to previous page')
-      userEvent.click(button)
+        const button = await screen.findByText('Return to previous page')
+        userEvent.click(button)
 
-      userEvent.type(textBox, 'pass')
+        userEvent.type(textBox, 'pass')
 
-      const thingsAreGood = await screen.findByText(/things are good/)
-      expect(thingsAreGood).toBeInTheDocument()
+        const thingsAreGood = await screen.findByText(/things are good/)
+        expect(thingsAreGood).toBeInTheDocument()
+      })
+    })
+
+    describe('user navigates back', () => {
+      it('renders a things are good', async () => {
+        const textBox = await screen.findByRole('textbox')
+        userEvent.type(textBox, 'fail')
+
+        const button = await screen.findByText('Go back')
+        userEvent.click(button)
+
+        userEvent.type(textBox, 'pass')
+
+        const thingsAreGood = await screen.findByText(/things are good/)
+        expect(thingsAreGood).toBeInTheDocument()
+      })
     })
   })
 })
