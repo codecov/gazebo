@@ -34,8 +34,8 @@ export function useSessions({ provider }) {
       }
   `
 
-  return useQuery(['sessions', provider], () => {
-    return Api.graphql({ provider, query }).then((res) => {
+  return useQuery(['sessions', provider], ({ signal }) => {
+    return Api.graphql({ provider, query, signal }).then((res) => {
       const me = res?.data?.me
       if (!me) return null
       return {

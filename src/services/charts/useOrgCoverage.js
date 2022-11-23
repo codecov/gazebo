@@ -9,15 +9,15 @@ function getOrgCoverage({ provider, owner }) {
   ).toLowerCase()}/${owner}/coverage/organization`
 }
 
-function fetchOrgCoverage({ provider, owner, query }) {
+function fetchOrgCoverage({ provider, owner, query, signal }) {
   const path = getOrgCoverage({ provider, owner })
-  return Api.get({ path, provider, query })
+  return Api.get({ path, provider, query, signal })
 }
 
 export function useOrgCoverage({ provider, owner, query, opts = {} }) {
   return useQuery(
     ['organization', 'coverage', provider, owner, query],
-    () => fetchOrgCoverage({ provider, owner, query }),
+    ({ signal }) => fetchOrgCoverage({ provider, owner, query, signal }),
     opts
   )
 }

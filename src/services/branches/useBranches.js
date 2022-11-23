@@ -33,10 +33,11 @@ export function useBranches({ provider, owner, repo, filters }) {
 
   const { data, ...rest } = useInfiniteQuery(
     ['GetBranches', provider, owner, repo, variables],
-    ({ pageParam }) =>
+    ({ pageParam, signal }) =>
       Api.graphql({
         provider,
         query,
+        signal,
         variables: {
           owner,
           repo,
