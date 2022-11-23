@@ -2,7 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-function fetchRepoPulls({ provider, owner, repo, variables, after }) {
+function fetchRepoPulls({ provider, owner, repo, variables, after, signal }) {
   const PullFragment = `
    fragment PullFragment on Pull {
         pullId
@@ -51,6 +51,7 @@ function fetchRepoPulls({ provider, owner, repo, variables, after }) {
     provider,
     repo,
     query,
+    signal,
     variables: {
       owner,
       repo,
@@ -80,13 +81,14 @@ export function usePulls({
   }
   const { data, ...rest } = useInfiniteQuery(
     ['pulls', provider, owner, repo, variables],
-    ({ pageParam }) =>
+    ({ pageParam, signal }) =>
       fetchRepoPulls({
         provider,
         owner,
         repo,
         variables,
         after: pageParam,
+        signal,
       }),
     {
       getNextPageParam: (data) =>

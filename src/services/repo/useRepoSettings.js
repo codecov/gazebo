@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
 
-function fetchRepoSettingsDetails({ provider, owner, repo }) {
+function fetchRepoSettingsDetails({ provider, owner, repo, signal }) {
   const query = `
     query GetRepoSettings($name: String!, $repo: String!){
       owner(username:$name){
@@ -26,6 +26,7 @@ function fetchRepoSettingsDetails({ provider, owner, repo }) {
     provider,
     repo,
     query,
+    signal,
     variables: {
       name: owner,
       repo,
@@ -40,7 +41,7 @@ function fetchRepoSettingsDetails({ provider, owner, repo }) {
 export function useRepoSettings() {
   const { provider, owner, repo } = useParams()
 
-  return useQuery(['GetRepoSettings', provider, owner, repo], () => {
-    return fetchRepoSettingsDetails({ provider, owner, repo })
-  })
+  return useQuery(['GetRepoSettings', provider, owner, repo], ({ signal }) =>
+    fetchRepoSettingsDetails({ provider, owner, repo, signal })
+  )
 }

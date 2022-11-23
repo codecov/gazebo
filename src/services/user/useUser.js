@@ -58,9 +58,9 @@ export function useUser(options = {}) {
 
   return useQuery(
     ['currentUser', provider],
-    async () => {
+    async ({ signal }) => {
       try {
-        const { data } = await Api.graphql({ provider, query })
+        const { data } = await Api.graphql({ provider, query, signal })
         const currentUser = data?.me
 
         if (currentUser) return currentUser

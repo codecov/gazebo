@@ -6,17 +6,15 @@ function getPathAccountDetails({ provider, owner }) {
   return `/${provider}/${owner}/account-details/`
 }
 
-function fetchAccountDetails({ provider, owner }) {
+function fetchAccountDetails({ provider, owner, signal }) {
   const path = getPathAccountDetails({ provider, owner })
-  return Api.get({ path, provider })
+  return Api.get({ path, provider, signal })
 }
 
 export function useAccountDetails({ provider, owner, opts = {} }) {
   return useQuery(
     ['accountDetails', provider, owner],
-    () => {
-      return fetchAccountDetails({ provider, owner })
-    },
+    ({ signal }) => fetchAccountDetails({ provider, owner, signal }),
     opts
   )
 }

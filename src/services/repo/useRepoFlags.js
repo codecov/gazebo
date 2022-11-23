@@ -15,6 +15,7 @@ function fetchRepoFlags({
   afterDate,
   beforeDate,
   after,
+  signal,
 }) {
   const query = `
     query FlagMeasurements(
@@ -52,6 +53,7 @@ function fetchRepoFlags({
   return Api.graphql({
     provider,
     query,
+    signal,
     variables: {
       name,
       repo,
@@ -94,7 +96,7 @@ export function useRepoFlags({
       afterDate,
       beforeDate,
     ],
-    ({ pageParam: after }) =>
+    ({ pageParam: after, signal }) =>
       fetchRepoFlags({
         provider,
         owner,
@@ -105,6 +107,7 @@ export function useRepoFlags({
         afterDate,
         beforeDate,
         after,
+        signal,
       }),
     {
       getNextPageParam: (data) =>
