@@ -5,7 +5,7 @@ import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
 import Button from 'ui/Button'
 import MultiSelect from 'ui/MultiSelect'
-import Select from 'ui/NewSelect'
+import Select from 'ui/Select'
 
 import {
   filterItems,
