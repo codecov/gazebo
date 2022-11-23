@@ -23,6 +23,7 @@ const Template = ({ renderItem, renderSelected, onChange, ...args }) => {
       {...functionArgs}
       onChange={onChangeHandler}
       value={value}
+      ariaName="select dropdown"
     />
   )
 }
@@ -83,10 +84,47 @@ complexSelect.args = {
   renderItem: (obj) => <span>Passed: {JSON.stringify(obj)}</span>,
 }
 
+export const SelectWithLoadMore = Template.bind({})
+SelectWithLoadMore.args = {
+  ...SimpleSelect.args,
+  items: [
+    `Item1`,
+    `Item2`,
+    `Item3`,
+    `Item4`,
+    `Item5`,
+    `Item6`,
+    `Item7`,
+    `Item8`,
+    `Item9`,
+    `Item10`,
+    `Item11`,
+    `Item12`,
+    `Item13`,
+    `Item14`,
+    `Item15`,
+    `Item16`,
+  ],
+}
+
+export const SelectWithLoader = Template.bind({})
+SelectWithLoader.args = {
+  items: [`Item1`, `Item2`, `Item3`],
+  isLoading: true,
+}
+
+export const SelectWithNoSearch = Template.bind({})
+SelectWithNoSearch.args = {
+  items: [`Item1`, `Item2`, `Item3`],
+  onSearch: undefined,
+}
+
 export default {
-  title: 'Components/Select',
+  title: 'Components/NewSelect',
   component: Select,
   argTypes: {
     onChange: { action: 'onChange' },
+    onSearch: { action: 'onSearch' },
+    onLoadMore: { action: 'onLoadMore' },
   },
 }
