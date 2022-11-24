@@ -12,7 +12,7 @@ import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
 const SelectClasses = {
-  root: 'flex-1 relative',
+  root: 'relative',
   item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
   button:
     'flex justify-between items-center w-full rounded bg-white text-left disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
@@ -29,7 +29,7 @@ const UlVariantClass = {
 const ButtonVariantClass = {
   default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
   gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
-  text: `flex-init text-ds-blue`,
+  text: `flex-init flex-0 text-ds-blue`,
 }
 
 function getSearchPlaceholder(resourceName) {
