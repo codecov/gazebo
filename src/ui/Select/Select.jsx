@@ -29,7 +29,7 @@ const UlVariantClass = {
 const ButtonVariantClass = {
   default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
   gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
-  text: `flex-init flex-0 text-ds-blue`,
+  text: `flex-init text-ds-blue`,
 }
 
 function getSearchPlaceholder(resourceName) {
