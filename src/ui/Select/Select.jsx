@@ -12,7 +12,7 @@ import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
 const SelectClasses = {
-  root: 'relative',
+  root: 'flex-1 relative',
   item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
   button:
     'flex justify-between items-center w-full rounded bg-white text-left disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
