@@ -38,6 +38,7 @@ describe('useStaticNavLinks', () => {
       ${links.flags}                   | ${'https://docs.codecov.com/docs/flags'}
       ${links.unexpectedChanges}       | ${'https://docs.codecov.com/docs/unexpected-coverage-changes'}
       ${links.userAppManagePage}       | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
+      ${links.deployingFlagsSupport}   | ${'https://docs.codecov.com/docs/deploying-with-helm#deploying-flags-support'}
       ${links.blog}                    | ${`${config.MARKETING_BASE_URL}/blog`}
       ${links.sales}                   | ${`${config.MARKETING_BASE_URL}/sales`}
       ${links.uploader}                | ${'https://docs.codecov.com/docs/codecov-uploader'}

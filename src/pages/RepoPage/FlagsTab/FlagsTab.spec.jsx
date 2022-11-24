@@ -87,6 +87,7 @@ describe('Flags Tab', () => {
           data: {
             flagsMeasurementsActive: false,
             flagsMeasurementsBackfilled: false,
+            isTimescaleEnabled: true,
           },
         },
       })
@@ -113,6 +114,7 @@ describe('Flags Tab', () => {
           data: {
             flagsMeasurementsActive: true,
             flagsMeasurementsBackfilled: false,
+            isTimescaleEnabled: true,
           },
         },
       })
@@ -139,6 +141,7 @@ describe('Flags Tab', () => {
           data: {
             flagsMeasurementsActive: true,
             flagsMeasurementsBackfilled: true,
+            isTimescaleEnabled: true,
           },
         },
       })
@@ -158,6 +161,7 @@ describe('Flags Tab', () => {
           data: {
             flagsMeasurementsActive: false,
             flagsMeasurementsBackfilled: false,
+            isTimescaleEnabled: true,
           },
         },
         flags: [],
@@ -167,6 +171,30 @@ describe('Flags Tab', () => {
     it('renders empty state message', () => {
       expect(
         screen.getByText(/The Flags feature is not yet configured/)
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered without timescale enabled', () => {
+    beforeEach(() => {
+      setup({
+        data: {
+          data: {
+            flagsMeasurementsActive: false,
+            flagsMeasurementsBackfilled: false,
+            isTimescaleEnabled: false,
+          },
+        },
+        flags: [],
+      })
+    })
+
+    it('renders empty state message', () => {
+      expect(
+        screen.getByText(/The Flags feature is not yet enabled/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(/enable flags in your infrastructure today/)
       ).toBeInTheDocument()
     })
   })

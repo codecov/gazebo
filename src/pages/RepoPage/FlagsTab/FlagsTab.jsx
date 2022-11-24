@@ -12,6 +12,17 @@ import FlagsTable from './subroute/FlagsTable/FlagsTable'
 const isDisabled = ({ flagsMeasurementsActive, isRepoBackfilling }) =>
   !flagsMeasurementsActive || isRepoBackfilling
 
+const showFlagsTable = ({
+  flagsMeasurementsActive,
+  flagsMeasurementsBackfilled,
+}) => {
+  return flagsMeasurementsActive && flagsMeasurementsBackfilled
+}
+
+const showFlagsData = ({ flagsData, isTimescaleEnabled }) => {
+  return isTimescaleEnabled && flagsData && flagsData?.length > 0
+}
+
 function FlagsTab() {
   const { data: flagsData } = useRepoFlagsSelect()
 
@@ -19,11 +30,12 @@ function FlagsTab() {
     flagsMeasurementsActive,
     isRepoBackfilling,
     flagsMeasurementsBackfilled,
+    isTimescaleEnabled,
   } = useRepoBackfillingStatus()
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
-      {flagsData && flagsData?.length > 0 ? (
+      {showFlagsData({ flagsData, isTimescaleEnabled }) ? (
         <>
           <Header
             controlsDisabled={isDisabled({
@@ -34,7 +46,11 @@ function FlagsTab() {
             <BackfillBanners />
           </Header>
           <div className="flex flex-1 flex-col gap-4">
-            {flagsMeasurementsActive && flagsMeasurementsBackfilled ? (
+            {showFlagsTable({
+              flagsMeasurementsActive,
+              flagsMeasurementsBackfilled,
+              isTimescaleEnabled,
+            }) ? (
               <Route path="/:provider/:owner/:repo/flags" exact>
                 <FlagsTable />
               </Route>
@@ -48,7 +64,7 @@ function FlagsTab() {
           </div>
         </>
       ) : (
-        <FlagsNotConfigured />
+        <FlagsNotConfigured isTimescaleEnabled={isTimescaleEnabled} />
       )}
     </div>
   )
