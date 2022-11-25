@@ -8,19 +8,13 @@ import { useFlags } from 'shared/featureFlags'
 
 export function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
-  const {
-    gazeboRepoTabs,
-    gazeboPullRequestPage,
-
-    gazeboSettingsTab,
-    gazeboOverviewTab,
-  } = useFlags({
-    gazeboRepoTabs: false,
-    gazeboPullRequestPage: false,
-
-    gazeboSettingsTab: false,
-    gazeboOverviewTab: false,
-  })
+  const { gazeboRepoTabs, gazeboPullRequestPage, gazeboSettingsTab } = useFlags(
+    {
+      gazeboRepoTabs: false,
+      gazeboPullRequestPage: false,
+      gazeboSettingsTab: false,
+    }
+  )
 
   const utmCookie = Cookie.get('utmParams')
   const utmCookieObj = qs.parse(utmCookie, {
@@ -245,7 +239,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: gazeboOverviewTab,
       text: 'Overview',
     },
     flagsTab: {
