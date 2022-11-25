@@ -11,14 +11,12 @@ export function useNavLinks() {
   const {
     gazeboRepoTabs,
     gazeboPullRequestPage,
-    gazeboCommitsTab,
     gazeboPullsTab,
     gazeboSettingsTab,
     gazeboOverviewTab,
   } = useFlags({
     gazeboRepoTabs: false,
     gazeboPullRequestPage: false,
-    gazeboCommitsTab: false,
     gazeboPullsTab: false,
     gazeboSettingsTab: false,
     gazeboOverviewTab: false,
@@ -174,7 +172,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commits`,
-      isExternalLink: gazeboCommitsTab,
       text: 'Commits',
     },
     commit: {
