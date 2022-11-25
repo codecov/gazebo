@@ -2,14 +2,14 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FlagsNotConfigured from './FlagsNotConfigured'
+import TimescaleDisabled from './TimescaleDisabled'
 
-describe('FlagsNotConfigured', () => {
+describe('TimescaleDisabled', () => {
   function setup() {
     render(
       <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
         <Route path="/:provider/:owner/:repo/flags">
-          <FlagsNotConfigured />
+          <TimescaleDisabled />
         </Route>
       </MemoryRouter>
     )
@@ -17,20 +17,24 @@ describe('FlagsNotConfigured', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup()
+      const props = { isTimescaleEnabled: false }
+      setup(props)
     })
 
     it('shows message', () => {
       expect(
-        screen.getByText(/The Flags feature is not yet configured/)
+        screen.getByText(/The Flags feature is not yet enabled/)
       ).toBeInTheDocument()
     })
 
     it('renders link', () => {
-      const flagsAnchor = screen.getByRole('link', /help your team today/i)
+      const flagsAnchor = screen.getByRole(
+        'link',
+        /enable flags in your infrastructure today/i
+      )
       expect(flagsAnchor).toHaveAttribute(
         'href',
-        'https://docs.codecov.com/docs/flags'
+        'https://docs.codecov.com/docs/deploying-with-helm#deploying-flags-support'
       )
     })
 

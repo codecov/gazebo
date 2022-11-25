@@ -8,6 +8,7 @@ import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
 import FlagsNotConfigured from './FlagsNotConfigured'
 import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
+import TimescaleDisabled from './TimescaleDisabled'
 
 const isDisabled = ({ flagsMeasurementsActive, isRepoBackfilling }) =>
   !flagsMeasurementsActive || isRepoBackfilling
@@ -19,8 +20,8 @@ const showFlagsTable = ({
   return flagsMeasurementsActive && flagsMeasurementsBackfilled
 }
 
-const showFlagsData = ({ flagsData, isTimescaleEnabled }) => {
-  return isTimescaleEnabled && flagsData && flagsData?.length > 0
+const showFlagsData = ({ flagsData }) => {
+  return flagsData && flagsData?.length > 0
 }
 
 function FlagsTab() {
@@ -35,7 +36,9 @@ function FlagsTab() {
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
-      {showFlagsData({ flagsData, isTimescaleEnabled }) ? (
+      {!isTimescaleEnabled ? (
+        <TimescaleDisabled />
+      ) : showFlagsData({ flagsData }) ? (
         <>
           <Header
             controlsDisabled={isDisabled({
@@ -49,7 +52,6 @@ function FlagsTab() {
             {showFlagsTable({
               flagsMeasurementsActive,
               flagsMeasurementsBackfilled,
-              isTimescaleEnabled,
             }) ? (
               <Route path="/:provider/:owner/:repo/flags" exact>
                 <FlagsTable />
@@ -64,7 +66,7 @@ function FlagsTab() {
           </div>
         </>
       ) : (
-        <FlagsNotConfigured isTimescaleEnabled={isTimescaleEnabled} />
+        <FlagsNotConfigured />
       )}
     </div>
   )
