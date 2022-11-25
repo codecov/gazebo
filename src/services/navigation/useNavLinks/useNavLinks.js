@@ -8,13 +8,10 @@ import { useFlags } from 'shared/featureFlags'
 
 export function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
-  const { gazeboRepoTabs, gazeboPullRequestPage, gazeboSettingsTab } = useFlags(
-    {
-      gazeboRepoTabs: false,
-      gazeboPullRequestPage: false,
-      gazeboSettingsTab: false,
-    }
-  )
+  const { gazeboRepoTabs, gazeboPullRequestPage } = useFlags({
+    gazeboRepoTabs: false,
+    gazeboPullRequestPage: false,
+  })
 
   const utmCookie = Cookie.get('utmParams')
   const utmCookieObj = qs.parse(utmCookie, {
@@ -293,7 +290,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings`,
-      isExternalLink: gazeboSettingsTab,
       text: 'Settings',
     },
     settingsGeneral: {
@@ -304,7 +300,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings`,
-      isExternalLink: gazeboSettingsTab,
       text: 'General',
     },
     settingsYaml: {
@@ -315,7 +310,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings/yaml`,
-      isExternalLink: gazeboSettingsTab,
       text: 'Yaml',
     },
     settingsBadge: {
@@ -327,7 +321,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
-      isExternalLink: gazeboSettingsTab,
       text: 'Badges & Graphs',
     },
     feedback: {
