@@ -14,8 +14,6 @@ import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import SettingsTab from './SettingsTab'
 
-import { useFlags } from '../../shared/featureFlags'
-
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
@@ -24,28 +22,19 @@ const FlagsTab = lazy(() => import('./FlagsTab'))
 
 const path = '/:provider/:owner/:repo'
 
-const shouldShowFlagsTab = ({ gazeboFlagsTab, isRepoActivated }) =>
-  gazeboFlagsTab && isRepoActivated
-
-const getRepoTabs = ({
-  matchTree,
-  matchBlobs,
-  isRepoActivated,
-  isCurrentUserPartOfOrg,
-  gazeboFlagsTab,
-}) => [
-  {
-    pageName: 'overview',
-    children: 'Coverage',
-    exact: `${!matchTree && !matchBlobs}`,
-  },
-  ...(shouldShowFlagsTab({ gazeboFlagsTab, isRepoActivated })
-    ? [{ pageName: 'flagsTab' }]
-    : []),
-  { pageName: 'commits' },
-  { pageName: 'pulls' },
-  ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
-]
+const getRepoTabs = ({ matchTree, matchBlobs, isCurrentUserPartOfOrg }) => {
+  return [
+    {
+      pageName: 'overview',
+      children: 'Coverage',
+      exact: `${!matchTree && !matchBlobs}`,
+    },
+    { pageName: 'flagsTab' },
+    { pageName: 'commits' },
+    { pageName: 'pulls' },
+    ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
+  ]
+}
 
 const Loader = (
   <div className="flex-1 flex items-center justify-center mt-16">
@@ -60,9 +49,6 @@ function RepoPage() {
     provider,
     owner,
     repo,
-  })
-  const { gazeboFlagsTab } = useFlags({
-    gazeboFlagsTab: false,
   })
   const { data: currentOwner } = useOwner({ username: owner })
   const { data: commitsData } = useCommits({ provider, owner, repo })
@@ -80,6 +66,7 @@ function RepoPage() {
   if (!repoData?.repository) {
     return <NotFound />
   }
+
   // if the repo is private and the user is not associated
   // then hard redirect to provider
   else if (isRepoPrivate && !isCurrentUserPartOfOrg) {
@@ -95,9 +82,7 @@ function RepoPage() {
             tabs={getRepoTabs({
               matchTree,
               matchBlobs,
-              isRepoActivated: repoData?.repository?.activated,
               isCurrentUserPartOfOrg,
-              gazeboFlagsTab,
             })}
           />
         )}
