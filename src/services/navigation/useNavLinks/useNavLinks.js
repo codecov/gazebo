@@ -8,9 +8,8 @@ import { useFlags } from 'shared/featureFlags'
 
 export function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
-  const { gazeboRepoTabs, gazeboPullRequestPage } = useFlags({
+  const { gazeboRepoTabs } = useFlags({
     gazeboRepoTabs: false,
-    gazeboPullRequestPage: false,
   })
 
   const utmCookie = Cookie.get('utmParams')
@@ -279,7 +278,6 @@ export function useNavLinks() {
           pullId: pi,
         }
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}`,
-      isExternalLink: gazeboPullRequestPage,
       text: 'Pull',
     },
     settings: {
