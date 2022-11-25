@@ -29,7 +29,7 @@ const defaultParams = {
   prStates: [],
 }
 
-function useSetupParams() {
+function useControlParams() {
   const { params, updateParams } = useLocationParams(defaultParams)
   const { order, prStates } = params
   const paramOrderName = orderNames[order]
@@ -60,7 +60,7 @@ function PullsTab() {
     setSelectedOrder,
     selectedStates,
     setSelectedStates,
-  } = useSetupParams()
+  } = useControlParams()
 
   useLayoutEffect(() => {
     setCrumbs()
