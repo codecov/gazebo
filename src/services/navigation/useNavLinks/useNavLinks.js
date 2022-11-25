@@ -4,13 +4,8 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 export function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
-  const { gazeboRepoTabs } = useFlags({
-    gazeboRepoTabs: false,
-  })
 
   const utmCookie = Cookie.get('utmParams')
   const utmCookieObj = qs.parse(utmCookie, {
@@ -80,7 +75,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: gazeboRepoTabs,
     },
     account: {
       text: 'Personal Settings',
@@ -224,7 +218,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/new`,
-      isExternalLink: gazeboRepoTabs,
       text: 'New',
     },
     overview: {
@@ -256,7 +249,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/branches`,
-      isExternalLink: gazeboRepoTabs,
       text: 'Branches',
     },
     pulls: {
