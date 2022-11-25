@@ -20,6 +20,12 @@ afterAll(() => {
   jest.useRealTimers()
 })
 
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
+    <Route path="/analytics/:provider/:owner">{children}</Route>
+  </MemoryRouter>
+)
+
 describe('ChartSelectors', () => {
   let props
   let repositories
@@ -33,6 +39,7 @@ describe('ChartSelectors', () => {
       ordering: 'NAME',
       direction: 'ASC',
     }
+
     repositories = [
       {
         private: false,
@@ -55,9 +62,10 @@ describe('ChartSelectors', () => {
         active: false,
       },
     ]
+
     const params = {
       search: 'Repo name 1',
-      repositories,
+      repositories: [],
     }
 
     useRepos.mockReturnValue({
@@ -77,39 +85,21 @@ describe('ChartSelectors', () => {
 
   describe('renders component', () => {
     it('renders date picker', async () => {
-      render(
-        <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-          <Route path="/analytics/:provider/:owner">
-            <ChartSelectors {...props} />
-          </Route>
-        </MemoryRouter>
-      )
+      render(<ChartSelectors {...props} />, { wrapper })
 
       const datePicker = await screen.findByPlaceholderText('Start Date')
       expect(datePicker).toBeInTheDocument()
     })
 
     it('renders multiselect', async () => {
-      render(
-        <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-          <Route path="/analytics/:provider/:owner">
-            <ChartSelectors {...props} />
-          </Route>
-        </MemoryRouter>
-      )
+      render(<ChartSelectors {...props} />, { wrapper })
 
       const multiSelect = await screen.findByText('All Repos')
       expect(multiSelect).toBeInTheDocument()
     })
 
     it('renders clear filters', async () => {
-      render(
-        <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-          <Route path="/analytics/:provider/:owner">
-            <ChartSelectors {...props} />
-          </Route>
-        </MemoryRouter>
-      )
+      render(<ChartSelectors {...props} />, { wrapper })
 
       const clearFilters = await screen.findByText('Clear filters')
       expect(clearFilters).toBeInTheDocument()
@@ -118,13 +108,7 @@ describe('ChartSelectors', () => {
 
   describe('interacting with the date picker', () => {
     it('updates the value', async () => {
-      render(
-        <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-          <Route path="/analytics/:provider/:owner">
-            <ChartSelectors {...props} />
-          </Route>
-        </MemoryRouter>
-      )
+      render(<ChartSelectors {...props} />, { wrapper })
 
       const datePicker = await screen.findByPlaceholderText('Start Date')
       userEvent.click(datePicker)
@@ -138,13 +122,7 @@ describe('ChartSelectors', () => {
     })
 
     it('updates the location params', async () => {
-      render(
-        <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-          <Route path="/analytics/:provider/:owner">
-            <ChartSelectors {...props} />
-          </Route>
-        </MemoryRouter>
-      )
+      render(<ChartSelectors {...props} />, { wrapper })
 
       const datePicker = await screen.findByPlaceholderText('Start Date')
       userEvent.click(datePicker)
@@ -163,13 +141,7 @@ describe('ChartSelectors', () => {
 
   describe('interacting with the multi select', () => {
     it('displays list of repos when opened', async () => {
-      render(
-        <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-          <Route path="/analytics/:provider/:owner">
-            <ChartSelectors {...props} />
-          </Route>
-        </MemoryRouter>
-      )
+      render(<ChartSelectors {...props} />, { wrapper })
 
       const multiselect = await screen.findByText('All Repos')
       userEvent.click(multiselect)
@@ -183,13 +155,7 @@ describe('ChartSelectors', () => {
 
     describe('when item clicked', () => {
       it('updates button value', async () => {
-        render(
-          <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-            <Route path="/analytics/:provider/:owner">
-              <ChartSelectors {...props} />
-            </Route>
-          </MemoryRouter>
-        )
+        render(<ChartSelectors {...props} />, { wrapper })
 
         const multiselect = await screen.findByText('All Repos')
         userEvent.click(multiselect)
@@ -202,13 +168,7 @@ describe('ChartSelectors', () => {
       })
 
       it('updates url params', async () => {
-        render(
-          <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-            <Route path="/analytics/:provider/:owner">
-              <ChartSelectors {...props} />
-            </Route>
-          </MemoryRouter>
-        )
+        render(<ChartSelectors {...props} />, { wrapper })
 
         const multiselect = await screen.findByText('All Repos')
         userEvent.click(multiselect)
@@ -222,13 +182,7 @@ describe('ChartSelectors', () => {
 
     describe('when searching for a repo', () => {
       it('displays the searchbox', async () => {
-        render(
-          <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-            <Route path="/analytics/:provider/:owner">
-              <ChartSelectors {...props} />
-            </Route>
-          </MemoryRouter>
-        )
+        render(<ChartSelectors {...props} />, { wrapper })
 
         const multiselect = await screen.findByText('All Repos')
         userEvent.click(multiselect)
@@ -238,13 +192,7 @@ describe('ChartSelectors', () => {
       })
 
       it('updates the textbox value when typing', async () => {
-        render(
-          <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-            <Route path="/analytics/:provider/:owner">
-              <ChartSelectors {...props} />
-            </Route>
-          </MemoryRouter>
-        )
+        render(<ChartSelectors {...props} />, { wrapper })
 
         const multiselect = await screen.findByText('All Repos')
         userEvent.click(multiselect)
@@ -289,13 +237,7 @@ describe('ChartSelectors', () => {
         })
 
         it('calls fetchNextPage', async () => {
-          render(
-            <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-              <Route path="/analytics/:provider/:owner">
-                <ChartSelectors {...props} />
-              </Route>
-            </MemoryRouter>
-          )
+          render(<ChartSelectors {...props} />, { wrapper })
 
           const multiselect = await screen.findByText('All Repos')
           userEvent.click(multiselect)
@@ -314,13 +256,7 @@ describe('ChartSelectors', () => {
         })
 
         it('does not calls fetchNextPage', async () => {
-          render(
-            <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-              <Route path="/analytics/:provider/:owner">
-                <ChartSelectors {...props} />
-              </Route>
-            </MemoryRouter>
-          )
+          render(<ChartSelectors {...props} />, { wrapper })
 
           const multiselect = await screen.findByText('All Repos')
           userEvent.click(multiselect)
@@ -333,13 +269,7 @@ describe('ChartSelectors', () => {
 
   describe('interacting with clear filters', () => {
     it('updates params', () => {
-      render(
-        <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-          <Route path="/analytics/:provider/:owner">
-            <ChartSelectors {...props} />
-          </Route>
-        </MemoryRouter>
-      )
+      render(<ChartSelectors {...props} />, { wrapper })
 
       const clearFilters = screen.getByRole('button', { name: 'Clear filters' })
       userEvent.click(clearFilters)
