@@ -1,65 +1,17 @@
 import userEvent from '@testing-library/user-event'
 
-import { usePulls } from 'services/pulls'
+import PullsTab from './PullsTab'
 
 import { repoPageRender, screen } from '../repo-jest-setup'
 
-import PullsTab from '.'
-
-jest.mock('services/pulls')
+jest.mock('./PullsTable/PullsTable', () => () => 'PullsTable')
 
 describe('Pulls Pab', () => {
   afterAll(() => {
     jest.resetAllMocks()
   })
 
-  function setup({ hasNextPage }) {
-    usePulls.mockReturnValue({
-      hasNextPage,
-      data: {
-        pulls: [
-          {
-            node: {
-              author: { username: 'RulaKhaled', avatarUrl: 'random' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: 90,
-                },
-              },
-              head: {
-                totals: {
-                  coverage: 45,
-                },
-              },
-              pullId: 746,
-              state: 'MERGED',
-              title: 'Test1',
-              updatestamp: '2021-08-30T19:33:49.819672',
-            },
-          },
-          {
-            node: {
-              author: { username: 'ThiagoCodecov', avatarUrl: 'random' },
-              compareWithBase: {
-                patchTotals: {
-                  coverage: 87,
-                },
-              },
-              head: {
-                totals: {
-                  coverage: 100,
-                },
-              },
-              pullId: 745,
-              state: 'OPEN',
-              title: 'Test2',
-              updatestamp: '2021-07-30T19:33:49.819672',
-            },
-          },
-        ],
-      },
-    })
-
+  function setup() {
     repoPageRender({
       initialEntries: ['/gh/codecov/gazebo/pulls'],
       renderPulls: () => <PullsTab />,
@@ -68,22 +20,7 @@ describe('Pulls Pab', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ hasNextPage: true })
-    })
-
-    it('renders with table name heading', () => {
-      const head = screen.getByText(/Name/)
-      expect(head).toBeInTheDocument()
-    })
-
-    it('renders with table coverage heading', () => {
-      const head = screen.getByText(/Coverage on/)
-      expect(head).toBeInTheDocument()
-    })
-
-    it('renders with table change heading', () => {
-      const head = screen.getByText(/Change from/)
-      expect(head).toBeInTheDocument()
+      setup()
     })
 
     it('renders select by updatestamp label', () => {
@@ -104,11 +41,6 @@ describe('Pulls Pab', () => {
     it('renders default of select by state', () => {
       const label = screen.getByText(/Newest/)
       expect(label).toBeInTheDocument()
-    })
-
-    it('renders load more pagination button', () => {
-      const btn = screen.getByText(/Load More/)
-      expect(btn).toBeInTheDocument()
     })
   })
 
@@ -164,17 +96,6 @@ describe('Pulls Pab', () => {
 
     it('renders the number of selected options', () => {
       expect(screen.getByText(/1 selected/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when renders with no next page', () => {
-    beforeEach(() => {
-      setup({ hasNextPage: false })
-    })
-
-    it('does not display load more pagination button', () => {
-      const btn = screen.queryByText(/Load More/)
-      expect(btn).not.toBeInTheDocument()
     })
   })
 })

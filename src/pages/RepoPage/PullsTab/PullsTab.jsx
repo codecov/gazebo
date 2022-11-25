@@ -1,11 +1,9 @@
-import { useLayoutEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { lazy, Suspense, useLayoutEffect, useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
-import { usePulls } from 'services/pulls'
-import Button from 'ui/Button'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
+import Spinner from 'ui/Spinner'
 
 import {
   filterItems,
@@ -15,18 +13,24 @@ import {
   stateEnum,
   stateNames,
 } from './enums'
-import PullsTable from './PullsTable'
 
 import { useSetCrumbs } from '../context'
+
+const PullsTable = lazy(() => import('./PullsTable'))
+
+const Loader = (
+  <div className="flex-1 flex justify-center">
+    <Spinner size={60} />
+  </div>
+)
 
 const defaultParams = {
   order: orderingEnum.Newest.order,
   prStates: [],
 }
 
-const useParamsStatesAndOrder = () => {
+function useSetupParams() {
   const { params, updateParams } = useLocationParams(defaultParams)
-
   const { order, prStates } = params
   const paramOrderName = orderNames[order]
 
@@ -34,77 +38,49 @@ const useParamsStatesAndOrder = () => {
     const stateName = stateNames[filter]
     return stateName
   })
-  return { paramOrderName, paramStatesNames, prStates, order, updateParams }
-}
 
-// Moved during merge I'll likely consolodate this
-function useFormControls() {
-  const { provider, owner, repo } = useParams()
-  const { paramOrderName, paramStatesNames, prStates, order, updateParams } =
-    useParamsStatesAndOrder()
-
-  const [selectedStates, setSelectedStates] = useState(paramStatesNames)
   const [selectedOrder, setSelectedOrder] = useState(paramOrderName)
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = usePulls({
-    provider,
-    owner,
-    repo,
-    filters: {
-      state: prStates,
-    },
-    orderingDirection: order,
-  })
-
-  const pulls = data?.pulls
+  const [selectedStates, setSelectedStates] = useState(paramStatesNames)
 
   return {
-    setSelectedOrder,
-    setSelectedStates,
-    pulls,
-    selectedStates,
-    selectedOrder,
     updateParams,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
+    selectedOrder,
+    setSelectedOrder,
+    selectedStates,
+    setSelectedStates,
   }
 }
 
 function PullsTab() {
   const setCrumbs = useSetCrumbs()
+
   const {
-    setSelectedOrder,
-    setSelectedStates,
-    pulls,
-    selectedStates,
-    selectedOrder,
     updateParams,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useFormControls()
+    selectedOrder,
+    setSelectedOrder,
+    selectedStates,
+    setSelectedStates,
+  } = useSetupParams()
 
   useLayoutEffect(() => {
     setCrumbs()
   }, [setCrumbs])
 
   const handleOrderChange = (selectedOrder) => {
-    setSelectedOrder(selectedOrder)
-
     const { order } = orderingEnum[selectedOrder]
+    setSelectedOrder(selectedOrder)
     updateParams({ order })
   }
 
   const handleStatesChange = (selectedStates) => {
-    setSelectedStates(selectedStates)
-
     const prStates = selectedStates.map((filter) => {
       const { state } = stateEnum[filter]
       return state
     })
+    setSelectedStates(prStates)
     updateParams({ prStates })
   }
+
   return (
     <div className="flex-1 flex flex-col gap-4">
       <div className="flex flex-row gap-3">
@@ -114,7 +90,7 @@ function PullsTab() {
             <MultiSelect
               dataMarketing="pulls-filter-by-state"
               ariaName="Filter by state"
-              selectedItems={selectedStates}
+              value={selectedStates}
               items={filterItems}
               onChange={handleStatesChange}
               resourceName=""
@@ -134,18 +110,9 @@ function PullsTab() {
           </div>
         </div>
       </div>
-      <PullsTable pulls={pulls} />
-      {hasNextPage && (
-        <div className="flex-1 mt-4 flex justify-center">
-          <Button
-            hook="load-more"
-            isLoading={isFetchingNextPage}
-            onClick={fetchNextPage}
-          >
-            Load More
-          </Button>
-        </div>
-      )}
+      <Suspense fallback={Loader}>
+        <PullsTable />
+      </Suspense>
     </div>
   )
 }
