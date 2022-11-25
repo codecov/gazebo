@@ -11,13 +11,13 @@ export function useNavLinks() {
   const {
     gazeboRepoTabs,
     gazeboPullRequestPage,
-    gazeboPullsTab,
+
     gazeboSettingsTab,
     gazeboOverviewTab,
   } = useFlags({
     gazeboRepoTabs: false,
     gazeboPullRequestPage: false,
-    gazeboPullsTab: false,
+
     gazeboSettingsTab: false,
     gazeboOverviewTab: false,
   })
@@ -278,7 +278,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/pulls`,
-      isExternalLink: gazeboPullsTab,
       text: 'Pulls',
     },
     pullDetail: {
