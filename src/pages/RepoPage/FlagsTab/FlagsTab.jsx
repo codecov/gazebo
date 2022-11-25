@@ -36,37 +36,39 @@ function FlagsTab() {
 
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
-      {!isTimescaleEnabled ? (
-        <TimescaleDisabled />
-      ) : showFlagsData({ flagsData }) ? (
-        <>
-          <Header
-            controlsDisabled={isDisabled({
-              flagsMeasurementsActive,
-              isRepoBackfilling,
-            })}
-          >
-            <BackfillBanners />
-          </Header>
-          <div className="flex flex-1 flex-col gap-4">
-            {showFlagsTable({
-              flagsMeasurementsActive,
-              flagsMeasurementsBackfilled,
-            }) ? (
-              <Route path="/:provider/:owner/:repo/flags" exact>
-                <FlagsTable />
-              </Route>
-            ) : (
-              <img
-                alt="Blurred flags table"
-                src={blurredTable}
-                className="h-auto max-w-full"
-              />
-            )}
-          </div>
-        </>
+      {isTimescaleEnabled ? (
+        showFlagsData({ flagsData }) ? (
+          <>
+            <Header
+              controlsDisabled={isDisabled({
+                flagsMeasurementsActive,
+                isRepoBackfilling,
+              })}
+            >
+              <BackfillBanners />
+            </Header>
+            <div className="flex flex-1 flex-col gap-4">
+              {showFlagsTable({
+                flagsMeasurementsActive,
+                flagsMeasurementsBackfilled,
+              }) ? (
+                <Route path="/:provider/:owner/:repo/flags" exact>
+                  <FlagsTable />
+                </Route>
+              ) : (
+                <img
+                  alt="Blurred flags table"
+                  src={blurredTable}
+                  className="h-auto max-w-full"
+                />
+              )}
+            </div>
+          </>
+        ) : (
+          <FlagsNotConfigured />
+        )
       ) : (
-        <FlagsNotConfigured />
+        <TimescaleDisabled />
       )}
     </div>
   )

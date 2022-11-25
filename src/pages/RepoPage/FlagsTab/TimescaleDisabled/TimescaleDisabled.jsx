@@ -11,18 +11,14 @@ function TimescaleDisabled() {
           className="mx-auto mb-8"
           src={flagsEmptyState}
         />
-        <>
-          <span className="text-3xl">
-            The Flags feature is not yet enabled{' '}
-          </span>
-          <span className="text-base">
-            Learn how you can{' '}
-            <A hook="flags" to={{ pageName: 'deployingFlagsSupport' }}>
-              enable flags in your infrastructure today
-            </A>
-            .
-          </span>
-        </>
+        <span className="text-3xl">The Flags feature is not yet enabled </span>
+        <span className="text-base">
+          Learn how you can{' '}
+          <A hook="flags" to={{ pageName: 'deployingFlagsSupport' }}>
+            enable flags in your infrastructure today
+          </A>
+          .
+        </span>
       </div>
     </div>
   )
