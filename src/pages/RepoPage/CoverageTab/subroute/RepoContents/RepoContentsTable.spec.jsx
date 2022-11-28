@@ -115,10 +115,20 @@ describe('RepoContentsTable', () => {
       expect(screen.getByText(/233/)).toBeInTheDocument()
     })
 
-    it('renders corresponding links', () => {
+    it('renders up directory link', () => {
       // Open to better ways of doing this if anyone has an idea :)
       const links = screen.getAllByRole('link')
       const flag2Link = links[0]
+      expect(flag2Link).toHaveAttribute(
+        'href',
+        '/gh/Rabee-AbuBaker/another-test/tree/'
+      )
+    })
+
+    it('renders corresponding links', () => {
+      // Open to better ways of doing this if anyone has an idea :)
+      const links = screen.getAllByRole('link')
+      const flag2Link = links[1]
       expect(flag2Link).toHaveAttribute(
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/default-branch/flag2'
@@ -134,7 +144,8 @@ describe('RepoContentsTable', () => {
     it('renders corresponding links correctly', () => {
       // Open to better ways of doing this if anyone has an idea :)
       const links = screen.getAllByRole('link')
-      const flag2Link = links[0]
+      console.debug(links)
+      const flag2Link = links[1]
       expect(flag2Link).toHaveAttribute(
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/main/src/flag2'
