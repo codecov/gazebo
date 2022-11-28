@@ -6,9 +6,6 @@ import Api from 'shared/api'
 function fetchRepoBackfilledContents({ provider, owner, repo, signal }) {
   const query = `
       query BackfillFlagMemberships($name: String!, $repo: String!) {
-        config {
-          isTimescaleEnabled
-        }
         owner(username:$name){
           repository(name:$repo){
             flagsMeasurementsActive
@@ -29,10 +26,7 @@ function fetchRepoBackfilledContents({ provider, owner, repo, signal }) {
       repo,
     },
   }).then((res) => {
-    return {
-      ...res?.data?.config,
-      ...res?.data?.owner?.repository,
-    }
+    return res?.data?.owner?.repository
   })
 }
 
