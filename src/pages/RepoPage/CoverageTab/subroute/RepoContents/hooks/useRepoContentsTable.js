@@ -15,6 +15,12 @@ import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
 
+function determineDisplayType({ filters, isSearching }) {
+  return filters?.displayType === displayTypeParameter.list || isSearching
+    ? displayTypeParameter.list
+    : displayTypeParameter.tree
+}
+
 function createTableData({
   tableData,
   branch,
@@ -23,13 +29,10 @@ function createTableData({
   filters,
   treePaths,
 }) {
-  const displayType =
-    filters?.displayType === displayTypeParameter.list || isSearching
-      ? displayTypeParameter.list
-      : displayTypeParameter.tree
-
   if (tableData?.length > 0) {
-    const filesAndDirs = tableData.map(
+    const displayType = determineDisplayType({ filters, isSearching })
+
+    const filesAndDirs = tableData?.map(
       ({
         name,
         percentCovered,
@@ -77,7 +80,7 @@ function createTableData({
 
     const upDir = treePaths?.at(-2)
 
-    if (treePaths.length > 1) {
+    if (treePaths.length > 1 && displayType === 'TREE') {
       const items = [
         {
           name: (
