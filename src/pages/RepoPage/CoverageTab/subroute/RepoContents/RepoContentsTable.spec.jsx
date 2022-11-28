@@ -144,7 +144,6 @@ describe('RepoContentsTable', () => {
     it('renders corresponding links correctly', () => {
       // Open to better ways of doing this if anyone has an idea :)
       const links = screen.getAllByRole('link')
-      console.debug(links)
       const flag2Link = links[1]
       expect(flag2Link).toHaveAttribute(
         'href',
