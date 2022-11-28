@@ -28,6 +28,7 @@ function Table({
   onSort,
   defaultSort = {},
   renderSubComponent = null,
+  enableHover = false,
 }) {
   const _data = React.useMemo(() => data, [data])
   const _columns = React.useMemo(() => columns, [columns])
@@ -123,7 +124,11 @@ function Table({
             table.getRowModel().rows.map((row) => {
               return (
                 <Fragment key={uniqueId(`row_${row.id}_`)}>
-                  <tr className={TableClasses.tableRow}>
+                  <tr
+                    className={cs(TableClasses.tableRow, {
+                      'hover:bg-ds-gray-primary': enableHover,
+                    })}
+                  >
                     {
                       // Loop over the rows cells
                       row.getVisibleCells().map((cell) => {
@@ -165,6 +170,7 @@ Table.propTypes = {
     id: PropTypes.string,
     desc: PropTypes.bool,
   }),
+  enableHover: PropTypes.bool,
 }
 
 export default Table
