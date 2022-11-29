@@ -252,7 +252,7 @@ const MultiSelect = forwardRef(
     }
 
     return (
-      <div className="flex-1 relative">
+      <div className="relative">
         <div {...getComboboxProps()}>
           <button
             data-marketing={dataMarketing}
