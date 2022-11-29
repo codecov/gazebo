@@ -12,8 +12,12 @@ function Footer() {
   })
 
   const year = new Date().getUTCFullYear()
+  const version = config.IS_SELF_HOSTED
+    ? [{ text: config?.CODECOV_VERSION }]
+    : []
   const leftMenu = [
     { text: `© ${year} Codecov` },
+    ...version,
     { to: { pageName: 'terms' } },
     { to: { pageName: 'privacy' } },
     { to: { pageName: 'security' } },
