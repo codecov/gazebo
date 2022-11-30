@@ -78,9 +78,8 @@ function createTableData({
       })
     )
 
-    const upDir = treePaths?.at(-2)
-
     if (treePaths.length > 1 && displayType === 'TREE') {
+      const upDir = treePaths?.at(-2)
       const items = [
         {
           name: (
