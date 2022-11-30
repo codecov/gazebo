@@ -8,7 +8,7 @@ import { useRepo } from 'services/repo'
 import Button from 'ui/Button'
 import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
-import Select from 'ui/NewSelect'
+import Select from 'ui/Select'
 
 import CommitsTable from './CommitsTable'
 

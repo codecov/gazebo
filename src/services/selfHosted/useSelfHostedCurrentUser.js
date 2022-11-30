@@ -5,6 +5,6 @@ import Api from 'shared/api'
 export const useSelfHostedCurrentUser = (options = {}) =>
   useQuery(
     ['SelfHostedCurrentUser'],
-    () => Api.get({ path: '/users/current' }),
+    ({ signal }) => Api.get({ path: '/users/current', signal }),
     options
   )

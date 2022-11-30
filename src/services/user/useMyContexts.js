@@ -25,8 +25,8 @@ export function useMyContexts() {
       }
     `
 
-  return useQuery(['myContexts', provider], () =>
-    Api.graphql({ provider, query }).then((res) => {
+  return useQuery(['myContexts', provider], ({ signal }) =>
+    Api.graphql({ provider, query, signal }).then((res) => {
       const me = res?.data?.me
       return me
         ? {

@@ -21,7 +21,7 @@ const repositoryFragment = `
   }
 `
 
-function fetchMyRepos({ provider, variables, after }) {
+function fetchMyRepos({ provider, variables, after, signal }) {
   const query = `
     query MyRepos($filters: RepositorySetFilters!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String) {
         me {
@@ -45,6 +45,7 @@ function fetchMyRepos({ provider, variables, after }) {
   return Api.graphql({
     provider,
     query,
+    signal,
     variables: { ...variables, after },
   }).then((res) => {
     const me = res?.data?.me
@@ -55,7 +56,7 @@ function fetchMyRepos({ provider, variables, after }) {
   })
 }
 
-function fetchReposForOwner({ provider, variables, owner, after }) {
+function fetchReposForOwner({ provider, variables, owner, after, signal }) {
   const query = `
     query ReposForOwner($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String, $first: Int) {
         owner(username: $owner) {
@@ -79,6 +80,7 @@ function fetchReposForOwner({ provider, variables, owner, after }) {
   return Api.graphql({
     provider,
     query,
+    signal,
     variables: {
       ...variables,
       owner,
@@ -112,10 +114,16 @@ export function useRepos({
 
   const { data, ...rest } = useInfiniteQuery(
     ['repos', provider, variables, owner],
-    ({ pageParam }) => {
+    ({ pageParam, signal }) => {
       return owner
-        ? fetchReposForOwner({ provider, variables, owner, after: pageParam })
-        : fetchMyRepos({ provider, variables, after: pageParam })
+        ? fetchReposForOwner({
+            provider,
+            variables,
+            owner,
+            after: pageParam,
+            signal,
+          })
+        : fetchMyRepos({ provider, variables, after: pageParam, signal })
     },
     {
       getNextPageParam: (data) =>

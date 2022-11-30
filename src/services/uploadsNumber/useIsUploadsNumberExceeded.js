@@ -11,7 +11,7 @@ function fetchIsUploadsNumberExceeded({ numberOfUploads = 0 }) {
 export function useIsUploadsNumberExceeded({ provider, owner }) {
   const { data: numberOfUploads } = useUploadsNumber({ provider, owner })
 
-  return useQuery(['uploadsExceeded', provider, owner], () => {
-    return fetchIsUploadsNumberExceeded({ numberOfUploads })
-  })
+  return useQuery(['uploadsExceeded', provider, owner], () =>
+    fetchIsUploadsNumberExceeded({ numberOfUploads })
+  )
 }

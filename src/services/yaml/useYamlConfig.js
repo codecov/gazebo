@@ -12,8 +12,8 @@ export function useYamlConfig({ variables }) {
       }
     }
   `
-  return useQuery(['YamlConfig', provider, variables?.username], () =>
-    Api.graphql({ provider, query, variables }).then((res) => {
+  return useQuery(['YamlConfig', provider, variables?.username], ({ signal }) =>
+    Api.graphql({ provider, query, variables, signal }).then((res) => {
       const yaml = res?.data?.owner?.yaml
       return yaml
     })
