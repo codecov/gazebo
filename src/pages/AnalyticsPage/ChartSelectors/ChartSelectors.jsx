@@ -59,10 +59,11 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
         <MultiSelect
           hook="repo-chart-selector"
           ariaName="Select repos to choose"
+          dataMarketing="repo-chart-selector"
           items={items}
           onChange={onSelectChangeHandler}
           resourceName="Repo"
-          selectedItems={selectedRepos}
+          value={selectedRepos}
           isLoading={isLoading}
           onLoadMore={() => hasNextPage && fetchNextPage()}
           onSearch={(search) => setSearch(search)}

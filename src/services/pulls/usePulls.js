@@ -74,6 +74,7 @@ export function usePulls({
   repo,
   filters,
   orderingDirection,
+  options = {},
 }) {
   const variables = {
     filters,
@@ -93,6 +94,7 @@ export function usePulls({
     {
       getNextPageParam: (data) =>
         data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+      ...options,
     }
   )
 

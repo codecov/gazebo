@@ -5,7 +5,9 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { useRepoContents, useRepoOverview } from 'services/repo'
 import { usePaginatedContents } from 'services/usePaginatedContents'
+import { useTreePaths } from 'shared/useTreePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
+import A from 'ui/A'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../../../constants'
@@ -13,60 +15,93 @@ import CoverageEntry from '../TableEntries/CoverageEntry'
 import DirEntry from '../TableEntries/DirEntry'
 import FileEntry from '../TableEntries/FileEntry'
 
-function createTableData({ tableData, branch, path, isSearching, filters }) {
-  const displayType =
-    filters?.displayType === displayTypeParameter.list || isSearching
-      ? displayTypeParameter.list
-      : displayTypeParameter.tree
-  return tableData?.length > 0
-    ? tableData.map(
-        ({
-          name,
-          percentCovered,
-          __typename,
-          path: filePath,
-          isCriticalFile,
-          misses,
-          partials,
-          hits,
-          lines,
-        }) => ({
-          name:
-            __typename === 'PathContentDir' ? (
-              <DirEntry
-                branch={branch}
-                name={name}
-                path={path}
-                filters={filters}
-              />
-            ) : (
-              <FileEntry
-                name={name}
-                path={path}
-                branch={branch}
-                filePath={filePath}
-                displayType={displayType}
-                isCriticalFile={isCriticalFile}
-              />
-            ),
-          lines: (
-            <div className="flex w-full justify-end font-lato">{lines}</div>
+function determineDisplayType({ filters, isSearching }) {
+  return filters?.displayType === displayTypeParameter.list || isSearching
+    ? displayTypeParameter.list
+    : displayTypeParameter.tree
+}
+
+function createTableData({
+  tableData,
+  branch,
+  path,
+  isSearching,
+  filters,
+  treePaths,
+}) {
+  if (tableData?.length > 0) {
+    const displayType = determineDisplayType({ filters, isSearching })
+
+    const filesAndDirs = tableData?.map(
+      ({
+        name,
+        percentCovered,
+        __typename,
+        path: filePath,
+        isCriticalFile,
+        misses,
+        partials,
+        hits,
+        lines,
+      }) => ({
+        name:
+          __typename === 'PathContentDir' ? (
+            <DirEntry
+              branch={branch}
+              name={name}
+              path={path}
+              filters={filters}
+            />
+          ) : (
+            <FileEntry
+              name={name}
+              path={path}
+              branch={branch}
+              filePath={filePath}
+              displayType={displayType}
+              isCriticalFile={isCriticalFile}
+            />
           ),
-          misses: (
-            <div className="flex w-full justify-end font-lato">{misses}</div>
+        lines: <div className="flex w-full justify-end font-lato">{lines}</div>,
+        misses: (
+          <div className="flex w-full justify-end font-lato">{misses}</div>
+        ),
+        hits: <div className="flex w-full justify-end font-lato">{hits}</div>,
+        partials: (
+          <div className="flex w-full justify-end font-lato">{partials}</div>
+        ),
+        coverage: (
+          <span className="font-lato w-full">
+            <CoverageEntry percentCovered={percentCovered} />
+          </span>
+        ),
+      })
+    )
+
+    if (treePaths.length > 1 && displayType === 'TREE') {
+      const upDir = treePaths?.at(-2)
+      const items = [
+        {
+          name: (
+            <A to={upDir} variant="upDirectory">
+              <div className="pl-1 ">..</div>
+            </A>
           ),
-          hits: <div className="flex w-full justify-end font-lato">{hits}</div>,
-          partials: (
-            <div className="flex w-full justify-end font-lato">{partials}</div>
-          ),
-          coverage: (
-            <span className="font-lato w-full">
-              <CoverageEntry percentCovered={percentCovered} />
-            </span>
-          ),
-        })
-      )
-    : []
+          lines: '',
+          hits: '',
+          misses: '',
+          partials: '',
+          coverage: '',
+        },
+        ...filesAndDirs,
+      ]
+      return items
+    }
+
+    return filesAndDirs
+  }
+
+  return []
 }
 
 const headers = [
@@ -147,16 +182,15 @@ const getQueryFilters = ({ params, sortBy }) => {
 function useRepoContentsTable() {
   const { provider, owner, repo, path, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
-
-  const [sortBy, setSortBy] = useState([])
+  const { treePaths } = useTreePaths()
 
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
     repo,
     owner,
   })
-  const isSearching = Boolean(params?.search)
 
+  const [sortBy, setSortBy] = useState([])
   const { data: pathContentData, isLoading } = useRepoContents({
     provider,
     owner,
@@ -173,17 +207,18 @@ function useRepoContentsTable() {
         tableData: pathContentData?.results,
         branch: branch || repoOverview?.defaultBranch,
         path: path || '',
-        isSearching,
+        isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+        treePaths,
       }),
     [
       pathContentData?.results,
       branch,
       repoOverview?.defaultBranch,
       path,
-      isSearching,
       params,
       sortBy,
+      treePaths,
     ]
   )
 
@@ -205,7 +240,7 @@ function useRepoContentsTable() {
     headers,
     handleSort,
     isLoading: isLoadingRepo || isLoading,
-    isSearching,
+    isSearching: !!params?.search,
     handlePaginationClick,
     hasNextPage,
     isMissingHeadReport:
