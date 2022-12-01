@@ -1,5 +1,7 @@
+import PropTypes from 'prop-types'
 import { Suspense } from 'react'
 
+import { usePrefetchSingleFileComp } from 'services/pull'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
@@ -10,34 +12,46 @@ import { useImpactedFilesTable } from './hooks'
 
 import FileDiff from '../FileDiff'
 
+function NameColumn({ row, getValue }) {
+  const nameColumn = row.getValue('name')
+  const [fileNames] = nameColumn?.props?.children
+  const path = fileNames?.props?.children
+
+  const { runPrefetch } = usePrefetchSingleFileComp({ path })
+
+  return (
+    <div
+      className="flex gap-2 cursor-pointer items-center"
+      data-testid="name-expand"
+      onClick={() => row.toggleExpanded()}
+      onMouseEnter={async () => !row.getIsExpanded() && (await runPrefetch())}
+    >
+      <span
+        className={row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'}
+      >
+        <Icon
+          size="md"
+          name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
+          variant="solid"
+        />
+      </span>
+      {getValue()}
+    </div>
+  )
+}
+
+NameColumn.propTypes = {
+  row: PropTypes.object,
+  getValue: PropTypes.func,
+}
+
 const columns = [
   {
     id: 'name',
     header: 'Name',
     accessorKey: 'name',
     width: 'w-7/12 min-w-min',
-    cell: ({ row, getValue }) => {
-      return (
-        <div
-          className="flex gap-2 cursor-pointer items-center"
-          data-testid="name-expand"
-          onClick={() => row.toggleExpanded()}
-        >
-          <span
-            className={
-              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
-            }
-          >
-            <Icon
-              size="md"
-              name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
-              variant="solid"
-            />
-          </span>
-          {getValue()}
-        </div>
-      )
-    },
+    cell: ({ row, getValue }) => <NameColumn row={row} getValue={getValue} />,
     justifyStart: true,
   },
   {
@@ -67,7 +81,7 @@ const columns = [
   },
 ]
 
-function createTable({ tableData }) {
+function createTable({ tableData, runPrefetch }) {
   return tableData?.length > 0
     ? tableData?.map((row) => {
         const {
@@ -138,7 +152,9 @@ const renderSubComponent = ({ row }) => {
 
 function ImpactedFiles() {
   const { data, handleSort } = useImpactedFilesTable()
-  const tableContent = createTable({ tableData: data?.impactedFiles })
+  const tableContent = createTable({
+    tableData: data?.impactedFiles,
+  })
 
   return (
     <Table

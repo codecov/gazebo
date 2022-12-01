@@ -1,5 +1,6 @@
 import { render, screen } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -8,6 +9,8 @@ import ImpactedFiles from './ImpactedFiles'
 
 jest.mock('../FileDiff', () => () => 'FileDiff Component')
 jest.mock('./hooks')
+
+const queryClient = new QueryClient()
 
 const mockImpactedFiles = {
   data: {
@@ -28,6 +31,10 @@ const mockImpactedFiles = {
   },
 }
 
+afterEach(() => {
+  queryClient.clear()
+})
+
 describe('ImpactedFiles', () => {
   function setup({
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
@@ -35,11 +42,13 @@ describe('ImpactedFiles', () => {
   }) {
     useImpactedFilesTable.mockReturnValue(impactedFiles)
     render(
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">
-          <ImpactedFiles />
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">
+            <ImpactedFiles />
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
   }
 
