@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 
+import config from 'config'
+
 import { useAccountDetails } from 'services/account'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { isFreePlan } from 'shared/utils/billing'
@@ -11,10 +13,17 @@ function RequestButton({ owner, provider }) {
     owner,
     opts: {
       suspense: false,
+      enabled: !config.IS_SELF_HOSTED,
     },
   })
+  const isAnPaidAccount = !isFreePlan(accountDetails?.plan?.value)
 
-  return isFreePlan(accountDetails?.plan?.value) ? (
+  // Do not up sell if self hosted or org is all ready a paying customer.
+  if (config.IS_SELF_HOSTED || isAnPaidAccount) {
+    return null
+  }
+
+  return (
     <Button
       to={{ pageName: 'demo' }}
       showExternalIcon={false}
@@ -32,7 +41,7 @@ function RequestButton({ owner, provider }) {
     >
       Request demo
     </Button>
-  ) : null
+  )
 }
 
 RequestButton.propTypes = {

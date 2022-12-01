@@ -1,90 +1,140 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, within } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { formatTimeToNow } from 'shared/utils/dates'
 
-import PullsTable from '.'
+import PullsTable from './PullsTable'
 
 jest.mock('services/repo')
 
-describe('Pulls Table', () => {
-  function setup({ modifiedProps = {}, overridePulls = {} }) {
-    const defaultPull = {
-      author: { username: 'RulaKhaled', avatarUrl: 'random' },
-      compareWithBase: {
-        changeWithParent: 14,
-      },
-      head: {
-        totals: {
-          coverage: 45,
-        },
-      },
-      pullId: 746,
-      state: 'MERGED',
-      title: 'Test1',
-      updatestamp: '2021-08-30T19:33:49.819672',
-    }
+const queryClient = new QueryClient()
+const server = setupServer()
 
-    const props = {
-      pulls: [
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
+
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/Test/pulls']}>
+    <Route path="/:provider/:owner/:repo/pulls">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
+
+describe('Pulls Table', () => {
+  function setup({
+    noPulls = false,
+    nullPulls = false,
+    overrideDetails = {},
+    hasNextPage = false,
+  }) {
+    let edges = {
+      edges: [
         {
           node: {
-            ...defaultPull,
-            ...modifiedProps,
+            author: { username: 'cool-user', avatarUrl: 'random' },
+            compareWithBase: {
+              changeWithParent: 14,
+            },
+            head: {
+              totals: {
+                coverage: 45,
+              },
+            },
+            pullId: 746,
+            state: 'MERGED',
+            title: 'Test1',
+            updatestamp: '2021-08-30T19:33:49.819672',
+            ...overrideDetails,
           },
         },
       ],
-      ...overridePulls,
     }
 
-    const queryClient = new QueryClient()
+    if (noPulls) {
+      edges = {
+        edges: [],
+      }
+    }
 
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/Test/pulls']}>
-        <Route path="/:provider/:owner/:repo/pulls">
-          <QueryClientProvider client={queryClient}>
-            <PullsTable {...props} />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
+    if (nullPulls) {
+      edges = {
+        edges: [null],
+      }
+    }
+
+    const defaultPull = {
+      owner: {
+        repository: {
+          pulls: {
+            ...edges,
+            pageInfo: {
+              hasNextPage,
+              endCursor: '',
+            },
+          },
+        },
+      },
+    }
+
+    server.use(
+      graphql.query('GetPulls', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(defaultPull))
+      )
     )
   }
 
   describe('when rendered with the full/correct available pulls data', () => {
-    beforeEach(() => {
-      setup({})
-    })
+    beforeEach(() => setup({}))
 
-    it('renders pulls titles', () => {
-      const title1 = screen.getByText(/Test1/)
+    it('renders pulls titles', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const title1 = await screen.findByText(/Test1/)
       expect(title1).toBeInTheDocument()
     })
 
-    it('renders pulls authors', () => {
-      const author1 = screen.getByText(/RulaKhaled/)
+    it('renders pulls authors', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const author1 = await screen.findByText(/cool-user/)
       expect(author1).toBeInTheDocument()
     })
 
-    it('renders pulls updatestamp', () => {
+    it('renders pulls updatestamp', async () => {
+      render(<PullsTable />, { wrapper })
+
       const dt = formatTimeToNow('2021-08-30T19:33:49.819672')
-      const dt1 = screen.getByText('opened ' + dt)
+      const dt1 = await screen.findByText('opened ' + dt)
       expect(dt1).toBeInTheDocument()
     })
 
-    it('renders pulls ids', () => {
-      const id1 = screen.getByText(/#746/)
+    it('renders pulls ids', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const id1 = await screen.findByText(/#746/)
       expect(id1).toBeInTheDocument()
     })
 
-    it('renders pulls covarage', () => {
-      const cov1 = screen.getByText(/45.00%/)
+    it('renders pulls coverage', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const cov1 = await screen.findByText(/45.00%/)
       expect(cov1).toBeInTheDocument()
     })
 
-    it('renders pulls change from base', () => {
-      const changeValue = screen.getByTestId('change-value')
-      const child = within(changeValue).getByTestId('number-value')
+    it('renders pulls change from base', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const changeValue = await screen.findByTestId('change-value')
+      const child = await within(changeValue).findByTestId('number-value')
       expect(child).toHaveTextContent('14.00%')
       expect(child).toHaveClass("before:content-['+']")
     })
@@ -92,13 +142,13 @@ describe('Pulls Table', () => {
 
   describe('when rendered with a no pulls data', () => {
     beforeEach(() => {
-      setup({
-        overridePulls: { pulls: [] },
-      })
+      setup({ noPulls: true })
     })
 
-    it('renders no pulls message', () => {
-      const msg = screen.getByText(/no results found/)
+    it('renders no pulls message', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const msg = await screen.findByText(/no results found/)
       expect(msg).toBeInTheDocument()
     })
   })
@@ -106,12 +156,14 @@ describe('Pulls Table', () => {
   describe('when rendered with missing pulls data', () => {
     beforeEach(() => {
       setup({
-        overridePulls: { pulls: [null] },
+        nullPulls: true,
       })
     })
 
-    it('renders missing pulls message', () => {
-      const msg = screen.getByText(/we can't find this pull/)
+    it('renders missing pulls message', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const msg = await screen.findByText(/we can't find this pull/)
       expect(msg).toBeInTheDocument()
     })
   })
@@ -119,7 +171,7 @@ describe('Pulls Table', () => {
   describe('when pull rendered with null coverage', () => {
     beforeEach(() => {
       setup({
-        modifiedProps: {
+        overrideDetails: {
           compareWithBase: {
             changeWithParent: null,
           },
@@ -132,13 +184,17 @@ describe('Pulls Table', () => {
       })
     })
 
-    it('renders text of null covergae', () => {
-      const msg = screen.getByText(/No report uploaded yet/)
+    it('renders text of null coverage', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const msg = await screen.findByText(/No report uploaded yet/)
       expect(msg).toBeInTheDocument()
     })
 
-    it('renders id of the pull', () => {
-      const id = screen.getByText(/#746/)
+    it('renders id of the pull', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const id = await screen.findByText(/#746/)
       expect(id).toBeInTheDocument()
     })
   })
@@ -146,12 +202,14 @@ describe('Pulls Table', () => {
   describe('when pull rendered with CLOSE state', () => {
     beforeEach(() => {
       setup({
-        modifiedProps: { state: 'CLOSED' },
+        overrideDetails: { state: 'CLOSED' },
       })
     })
 
-    it('renders the icon pullRequestClosed', () => {
-      const icon = screen.getByText(/pull-request-closed.svg/)
+    it('renders the icon pullRequestClosed', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const icon = await screen.findByText(/pull-request-closed.svg/)
       expect(icon).toBeInTheDocument()
     })
   })
@@ -161,8 +219,10 @@ describe('Pulls Table', () => {
       setup({})
     })
 
-    it('renders the icon merge', () => {
-      const icon = screen.getByText(/merge.svg/)
+    it('renders the icon merge', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const icon = await screen.findByText(/merge.svg/)
       expect(icon).toBeInTheDocument()
     })
   })
@@ -170,20 +230,22 @@ describe('Pulls Table', () => {
   describe('when pull rendered with OPEN state', () => {
     beforeEach(() => {
       setup({
-        modifiedProps: { state: 'OPEN' },
+        overrideDetails: { state: 'OPEN' },
       })
     })
 
-    it('renders the icon pullRequestOpen', () => {
-      const icon = screen.getByText(/pull-request-open.svg/)
+    it('renders the icon pullRequestOpen', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const icon = await screen.findByText(/pull-request-open.svg/)
       expect(icon).toBeInTheDocument()
     })
   })
 
-  describe('when pull rendered with no head covarge', () => {
+  describe('when pull rendered with no head coverage', () => {
     beforeEach(() => {
       setup({
-        modifiedProps: {
+        overrideDetails: {
           head: {
             totals: null,
           },
@@ -192,8 +254,24 @@ describe('Pulls Table', () => {
     })
 
     it('does not render the change', () => {
+      render(<PullsTable />, { wrapper })
+
       const change = screen.queryByText(/90/)
       expect(change).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when there is a next page', () => {
+    beforeEach(() => {
+      setup({
+        hasNextPage: true,
+      })
+    })
+    it('displays load more button', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const loadMore = await screen.findByText(/Load More/)
+      expect(loadMore).toBeInTheDocument()
     })
   })
 })
