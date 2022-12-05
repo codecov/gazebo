@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { Suspense } from 'react'
 
 import { usePrefetchSingleFileComp } from 'services/pull'
 import Icon from 'ui/Icon'
@@ -24,7 +23,11 @@ function NameColumn({ row, getValue }) {
       className="flex gap-2 cursor-pointer items-center"
       data-testid="name-expand"
       onClick={() => row.toggleExpanded()}
-      onMouseEnter={async () => !row.getIsExpanded() && (await runPrefetch())}
+      onMouseEnter={async () => {
+        if (!row.getIsExpanded()) {
+          await runPrefetch()
+        }
+      }}
     >
       <span
         className={row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'}
@@ -81,7 +84,7 @@ const columns = [
   },
 ]
 
-function createTable({ tableData, runPrefetch }) {
+function createTable({ tableData }) {
   return tableData?.length > 0
     ? tableData?.map((row) => {
         const {
@@ -132,7 +135,7 @@ function createTable({ tableData, runPrefetch }) {
     : []
 }
 
-const Loader = (
+const Loader = () => (
   <div className="flex items-center justify-center py-16">
     <Spinner />
   </div>
@@ -142,16 +145,19 @@ const renderSubComponent = ({ row }) => {
   const nameColumn = row.getValue('name')
   const [fileNames] = nameColumn?.props?.children
   const path = fileNames?.props?.children
-  // TODO: this component has a nested table and needs to be reworked as it is used inside the Table component, which leads to an accessibilty issue
-  return (
-    <Suspense fallback={Loader}>
-      <FileDiff path={path} />
-    </Suspense>
-  )
+
+  // TODO: this component has a nested table and needs to be reworked,
+  // as it is used inside the Table component, which leads to an accessibility issue
+  return <FileDiff path={path} />
 }
 
 function ImpactedFiles() {
-  const { data, handleSort } = useImpactedFilesTable()
+  const { data, handleSort, isLoading } = useImpactedFilesTable()
+
+  if (isLoading) {
+    return <Loader />
+  }
+
   const tableContent = createTable({
     tableData: data?.impactedFiles,
   })
