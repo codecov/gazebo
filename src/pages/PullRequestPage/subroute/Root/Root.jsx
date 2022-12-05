@@ -23,16 +23,20 @@ function hasReportWithoutChanges({
   )
 }
 
+const Loader = () => (
+  <div className="flex items-center justify-center py-16">
+    <Spinner />
+  </div>
+)
+
 const Root = () => {
   const { data, isLoading } = useImpactedFilesTable()
 
-  const Loader = () => (
-    <div className="flex items-center justify-center py-16">
-      <Spinner />
-    </div>
-  )
+  if (isLoading) {
+    return <Loader />
+  }
 
-  return !isLoading ? (
+  return (
     <div className="flex flex-col gap-4">
       <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
       {data?.headState === CommitStateEnum.ERROR ? (
@@ -69,8 +73,6 @@ const Root = () => {
         <p>No Files covered by tests were changed</p>
       )}
     </div>
-  ) : (
-    <Loader />
   )
 }
 
