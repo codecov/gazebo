@@ -86,6 +86,7 @@ describe('useRepoContentsTable', () => {
           owner: 'Rabee-AbuBaker',
           options: {
             staleTime: 300000,
+            suspense: false,
           },
           provider: 'gh',
           pullId: undefined,
@@ -105,6 +106,7 @@ describe('useRepoContentsTable', () => {
           pullId: undefined,
           options: {
             staleTime: 300000,
+            suspense: false,
           },
           repo: 'another-test',
         })
