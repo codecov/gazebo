@@ -177,4 +177,19 @@ describe('FileDiff', () => {
       expect(screen.getByText(/Critical File/i)).toBeInTheDocument()
     })
   })
+
+  describe('when isLoading is true', () => {
+    beforeEach(() => {
+      const impactedFile = {
+        data: {},
+        isLoading: true,
+      }
+      setup({ path: 'flag1/mafs.js', impactedFile })
+    })
+
+    it('shows loading spinner', () => {
+      const spinner = screen.getByTestId('spinner')
+      expect(spinner).toBeInTheDocument()
+    })
+  })
 })
