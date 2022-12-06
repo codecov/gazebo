@@ -5,6 +5,7 @@ import {
 } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { BrowserRouter } from 'react-router-dom'
 
 import config from 'config'
 
@@ -43,6 +44,8 @@ beforeAll(() => server.listen())
 beforeEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
+const wrapper = ({ children }) => <BrowserRouter>{children}</BrowserRouter>
+
 describe('App', () => {
   function setup() {
     server.use(
@@ -70,7 +73,7 @@ describe('App', () => {
       )
     )
 
-    render(<App />)
+    render(<App />, { wrapper })
   }
 
   describe('rendering account settings page', () => {
