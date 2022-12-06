@@ -95,7 +95,7 @@ describe('InstructionBox', () => {
     })
 
     it('renders with expected base uploader url', () => {
-      const baseUrl = screen.getByText(/https:\/\/app.codecov.io/)
+      const baseUrl = screen.getByText(/https:\/\/app.codecov.io\/uploader/)
       expect(baseUrl).toBeInTheDocument()
     })
 

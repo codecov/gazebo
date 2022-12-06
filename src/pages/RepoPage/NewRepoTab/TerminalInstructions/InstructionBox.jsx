@@ -27,11 +27,13 @@ const systems = [
   systemsEnum.WINDOWS,
 ]
 
-const baseUploaderUrl = config.IS_SELF_HOSTED
-  ? `${config.BASE_URL}/uploader/`
-  : 'https://uploader.codecov.io/latest/'
+const defaultBaseUrl = 'https://uploader.codecov.io/latest/'
 
 const WindowsSystemInstructions = () => {
+  const baseUploaderUrl = config.IS_SELF_HOSTED
+    ? `${config.BASE_URL}/uploader/`
+    : defaultBaseUrl
+
   if (config.IS_SELF_HOSTED) {
     return (
       <span>
@@ -68,6 +70,10 @@ export default function InstructionBox() {
     const { name } = e.target
     setCurSystem(name)
   }
+
+  const baseUploaderUrl = config.IS_SELF_HOSTED
+    ? `${config.BASE_URL}/uploader/`
+    : defaultBaseUrl
 
   return (
     <div className="w-5/5 bg-ds-gray-primary my-4 rounded w-auto">
