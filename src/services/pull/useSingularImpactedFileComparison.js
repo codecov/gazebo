@@ -2,46 +2,22 @@ import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
+import { FileComparisonWithBase } from './fragments'
+
 const query = `
     query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!) {
       owner(username: $owner) {
         repository(name: $repo) {
           pull(id: $pullId) {
-            compareWithBase: compareWithBaseTemp {
-              impactedFile(path:$path) {
-                headName
-                isNewFile
-                isRenamedFile
-                isDeletedFile
-                isCriticalFile
-                baseCoverage {
-                  percentCovered
-                }
-                headCoverage {
-                  percentCovered
-                }
-                patchCoverage {
-                  percentCovered
-                }
-                changeCoverage
-                segments {
-                  header
-                  hasUnintendedChanges
-                  lines {
-                    baseNumber
-                    headNumber
-                    baseCoverage
-                    headCoverage
-                    content
-                  }
-                }
-              }
-            }
+            ...FileComparisonWithBase
           }
         }
       }
     }
-    `
+
+    ${FileComparisonWithBase}
+`
+
 function setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
   if (isNewFile) return 'New'
   if (isRenamedFile) return 'Renamed'

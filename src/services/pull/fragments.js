@@ -125,3 +125,38 @@ fragment ImpactedFilesOnPull on Pull {
   }
 }
 `
+
+export const FileComparisonWithBase = `
+fragment FileComparisonWithBase on Pull {
+  compareWithBase {
+    impactedFile(path: $path) {
+      headName
+      isNewFile
+      isRenamedFile
+      isDeletedFile
+      isCriticalFile
+      baseCoverage {
+        percentCovered
+      }
+      headCoverage {
+        percentCovered
+      }
+      patchCoverage {
+        percentCovered
+      }
+      changeCoverage
+      segments {
+        header
+        hasUnintendedChanges
+        lines {
+          baseNumber
+          headNumber
+          baseCoverage
+          headCoverage
+          content
+        }
+      }
+    }
+  }
+}
+`
