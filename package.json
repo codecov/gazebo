@@ -5,7 +5,8 @@
   "dependencies": {
     "@hookform/resolvers": "^2.8.5",
     "@reach/menu-button": "^0.16.2",
-    "@sentry/react": "^7.13.0",
+    "@sentry/react": "^7.23.0",
+    "@sentry/replay": "^0.6.14",
     "@sentry/tracing": "^7.23.0",
     "@storybook/builder-webpack5": "^6.5.10",
     "@stripe/react-stripe-js": "^1.7.2",
