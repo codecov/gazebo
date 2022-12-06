@@ -1,7 +1,9 @@
 import { lazy, Suspense } from 'react'
-import { Redirect, Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import config from 'config'
+
+import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
@@ -48,7 +50,7 @@ function AccountSettings() {
       <SidebarLayout sidebar={<AccountSettingsSideMenu />}>
         <Suspense fallback={Loader}>
           <Switch>
-            <Route path="/account/:provider/:owner/" exact>
+            <SentryRoute path="/account/:provider/:owner/" exact>
               {config.IS_SELF_HOSTED && isViewingPersonalSettings ? (
                 <Profile provider={provider} owner={owner} />
               ) : !config.IS_SELF_HOSTED && isAdmin ? (
@@ -56,23 +58,26 @@ function AccountSettings() {
               ) : (
                 <Redirect to={yamlTab} />
               )}
-            </Route>
-            <Route path="/account/:provider/:owner/yaml/" exact>
+            </SentryRoute>
+            <SentryRoute path="/account/:provider/:owner/yaml/" exact>
               <YAMLTab provider={provider} owner={owner} />
-            </Route>
+            </SentryRoute>
             {!config.IS_SELF_HOSTED && (
-              <Route path="/account/:provider/:owner/access/" exact>
+              <SentryRoute path="/account/:provider/:owner/access/" exact>
                 <AccessTab provider={provider} />
-              </Route>
+              </SentryRoute>
             )}
             {showOrgUploadToken && (
-              <Route path="/account/:provider/:owner/orgUploadToken" exact>
+              <SentryRoute
+                path="/account/:provider/:owner/orgUploadToken"
+                exact
+              >
                 <OrgUploadToken />
-              </Route>
+              </SentryRoute>
             )}
-            <Route path="/account/:provider/:owner/*">
+            <SentryRoute path="/account/:provider/:owner/*">
               <NotFound />
-            </Route>
+            </SentryRoute>
           </Switch>
         </Suspense>
       </SidebarLayout>

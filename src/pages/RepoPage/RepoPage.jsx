@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { Redirect, Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import NotFound from 'pages/NotFound'
@@ -104,31 +106,31 @@ function RepoPage() {
         <Suspense fallback={Loader}>
           {isRepoActivated ? (
             <Switch>
-              <Route path={path} exact>
+              <SentryRoute path={path} exact>
                 <CoverageTab />
-              </Route>
-              <Route path={`${path}/flags`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/flags`} exact>
                 <FlagsTab />
-              </Route>
-              <Route path={`${path}/commits`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/commits`} exact>
                 <CommitsTab />
-              </Route>
-              <Route path={`${path}/pulls`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/pulls`} exact>
                 <PullsTab />
-              </Route>
+              </SentryRoute>
               <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
-              <Route path={`${path}/settings`}>
+              <SentryRoute path={`${path}/settings`}>
                 <SettingsTab />
-              </Route>
-              <Route path={`${path}/tree/:branch/:path+`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/tree/:branch/:path+`} exact>
                 <CoverageTab />
-              </Route>
-              <Route path={`${path}/tree/:branch`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/tree/:branch`} exact>
                 <CoverageTab />
-              </Route>
-              <Route path={`${path}/blob/:ref/:path+`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/blob/:ref/:path+`} exact>
                 <CoverageTab />
-              </Route>
+              </SentryRoute>
               <Redirect
                 from="/:provider/:owner/:repo/*"
                 to="/:provider/:owner/:repo"
@@ -138,18 +140,18 @@ function RepoPage() {
             <>
               {repoHasCommits ? (
                 <Switch>
-                  <Route path={`${path}/settings`}>
+                  <SentryRoute path={`${path}/settings`}>
                     <SettingsTab />
-                  </Route>
-                  <Route path={path}>
+                  </SentryRoute>
+                  <SentryRoute path={path}>
                     <DeactivatedRepo />
-                  </Route>
+                  </SentryRoute>
                 </Switch>
               ) : (
                 <Switch>
-                  <Route path={`${path}/new`} exact>
+                  <SentryRoute path={`${path}/new`} exact>
                     <NewRepoTab />
-                  </Route>
+                  </SentryRoute>
                   <Redirect from={path} to={`${path}/new`} />
                   <Redirect from={`${path}/*`} to={`${path}/new`} />
                 </Switch>

@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch, useParams } from 'react-router-dom'
+import { Switch, useParams } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
@@ -28,18 +30,18 @@ function SettingsTab() {
     <SidebarLayout sidebar={<SideMenuSettings />}>
       <Suspense fallback={tabLoading}>
         <Switch>
-          <Route path="/:provider/:owner/:repo/settings" exact>
+          <SentryRoute path="/:provider/:owner/:repo/settings" exact>
             <GeneralTab />
-          </Route>
-          <Route path="/:provider/:owner/:repo/settings/yaml" exact>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/settings/yaml" exact>
             <YamlTab />
-          </Route>
-          <Route path="/:provider/:owner/:repo/settings/badge" exact>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/settings/badge" exact>
             <BadgesAndGraphsTab />
-          </Route>
-          <Route path="/:provider/:owner/:repo/settings/*">
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/settings/*">
             <NotFound />
-          </Route>
+          </SentryRoute>
         </Switch>
       </Suspense>
     </SidebarLayout>
