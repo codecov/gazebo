@@ -31,11 +31,7 @@ function Progress({ amount, label, color = 'default', variant = 'default' }) {
       </div>
 
       {label && (
-        <div
-          className={cs({
-            'flex-none flex justify-end': !amountInNumber,
-          })}
-        >
+        <div className="flex-[53px_0]">
           <TotalsNumber
             data-testid="coverage-value"
             value={amount}
