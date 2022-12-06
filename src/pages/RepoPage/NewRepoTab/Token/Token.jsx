@@ -27,7 +27,7 @@ export default function Token({
       )}
       {!config.IS_SELF_HOSTED && (
         <i className="font-light">
-          *Not required if your repo is using GitHub Actions, Travic CI, CIrcle
+          *Not required if your repo is using GitHub Actions, Travic CI, Circle
           CI, AppVeyor, or Azure Pipelines.
         </i>
       )}

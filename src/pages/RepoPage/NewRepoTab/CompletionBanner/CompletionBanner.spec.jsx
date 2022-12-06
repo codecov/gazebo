@@ -15,6 +15,8 @@ const queryClient = new QueryClient({
   },
 })
 
+jest.mock('config')
+
 describe('CompletionBanner', () => {
   function setup({ isSelfHosted = false } = {}) {
     config.IS_SELF_HOSTED = isSelfHosted
