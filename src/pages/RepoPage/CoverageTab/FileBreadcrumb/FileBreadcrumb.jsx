@@ -1,6 +1,5 @@
+import { useTreePaths } from 'shared/useTreePaths'
 import Breadcrumb from 'ui/Breadcrumb'
-
-import { useTreePaths } from './hooks'
 
 function FileBreadcrumb() {
   const { treePaths } = useTreePaths()

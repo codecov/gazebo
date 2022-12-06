@@ -104,13 +104,13 @@ const useRepoOverviewMock = {
 
 describe('useRepoContentsTable', () => {
   let hookData
-  function setup({ repoData, useParamsValue }) {
+  function setup({ repoData, useParamsValue, paramPath = false }) {
     useParams.mockReturnValue({
       owner: 'Rabee-AbuBaker',
       provider: 'gh',
       repo: 'another-test',
       branch: 'main',
-      path: '',
+      ...(paramPath && { path: 'filePath' }),
     })
 
     useRepoContents.mockReturnValue(repoData)
@@ -124,9 +124,25 @@ describe('useRepoContentsTable', () => {
 
   it('returns data accordingly', () => {
     setup({ repoData: repoContentsMock })
+
     expect(hookData.result.current.data.length).toEqual(1)
     expect(hookData.result.current.headers.length).toEqual(6)
     expect(hookData.result.current.isLoading).toEqual(false)
+  })
+
+  it('renders the correct headers', async () => {
+    expect(hookData.result.current.headers[0].header).toStrictEqual('Files')
+    expect(hookData.result.current.headers[5].header).toStrictEqual(
+      'Coverage %'
+    )
+  })
+
+  describe('when there is a file path', () => {
+    it('includes .. link', () => {
+      setup({ repoData: repoContentsMock, paramPath: true })
+
+      expect(hookData.result.current.data.length).toEqual(2)
+    })
   })
 
   describe('when there is no data', () => {

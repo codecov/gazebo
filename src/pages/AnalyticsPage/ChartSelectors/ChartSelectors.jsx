@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 
 import { useRepos } from 'services/repos'
 import DateRangePicker from 'ui/DateRangePicker'
-import MultiSelect from 'ui/NewMultiSelect'
+import MultiSelect from 'ui/MultiSelect'
 
 function formatDataForMultiselect(repos) {
   return repos?.map((repo) => repo.name)
@@ -59,10 +59,11 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
         <MultiSelect
           hook="repo-chart-selector"
           ariaName="Select repos to choose"
+          dataMarketing="repo-chart-selector"
           items={items}
           onChange={onSelectChangeHandler}
           resourceName="Repo"
-          selectedItems={selectedRepos}
+          value={selectedRepos}
           isLoading={isLoading}
           onLoadMore={() => hasNextPage && fetchNextPage()}
           onSearch={(search) => setSearch(search)}

@@ -23,8 +23,9 @@ const queryClient = new QueryClient({
 })
 
 describe('PlanPage', () => {
-  function setup({ owner = null, isEnterprise = false }) {
-    config.IS_ENTERPRISE = isEnterprise
+  let testLocation
+  function setup({ owner = null, isSelfHosted = false }) {
+    config.IS_SELF_HOSTED = isSelfHosted
 
     useOwner.mockReturnValue({
       data: owner,
@@ -36,6 +37,13 @@ describe('PlanPage', () => {
             <PlanPage />
           </QueryClientProvider>
         </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
       </MemoryRouter>
     )
   }
@@ -69,6 +77,25 @@ describe('PlanPage', () => {
 
     it('doesnt render Tabs', () => {
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the environment is self-hosted', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          owner: {
+            username: 'codecov',
+            isCurrentUserPartOfOrg: false,
+          },
+        },
+        isSelfHosted: true,
+      })
+    })
+
+    it('doesnt render tabs', () => {
+      expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+      expect(testLocation.pathname).toBe('/gh/codecov')
     })
   })
 })

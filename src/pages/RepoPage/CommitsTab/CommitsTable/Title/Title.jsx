@@ -26,7 +26,7 @@ const Title = ({ message, author, commitid, createdAt }) => {
       </span>
       <div className="flex flex-col w-5/6 lg:w-auto">
         <A to={{ pageName: 'commit', options: { commit: commitid } }}>
-          <h2 className="font-medium text-sm md:text-base text-black">
+          <h2 className="font-semibold text-sm text-black">
             {commitMessage()}
           </h2>
         </A>

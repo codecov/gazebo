@@ -33,8 +33,8 @@ function HomePage({ active = false }) {
     <div className="flex flex-col gap-4">
       <Header />
       <div>
-        <Tabs currentUsername={currentUser?.user?.username} />
         <ActiveContext.Provider value={active}>
+          <Tabs currentUsername={currentUser?.user?.username} />
           <ListRepo canRefetch />
         </ActiveContext.Provider>
       </div>

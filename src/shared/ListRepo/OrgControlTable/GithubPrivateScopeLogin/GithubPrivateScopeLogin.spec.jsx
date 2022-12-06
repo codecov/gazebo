@@ -72,7 +72,7 @@ describe('GithubPrivateScopeLogin', () => {
 
     expect(screen.queryByText('add private')).toHaveAttribute(
       'href',
-      'https://stage-web.codecov.dev/login/gh?private=t'
+      'https://stage-web.codecov.dev/login/gh?private=true'
     )
   })
 })

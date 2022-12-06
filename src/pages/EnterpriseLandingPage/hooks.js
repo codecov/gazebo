@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-const fetchServiceProviders = () => {
+const fetchServiceProviders = ({ signal }) => {
   const query = `
     query GetServiceProviders {
       config {
@@ -13,6 +13,7 @@ const fetchServiceProviders = () => {
 
   return Api.graphql({
     provider: 'gh',
+    signal,
     query,
   }).then((res) => {
     const loginProviders = res?.data?.config?.loginProviders
@@ -32,5 +33,7 @@ const fetchServiceProviders = () => {
 }
 
 export const useServiceProviders = () => {
-  return useQuery(['GetServiceProviders'], () => fetchServiceProviders())
+  return useQuery(['GetServiceProviders'], ({ signal }) =>
+    fetchServiceProviders({ signal })
+  )
 }

@@ -57,6 +57,7 @@ function OrgControlTable({
             value={search}
             placeholder="Search"
             onChange={(e) => setSearch(e.target.value)}
+            data-testid="org-control-search"
           />
         </div>
       </div>

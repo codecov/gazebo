@@ -21,6 +21,7 @@ const variantClasses = {
   greyOctinary: `text-ds-gray-octinary`,
   grayQuinary: `text-ds-gray-quinary`,
   headerHighlight: `font-semibold text-ds-pink`,
+  upDirectory: `flex flex-grow text-ds-blue hover:no-underline focus:ring-0`,
 }
 
 function _adjustPathForGLSubgroups(path) {
@@ -98,6 +99,7 @@ A.propTypes = {
     'grayQuinary',
     'greyOctinary',
     'headerHighlight',
+    'upDirectory',
   ]),
   isExternal: PropTypes.bool,
 }

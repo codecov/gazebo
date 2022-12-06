@@ -1,6 +1,6 @@
 import A from 'ui/A'
 
-import flagsEmptyState from './assets/flagsEmptystate.svg'
+import flagsEmptyState from '../assets/flagsEmptystate.svg'
 
 function FlagsNotConfigured() {
   return (

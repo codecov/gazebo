@@ -17,9 +17,9 @@ describe('GithubIntegrationCard', () => {
     owner: 'codecov',
   }
 
-  function setup(accountDetails = {}, over = {}, isEnterprise = false) {
+  function setup(accountDetails = {}, over = {}, isSelfHosted = false) {
     useAccountDetails.mockReturnValue({ data: accountDetails })
-    config.IS_ENTERPRISE = isEnterprise
+    config.IS_SELF_HOSTED = isSelfHosted
     const props = {
       ...defaultProps,
       ...over,

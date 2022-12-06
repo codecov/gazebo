@@ -1,9 +1,13 @@
+import { useQueryClient } from '@tanstack/react-query'
 import cs from 'classnames'
-import { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Component, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import config from 'config'
 
 import A from 'ui/A'
+import Button from 'ui/Button'
 
 import img401 from './assets/error-401.svg'
 import img403 from './assets/error-403.svg'
@@ -50,7 +54,7 @@ const graphQLErrorToUI = {
 }
 
 const NetworkErrorMessage = () => {
-  if (config.IS_ENTERPRISE) {
+  if (config.IS_SELF_HOSTED) {
     return (
       <p className="my-4 px-3 sm:px-0">
         Please see{' '}
@@ -78,7 +82,7 @@ const NetworkErrorMessage = () => {
         isExternal={true}
         hook="status"
       >
-        Codecov’s status
+        Codecov&apos;s status
       </A>{' '}
       or see{' '}
       <A
@@ -95,6 +99,43 @@ const NetworkErrorMessage = () => {
   )
 }
 
+function ResetHandler({ reset }) {
+  const queryClient = useQueryClient()
+  const history = useHistory()
+
+  useEffect(() => {
+    let unMounted = false
+    const unListen = history.listen(() => {
+      if (unMounted) return
+      queryClient.clear()
+      reset()
+    })
+
+    return () => {
+      unMounted = true
+      unListen()
+    }
+  }, [history, queryClient, reset])
+
+  return (
+    <div className="my-4">
+      <Button
+        onClick={() => {
+          queryClient.clear()
+          history.goBack()
+          reset()
+        }}
+      >
+        Return to previous page
+      </Button>
+    </div>
+  )
+}
+
+ResetHandler.propTypes = {
+  reset: PropTypes.func,
+}
+
 class NetworkErrorBoundary extends Component {
   constructor(props) {
     super(props)
@@ -107,7 +148,7 @@ class NetworkErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    // if the error isnt a network error, we don't do anything and
+    // if the error is not a network error, we don't do anything and
     // another error boundary will take it from there
     if (Object.keys(errorToUI).includes(String(error.status))) {
       return { hasNetworkError: true, error }
@@ -115,6 +156,18 @@ class NetworkErrorBoundary extends Component {
     if (Object.keys(graphQLErrorToUI).includes(error.__typename))
       return { hasGraphqlError: true, error }
     return {}
+  }
+
+  resetErrorBoundary = () => {
+    this.reset()
+  }
+
+  reset() {
+    this.setState({
+      hasNetworkError: false,
+      hasGraphqlError: false,
+      error: null,
+    })
   }
 
   renderGraphQLError() {
@@ -130,6 +183,7 @@ class NetworkErrorBoundary extends Component {
         />
         <h1 className="text-2xl mt-6">{title}</h1>
         <NetworkErrorMessage />
+        <ResetHandler reset={this.resetErrorBoundary} />
       </article>
     )
   }
@@ -151,6 +205,7 @@ class NetworkErrorBoundary extends Component {
         <p>
           <strong>Error {status}</strong>
         </p>
+        <ResetHandler reset={this.resetErrorBoundary} />
       </article>
     )
   }

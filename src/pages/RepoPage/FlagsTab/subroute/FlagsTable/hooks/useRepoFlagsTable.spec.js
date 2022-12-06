@@ -57,7 +57,7 @@ describe('useRepoFlagsTable', () => {
   let hookData
   function setup({
     repoData,
-    useParamsValue = { search: '', historicalTrend: '' },
+    useParamsValue = { search: '', historicalTrend: '', flags: [] },
   }) {
     useParams.mockReturnValue({
       provider: 'gh',
@@ -108,7 +108,7 @@ describe('useRepoFlagsTable', () => {
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2020-06-11',
           beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: { term: '' },
+          filters: { term: '', flagsNames: [] },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'DESC',
           suspense: false,
@@ -125,7 +125,7 @@ describe('useRepoFlagsTable', () => {
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2020-06-11',
           beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: { term: '' },
+          filters: { term: '', flagsNames: [] },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'ASC',
           suspense: false,
@@ -142,7 +142,7 @@ describe('useRepoFlagsTable', () => {
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2020-06-11',
           beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: { term: '' },
+          filters: { term: '', flagsNames: [] },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'ASC',
           suspense: false,
@@ -182,7 +182,7 @@ describe('useRepoFlagsTable', () => {
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2020-06-11',
           beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: { term: '' },
+          filters: { term: '', flagsNames: [] },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'ASC',
           suspense: false,
@@ -229,6 +229,24 @@ describe('useRepoFlagsTable', () => {
           orderingDirection: 'ASC',
           suspense: false,
         })
+      })
+    })
+  })
+
+  describe('when there is a flags param', () => {
+    it('calls useRepoContents with correct filters values', () => {
+      setup({
+        repoData: repoFlagsMock,
+        useParamsValue: { flags: ['flag1'] },
+      })
+
+      expect(useRepoFlags).toHaveBeenCalledWith({
+        afterDate: '2020-06-11',
+        beforeDate: format(new Date(), 'yyyy-MM-dd'),
+        filters: { flagsNames: ['flag1'] },
+        interval: 'INTERVAL_30_DAY',
+        orderingDirection: 'ASC',
+        suspense: false,
       })
     })
   })

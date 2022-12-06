@@ -1,26 +1,45 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
+import { act } from 'react-dom/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
+import useIntersection from 'react-use/lib/useIntersection'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoBackfilled } from 'services/repo'
+import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 
 import Header from './Header'
 
+jest.mock('react-use/lib/useIntersection')
 jest.mock('services/navigation/useLocationParams')
 jest.mock('services/repo/useRepoBackfilled')
+jest.mock('services/repo/useRepoFlagsSelect')
+
+beforeAll(() => {
+  jest.useFakeTimers()
+})
+afterAll(() => {
+  jest.useRealTimers()
+})
 
 describe('Header', () => {
   const updateLocationMock = jest.fn()
-  function setup() {
+  const fetchNextPage = jest.fn()
+
+  function setup(setRepoFlags = true) {
     useLocationParams.mockReturnValue({
-      params: { search: '', historicalTrend: '' },
+      params: { search: '', historicalTrend: '', flags: [] },
       updateParams: updateLocationMock,
     })
     useRepoBackfilled.mockReturnValue({
       data: { flagsCount: 99 },
     })
+
+    if (setRepoFlags) {
+      useRepoFlagsSelect.mockReturnValue({
+        data: [{ name: 'flag1' }],
+      })
+    }
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
@@ -113,6 +132,132 @@ describe('Header', () => {
       await waitFor(() =>
         expect(updateLocationMock).toHaveBeenCalledWith({ search: 'flag1' })
       )
+    })
+  })
+
+  describe('Show by', () => {
+    describe('Title', () => {
+      beforeEach(() => {
+        setup()
+      })
+
+      it('renders the label', () => {
+        const showBy = screen.getByText('Show by')
+        expect(showBy).toBeInTheDocument()
+      })
+    })
+
+    describe('MultiSelect', () => {
+      describe('on page load', () => {
+        beforeEach(() => {
+          setup()
+        })
+
+        it('loads the expected list', () => {
+          const button = screen.getByText('All flags')
+          userEvent.click(button)
+
+          const flag1 = screen.getByText('flag1')
+          expect(flag1).toBeInTheDocument()
+        })
+
+        it('updates the location params on select', async () => {
+          const button = screen.getByText('All flags')
+          userEvent.click(button)
+
+          const flag1 = screen.getByText('flag1')
+          userEvent.click(flag1)
+
+          await waitFor(() =>
+            expect(updateLocationMock).toHaveBeenCalledWith({
+              flags: ['flag1'],
+            })
+          )
+        })
+      })
+
+      describe('where onLoadMore is triggered', () => {
+        describe('when there is a next page', () => {
+          beforeEach(() => {
+            useRepoFlagsSelect.mockReturnValue({
+              data: [{ name: 'flag1' }],
+              fetchNextPage,
+              hasNextPage: true,
+            })
+            useIntersection.mockReturnValue({ isIntersecting: true })
+            setup(false)
+          })
+
+          it('calls fetchNextPage', () => {
+            const button = screen.getByText('All flags')
+            userEvent.click(button)
+
+            expect(fetchNextPage).toBeCalled()
+          })
+        })
+
+        describe('when there is no next page', () => {
+          beforeEach(() => {
+            useRepoFlagsSelect.mockReturnValue({
+              data: [{ name: 'flag1' }],
+              fetchNextPage,
+              hasNextPage: false,
+            })
+            useIntersection.mockReturnValue({ isIntersecting: true })
+            setup(false)
+          })
+
+          it('does not calls fetchNextPage', () => {
+            const button = screen.getByText('All flags')
+            userEvent.click(button)
+
+            expect(fetchNextPage).not.toBeCalled()
+          })
+        })
+      })
+
+      describe('when searching for a flag', () => {
+        beforeEach(() => {
+          setup()
+        })
+
+        it('displays the search box', () => {
+          const button = screen.getByText('All flags')
+          userEvent.click(button)
+
+          const searchBox = screen.getByPlaceholderText('Search for Flags')
+          expect(searchBox).toBeInTheDocument()
+        })
+
+        it('updates the textbox value when typing', () => {
+          const button = screen.getByText('All flags')
+          userEvent.click(button)
+
+          const searchBox = screen.getByPlaceholderText('Search for Flags')
+          userEvent.type(searchBox, 'flag2')
+
+          const searchBoxUpdated =
+            screen.getByPlaceholderText('Search for Flags')
+          expect(searchBoxUpdated).toHaveAttribute('value', 'flag2')
+        })
+
+        it('calls useRepoFlagsSelect with term', () => {
+          const button = screen.getByText('All flags')
+          userEvent.click(button)
+
+          const searchBox = screen.getByPlaceholderText('Search for Flags')
+          userEvent.type(searchBox, 'flag2')
+
+          act(() => {
+            jest.advanceTimersByTime(5000)
+          })
+
+          expect(useRepoFlagsSelect).toBeCalledWith({
+            filters: { term: 'flag2' },
+            options: { suspense: false },
+          })
+        })
+      })
     })
   })
 })

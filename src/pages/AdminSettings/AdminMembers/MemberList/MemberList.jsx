@@ -93,6 +93,7 @@ function MemberList() {
             placeholder="Search"
             searchValue={params?.search || ''}
             setSearchValue={(search) => updateParams({ ...params, search })}
+            data-testid="search-input-members"
           />
         </div>
       </div>

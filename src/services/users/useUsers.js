@@ -6,15 +6,15 @@ function getPathUsers({ provider, owner }) {
   return `/${provider}/${owner}/users/`
 }
 
-function fetchUsers({ provider, owner, query }) {
+function fetchUsers({ provider, owner, query, signal }) {
   const path = getPathUsers({ provider, owner })
-  return Api.get({ path, provider, query })
+  return Api.get({ path, provider, query, signal })
 }
 
 export function useUsers({ provider, owner, query, opts = {} }) {
   return useQuery(
     ['users', provider, owner, query],
-    () => fetchUsers({ provider, owner, query }),
+    ({ signal }) => fetchUsers({ provider, owner, query, signal }),
     {
       keepPreviousData: true,
       staleTime: 5000,

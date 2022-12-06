@@ -109,10 +109,11 @@ export function useCommit({
 
   const tempKey = ['commit', provider, owner, repo, commitid]
 
-  const commitQuery = useQuery(tempKey, () => {
-    return Api.graphql({
+  const commitQuery = useQuery(tempKey, ({ signal }) =>
+    Api.graphql({
       provider,
       query,
+      signal,
       variables: {
         provider,
         owner,
@@ -129,7 +130,7 @@ export function useCommit({
         },
       }
     })
-  })
+  )
 
   const queryClient = useQueryClient()
 

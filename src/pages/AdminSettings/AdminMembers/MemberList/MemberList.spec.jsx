@@ -229,22 +229,22 @@ describe('MemberList', () => {
     })
 
     it('displays the search box', async () => {
-      const search = await screen.findByPlaceholderText('Search')
+      const search = await screen.findByTestId('search-input-members')
       expect(search).toBeInTheDocument()
     })
 
     describe('when the user types', () => {
       it('updates the text box', async () => {
-        let search = await screen.findByPlaceholderText('Search')
+        let search = await screen.findByTestId('search-input-members')
 
         userEvent.type(search, 'codecov')
 
-        search = await screen.findByPlaceholderText('Search')
+        search = await screen.findByTestId('search-input-members')
         expect(search).toHaveAttribute('value', 'codecov')
       })
 
       it('updates the location params', async () => {
-        let search = await screen.findByPlaceholderText('Search')
+        let search = await screen.findByTestId('search-input-members')
 
         userEvent.type(search, 'codecov')
 

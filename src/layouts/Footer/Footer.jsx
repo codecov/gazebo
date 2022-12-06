@@ -1,3 +1,5 @@
+import config from 'config'
+
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import { useUser } from 'services/user'
 import A from 'ui/A'
@@ -10,16 +12,23 @@ function Footer() {
   })
 
   const year = new Date().getUTCFullYear()
+  const version = config.IS_SELF_HOSTED
+    ? [{ text: config?.CODECOV_VERSION }]
+    : []
   const leftMenu = [
     { text: `© ${year} Codecov` },
+    ...version,
     { to: { pageName: 'terms' } },
     { to: { pageName: 'privacy' } },
     { to: { pageName: 'security' } },
     { to: { pageName: 'gdpr' } },
   ]
 
+  const pricing = !config.IS_SELF_HOSTED
+    ? [{ to: { pageName: 'pricing' } }]
+    : []
   const rightMenu = [
-    { to: { pageName: 'pricing' } },
+    ...pricing,
     { to: { pageName: 'support' } },
     { to: { pageName: 'docs' } },
     { to: { pageName: 'enterprise' } },
