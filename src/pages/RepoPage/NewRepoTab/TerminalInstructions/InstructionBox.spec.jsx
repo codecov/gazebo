@@ -22,6 +22,7 @@ const loggedInUser = {
 
 describe('InstructionBox', () => {
   function setup({ isSelfHosted = false } = {}) {
+    config.BASE_URL = 'https://app.codecov.io'
     config.IS_SELF_HOSTED = isSelfHosted
 
     useUser.mockReturnValue({ data: loggedInUser })
@@ -84,7 +85,6 @@ describe('InstructionBox', () => {
 
   describe('when click on windows an user is a self hosted user', () => {
     beforeEach(() => {
-      config.BASE_URL = 'https://app.codecov.io/'
       setup({ isSelfHosted: true })
       userEvent.click(screen.getByRole('button', { name: 'Windows' }))
     })
@@ -92,6 +92,11 @@ describe('InstructionBox', () => {
     it('renders windows specific instruction', () => {
       const widnowsInstruction = screen.getByText(/windows\/codecov/)
       expect(widnowsInstruction).toBeInTheDocument()
+    })
+
+    it('renders with expected base uploader url', () => {
+      const baseUrl = screen.getByText(/https:\/\/app.codecov.io/)
+      expect(baseUrl).toBeInTheDocument()
     })
 
     it('renders self hosted specific instruction', () => {
