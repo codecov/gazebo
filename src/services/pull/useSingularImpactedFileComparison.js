@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import Api from 'shared/api'
 
 import { FileComparisonWithBase } from './fragments'
+import { transformImpactedFileData } from './utils'
 
 const query = `
     query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!) {
@@ -17,28 +18,6 @@ const query = `
 
     ${FileComparisonWithBase}
 `
-
-function setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
-  if (isNewFile) return 'New'
-  if (isRenamedFile) return 'Renamed'
-  if (isDeletedFile) return 'Deleted'
-  return null
-}
-
-function transformImpactedFileData(impactedFile) {
-  const fileLabel = setFileLabel({
-    isNewFile: impactedFile?.isNewFile,
-    isRenamedFile: impactedFile?.isRenamedFile,
-    isDeletedFile: impactedFile?.isDeletedFile,
-  })
-
-  return {
-    fileLabel,
-    headName: impactedFile?.headName,
-    isCriticalFile: impactedFile?.isCriticalFile,
-    segments: impactedFile?.segments,
-  }
-}
 
 export function useSingularImpactedFileComparison({
   provider,
