@@ -59,10 +59,10 @@ export const setupSentry = ({ history }) => {
 
   const replay = new Replay({
     // Capture 10% of all sessions
-    sessionSampleRate: 0.1,
+    sessionSampleRate: config?.SENTRY_SESSION_SAMPLE_RATE,
 
     // Of the remaining 90% of sessions, if an error happens start capturing
-    errorSampleRate: 1.0,
+    errorSampleRate: config?.SENTRY_ERROR_SAMPLE_RATE,
   })
 
   return Sentry.init({
@@ -71,7 +71,7 @@ export const setupSentry = ({ history }) => {
     release: config.SENTRY_RELEASE,
     environment: config.SENTRY_ENVIRONMENT,
     integrations: [browserTracing, replay],
-    tracesSampleRate: parseFloat(config.SENTRY_TRACING_SAMPLE_RATE),
+    tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,
     ...deClutterConfig,
   })
 }
