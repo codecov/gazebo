@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react'
+import { Replay } from '@sentry/replay'
 import { BrowserTracing } from '@sentry/tracing'
 import { Route } from 'react-router-dom'
 
@@ -50,20 +51,27 @@ const deClutterConfig = {
 
 export const SentryRoute = Sentry.withSentryRouting(Route)
 
-console.debug(parseFloat(config.SENTRY_TRACING_SAMPLE_RATE))
+export const setupSentry = ({ history }) => {
+  const browserTracing = new BrowserTracing({
+    routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
+    tracePropagationTargets: ['api.codecov.io', 'stage-api.codecov.dev'],
+  })
 
-export const setupSentry = ({ history }) =>
-  Sentry.init({
+  const replay = new Replay({
+    // Capture 10% of all sessions
+    sessionSampleRate: 0.1,
+
+    // Of the remaining 90% of sessions, if an error happens start capturing
+    errorSampleRate: 1.0,
+  })
+
+  return Sentry.init({
     dsn: config.SENTRY_DSN,
     debug: config.node_env !== 'production',
     release: config.SENTRY_RELEASE,
     environment: config.SENTRY_ENVIRONMENT,
-    integrations: [
-      new BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
-        tracePropagationTargets: ['api.codecov.io', 'stage-api.codecov.dev'],
-      }),
-    ],
+    integrations: [browserTracing, replay],
     tracesSampleRate: parseFloat(config.SENTRY_TRACING_SAMPLE_RATE),
     ...deClutterConfig,
   })
+}
