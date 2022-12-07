@@ -1,5 +1,7 @@
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import codecovReport from 'assets/repoConfig/codecov-report.png'
 import patchAndProject from 'assets/repoConfig/patch-and-project.png'
 import { useRepo } from 'services/repo'
@@ -71,7 +73,7 @@ function NewRepoGithubContent() {
         </span>
       </div>
 
-      <TeamBotBanner />
+      {!config.IS_SELF_HOSTED && <TeamBotBanner />}
 
       <div className="flex flex-col gap-1 mt-3">
         <h2 className="font-semibold">
