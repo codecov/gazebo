@@ -1,7 +1,7 @@
 import RawFileviewer from 'shared/RawFileviewer'
+import { useTreePaths } from 'shared/useTreePaths'
 
 import FileBreadcrumb from '../../FileBreadcrumb'
-import { useTreePaths } from '../../FileBreadcrumb/hooks'
 
 function FileView() {
   const { treePaths } = useTreePaths()

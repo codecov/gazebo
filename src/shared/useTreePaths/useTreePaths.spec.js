@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useTreePaths } from './hooks'
+import { useTreePaths } from './useTreePaths'
 
 describe('useTreePaths', () => {
   let hookData

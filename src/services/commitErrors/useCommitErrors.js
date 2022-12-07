@@ -33,10 +33,11 @@ export function useCommitErrors() {
 
   return useQuery(
     ['CommitErrors', provider, owner, repo, commitid],
-    () => {
+    ({ signal }) => {
       return Api.graphql({
         provider,
         query,
+        signal,
         variables: {
           owner,
           repo,

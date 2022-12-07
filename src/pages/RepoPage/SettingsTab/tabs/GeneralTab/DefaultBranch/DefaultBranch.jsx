@@ -5,7 +5,7 @@ import { useBranches } from 'services/branches'
 import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
-import Select from 'ui/NewSelect'
+import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 
 function useUpdateDefaultBranch() {

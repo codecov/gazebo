@@ -61,7 +61,8 @@ function RepoContentsTable() {
         data={paginatedData}
         columns={headers}
         onSort={handleSort}
-        defaultSort={{ id: 'coverage', desc: false }}
+        defaultSort={[{ id: 'name', desc: false }]}
+        enableHover={true}
       />
       <Loader isLoading={isLoading} />
       {paginatedData?.length === 0 && !isLoading && (

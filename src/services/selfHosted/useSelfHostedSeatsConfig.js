@@ -15,8 +15,12 @@ query Seats {
 export const useSelfHostedSeatsConfig = (options = {}) => {
   const { provider } = useParams()
 
-  return useQuery(['Seats'], () => Api.graphql({ provider, query }), {
-    select: ({ data }) => data?.config,
-    ...options,
-  })
+  return useQuery(
+    ['Seats'],
+    ({ signal }) => Api.graphql({ provider, query, signal }),
+    {
+      select: ({ data }) => data?.config,
+      ...options,
+    }
+  )
 }

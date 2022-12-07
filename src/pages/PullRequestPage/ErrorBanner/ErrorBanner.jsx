@@ -101,7 +101,10 @@ function BannerContent({ errorType }) {
         {' '}
         <h1 className="font-semibold">Missing Comparison</h1>
         <div className="flex gap-1">
-          <span>Unable to compare head and base commits successfully.</span>
+          <span>
+            There was an error computing the comparison for the head and base
+            commit.
+          </span>
           <A
             hook="compare errors"
             to={{ pageName: 'missingComparisonReport' }}

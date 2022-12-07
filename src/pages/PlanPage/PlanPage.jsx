@@ -28,8 +28,12 @@ const Loader = (
 )
 
 function PlanPage() {
-  const { owner } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+
+  if (config.IS_SELF_HOSTED) {
+    return <Redirect to={`/${provider}/${owner}`} />
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -41,7 +45,6 @@ function PlanPage() {
           <hr className="md:w-10/12" />
           <Suspense fallback={Loader}>
             <Switch>
-              {config.IS_SELF_HOSTED && <Redirect to="/:provider/:owner" />}
               <Route path={path} exact>
                 <CurrentOrgPlan />
               </Route>

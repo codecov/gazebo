@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import CopyClipboard from 'ui/CopyClipboard'
 
-const TokenWrapper = ({ token, onClick, truncate = false }) => {
+const TokenWrapper = ({ token, onClick, truncate = false, encodedToken }) => {
   return (
     <div className="flex flex-row gap-1 overflow-auto">
       <pre
@@ -14,7 +14,7 @@ const TokenWrapper = ({ token, onClick, truncate = false }) => {
           }
         )}
       >
-        {token}
+        {encodedToken ? encodedToken : token}
       </pre>
       <CopyClipboard string={token} onClick={onClick} showLabel />
     </div>
@@ -25,6 +25,7 @@ TokenWrapper.propTypes = {
   token: PropTypes.string.isRequired,
   onClick: PropTypes.func,
   truncate: PropTypes.bool,
+  encodedToken: PropTypes.string,
 }
 
 export default TokenWrapper

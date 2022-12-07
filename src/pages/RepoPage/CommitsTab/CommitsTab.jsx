@@ -8,7 +8,7 @@ import { useRepo } from 'services/repo'
 import Button from 'ui/Button'
 import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
-import Select from 'ui/NewSelect'
+import Select from 'ui/Select'
 
 import CommitsTable from './CommitsTable'
 
@@ -76,8 +76,8 @@ function CommitsTab() {
     <div className="flex-1 flex flex-col gap-4">
       <div className="flex gap-2 justify-between px-2 sm:px-0">
         <div className="flex gap-1 flex-col">
-          <h2 className="font-semibold flex gap-1 flex-initial">
-            <span>
+          <h2 className="font-semibold flex gap-1 flex-initial items-center">
+            <span className="text-ds-gray-quinary">
               <Icon name="branch" variant="developer" size="sm" />
             </span>
             Branch Context
