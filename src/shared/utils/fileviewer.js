@@ -13,7 +13,8 @@ export const LINE_STATE = Object.freeze({
 })
 
 export const classNamePerLineState = {
-  [LINE_STATE.COVERED]: 'bg-ds-coverage-covered font-normal',
+  [LINE_STATE.COVERED]:
+    'bg-ds-coverage-covered font-normal border-ds-gray-tertiary border-r',
   [LINE_STATE.UNCOVERED]:
     'bg-ds-coverage-uncovered border-ds-primary-red border-r-2 font-bold',
   [LINE_STATE.BLANK]: 'border-ds-gray-tertiary border-r font-normal',
