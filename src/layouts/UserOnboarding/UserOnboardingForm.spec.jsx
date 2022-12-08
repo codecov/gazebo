@@ -7,8 +7,6 @@ import { useOnboardUser } from 'services/user'
 import { useOnboardingTracking } from './useOnboardingTracking'
 import UserOnboardingForm from './UserOnboardingForm'
 
-import { useFlags } from '../../shared/featureFlags'
-
 jest.mock('services/user')
 jest.mock('./useOnboardingTracking.js')
 jest.mock('shared/featureFlags')
@@ -29,7 +27,7 @@ describe('UserOnboardingFrom', () => {
     secondPage = jest.fn()
   })
 
-  function setup(currentUserPassedIn = defaultCurrentUser, flagValue = true) {
+  function setup(currentUserPassedIn = defaultCurrentUser) {
     currentUser = currentUserPassedIn
     mutate = jest.fn()
     useOnboardingTracking.mockReturnValue({
@@ -41,9 +39,6 @@ describe('UserOnboardingFrom', () => {
       isLoading: false,
       mutate,
       onSuccess: jest.fn(),
-    })
-    useFlags.mockReturnValue({
-      onboardingOrganizationSelector: flagValue,
     })
   }
 
@@ -574,41 +569,6 @@ describe('UserOnboardingFrom', () => {
         name: /other/i,
       })
       expect(otherCheckBox).toBeChecked()
-    })
-  })
-
-  describe('when feature flag is false', () => {
-    beforeEach(() => {
-      setup(defaultCurrentUser, false)
-    })
-
-    it('shows button with submit text', async () => {
-      render(
-        <UserOnboardingForm
-          currentUser={currentUser}
-          onFormSubmit={onFormSubmit}
-        />
-      )
-
-      const checkbox = await screen.findByRole('checkbox', {
-        name: /your organization/i,
-      })
-      userEvent.click(checkbox)
-
-      const justStartingCheckbox = await screen.findByRole('checkbox', {
-        name: /just starting to write tests/i,
-      })
-      userEvent.click(justStartingCheckbox)
-
-      const nextBtn = await screen.findByRole('button', {
-        name: /next/i,
-      })
-      userEvent.click(nextBtn)
-
-      const submitBtn = await screen.findByRole('button', {
-        name: /submit/i,
-      })
-      expect(submitBtn).toBeInTheDocument()
     })
   })
 })
