@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useLocationParams } from 'services/navigation'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
+import ChartToggle from './Chart/ChartToggle'
 import ContentsTableHeader from './ContentsTableHeader'
 import DisplayTypeButton from './DisplayTypeButton'
 import FileBreadcrumb from './FileBreadcrumb'
@@ -13,7 +13,6 @@ import Summary from './Summary'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
 const RepoContentsTable = lazy(() => import('./subroute/RepoContents'))
-const Chart = lazy(() => import('./Chart'))
 
 const defaultQueryParams = {
   search: '',
@@ -41,9 +40,7 @@ function CoverageTab() {
             ]}
             exact
           >
-            <SilentNetworkErrorWrapper>
-              <Chart />
-            </SilentNetworkErrorWrapper>
+            <ChartToggle />
           </Route>
         </Switch>
         <Switch>
