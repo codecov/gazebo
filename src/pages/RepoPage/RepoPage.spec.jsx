@@ -7,15 +7,12 @@ import { useOwner } from 'services/user'
 
 import { repoPageRender, screen, waitFor } from './repo-jest-setup'
 
-import { useFlags } from '../../shared/featureFlags'
-
 import RepoPage from '.'
 
 jest.mock('services/repo/useRepo')
 jest.mock('services/commits')
 jest.mock('services/branches')
 jest.mock('services/user')
-jest.mock('shared/featureFlags')
 
 // This component is too complex for an integration test imo
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
@@ -74,15 +71,11 @@ describe('RepoPage', () => {
     commits,
     initialEntries,
     isCurrentUserPartOfOrg = true,
-    flagValue = false,
   }) {
     useRepo.mockReturnValue({ data: { repository } })
     useCommits.mockReturnValue({ data: commits })
     useBranches.mockReturnValue({ data: { branches } })
     useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
-    useFlags.mockReturnValue({
-      gazeboFlagsTab: flagValue,
-    })
 
     // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.
     if (initialEntries) {
@@ -405,7 +398,7 @@ describe('RepoPage', () => {
     })
   })
 
-  describe('when the repo is activated and the flags feature flag is true', () => {
+  describe('when the repo is activated', () => {
     beforeEach(() => {
       setup({
         repository: {
@@ -413,11 +406,10 @@ describe('RepoPage', () => {
           activated: true,
         },
         commits: { commits },
-        flagValue: true,
       })
     })
 
-    it('renders coverage tab', () => {
+    it('renders displays the flags tab link', () => {
       const flags = screen.getByText('Flags')
       expect(flags).toBeInTheDocument()
     })

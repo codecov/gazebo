@@ -1,5 +1,7 @@
 import userEvent from '@testing-library/user-event'
 
+import config from 'config'
+
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
 import * as Segment from 'services/tracking/segment'
@@ -17,6 +19,7 @@ jest.mock('services/repo/useRepo')
 jest.mock('services/commits')
 jest.mock('services/user')
 jest.mock('shared/featureFlags')
+jest.mock('config')
 
 describe('New Repo Tab', () => {
   let mockError
@@ -43,7 +46,7 @@ describe('New Repo Tab', () => {
     window.location = originalLocation
   })
 
-  function setup({ repoData, commitsData = [] }) {
+  function setup({ repoData, commitsData = [], provider = 'gh' }) {
     useRepo.mockReturnValue({ data: repoData })
     useCommits.mockReturnValue({ data: { commits: commitsData } })
     useUser.mockReturnValue({ data: loggedInUser })
@@ -54,7 +57,7 @@ describe('New Repo Tab', () => {
     spy.mockImplementation(mockError)
 
     const { testLocation } = repoPageRender({
-      initialEntries: ['/gh/codecov/Test/new'],
+      initialEntries: [`/${provider}/codecov/Test/new`],
       renderNew: () => <NewRepoTab />,
     })
     location = testLocation
@@ -198,6 +201,29 @@ describe('New Repo Tab', () => {
           userId: 98765,
         },
       })
+    })
+  })
+
+  describe('when render for self hosted users with a provider that is not gh', () => {
+    beforeEach(() => {
+      config.IS_SELF_HOSTED = true
+
+      setup({
+        repoData: {
+          isCurrentUserPartOfOrg: true,
+          repository: { private: false, uploadToken: 'random-token' },
+        },
+        provider: 'bb',
+      })
+    })
+
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('renders uploader integrity check banner with different copy', () => {
+      const copy = screen.getByText(/You can use the SHASUMs located/)
+      expect(copy).toBeInTheDocument()
     })
   })
 })
