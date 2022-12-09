@@ -16,16 +16,16 @@ import CompareSummary from './Summary'
 
 const Root = lazy(() => import('./subroute/Root'))
 
+const Loader = (
+  <div className="flex items-center justify-center py-16">
+    <Spinner />
+  </div>
+)
+
 // eslint-disable-next-line complexity
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePull({ provider, owner, repo, pullId })
-
-  const Loader = (
-    <div className="flex items-center justify-center py-16">
-      <Spinner />
-    </div>
-  )
 
   if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
     return <NotFound />
