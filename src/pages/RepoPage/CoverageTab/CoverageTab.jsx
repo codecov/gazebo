@@ -5,7 +5,7 @@ import { useLocationParams } from 'services/navigation'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
-import ChartToggle from './Chart/ChartToggle'
+import ToggleChart from './Chart/ToggleChart'
 import ContentsTableHeader from './ContentsTableHeader'
 import DisplayTypeButton from './DisplayTypeButton'
 import FileBreadcrumb from './FileBreadcrumb'
@@ -40,7 +40,7 @@ function CoverageTab() {
             ]}
             exact
           >
-            <ChartToggle />
+            <ToggleChart />
           </Route>
         </Switch>
         <Switch>
