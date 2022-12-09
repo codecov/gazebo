@@ -45,6 +45,7 @@ function ToggleChart() {
     <SilentNetworkErrorWrapper>
       <div className="mt-2">
         <A
+          hook="toggle-chart"
           onClick={() => {
             setIsHidden(!isHidden)
             localStorage.setItem(chartKey, !isHidden)
