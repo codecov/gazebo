@@ -1,7 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ToggleChart from './ToggleChart'
@@ -23,30 +21,11 @@ const wrapper = ({ children }) => (
 )
 
 const queryClient = new QueryClient()
-const server = setupServer()
-
-beforeAll(() => server.listen())
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => server.close())
 
 describe('Toggle chart', () => {
   function setup({ chartData }) {
     useBranchSelector.mockReturnValue({ selection: { name: 'bells-hells' } })
     useRepoCoverageTimeseries.mockReturnValue(chartData)
-
-    server.use(
-      graphql.query('GetBranches', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      )
-    )
-    server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      )
-    )
   }
 
   describe('Toggle chart with successfull repo coverage data', () => {
