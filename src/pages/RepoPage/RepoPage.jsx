@@ -24,12 +24,27 @@ const FlagsTab = lazy(() => import('./FlagsTab'))
 
 const path = '/:provider/:owner/:repo'
 
-const getRepoTabs = ({ matchTree, matchBlobs, isCurrentUserPartOfOrg }) => {
+const getRepoTabs = ({
+  matchTree,
+  matchBlobs,
+  isCurrentUserPartOfOrg,
+  provider,
+  owner,
+  repo,
+}) => {
+  let location = undefined
+  if (matchTree) {
+    location = { pathname: `/${provider}/${owner}/${repo}/tree` }
+  } else if (matchBlobs) {
+    location = { pathname: `/${provider}/${owner}/${repo}/blob` }
+  }
+
   return [
     {
       pageName: 'overview',
       children: 'Coverage',
       exact: !matchTree && !matchBlobs,
+      location,
     },
     { pageName: 'flagsTab' },
     { pageName: 'commits' },
@@ -85,6 +100,9 @@ function RepoPage() {
               matchTree,
               matchBlobs,
               isCurrentUserPartOfOrg,
+              provider,
+              owner,
+              repo,
             })}
           />
         )}
