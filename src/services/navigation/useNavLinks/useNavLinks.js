@@ -4,25 +4,8 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 export function useNavLinks() {
   const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
-  const {
-    gazeboRepoTabs,
-    gazeboPullRequestPage,
-    gazeboCommitsTab,
-    gazeboPullsTab,
-    gazeboSettingsTab,
-    gazeboOverviewTab,
-  } = useFlags({
-    gazeboRepoTabs: false,
-    gazeboPullRequestPage: false,
-    gazeboCommitsTab: false,
-    gazeboPullsTab: false,
-    gazeboSettingsTab: false,
-    gazeboOverviewTab: false,
-  })
 
   const utmCookie = Cookie.get('utmParams')
   const utmCookieObj = qs.parse(utmCookie, {
@@ -92,7 +75,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: gazeboRepoTabs,
     },
     account: {
       text: 'Personal Settings',
@@ -174,7 +156,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/commits`,
-      isExternalLink: gazeboCommitsTab,
       text: 'Commits',
     },
     commit: {
@@ -237,7 +218,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/new`,
-      isExternalLink: gazeboRepoTabs,
       text: 'New',
     },
     overview: {
@@ -248,7 +228,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}`,
-      isExternalLink: gazeboOverviewTab,
       text: 'Overview',
     },
     flagsTab: {
@@ -270,7 +249,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/branches`,
-      isExternalLink: gazeboRepoTabs,
       text: 'Branches',
     },
     pulls: {
@@ -281,7 +259,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/pulls`,
-      isExternalLink: gazeboPullsTab,
       text: 'Pulls',
     },
     pullDetail: {
@@ -293,7 +270,6 @@ export function useNavLinks() {
           pullId: pi,
         }
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}`,
-      isExternalLink: gazeboPullRequestPage,
       text: 'Pull',
     },
     settings: {
@@ -304,7 +280,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings`,
-      isExternalLink: gazeboSettingsTab,
       text: 'Settings',
     },
     settingsGeneral: {
@@ -315,7 +290,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings`,
-      isExternalLink: gazeboSettingsTab,
       text: 'General',
     },
     settingsYaml: {
@@ -326,7 +300,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings/yaml`,
-      isExternalLink: gazeboSettingsTab,
       text: 'Yaml',
     },
     settingsBadge: {
@@ -338,7 +311,6 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
-      isExternalLink: gazeboSettingsTab,
       text: 'Badges & Graphs',
     },
     feedback: {

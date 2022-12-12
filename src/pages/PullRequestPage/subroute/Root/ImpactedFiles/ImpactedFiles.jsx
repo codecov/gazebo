@@ -1,12 +1,10 @@
-import { Suspense } from 'react'
-
-import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import { useImpactedFilesTable } from './hooks'
+import NameColumn from './NameColumn'
 
 import FileDiff from '../FileDiff'
 
@@ -16,28 +14,7 @@ const columns = [
     header: 'Name',
     accessorKey: 'name',
     width: 'w-7/12 min-w-min',
-    cell: ({ row, getValue }) => {
-      return (
-        <div
-          className="flex gap-2 cursor-pointer items-center"
-          data-testid="name-expand"
-          onClick={() => row.toggleExpanded()}
-        >
-          <span
-            className={
-              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
-            }
-          >
-            <Icon
-              size="md"
-              name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
-              variant="solid"
-            />
-          </span>
-          {getValue()}
-        </div>
-      )
-    },
+    cell: ({ row, getValue }) => <NameColumn row={row} getValue={getValue} />,
     justifyStart: true,
   },
   {
@@ -118,7 +95,7 @@ function createTable({ tableData }) {
     : []
 }
 
-const Loader = (
+const Loader = () => (
   <div className="flex items-center justify-center py-16">
     <Spinner />
   </div>
@@ -128,17 +105,22 @@ const renderSubComponent = ({ row }) => {
   const nameColumn = row.getValue('name')
   const [fileNames] = nameColumn?.props?.children
   const path = fileNames?.props?.children
-  // TODO: this component has a nested table and needs to be reworked as it is used inside the Table component, which leads to an accessibilty issue
-  return (
-    <Suspense fallback={Loader}>
-      <FileDiff path={path} />
-    </Suspense>
-  )
+
+  // TODO: this component has a nested table and needs to be reworked,
+  // as it is used inside the Table component, which leads to an accessibility issue
+  return <FileDiff path={path} />
 }
 
 function ImpactedFiles() {
-  const { data, handleSort } = useImpactedFilesTable()
-  const tableContent = createTable({ tableData: data?.impactedFiles })
+  const { data, handleSort, isLoading } = useImpactedFilesTable()
+
+  if (isLoading) {
+    return <Loader />
+  }
+
+  const tableContent = createTable({
+    tableData: data?.impactedFiles,
+  })
 
   return (
     <Table

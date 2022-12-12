@@ -1,30 +1,68 @@
 import cs from 'classnames'
 import { useState } from 'react'
 
+import config from 'config'
+
 import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import CopyClipboard from 'ui/CopyClipboard'
+
+const systemsEnum = Object.freeze({
+  LINUX: 'Linux',
+  ALPINE: 'Alpine Linux',
+  MACOS: 'macOS',
+  WINDOWS: 'Windows',
+})
+
+const systemsMapper = Object.freeze({
+  Linux: 'linux',
+  'Alpine Linux': 'alpine',
+  macOS: 'macos',
+  Windows: 'Windows',
+})
+
+const systems = [
+  systemsEnum.LINUX,
+  systemsEnum.ALPINE,
+  systemsEnum.MACOS,
+  systemsEnum.WINDOWS,
+]
+
+const defaultBaseUrl = 'https://uploader.codecov.io/latest/'
+
+const WindowsSystemInstructions = () => {
+  const baseUploaderUrl = config.IS_SELF_HOSTED
+    ? `${config.BASE_URL}/uploader/`
+    : defaultBaseUrl
+
+  if (config.IS_SELF_HOSTED) {
+    return (
+      <span>
+        curl -Os {baseUploaderUrl}
+        windows/codecov
+        <br />
+        <br />
+        chmod +x codecov
+        <br />
+        ./codecov {config.IS_SELF_HOSTED && <>-u {config.BASE_URL}</>}
+      </span>
+    )
+  }
+  return (
+    <span>
+      $ProgressPreference = &apos;SilentlyContinue&apos;
+      <br />
+      Invoke-WebRequest -Uri
+      https://uploader.codecov.io/latest/windows/codecov.exe -Outfile
+      codecov.exe
+      <br />
+      .\codecov.exe
+    </span>
+  )
+}
 
 export default function InstructionBox() {
   const { terminalUploaderCommandClicked } = useOnboardingTracking()
 
-  const systemsEnum = {
-    LINUX: 'Linux',
-    ALPINE: 'Alpine Linux',
-    MACOS: 'macOS',
-    WINDOWS: 'Windows',
-  }
-  const systemsMapper = {
-    Linux: 'linux',
-    'Alpine Linux': 'alpine',
-    macOS: 'macos',
-    Windows: 'Windows',
-  }
-  const systems = [
-    systemsEnum.LINUX,
-    systemsEnum.ALPINE,
-    systemsEnum.MACOS,
-    systemsEnum.WINDOWS,
-  ]
   const [curSystem, setCurSystem] = useState(systemsEnum.LINUX)
 
   const handleInstructionClick = (e) => {
@@ -32,6 +70,10 @@ export default function InstructionBox() {
     const { name } = e.target
     setCurSystem(name)
   }
+
+  const baseUploaderUrl = config.IS_SELF_HOSTED
+    ? `${config.BASE_URL}/uploader/`
+    : defaultBaseUrl
 
   return (
     <div className="w-5/5 bg-ds-gray-primary my-4 rounded w-auto">
@@ -52,25 +94,17 @@ export default function InstructionBox() {
       </div>
       <div className="p-4 flex flex-row overflow-scroll">
         {curSystem === 'Windows' ? (
-          <span>
-            $ProgressPreference = &apos;SilentlyContinue&apos;
-            <br />
-            Invoke-WebRequest -Uri
-            https://uploader.codecov.io/latest/windows/codecov.exe -Outfile
-            codecov.exe
-            <br />
-            .\codecov.exe
-          </span>
+          <WindowsSystemInstructions />
         ) : (
           <span>
-            curl -Os https://uploader.codecov.io/latest/
+            curl -Os {baseUploaderUrl}
             {systemsMapper[curSystem]}
             /codecov
             <br />
             <br />
             chmod +x codecov
             <br />
-            ./codecov
+            ./codecov {config.IS_SELF_HOSTED && <>-u {config.BASE_URL}</>}
           </span>
         )}
         <span className="md:ml-auto">

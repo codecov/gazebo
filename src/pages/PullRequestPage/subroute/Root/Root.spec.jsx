@@ -142,4 +142,21 @@ describe('Root', () => {
       ).toBeInTheDocument()
     })
   })
+
+  describe('when loading data', () => {
+    beforeEach(() => {
+      const impactedFiles = {
+        data: {
+          headState: CommitStateEnum.ERROR,
+        },
+        isLoading: true,
+      }
+      setup({ impactedFiles })
+    })
+
+    it('shows loading spinner', () => {
+      const spinner = screen.getByTestId('spinner')
+      expect(spinner).toBeInTheDocument()
+    })
+  })
 })

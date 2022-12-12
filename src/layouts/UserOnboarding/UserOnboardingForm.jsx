@@ -12,17 +12,11 @@ import FormEmails from './FormEmails'
 import FormInformation from './FormInformation'
 import { useOnboardingTracking } from './useOnboardingTracking'
 
-import { useFlags } from '../../shared/featureFlags'
-
 function usePerStepProp({ currentUser, onFormSubmit, isSubmitting }) {
   const form = useForm({
     reValidateMode: 'onSubmit',
     defaultValues: getInitialDataForm(currentUser),
     resolver: yupResolver(getSchema()),
-  })
-
-  const { onboardingOrganizationSelector } = useFlags({
-    onboardingOrganizationSelector: false,
   })
 
   const formData = form.watch()
@@ -68,18 +62,9 @@ function usePerStepProp({ currentUser, onFormSubmit, isSubmitting }) {
       subtitle: 'Help us keep your contact information up to date',
       onSubmit,
       body: <FormEmails form={form} currentUser={currentUser} />,
-      footer: onboardingOrganizationSelector ? (
+      footer: (
         <Button hook="submit form" variant="primary" type="submit">
           Next
-        </Button>
-      ) : (
-        <Button
-          variant="primary"
-          isLoading={isSubmitting}
-          type="submit"
-          hook="user-onboarding-submit"
-        >
-          Submit
         </Button>
       ),
     },
