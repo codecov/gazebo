@@ -1,5 +1,5 @@
 import cs from 'classnames'
-import { useState } from 'react'
+import { lazy, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
@@ -8,15 +8,15 @@ import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-import Chart from './Chart'
-
 import { useBranchSelector, useRepoCoverageTimeseries } from '../hooks'
+
+const Chart = lazy(() => import('./Chart'))
 
 const chartKey = 'is-chart-hidden'
 
 function ToggleChart() {
   const [isHidden, setIsHidden] = useState(
-    localStorage.getItem(chartKey) === 'true'
+    () => localStorage.getItem(chartKey) === 'true'
   )
 
   const { provider, owner, repo } = useParams()

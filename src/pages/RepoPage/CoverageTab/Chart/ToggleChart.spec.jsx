@@ -1,16 +1,14 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useBranches } from 'services/branches'
-import { useRepoOverview } from 'services/repo'
 
 import ToggleChart from './ToggleChart'
 
 import { useBranchSelector, useRepoCoverageTimeseries } from '../hooks'
 
 jest.mock('./Chart', () => () => 'Chart')
-jest.mock('services/branches')
-jest.mock('services/repo')
 jest.mock('../hooks')
 jest.spyOn(window.localStorage.__proto__, 'setItem')
 
@@ -18,19 +16,37 @@ window.localStorage.__proto__.setItem = jest.fn()
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/critical-role/c3/bells-hells']}>
-    <Route path="/:provider/:owner/:repo">{children}</Route>
+    <Route path="/:provider/:owner/:repo">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
   </MemoryRouter>
 )
 
+const queryClient = new QueryClient()
+const server = setupServer()
+
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
+
 describe('Toggle chart', () => {
   function setup({ chartData }) {
-    useRepoCoverageTimeseries.mockReturnValue(chartData)
-    useRepoOverview.mockReturnValue({})
-    useBranches.mockReturnValue({})
     useBranchSelector.mockReturnValue({ selection: { name: 'bells-hells' } })
-    render(<ToggleChart />, {
-      wrapper,
-    })
+    useRepoCoverageTimeseries.mockReturnValue(chartData)
+
+    server.use(
+      graphql.query('GetBranches', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      )
+    )
+    server.use(
+      graphql.query('GetRepoOverview', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      )
+    )
   }
 
   describe('Toggle chart with successfull repo coverage data', () => {
@@ -43,11 +59,15 @@ describe('Toggle chart', () => {
     })
 
     it('renders the default chart toggle', () => {
+      render(<ToggleChart />, { wrapper })
+
       expect(screen.getByText('Hide Chart')).toBeInTheDocument()
       expect(screen.getByText('chevron-down.svg')).toBeInTheDocument()
     })
 
     it('renders the chart', () => {
+      render(<ToggleChart />, { wrapper })
+
       expect(screen.getByText('Chart')).toBeInTheDocument()
       expect(screen.getByText('Chart')).not.toHaveClass('hidden')
     })
@@ -60,14 +80,19 @@ describe('Toggle chart', () => {
           isSuccess: true,
         },
       })
-      screen.getByText('Hide Chart').click()
     })
 
     it('renders show chart', () => {
+      render(<ToggleChart />, { wrapper })
+      screen.getByText('Hide Chart').click()
+
       expect(screen.getByText('Show Chart')).toBeInTheDocument()
     })
 
     it('hides the chart', () => {
+      render(<ToggleChart />, { wrapper })
+      screen.getByText('Hide Chart').click()
+
       expect(screen.getByText('Chart')).toHaveClass('hidden')
     })
   })
@@ -82,10 +107,14 @@ describe('Toggle chart', () => {
     })
 
     it('does not render show chart', () => {
+      render(<ToggleChart />, { wrapper })
+
       expect(screen.queryByText('Show Chart')).not.toBeInTheDocument()
     })
 
     it('does not render the chart', () => {
+      render(<ToggleChart />, { wrapper })
+
       expect(screen.queryByText('Chart')).not.toBeInTheDocument()
     })
   })
