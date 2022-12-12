@@ -1,7 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ToggleChart from './ToggleChart'
@@ -23,15 +21,6 @@ const wrapper = ({ children }) => (
     </Route>
   </MemoryRouter>
 )
-
-const server = setupServer()
-
-beforeAll(() => server.listen())
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => server.close())
 
 describe('Toggle chart', () => {
   function setup({ chartData }) {
