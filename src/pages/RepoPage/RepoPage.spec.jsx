@@ -93,21 +93,77 @@ describe('RepoPage', () => {
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup({
-        repository: { private: false, defaultBranch: 'main', activated: true },
-        commits: { commits },
+    describe('user is under root path', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: false,
+            defaultBranch: 'main',
+            activated: true,
+          },
+          commits: { commits },
+        })
+      })
+
+      it('renders the title with the owner name', () => {
+        const owner = screen.getByText(/codecov/)
+        expect(owner).toBeInTheDocument()
+      })
+
+      it('renders the title with the repo name', () => {
+        const repo = screen.getByText(/test-repo/)
+        expect(repo).toBeInTheDocument()
       })
     })
 
-    it('renders the title with the owner name', () => {
-      const owner = screen.getByText(/codecov/)
-      expect(owner).toBeInTheDocument()
+    describe('user is under /tree path', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: false,
+            defaultBranch: 'main',
+            activated: true,
+          },
+          commits: { commits },
+        })
+      })
+
+      it('has the coverage tab as active', async () => {
+        repoPageRender({
+          renderTree: () => <RepoPage />,
+          initialEntries: ['/gh/codecov/test-repo/tree'],
+        })
+
+        const coverageTab = screen.getByRole('link', { name: 'Coverage' })
+
+        expect(coverageTab).toBeInTheDocument()
+        expect(coverageTab).toHaveClass('text-ds-gray-octonary')
+      })
     })
 
-    it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/test-repo/)
-      expect(repo).toBeInTheDocument()
+    describe('user is under /blob path', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: false,
+            defaultBranch: 'main',
+            activated: true,
+          },
+          commits: { commits },
+        })
+      })
+
+      it('has the coverage tab as active', () => {
+        repoPageRender({
+          renderBlob: () => <RepoPage />,
+          initialEntries: ['/gh/codecov/test-repo/blob'],
+        })
+
+        const coverageTab = screen.getByRole('link', { name: 'Coverage' })
+
+        expect(coverageTab).toBeInTheDocument()
+        expect(coverageTab).toHaveClass('text-ds-gray-octonary')
+      })
     })
   })
 
@@ -170,6 +226,7 @@ describe('RepoPage', () => {
       const tab = screen.getByText('Coverage')
       expect(tab).toBeInTheDocument()
     })
+
     it('renders the commits tab', () => {
       const tab = screen.getByText(/Commits/)
       expect(tab).toBeInTheDocument()
