@@ -1,4 +1,3 @@
-import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -13,33 +12,36 @@ const columns = [
     id: 'name',
     header: 'Name',
     accessorKey: 'name',
-    width: 'w-7/12 min-w-min',
+    width: 'w-8/12 min-w-min',
     cell: ({ row, getValue }) => <NameColumn row={row} getValue={getValue} />,
     justifyStart: true,
   },
   {
+    id: 'patchMisses',
+    header: 'Missed lines',
+    accessorKey: 'patchMisses',
+    width: 'w-48 min-w-min',
+    cell: (info) => info.getValue(),
+  },
+  {
     id: 'head',
-    header: (
-      <span className="w-full text-right">
-        <span className="font-mono">HEAD</span> file coverage %
-      </span>
-    ),
+    header: <span className="w-full text-right font-mono">HEAD %</span>,
     accessorKey: 'head',
-    width: 'w-3/12 min-w-min',
+    width: 'w-36 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
     id: 'patch',
     header: <span className="w-full text-sm text-right">Patch %</span>,
     accessorKey: 'patch',
-    width: 'w-28 min-w-min',
+    width: 'w-36 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
     header: <span className="w-full text-right">Change</span>,
     accessorKey: 'change',
-    width: 'w-28 min-w-min',
+    width: 'w-36 min-w-min',
     cell: (info) => info.getValue(),
   },
 ]
@@ -50,6 +52,7 @@ function createTable({ tableData }) {
         const {
           headCoverage,
           patchCoverage,
+          patchMisses,
           changeCoverage,
           hasHeadOrPatchCoverage,
           headName,
@@ -67,9 +70,12 @@ function createTable({ tableData }) {
               )}
             </div>
           ),
+          patchMisses: (
+            <div className="flex w-full justify-end">{patchMisses}</div>
+          ),
           head: (
-            <div className="flex flex-1 gap-2 items-center">
-              <Progress amount={headCoverage} label />
+            <div className="w-full flex justify-end">
+              <TotalsNumber value={headCoverage} plain />
             </div>
           ),
           patch: (
@@ -114,21 +120,21 @@ const renderSubComponent = ({ row }) => {
 function ImpactedFiles() {
   const { data, handleSort, isLoading } = useImpactedFilesTable()
 
-  if (isLoading) {
-    return <Loader />
-  }
-
   const tableContent = createTable({
     tableData: data?.impactedFiles,
   })
 
   return (
-    <Table
-      data={tableContent}
-      columns={columns}
-      onSort={handleSort}
-      renderSubComponent={renderSubComponent}
-    />
+    <>
+      <Table
+        data={tableContent}
+        columns={columns}
+        onSort={handleSort}
+        defaultSort={[{ id: 'patchMisses', desc: true }]}
+        renderSubComponent={renderSubComponent}
+      />
+      {isLoading && <Loader />}
+    </>
   )
 }
 

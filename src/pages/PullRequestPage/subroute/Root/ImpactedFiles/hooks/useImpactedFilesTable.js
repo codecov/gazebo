@@ -15,6 +15,7 @@ const orderingParameter = Object.freeze({
   change: 'CHANGE_COVERAGE',
   patch: 'PATCH_COVERAGE',
   head: 'HEAD_COVERAGE',
+  patchMisses: 'PATCH_COVERAGE_MISSES',
 })
 
 function getFilters({ sortBy }) {
@@ -31,6 +32,7 @@ function transformImpactedFilesData({ pull }) {
   const impactedFiles = compareWithBase?.impactedFiles?.map((impactedFile) => {
     const headCoverage = impactedFile?.headCoverage?.percentCovered
     const patchCoverage = impactedFile?.patchCoverage?.percentCovered
+    const patchMisses = impactedFile?.patchCoverage?.missesCount || 0
     const baseCoverage = impactedFile?.baseCoverage?.percentCovered
     const changeCoverage =
       isNumber(headCoverage) && isNumber(baseCoverage)
@@ -40,6 +42,7 @@ function transformImpactedFilesData({ pull }) {
       isNumber(headCoverage) || isNumber(patchCoverage)
 
     return {
+      patchMisses,
       headCoverage,
       patchCoverage,
       changeCoverage,
@@ -60,7 +63,7 @@ function transformImpactedFilesData({ pull }) {
 
 export function useImpactedFilesTable() {
   const { provider, owner, repo, pullId } = useParams()
-  const [sortBy, setSortBy] = useState([{ desc: true, id: 'change' }])
+  const [sortBy, setSortBy] = useState([{ id: 'patchMisses', desc: true }])
   const filters = getFilters({ sortBy: sortBy[0] })
 
   const { data: pullData, isLoading } = usePull({

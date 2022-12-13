@@ -99,6 +99,7 @@ fragment ImpactedFilesOnPull on Pull {
     ... on Comparison {
       patchTotals {
         percentCovered
+        missesCount
       }
       baseTotals {
         percentCovered
