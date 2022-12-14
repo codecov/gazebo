@@ -114,21 +114,20 @@ const renderSubComponent = ({ row }) => {
 function ImpactedFiles() {
   const { data, handleSort, isLoading } = useImpactedFilesTable()
 
-  if (isLoading) {
-    return <Loader />
-  }
-
   const tableContent = createTable({
     tableData: data?.impactedFiles,
   })
 
   return (
-    <Table
-      data={tableContent}
-      columns={columns}
-      onSort={handleSort}
-      renderSubComponent={renderSubComponent}
-    />
+    <>
+      <Table
+        data={tableContent}
+        columns={columns}
+        onSort={handleSort}
+        renderSubComponent={renderSubComponent}
+      />
+      {isLoading && <Loader />}
+    </>
   )
 }
 
