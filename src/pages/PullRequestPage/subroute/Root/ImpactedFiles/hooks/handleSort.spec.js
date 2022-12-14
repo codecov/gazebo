@@ -67,7 +67,7 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('useRepoContentsTable', () => {
+describe('handleSort', () => {
   let hookData
   function setup(pullData = mockPull) {
     usePull.mockReturnValue(pullData)
@@ -81,10 +81,6 @@ describe('useRepoContentsTable', () => {
     })
 
     it('calls useRepoContents with correct filters value', async () => {
-      act(() => {
-        hookData.result.current.handleSort([{ desc: false, id: 'name' }])
-      })
-
       await waitFor(() =>
         expect(usePull).toHaveBeenCalledWith({
           filters: {
@@ -102,12 +98,14 @@ describe('useRepoContentsTable', () => {
       )
 
       act(() => {
-        hookData.result.current.handleSort([{ desc: true, id: 'coverage' }])
+        hookData.result.current.handleSort([{ desc: false, id: 'change' }])
       })
 
       await waitFor(() =>
         expect(usePull).toHaveBeenCalledWith({
-          filters: { ordering: { direction: 'DESC', parameter: undefined } },
+          filters: {
+            ordering: { direction: 'ASC', parameter: 'CHANGE_COVERAGE' },
+          },
           owner: 'frumpkin',
           provider: 'gh',
           pullId: undefined,

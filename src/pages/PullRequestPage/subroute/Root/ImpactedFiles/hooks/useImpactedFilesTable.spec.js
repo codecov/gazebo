@@ -94,16 +94,13 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('useRepoContentsTable', () => {
-  let hookData
+describe('useImpactedFilesTable', () => {
   function setup(dataReturned = mockPull) {
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-
-    hookData = renderHook(() => useImpactedFilesTable(), { wrapper })
   }
 
   describe('when called', () => {
@@ -112,16 +109,18 @@ describe('useRepoContentsTable', () => {
     })
 
     it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
+      const { result } = renderHook(() => useImpactedFilesTable(), { wrapper })
+      expect(result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
-
       it('returns data', async () => {
-        expect(hookData.result.current.data).toEqual({
+        const { result, waitFor } = renderHook(() => useImpactedFilesTable(), {
+          wrapper,
+        })
+        await waitFor(() => !result.current.isLoading)
+
+        expect(result.current.data).toEqual({
           headState: 'PROCESSED',
           impactedFiles: [
             {
@@ -174,11 +173,15 @@ describe('useRepoContentsTable', () => {
       mockPull.owner.repository.pull.compareWithBase.impactedFiles =
         mockImpactedFilesWithoutCoverage
       setup(mockPull)
-      return hookData.waitFor(() => !hookData.result.current.isLoading)
     })
 
     it('returns data', async () => {
-      expect(hookData.result.current.data).toEqual({
+      const { result, waitFor } = renderHook(() => useImpactedFilesTable(), {
+        wrapper,
+      })
+      await waitFor(() => !result.current.isLoading)
+
+      expect(result.current.data).toEqual({
         headState: 'PROCESSED',
         impactedFiles: [
           {
