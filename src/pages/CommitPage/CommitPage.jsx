@@ -1,7 +1,9 @@
 import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
-import { Redirect, Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
@@ -99,7 +101,7 @@ function CommitPage() {
         </aside>
         <article className="flex flex-1 flex-col gap-4">
           <Switch>
-            <Route path="/:provider/:owner/:repo/commit/:commit">
+            <SentryRoute path="/:provider/:owner/:repo/commit/:commit">
               <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
               {!isEmpty(erroredUploads) ? (
                 <ErroredUploads erroredUploads={erroredUploads} />
@@ -112,7 +114,7 @@ function CommitPage() {
                   />
                 </Suspense>
               )}
-            </Route>
+            </SentryRoute>
             <Redirect
               from="/:provider/:owner/:repo/commit/:commit/*"
               to="/:provider/:owner/:repo/commit/:commit"
