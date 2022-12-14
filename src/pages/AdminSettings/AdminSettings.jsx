@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { Redirect, Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
@@ -38,15 +40,15 @@ function AdminSettings() {
           <SidebarLayout sidebar={<AdminSettingsSidebar />}>
             <Suspense fallback={SpinnerLoader}>
               <Switch>
-                <Route path="/admin/:provider/access" exact>
+                <SentryRoute path="/admin/:provider/access" exact>
                   <AdminAccess />
-                </Route>
-                <Route path="/admin/:provider/users" exact>
+                </SentryRoute>
+                <SentryRoute path="/admin/:provider/users" exact>
                   <AdminMembers />
-                </Route>
-                <Route path="/admin/:provider">
+                </SentryRoute>
+                <SentryRoute path="/admin/:provider">
                   <Redirect to={redirectTo} />
-                </Route>
+                </SentryRoute>
               </Switch>
             </Suspense>
           </SidebarLayout>

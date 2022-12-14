@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom'
+import { SentryRoute } from 'sentry'
 
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 
@@ -52,9 +52,9 @@ function FlagsTab() {
                 flagsMeasurementsActive,
                 flagsMeasurementsBackfilled,
               }) ? (
-                <Route path="/:provider/:owner/:repo/flags" exact>
+                <SentryRoute path="/:provider/:owner/:repo/flags" exact>
                   <FlagsTable />
-                </Route>
+                </SentryRoute>
               ) : (
                 <img
                   alt="Blurred flags table"
