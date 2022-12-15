@@ -68,7 +68,7 @@ describe('HeaderBanners', () => {
     )
   }
 
-  describe('displaying the ContinuousImprovement banner', () => {
+  describe('displaying the FeedbackBanner', () => {
     describe('running in cloud', () => {
       beforeEach(() => {
         setup({})

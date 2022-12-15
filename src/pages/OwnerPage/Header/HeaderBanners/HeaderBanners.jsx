@@ -4,8 +4,8 @@ import config from 'config'
 
 import { useUploadsNumber } from 'services/uploadsNumber'
 
-import ContinuousImprovement from './ContinuousImprovement'
 import ExceededUploadsAlert from './ExceededUploadsAlert'
+import FeedbackBanner from './FeedbackBanner'
 import ReachingUploadLimit from './ReachingUploadLimit'
 
 const MAX_UPLOADS_NUMBER = 250
@@ -34,7 +34,7 @@ export default function HeaderBanners({ provider, owner }) {
     return <ReachingUploadLimit />
   }
 
-  return <ContinuousImprovement provider={provider} />
+  return <FeedbackBanner provider={provider} />
 }
 
 HeaderBanners.propTypes = {
