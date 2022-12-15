@@ -342,14 +342,14 @@ describe('ImpactedFiles', () => {
       setup(mockNoChange)
     })
 
-    it('renders no data available for the change', async () => {
+    it('renders no data for the change', async () => {
       render(<ImpactedFiles />, { wrapper: wrapper() })
 
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const noData = await screen.findByText('No data available')
+      const noData = await screen.findByText('No data')
       expect(noData).toBeInTheDocument()
     })
   })

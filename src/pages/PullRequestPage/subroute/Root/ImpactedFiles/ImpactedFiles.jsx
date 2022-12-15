@@ -20,7 +20,7 @@ const columns = [
     id: 'patchMisses',
     header: 'Missed lines',
     accessorKey: 'patchMisses',
-    width: 'w-48 min-w-min',
+    width: 'w-56 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
@@ -92,9 +92,7 @@ function createTable({ tableData }) {
               />
             </div>
           ) : (
-            <span className="text-ds-gray-quinary text-sm ml-4">
-              No data available
-            </span>
+            <span className="text-ds-gray-quinary text-sm ml-4">No data</span>
           ),
         }
       })
