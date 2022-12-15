@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { providerToName } from 'shared/utils/provider'
@@ -7,15 +6,15 @@ import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 
-const GithubConfigBanner = ({ privateRepo }) => {
+const GithubConfigBanner = () => {
   const { provider } = useParams()
   const isGh = providerToName(provider) === 'Github'
 
-  return isGh && privateRepo ? (
+  return isGh ? (
     <div className="mt-8">
       <Banner>
         <BannerHeading>
-          <div className="flex justify-center gap-2">
+          <div className="flex justify-center gap-2 font-semibold">
             <h2>Install Codecov GitHub app</h2>
           </div>
         </BannerHeading>
@@ -39,10 +38,6 @@ const GithubConfigBanner = ({ privateRepo }) => {
       </Banner>
     </div>
   ) : null
-}
-
-GithubConfigBanner.propTypes = {
-  privateRepo: PropTypes.bool.isRequired,
 }
 
 export default GithubConfigBanner
