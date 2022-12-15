@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { act } from 'react-test-renderer'
 
 import { useImpactedFilesTable } from './useImpactedFilesTable'
 
@@ -95,9 +96,12 @@ const wrapper = ({ children }) => (
 )
 
 describe('useImpactedFilesTable', () => {
+  const callsHandleSort = jest.fn()
   function setup(dataReturned = mockPull) {
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
+        const { direction, parameter } = req.variables.filters.ordering
+        callsHandleSort({ direction, parameter })
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
@@ -198,6 +202,37 @@ describe('useImpactedFilesTable', () => {
         pullBaseCoverage: 27.35,
         pullHeadCoverage: 74.2,
         pullPatchCoverage: 92.12,
+      })
+    })
+  })
+
+  describe('when handleSort is triggered', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('returns data', async () => {
+      const { result, waitFor } = renderHook(() => useImpactedFilesTable(), {
+        wrapper,
+      })
+      await waitFor(() => !result.current.isLoading)
+      expect(callsHandleSort).toBeCalledTimes(1)
+      expect(callsHandleSort).toHaveBeenNthCalledWith(1, {
+        direction: 'DESC',
+        parameter: 'PATCH_COVERAGE_MISSES',
+      })
+
+      act(() => {
+        result.current.handleSort([{ desc: true, id: 'change' }])
+      })
+
+      await waitFor(() => !result.current.isLoading)
+
+      // Accounts for both handleSort being called both times during api call
+      expect(callsHandleSort).toBeCalledTimes(2)
+      expect(callsHandleSort).toHaveBeenNthCalledWith(2, {
+        direction: 'DESC',
+        parameter: 'CHANGE_COVERAGE',
       })
     })
   })
