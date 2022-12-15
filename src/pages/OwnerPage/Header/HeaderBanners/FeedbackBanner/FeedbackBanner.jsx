@@ -7,7 +7,7 @@ import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 import Icon from 'ui/Icon'
 
-export default function ContinuousImprovement({ provider }) {
+export default function FeedBack({ provider }) {
   return (
     <Banner>
       <BannerHeading>
@@ -35,6 +35,6 @@ export default function ContinuousImprovement({ provider }) {
   )
 }
 
-ContinuousImprovement.propTypes = {
+FeedBack.propTypes = {
   provider: PropTypes.string.isRequired,
 }

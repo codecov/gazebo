@@ -1,25 +1,25 @@
 import { render, screen } from '@testing-library/react'
 
-import ContinuousImprovement from './ContinuousImprovement'
+import FeedbackBanner from './FeedbackBanner'
 
-describe('ContinuousImprovement', () => {
+describe('FeedbackBanner', () => {
   describe('rendering banner', () => {
     it('has header content', () => {
-      render(<ContinuousImprovement provider="gh" />)
+      render(<FeedbackBanner provider="gh" />)
 
       const header = screen.getByText('Updating our web app')
       expect(header).toBeInTheDocument()
     })
 
     it('has body content', () => {
-      render(<ContinuousImprovement provider="gh" />)
+      render(<FeedbackBanner provider="gh" />)
 
       const body = screen.getByText(/We've been making changes/)
       expect(body).toBeInTheDocument()
     })
 
     it('has link to feedback', () => {
-      render(<ContinuousImprovement provider="gh" />)
+      render(<FeedbackBanner provider="gh" />)
 
       const link = screen.getByRole('link', { name: /this issue/ })
       expect(link).toBeInTheDocument()
