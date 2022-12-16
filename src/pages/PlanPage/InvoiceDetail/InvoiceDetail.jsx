@@ -12,7 +12,6 @@ import Icon from 'ui/Icon'
 import InvoiceFooter from './sections/InvoiceFooter'
 import InvoiceHeader from './sections/InvoiceHeader'
 import InvoiceItems from './sections/InvoiceItems'
-import InvoiceSubTotal from './sections/InvoiceSubTotal'
 
 import { useSetCrumbs } from '../context'
 
@@ -72,16 +71,13 @@ function InvoiceDetail() {
         )}
       >
         <div className={classNameSection}>
-          <InvoiceHeader invoice={invoice} />
+          <InvoiceHeader invoice={invoice} accountDetails={accountDetails} />
         </div>
         <div className={classNameSection}>
           <InvoiceItems invoice={invoice} />
         </div>
         <div className={classNameSection}>
-          <InvoiceSubTotal invoice={invoice} />
-        </div>
-        <div className={classNameSection}>
-          <InvoiceFooter invoice={invoice} accountDetails={accountDetails} />
+          <InvoiceFooter invoice={invoice} />
         </div>
       </div>
       <div className="my-8 flex gap-5">
