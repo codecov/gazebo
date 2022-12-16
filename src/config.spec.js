@@ -21,6 +21,7 @@ describe('config', () => {
           IS_SELF_HOSTED: true,
         })
       })
+
       it('sets to false', () => {
         const obj = {
           ENV: 'production',
@@ -31,10 +32,44 @@ describe('config', () => {
           IS_SELF_HOSTED: false,
         })
       })
+
       it('sets skips if undefined', () => {
         const obj = {}
 
         expect(removeReactAppPrefix(obj)).toEqual({})
+      })
+    })
+
+    describe('sets SENTRY_TRACING_SAMPLE_RATE to float', () => {
+      it('sets to float', () => {
+        const obj = {
+          SENTRY_TRACING_SAMPLE_RATE: '0.1',
+        }
+
+        const returnObj = removeReactAppPrefix(obj)
+        expect(returnObj).toEqual({ SENTRY_TRACING_SAMPLE_RATE: 0.1 })
+      })
+    })
+
+    describe('sets SENTRY_SESSION_SAMPLE_RATE to float', () => {
+      it('sets to float', () => {
+        const obj = {
+          SENTRY_SESSION_SAMPLE_RATE: '0.1',
+        }
+
+        const returnObj = removeReactAppPrefix(obj)
+        expect(returnObj).toEqual({ SENTRY_SESSION_SAMPLE_RATE: 0.1 })
+      })
+    })
+
+    describe('sets SENTRY_ERROR_SAMPLE_RATE to float', () => {
+      it('sets to float', () => {
+        const obj = {
+          SENTRY_ERROR_SAMPLE_RATE: '0.1',
+        }
+
+        const returnObj = removeReactAppPrefix(obj)
+        expect(returnObj).toEqual({ SENTRY_ERROR_SAMPLE_RATE: 0.1 })
       })
     })
   })
