@@ -43,27 +43,11 @@ describe('useRepoContents', () => {
     },
   }
 
-  let hookData
-
   function setup() {
     server.use(
-      graphql.query('BranchFiles', (req, res, ctx) => {
+      graphql.query('BranchContents', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
-    )
-
-    hookData = renderHook(
-      () =>
-        useRepoBranchContents({
-          provider: 'gh',
-          owner: 'Rabee-AbuBaker',
-          repo: 'another-test',
-          branch: 'main',
-          path: '',
-        }),
-      {
-        wrapper,
-      }
     )
   }
 
@@ -82,16 +66,43 @@ describe('useRepoContents', () => {
     })
 
     it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
+      const { result } = renderHook(
+        () =>
+          useRepoBranchContents({
+            provider: 'gh',
+            owner: 'Rabee-AbuBaker',
+            repo: 'another-test',
+            branch: 'main',
+            path: '',
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      expect(result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            useRepoBranchContents({
+              provider: 'gh',
+              owner: 'Rabee-AbuBaker',
+              repo: 'another-test',
+              branch: 'main',
+              path: '',
+            }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(expectedResponse)
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        expect(result.current.data).toEqual(expectedResponse)
       })
     })
   })
