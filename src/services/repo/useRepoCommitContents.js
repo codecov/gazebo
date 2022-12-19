@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import Api from 'shared/api'
 
 const query = `
-  query CommitFiles(
+  query CommitContents(
     $name: String!
     $commitSha: String!
     $repo: String!
@@ -48,7 +48,7 @@ export const useRepoCommitContents = ({
   opts = {},
 }) => {
   return useQuery(
-    ['CommitFiles', provider, owner, repo, commitSha, path, filters],
+    ['CommitContents', provider, owner, repo, commitSha, path, filters],
     ({ signal }) =>
       Api.graphql({
         provider,
