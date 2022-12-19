@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter } from 'react-router-dom'
@@ -130,11 +131,17 @@ afterAll(() => {
 })
 
 describe('CommitsTable', () => {
+  const fetchesNextPage = jest.fn()
+
   function setup({ commitData } = { commitData: mockCommits() }) {
     server.use(
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(commitData))
-      )
+      graphql.query('GetCommits', (req, res, ctx) => {
+        if (!!req?.variables?.after) {
+          fetchesNextPage(req?.variables?.after)
+        }
+
+        return res(ctx.status(200), ctx.data(commitData))
+      })
     )
   }
 
@@ -230,7 +237,7 @@ describe('CommitsTable', () => {
     })
   })
 
-  describe('checking load more button', () => {
+  describe('load more button', () => {
     describe('hasNextPage is set to true', () => {
       beforeEach(() => {
         setup({ commitData: mockCommits({ hasNextPage: true }) })
@@ -243,6 +250,22 @@ describe('CommitsTable', () => {
 
         const loadMoreButton = await screen.findByText('Load More')
         expect(loadMoreButton).toBeInTheDocument()
+      })
+
+      describe('user clicks on load more button', () => {
+        it('fetches the next page', async () => {
+          render(<CommitsTable branch="main" paramCIStatus={false} />, {
+            wrapper,
+          })
+
+          const loadMoreButton = await screen.findByText('Load More')
+          userEvent.click(loadMoreButton)
+
+          await waitFor(() => expect(fetchesNextPage).toBeCalled())
+          await waitFor(() =>
+            expect(fetchesNextPage).toBeCalledWith('some cursor')
+          )
+        })
       })
     })
 
