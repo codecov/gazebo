@@ -13,7 +13,7 @@ function fetchRepoContents({
   signal,
 }) {
   const query = `
-    query BranchFiles($name: String!, $repo: String!, $branch: String!, $path: String!, $filters: PathContentsFilters!) {
+    query BranchContents($name: String!, $repo: String!, $branch: String!, $path: String!, $filters: PathContentsFilters!) {
         owner(username:$name){
         username
         repository(name:$repo){
@@ -70,7 +70,7 @@ export function useRepoBranchContents({
   ...options
 }) {
   return useQuery(
-    ['BranchFiles', provider, owner, repo, branch, path, filters],
+    ['BranchContents', provider, owner, repo, branch, path, filters],
     ({ signal }) =>
       fetchRepoContents({
         provider,
