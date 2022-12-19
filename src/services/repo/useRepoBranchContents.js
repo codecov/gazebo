@@ -60,7 +60,7 @@ function fetchRepoContents({
   })
 }
 
-export function useRepoContents({
+export function useRepoBranchContents({
   provider,
   owner,
   repo,
