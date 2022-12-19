@@ -47,7 +47,7 @@ function CommitsTab() {
 
   const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames =
-    branchesData?.branches?.map((branch) => branch.name) || []
+    branchesData?.branches?.map((branch) => branch?.name) || []
 
   const { branch, paramCIStatus, updateParams } = useParamsFilters(
     repoData?.repository?.defaultBranch
@@ -78,7 +78,7 @@ function CommitsTab() {
             </span>
             Branch Context
           </h2>
-          <div>
+          <div className="min-w-[16rem]">
             <Select
               dataMarketing="branch-selector-commits-page"
               ariaName="Select branch"
