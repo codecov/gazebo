@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoContents, useRepoOverview } from 'services/repo'
+import { useRepoBranchContents, useRepoOverview } from 'services/repo'
 
 import useRepoContentsTable from './useRepoContentsTable'
 
@@ -113,7 +113,7 @@ describe('useRepoContentsTable', () => {
       ...(paramPath && { path: 'filePath' }),
     })
 
-    useRepoContents.mockReturnValue(repoData)
+    useRepoBranchContents.mockReturnValue(repoData)
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
     useLocationParams.mockReturnValue({
       params: useParamsValue,
@@ -153,14 +153,14 @@ describe('useRepoContentsTable', () => {
   })
 
   describe('when there is search param', () => {
-    it('calls useRepoContents with correct filters value', () => {
+    it('calls useRepoBranchContents with correct filters value', () => {
       setup({
         repoData: repoContentsMock,
         useParamsValue: { search: 'file.js' },
       })
 
       expect(hookData.result.current.isSearching).toEqual(true)
-      expect(useRepoContents).toHaveBeenCalledWith({
+      expect(useRepoBranchContents).toHaveBeenCalledWith({
         branch: 'main',
         filters: { searchValue: 'file.js' },
         owner: 'Rabee-AbuBaker',
@@ -173,14 +173,14 @@ describe('useRepoContentsTable', () => {
   })
 
   describe('when there is list param', () => {
-    it('calls useRepoContents with correct filters value', () => {
+    it('calls useRepoBranchContents with correct filters value', () => {
       setup({
         repoData: manyFilesAndDirsMock,
         useParamsValue: { displayType: 'list' },
       })
 
       expect(hookData.result.current.data.length).toBe(3)
-      expect(useRepoContents).toHaveBeenCalledWith({
+      expect(useRepoBranchContents).toHaveBeenCalledWith({
         branch: 'main',
         filters: { displayType: 'LIST' },
         owner: 'Rabee-AbuBaker',
@@ -193,7 +193,7 @@ describe('useRepoContentsTable', () => {
   })
 
   describe('when handleSort is triggered', () => {
-    it('calls useRepoContents with correct filters value', async () => {
+    it('calls useRepoBranchContents with correct filters value', async () => {
       setup({
         repoData: repoContentsMock,
       })
@@ -203,7 +203,7 @@ describe('useRepoContentsTable', () => {
       })
 
       await waitFor(() =>
-        expect(useRepoContents).toHaveBeenCalledWith({
+        expect(useRepoBranchContents).toHaveBeenCalledWith({
           branch: 'main',
           filters: { ordering: { direction: 'ASC', parameter: 'NAME' } },
           owner: 'Rabee-AbuBaker',
@@ -219,7 +219,7 @@ describe('useRepoContentsTable', () => {
       })
 
       await waitFor(() =>
-        expect(useRepoContents).toHaveBeenCalledWith({
+        expect(useRepoBranchContents).toHaveBeenCalledWith({
           branch: 'main',
           filters: { ordering: { direction: 'DESC', parameter: 'COVERAGE' } },
           owner: 'Rabee-AbuBaker',

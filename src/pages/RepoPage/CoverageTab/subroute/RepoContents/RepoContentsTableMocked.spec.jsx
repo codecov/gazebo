@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useRepoContents, useRepoOverview } from 'services/repo'
+import { useRepoBranchContents, useRepoOverview } from 'services/repo'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
@@ -92,7 +92,7 @@ describe('RepoContentsTableMocked', () => {
     isSearching = false,
     hasNextPage = true,
   } = {}) {
-    useRepoContents.mockReturnValue({
+    useRepoBranchContents.mockReturnValue({
       paginatedData,
       isLoading: false,
     })
