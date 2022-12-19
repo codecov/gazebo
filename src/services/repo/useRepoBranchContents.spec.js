@@ -102,7 +102,9 @@ describe('useRepoContents', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
-        expect(result.current.data).toEqual(expectedResponse)
+        await waitFor(() =>
+          expect(result.current.data).toEqual(expectedResponse)
+        )
       })
     })
   })

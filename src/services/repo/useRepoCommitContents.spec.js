@@ -100,7 +100,9 @@ describe('useRepoCommitContents', () => {
         },
       ]
 
-      expect(result.current.data).toStrictEqual(expectedData)
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual(expectedData)
+      )
     })
   })
 })
