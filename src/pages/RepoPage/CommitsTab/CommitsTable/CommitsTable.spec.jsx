@@ -1,87 +1,173 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter } from 'react-router-dom'
 
 import CommitsTable from './CommitsTable'
 
-jest.mock('services/commits')
+const genMockWrapper = ({ commits = [], hasNextPage = false }) => ({
+  owner: {
+    repository: {
+      commits: {
+        edges: commits,
+        pageInfo: {
+          hasNextPage,
+          endCursor: 'some cursor',
+        },
+      },
+    },
+  },
+})
+
+const mockCommits = ({ hasNextPage } = { hasNextPage: false }) =>
+  genMockWrapper({
+    commits: [
+      {
+        node: {
+          ciPassed: true,
+          message: 'commit message 1',
+          commitid: 'id1',
+          createdAt: '2021-08-30T19:33:49.819672',
+          author: {
+            username: 'user-1',
+            avatarUrl: 'cool-avatar-url',
+          },
+          totals: {
+            coverage: 100,
+          },
+          parent: {
+            totals: {
+              coverage: 100,
+            },
+          },
+          compareWithParent: {
+            patchTotals: {
+              coverage: 100,
+            },
+          },
+        },
+      },
+      {
+        node: {
+          ciPassed: true,
+          message: 'commit message 2',
+          commitid: 'id2',
+          createdAt: '2021-08-30T19:33:49.819672',
+          author: {
+            username: 'user-1',
+            avatarUrl: 'cool-avatar-url',
+          },
+          totals: {
+            coverage: 100,
+          },
+          parent: {
+            totals: {
+              coverage: 100,
+            },
+          },
+          compareWithParent: {
+            patchTotals: {
+              coverage: 100,
+            },
+          },
+        },
+      },
+    ],
+    hasNextPage,
+  })
+
+const mockNullCommit = genMockWrapper({ commits: [null] })
+
+const mockInvalidPatchCommit = genMockWrapper({
+  commits: [
+    {
+      node: {
+        ciPassed: true,
+        message: 'commit message 1',
+        commitid: 'id1',
+        createdAt: '2021-08-30T19:33:49.819672',
+        author: {
+          username: 'user-1',
+          avatarUrl: 'cool-avatar-url',
+        },
+        totals: {
+          coverage: 100,
+        },
+        parent: {
+          totals: {
+            coverage: 100,
+          },
+        },
+        compareWithParent: {
+          patchTotals: {
+            coverage: null,
+          },
+        },
+      },
+    },
+  ],
+})
+
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <MemoryRouter>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  </MemoryRouter>
+)
+
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
 
 describe('CommitsTable', () => {
-  function setup({ commits }) {
-    const queryClient = new QueryClient()
-
-    render(
-      <MemoryRouter>
-        <QueryClientProvider client={queryClient}>
-          <CommitsTable commits={commits} />
-        </QueryClientProvider>
-      </MemoryRouter>
+  function setup({ commitData } = { commitData: mockCommits() }) {
+    server.use(
+      graphql.query('GetCommits', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(commitData))
+      )
     )
   }
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({
-        commits: [
-          {
-            author: { username: 'RulaKhaled', avatarUrl: 'random' },
-            compareWithParent: {
-              patchTotals: {
-                coverage: 90,
-              },
-            },
-            totals: {
-              coverage: 45,
-            },
-            parent: {
-              totals: {
-                coverage: 98,
-              },
-            },
-            commitid: 'id',
-            message: 'Test1',
-            createdAt: '2021-08-30T19:33:49.819672',
-          },
-          {
-            author: { username: 'Terry', avatarUrl: 'random' },
-            compareWithParent: {
-              patchTotals: {
-                coverage: 55,
-              },
-            },
-            totals: {
-              coverage: 59,
-            },
-            parent: {
-              totals: {
-                coverage: 98,
-              },
-            },
-            commitid: 'id',
-            message: 'Test2',
-            createdAt: '2021-08-30T19:33:49.819672',
-          },
-        ],
-      })
+      setup({ commitData: mockCommits() })
     })
 
-    it('renders commit table Name header', () => {
-      const name = screen.getByText('Name')
+    it('renders commit table Name header', async () => {
+      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+
+      const name = await screen.findByText('Name')
       expect(name).toBeInTheDocument()
     })
 
-    it('renders commit table Change header', () => {
-      const change = screen.getByText('Change')
+    it('renders commit table Change header', async () => {
+      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+
+      const change = await screen.findByText('Change')
       expect(change).toBeInTheDocument()
     })
 
-    it('renders commit table Patch header', () => {
-      const patch = screen.getByText('Patch %')
+    it('renders commit table Patch header', async () => {
+      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+
+      const patch = await screen.findByText('Patch %')
       expect(patch).toBeInTheDocument()
     })
 
-    it('renders commit table Coverage header', () => {
-      const coverage = screen.getByText('Coverage')
+    it('renders commit table Coverage header', async () => {
+      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+
+      const coverage = await screen.findByText('Coverage')
       expect(coverage).toBeInTheDocument()
     })
   })
@@ -89,70 +175,93 @@ describe('CommitsTable', () => {
   describe('when rendered with no commits (length)', () => {
     beforeEach(() => {
       setup({
-        commits: [],
+        commitData: [],
       })
     })
 
-    it('renders no result found message', () => {
-      const text = screen.getByText('no results found')
-      expect(text).toBeInTheDocument()
-    })
-  })
+    it('renders an empty table', async () => {
+      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
 
-  describe('when rendered with no commits', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
-    it('renders no result found message', () => {
-      const text = screen.getByText('no results found')
-      expect(text).toBeInTheDocument()
+      const table = await screen.findByTestId('body-row')
+      expect(table).toBeEmptyDOMElement()
     })
   })
 
   describe('when rendered with null commit', () => {
     beforeEach(() => {
       setup({
-        commits: [null],
+        commitData: mockNullCommit,
       })
     })
 
-    it('renders on null message', () => {
-      const text = screen.getByText(/we can't find this commit/)
+    it('renders on null message', async () => {
+      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+
+      const text = await screen.findByText(/we can't find this commit/)
       expect(text).toBeInTheDocument()
     })
   })
 
   describe('when rendered with an invalid patch value', () => {
     beforeEach(() => {
-      setup({
-        commits: [
-          {
-            author: { username: 'RabeeAbuBaker', avatarUrl: 'random' },
-            compareWithParent: {
-              patchTotals: {
-                coverage: null,
-              },
-            },
-            totals: {
-              coverage: 45,
-            },
-            parent: {
-              totals: {
-                coverage: 98,
-              },
-            },
-            commitid: 'id',
-            message: 'Test1',
-            createdAt: '2021-08-30T19:33:49.819672',
-          },
-        ],
+      setup({ commitData: mockInvalidPatchCommit })
+    })
+
+    it('render - for missing patch', async () => {
+      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+
+      const changeValue = await screen.findByTestId('patch-value')
+      expect(changeValue).toHaveTextContent('-')
+    })
+  })
+
+  describe('when loading data', () => {
+    beforeEach(() => {
+      setup({ commitData: mockCommits() })
+    })
+
+    it('shows loading spinner', async () => {
+      render(<CommitsTable branch="main" paramCIStatus={false} />, {
+        wrapper,
+      })
+
+      const spinner = await screen.findByTestId('spinner')
+      expect(spinner).toBeInTheDocument()
+    })
+  })
+
+  describe('checking load more button', () => {
+    describe('hasNextPage is set to true', () => {
+      beforeEach(() => {
+        setup({ commitData: mockCommits({ hasNextPage: true }) })
+      })
+
+      it('displays the loadMore button', async () => {
+        render(<CommitsTable branch="main" paramCIStatus={false} />, {
+          wrapper,
+        })
+
+        const loadMoreButton = await screen.findByText('Load More')
+        expect(loadMoreButton).toBeInTheDocument()
       })
     })
 
-    it('render - for missing patch', () => {
-      const changeValue = screen.getByTestId('patch-value')
-      expect(changeValue).toHaveTextContent('-')
+    describe('hasNextPage is set to false', () => {
+      beforeEach(() => {
+        setup({ commitData: mockCommits({ hasNextPage: false }) })
+      })
+
+      it('does not display the loadMore button', async () => {
+        render(<CommitsTable branch="main" paramCIStatus={false} />, {
+          wrapper,
+        })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const loadMoreButton = screen.queryByText('Load More')
+        expect(loadMoreButton).not.toBeInTheDocument()
+      })
     })
   })
 })
