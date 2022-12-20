@@ -34,9 +34,9 @@ const AlertBanners = ({
 }) => {
   return (
     <>
+      {!hasGhApp && <GithubConfigBanner />}
       {isUploadsExceeded && <ExceededUploadsAlert />}
       {isUploadsReachingLimit && <ReachingUploadLimit />}
-      {!hasGhApp && <GithubConfigBanner />}
     </>
   )
 }
