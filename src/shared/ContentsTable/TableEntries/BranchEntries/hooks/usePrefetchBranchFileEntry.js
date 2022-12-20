@@ -43,7 +43,7 @@ fragment CoverageForFile on Commit {
 }
 `
 
-export function usePrefetchFileEntry({ branch, path, options = {} }) {
+export function usePrefetchBranchFileEntry({ branch, path, options = {} }) {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
 

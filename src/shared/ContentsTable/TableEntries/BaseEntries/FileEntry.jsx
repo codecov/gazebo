@@ -3,9 +3,7 @@ import PropTypes from 'prop-types'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
-
-import { displayTypeParameter } from '../../../constants'
+import { displayTypeParameter } from '../../constants'
 
 const FileHeader = ({ displayAsList, filePath, name }) => {
   return (
@@ -29,11 +27,8 @@ function FileEntry({
   name,
   path,
   displayType,
+  runPrefetch,
 }) {
-  const { runPrefetch } = usePrefetchFileEntry({
-    branch,
-    path: filePath,
-  })
   const displayAsList = displayType === displayTypeParameter.list
   return (
     <div className="flex flex-col">
@@ -77,6 +72,7 @@ FileEntry.propTypes = {
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   path: PropTypes.string,
+  runPrefetch: PropTypes.func,
 }
 
 export default FileEntry

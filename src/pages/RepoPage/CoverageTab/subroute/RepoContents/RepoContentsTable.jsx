@@ -1,10 +1,14 @@
 import PropType from 'prop-types'
 
+import { useLocationParams } from 'services/navigation'
+import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
+import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
+import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
+import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
 import Button from 'ui/Button'
+import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
-
-import useRepoContentsTable from './hooks'
 
 const Loader = ({ isLoading }) => {
   return (
@@ -43,20 +47,38 @@ RepoContentsResult.propTypes = {
   isMissingHeadReport: PropType.bool,
 }
 
+const defaultQueryParams = {
+  search: '',
+}
+
 function RepoContentsTable() {
   const {
     paginatedData,
     headers,
     handleSort,
-    isLoading,
     isSearching,
     handlePaginationClick,
     hasNextPage,
     isMissingHeadReport,
-  } = useRepoContentsTable()
+    isLoading,
+  } = useRepoBranchContentsTable()
+
+  const { params, updateParams } = useLocationParams(defaultQueryParams)
 
   return (
     <>
+      <ContentsTableHeader>
+        <div className="flex gap-4">
+          <DisplayTypeButton dataLength={paginatedData?.length} />
+          <FileBreadcrumb />
+        </div>
+        <SearchField
+          dataMarketing="files-search"
+          placeholder="Search for files"
+          searchValue={params?.search}
+          setSearchValue={(search) => updateParams({ search })}
+        />
+      </ContentsTableHeader>
       <Table
         data={paginatedData}
         columns={headers}

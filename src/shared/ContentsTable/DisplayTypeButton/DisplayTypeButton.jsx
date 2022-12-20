@@ -1,10 +1,10 @@
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
 import OptionButton from 'ui/OptionButton'
 
 import { displayTypeParameter } from '../constants'
-import useRepoContentsTable from '../subroute/RepoContents/hooks'
 
 const options = [
   {
@@ -25,8 +25,7 @@ function initialState(urlParams) {
     : treeView
 }
 
-function DisplayTypeButton() {
-  const { data } = useRepoContentsTable()
+function DisplayTypeButton({ dataLength }) {
   const { params, updateParams } = useLocationParams()
   const [active, setActive] = useState(() => initialState(params))
 
@@ -42,11 +41,15 @@ function DisplayTypeButton() {
         options={options}
         onChange={(option) => handleOnChange(option)}
       />
-      {active?.displayType === displayTypeParameter.list && data && (
-        <span>{data?.length} total files</span>
+      {active?.displayType === displayTypeParameter.list && dataLength && (
+        <span>{dataLength} total files</span>
       )}
     </div>
   )
+}
+
+DisplayTypeButton.propTypes = {
+  dataLength: PropTypes.number,
 }
 
 export default DisplayTypeButton
