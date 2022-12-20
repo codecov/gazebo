@@ -17,9 +17,9 @@ const columns = [
     justifyStart: true,
   },
   {
-    id: 'patchMisses',
+    id: 'missesInComparison',
     header: 'Missed lines',
-    accessorKey: 'patchMisses',
+    accessorKey: 'missesInComparison',
     width: 'w-56 min-w-min',
     cell: (info) => info.getValue(),
   },
@@ -52,7 +52,7 @@ function createTable({ tableData }) {
         const {
           headCoverage,
           patchCoverage,
-          patchMisses,
+          missesInComparison,
           changeCoverage,
           hasHeadOrPatchCoverage,
           headName,
@@ -70,8 +70,8 @@ function createTable({ tableData }) {
               )}
             </div>
           ),
-          patchMisses: (
-            <div className="flex w-full justify-end">{patchMisses}</div>
+          missesInComparison: (
+            <div className="flex w-full justify-end">{missesInComparison}</div>
           ),
           head: (
             <div className="w-full flex justify-end">
@@ -128,7 +128,7 @@ function ImpactedFiles() {
         data={tableContent}
         columns={columns}
         onSort={handleSort}
-        defaultSort={[{ id: 'patchMisses', desc: true }]}
+        defaultSort={[{ id: 'missesInComparison', desc: true }]}
         renderSubComponent={renderSubComponent}
       />
       {isLoading && <Loader />}

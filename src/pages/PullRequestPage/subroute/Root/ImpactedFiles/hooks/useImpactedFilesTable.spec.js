@@ -17,10 +17,10 @@ const mockImpactedFiles = [
     },
     headCoverage: {
       percentCovered: 90.23,
+      missesCount: 3,
     },
     patchCoverage: {
       percentCovered: 27.43,
-      missesCount: 3,
     },
   },
   {
@@ -32,10 +32,10 @@ const mockImpactedFiles = [
     },
     headCoverage: {
       percentCovered: 80,
+      missesCount: 7,
     },
     patchCoverage: {
       percentCovered: 48.23,
-      missesCount: 7,
     },
   },
 ]
@@ -135,7 +135,7 @@ describe('useImpactedFilesTable', () => {
               headName: 'flag1/mafs.js',
               isCriticalFile: true,
               patchCoverage: 27.43,
-              patchMisses: 3,
+              missesInComparison: 3,
             },
             {
               changeCoverage: 41,
@@ -145,7 +145,7 @@ describe('useImpactedFilesTable', () => {
               headName: 'flag2/quarg.js',
               isCriticalFile: true,
               patchCoverage: 48.23,
-              patchMisses: 7,
+              missesInComparison: 7,
             },
           ],
           pullBaseCoverage: 27.35,
@@ -196,7 +196,7 @@ describe('useImpactedFilesTable', () => {
             headName: 'flag1/mafs.js',
             isCriticalFile: true,
             patchCoverage: 27.43,
-            patchMisses: 0,
+            missesInComparison: 0,
           },
         ],
         pullBaseCoverage: 27.35,
