@@ -31,7 +31,7 @@ function Progress({ amount, label, color = 'default', variant = 'default' }) {
       </div>
 
       {label && (
-        <div className="flex-[53px_0]">
+        <div className="flex-[0_0_56px]">
           <TotalsNumber
             data-testid="coverage-value"
             value={amount}
