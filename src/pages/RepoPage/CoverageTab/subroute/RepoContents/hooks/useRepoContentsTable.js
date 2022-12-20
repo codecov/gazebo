@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoContents, useRepoOverview } from 'services/repo'
+import { useRepoBranchContents, useRepoOverview } from 'services/repo'
 import { usePaginatedContents } from 'services/usePaginatedContents'
 import { useTreePaths } from 'shared/useTreePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
@@ -191,7 +191,7 @@ function useRepoContentsTable() {
   })
 
   const [sortBy, setSortBy] = useState([])
-  const { data: pathContentData, isLoading } = useRepoContents({
+  const { data: pathContentData, isLoading } = useRepoBranchContents({
     provider,
     owner,
     repo,

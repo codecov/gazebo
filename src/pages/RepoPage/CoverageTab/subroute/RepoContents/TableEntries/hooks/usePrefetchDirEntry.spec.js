@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -56,7 +55,6 @@ const mockData = {
 }
 
 describe('usePrefetchFileEntry', () => {
-  let hookData
   function setup() {
     useParams.mockReturnValue({
       provider: 'gh',
@@ -65,14 +63,9 @@ describe('usePrefetchFileEntry', () => {
     })
 
     server.use(
-      graphql.query('BranchFiles', (req, res, ctx) =>
+      graphql.query('BranchContents', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))
       )
-    )
-
-    hookData = renderHook(
-      () => usePrefetchDirEntry({ branch: 'main', path: 'src' }),
-      { wrapper }
     )
   }
 
@@ -81,13 +74,24 @@ describe('usePrefetchFileEntry', () => {
   })
 
   it('returns runPrefetch function', () => {
-    expect(hookData.result.current.runPrefetch).toBeDefined()
-    expect(typeof hookData.result.current.runPrefetch).toBe('function')
+    const { result } = renderHook(
+      () => usePrefetchDirEntry({ branch: 'main', path: 'src' }),
+      { wrapper }
+    )
+
+    expect(result.current.runPrefetch).toBeDefined()
+    expect(typeof result.current.runPrefetch).toBe('function')
   })
 
   it('queries the api', async () => {
-    await hookData.result.current.runPrefetch()
+    const { result, waitFor } = renderHook(
+      () => usePrefetchDirEntry({ branch: 'main', path: 'src' }),
+      { wrapper }
+    )
+
+    await result.current.runPrefetch()
     await waitFor(() => queryClient.getQueryState().isFetching)
+    await waitFor(() => !queryClient.getQueryState().isFetching)
 
     expect(queryClient.getQueryState().data).toStrictEqual({
       results: [

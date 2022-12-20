@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: 'Enable experimental docker'
         run: |
-          sudo bash -c 'echo "{\"experimental\": true, \"cgroup-parent\": \"/actions_job\"}" > /etc/docker/daemon.json'
+          sudo bash -c 'echo "{\"experimental\": true}" > /etc/docker/daemon.json'
           sudo systemctl restart docker
 
       - name: Checkout
@@ -40,39 +40,37 @@ jobs:
       # Build the Docker image
       - name: Build
         env:
-          BUILD_ENV: production
-          DEPLOY_ENV: production
+          ENV: production
           NPM_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
         run: |-
           make build
 
       - name: Build Enterprise
         env:
-          BUILD_ENV: production
-          DEPLOY_ENV: enterprise
+          ENV: enterprise
           NPM_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
         run: |-
-          make build
+          make build.enterprise
+
+      - name: Dive
+        env:
+          ENV: production
+        run: |-
+          make dive
+
+      - name: Deep Dive
+        run: |-
+          make deep-dive
 
       # Push the Docker image to Google Artifact Registry
       - name: Publish
         env:
-          BUILD_ENV: production
-          DEPLOY_ENV: production
+          ENV: production
         run: |-
           make push
 
       - name: Publish Enterprise
         env:
-          BUILD_ENV: production
-          DEPLOY_ENV: enterprise
+          ENV: enterprise
         run: |-
-          make push
-
-      - name: Run Frontend Docker Build
-        uses: mvasigh/dispatch-action@1.1.6
-        with:
-          token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-          repo: codecov-frontend-docker
-          owner: codecov
-          event_type: production_build
+          make push.enterprise

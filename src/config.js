@@ -4,6 +4,9 @@ const defaultConfig = {
   API_URL: '',
   STRIPE_KEY: '',
   SENTRY_ENVIRONMENT: 'staging',
+  SENTRY_TRACING_SAMPLE_RATE: 0.2,
+  SENTRY_SESSION_SAMPLE_RATE: 0.1,
+  SENTRY_ERROR_SAMPLE_RATE: 0.9,
 }
 
 export function removeReactAppPrefix(obj) {
@@ -14,6 +17,24 @@ export function removeReactAppPrefix(obj) {
 
   if ('ENV' in keys) {
     keys['IS_SELF_HOSTED'] = keys['ENV'].toLowerCase() === 'enterprise'
+  }
+
+  if ('SENTRY_TRACING_SAMPLE_RATE' in keys) {
+    keys['SENTRY_TRACING_SAMPLE_RATE'] = parseFloat(
+      keys['SENTRY_TRACING_SAMPLE_RATE']
+    )
+  }
+
+  if ('SENTRY_SESSION_SAMPLE_RATE' in keys) {
+    keys['SENTRY_SESSION_SAMPLE_RATE'] = parseFloat(
+      keys['SENTRY_SESSION_SAMPLE_RATE']
+    )
+  }
+
+  if ('SENTRY_ERROR_SAMPLE_RATE' in keys) {
+    keys['SENTRY_ERROR_SAMPLE_RATE'] = parseFloat(
+      keys['SENTRY_ERROR_SAMPLE_RATE']
+    )
   }
 
   return keys

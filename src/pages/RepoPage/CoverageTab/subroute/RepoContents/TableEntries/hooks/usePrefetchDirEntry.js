@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import Api from 'shared/api'
 
 const query = `
-query BranchFiles(
+query BranchContents(
   $name: String!
   $repo: String!
   $branch: String!
@@ -47,7 +47,7 @@ export function usePrefetchDirEntry({ branch, path, filters }) {
 
   const runPrefetch = async () =>
     await queryClient.prefetchQuery(
-      ['BranchFiles', provider, owner, repo, branch, path, filters],
+      ['BranchContents', provider, owner, repo, branch, path, filters],
       () =>
         Api.graphql({
           provider,

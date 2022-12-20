@@ -1,9 +1,11 @@
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Suspense } from 'react'
-import { Redirect, Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import config from 'config'
+
+import { SentryRoute } from 'sentry'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
@@ -45,21 +47,21 @@ function PlanPage() {
           <hr className="md:w-10/12" />
           <Suspense fallback={Loader}>
             <Switch>
-              <Route path={path} exact>
+              <SentryRoute path={path} exact>
                 <CurrentOrgPlan />
-              </Route>
-              <Route path={`${path}/upgrade`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/upgrade`} exact>
                 <UpgradePlan />
-              </Route>
-              <Route path={`${path}/cancel`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/cancel`} exact>
                 <CancelPlanPage />
-              </Route>
-              <Route path={`${path}/invoices`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/invoices`} exact>
                 <Invoices />
-              </Route>
-              <Route path={`${path}/invoices/:id`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/invoices/:id`} exact>
                 <InvoiceDetail />
-              </Route>
+              </SentryRoute>
               <Redirect
                 from="/billing/:provider/:owner/*"
                 to="/billing/:provider/:owner"
