@@ -31,33 +31,51 @@ function generateAddressInfo(accountDetails) {
 
 function InvoiceHeader({ invoice, accountDetails }) {
   const addressInfo = generateAddressInfo(accountDetails)
+  const isPaid = invoice.status === 'paid'
 
   return (
     <div className="flex flex-col gap-6 text-lg">
       <div className="flex justify-between">
         <div className="flex flex-col gap-6">
-          <h1 className="text-xl text-gray-800 font-semibold">Receipt</h1>
+          <h1 className="text-xl text-gray-800 font-semibold">
+            {isPaid ? 'Receipt' : 'Invoice'}
+          </h1>
           <table>
-            <tr>
-              <td className="pr-2">Receipt number</td>
-              <td>{invoice.number}</td>
-            </tr>
-            <tr>
-              <td className="pr-2">Date created</td>
-              <td>
-                {format(
-                  utcToZonedTime(fromUnixTime(invoice.created), 'UTC'),
-                  'MMMM do, yyyy',
-                  { timeZone: 'UTC' }
-                )}
-              </td>
-            </tr>
-            {invoice.defaultPaymentMethod && (
+            <tbody>
               <tr>
-                <td className="pr-2">Payment method</td>
-                <td>{invoice.defaultPaymentMethod}</td>
+                <td className="pr-2">
+                  {' '}
+                  {isPaid ? 'Receipt' : 'Invoice'} number
+                </td>
+                <td>{invoice.number}</td>
               </tr>
-            )}
+              <tr>
+                <td className="pr-2">Date of issue</td>
+                <td>
+                  {format(
+                    utcToZonedTime(fromUnixTime(invoice.created), 'UTC'),
+                    'MMMM do, yyyy',
+                    { timeZone: 'UTC' }
+                  )}
+                </td>
+              </tr>
+              <tr>
+                <td className="pr-2">Date due</td>
+                <td>
+                  {format(
+                    utcToZonedTime(fromUnixTime(invoice.dueDate), 'UTC'),
+                    'MMMM do, yyyy',
+                    { timeZone: 'UTC' }
+                  )}
+                </td>
+              </tr>
+              {invoice.defaultPaymentMethod && (
+                <tr>
+                  <td className="pr-2">Payment method</td>
+                  <td>{invoice.defaultPaymentMethod}</td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
         <div>
@@ -68,7 +86,7 @@ function InvoiceHeader({ invoice, accountDetails }) {
           />
         </div>
       </div>
-      <div className="flex gap-16">
+      <div className="flex gap-64">
         <div>
           <p className="font-semibold">Codecov</p>
           <address className="not-italic text-gray-800">
@@ -98,8 +116,8 @@ function InvoiceHeader({ invoice, accountDetails }) {
         </div>
       </div>
       <p className="font-semibold">
-        ${(invoice.total / 100).toFixed(2)} {invoice.status} on{' '}
-        {format(fromUnixTime(invoice?.created), 'MMMM do yyyy')}
+        ${(invoice.total / 100).toFixed(2)} {isPaid ? 'paid on' : 'due'}{' '}
+        {format(fromUnixTime(invoice?.dueDate), 'MMMM do yyyy')}
       </p>
     </div>
   )

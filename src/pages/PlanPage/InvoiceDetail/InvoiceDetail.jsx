@@ -15,8 +15,7 @@ import InvoiceItems from './sections/InvoiceItems'
 
 import { useSetCrumbs } from '../context'
 
-const classNameSection =
-  'py-8 px-16 border border-t-0 print:border-0 print:border-b border-gray-200 print:px-0'
+const classNameSection = 'py-8 px-16 print:px-0'
 // make the Invoice container full screen so only that part is printed
 const printClassnames = 'print:absolute print:inset-0 print:z-50'
 
@@ -82,6 +81,7 @@ function InvoiceDetail() {
       </div>
       <div className="my-8 flex gap-5">
         <A
+          hook="print-invoice"
           href={invoiceDetailsPage.path({ id: invoice.id }) + '?print'}
           variant="semibold"
         >

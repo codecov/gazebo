@@ -2,9 +2,8 @@ import PropTypes from 'prop-types'
 
 function InvoiceItems({ invoice }) {
   return (
-    <div className="flex flex-col gap-4">
-      <h4 className="text-lg bold">Description</h4>
-      <table className="w-full text-left">
+    <table className="w-full text-left text-base font-normal">
+      <tbody>
         <tr className="border-b-2 border-black b-y-4">
           <th>Description</th>
           <th>Amount</th>
@@ -15,8 +14,8 @@ function InvoiceItems({ invoice }) {
             <td>{(line.amount / 100).toFixed(2)}</td>
           </tr>
         ))}
-      </table>
-    </div>
+      </tbody>
+    </table>
   )
 }
 

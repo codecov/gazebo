@@ -4,27 +4,29 @@ function InvoiceFooter({ invoice }) {
   const discount = invoice.amountDue - invoice.subtotal
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 text-base">
       <div className="flex justify-end">
         <table className="text-lg w-1/5">
-          <tr>
-            <td>Subtotal</td>
-            <td>${(invoice.subtotal / 100).toFixed(2)}</td>
-          </tr>
-          {discount > 0 && (
+          <tbody>
             <tr>
-              <td>Dicsount</td>
-              <td>$-{(discount / 100).toFixed(2)}</td>
+              <td>Subtotal</td>
+              <td>${(invoice.subtotal / 100).toFixed(2)}</td>
             </tr>
-          )}
-          <tr>
-            <td>Total</td>
-            <td>${(invoice.total / 100).toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td>Amount paid</td>
-            <td> ${(invoice.amountPaid / 100).toFixed(2)}</td>
-          </tr>
+            {discount > 0 && (
+              <tr>
+                <td>Dicsount</td>
+                <td>$-{(discount / 100).toFixed(2)}</td>
+              </tr>
+            )}
+            <tr>
+              <td>Total</td>
+              <td>${(invoice.total / 100).toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>Amount paid</td>
+              <td> ${(invoice.amountPaid / 100).toFixed(2)}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
       <footer>{invoice.footer}</footer>
