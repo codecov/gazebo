@@ -115,35 +115,16 @@ describe('InvoiceDetail', () => {
       ).toBeInTheDocument()
     })
 
-    it('renders the number, currency, and date of the invoice', () => {
-      expect(
-        screen.getByText(/december 30th, 2020usd#ce3cef02-0008/i)
-      ).toBeInTheDocument()
-    })
-
     it('renders the items', () => {
-      expect(
-        screen.getByText(
-          /\(6\) users-pr-inappy - period from december 30th 2020 to december 30th 2021/i
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          /\(19\) users-pr-inappm - period from december 30th 2020 to january 12th 2021/i
-        )
-      ).toBeInTheDocument()
       expect(
         screen.getByText(
           /unused time on 19 × users-pr-inappm after 30 dec 2020/i
         )
       ).toBeInTheDocument()
-      expect(
-        screen.getByText(/\(1\) same period doesnt render date/i)
-      ).toBeInTheDocument()
     })
 
     it('renders the subtotal', () => {
-      expect(screen.getByText(/sub total/i)).toBeInTheDocument()
+      expect(screen.getByText(/subtotal/i)).toBeInTheDocument()
       expect(screen.getAllByText(/\$625\.51/i)[0]).toBeInTheDocument()
     })
 
@@ -158,21 +139,6 @@ describe('InvoiceDetail', () => {
 
     it('renders the total', () => {
       expect(screen.getAllByText(/\$625\.51/i)[1]).toBeInTheDocument()
-    })
-  })
-
-  describe('when the invoice has a discount', () => {
-    beforeEach(() => {
-      setup({
-        amountDue: 10000, // 100$
-        subtotal: 9000, // 190$
-        total: 9000,
-      })
-    })
-
-    it('renders the discount', () => {
-      expect(screen.getByText(/discount/i)).toBeInTheDocument()
-      expect(screen.getByText(/\$-10.00/i)).toBeInTheDocument()
     })
   })
 
