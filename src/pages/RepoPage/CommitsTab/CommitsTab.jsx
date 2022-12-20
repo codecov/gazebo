@@ -1,11 +1,9 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
-import { useCommits } from 'services/commits'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
-import Button from 'ui/Button'
 import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
@@ -28,6 +26,7 @@ const useParamsFilters = (defaultBranch) => {
 }
 
 function CommitsTab() {
+  const [branchSearchTerm, setBranchSearchTerm] = useState()
   const setCrumbs = useSetCrumbs()
   const { provider, owner, repo } = useParams()
 
@@ -36,26 +35,23 @@ function CommitsTab() {
     isFetching: branchesIsFetching,
     fetchNextPage: branchesFetchNextPage,
     hasNextPage: branchesHasNextPage,
-  } = useBranches({ provider, owner, repo })
+  } = useBranches({
+    provider,
+    owner,
+    repo,
+    filters: { searchValue: branchSearchTerm },
+    opts: {
+      suspense: false,
+    },
+  })
+
   const { data: repoData } = useRepo({ provider, owner, repo })
   const branchesNames =
-    branchesData?.branches?.map((branch) => branch.name) || []
+    branchesData?.branches?.map((branch) => branch?.name) || []
 
   const { branch, paramCIStatus, updateParams } = useParamsFilters(
     repoData?.repository?.defaultBranch
   )
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useCommits({
-    provider,
-    owner,
-    repo,
-    filters: {
-      hideFailedCI: paramCIStatus,
-      branchName: branch,
-    },
-  })
-
-  const commits = data?.commits
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -82,7 +78,7 @@ function CommitsTab() {
             </span>
             Branch Context
           </h2>
-          <div>
+          <div className="min-w-[16rem]">
             <Select
               dataMarketing="branch-selector-commits-page"
               ariaName="Select branch"
@@ -96,6 +92,7 @@ function CommitsTab() {
                 branchesHasNextPage && branchesFetchNextPage()
               }}
               value={branch}
+              onSearch={(term) => setBranchSearchTerm(term)}
             />
           </div>
         </div>
@@ -110,18 +107,7 @@ function CommitsTab() {
           checked={paramCIStatus}
         />
       </div>
-      <CommitsTable commits={commits} />
-      {hasNextPage && (
-        <div className="flex-1 mt-4 flex justify-center">
-          <Button
-            hook="load-more"
-            isLoading={isFetchingNextPage}
-            onClick={fetchNextPage}
-          >
-            Load More
-          </Button>
-        </div>
-      )}
+      <CommitsTable branch={branch} paramCIStatus={paramCIStatus} />
     </div>
   )
 }
