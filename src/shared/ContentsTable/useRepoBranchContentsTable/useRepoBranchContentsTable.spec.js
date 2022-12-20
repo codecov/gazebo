@@ -6,7 +6,7 @@ import { act } from 'react-test-renderer'
 import { useLocationParams } from 'services/navigation'
 import { useRepoBranchContents, useRepoOverview } from 'services/repo'
 
-import useRepoContentsTable from './useRepoContentsTable'
+import { useRepoBranchContentsTable } from './useRepoBranchContentsTable'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -102,7 +102,7 @@ const useRepoOverviewMock = {
   isLoading: false,
 }
 
-describe('useRepoContentsTable', () => {
+describe('useRepoBranchContentsTable', () => {
   let hookData
   function setup({ repoData, useParamsValue, paramPath = false }) {
     useParams.mockReturnValue({
@@ -119,7 +119,7 @@ describe('useRepoContentsTable', () => {
       params: useParamsValue,
     })
 
-    hookData = renderHook(() => useRepoContentsTable())
+    hookData = renderHook(() => useRepoBranchContentsTable())
   }
 
   it('returns data accordingly', () => {

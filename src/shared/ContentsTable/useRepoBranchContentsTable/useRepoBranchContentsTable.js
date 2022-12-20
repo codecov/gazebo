@@ -10,10 +10,10 @@ import { CommitErrorTypes } from 'shared/utils/commit'
 import A from 'ui/A'
 import { SortingDirection } from 'ui/Table/constants'
 
-import { displayTypeParameter } from '../../../constants'
-import CoverageEntry from '../TableEntries/CoverageEntry'
-import DirEntry from '../TableEntries/DirEntry'
-import FileEntry from '../TableEntries/FileEntry'
+import { displayTypeParameter } from '../constants'
+import CoverageEntry from '../TableEntries/BaseEntries/CoverageEntry'
+import BranchDirEntry from '../TableEntries/BranchEntries/BranchDirEntry'
+import BranchFileEntry from '../TableEntries/BranchEntries/BranchFileEntry'
 
 function determineDisplayType({ filters, isSearching }) {
   return filters?.displayType === displayTypeParameter.list || isSearching
@@ -46,14 +46,14 @@ function createTableData({
       }) => ({
         name:
           __typename === 'PathContentDir' ? (
-            <DirEntry
-              branch={branch}
+            <BranchDirEntry
               name={name}
+              branch={branch}
               path={path}
               filters={filters}
             />
           ) : (
-            <FileEntry
+            <BranchFileEntry
               name={name}
               path={path}
               branch={branch}
@@ -179,10 +179,11 @@ const getQueryFilters = ({ params, sortBy }) => {
   }
 }
 
-function useRepoContentsTable() {
+export function useRepoBranchContentsTable() {
   const { provider, owner, repo, path, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useTreePaths()
+  const [sortBy, setSortBy] = useState([])
 
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
@@ -190,7 +191,6 @@ function useRepoContentsTable() {
     owner,
   })
 
-  const [sortBy, setSortBy] = useState([])
   const { data: pathContentData, isLoading } = useRepoBranchContents({
     provider,
     owner,
@@ -247,5 +247,3 @@ function useRepoContentsTable() {
       pathContentData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
   }
 }
-
-export default useRepoContentsTable
