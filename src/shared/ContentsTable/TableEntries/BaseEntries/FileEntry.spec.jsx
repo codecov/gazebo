@@ -3,16 +3,13 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import FileEntry from './FileEntry'
-import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
 
-import { displayTypeParameter } from '../../../constants'
+import { displayTypeParameter } from '../../constants'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(() => {}),
 }))
-
-jest.mock('./hooks/usePrefetchFileEntry')
 
 describe('FileEntry', () => {
   const runPrefetchMock = jest.fn()
@@ -29,10 +26,6 @@ describe('FileEntry', () => {
       path: '',
     })
 
-    usePrefetchFileEntry.mockReturnValue({
-      runPrefetch: runPrefetchMock,
-    })
-
     render(
       <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
         <Route path="/:provider/:owner/:repo/">
@@ -43,6 +36,7 @@ describe('FileEntry', () => {
             path="dir"
             isCriticalFile={isCriticalFile}
             displayType={displayType}
+            runPrefetch={runPrefetchMock}
           />
         </Route>
       </MemoryRouter>
