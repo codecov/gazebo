@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useRepoContents, useRepoOverview } from 'services/repo'
+import { useRepoBranchContents, useRepoOverview } from 'services/repo'
 
 import RepoContentsTable from './RepoContentsTable'
 import { usePrefetchDirEntry } from './TableEntries/hooks/usePrefetchDirEntry'
@@ -56,7 +56,7 @@ describe('RepoContentsTable', () => {
     branch,
     path,
   } = {}) {
-    useRepoContents.mockReturnValue({
+    useRepoBranchContents.mockReturnValue({
       data,
       isLoading,
     })

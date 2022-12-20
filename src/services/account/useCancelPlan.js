@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
-import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
 function getPathAccountDetails({ provider, owner }) {
@@ -20,8 +19,7 @@ function cancelPlan({ provider, owner, planType }) {
 
 export function useCancelPlan({ provider, owner }) {
   const queryClient = useQueryClient()
-  const { planCancelationFlow } = useFlags({ planCancelationFlow: false })
-  const planType = planCancelationFlow ? Plans.USERS_BASIC : Plans.USERS_FREE
+  const planType = Plans.USERS_BASIC
 
   return useMutation(() => cancelPlan({ provider, owner, planType }), {
     onSuccess: (data) => {

@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Switch } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import { useLocationParams } from 'services/navigation'
 import SearchField from 'ui/SearchField'
@@ -32,7 +34,7 @@ function CoverageTab() {
       <Summary />
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Switch>
-          <Route
+          <SentryRoute
             path={[
               '/:provider/:owner/:repo/tree/:branch/:path+',
               '/:provider/:owner/:repo/tree/:branch',
@@ -41,15 +43,15 @@ function CoverageTab() {
             exact
           >
             <ToggleChart />
-          </Route>
+          </SentryRoute>
         </Switch>
         <Switch>
-          <Route path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
+          <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
             <Suspense fallback={Loader}>
               <FileViewer />
             </Suspense>
-          </Route>
-          <Route
+          </SentryRoute>
+          <SentryRoute
             path={[
               '/:provider/:owner/:repo/tree/:branch/:path+',
               '/:provider/:owner/:repo/tree/:branch',
@@ -72,7 +74,7 @@ function CoverageTab() {
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
-          </Route>
+          </SentryRoute>
         </Switch>
       </div>
     </div>

@@ -71,6 +71,7 @@ export function useImpactedFilesTable() {
     filters,
     options: {
       staleTime: 1000 * 60 * 5,
+      suspense: false,
     },
   })
 

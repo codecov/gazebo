@@ -6,8 +6,6 @@ import Cookie from 'js-cookie'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useFlags } from 'shared/featureFlags'
-
 import {
   useAccountDetails,
   useAutoActivate,
@@ -22,7 +20,6 @@ import {
 
 jest.mock('@stripe/react-stripe-js')
 jest.mock('js-cookie')
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -212,7 +209,7 @@ describe('usePlans', () => {
 describe('useCancelPlan', () => {
   let hookData
 
-  function setup(flagValue = false) {
+  function setup() {
     server.use(
       rest.patch(
         `/internal/${provider}/${owner}/account-details/`,
@@ -221,9 +218,6 @@ describe('useCancelPlan', () => {
         }
       )
     )
-    useFlags.mockReturnValue({
-      planCancelationFlow: flagValue,
-    })
 
     hookData = renderHook(() => useCancelPlan({ provider, owner }), {
       wrapper,
@@ -233,31 +227,6 @@ describe('useCancelPlan', () => {
   describe('when called', () => {
     beforeEach(() => {
       setup()
-    })
-
-    it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
-    describe('when calling the mutation', () => {
-      beforeEach(() => {
-        return waitFor(() => {
-          hookData.result.current.mutate()
-          return hookData.waitFor(
-            () => hookData.result.current.status !== 'idle'
-          )
-        })
-      })
-
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
-      })
-    })
-  })
-
-  describe('with cancel flow setting org to a basic plan', () => {
-    beforeEach(() => {
-      setup(true)
     })
 
     describe('when calling the mutation', () => {

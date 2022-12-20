@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { Redirect, Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
@@ -16,16 +18,16 @@ import CompareSummary from './Summary'
 
 const Root = lazy(() => import('./subroute/Root'))
 
+const Loader = (
+  <div className="flex items-center justify-center py-16">
+    <Spinner />
+  </div>
+)
+
 // eslint-disable-next-line complexity
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePull({ provider, owner, repo, pullId })
-
-  const Loader = (
-    <div className="flex items-center justify-center py-16">
-      <Spinner />
-    </div>
-  )
 
   if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
     return <NotFound />
@@ -56,11 +58,14 @@ function PullRequestPage() {
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
           <article className="col-span-2">
             <Switch>
-              <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
+              <SentryRoute
+                path="/:provider/:owner/:repo/pull/:pullId"
+                exact={true}
+              >
                 <Suspense fallback={Loader}>
                   <Root />
                 </Suspense>
-              </Route>
+              </SentryRoute>
               <Redirect
                 from="/:provider/:owner/:repo/pull/:pullId/*"
                 to="/:provider/:owner/:repo/pull/:pullId"

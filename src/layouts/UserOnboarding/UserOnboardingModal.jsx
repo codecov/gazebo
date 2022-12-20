@@ -9,17 +9,12 @@ import { useOnboardingTracking } from './useOnboardingTracking'
 import UserOnboardingForm from './UserOnboardingForm'
 
 import { useOnboardUser } from '../../services/user'
-import { useFlags } from '../../shared/featureFlags'
 
 function UserOnboardingModal({ currentUser }) {
   const { startOnboarding, completedOnboarding, skipOnboarding } =
     useOnboardingTracking()
   const history = useHistory()
   const { provider } = useParams()
-
-  const { onboardingOrganizationSelector } = useFlags({
-    onboardingOrganizationSelector: false,
-  })
 
   const [formData, setFormData] = useState(false)
 
@@ -58,11 +53,7 @@ function UserOnboardingModal({ currentUser }) {
         ) : (
           <UserOnboardingForm
             currentUser={currentUser}
-            onFormSubmit={(formData) =>
-              onboardingOrganizationSelector
-                ? setFormData(formData)
-                : mutate({ formData })
-            }
+            onFormSubmit={(formData) => setFormData(formData)}
             isSubmitting={isLoading}
           />
         )}

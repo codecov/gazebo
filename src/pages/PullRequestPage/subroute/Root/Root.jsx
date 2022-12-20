@@ -1,5 +1,4 @@
 import isNil from 'lodash/isNil'
-import { Suspense } from 'react'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
@@ -24,56 +23,56 @@ function hasReportWithoutChanges({
   )
 }
 
+const Loader = () => (
+  <div className="flex items-center justify-center py-16">
+    <Spinner />
+  </div>
+)
+
 const Root = () => {
   const { data, isLoading } = useImpactedFilesTable()
 
-  const Loader = (
-    <div className="flex items-center justify-center py-16">
-      <Spinner />
-    </div>
-  )
+  if (isLoading) {
+    return <Loader />
+  }
 
   return (
-    !isLoading && (
-      <div className="flex flex-col gap-4">
-        <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
-        {data?.headState === CommitStateEnum.ERROR ? (
+    <div className="flex flex-col gap-4">
+      <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
+      {data?.headState === CommitStateEnum.ERROR ? (
+        <p>
+          Cannot display Impacted Files because most recent commit is in an
+          error state.
+        </p>
+      ) : hasImpactedFiles(data?.impactedFiles) ? (
+        <ImpactedFiles />
+      ) : // Coverage changes remain the same as before, but no impacted files = no change
+      hasReportWithoutChanges({
+          pullHeadCoverage: data?.pullHeadCoverage,
+          pullBaseCoverage: data?.pullBaseCoverage,
+          pullPatchCoverage: data?.pullPatchCoverage,
+        }) ? (
+        <>
           <p>
-            Cannot display Impacted Files because most recent commit is in an
-            error state.
+            Everything is accounted for! No changes detected that need to be
+            reviewed.
           </p>
-        ) : hasImpactedFiles(data?.impactedFiles) ? (
-          <Suspense fallback={Loader}>
-            <ImpactedFiles />
-          </Suspense>
-        ) : // Coverage changes remain the same as before, but no impacted files = no change
-        hasReportWithoutChanges({
-            pullHeadCoverage: data?.pullHeadCoverage,
-            pullBaseCoverage: data?.pullBaseCoverage,
-            pullPatchCoverage: data?.pullPatchCoverage,
-          }) ? (
-          <>
-            <p>
-              Everything is accounted for! No changes detected that need to be
-              reviewed.
-            </p>
-            <p className="font-medium">What changes does Codecov check for?</p>
-            <ul className="list-disc ml-6">
-              <li>
-                Lines, not adjusted in diff, that have changed coverage data.
-              </li>
-              <li>Files that introduced coverage data that had none before.</li>
-              <li>
-                Files that have missing coverage data that once were tracked.
-              </li>
-            </ul>
-          </>
-        ) : (
-          // No impacted files nor head, patch or change coverage
-          <p>No Files covered by tests were changed</p>
-        )}
-      </div>
-    )
+          <p className="font-medium">What changes does Codecov check for?</p>
+          <ul className="list-disc ml-6">
+            <li>
+              Lines, not adjusted in diff, that have changed coverage data.
+            </li>
+            <li>Files that introduced coverage data that had none before.</li>
+            <li>
+              Files that have missing coverage data that once were tracked.
+            </li>
+          </ul>
+        </>
+      ) : (
+        // No impacted files nor head, patch or change coverage
+        <p>No Files covered by tests were changed</p>
+      )}
+    </div>
   )
 }
 
