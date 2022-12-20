@@ -39,7 +39,7 @@ function OrgControlTable({
   )
 
   return (
-    <div className="flex lg:items-center h-auto my-4 mx-4 gap-2 md:mx-0 flex-col lg:flex-row">
+    <div className="flex lg:items-center h-auto my-4 mx-4 gap-2 sm:mx-0 flex-col lg:flex-row">
       <div className="flex flex-wrap sm:flex-nowrap gap-2">
         <div className="basis-52">
           <Select
