@@ -1,6 +1,6 @@
 import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
 import RawFileviewer from 'shared/RawFileviewer'
-import { useTreePaths } from 'shared/useTreePaths'
+import { useTreePaths } from 'shared/treePaths'
 
 function FileView() {
   const { treePaths } = useTreePaths()

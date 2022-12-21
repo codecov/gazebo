@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoBranchContents, useRepoOverview } from 'services/repo'
-import { useTreePaths } from 'shared/useTreePaths'
+import { useTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
 import A from 'ui/A'
 import { SortingDirection } from 'ui/Table/constants'
