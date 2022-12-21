@@ -25,7 +25,7 @@ describe('DirEntry', () => {
       <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
         <Route path="/:provider/:owner/:repo/">
           <DirEntry
-            branch="branch"
+            linkRef="branch"
             name="dir"
             path="path/to/directory"
             runPrefetch={runPrefetchMock}

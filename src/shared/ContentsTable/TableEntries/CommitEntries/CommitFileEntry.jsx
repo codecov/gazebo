@@ -5,8 +5,8 @@ import { usePrefetchCommitFileEntry } from './hooks/usePrefetchCommitFileEntry'
 import { displayTypeParameter } from '../../constants'
 import FileEntry from '../BaseEntries/FileEntry'
 
-function BranchFileEntry({
-  branch,
+function CommitFileEntry({
+  commitSha,
   filePath,
   isCriticalFile,
   name,
@@ -19,7 +19,7 @@ function BranchFileEntry({
 
   return (
     <FileEntry
-      branch={branch}
+      linkRef={commitSha}
       filePath={filePath}
       isCriticalFile={isCriticalFile}
       name={name}
@@ -30,8 +30,8 @@ function BranchFileEntry({
   )
 }
 
-BranchFileEntry.propTypes = {
-  branch: PropTypes.string.isRequired,
+CommitFileEntry.propTypes = {
+  commitSha: PropTypes.string.isRequired,
   filePath: PropTypes.string.isRequired,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
@@ -39,4 +39,4 @@ BranchFileEntry.propTypes = {
   path: PropTypes.string,
 }
 
-export default BranchFileEntry
+export default CommitFileEntry

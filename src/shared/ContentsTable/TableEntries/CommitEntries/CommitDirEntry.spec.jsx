@@ -68,7 +68,7 @@ describe('CommitDirEntry', () => {
 
   it('displays the directory name', () => {
     render(
-      <CommitDirEntry branch="branch" name="dir" path="path/to/directory" />,
+      <CommitDirEntry commitSha="1234" name="dir" path="path/to/directory" />,
       { wrapper }
     )
 
@@ -77,20 +77,20 @@ describe('CommitDirEntry', () => {
 
   it('sets the correct href', () => {
     render(
-      <CommitDirEntry branch="branch" name="dir" path="path/to/directory" />,
+      <CommitDirEntry commitSha="1234" name="dir" path="path/to/directory" />,
       { wrapper }
     )
 
     const a = screen.getByRole('link')
     expect(a).toHaveAttribute(
       'href',
-      '/gh/codecov/test-repo/tree/branch/path/to/directory/dir'
+      '/gh/codecov/test-repo/tree/1234/path/to/directory/dir'
     )
   })
 
   it('fires the prefetch function on hover', async () => {
     render(
-      <CommitDirEntry branch="branch" name="dir" path="path/to/directory" />,
+      <CommitDirEntry commitSha="1234" name="dir" path="path/to/directory" />,
       { wrapper }
     )
 

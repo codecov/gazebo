@@ -4,12 +4,16 @@ import { usePrefetchCommitDirEntry } from './hooks'
 
 import DirEntry from '../BaseEntries/DirEntry'
 
-function CommitDirEntry({ branch, path, name, filters }) {
-  const { runPrefetch } = usePrefetchCommitDirEntry({ branch, path, filters })
+function CommitDirEntry({ commitSha, path, name, filters }) {
+  const { runPrefetch } = usePrefetchCommitDirEntry({
+    commitSha,
+    path,
+    filters,
+  })
 
   return (
     <DirEntry
-      branch={branch}
+      linkRef={commitSha}
       name={name}
       path={path}
       runPrefetch={runPrefetch}
@@ -18,7 +22,7 @@ function CommitDirEntry({ branch, path, name, filters }) {
 }
 
 CommitDirEntry.propTypes = {
-  branch: PropTypes.string.isRequired,
+  commitSha: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   path: PropTypes.string,
   filters: PropTypes.shape({

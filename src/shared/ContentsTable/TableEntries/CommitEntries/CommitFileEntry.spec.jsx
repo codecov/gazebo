@@ -77,7 +77,7 @@ describe('CommitFileEntry', () => {
     it('displays the file path', () => {
       render(
         <CommitFileEntry
-          branch="main"
+          commitSha="1234"
           filePath="dir/file.js"
           name="file.js"
           path="dir"
@@ -99,7 +99,7 @@ describe('CommitFileEntry', () => {
     it('displays the file name', () => {
       render(
         <CommitFileEntry
-          branch="main"
+          commitSha="1234"
           filePath="dir/file.js"
           name="file.js"
           path="dir"
@@ -115,7 +115,7 @@ describe('CommitFileEntry', () => {
     it('does not display the file name', () => {
       render(
         <CommitFileEntry
-          branch="main"
+          commitSha="1234"
           filePath="dir/file.js"
           name="file.js"
           path="dir"
@@ -137,7 +137,7 @@ describe('CommitFileEntry', () => {
     it('displays critical file label', () => {
       render(
         <CommitFileEntry
-          branch="main"
+          commitSha="1234"
           filePath="dir/file.js"
           name="file.js"
           path="dir"
@@ -159,7 +159,7 @@ describe('CommitFileEntry', () => {
     it('displays the file path label', () => {
       render(
         <CommitFileEntry
-          branch="main"
+          commitSha="1234"
           filePath="dir/file.js"
           name="file.js"
           path="dir"
@@ -181,7 +181,7 @@ describe('CommitFileEntry', () => {
     it('fires the prefetch function on hover', async () => {
       render(
         <CommitFileEntry
-          branch="main"
+          commitSha="1234"
           filePath="dir/file.js"
           name="file.js"
           path="dir"
