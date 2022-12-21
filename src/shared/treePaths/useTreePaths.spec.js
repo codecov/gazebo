@@ -4,8 +4,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useTreePaths } from './useTreePaths'
 
 describe('useTreePaths', () => {
-  let hookData
-
   describe('a path is provided', () => {
     describe('no duplicate names in path', () => {
       const wrapper = ({ children }) => (
@@ -17,17 +15,11 @@ describe('useTreePaths', () => {
           </Route>
         </MemoryRouter>
       )
-      function setup() {
-        hookData = renderHook(() => useTreePaths(), { wrapper })
-      }
-
-      beforeEach(() => {
-        setup()
-        return hookData.waitFor(() => hookData.result)
-      })
 
       it('returns a list of objects', () => {
-        expect(hookData.result.current.treePaths).toEqual([
+        const { result } = renderHook(() => useTreePaths(), { wrapper })
+
+        expect(result.current.treePaths).toEqual([
           {
             pageName: 'treeView',
             text: 'coolrepo',
@@ -58,17 +50,11 @@ describe('useTreePaths', () => {
           </Route>
         </MemoryRouter>
       )
-      function setup() {
-        hookData = renderHook(() => useTreePaths(), { wrapper })
-      }
-
-      beforeEach(() => {
-        setup()
-        return hookData.waitFor(() => hookData.result)
-      })
 
       it('returns a list of objects', () => {
-        expect(hookData.result.current.treePaths).toEqual([
+        const { result } = renderHook(() => useTreePaths(), { wrapper })
+
+        expect(result.current.treePaths).toEqual([
           {
             pageName: 'treeView',
             text: 'coolrepo',
@@ -112,17 +98,11 @@ describe('useTreePaths', () => {
         </Route>
       </MemoryRouter>
     )
-    function setup() {
-      hookData = renderHook(() => useTreePaths(), { wrapper })
-    }
-
-    beforeEach(() => {
-      setup()
-      return hookData.waitFor(() => hookData.result)
-    })
 
     it('returns a list of objects', () => {
-      expect(hookData.result.current.treePaths).toEqual([
+      const { result } = renderHook(() => useTreePaths(), { wrapper })
+
+      expect(result.current.treePaths).toEqual([
         {
           pageName: 'treeView',
           text: 'coolrepo',
@@ -143,17 +123,11 @@ describe('useTreePaths', () => {
           </Route>
         </MemoryRouter>
       )
-      function setup() {
-        hookData = renderHook(() => useTreePaths(), { wrapper })
-      }
-
-      beforeEach(() => {
-        setup()
-        return hookData.waitFor(() => hookData.result)
-      })
 
       it('returns a list of objects', () => {
-        expect(hookData.result.current.treePaths).toEqual([
+        const { result } = renderHook(() => useTreePaths(), { wrapper })
+
+        expect(result.current.treePaths).toEqual([
           {
             pageName: 'treeView',
             text: 'coolrepo',
