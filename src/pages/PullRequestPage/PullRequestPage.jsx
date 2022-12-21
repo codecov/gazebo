@@ -6,8 +6,10 @@ import { SentryRoute } from 'sentry'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import { usePull } from 'services/pull'
+import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
+import TabNavigation from 'ui/TabNavigation'
 
 import Commits from './Commits'
 import ErrorBanner from './ErrorBanner'
@@ -28,6 +30,7 @@ const Loader = (
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePull({ provider, owner, repo, pullId })
+  const { pullPageTabs } = useFlags({ pullPageTabs: true })
 
   if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
     return <NotFound />
@@ -57,15 +60,55 @@ function PullRequestPage() {
       ) : (
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
           <article className="col-span-2">
+            <div className="mb-4">
+              <TabNavigation
+                tabs={[
+                  {
+                    pageName: 'pullDetail',
+                    children: 'Impacted files',
+                    exact: true,
+                  },
+                  ...(pullPageTabs
+                    ? [
+                        { pageName: 'pullIndirectChanges' },
+                        { pageName: 'pullCommits' },
+                        { pageName: 'pullFlags' },
+                      ]
+                    : []),
+                ]}
+              />
+            </div>
             <Switch>
-              <SentryRoute
-                path="/:provider/:owner/:repo/pull/:pullId"
-                exact={true}
-              >
-                <Suspense fallback={Loader}>
+              <Suspense fallback={Loader}>
+                <SentryRoute
+                  path="/:provider/:owner/:repo/pull/:pullId"
+                  exact={true}
+                >
                   <Root />
-                </Suspense>
-              </SentryRoute>
+                </SentryRoute>
+                {pullPageTabs && (
+                  <>
+                    <SentryRoute
+                      path="/:provider/:owner/:repo/pull/:pullId/indirectChanges"
+                      exact={true}
+                    >
+                      indirect changes
+                    </SentryRoute>
+                    <SentryRoute
+                      path="/:provider/:owner/:repo/pull/:pullId/commits"
+                      exact={true}
+                    >
+                      pull commits
+                    </SentryRoute>
+                    <SentryRoute
+                      path="/:provider/:owner/:repo/pull/:pullId/flags"
+                      exact={true}
+                    >
+                      pull flags
+                    </SentryRoute>
+                  </>
+                )}
+              </Suspense>
               <Redirect
                 from="/:provider/:owner/:repo/pull/:pullId/*"
                 to="/:provider/:owner/:repo/pull/:pullId"

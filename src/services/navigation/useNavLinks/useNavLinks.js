@@ -270,7 +270,7 @@ export function useNavLinks() {
           pullId: pi,
         }
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}`,
-      text: 'Pull',
+      text: 'Impacted Files',
     },
     settings: {
       path: (
@@ -357,6 +357,54 @@ export function useNavLinks() {
       text: 'Profile',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    pullImpactedFiles: {
+      text: 'Impacted files',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/impactedFiles`,
+      isExternalLink: false,
+    },
+    pullIndirectChanges: {
+      text: 'Indirect changes',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirectChanges`,
+      isExternalLink: false,
+    },
+    pullCommits: {
+      text: 'Commits',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/commits`,
+      isExternalLink: false,
+    },
+    pullFlags: {
+      text: 'Flags',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/flags`,
       isExternalLink: false,
     },
   }

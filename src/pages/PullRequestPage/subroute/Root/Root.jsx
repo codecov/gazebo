@@ -37,8 +37,8 @@ const Root = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
+    <div className="flex flex-col gap-2">
+      <ToggleHeader coverageIsLoading={false} />
       {data?.headState === CommitStateEnum.ERROR ? (
         <p>
           Cannot display Impacted Files because most recent commit is in an
