@@ -6,9 +6,6 @@ import { useLocationParams } from 'services/navigation'
 
 import DisplayTypeButton from './DisplayTypeButton'
 
-import useRepoContentsTable from '../subroute/RepoContents/hooks'
-
-jest.mock('../subroute/RepoContents/hooks')
 jest.mock('services/navigation', () => ({
   ...jest.requireActual('services/navigation'),
   useLocationParams: jest.fn(),
@@ -54,7 +51,6 @@ const mockUrlParams = {
 describe('Coverage Tab', () => {
   const mockUpdateParams = jest.fn()
   function setup(urlParams = mockUrlParams) {
-    useRepoContentsTable.mockReturnValue(mockRepoContents)
     useLocationParams.mockReturnValue({
       updateParams: mockUpdateParams,
       params: urlParams,
@@ -62,7 +58,7 @@ describe('Coverage Tab', () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <DisplayTypeButton />
+        <DisplayTypeButton dataLength={mockRepoContents.data.length} />
       </QueryClientProvider>
     )
   }

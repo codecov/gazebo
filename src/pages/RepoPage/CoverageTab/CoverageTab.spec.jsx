@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -14,7 +13,6 @@ jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
 jest.mock('./Summary', () => () => 'Summary Component')
 jest.mock('./Chart', () => () => 'Chart Component')
 jest.mock('./DeactivatedRepo', () => () => 'Disabled Repo Component')
-jest.mock('./DisplayTypeButton', () => () => 'Display Type Button')
 jest.mock('services/repo')
 jest.mock('services/user')
 jest.mock('services/commits')
@@ -94,9 +92,8 @@ describe('Coverage Tab', () => {
       setup({ initialEntries: ['/gh/test-org/test-repo/'] })
     })
 
-    it('renders summary, display type button, and root tree component', () => {
+    it('renders summary, and root tree component', () => {
       expect(screen.getByText(/Summary Component/)).toBeInTheDocument()
-      expect(screen.getByText(/Display Type Button/)).toBeInTheDocument()
       expect(screen.queryByText(/Fileviewer Component/)).not.toBeInTheDocument()
     })
   })
@@ -153,27 +150,6 @@ describe('Coverage Tab', () => {
       expect(
         screen.queryByText(/RepoContents Component/)
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe.each([
-    '/gh/test-org/test-repo/',
-    '/gh/test-org/test-repo/tree/main',
-    '/gh/test-org/test-repo/tree/master/src',
-  ])('update search params after typing on route %s', (entries) => {
-    beforeEach(() => {
-      setup({ initialEntries: [entries] })
-      const searchInput = screen.getByRole('textbox', {
-        name: 'Search for files',
-      })
-      userEvent.type(searchInput, 'file.js')
-    })
-
-    it('calls setSearchValue', async () => {
-      await waitFor(() => expect(mockUpdateParams).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
-      )
     })
   })
 })

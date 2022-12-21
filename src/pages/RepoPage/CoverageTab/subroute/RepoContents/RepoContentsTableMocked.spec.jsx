@@ -2,15 +2,15 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useRepoBranchContents, useRepoOverview } from 'services/repo'
+import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 
-import useRepoContentsTable from './hooks'
 import RepoContentsTable from './RepoContentsTable'
 
 jest.mock('services/repo')
-jest.mock('./hooks')
+jest.mock('shared/ContentsTable/useRepoBranchContentsTable')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(() => {}),
@@ -105,7 +105,7 @@ describe('RepoContentsTableMocked', () => {
       path,
     })
 
-    useRepoContentsTable.mockReturnValue({
+    useRepoBranchContentsTable.mockReturnValue({
       paginatedData: createTable({
         tableData: paginatedData,
         branch,

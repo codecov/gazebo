@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { usePrefetchDirEntry } from './usePrefetchDirEntry'
+import { usePrefetchBranchDirEntry } from './usePrefetchBranchDirEntry'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -54,7 +54,7 @@ const mockData = {
   },
 }
 
-describe('usePrefetchFileEntry', () => {
+describe('usePrefetchBranchDirEntry', () => {
   function setup() {
     useParams.mockReturnValue({
       provider: 'gh',
@@ -75,7 +75,7 @@ describe('usePrefetchFileEntry', () => {
 
   it('returns runPrefetch function', () => {
     const { result } = renderHook(
-      () => usePrefetchDirEntry({ branch: 'main', path: 'src' }),
+      () => usePrefetchBranchDirEntry({ branch: 'main', path: 'src' }),
       { wrapper }
     )
 
@@ -85,7 +85,7 @@ describe('usePrefetchFileEntry', () => {
 
   it('queries the api', async () => {
     const { result, waitFor } = renderHook(
-      () => usePrefetchDirEntry({ branch: 'main', path: 'src' }),
+      () => usePrefetchBranchDirEntry({ branch: 'main', path: 'src' }),
       { wrapper }
     )
 

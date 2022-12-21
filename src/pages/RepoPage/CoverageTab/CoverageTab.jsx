@@ -4,22 +4,13 @@ import { Switch } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useLocationParams } from 'services/navigation'
-import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
-import ContentsTableHeader from './ContentsTableHeader'
-import DisplayTypeButton from './DisplayTypeButton'
-import FileBreadcrumb from './FileBreadcrumb'
 import Summary from './Summary'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
 const RepoContentsTable = lazy(() => import('./subroute/RepoContents'))
 const Chart = lazy(() => import('./Chart'))
-
-const defaultQueryParams = {
-  search: '',
-}
 
 const Loader = (
   <div className="flex items-center justify-center py-16">
@@ -28,8 +19,6 @@ const Loader = (
 )
 
 function CoverageTab() {
-  const { params, updateParams } = useLocationParams(defaultQueryParams)
-
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       <Summary />
@@ -62,18 +51,6 @@ function CoverageTab() {
             ]}
             exact
           >
-            <ContentsTableHeader>
-              <div className="flex gap-4">
-                <DisplayTypeButton />
-                <FileBreadcrumb />
-              </div>
-              <SearchField
-                dataMarketing="files-search"
-                placeholder="Search for files"
-                searchValue={params?.search}
-                setSearchValue={(search) => updateParams({ search })}
-              />
-            </ContentsTableHeader>
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
