@@ -5,16 +5,10 @@ import GlobalBanners from './GlobalBanners'
 jest.mock('./MissingDesignatedAdmins', () => () => 'MissingDesignatedAdmins')
 
 describe('GlobalBanners', () => {
-  function setup() {
-    render(<GlobalBanners />)
-  }
-
   describe('Successful render', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('MissingDesignatedAdmins is loaded', () => {
+      render(<GlobalBanners />)
+
       const MissingDesignatedAdminsBanner = screen.getByText(
         'MissingDesignatedAdmins'
       )

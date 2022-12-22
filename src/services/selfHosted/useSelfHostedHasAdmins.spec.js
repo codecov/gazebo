@@ -19,18 +19,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useSelfHostedHasAdmins', () => {
-  let hookData
-
-  function setup({ data, provider = 'gl' }) {
+  function setup({ data }) {
     server.use(
       graphql.query('HasAdmins', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
       )
     )
-
-    hookData = renderHook(() => useSelfHostedHasAdmins({ provider }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -39,19 +33,34 @@ describe('useSelfHostedHasAdmins', () => {
     })
 
     it('returns isLoading', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
+      const { result } = renderHook(
+        () => useSelfHostedHasAdmins({ provider: 'gl' }),
+        {
+          wrapper,
+        }
+      )
+
+      expect(result.current.isLoading).toBeTruthy()
     })
   })
 
   describe('when data is loaded', () => {
     beforeEach(async () => {
       setup({ data: { config: { hasAdmins: true } } })
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('returns the user info', () => {
-      expect(hookData.result.current.data).toEqual(true)
+    it('returns the user info', async () => {
+      const { result, waitFor } = renderHook(
+        () => useSelfHostedHasAdmins({ provider: 'gl' }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
+
+      expect(result.current.data).toEqual(true)
     })
   })
 })
