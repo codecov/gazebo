@@ -49,7 +49,7 @@ NoData.propTypes = {
   dataPointCount: PropTypes.number.isRequired,
 }
 
-const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi')
+const VictoryVoronoiContainer = createContainer('voronoi')
 
 function Chart() {
   const { provider, owner, repo } = useParams()
@@ -149,7 +149,7 @@ function Chart() {
             // For line charts this is a better tooltip then using a normal hover target
             // which is hard/tiny to hit.
             // Reference: https://en.wikipedia.org/wiki/Voronoi_diagram
-            <VictoryZoomVoronoiContainer
+            <VictoryVoronoiContainer
               className="coverageOverTimeChart"
               title={`${repo} coverage chart`}
               desc={makeTitle(
