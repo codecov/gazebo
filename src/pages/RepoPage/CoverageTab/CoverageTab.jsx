@@ -3,22 +3,13 @@ import { Switch } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import { useLocationParams } from 'services/navigation'
-import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
-import ToggleChart from './Chart/ToggleChart'
-import ContentsTableHeader from './ContentsTableHeader'
-import DisplayTypeButton from './DisplayTypeButton'
-import FileBreadcrumb from './FileBreadcrumb'
 import Summary from './Summary'
+import ToggleChart from './Chart/ToggleChart'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
 const RepoContentsTable = lazy(() => import('./subroute/RepoContents'))
-
-const defaultQueryParams = {
-  search: '',
-}
 
 const Loader = (
   <div className="flex items-center justify-center py-16">
@@ -27,8 +18,6 @@ const Loader = (
 )
 
 function CoverageTab() {
-  const { params, updateParams } = useLocationParams(defaultQueryParams)
-
   return (
     <div className="flex flex-col gap-4 mx-4 md:mx-0">
       <Summary />
@@ -44,8 +33,6 @@ function CoverageTab() {
           >
             <ToggleChart />
           </SentryRoute>
-        </Switch>
-        <Switch>
           <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
             <Suspense fallback={Loader}>
               <FileViewer />
@@ -59,18 +46,6 @@ function CoverageTab() {
             ]}
             exact
           >
-            <ContentsTableHeader>
-              <div className="flex gap-4">
-                <DisplayTypeButton />
-                <FileBreadcrumb />
-              </div>
-              <SearchField
-                dataMarketing="files-search"
-                placeholder="Search for files"
-                searchValue={params?.search}
-                setSearchValue={(search) => updateParams({ search })}
-              />
-            </ContentsTableHeader>
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>

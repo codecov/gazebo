@@ -41,7 +41,7 @@ query BranchContents(
 }
 `
 
-export function usePrefetchDirEntry({ branch, path, filters }) {
+export function usePrefetchBranchDirEntry({ branch, path, filters }) {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
 

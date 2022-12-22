@@ -2,19 +2,19 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import FileEntry from './FileEntry'
-import { usePrefetchFileEntry } from './hooks/usePrefetchFileEntry'
+import BranchFileEntry from './BranchFileEntry'
+import { usePrefetchBranchFileEntry } from './hooks/usePrefetchBranchFileEntry'
 
-import { displayTypeParameter } from '../../../constants'
+import { displayTypeParameter } from '../../constants'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(() => {}),
 }))
 
-jest.mock('./hooks/usePrefetchFileEntry')
+jest.mock('./hooks/usePrefetchBranchFileEntry')
 
-describe('FileEntry', () => {
+describe('BranchFileEntry', () => {
   const runPrefetchMock = jest.fn()
 
   function setup({
@@ -29,14 +29,14 @@ describe('FileEntry', () => {
       path: '',
     })
 
-    usePrefetchFileEntry.mockReturnValue({
+    usePrefetchBranchFileEntry.mockReturnValue({
       runPrefetch: runPrefetchMock,
     })
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
         <Route path="/:provider/:owner/:repo/">
-          <FileEntry
+          <BranchFileEntry
             branch="main"
             filePath="dir/file.js"
             name="file.js"
