@@ -12,8 +12,6 @@ import BaseLayout from 'layouts/BaseLayout'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
 
-// Not lazy loading because the page is very small and is accessed often
-
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
@@ -38,7 +36,6 @@ const queryClient = new QueryClient({
   },
 })
 
-// eslint-disable-next-line complexity
 function App() {
   useUTM()
 
