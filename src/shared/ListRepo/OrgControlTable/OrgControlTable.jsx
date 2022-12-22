@@ -39,41 +39,33 @@ function OrgControlTable({
   )
 
   return (
-    <div className="flex lg:items-center h-auto my-4 mx-4 gap-2 sm:mx-0 flex-col lg:flex-row">
-      <div className="flex flex-wrap sm:flex-nowrap gap-2">
-        <div className="basis-52">
-          <Select
-            dataMarketing="repo-list-order-selector"
-            ariaName="Sort Order"
-            value={sortItem}
-            items={active ? orderingOptions : nonActiveOrderingOptions}
-            onChange={setSortItem}
-            renderItem={(option) => option.text}
-          />
-        </div>
-        <div className="basis-52">
-          <TextInput
-            dataMarketing="search-repos-list"
-            value={search}
-            placeholder="Search"
-            onChange={(e) => setSearch(e.target.value)}
-            data-testid="org-control-search"
-          />
-        </div>
+    <div className="m-4 gap-2 sm:mx-0 grid grid-cols-2 lg:grid-cols-5 items-center justify-items-stretch">
+      <Select
+        dataMarketing="repo-list-order-selector"
+        ariaName="Sort Order"
+        value={sortItem}
+        items={active ? orderingOptions : nonActiveOrderingOptions}
+        onChange={setSortItem}
+        renderItem={(option) => option.text}
+      />
+      <TextInput
+        dataMarketing="search-repos-list"
+        value={search}
+        placeholder="Search"
+        onChange={(e) => setSearch(e.target.value)}
+        data-testid="org-control-search"
+      />
+      {canRefetch && <ResyncButton />}
+      <GithubPrivateScopeLogin />
+      <div className="justify-self-end">
+        <OptionButton
+          active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
+          onChange={(option) =>
+            setActive(option.text === optionButtonOptions[0].text)
+          }
+          options={optionButtonOptions}
+        />
       </div>
-      <span className="flex flex-auto gap-4 mt-2 lg:m-0 flex-wrap md:flex-nowrap justify-between">
-        {canRefetch && <ResyncButton />}
-        <div className="flex items-center">
-          <GithubPrivateScopeLogin />
-          <OptionButton
-            active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
-            onChange={(option) =>
-              setActive(option.text === optionButtonOptions[0].text)
-            }
-            options={optionButtonOptions}
-          />
-        </div>
-      </span>
     </div>
   )
 }
