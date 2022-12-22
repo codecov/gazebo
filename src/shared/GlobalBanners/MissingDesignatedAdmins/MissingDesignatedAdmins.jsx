@@ -6,14 +6,31 @@ import { useSelfHostedHasAdmins } from 'services/selfHosted'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 
+const useHideBanner = ({ provider, hasAdmins, isFetching, isSelfHosted }) => {
+  if (!isSelfHosted || !provider || hasAdmins || isFetching) {
+    return true
+  }
+
+  return false
+}
+
 const MissingDesignatedAdmins = () => {
   const { provider } = useParams()
-  const { data: hasAdmins } = useSelfHostedHasAdmins(
+  const { data: hasAdmins, isFetching } = useSelfHostedHasAdmins(
     { provider },
     { enabled: !!provider && config.IS_SELF_HOSTED }
   )
+  // This hook is purely side stepping the complexity rule here.
+  const hideBanner = useHideBanner({
+    provider,
+    hasAdmins,
+    isFetching,
+    isSelfHosted: config.IS_SELF_HOSTED,
+  })
 
-  if (!config.IS_SELF_HOSTED || hasAdmins) return null
+  if (hideBanner) {
+    return null
+  }
 
   return (
     <Banner>
