@@ -26,23 +26,6 @@ function initialState(urlParams) {
     : treeView
 }
 
-function FileCount({ active, dataLength }) {
-  return (
-    <>
-      {active?.displayType === displayTypeParameter.list && dataLength && (
-        <span>{dataLength} total files</span>
-      )}
-    </>
-  )
-}
-
-FileCount.propTypes = {
-  active: PropTypes.shape({
-    displayType: PropTypes.string,
-  }),
-  dataLength: PropTypes.number,
-}
-
 function DisplayTypeButton({ dataLength, isLoading }) {
   const { params, updateParams } = useLocationParams()
   const [active, setActive] = useState(() => initialState(params))
@@ -62,7 +45,8 @@ function DisplayTypeButton({ dataLength, isLoading }) {
       {isLoading ? (
         <Spinner />
       ) : (
-        <FileCount active={active} dataLength={dataLength} />
+        active?.displayType === displayTypeParameter.list &&
+        dataLength && <span>{dataLength} total files</span>
       )}
     </div>
   )
