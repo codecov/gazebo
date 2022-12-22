@@ -20,7 +20,7 @@ function RepoState() {
   const activated = repository?.activated
 
   return activated ? (
-    <div className="flex">
+    <div className="flex flex-col sm:flex-row gap-4">
       <div className="flex flex-col flex-1 gap-1">
         <h2 className="font-semibold">{ActivationStatus.ACTIVATED.TITLE}</h2>
         <p>This will prevent any further uploads</p>
