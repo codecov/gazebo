@@ -12,6 +12,8 @@ jest.spyOn(window.localStorage.__proto__, 'setItem')
 
 window.localStorage.__proto__.setItem = jest.fn()
 
+const queryClient = new QueryClient()
+
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/critical-role/c3/bells-hells']}>
     <Route path="/:provider/:owner/:repo">
@@ -19,8 +21,6 @@ const wrapper = ({ children }) => (
     </Route>
   </MemoryRouter>
 )
-
-const queryClient = new QueryClient()
 
 describe('Toggle chart', () => {
   function setup({ chartData }) {

@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useBranches } from 'services/branches'
 import { useRepoOverview } from 'services/repo'
-import A from 'ui/A'
 import Icon from 'ui/Icon'
 
 import { useBranchSelector, useRepoCoverageTimeseries } from '../hooks'
@@ -41,23 +40,31 @@ function ToggleChart() {
     }
   )
 
-  return isPreviousData || isSuccess ? (
+  if (!isPreviousData && !isSuccess) {
+    return null
+  }
+
+  return (
     <SilentNetworkErrorWrapper>
       <div className="mt-2">
-        <A
-          hook="toggle-chart"
-          onClick={() => {
-            setIsHidden(!isHidden)
-            localStorage.setItem(chartKey, !isHidden)
-          }}
-        >
+        <div className="flex text-ds-blue">
           <Icon
             size="md"
             name={isHidden ? 'chevron-right' : 'chevron-down'}
             variant="solid"
           />
-          {isHidden ? 'Show Chart' : 'Hide Chart'}
-        </A>
+          <p
+            className="flex font-sans cursor-pointer hover:underline focus:ring-2 items-center"
+            data-cy="toggle-chart"
+            data-marketing="toggle-chart"
+            onClick={() => {
+              setIsHidden(!isHidden)
+              localStorage.setItem(chartKey, !isHidden)
+            }}
+          >
+            {isHidden ? 'Show Chart' : 'Hide Chart'}
+          </p>
+        </div>
         <div
           className={cs({
             hidden: isHidden,
@@ -67,7 +74,7 @@ function ToggleChart() {
         </div>
       </div>
     </SilentNetworkErrorWrapper>
-  ) : null
+  )
 }
 
 export default ToggleChart

@@ -5,8 +5,8 @@ import { SentryRoute } from 'sentry'
 
 import Spinner from 'ui/Spinner'
 
-import Summary from './Summary'
 import ToggleChart from './Chart/ToggleChart'
+import Summary from './Summary'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
 const RepoContentsTable = lazy(() => import('./subroute/RepoContents'))
@@ -33,6 +33,8 @@ function CoverageTab() {
           >
             <ToggleChart />
           </SentryRoute>
+        </Switch>
+        <Switch>
           <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
             <Suspense fallback={Loader}>
               <FileViewer />
