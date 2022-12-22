@@ -20,7 +20,7 @@ function fetchHasAdmins({ provider }) {
 export const useSelfHostedHasAdmins = ({ provider }, options = {}) => {
   const opts = {
     select: ({ data }) => data?.config?.hasAdmins,
-    cacheTime: 1000 * 60 * 30, // This is not a value that changes so stale data is fine.
+    keepPreviousData: true,
     ...options,
   }
 
