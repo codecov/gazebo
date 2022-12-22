@@ -76,7 +76,7 @@ const Sparkline = ({
               key={uniqueId(dataTemplate + description)}
             >
               <td
-                className="line p-0 absolute inset-0 flex flex-1 before:content-[''] before:absolute before:inset-0"
+                className="line p-0 absolute inset-0 flex flex-1 before:content-[''] before:absolute before:inset-0 before:bg-ds-pink after:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-ds-pink after:to-white"
                 style={properties}
                 data-mode={mode}
               >
