@@ -9,8 +9,8 @@ const NoReposBlock = ({ owner }) => {
   const active = useContext(ActiveContext)
 
   return active ? (
-    <div className="text-center m-auto mt-8">
-      <h1 className="font-semibold text-3xl">No repos setup yet</h1>
+    <div className="text-center mx-4 mt-8">
+      <h1 className="font-semibold text-3xl">No repos yet</h1>
       <p className="text-base font-light my-6">
         <A to={{ pageName: owner ? 'ownerAddRepo' : 'providerAddRepo' }}>
           Select the repo
