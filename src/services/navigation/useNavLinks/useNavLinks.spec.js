@@ -564,7 +564,7 @@ describe('useNavLinks', () => {
     it('Returns the correct link with only commitSha passed', () => {
       expect(
         hookData.result.current.commitTreeView.path({ commitSha: 'sha256' })
-      ).toBe('/gl/doggo/watch/commit/sha256/tree/')
+      ).toBe('/gl/doggo/watch/commit/sha256/tree')
     })
 
     it('can override the params', () => {
@@ -573,19 +573,19 @@ describe('useNavLinks', () => {
           provider: 'bb',
           commitSha: 'sha256',
         })
-      ).toBe('/bb/doggo/watch/commit/sha256/tree/')
+      ).toBe('/bb/doggo/watch/commit/sha256/tree')
       expect(
         hookData.result.current.commitTreeView.path({
           owner: 'cat',
           commitSha: 'sha256',
         })
-      ).toBe('/gl/cat/watch/commit/sha256/tree/')
+      ).toBe('/gl/cat/watch/commit/sha256/tree')
       expect(
         hookData.result.current.commitTreeView.path({
           repo: 'sleep',
           commitSha: 'sha256',
         })
-      ).toBe('/gl/doggo/sleep/commit/sha256/tree/')
+      ).toBe('/gl/doggo/sleep/commit/sha256/tree')
     })
 
     it('accepts a commitSha option', () => {
@@ -593,7 +593,7 @@ describe('useNavLinks', () => {
         hookData.result.current.commitTreeView.path({
           commitSha: 'sha256',
         })
-      ).toBe('/gl/doggo/watch/commit/sha256/tree/')
+      ).toBe('/gl/doggo/watch/commit/sha256/tree')
     })
 
     it('accepts a tree option', () => {
