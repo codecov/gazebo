@@ -359,18 +359,6 @@ export function useNavLinks() {
         `/account/${provider}/${owner}`,
       isExternalLink: false,
     },
-    pullImpactedFiles: {
-      text: 'Impacted files',
-      path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-        }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/impactedFiles`,
-      isExternalLink: false,
-    },
     pullIndirectChanges: {
       text: 'Indirect changes',
       path: (
