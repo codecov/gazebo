@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
@@ -58,7 +59,11 @@ function PullRequestPage() {
       {resultType !== ComparisonReturnType.SUCCESFUL_COMPARISON ? (
         <ErrorBanner errorType={resultType} />
       ) : (
-        <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
+        <div
+          className={cs('grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2', {
+            'lg:grid-cols-2': pullPageTabs,
+          })}
+        >
           <article className="col-span-2">
             <div className="mb-4">
               <TabNavigation
