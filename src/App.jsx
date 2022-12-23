@@ -86,24 +86,34 @@ function App() {
               <PlanPage />
             </BaseLayout>
           </SentryRoute>
-          <SentryRoute path="/:provider/+" exact>
+          <SentryRoute path="/:provider" exact>
             <BaseLayout>
-              <HomePage />
+              <HomePage repoDisplay="All" />
             </BaseLayout>
           </SentryRoute>
-          <SentryRoute path="/:provider/" exact>
+          <SentryRoute path="/:provider/inactive" exact>
             <BaseLayout>
-              <HomePage active={true} />
+              <HomePage repoDisplay="Inactive" />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/:provider/active" exact>
+            <BaseLayout>
+              <HomePage repoDisplay="Active" />
             </BaseLayout>
           </SentryRoute>
           <SentryRoute path="/:provider/:owner/" exact>
             <BaseLayout>
-              <OwnerPage active={true} />
+              <OwnerPage repoDisplay="All" />
             </BaseLayout>
           </SentryRoute>
-          <SentryRoute path="/:provider/:owner/+" exact>
+          <SentryRoute path="/:provider/:owner/inactive" exact>
             <BaseLayout>
-              <OwnerPage />
+              <OwnerPage repoDisplay="Inactive" />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/active" exact>
+            <BaseLayout>
+              <OwnerPage repoDisplay="Active" />
             </BaseLayout>
           </SentryRoute>
           <Redirect

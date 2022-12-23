@@ -9,7 +9,7 @@ import ListRepo from 'shared/ListRepo'
 import Header from './Header'
 import Tabs from './Tabs'
 
-function HomePage({ active = false }) {
+function HomePage({ repoDisplay = '' }) {
   const { push } = useHistory()
   const { provider } = useParams()
   const { data: currentUser, isLoading } = useUser({
@@ -33,7 +33,7 @@ function HomePage({ active = false }) {
     <div className="flex flex-col gap-4">
       <Header />
       <div>
-        <ActiveContext.Provider value={active}>
+        <ActiveContext.Provider value={repoDisplay}>
           <Tabs currentUsername={currentUser?.user?.username} />
           <ListRepo canRefetch />
         </ActiveContext.Provider>
@@ -43,7 +43,7 @@ function HomePage({ active = false }) {
 }
 
 HomePage.propTypes = {
-  active: PropTypes.bool,
+  repoDisplay: PropTypes.string.isRequired,
 }
 
 export default HomePage

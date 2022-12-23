@@ -9,7 +9,7 @@ import ListRepo from 'shared/ListRepo'
 import Header from './Header'
 import Tabs from './Tabs'
 
-function OwnerPage({ active = false }) {
+function OwnerPage({ repoDisplay = '' }) {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
@@ -24,7 +24,7 @@ function OwnerPage({ active = false }) {
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />
         )}
-        <ActiveContext.Provider value={active}>
+        <ActiveContext.Provider value={repoDisplay}>
           <ListRepo
             canRefetch={ownerData.isCurrentUserPartOfOrg}
             owner={ownerData.username}
@@ -36,7 +36,7 @@ function OwnerPage({ active = false }) {
 }
 
 OwnerPage.propTypes = {
-  active: PropTypes.bool,
+  repoDisplay: PropTypes.string.isRequired,
 }
 
 export default OwnerPage

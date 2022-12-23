@@ -48,8 +48,12 @@ export function useNavLinks() {
       path: ({ provider = p } = { provider: p }) => `/${provider}`,
       isExternalLink: false,
     },
-    providerAddRepo: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}/+`,
+    providerActiveRepos: {
+      path: ({ provider = p } = { provider: p }) => `/${provider}/active`,
+      isExternalLink: false,
+    },
+    providerInactiveRepos: {
+      path: ({ provider = p } = { provider: p }) => `/${provider}/inactive`,
       isExternalLink: false,
     },
     owner: {
@@ -57,9 +61,14 @@ export function useNavLinks() {
         `/${provider}/${owner}`,
       isExternalLink: false,
     },
-    ownerAddRepo: {
+    ownerInactiveRepos: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}/+`,
+        `/${provider}/${owner}/inactive`,
+      isExternalLink: false,
+    },
+    ownerActiveRepos: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/${provider}/${owner}/active`,
       isExternalLink: false,
     },
     analytics: {

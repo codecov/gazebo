@@ -5,10 +5,12 @@ import { ActiveContext } from 'shared/context'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
-const NoReposBlock = ({ owner }) => {
-  const active = useContext(ActiveContext)
+import { repoDisplayOptions } from '../ListRepo'
 
-  return active ? (
+const NoReposBlock = ({ owner }) => {
+  const repoDisplay = useContext(ActiveContext)
+
+  return repoDisplay !== repoDisplayOptions.INACTIVE.text ? (
     <div className="text-center mx-4 mt-8">
       <h1 className="font-semibold text-3xl">No repos setup yet</h1>
       <p className="text-base font-light my-6">

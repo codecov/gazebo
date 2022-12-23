@@ -1,3 +1,4 @@
+/* */
 import PropTypes from 'prop-types'
 import { Suspense, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
@@ -16,18 +17,30 @@ const defaultQueryParams = {
   direction: orderingOptions[0]['direction'],
 }
 
+export const repoDisplayOptions = Object.freeze({
+  ACTIVE: { text: 'Active', status: true },
+  INACTIVE: { text: 'Inactive', status: false },
+  ALL: { text: 'All', status: null },
+})
+
 function ListRepo({ owner, canRefetch }) {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { push } = useHistory()
   const {
     owner: ownerLink,
-    ownerAddRepo,
+    ownerInactiveRepos,
+    ownerActiveRepos,
     provider: providerLink,
-    providerAddRepo,
+    providerActiveRepos,
+    providerInactiveRepos,
   } = useNavLinks()
 
-  const active = useContext(ActiveContext)
-  const orderOptions = active ? orderingOptions : nonActiveOrderingOptions
+  const repoDisplay = useContext(ActiveContext)
+
+  const orderOptions =
+    repoDisplay === repoDisplayOptions.ACTIVE.text
+      ? orderingOptions
+      : nonActiveOrderingOptions
 
   const sortItem =
     orderOptions.find(
@@ -42,19 +55,23 @@ function ListRepo({ owner, canRefetch }) {
     </div>
   )
 
-  function handleOwnerLinks(active) {
-    if (active) {
-      push(ownerLink.path())
+  function handleOwnerLinks(repoDisplay) {
+    if (repoDisplay === repoDisplayOptions.ACTIVE.text) {
+      push(ownerActiveRepos.path())
+    } else if (repoDisplay === repoDisplayOptions.INACTIVE.text) {
+      push(ownerInactiveRepos.path())
     } else {
-      push(ownerAddRepo.path())
+      push(ownerLink.path())
     }
   }
 
-  function handleUserLinks(active) {
-    if (active) {
-      push(providerLink.path())
+  function handleUserLinks(repoDisplay) {
+    if (repoDisplay === repoDisplayOptions.ACTIVE.text) {
+      push(providerActiveRepos.path())
+    } else if (repoDisplay === repoDisplayOptions.INACTIVE.text) {
+      push(providerInactiveRepos.path())
     } else {
-      push(providerAddRepo.path())
+      push(providerLink.path())
     }
   }
 
@@ -69,12 +86,12 @@ function ListRepo({ owner, canRefetch }) {
             direction: sort.direction,
           })
         }}
-        active={active}
-        setActive={(active) => {
+        repoDisplay={repoDisplay}
+        setRepoDisplay={(repoDisplay) => {
           if (owner) {
-            handleOwnerLinks(active)
+            handleOwnerLinks(repoDisplay)
           } else {
-            handleUserLinks(active)
+            handleUserLinks(repoDisplay)
           }
         }}
         setSearchValue={(search) => {

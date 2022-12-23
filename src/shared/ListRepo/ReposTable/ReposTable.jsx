@@ -13,6 +13,8 @@ import Table from 'ui/Table'
 import NoReposBlock from './NoReposBlock'
 import RepoTitleLink from './RepoTitleLink'
 
+import { repoDisplayOptions } from '../ListRepo'
+
 const tableActive = [
   {
     id: 'title',
@@ -126,7 +128,11 @@ function transformRepoToTable({
 
 // eslint-disable-next-line complexity
 function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
-  const active = useContext(ActiveContext)
+  const repoDisplay = useContext(ActiveContext)
+  const option = Object.keys(repoDisplayOptions).find((key) => {
+    return repoDisplayOptions[key].text === repoDisplay
+  })
+  const active = repoDisplayOptions[option].status
   const { data: userData } = useUser()
   const { data: ownerData } = useOwner({
     username: owner || userData?.user?.username,
@@ -150,7 +156,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
 
   return (
     <>
-      <Table data={dataTable} columns={active ? tableActive : tableInactive} />
+      <Table data={dataTable} columns={!active ? tableInactive : tableActive} />
       {data?.repos?.length
         ? hasNextPage && (
             <div className="w-full mt-4 flex justify-center">
