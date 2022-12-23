@@ -21,6 +21,7 @@ const invoice = {
   amountRemaining: 0,
   total: 62551,
   subtotal: 62551,
+  defaultPaymentMethod: 'Master Card',
   invoicePdf:
     'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_IfFo7ZObDS0WosDNKdA6ZlcEzZ4fDkS/pdf',
   lineItems: [
@@ -123,6 +124,10 @@ describe('InvoiceDetail', () => {
       ).toBeInTheDocument()
     })
 
+    it('renders the default payment method', () => {
+      expect(screen.getByText(/Master Card/i)).toBeInTheDocument()
+    })
+
     it('renders the subtotal', () => {
       expect(screen.getByText(/subtotal/i)).toBeInTheDocument()
       expect(screen.getAllByText(/\$625\.51/i)[0]).toBeInTheDocument()
@@ -162,6 +167,21 @@ describe('InvoiceDetail', () => {
 
     it('renders the total', () => {
       expect(screen.getAllByText(/\$625\.51/i)[1]).toBeInTheDocument()
+    })
+  })
+
+  describe('when the invoice has a discount', () => {
+    beforeEach(() => {
+      setup({
+        amountDue: 10000, // 100$
+        subtotal: 9000, // 190$
+        total: 9000,
+      })
+    })
+
+    it('renders the discount', () => {
+      expect(screen.getByText(/Discount/i)).toBeInTheDocument()
+      expect(screen.getByText(/\$-10.00/i)).toBeInTheDocument()
     })
   })
 })

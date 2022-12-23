@@ -16,7 +16,7 @@ function InvoiceFooter({ invoice }) {
             </tr>
             {discount > 0 && (
               <tr className="border-t-2">
-                <td className="p-2">Dicsount</td>
+                <td className="p-2">Discount</td>
                 <td className="text-end">$-{(discount / 100).toFixed(2)}</td>
               </tr>
             )}
