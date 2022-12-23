@@ -23,18 +23,6 @@ function CoverageTab() {
       <Summary />
       <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
         <Switch>
-          <SentryRoute
-            path={[
-              '/:provider/:owner/:repo/tree/:branch/:path+',
-              '/:provider/:owner/:repo/tree/:branch',
-              '/:provider/:owner/:repo',
-            ]}
-            exact
-          >
-            <ToggleChart />
-          </SentryRoute>
-        </Switch>
-        <Switch>
           <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
             <Suspense fallback={Loader}>
               <FileViewer />
@@ -48,6 +36,7 @@ function CoverageTab() {
             ]}
             exact
           >
+            <ToggleChart />
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
