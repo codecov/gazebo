@@ -4,32 +4,36 @@ function InvoiceFooter({ invoice }) {
   const discount = invoice.amountDue - invoice.subtotal
 
   return (
-    <div className="flex flex-col gap-8 text-base">
+    <div className="flex flex-col gap-10 text-base">
       <div className="flex justify-end">
-        <table className="text-lg w-1/5">
+        <table className="text-lg w-2/5">
           <tbody>
-            <tr>
-              <td>Subtotal</td>
-              <td>${(invoice.subtotal / 100).toFixed(2)}</td>
+            <tr className="border-t-2">
+              <td className="w-4/5 p-2">Subtotal</td>
+              <td className="text-end">
+                ${(invoice.subtotal / 100).toFixed(2)}
+              </td>
             </tr>
             {discount > 0 && (
-              <tr>
-                <td>Dicsount</td>
-                <td>$-{(discount / 100).toFixed(2)}</td>
+              <tr className="border-t-2">
+                <td className="p-2">Dicsount</td>
+                <td className="text-end">$-{(discount / 100).toFixed(2)}</td>
               </tr>
             )}
-            <tr>
-              <td>Total</td>
-              <td>${(invoice.total / 100).toFixed(2)}</td>
+            <tr className="border-t-2">
+              <td className="p-2">Total</td>
+              <td className="text-end">${(invoice.total / 100).toFixed(2)}</td>
             </tr>
-            <tr>
-              <td>Amount paid</td>
-              <td> ${(invoice.amountPaid / 100).toFixed(2)}</td>
+            <tr className="border-t-2">
+              <td className="font-semibold p-2">Amount paid</td>
+              <td className="text-end">
+                ${(invoice.amountPaid / 100).toFixed(2)}
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <footer>{invoice.footer}</footer>
+      <pre className="font-sans whitespace-pre-wrap">{invoice.footer}</pre>
     </div>
   )
 }

@@ -3,15 +3,17 @@ import PropTypes from 'prop-types'
 function InvoiceItems({ invoice }) {
   return (
     <table className="w-full text-left text-base font-normal">
-      <tbody>
+      <thead>
         <tr className="border-b-2 border-black b-y-4">
           <th>Description</th>
-          <th>Amount</th>
+          <th className="text-right">Amount</th>
         </tr>
+      </thead>
+      <tbody>
         {invoice.lineItems.map((line, i) => (
           <tr key={i}>
             <td className="p-2">{line.description}</td>
-            <td>{(line.amount / 100).toFixed(2)}</td>
+            <td className=" text-right">${(line.amount / 100).toFixed(2)}</td>
           </tr>
         ))}
       </tbody>
