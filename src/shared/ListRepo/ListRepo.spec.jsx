@@ -35,7 +35,7 @@ describe('ListRepo', () => {
     })
 
     it('renders the children', () => {
-      expect(screen.getByText(/Enabled/)).toBeInTheDocument()
+      expect(screen.getByText(/Inactive/)).toBeInTheDocument()
     })
 
     it('renders the repo table', () => {
@@ -77,37 +77,43 @@ describe('ListRepo', () => {
       setup(null, false, '/gh', '/:provider')
       screen
         .getByRole('button', {
-          name: /enabled/i,
+          name: /Active/,
         })
         .click()
-      expect(testLocation.pathname).toEqual(expect.not.stringContaining('+'))
+      expect(testLocation.pathname).toEqual(
+        expect.not.stringContaining('inactive')
+      )
+      expect(testLocation.pathname).toEqual(expect.stringContaining('active'))
     })
     it('switches to inactive repos', () => {
       setup(null, false, '/gh', '/:provider')
       screen
         .getByRole('button', {
-          name: /Not yet setup/i,
+          name: /Inactive/i,
         })
         .click()
-      expect(testLocation.pathname).toEqual(expect.stringContaining('+'))
+      expect(testLocation.pathname).toEqual(expect.stringContaining('inactive'))
     })
     it('switches to active repos owner page', () => {
       setup('owner', false, '/gh', '/:provider/:owner')
       screen
         .getByRole('button', {
-          name: /enabled/i,
+          name: /Active/,
         })
         .click()
-      expect(testLocation.pathname).toEqual(expect.not.stringContaining('+'))
+      expect(testLocation.pathname).toEqual(
+        expect.not.stringContaining('inactive')
+      )
+      expect(testLocation.pathname).toEqual(expect.stringContaining('active'))
     })
     it('switches to inactive repos owner page', () => {
       setup('owner', false, '/gh', '/:provider/:owner')
       screen
         .getByRole('button', {
-          name: /Not yet setup/i,
+          name: /Inactive/i,
         })
         .click()
-      expect(testLocation.pathname).toEqual(expect.stringContaining('+'))
+      expect(testLocation.pathname).toEqual(expect.stringContaining('inactive'))
     })
   })
 
@@ -135,15 +141,14 @@ describe('ListRepo', () => {
   describe('update params after usign select', () => {
     beforeEach(() => {
       setup()
-      const button = screen.getByText('Most recent commit')
-      userEvent.click(button)
+      userEvent.click(screen.getByText('Most recent commit'))
     })
 
     it('renders the option user the custom rendered', () => {
       const options = screen.getAllByRole('option')
-      userEvent.click(options[3])
-      expect(testLocation.state.direction).toBe('ASC')
-      expect(testLocation.state.ordering).toBe('COVERAGE')
+      userEvent.click(options[1])
+      expect(testLocation.state.direction).toBe('DESC')
+      expect(testLocation.state.ordering).toBe('NAME')
     })
   })
 
@@ -151,12 +156,12 @@ describe('ListRepo', () => {
     it('render sorting for non active repos', () => {
       setup(null, false, '')
       const buttons = screen.getAllByRole('button')
-      expect(buttons.length).toBe(3)
+      expect(buttons.length).toBe(4)
     })
     it('render sorting for non active reposL', () => {
       setup(null, true, '')
       const buttons = screen.getAllByRole('button')
-      expect(buttons.length).toBe(3)
+      expect(buttons.length).toBe(4)
     })
   })
 })

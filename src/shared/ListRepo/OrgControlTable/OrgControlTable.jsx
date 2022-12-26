@@ -45,7 +45,7 @@ function OrgControlTable({
     <div className="flex justify-between items-center">
       <div className="m-4 gap-2 sm:mx-0 flex items-center justify-items-stretch">
         <OptionButton
-          repoDisplay={repoDisplay}
+          active={repoDisplay}
           onChange={(option) => setRepoDisplay(option.text)}
           options={optionButtonOptions}
         />

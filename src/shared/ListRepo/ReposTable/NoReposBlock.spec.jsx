@@ -7,14 +7,14 @@ import { ActiveContext } from 'shared/context'
 import NoReposBlock from './NoReposBlock'
 
 describe('NoReposBlock', () => {
-  function setup({ owner, active }) {
+  function setup({ owner, repoDisplay }) {
     const props = {
       owner,
     }
     render(
       <MemoryRouter>
         <Route>
-          <ActiveContext.Provider value={active}>
+          <ActiveContext.Provider value={repoDisplay}>
             <NoReposBlock {...props} />
           </ActiveContext.Provider>
         </Route>
@@ -26,7 +26,7 @@ describe('NoReposBlock', () => {
     beforeEach(() => {
       setup({
         owner: 'rula',
-        active: true,
+        repoDisplay: 'Active',
       })
     })
 
@@ -45,7 +45,7 @@ describe('NoReposBlock', () => {
     beforeEach(() => {
       setup({
         owner: 'rula',
-        active: false,
+        repoDisplay: 'Inactive',
       })
     })
 

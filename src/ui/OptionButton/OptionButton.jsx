@@ -1,15 +1,14 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-function OptionButton({ repoDisplay, options, onChange }) {
+function OptionButton({ active, options, onChange }) {
   return (
     <div className="rounded border max-w-max">
       {options.map((o, index) => {
         return (
           <button
             className={cs('py-1 px-2 text-sm cursor-pointer', {
-              'bg-ds-blue-darker text-white font-semibold':
-                repoDisplay === o.text,
+              'bg-ds-blue-darker text-white font-semibold': active === o.text,
               'rounded-l': index === 0,
               'rounded-r': index === options.length - 1,
             })}
@@ -27,7 +26,7 @@ function OptionButton({ repoDisplay, options, onChange }) {
 }
 
 OptionButton.propTypes = {
-  repoDisplay: PropTypes.string.isRequired,
+  active: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       text: PropTypes.string,
