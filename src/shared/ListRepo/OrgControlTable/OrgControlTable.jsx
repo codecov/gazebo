@@ -42,33 +42,37 @@ function OrgControlTable({
   )
 
   return (
-    <div className="m-4 gap-2 sm:mx-0 flex items-center justify-items-stretch">
-      <OptionButton
-        repoDisplay={repoDisplay}
-        onChange={(option) => setRepoDisplay(option.text)}
-        options={optionButtonOptions}
-      />
-      <TextInput
-        dataMarketing="search-repos-list"
-        value={search}
-        placeholder="Search"
-        onChange={(e) => setSearch(e.target.value)}
-        data-testid="org-control-search"
-      />
-      {canRefetch && <ResyncButton />}
-      <GithubPrivateScopeLogin />
-      <Select
-        dataMarketing="repo-list-order-selector"
-        ariaName="Sort Order"
-        value={sortItem}
-        items={
-          repoDisplay === repoDisplayOptions.ACTIVE.text
-            ? orderingOptions
-            : nonActiveOrderingOptions
-        }
-        onChange={setSortItem}
-        renderItem={(option) => option.text}
-      />
+    <div className="flex justify-between items-center">
+      <div className="m-4 gap-2 sm:mx-0 flex items-center justify-items-stretch">
+        <OptionButton
+          repoDisplay={repoDisplay}
+          onChange={(option) => setRepoDisplay(option.text)}
+          options={optionButtonOptions}
+        />
+        <TextInput
+          dataMarketing="search-repos-list"
+          value={search}
+          placeholder="Search"
+          onChange={(e) => setSearch(e.target.value)}
+          data-testid="org-control-search"
+        />
+        {canRefetch && <ResyncButton />}
+        <GithubPrivateScopeLogin />
+      </div>
+      <div>
+        <Select
+          dataMarketing="repo-list-order-selector"
+          ariaName="Sort Order"
+          value={sortItem}
+          items={
+            repoDisplay === repoDisplayOptions.ACTIVE.text
+              ? orderingOptions
+              : nonActiveOrderingOptions
+          }
+          onChange={setSortItem}
+          renderItem={(option) => option.text}
+        />
+      </div>
     </div>
   )
 }
