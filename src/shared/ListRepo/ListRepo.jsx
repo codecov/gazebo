@@ -38,9 +38,9 @@ function ListRepo({ owner, canRefetch }) {
   const repoDisplay = useContext(ActiveContext)
 
   const orderOptions =
-    repoDisplay === repoDisplayOptions.ACTIVE.text
-      ? orderingOptions
-      : nonActiveOrderingOptions
+    repoDisplay === repoDisplayOptions.INACTIVE.text
+      ? nonActiveOrderingOptions
+      : orderingOptions
 
   const sortItem =
     orderOptions.find(
