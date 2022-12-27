@@ -334,5 +334,11 @@ describe('PullRequestPage', () => {
     it('renders indirect changes tab', () => {
       expect(screen.getByText(/Indirect changes/i)).toBeInTheDocument()
     })
+
+    it('renders the name of the header and coverage labels', () => {
+      expect(screen.getByText('covered')).toBeInTheDocument()
+      expect(screen.getByText('partial')).toBeInTheDocument()
+      expect(screen.getByText('uncovered')).toBeInTheDocument()
+    })
   })
 })

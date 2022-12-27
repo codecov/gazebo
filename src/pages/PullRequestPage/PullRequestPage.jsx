@@ -9,6 +9,7 @@ import NotFound from 'pages/NotFound'
 import { usePull } from 'services/pull'
 import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
+import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -65,7 +66,7 @@ function PullRequestPage() {
           })}
         >
           <article className="col-span-2">
-            <div className="mb-4">
+            <div className="flex justify-between">
               <TabNavigation
                 tabs={[
                   {
@@ -82,6 +83,7 @@ function PullRequestPage() {
                     : []),
                 ]}
               />
+              <ToggleHeader coverageIsLoading={false} />
             </div>
             <Switch>
               <Suspense fallback={Loader}>
