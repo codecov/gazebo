@@ -13,7 +13,6 @@ import ReposTable from './ReposTable'
 
 import { repoDisplayOptions } from '../ListRepo'
 
-
 const queryClient = new QueryClient()
 const server = setupServer()
 
@@ -25,9 +24,14 @@ afterEach(() => {
 afterAll(() => server.close)
 
 describe('ReposTable', () => {
-  let props
+  let props, repoDisplay
 
-  function setup({ propObj = {}, edges = [], isCurrentUserPartOfOrg = true }) {
+  function setup({
+    propObj = {},
+    edges = [],
+    isCurrentUserPartOfOrg = true,
+    repoDisplayPassed = '',
+  }) {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(
@@ -111,11 +115,14 @@ describe('ReposTable', () => {
       sortItem: orderingOptions[0],
       ...propObj,
     }
+
+    repoDisplay = repoDisplayPassed
   }
 
   describe('when rendered with active true', () => {
     beforeEach(() => {
       setup({
+        repoDisplayPassed: repoDisplayOptions.ALL.text,
         edges: [
           {
             node: {
@@ -164,7 +171,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -184,7 +191,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -215,7 +222,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -238,7 +245,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -258,7 +265,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -278,6 +285,7 @@ describe('ReposTable', () => {
     describe('user belongs to org', () => {
       beforeEach(() => {
         setup({
+          repoDisplayPassed: repoDisplayOptions.ALL.text,
           edges: [
             {
               node: {
@@ -327,7 +335,7 @@ describe('ReposTable', () => {
           <QueryClientProvider client={queryClient}>
             <MemoryRouter initialEntries={['/gh']}>
               <Route path="/:provider">
-                <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+                <ActiveContext.Provider value={repoDisplay}>
                   <ReposTable {...props} />
                 </ActiveContext.Provider>
               </Route>
@@ -358,6 +366,7 @@ describe('ReposTable', () => {
     describe('user does not belongs to org', () => {
       beforeEach(() => {
         setup({
+          repoDisplayPassed: repoDisplayOptions.INACTIVE.text,
           isCurrentUserPartOfOrg: false,
           edges: [
             {
@@ -408,7 +417,7 @@ describe('ReposTable', () => {
           <QueryClientProvider client={queryClient}>
             <MemoryRouter initialEntries={['/gh']}>
               <Route path="/:provider">
-                <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+                <ActiveContext.Provider value={repoDisplay}>
                   <ReposTable {...props} />
                 </ActiveContext.Provider>
               </Route>
@@ -434,9 +443,7 @@ describe('ReposTable', () => {
           <QueryClientProvider client={queryClient}>
             <MemoryRouter initialEntries={['/gh']}>
               <Route path="/:provider">
-                <ActiveContext.Provider
-                  value={repoDisplayOptions.INACTIVE.text}
-                >
+                <ActiveContext.Provider value={repoDisplay}>
                   <ReposTable {...props} />
                 </ActiveContext.Provider>
               </Route>
@@ -458,7 +465,7 @@ describe('ReposTable', () => {
 
   describe('when rendered empty repos', () => {
     beforeEach(() => {
-      setup({ edges: [] })
+      setup({ edges: [], repoDisplayPassed: repoDisplayOptions.ALL.text })
     })
 
     it('renders no repos detected', async () => {
@@ -466,7 +473,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -486,7 +493,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -508,7 +515,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -528,7 +535,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -550,7 +557,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -571,6 +578,7 @@ describe('ReposTable', () => {
   describe('when rendered empty search', () => {
     beforeEach(() => {
       setup({
+        repoDisplayPassed: repoDisplayOptions.ALL.text,
         edges: [],
         propObj: { searchValue: 'something' },
       })
@@ -580,7 +588,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -599,6 +607,7 @@ describe('ReposTable', () => {
   describe('render next page button', () => {
     beforeEach(() => {
       setup({
+        repoDisplayPassed: repoDisplayOptions.ALL.text,
         edges: [
           {
             node: {
@@ -622,7 +631,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
@@ -642,7 +651,7 @@ describe('ReposTable', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
             <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplayOptions.ALL.text}>
+              <ActiveContext.Provider value={repoDisplay}>
                 <ReposTable {...props} />
               </ActiveContext.Provider>
             </Route>
