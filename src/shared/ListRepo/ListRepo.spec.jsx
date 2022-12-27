@@ -184,7 +184,7 @@ describe('ListRepo', () => {
   })
 
   describe('renders sorting options fo repos', () => {
-    it('render sorting for all/inactive repos', () => {
+    it('render sorting for all repos', () => {
       setup()
 
       const sortBtn = screen.getByRole('button', {
@@ -210,6 +210,20 @@ describe('ListRepo', () => {
 
       const options = screen.getAllByRole('option')
       expect(options.length).toBe(6)
+    })
+
+    it('render sorting for inactive repos', () => {
+      setup(null, '', '', repoDisplayOptions.INACTIVE.text)
+
+      const sortBtn = screen.getByRole('button', {
+        name: 'Sort Order',
+      })
+      expect(sortBtn).toBeInTheDocument()
+
+      sortBtn.click()
+
+      const options = screen.getAllByRole('option')
+      expect(options.length).toBe(2)
     })
   })
 })
