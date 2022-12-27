@@ -113,6 +113,9 @@ fragment ImpactedFilesOnPull on Pull {
         baseCoverage {
           percentCovered
         }
+        segments {
+          hasUnintendedChanges
+        }
         headCoverage {
           percentCovered
         }

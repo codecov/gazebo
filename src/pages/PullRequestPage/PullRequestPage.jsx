@@ -7,6 +7,7 @@ import { SentryRoute } from 'sentry'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import { usePull } from 'services/pull'
+import { IndirectChangesOnly } from 'shared/context/indirectChangesContext'
 import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
@@ -18,6 +19,7 @@ import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Flags from './Flags'
 import Header from './Header'
+import IndirectChangesInfo from './IndirectChangesInfo'
 import CompareSummary from './Summary'
 
 const Root = lazy(() => import('./subroute/Root'))
@@ -91,7 +93,9 @@ function PullRequestPage() {
                   path="/:provider/:owner/:repo/pull/:pullId"
                   exact={true}
                 >
-                  <Root />
+                  <IndirectChangesOnly.Provider value={false}>
+                    <Root />
+                  </IndirectChangesOnly.Provider>
                 </SentryRoute>
                 {pullPageTabs && (
                   <>
@@ -99,7 +103,10 @@ function PullRequestPage() {
                       path="/:provider/:owner/:repo/pull/:pullId/indirectChanges"
                       exact={true}
                     >
-                      indirect changes
+                      <IndirectChangesOnly.Provider value={true}>
+                        <IndirectChangesInfo />
+                        <Root />
+                      </IndirectChangesOnly.Provider>
                     </SentryRoute>
                     <SentryRoute
                       path="/:provider/:owner/:repo/pull/:pullId/commits"

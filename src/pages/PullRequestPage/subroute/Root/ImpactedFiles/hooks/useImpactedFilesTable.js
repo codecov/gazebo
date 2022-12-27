@@ -1,9 +1,10 @@
 import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
-import { useCallback, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
+import { IndirectChangesOnly } from 'shared/context/indirectChangesContext'
 
 const orderingDirection = Object.freeze({
   desc: 'DESC',
@@ -26,9 +27,26 @@ function getFilters({ sortBy }) {
   }
 }
 
-function transformImpactedFilesData({ pull }) {
-  const compareWithBase = pull?.compareWithBase
-  const impactedFiles = compareWithBase?.impactedFiles?.map((impactedFile) => {
+function extractFilesWithIndirectChanges({ files }) {
+  const impactedFiles = files?.filter((impactedFile) => {
+    const segmentsWithIndirectChanes = impactedFile.segments.filter(
+      (segment) => segment.hasUnintendedChanges
+    )
+
+    return !!segmentsWithIndirectChanes.length
+  })
+
+  return impactedFiles
+}
+
+function transformImpactedFilesData({ pull, indirectChangesOnly = false }) {
+  const files = indirectChangesOnly
+    ? extractFilesWithIndirectChanges({
+        files: pull?.compareWithBase?.impactedFiles,
+      })
+    : pull?.compareWithBase?.impactedFiles
+
+  const impactedFiles = files?.map((impactedFile) => {
     const headCoverage = impactedFile?.headCoverage?.percentCovered
     const patchCoverage = impactedFile?.patchCoverage?.percentCovered
     const baseCoverage = impactedFile?.baseCoverage?.percentCovered
@@ -52,9 +70,9 @@ function transformImpactedFilesData({ pull }) {
   return {
     headState: pull?.head?.state,
     impactedFiles,
-    pullHeadCoverage: compareWithBase?.headTotals?.percentCovered,
-    pullPatchCoverage: compareWithBase?.patchTotals?.percentCovered,
-    pullBaseCoverage: compareWithBase?.baseTotals?.percentCovered,
+    pullHeadCoverage: pull?.compareWithBase?.headTotals?.percentCovered,
+    pullPatchCoverage: pull?.compareWithBase?.patchTotals?.percentCovered,
+    pullBaseCoverage: pull?.compareWithBase?.baseTotals?.percentCovered,
   }
 }
 
@@ -75,8 +93,11 @@ export function useImpactedFilesTable() {
     },
   })
 
+  const indirectChangesOnly = useContext(IndirectChangesOnly)
+
   const data = transformImpactedFilesData({
     pull: pullData?.pull,
+    indirectChangesOnly,
   })
 
   const handleSort = useCallback(
