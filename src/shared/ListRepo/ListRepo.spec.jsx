@@ -2,7 +2,9 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import ListRepo from './ListRepo'
+import { ActiveContext } from 'shared/context'
+
+import ListRepo, { repoDisplayOptions } from './ListRepo'
 
 jest.mock(
   './OrgControlTable/GithubPrivateScopeLogin',
@@ -14,17 +16,19 @@ jest.mock('./ReposTable', () => () => 'ReposTable')
 describe('ListRepo', () => {
   let testLocation
 
-  function setup(owner = null, url = '', path = '') {
+  function setup(owner = null, url = '', path = '', repoDisplay = '') {
     render(
       <MemoryRouter initialEntries={[url]}>
-        <ListRepo owner={owner} canRefetch />
-        <Route
-          path={path}
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
+        <ActiveContext.Provider value={repoDisplay}>
+          <ListRepo owner={owner} canRefetch />
+          <Route
+            path={path}
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </ActiveContext.Provider>
       </MemoryRouter>
     )
   }
@@ -96,7 +100,7 @@ describe('ListRepo', () => {
       expect(testLocation.pathname).toEqual(expect.stringContaining('inactive'))
     })
     it('switches to all repos page', () => {
-      setup('owner', '/gh', '/:provider')
+      setup(null, '/gh', '/:provider')
       screen
         .getByRole('button', {
           name: /All/,
@@ -109,6 +113,7 @@ describe('ListRepo', () => {
         expect.not.stringContaining('active')
       )
     })
+
     it('switches to inactive repos owner page', () => {
       setup('owner', '/gh', '/:provider/:owner')
       screen
@@ -117,6 +122,15 @@ describe('ListRepo', () => {
         })
         .click()
       expect(testLocation.pathname).toEqual(expect.stringContaining('inactive'))
+    })
+    it('switches to active repos owner page', () => {
+      setup('owner', '/gh', '/:provider/:owner')
+      screen
+        .getByRole('button', {
+          name: /Active/,
+        })
+        .click()
+      expect(testLocation.pathname).toEqual(expect.stringContaining('active'))
     })
     it('switches to all repos owner page', () => {
       setup('owner', '/gh/owner', '/:provider/:owner')
@@ -182,6 +196,20 @@ describe('ListRepo', () => {
 
       const options = screen.getAllByRole('option')
       expect(options.length).toBe(2)
+    })
+
+    it('render sorting for active repos', () => {
+      setup(null, '', '', repoDisplayOptions.ACTIVE.text)
+
+      const sortBtn = screen.getByRole('button', {
+        name: 'Sort Order',
+      })
+      expect(sortBtn).toBeInTheDocument()
+
+      sortBtn.click()
+
+      const options = screen.getAllByRole('option')
+      expect(options.length).toBe(6)
     })
   })
 })
