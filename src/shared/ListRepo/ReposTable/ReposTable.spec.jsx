@@ -122,7 +122,7 @@ describe('ReposTable', () => {
   describe('when rendered with active true', () => {
     beforeEach(() => {
       setup({
-        repoDisplayPassed: repoDisplayOptions.ALL.text,
+        repoDisplayPassed: repoDisplayOptions.ACTIVE.text,
         edges: [
           {
             node: {
@@ -285,7 +285,7 @@ describe('ReposTable', () => {
     describe('user belongs to org', () => {
       beforeEach(() => {
         setup({
-          repoDisplayPassed: repoDisplayOptions.ALL.text,
+          repoDisplayPassed: repoDisplayOptions.INACTIVE.text,
           edges: [
             {
               node: {
@@ -670,6 +670,94 @@ describe('ReposTable', () => {
 
       const newlyLoadedRepo = await screen.findByText('Repo name extra')
       expect(newlyLoadedRepo).toBeInTheDocument()
+    })
+  })
+  describe('when rendered with all repos', () => {
+    beforeEach(() => {
+      setup({
+        repoDisplayPassed: repoDisplayOptions.ALL.text,
+        edges: [
+          {
+            node: {
+              private: false,
+              activated: true,
+              author: {
+                username: 'owner1',
+              },
+              name: 'Repo name 1',
+              latestCommitAt: subDays(new Date(), 3).toISOString(),
+              coverage: 0,
+              active: true,
+            },
+          },
+          {
+            node: {
+              private: true,
+              activated: true,
+              author: {
+                username: 'owner1',
+              },
+              name: 'Repo name 2',
+              latestCommitAt: subDays(new Date(), 2).toISOString(),
+              coverage: 100,
+              active: true,
+            },
+          },
+          {
+            node: {
+              private: true,
+              activated: true,
+              author: {
+                username: 'owner1',
+              },
+              name: 'Repo name 3',
+              latestCommitAt: subDays(new Date(), 5).toISOString(),
+              coverage: null,
+              active: false,
+            },
+          },
+        ],
+      })
+    })
+
+    it('renders all repos', async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/gh']}>
+            <Route path="/:provider">
+              <ActiveContext.Provider value={repoDisplay}>
+                <ReposTable {...props} />
+              </ActiveContext.Provider>
+            </Route>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+
+      await waitFor(() => queryClient.isFetching())
+      await waitFor(() => !queryClient.isFetching())
+
+      const buttons = await screen.findAllByText(/Repo name/)
+      expect(buttons.length).toBe(3)
+    })
+
+    it('renders not yet set up for inactive repos', async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/gh']}>
+            <Route path="/:provider">
+              <ActiveContext.Provider value={repoDisplay}>
+                <ReposTable {...props} />
+              </ActiveContext.Provider>
+            </Route>
+          </MemoryRouter>
+        </QueryClientProvider>
+      )
+
+      await waitFor(() => queryClient.isFetching())
+      await waitFor(() => !queryClient.isFetching())
+
+      const label = await screen.findByText(/Not yet enabled/)
+      expect(label).toBeInTheDocument()
     })
   })
 })
