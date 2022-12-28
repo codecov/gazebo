@@ -6,6 +6,7 @@ import NotFound from 'pages/NotFound'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
 import { useOwner } from 'services/user'
+import { ActiveContext } from 'shared/context'
 import ReposTable from 'shared/ListRepo/ReposTable'
 
 import ChartSelectors from './ChartSelectors'
@@ -55,12 +56,14 @@ function AnalyticsPage() {
       />
       <Suspense fallback={<LogoSpinner />}>
         <Chart provider={provider} owner={owner} params={params} />
-        <ReposTable
-          owner={owner}
-          sortItem={sortItem}
-          searchValue={params.search}
-          filterValues={params?.repositories}
-        />
+        <ActiveContext.Provider value="Active">
+          <ReposTable
+            owner={owner}
+            sortItem={sortItem}
+            searchValue={params.search}
+            filterValues={params?.repositories}
+          />
+        </ActiveContext.Provider>
       </Suspense>
     </div>
   )
