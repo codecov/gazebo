@@ -45,6 +45,11 @@ const pull = {
       coverage: 92.12,
     },
     changeWithParent: 38.94,
+    segments: [
+      {
+        hasUnintendedChanges: true,
+      },
+    ],
   },
 }
 

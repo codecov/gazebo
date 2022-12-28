@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
 import { usePull } from 'services/pull'
+import { IndirectChangesOnly } from 'shared/context/indirectChangesContext'
 
 import { useImpactedFilesTable } from './useImpactedFilesTable'
 
@@ -12,6 +13,12 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => {}),
 }))
 jest.mock('services/pull')
+
+const wrapper = ({ children, indirectChangesOnly }) => (
+  <IndirectChangesOnly.Provider value={indirectChangesOnly}>
+    {children}
+  </IndirectChangesOnly.Provider>
+)
 
 const mockImpactedFiles = [
   {
@@ -56,7 +63,7 @@ let mockPull = {
 
 describe('useRepoContentsTable', () => {
   let hookData
-  function setup(pullData = mockPull) {
+  function setup(pullData = mockPull, indirectChangesOnly = false) {
     useParams.mockReturnValue({
       owner: 'Rabee-AbuBaker',
       provider: 'gh',
@@ -65,7 +72,12 @@ describe('useRepoContentsTable', () => {
     })
     usePull.mockReturnValue(pullData)
 
-    hookData = renderHook(() => useImpactedFilesTable({}))
+    hookData = renderHook(() => useImpactedFilesTable({}), {
+      wrapper,
+      initialProps: {
+        indirectChangesOnly,
+      },
+    })
   }
 
   describe('when handleSort is triggered', () => {
@@ -164,6 +176,71 @@ describe('useRepoContentsTable', () => {
     })
 
     it('returns data', async () => {
+      expect(hookData.result.current.data).toEqual({
+        headState: 'PROCESSED',
+        impactedFiles: [
+          {
+            changeCoverage: NaN,
+            fileName: 'mafs.js',
+            hasHeadOrPatchCoverage: true,
+            headCoverage: undefined,
+            headName: 'flag1/mafs.js',
+            isCriticalFile: true,
+            patchCoverage: 27.43,
+          },
+        ],
+        pullBaseCoverage: 27.35,
+        pullHeadCoverage: 74.2,
+        pullPatchCoverage: 92.12,
+      })
+    })
+  })
+
+  describe('when when called with direct changes only context set to true impacted files', () => {
+    beforeEach(() => {
+      const mockImpactedFiles = [
+        {
+          isCriticalFile: true,
+          fileName: 'mafs.js',
+          headName: 'flag1/mafs.js',
+          baseCoverage: {
+            percentCovered: undefined,
+          },
+          headCoverage: {
+            percentCovered: undefined,
+          },
+          patchCoverage: {
+            percentCovered: 27.43,
+          },
+          segments: [
+            { hasUnintendedChanges: false },
+            { hasUnintendedChanges: false },
+          ],
+        },
+        {
+          isCriticalFile: true,
+          fileName: 'mafs.js',
+          headName: 'flag1/mafs.js',
+          baseCoverage: {
+            percentCovered: undefined,
+          },
+          headCoverage: {
+            percentCovered: undefined,
+          },
+          patchCoverage: {
+            percentCovered: 27.43,
+          },
+          segments: [
+            { hasUnintendedChanges: true },
+            { hasUnintendedChanges: false },
+          ],
+        },
+      ]
+      mockPull.data.pull.compareWithBase.impactedFiles = mockImpactedFiles
+      setup(mockPull, true)
+    })
+
+    it('returns data that includes unintended changes', async () => {
       expect(hookData.result.current.data).toEqual({
         headState: 'PROCESSED',
         impactedFiles: [
