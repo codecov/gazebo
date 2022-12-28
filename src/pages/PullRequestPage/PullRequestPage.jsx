@@ -65,24 +65,24 @@ function PullRequestPage() {
             'lg:grid-cols-2': pullPageTabs,
           })}
         >
-          <article className="col-span-2">
-            <div className="flex justify-between">
-              <TabNavigation
-                tabs={[
-                  {
-                    pageName: 'pullDetail',
-                    children: 'Impacted files',
-                    exact: true,
-                  },
-                  ...(pullPageTabs
-                    ? [
-                        { pageName: 'pullIndirectChanges' },
-                        { pageName: 'pullCommits' },
-                        { pageName: 'pullFlags' },
-                      ]
-                    : []),
-                ]}
-              />
+          <article className="col-span-2 flex flex-col">
+            <TabNavigation
+              tabs={[
+                {
+                  pageName: 'pullDetail',
+                  children: 'Impacted files',
+                  exact: true,
+                },
+                ...(pullPageTabs
+                  ? [
+                      { pageName: 'pullIndirectChanges' },
+                      { pageName: 'pullCommits' },
+                      { pageName: 'pullFlags' },
+                    ]
+                  : []),
+              ]}
+            />
+            <div className="md:mt-[-25px] md:pb-2 w-fit self-end">
               <ToggleHeader coverageIsLoading={false} />
             </div>
             <Switch>
@@ -122,12 +122,14 @@ function PullRequestPage() {
               />
             </Switch>
           </article>
-          <aside className="flex flex-col gap-4 self-start sticky top-1.5">
-            <Commits />
-            <SilentNetworkErrorWrapper>
-              <Flags />
-            </SilentNetworkErrorWrapper>
-          </aside>
+          {!pullPageTabs && (
+            <aside className="flex flex-col gap-4 self-start sticky top-1.5">
+              <Commits />
+              <SilentNetworkErrorWrapper>
+                <Flags />
+              </SilentNetworkErrorWrapper>
+            </aside>
+          )}
         </div>
       )}
     </div>
