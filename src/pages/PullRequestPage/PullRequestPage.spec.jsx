@@ -329,10 +329,21 @@ describe('PullRequestPage', () => {
     })
 
     it('renders impacted files tab', () => {
-      expect(screen.getByText(/Impacted files/i)).toBeInTheDocument()
+      const impactedFilesTab = screen.getByText(/Impacted files/i)
+      expect(impactedFilesTab).toBeInTheDocument()
+
+      impactedFilesTab.click()
+      expect(screen.getByText('Root')).toBeInTheDocument()
     })
+
     it('renders indirect changes tab', () => {
       expect(screen.getByText(/Indirect changes/i)).toBeInTheDocument()
+    })
+    it('renders commits tab', () => {
+      expect(screen.getByText(/Commits/i)).toBeInTheDocument()
+    })
+    it('renders flags tab', () => {
+      expect(screen.getByText(/Flags/i)).toBeInTheDocument()
     })
 
     it('renders the name of the header and coverage labels', () => {

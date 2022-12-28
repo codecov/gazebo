@@ -83,7 +83,7 @@ function PullRequestPage() {
               ]}
             />
             <div className="md:mt-[-25px] md:pb-2 w-fit self-end">
-              <ToggleHeader coverageIsLoading={false} />
+              <ToggleHeader title="" coverageIsLoading={false} />
             </div>
             <Switch>
               <Suspense fallback={Loader}>
