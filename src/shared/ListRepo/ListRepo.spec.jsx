@@ -84,10 +84,9 @@ describe('ListRepo', () => {
           name: /Active/,
         })
         .click()
-      expect(testLocation.pathname).toEqual(
-        expect.not.stringContaining('inactive')
+      expect(testLocation.state.repoDisplay).toEqual(
+        expect.stringContaining('Active')
       )
-      expect(testLocation.pathname).toEqual(expect.stringContaining('active'))
     })
 
     it('switches to inactive repos', () => {
@@ -97,7 +96,9 @@ describe('ListRepo', () => {
           name: /Inactive/i,
         })
         .click()
-      expect(testLocation.pathname).toEqual(expect.stringContaining('inactive'))
+      expect(testLocation.state.repoDisplay).toEqual(
+        expect.stringContaining('Inactive')
+      )
     })
     it('switches to all repos page', () => {
       setup(null, '/gh', '/:provider')
@@ -106,31 +107,33 @@ describe('ListRepo', () => {
           name: /All/,
         })
         .click()
-      expect(testLocation.pathname).toEqual(
-        expect.not.stringContaining('inactive')
-      )
-      expect(testLocation.pathname).toEqual(
-        expect.not.stringContaining('active')
+
+      expect(testLocation.state.repoDisplay).toEqual(
+        expect.stringContaining('All')
       )
     })
 
     it('switches to inactive repos owner page', () => {
-      setup('owner', '/gh', '/:provider/:owner')
+      setup('owner', '/gh/hola', '/:provider/:owner')
       screen
         .getByRole('button', {
-          name: /Inactive/i,
+          name: /Inactive/,
         })
         .click()
-      expect(testLocation.pathname).toEqual(expect.stringContaining('inactive'))
+      expect(testLocation.state.repoDisplay).toEqual(
+        expect.stringContaining('Inactive')
+      )
     })
     it('switches to active repos owner page', () => {
-      setup('owner', '/gh', '/:provider/:owner')
+      setup('owner', '/gh/hola', '/:provider/:owner')
       screen
         .getByRole('button', {
           name: /Active/,
         })
         .click()
-      expect(testLocation.pathname).toEqual(expect.stringContaining('active'))
+      expect(testLocation.state.repoDisplay).toEqual(
+        expect.stringContaining('Active')
+      )
     })
     it('switches to all repos owner page', () => {
       setup('owner', '/gh/owner', '/:provider/:owner')
@@ -139,11 +142,8 @@ describe('ListRepo', () => {
           name: /All/i,
         })
         .click()
-      expect(testLocation.pathname).toEqual(
-        expect.not.stringContaining('inactive')
-      )
-      expect(testLocation.pathname).toEqual(
-        expect.not.stringContaining('active')
+      expect(testLocation.state.repoDisplay).toEqual(
+        expect.stringContaining('All')
       )
     })
   })

@@ -30,9 +30,9 @@ describe('NoReposBlock', () => {
       })
     })
 
-    it('renders the link select the repo', () => {
-      const link = screen.getByRole('link', { name: 'Select the repo' })
-      expect(link).toBeInTheDocument()
+    it('renders select the repo text', () => {
+      const p = screen.getByText('Select the repo')
+      expect(p).toBeInTheDocument()
     })
 
     it('renders the button the set up link', () => {

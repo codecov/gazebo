@@ -488,7 +488,7 @@ describe('ReposTable', () => {
       expect(buttons.length).toBe(1)
     })
 
-    it('renders the select the repo link', async () => {
+    it('renders select the repo text', async () => {
       render(
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/gh']}>
@@ -504,10 +504,8 @@ describe('ReposTable', () => {
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
 
-      const link = await screen.findByRole('link', {
-        name: 'Select the repo',
-      })
-      expect(link).toBeInTheDocument()
+      const p = await screen.findByText('Select the repo')
+      expect(p).toBeInTheDocument()
     })
 
     it('renders the select the repo to have the right link', async () => {
@@ -526,8 +524,8 @@ describe('ReposTable', () => {
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
 
-      const link = await screen.findByRole('link', { name: 'Select the repo' })
-      expect(link).toHaveAttribute('href', '/gh/active')
+      const p = await screen.findByText('Select the repo')
+      expect(p).toBeInTheDocument()
     })
 
     it('renders the quick start guide link', async () => {
@@ -568,7 +566,7 @@ describe('ReposTable', () => {
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
 
-      const btn = await screen.findByRole('link', {
+      const btn = await screen.findByRole('button', {
         name: 'View repos for setup',
       })
       expect(btn).toBeInTheDocument()

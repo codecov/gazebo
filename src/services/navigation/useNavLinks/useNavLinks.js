@@ -48,27 +48,9 @@ export function useNavLinks() {
       path: ({ provider = p } = { provider: p }) => `/${provider}`,
       isExternalLink: false,
     },
-    providerActiveRepos: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}/active`,
-      isExternalLink: false,
-    },
-    providerInactiveRepos: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}/inactive`,
-      isExternalLink: false,
-    },
     owner: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/${provider}/${owner}`,
-      isExternalLink: false,
-    },
-    ownerInactiveRepos: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}/inactive`,
-      isExternalLink: false,
-    },
-    ownerActiveRepos: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}/active`,
       isExternalLink: false,
     },
     analytics: {

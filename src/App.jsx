@@ -88,32 +88,12 @@ function App() {
           </SentryRoute>
           <SentryRoute path="/:provider" exact>
             <BaseLayout>
-              <HomePage repoDisplay="All" />
-            </BaseLayout>
-          </SentryRoute>
-          <SentryRoute path="/:provider/inactive" exact>
-            <BaseLayout>
-              <HomePage repoDisplay="Inactive" />
-            </BaseLayout>
-          </SentryRoute>
-          <SentryRoute path="/:provider/active" exact>
-            <BaseLayout>
-              <HomePage repoDisplay="Active" />
+              <HomePage />
             </BaseLayout>
           </SentryRoute>
           <SentryRoute path="/:provider/:owner/" exact>
             <BaseLayout>
-              <OwnerPage repoDisplay="All" />
-            </BaseLayout>
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/inactive" exact>
-            <BaseLayout>
-              <OwnerPage repoDisplay="Inactive" />
-            </BaseLayout>
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/active" exact>
-            <BaseLayout>
-              <OwnerPage repoDisplay="Active" />
+              <OwnerPage />
             </BaseLayout>
           </SentryRoute>
           <Redirect

@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
+import { useLocationParams } from 'services/navigation'
 import { useOwner } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
@@ -9,9 +9,12 @@ import ListRepo from 'shared/ListRepo'
 import Header from './Header'
 import Tabs from './Tabs'
 
-function OwnerPage({ repoDisplay = '' }) {
+function OwnerPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+  const { params } = useLocationParams({
+    repoDisplay: 'All',
+  })
 
   if (!ownerData) {
     return <NotFound />
@@ -24,7 +27,7 @@ function OwnerPage({ repoDisplay = '' }) {
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />
         )}
-        <ActiveContext.Provider value={repoDisplay}>
+        <ActiveContext.Provider value={params.repoDisplay}>
           <ListRepo
             canRefetch={ownerData.isCurrentUserPartOfOrg}
             owner={ownerData.username}
@@ -33,10 +36,6 @@ function OwnerPage({ repoDisplay = '' }) {
       </div>
     </div>
   )
-}
-
-OwnerPage.propTypes = {
-  repoDisplay: PropTypes.string.isRequired,
 }
 
 export default OwnerPage
