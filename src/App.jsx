@@ -86,7 +86,7 @@ function App() {
               <PlanPage />
             </BaseLayout>
           </SentryRoute>
-          <SentryRoute path="/:provider" exact>
+          <SentryRoute path="/:provider/" exact>
             <BaseLayout>
               <HomePage />
             </BaseLayout>
