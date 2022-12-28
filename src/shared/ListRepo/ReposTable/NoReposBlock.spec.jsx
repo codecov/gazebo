@@ -1,8 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useHistory } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
 import { ActiveContext } from 'shared/context'
 
 import NoReposBlock from './NoReposBlock'
@@ -12,21 +11,23 @@ jest.mock('services/navigation', () => ({
   useLocationParams: jest.fn(),
 }))
 
-const mockUpdateParams = jest.fn()
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: jest.fn(),
+}))
+
+const mockHistoryPush = jest.fn()
 
 describe('NoReposBlock', () => {
-  function setup({ owner, repoDisplay, urlParams = '' }) {
+  function setup({ owner, repoDisplay }) {
     const props = {
       owner,
     }
-    useLocationParams.mockReturnValue({
-      updateParams: mockUpdateParams,
-      params: urlParams,
-    })
+    useHistory.mockReturnValue({ push: mockHistoryPush })
 
     render(
-      <MemoryRouter>
-        <Route>
+      <MemoryRouter initialEntries={['/gh/codecov/']}>
+        <Route path="/:provider/:owner">
           <ActiveContext.Provider value={repoDisplay}>
             <NoReposBlock {...props} />
           </ActiveContext.Provider>
@@ -52,9 +53,7 @@ describe('NoReposBlock', () => {
       const p = screen.getByText('Select the repo')
       p.click()
 
-      expect(mockUpdateParams).toBeCalledWith({
-        repoDisplay: 'Inactive',
-      })
+      expect(mockHistoryPush).toBeCalledWith('/gh/codecov?repoDisplay=Inactive')
     })
 
     it('renders the button the set up link', () => {
@@ -66,9 +65,7 @@ describe('NoReposBlock', () => {
       const btn = screen.getByText('View repos for setup')
       btn.click()
 
-      expect(mockUpdateParams).toBeCalledWith({
-        repoDisplay: 'Inactive',
-      })
+      expect(mockHistoryPush).toBeCalledWith('/gh/codecov?repoDisplay=Inactive')
     })
   })
 
