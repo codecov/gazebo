@@ -16,6 +16,7 @@ jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./ErrorBanner', () => () => 'Error Banner')
 jest.mock('services/pull')
 jest.mock('shared/featureFlags')
+jest.mock('./IndirectChangesInfo', () => () => 'IndirectChanges')
 
 describe('PullRequestPage', () => {
   function setup({
@@ -37,7 +38,10 @@ describe('PullRequestPage', () => {
         <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
           <PullRequestPage />
         </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path">
+        <Route
+          path="/:provider/:owner/:repo/pull/:pullId/indirectChanges"
+          exact={true}
+        >
           <PullRequestPage />
         </Route>
       </MemoryRouter>
@@ -241,7 +245,7 @@ describe('PullRequestPage', () => {
     beforeEach(async () => {
       setup({
         hasAccess: true,
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -257,7 +261,7 @@ describe('PullRequestPage', () => {
     beforeEach(async () => {
       setup({
         hasAccess: true,
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -278,7 +282,7 @@ describe('PullRequestPage', () => {
             __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
           },
         },
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -299,7 +303,7 @@ describe('PullRequestPage', () => {
             __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
           },
         },
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -320,7 +324,7 @@ describe('PullRequestPage', () => {
             __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
           },
         },
-        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        initialEntries: ['/gh/test-org/test-repo/pull/12'],
         pullPageTabsFlag: true,
       })
       await waitFor(() =>
@@ -350,6 +354,23 @@ describe('PullRequestPage', () => {
       expect(screen.getByText('covered')).toBeInTheDocument()
       expect(screen.getByText('partial')).toBeInTheDocument()
       expect(screen.getByText('uncovered')).toBeInTheDocument()
+    })
+
+    describe('when clicking on indirect changes tab', () => {
+      beforeEach(async () => {
+        screen.getByText(/Indirect changes/).click()
+
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+      })
+
+      it('renders the information text of indirect changes', () => {
+        expect(screen.getByText(/IndirectChanges/)).toBeInTheDocument()
+      })
+      it('renders the root', () => {
+        expect(screen.getByText(/Root/)).toBeInTheDocument()
+      })
     })
   })
 })
