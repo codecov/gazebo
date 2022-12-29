@@ -1,6 +1,6 @@
 import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
@@ -28,11 +28,11 @@ function getFilters({ sortBy }) {
 
 function extractFilesWithIndirectChanges({ files }) {
   const impactedFiles = files?.filter((impactedFile) => {
-    const segmentsWithIndirectChanes = impactedFile.segments.filter(
+    const segmentsWithIndirectChanges = impactedFile.segments.filter(
       (segment) => segment.hasUnintendedChanges
     )
 
-    return !!segmentsWithIndirectChanes.length
+    return !!segmentsWithIndirectChanges.length
   })
 
   return impactedFiles
@@ -92,10 +92,14 @@ export function useImpactedFilesTable(isIndirectChangesTab) {
     },
   })
 
-  const data = transformImpactedFilesData({
-    pull: pullData?.pull,
-    isIndirectChangesTab,
-  })
+  const data = useMemo(
+    () =>
+      transformImpactedFilesData({
+        pull: pullData?.pull,
+        isIndirectChangesTab,
+      }),
+    [pullData?.pull, isIndirectChangesTab]
+  )
 
   const handleSort = useCallback(
     (tableSortBy) => {
