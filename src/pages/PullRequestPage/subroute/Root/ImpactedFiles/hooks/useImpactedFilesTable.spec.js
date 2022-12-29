@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
 import { usePull } from 'services/pull'
-import { IndirectChangesOnly } from 'shared/context/indirectChangesContext'
 
 import { useImpactedFilesTable } from './useImpactedFilesTable'
 
@@ -13,12 +12,6 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => {}),
 }))
 jest.mock('services/pull')
-
-const wrapper = ({ children, indirectChangesOnly }) => (
-  <IndirectChangesOnly.Provider value={indirectChangesOnly}>
-    {children}
-  </IndirectChangesOnly.Provider>
-)
 
 const mockImpactedFiles = [
   {
@@ -63,7 +56,7 @@ let mockPull = {
 
 describe('useRepoContentsTable', () => {
   let hookData
-  function setup(pullData = mockPull, indirectChangesOnly = false) {
+  function setup(pullData = mockPull, isIndirectChangesTab = false) {
     useParams.mockReturnValue({
       owner: 'Rabee-AbuBaker',
       provider: 'gh',
@@ -72,12 +65,7 @@ describe('useRepoContentsTable', () => {
     })
     usePull.mockReturnValue(pullData)
 
-    hookData = renderHook(() => useImpactedFilesTable({}), {
-      wrapper,
-      initialProps: {
-        indirectChangesOnly,
-      },
-    })
+    hookData = renderHook(() => useImpactedFilesTable(isIndirectChangesTab))
   }
 
   describe('when handleSort is triggered', () => {
@@ -196,7 +184,7 @@ describe('useRepoContentsTable', () => {
     })
   })
 
-  describe('when when called with direct changes only context set to true impacted files', () => {
+  describe('when when called in indirect changes tab', () => {
     beforeEach(() => {
       const mockImpactedFiles = [
         {

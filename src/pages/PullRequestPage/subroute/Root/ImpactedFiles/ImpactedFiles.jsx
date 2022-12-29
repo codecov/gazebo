@@ -1,3 +1,6 @@
+import { useLocation } from 'react-router-dom'
+
+import { useNavLinks } from 'services/navigation'
 import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
@@ -33,6 +36,35 @@ const columns = [
     header: <span className="w-full text-sm text-right">Patch %</span>,
     accessorKey: 'patch',
     width: 'w-28 min-w-min',
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'change',
+    header: <span className="w-full text-right">Change</span>,
+    accessorKey: 'change',
+    width: 'w-28 min-w-min',
+    cell: (info) => info.getValue(),
+  },
+]
+
+const indirectChangesColumns = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
+    width: 'w-7/12 min-w-min',
+    cell: ({ row, getValue }) => <NameColumn row={row} getValue={getValue} />,
+    justifyStart: true,
+  },
+  {
+    id: 'head',
+    header: (
+      <span className="w-full text-right">
+        <span className="font-mono">HEAD</span> file coverage %
+      </span>
+    ),
+    accessorKey: 'head',
+    width: 'w-4/12 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
@@ -112,7 +144,12 @@ const renderSubComponent = ({ row }) => {
 }
 
 function ImpactedFiles() {
-  const { data, handleSort, isLoading } = useImpactedFilesTable()
+  const { pullIndirectChanges } = useNavLinks()
+  const { pathname } = useLocation()
+  const isIndirectChangesTab = pathname === pullIndirectChanges.path()
+
+  const { data, handleSort, isLoading } =
+    useImpactedFilesTable(isIndirectChangesTab)
 
   const tableContent = createTable({
     tableData: data?.impactedFiles,
@@ -122,7 +159,7 @@ function ImpactedFiles() {
     <>
       <Table
         data={tableContent}
-        columns={columns}
+        columns={isIndirectChangesTab ? indirectChangesColumns : columns}
         onSort={handleSort}
         renderSubComponent={renderSubComponent}
       />

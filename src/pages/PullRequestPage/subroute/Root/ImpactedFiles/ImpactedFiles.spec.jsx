@@ -424,4 +424,72 @@ describe('ImpactedFiles', () => {
       expect(change).toBeInTheDocument()
     })
   })
+
+  describe('when rendered with indirect changes tab', () => {
+    beforeEach(() => {
+      setup(mockNoImpactedFiles)
+    })
+
+    it('renders name column', async () => {
+      render(<ImpactedFiles />, {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/12/indirectChanges']),
+      })
+
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const name = await screen.findByText('Name')
+      expect(name).toBeInTheDocument()
+    })
+
+    it('renders HEAD column', async () => {
+      render(<ImpactedFiles />, {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/12/indirectChanges']),
+      })
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const head = await screen.findByText('HEAD')
+      expect(head).toBeInTheDocument()
+    })
+
+    it('renders file coverage column', async () => {
+      render(<ImpactedFiles />, {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/12/indirectChanges']),
+      })
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const fileCoverage = await screen.findByText('file coverage %')
+      expect(fileCoverage).toBeInTheDocument()
+    })
+
+    it('renders patch column', async () => {
+      render(<ImpactedFiles />, {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/12/indirectChanges']),
+      })
+
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const patch = screen.queryByText('Patch %')
+      expect(patch).not.toBeInTheDocument()
+    })
+
+    it('renders change', async () => {
+      render(<ImpactedFiles />, {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/12/indirectChanges']),
+      })
+
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+      const change = await screen.findByText('Change')
+      expect(change).toBeInTheDocument()
+    })
+  })
 })

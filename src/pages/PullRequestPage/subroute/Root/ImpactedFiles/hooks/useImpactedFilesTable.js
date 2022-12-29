@@ -1,10 +1,9 @@
 import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
-import { IndirectChangesOnly } from 'shared/context/indirectChangesContext'
 
 const orderingDirection = Object.freeze({
   desc: 'DESC',
@@ -39,8 +38,8 @@ function extractFilesWithIndirectChanges({ files }) {
   return impactedFiles
 }
 
-function transformImpactedFilesData({ pull, indirectChangesOnly = false }) {
-  const files = indirectChangesOnly
+function transformImpactedFilesData({ pull, isIndirectChangesTab = false }) {
+  const files = isIndirectChangesTab
     ? extractFilesWithIndirectChanges({
         files: pull?.compareWithBase?.impactedFiles,
       })
@@ -76,7 +75,7 @@ function transformImpactedFilesData({ pull, indirectChangesOnly = false }) {
   }
 }
 
-export function useImpactedFilesTable() {
+export function useImpactedFilesTable(isIndirectChangesTab) {
   const { provider, owner, repo, pullId } = useParams()
   const [sortBy, setSortBy] = useState([{ desc: true, id: 'change' }])
   const filters = getFilters({ sortBy: sortBy[0] })
@@ -93,11 +92,9 @@ export function useImpactedFilesTable() {
     },
   })
 
-  const indirectChangesOnly = useContext(IndirectChangesOnly)
-
   const data = transformImpactedFilesData({
     pull: pullData?.pull,
-    indirectChangesOnly,
+    isIndirectChangesTab,
   })
 
   const handleSort = useCallback(
