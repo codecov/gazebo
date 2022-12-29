@@ -12,7 +12,7 @@ import Icon from 'ui/Icon'
 import './ContextSwitcher.css'
 
 const styles = {
-  button: 'flex items-center text-xl font-semibold',
+  button: 'flex items-center text-xl font-semibold mx-4 sm:mx-0',
   image: 'w-6 h-6 rounded-full',
   switchContext: 'px-4 py-2 border-b border-ds-gray-secondary font-semibold',
 }

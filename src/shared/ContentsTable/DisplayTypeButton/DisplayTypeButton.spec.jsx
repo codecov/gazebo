@@ -6,9 +6,6 @@ import { useLocationParams } from 'services/navigation'
 
 import DisplayTypeButton from './DisplayTypeButton'
 
-import useRepoContentsTable from '../subroute/RepoContents/hooks'
-
-jest.mock('../subroute/RepoContents/hooks')
 jest.mock('services/navigation', () => ({
   ...jest.requireActual('services/navigation'),
   useLocationParams: jest.fn(),
@@ -54,7 +51,6 @@ const mockUrlParams = {
 describe('Coverage Tab', () => {
   const mockUpdateParams = jest.fn()
   function setup(urlParams = mockUrlParams) {
-    useRepoContentsTable.mockReturnValue(mockRepoContents)
     useLocationParams.mockReturnValue({
       updateParams: mockUpdateParams,
       params: urlParams,
@@ -62,7 +58,7 @@ describe('Coverage Tab', () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <DisplayTypeButton />
+        <DisplayTypeButton dataLength={mockRepoContents.data.length} />
       </QueryClientProvider>
     )
   }
@@ -78,8 +74,12 @@ describe('Coverage Tab', () => {
     })
 
     it('shows tree as the selected option', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).not.toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
+      expect(screen.getByText(/File list/)).not.toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
     })
   })
 
@@ -94,8 +94,12 @@ describe('Coverage Tab', () => {
     })
 
     it('renders sets the list button as selected', () => {
-      expect(screen.getByText(/Code tree/)).not.toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
+      expect(screen.getByText(/File list/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-r'
+      )
     })
 
     it('renders length of files if data is not empty', () => {
@@ -122,8 +126,12 @@ describe('Coverage Tab', () => {
     })
 
     it('renders sets the list button as selected', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).not.toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-l'
+      )
+      expect(screen.getByText(/File list/)).not.toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
     })
   })
 
@@ -136,8 +144,12 @@ describe('Coverage Tab', () => {
     })
 
     it('renders list view as selected', () => {
-      expect(screen.getByText(/Code tree/)).not.toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
+      expect(screen.getByText(/File list/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-r'
+      )
     })
   })
 })

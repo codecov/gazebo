@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
 import { useHistory, useParams } from 'react-router-dom'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useLocationParams } from 'services/navigation'
 import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
@@ -9,7 +9,7 @@ import ListRepo from 'shared/ListRepo'
 import Header from './Header'
 import Tabs from './Tabs'
 
-function HomePage({ active = false }) {
+function HomePage() {
   const { push } = useHistory()
   const { provider } = useParams()
   const { data: currentUser, isLoading } = useUser({
@@ -19,6 +19,10 @@ function HomePage({ active = false }) {
       }
     },
     suspense: false,
+  })
+
+  const { params } = useLocationParams({
+    repoDisplay: 'All',
   })
 
   if (isLoading) {
@@ -33,17 +37,13 @@ function HomePage({ active = false }) {
     <div className="flex flex-col gap-4">
       <Header />
       <div>
-        <ActiveContext.Provider value={active}>
+        <ActiveContext.Provider value={params.repoDisplay}>
           <Tabs currentUsername={currentUser?.user?.username} />
           <ListRepo canRefetch />
         </ActiveContext.Provider>
       </div>
     </div>
   )
-}
-
-HomePage.propTypes = {
-  active: PropTypes.bool,
 }
 
 export default HomePage
