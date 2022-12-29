@@ -11,7 +11,6 @@ import {
 import GeneralTab from './GeneralTab'
 
 jest.mock('services/repo')
-jest.mock('./DangerZone/RepoState', () => () => 'RepoState')
 
 const queryClient = new QueryClient()
 
@@ -143,6 +142,11 @@ describe('GeneralTab', () => {
     it('does not render graphing token compoenent', () => {
       const title = screen.queryByText(/Repository graphing token/)
       expect(title).not.toBeInTheDocument()
+    })
+
+    it('renders deactivate repo', () => {
+      const title = screen.queryByText(/Deactivate repo/)
+      expect(title).toBeInTheDocument()
     })
   })
 })
