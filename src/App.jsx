@@ -86,26 +86,26 @@ function App() {
               <PlanPage />
             </BaseLayout>
           </SentryRoute>
-          <SentryRoute path="/:provider/+" exact>
+          <SentryRoute path="/:provider/" exact>
             <BaseLayout>
               <HomePage />
             </BaseLayout>
           </SentryRoute>
-          <SentryRoute path="/:provider/" exact>
-            <BaseLayout>
-              <HomePage active={true} />
-            </BaseLayout>
-          </SentryRoute>
+          <Redirect
+            from="/:provider/+"
+            exact
+            to="/:provider\?repoDisplay=Inactive"
+          />
           <SentryRoute path="/:provider/:owner/" exact>
-            <BaseLayout>
-              <OwnerPage active={true} />
-            </BaseLayout>
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/+" exact>
             <BaseLayout>
               <OwnerPage />
             </BaseLayout>
           </SentryRoute>
+          <Redirect
+            from="/:provider/:owner/+"
+            exact
+            to="/:provider/:owner\?repoDisplay=Inactive"
+          />
           <Redirect
             from="/:provider/:owner/:repo/compare/*"
             to="/:provider/:owner/:repo/pull/*"

@@ -192,12 +192,10 @@ const Table = memo(function ({
   )
 
   return (
-    <div className="overflow-x-auto">
-      <table className="flex flex-col mx-4 sm:mx-0 overflow-x-auto">
-        {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
-        {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
-      </table>
-    </div>
+    <table className="flex flex-col mx-4 sm:mx-0">
+      {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
+      {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
+    </table>
   )
 })
 

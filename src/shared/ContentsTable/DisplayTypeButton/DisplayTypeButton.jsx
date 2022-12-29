@@ -37,7 +37,7 @@ function DisplayTypeButton({ dataLength }) {
   return (
     <div className="flex gap-4 items-center">
       <OptionButton
-        active={active}
+        active={active.text}
         options={options}
         onChange={(option) => handleOnChange(option)}
       />

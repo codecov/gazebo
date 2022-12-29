@@ -74,8 +74,12 @@ describe('Coverage Tab', () => {
     })
 
     it('shows tree as the selected option', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).not.toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
+      expect(screen.getByText(/File list/)).not.toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
     })
   })
 
@@ -90,8 +94,12 @@ describe('Coverage Tab', () => {
     })
 
     it('renders sets the list button as selected', () => {
-      expect(screen.getByText(/Code tree/)).not.toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
+      expect(screen.getByText(/File list/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-r'
+      )
     })
 
     it('renders length of files if data is not empty', () => {
@@ -118,8 +126,12 @@ describe('Coverage Tab', () => {
     })
 
     it('renders sets the list button as selected', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).not.toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-l'
+      )
+      expect(screen.getByText(/File list/)).not.toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
     })
   })
 
@@ -132,8 +144,12 @@ describe('Coverage Tab', () => {
     })
 
     it('renders list view as selected', () => {
-      expect(screen.getByText(/Code tree/)).not.toHaveClass('bg-ds-blue-darker')
-      expect(screen.getByText(/File list/)).toHaveClass('bg-ds-blue-darker')
+      expect(screen.getByText(/Code tree/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      )
+      expect(screen.getByText(/File list/)).toHaveClass(
+        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-r'
+      )
     })
   })
 })
