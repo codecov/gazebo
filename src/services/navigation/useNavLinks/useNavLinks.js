@@ -48,18 +48,9 @@ export function useNavLinks() {
       path: ({ provider = p } = { provider: p }) => `/${provider}`,
       isExternalLink: false,
     },
-    providerAddRepo: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}/+`,
-      isExternalLink: false,
-    },
     owner: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/${provider}/${owner}`,
-      isExternalLink: false,
-    },
-    ownerAddRepo: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}/+`,
       isExternalLink: false,
     },
     analytics: {

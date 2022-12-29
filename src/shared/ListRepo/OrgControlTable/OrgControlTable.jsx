@@ -10,20 +10,23 @@ import TextInput from 'ui/TextInput'
 import GithubPrivateScopeLogin from './GithubPrivateScopeLogin'
 import ResyncButton from './ResyncButton'
 
+import { repoDisplayOptions } from '../ListRepo'
+
 const optionButtonOptions = [
+  { text: 'All' },
   {
-    text: 'Enabled',
+    text: 'Active',
   },
   {
-    text: 'Not yet setup',
+    text: 'Inactive',
   },
 ]
 
 function OrgControlTable({
   sortItem,
   setSortItem,
-  active,
-  setActive,
+  repoDisplay,
+  setRepoDisplay,
   setSearchValue,
   searchValue,
   canRefetch,
@@ -39,31 +42,35 @@ function OrgControlTable({
   )
 
   return (
-    <div className="m-4 gap-2 sm:mx-0 grid grid-cols-2 lg:grid-cols-5 items-center justify-items-stretch">
-      <Select
-        dataMarketing="repo-list-order-selector"
-        ariaName="Sort Order"
-        value={sortItem}
-        items={active ? orderingOptions : nonActiveOrderingOptions}
-        onChange={setSortItem}
-        renderItem={(option) => option.text}
-      />
-      <TextInput
-        dataMarketing="search-repos-list"
-        value={search}
-        placeholder="Search"
-        onChange={(e) => setSearch(e.target.value)}
-        data-testid="org-control-search"
-      />
-      {canRefetch && <ResyncButton />}
-      <GithubPrivateScopeLogin />
-      <div className="justify-self-end">
+    <div className="flex justify-between items-center">
+      <div className="m-4 gap-2 sm:mx-0 flex items-center justify-items-stretch">
         <OptionButton
-          active={active ? optionButtonOptions[0] : optionButtonOptions[1]}
-          onChange={(option) =>
-            setActive(option.text === optionButtonOptions[0].text)
-          }
+          active={repoDisplay}
+          onChange={(option) => setRepoDisplay(option.text)}
           options={optionButtonOptions}
+        />
+        <TextInput
+          dataMarketing="search-repos-list"
+          value={search}
+          placeholder="Search"
+          onChange={(e) => setSearch(e.target.value)}
+          data-testid="org-control-search"
+        />
+        {canRefetch && <ResyncButton />}
+        <GithubPrivateScopeLogin />
+      </div>
+      <div>
+        <Select
+          dataMarketing="repo-list-order-selector"
+          ariaName="Sort Order"
+          value={sortItem}
+          items={
+            repoDisplay === repoDisplayOptions.ACTIVE.text
+              ? orderingOptions
+              : nonActiveOrderingOptions
+          }
+          onChange={setSortItem}
+          renderItem={(option) => option.text}
         />
       </div>
     </div>
@@ -73,8 +80,8 @@ function OrgControlTable({
 OrgControlTable.propTypes = {
   sortItem: PropTypes.object.isRequired,
   setSortItem: PropTypes.func.isRequired,
-  active: PropTypes.bool.isRequired,
-  setActive: PropTypes.func.isRequired,
+  repoDisplay: PropTypes.string.isRequired,
+  setRepoDisplay: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
   searchValue: PropTypes.string.isRequired,
   canRefetch: PropTypes.bool.isRequired,
