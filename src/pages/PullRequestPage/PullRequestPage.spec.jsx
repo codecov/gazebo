@@ -3,6 +3,7 @@ import { render, screen, waitFor } from 'custom-testing-library'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
+import { useFlags } from 'shared/featureFlags'
 
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import PullRequestPage from './PullRequestPage'
@@ -14,15 +15,21 @@ jest.mock('./Commits', () => () => 'Commits')
 jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./ErrorBanner', () => () => 'Error Banner')
 jest.mock('services/pull')
+jest.mock('shared/featureFlags')
 
 describe('PullRequestPage', () => {
   function setup({
     hasAccess = false,
     pullData = {},
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
+    pullPageTabsFlag = false,
   }) {
     usePull.mockReturnValue({
       data: { hasAccess, pull: pullData },
+    })
+
+    useFlags.mockReturnValue({
+      pullPageTabs: pullPageTabsFlag,
     })
 
     render(
@@ -301,6 +308,48 @@ describe('PullRequestPage', () => {
 
     it('renders', () => {
       expect(screen.getByText(/Commits/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('nav links', () => {
+    beforeEach(async () => {
+      setup({
+        hasAccess: true,
+        pullData: {
+          compareWithBase: {
+            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+          },
+        },
+        initialEntries: ['/gh/test-org/test-repo/pull/12/tree/App/index.js'],
+        pullPageTabsFlag: true,
+      })
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+    })
+
+    it('renders impacted files tab', () => {
+      const impactedFilesTab = screen.getByText(/Impacted files/i)
+      expect(impactedFilesTab).toBeInTheDocument()
+
+      impactedFilesTab.click()
+      expect(screen.getByText('Root')).toBeInTheDocument()
+    })
+
+    it('renders indirect changes tab', () => {
+      expect(screen.getByText(/Indirect changes/i)).toBeInTheDocument()
+    })
+    it('renders commits tab', () => {
+      expect(screen.getByText(/Commits/i)).toBeInTheDocument()
+    })
+    it('renders flags tab', () => {
+      expect(screen.getByText(/Flags/i)).toBeInTheDocument()
+    })
+
+    it('renders the name of the header and coverage labels', () => {
+      expect(screen.getByText('covered')).toBeInTheDocument()
+      expect(screen.getByText('partial')).toBeInTheDocument()
+      expect(screen.getByText('uncovered')).toBeInTheDocument()
     })
   })
 })
