@@ -467,7 +467,7 @@ describe('ImpactedFiles', () => {
       expect(fileCoverage).toBeInTheDocument()
     })
 
-    it('renders patch column', async () => {
+    it('does not render patch column', async () => {
       render(<ImpactedFiles />, {
         wrapper: wrapper(['/gh/test-org/test-repo/pull/12/indirectChanges']),
       })
