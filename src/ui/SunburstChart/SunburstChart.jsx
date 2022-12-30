@@ -1,39 +1,41 @@
-/* eslint-disable max-nested-callbacks */
 /* eslint-disable max-statements */
-import * as d3 from 'd3'
+import { format } from 'd3-format'
+import { hierarchy, partition } from 'd3-hierarchy'
+import { interpolate, interpolateHslLong } from 'd3-interpolate'
+import { scaleSequential } from 'd3-scale'
+import { select } from 'd3-selection'
+import { arc } from 'd3-shape'
 import PropTypes from 'prop-types'
 import { useEffect, useRef } from 'react'
 
-const partition = (data) => {
-  const root = d3
-    .hierarchy(data)
+const partitionFn = (data) => {
+  const root = hierarchy(data)
     .sum((d) => d.value)
     .sort((a, b) => b.value - a.value)
-  return d3.partition().size([2 * Math.PI, root.height + 1])(root)
+  return partition().size([2 * Math.PI, root.height + 1])(root)
 }
-const format = d3.format(',d')
+const formatData = format(',d')
 const width = 932
 const radius = width / 6
-const arc = d3
-  .arc()
+const drawArc = arc()
   .startAngle((d) => d.x0)
   .endAngle((d) => d.x1)
   .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.005))
   .padRadius(radius * 1.5)
   .innerRadius((d) => d.y0 * radius)
   .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
-const colorRange = d3.interpolateHslLong('rgb(206,32,25)', 'rgb(39,179,64)')
+const colorRange = interpolateHslLong('rgb(206,32,25)', 'rgb(39,179,64)')
 
 function SunburstChart({ data, onClick = () => {} }) {
   const ref = useRef()
-  const color = d3.scaleSequential().domain([0, 100]).interpolator(colorRange)
+  const color = scaleSequential().domain([0, 100]).interpolator(colorRange)
 
   useEffect(() => {
-    const root = partition(data)
+    const root = partitionFn(data)
 
     root.each((d) => (d.current = d))
 
-    const svg = d3.select(ref.current)
+    const svg = select(ref.current)
 
     const g = svg
       .append('g')
@@ -49,7 +51,7 @@ function SunburstChart({ data, onClick = () => {} }) {
         arcVisible(d.current) ? (d.children ? 1 : 0.6) : 0
       )
       .attr('pointer-events', (d) => (arcVisible(d.current) ? 'auto' : 'none'))
-      .attr('d', (d) => arc(d.current))
+      .attr('d', (d) => drawArc(d.current))
 
     path
       .filter((d) => d.children)
@@ -61,14 +63,14 @@ function SunburstChart({ data, onClick = () => {} }) {
       .style('cursor', 'pointer')
       .on('click', clickedFile)
 
-    path.append('title').text(
-      (d) =>
-        `${d
-          .ancestors()
-          .map((d) => d.data.name)
-          .reverse()
-          .join('/')}\n${format(d.data.value)}`
-    )
+    const formatTitle = (d) =>
+      `${d
+        .ancestors()
+        .map((d) => d.data.name)
+        .reverse()
+        .join('/')}\n${formatData(d.data.value)}`
+
+    path.append('title').text((d) => formatTitle(d))
 
     const label = g
       .append('g')
@@ -125,7 +127,7 @@ function SunburstChart({ data, onClick = () => {} }) {
       path
         .transition(t)
         .tween('data', (d) => {
-          const i = d3.interpolate(d.current, d.target)
+          const i = interpolate(d.current, d.target)
           return (t) => (d.current = i(t))
         })
         .filter(function (d) {
@@ -136,7 +138,7 @@ function SunburstChart({ data, onClick = () => {} }) {
         )
         .attr('pointer-events', (d) => (arcVisible(d.target) ? 'auto' : 'none'))
 
-        .attrTween('d', (d) => () => arc(d.current))
+        .attrTween('d', (d) => () => drawArc(d.current))
 
       label
         .filter(function (d) {
@@ -184,7 +186,7 @@ SunburstChart.propTypes = {
         value: PropTypes.number, // Coverage
         children: PropTypes.arrayOf(
           PropTypes.oneOfType([
-            PropTypes.object,
+            PropTypes.object, // Another object with children + values. PropTypes doesn't do recursion.
             PropTypes.shape({
               name: PropTypes.string, // FileName
               value: PropTypes.number, // Coverage
