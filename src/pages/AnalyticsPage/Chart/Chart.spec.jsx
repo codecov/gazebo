@@ -1,73 +1,139 @@
 import { render, screen } from '@testing-library/react'
-
-import { useOrgCoverage } from 'services/charts'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import Chart from './Chart'
+import { useCoverage } from './useCoverage'
 
-jest.mock('services/charts')
+jest.mock('./useCoverage')
+
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+    <Route path="/:provider/:owner/:repo">{children}</Route>
+  </MemoryRouter>
+)
 
 describe('Analytics coverage chart', () => {
-  function setup({ provider, owner, params, chart }) {
-    useOrgCoverage.mockReturnValue({
-      data: { coverage: chart },
-    })
-    render(<Chart provider={provider} owner={owner} params={params} />)
-  }
-
   describe('No coverage data exists', () => {
     beforeEach(() => {
       jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
-
-      setup({
-        provider: 'gh',
-        owner: 'codecov',
-        params: {
-          startDate: '2020-01-15',
-          endDate: '2020-01-19',
-          repositories: [],
-        },
-        chart: [],
+      useCoverage.mockReturnValue({
+        data: { coverage: [], coverageAxisLabel: () => 'hi' },
+        isPreviousData: false,
+        isSuccess: false,
       })
     })
     afterAll(() => {
       jest.useRealTimers()
+      jest.resetAllMocks()
     })
 
     it('renders no chart', () => {
+      render(
+        <Chart
+          params={{
+            startDate: '2020-01-15',
+            endDate: '2020-01-19',
+            repositories: [],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
       expect(screen.queryAllByRole('presentation').length).toBe(0)
+    })
+  })
+
+  describe('One data point', () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
+      useCoverage.mockReturnValue({
+        data: {
+          coverage: [{ date: new Date('2022/12/20'), coverage: 20 }],
+          coverageAxisLabel: () => 'hi',
+        },
+        isPreviousData: false,
+        isSuccess: true,
+      })
+    })
+    afterAll(() => {
+      jest.useRealTimers()
+      jest.resetAllMocks()
+    })
+
+    it('Not enough data to render', () => {
+      render(
+        <Chart
+          params={{
+            startDate: '2020-01-15',
+            endDate: '2020-01-19',
+            repositories: [],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      expect(screen.getByText(/Not enough data to render/)).toBeInTheDocument()
     })
   })
 
   describe('Chart with data', () => {
     beforeEach(() => {
       jest.useFakeTimers().setSystemTime(new Date('2020-04-01'))
-
-      setup({
-        provider: 'gh',
-        owner: 'codecov',
-        params: {
-          startDate: '2020-01-15',
-          endDate: '2020-01-19',
-          repositories: [],
+      useCoverage.mockReturnValue({
+        data: {
+          coverage: [
+            { date: new Date('2022/12/20'), coverage: 20 },
+            { date: new Date('2022/12/21'), coverage: 20 },
+          ],
+          coverageAxisLabel: () => 'hi',
         },
-        chart: [
-          { date: '2020-01-15T20:18:39.413Z', coverage: 20 },
-          { date: '2020-01-17T20:18:39.413Z', coverage: 50 },
-        ],
+        isPreviousData: false,
+        isSuccess: true,
       })
     })
     afterAll(() => {
       jest.useRealTimers()
+      jest.resetAllMocks()
     })
 
     it('renders victory', () => {
+      render(
+        <Chart
+          params={{
+            startDate: '2020-01-15',
+            endDate: '2020-01-19',
+            repositories: [],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
       expect(screen.getByRole('img')).toBeInTheDocument(0)
     })
 
     it('renders a screen reader friendly description', () => {
+      render(
+        <Chart
+          params={{
+            startDate: '2020-01-15',
+            endDate: '2020-01-19',
+            repositories: ['api', 'frontend'],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
       expect(
         screen.getByText(
-          'Organization wide coverage chart from Jan 15, 2020 to Jan 17, 2020, coverage change is +20%'
+          'api, frontend coverage chart from Dec 20, 2022 to Dec 21, 2022, coverage change is -20%'
         )
       ).toBeInTheDocument()
     })
