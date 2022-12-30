@@ -111,18 +111,32 @@ function SunburstChart({
       .attr('r', radius)
       .attr('fill', 'none')
       .attr('pointer-events', 'all')
+      .attr('cursor', 'pointer')
       .on('click', clickedFolder)
 
     function clickedFolder(_event, p) {
+      reactCallback(p)
+      changeLocation(p)
+    }
+
+    function clickedFile(_event, p) {
+      reactCallback(p)
+    }
+
+    function reactCallback(p) {
+      // Create a string from the root data down to the current item
       const filePath = `${p
         .ancestors()
         .map((d) => d.data.name)
         .reverse()
         .join('/')}`
 
-      // callback to react
-      onClick(filePath, p.data)
+      // callback to parent component with a path, the data node, and raw d3 data
+      // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
+      onClick(filePath, p.data, p)
+    }
 
+    function changeLocation(p) {
       parent.datum(p.parent || root)
 
       // Handle animating in/out of a folder
@@ -170,17 +184,6 @@ function SunburstChart({
         .transition(t)
         .attr('fill-opacity', (d) => +labelVisible(d.target))
         .attrTween('transform', (d) => () => labelTransform(d.current))
-    }
-
-    function clickedFile(_event, p) {
-      const filePath = `${p
-        .ancestors()
-        .map((d) => d.data.name)
-        .reverse()
-        .join('/')}`
-
-      // callback to react
-      onClick(filePath, p.data)
     }
 
     // Calculate if a arc is visible
