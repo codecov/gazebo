@@ -1,7 +1,6 @@
 import isNil from 'lodash/isNil'
 
 import { CommitStateEnum } from 'shared/utils/commit'
-import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './ImpactedFiles'
@@ -37,8 +36,7 @@ const Root = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <ToggleHeader title="Impacted Files" coverageIsLoading={false} />
+    <div className="flex flex-col gap-2">
       {data?.headState === CommitStateEnum.ERROR ? (
         <p>
           Cannot display Impacted Files because most recent commit is in an
