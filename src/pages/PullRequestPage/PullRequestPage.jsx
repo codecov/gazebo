@@ -111,7 +111,9 @@ function PullRequestPage() {
                       path="/:provider/:owner/:repo/pull/:pullId/flags"
                       exact={true}
                     >
-                      pull flags
+                      <SilentNetworkErrorWrapper>
+                        <Flags />
+                      </SilentNetworkErrorWrapper>
                     </SentryRoute>
                   </>
                 )}

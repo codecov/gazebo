@@ -1,13 +1,31 @@
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import flagManagement from 'assets/svg/flagManagement.svg'
 import { usePull } from 'services/pull'
+import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import Card from '../Card'
+
+const NoFlagsBanner = () => {
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <img alt="FlagManagement" src={flagManagement} />
+      <h2 className="text-lg">See how flags can help you today!</h2>
+      <p className="w-2/4 text-center">
+        Codecov Flags allow you to isolate and categorize coverage reports for
+        different tests and features in your project Learn how flags can{' '}
+        <A hook="flags" to={{ pageName: 'flags' }}>
+          help your team today.
+        </A>
+      </p>
+    </div>
+  )
+}
 
 const tableColumns = [
   {
@@ -111,32 +129,35 @@ function getTableInfo({ tableData, isTableDataEmpty, setIsCardDismissed }) {
           </button>
         </div>
       ),
-      value: (
-        <div className="flex flex-col">
-          <img alt="FlagManagement" src={flagManagement} />
-          <p>
-            Flags feature is not yet configured. Learn how flags can{' '}
-            <A hook="flags" to={{ pageName: 'flags' }}>
-              help your team today
-            </A>
-            .
-          </p>
-        </div>
-      ),
+      value: <NoFlagsBanner />,
     },
   }[cardInfo]
 }
 
-function Flags() {
-  const { owner, repo, pullId, provider } = useParams()
-  const { data } = usePull({ provider, owner, repo, pullId })
-  const flagComparison = data?.pull?.compareWithBase?.flagComparisons || []
+function NewFlagsTab({ isTableDataEmpty, tableData }) {
+  return isTableDataEmpty ? (
+    <NoFlagsBanner />
+  ) : (
+    <Table data={tableData} columns={tableColumns} />
+  )
+}
 
+NewFlagsTab.propTypes = {
+  isTableDataEmpty: PropTypes.bool.isRequired,
+  tableData: PropTypes.arrayOf(
+    PropTypes.shape({
+      changeCoverage: PropTypes.object,
+      headCoverage: PropTypes.object,
+      name: PropTypes.object,
+      patchCoverage: PropTypes.object,
+    })
+  ),
+}
+
+function OldFlagsSection({ isTableDataEmpty, tableData }) {
   const [isCardDismissed, setIsCardDismissed] = useState(
     !!JSON.parse(localStorage.getItem(localStorageKey))
   )
-  const tableData = getTableData(flagComparison)
-  const isTableDataEmpty = tableData && tableData?.length <= 0
   const { title, value } = getTableInfo({
     tableData,
     isTableDataEmpty,
@@ -145,6 +166,36 @@ function Flags() {
 
   return (
     !(isTableDataEmpty && isCardDismissed) && <Card title={title}>{value}</Card>
+  )
+}
+OldFlagsSection.propTypes = {
+  isTableDataEmpty: PropTypes.bool.isRequired,
+  tableData: PropTypes.arrayOf(
+    PropTypes.shape({
+      changeCoverage: PropTypes.object,
+      headCoverage: PropTypes.object,
+      name: PropTypes.object,
+      patchCoverage: PropTypes.object,
+    })
+  ),
+}
+
+function Flags() {
+  const { owner, repo, pullId, provider } = useParams()
+  const { data } = usePull({ provider, owner, repo, pullId })
+  const flagComparison = data?.pull?.compareWithBase?.flagComparisons || []
+  const { pullPageTabs } = useFlags({ pullPageTabs: true })
+
+  const tableData = getTableData(flagComparison)
+  const isTableDataEmpty = tableData && tableData?.length <= 0
+
+  return pullPageTabs ? (
+    <NewFlagsTab isTableDataEmpty={isTableDataEmpty} tableData={tableData} />
+  ) : (
+    <OldFlagsSection
+      tableData={tableData}
+      isTableDataEmpty={isTableDataEmpty}
+    />
   )
 }
 
