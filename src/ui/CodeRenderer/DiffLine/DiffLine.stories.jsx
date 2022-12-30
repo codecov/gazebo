@@ -48,6 +48,6 @@ UncoveredDiffLine.args = {
 }
 
 export default {
-  title: 'Components/DiffLine',
+  title: 'Components/CodeRenderer/DiffLine',
   component: DiffLine,
 }
