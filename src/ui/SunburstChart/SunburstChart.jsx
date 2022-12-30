@@ -1,68 +1,82 @@
 /* eslint-disable max-statements */
-import { format } from 'd3-format'
-import { hierarchy, partition } from 'd3-hierarchy'
-import { interpolate, interpolateHslLong } from 'd3-interpolate'
+import { interpolate } from 'd3-interpolate'
 import { scaleSequential } from 'd3-scale'
 import { select } from 'd3-selection'
 import { arc } from 'd3-shape'
+// eslint-disable-next-line no-unused-vars
+import { transition } from 'd3-transition' // Kinda odd d3 behavior seems to need to imported but not directly referenced.
 import PropTypes from 'prop-types'
 import { useEffect, useRef } from 'react'
 
-const partitionFn = (data) => {
-  const root = hierarchy(data)
-    .sum((d) => d.value)
-    .sort((a, b) => b.value - a.value)
-  return partition().size([2 * Math.PI, root.height + 1])(root)
-}
-const formatData = format(',d')
-const width = 932
-const radius = width / 6
-const drawArc = arc()
-  .startAngle((d) => d.x0)
-  .endAngle((d) => d.x1)
-  .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.005))
-  .padRadius(radius * 1.5)
-  .innerRadius((d) => d.y0 * radius)
-  .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
-const colorRange = interpolateHslLong('rgb(206,32,25)', 'rgb(39,179,64)')
-
-function SunburstChart({ data, onClick = () => {} }) {
+import { colorRange, formatData, partitionFn } from './utils'
+function SunburstChart({
+  data,
+  onClick = () => {},
+  svgRenderSize = 932,
+  svgFontSize = '16px',
+}) {
+  // DOM node D3 controls
   const ref = useRef()
-  const color = scaleSequential().domain([0, 100]).interpolator(colorRange)
 
+  // The svg render size. This is *not* equivalent to normal rendering.
+  const width = svgRenderSize
+  // Overall graph size
+  const radius = width / 6
+
+  // In this case D3 is handling rendering not React, so useEffect is used to handle rendering
+  // and changes outside of the React lifecycle.
   useEffect(() => {
-    const root = partitionFn(data)
+    // Creates a function for creating arcs representing files and folders.
+    const drawArc = arc()
+      .startAngle((d) => d.x0)
+      .endAngle((d) => d.x1)
+      .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.005))
+      .padRadius(radius * 1.5)
+      .innerRadius((d) => d.y0 * radius)
+      .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
+    // A color function you can pass a number from 0-100 to and get a color back from the specified color range
+    // Ex color(10.4)
+    const color = scaleSequential().domain([0, 100]).interpolator(colorRange)
 
+    // Process data for use in D3
+    const root = partitionFn(data)
     root.each((d) => (d.current = d))
 
+    // Bind D3 to a DOM element
     const svg = select(ref.current)
 
+    // Creates an animatable group
     const g = svg
       .append('g')
       .attr('transform', `translate(${width / 2},${width / 2})`)
 
+    // Renders an arc per data point in the correct location. (Pieces of the circle that add up to a circular graph)
     const path = g
       .append('g')
       .selectAll('path')
       .data(root.descendants().slice(1))
       .join('path')
       .attr('fill', (d) => color(d.data.value || 0))
+      // If data point is a file fade the background color a bit.
       .attr('fill-opacity', (d) =>
         arcVisible(d.current) ? (d.children ? 1 : 0.6) : 0
       )
       .attr('pointer-events', (d) => (arcVisible(d.current) ? 'auto' : 'none'))
       .attr('d', (d) => drawArc(d.current))
 
+    // Click events for folders
     path
       .filter((d) => d.children)
       .style('cursor', 'pointer')
       .on('click', clickedFolder)
 
+    // Click events for folders
     path
       .filter((d) => !d.children)
       .style('cursor', 'pointer')
       .on('click', clickedFile)
 
+    // Create a11y label / mouse hover tooltip
     const formatTitle = (d) =>
       `${d
         .ancestors()
@@ -72,8 +86,10 @@ function SunburstChart({ data, onClick = () => {} }) {
 
     path.append('title').text((d) => formatTitle(d))
 
+    // Render the file/folder name in it's
     const label = g
       .append('g')
+      .attr('font-size', svgFontSize)
       .attr('pointer-events', 'none')
       .attr('text-anchor', 'middle')
       .style('user-select', 'none')
@@ -81,10 +97,13 @@ function SunburstChart({ data, onClick = () => {} }) {
       .data(root.descendants().slice(1))
       .join('text')
       .attr('dy', '0.35em')
+      // Hide labels if arc not in view
       .attr('fill-opacity', (d) => +labelVisible(d.current))
+      // Apply animation when transitioning in and out.
       .attr('transform', (d) => labelTransform(d.current))
       .text((d) => d.data.name)
 
+    // White circle in the middle. Act's as a "back"
     const parent = g
       .append('circle')
       .datum(root)
@@ -100,9 +119,12 @@ function SunburstChart({ data, onClick = () => {} }) {
         .reverse()
         .join('/')}`
 
+      // callback to react
       onClick(filePath, p.data)
+
       parent.datum(p.parent || root)
 
+      // Handle animating in/out of a folder
       root.each(
         (d) =>
           (d.target = {
@@ -156,24 +178,29 @@ function SunburstChart({ data, onClick = () => {} }) {
         .reverse()
         .join('/')}`
 
+      // callback to react
       onClick(filePath, p.data)
     }
 
+    // Calculate if a arc is visible
     function arcVisible(d) {
       return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
     }
 
+    // Calculate if a label is visible
     function labelVisible(d) {
       return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03
     }
 
+    // Do the math for a css animation.
     function labelTransform(d) {
       const x = (((d.x0 + d.x1) / 2) * 180) / Math.PI
       const y = ((d.y0 + d.y1) / 2) * radius
       return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`
     }
+    // On cleanup remove the root DOM generated by D3
     return () => g.remove()
-  }, [color, data, onClick])
+  }, [data, onClick, radius, svgFontSize, width])
   return <svg viewBox={[0, 0, width, width]} ref={ref} />
 }
 
@@ -197,6 +224,8 @@ SunburstChart.propTypes = {
     ),
   }),
   onClick: PropTypes.func,
+  svgRenderSize: PropTypes.number,
+  svgFontSize: PropTypes.string,
 }
 
 export default SunburstChart
