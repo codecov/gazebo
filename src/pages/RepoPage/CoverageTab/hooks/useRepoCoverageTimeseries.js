@@ -48,12 +48,18 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
           }
         }
 
+        const coverage = data.coverage.map((coverage) => ({
+          ...coverage,
+          date: new Date(coverage.date),
+        }))
+
         const newData = {
+          ...data,
           coverageChange:
             data.coverage[data.coverage?.length - 1].coverage -
             data.coverage[0].coverage,
           coverageAxisLabel,
-          ...data,
+          coverage,
         }
 
         if (typeof select === 'function') {
