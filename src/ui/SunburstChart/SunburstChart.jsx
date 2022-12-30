@@ -22,10 +22,7 @@ const arc = d3
   .padRadius(radius * 1.5)
   .innerRadius((d) => d.y0 * radius)
   .outerRadius((d) => Math.max(d.y0 * radius, d.y1 * radius - 1))
-const colorRange = d3.interpolateHslLong(
-  'rgb(206,32,25)',
-  'rgb(39,179,64)' // ko.
-)
+const colorRange = d3.interpolateHslLong('rgb(206,32,25)', 'rgb(39,179,64)')
 
 function SunburstChart({ data, onClick = () => {} }) {
   const ref = useRef()
