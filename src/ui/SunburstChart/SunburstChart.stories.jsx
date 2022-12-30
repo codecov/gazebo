@@ -2,7 +2,7 @@ import data from './data'
 import SunburstChart from './SunburstChart'
 
 const Template = (args) => (
-  <div className="w-[50vw] mx-auto">
+  <div className="w-[40%] mx-auto">
     <SunburstChart {...args} />
   </div>
 )

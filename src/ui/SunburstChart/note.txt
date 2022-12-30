@@ -1,0 +1,3 @@
+D3 is causing all kinds of problems rendering in jest.
+Considering large parts of this code is untestable anyways I'm opting to ignore it on coverage/test suite.
+E2E tests will hopefully fix this as we'd be able to render using the actual DOM and have better control over the interactive events.

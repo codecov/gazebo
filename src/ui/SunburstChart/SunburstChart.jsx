@@ -8,6 +8,7 @@ import { transition } from 'd3-transition' // Kinda odd d3 behavior seems to nee
 import PropTypes from 'prop-types'
 import { useEffect, useRef } from 'react'
 
+// Modification of https://observablehq.com/@d3/zoomable-sunburst
 import { colorRange, formatData, partitionFn } from './utils'
 function SunburstChart({
   data,
