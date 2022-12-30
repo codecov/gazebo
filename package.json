@@ -125,6 +125,10 @@
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!d3)/"
     ],
+    "collectCoverageFrom": [
+      "!src/**/*.stories.js",
+      "!src/**/*.stories.jsx"
+    ],
     "globalSetup": "./src/setupTestGlobal.js"
   },
   "msw": {
