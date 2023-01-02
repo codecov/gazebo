@@ -1,6 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
+import CoverageSelectIcon from 'pages/PullRequestPage/subroute/Root/FileDiff/CoverageSelectIcon'
 import { LINE_STATE } from 'shared/utils/fileviewer'
 
 const classNamePerLineState = {
@@ -15,10 +16,14 @@ const classNamePerLineState = {
 // classNamePerLineState[coverage]
 function CoverageSelect({ coverage }) {
   return (
-    <div className="flex text-xs font-mono items-center gap-2">
-      <span className={cs('px-2 capitalize', classNamePerLineState[coverage])}>
-        <span className="text-black">{coverage.toLowerCase()}</span>
-      </span>
+    <div
+      className={cs(
+        'px-2 capitalize flex text-xs font-mono items-center gap-2',
+        classNamePerLineState[coverage]
+      )}
+    >
+      <span className="text-black">{coverage.toLowerCase()}</span>
+      <CoverageSelectIcon coverage={coverage} />
     </div>
   )
 }

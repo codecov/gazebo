@@ -1,6 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
+import CoverageSelectIcon from 'pages/PullRequestPage/subroute/Root/FileDiff/CoverageSelectIcon'
 import {
   classNamePerLineContent,
   classNamePerLineState,
@@ -44,9 +45,14 @@ function DiffLine({
         data-testid="affected-lines"
         className={cs('pl-2 break-all', classNamePerLineContent[headLineState])}
       >
-        {lineContent.map((token, key) => (
-          <span key={key} {...getTokenProps({ token, key })} />
-        ))}
+        <div className="flex items-center justify-between">
+          <div>
+            {lineContent.map((token, key) => (
+              <span key={key} {...getTokenProps({ token, key })} />
+            ))}
+          </div>
+          <CoverageSelectIcon coverage={headLineState} />
+        </div>
       </td>
     </tr>
   )
