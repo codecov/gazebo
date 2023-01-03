@@ -10,7 +10,7 @@ describe('useCommitTreePaths', () => {
         <MemoryRouter
           initialEntries={['/gh/owner/cool-repo/commit/sha256/tree/src/tests']}
         >
-          <Route path="/:provider/:owner/:repo/commit/:commitSha/tree/:path+">
+          <Route path="/:provider/:owner/:repo/commit/:commit/tree/:path+">
             <div>{children}</div>
           </Route>
         </MemoryRouter>
@@ -47,7 +47,7 @@ describe('useCommitTreePaths', () => {
             '/gh/owner/cool-repo/commit/sha256/tree/src/temp/src/temp/component',
           ]}
         >
-          <Route path="/:provider/:owner/:repo/commit/:commitSha/tree/:path+">
+          <Route path="/:provider/:owner/:repo/commit/:commit/tree/:path+">
             <div>{children}</div>
           </Route>
         </MemoryRouter>
@@ -98,7 +98,7 @@ describe('useCommitTreePaths', () => {
   describe('no path is given', () => {
     const wrapper = ({ children }) => (
       <MemoryRouter initialEntries={['/gh/owner/cool-repo/commit/sha256/tree']}>
-        <Route path="/:provider/:owner/:repo/commit/:commitSha/tree/">
+        <Route path="/:provider/:owner/:repo/commit/:commit/tree/">
           <div>{children}</div>
         </Route>
       </MemoryRouter>
@@ -125,7 +125,7 @@ describe('useCommitTreePaths', () => {
             '/gh/owner/cool-repo/commit/sha256/tree/src/file.js',
           ]}
         >
-          <Route path="/:provider/:owner/:repo/commit/:commitSha/tree/:path+">
+          <Route path="/:provider/:owner/:repo/commit/:commit/tree/:path+">
             <div>{children}</div>
           </Route>
         </MemoryRouter>
