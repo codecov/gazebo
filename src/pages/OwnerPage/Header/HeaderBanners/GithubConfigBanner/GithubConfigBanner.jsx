@@ -10,7 +10,9 @@ const GithubConfigBanner = () => {
   const { provider } = useParams()
   const isGh = providerToName(provider) === 'Github'
 
-  return isGh ? (
+  if (!isGh) return null
+
+  return (
     <div className="mt-8">
       <Banner>
         <BannerHeading>
@@ -29,7 +31,7 @@ const GithubConfigBanner = () => {
         </BannerContent>
       </Banner>
     </div>
-  ) : null
+  )
 }
 
 export default GithubConfigBanner
