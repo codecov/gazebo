@@ -29,7 +29,7 @@ const getRepoTabs = ({ matchTree, matchBlobs, isCurrentUserPartOfOrg }) => {
     {
       pageName: 'overview',
       children: 'Coverage',
-      exact: `${!matchTree && !matchBlobs}`,
+      exact: !matchTree && !matchBlobs,
     },
     { pageName: 'flagsTab' },
     { pageName: 'commits' },

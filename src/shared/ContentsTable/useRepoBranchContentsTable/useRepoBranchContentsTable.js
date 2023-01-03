@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoBranchContents, useRepoOverview } from 'services/repo'
-import { usePaginatedContents } from 'services/usePaginatedContents'
 import { useTreePaths } from 'shared/useTreePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
 import A from 'ui/A'
@@ -222,9 +221,6 @@ export function useRepoBranchContentsTable() {
     ]
   )
 
-  const { paginatedData, handlePaginationClick, hasNextPage } =
-    usePaginatedContents({ data })
-
   const handleSort = useCallback(
     (tableSortBy) => {
       if (!isEqual(sortBy, tableSortBy)) {
@@ -236,13 +232,10 @@ export function useRepoBranchContentsTable() {
 
   return {
     data,
-    paginatedData,
     headers,
     handleSort,
     isLoading: isLoadingRepo || isLoading,
     isSearching: !!params?.search,
-    handlePaginationClick,
-    hasNextPage,
     isMissingHeadReport:
       pathContentData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
   }
