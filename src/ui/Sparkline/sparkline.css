@@ -3,8 +3,6 @@ td {
 }
 
 .line::before {
-  background: theme('colors.ds.gray.octonary');
-
   clip-path: polygon(
     0 calc(100% * (1 - var(--start, var(--size)))),
     100% calc(100% * (1 - var(--size))),
@@ -13,11 +11,20 @@ td {
   );
 }
 
+.line::after {
+  clip-path: polygon(
+    0 calc(100% * (1 - var(--start, var(--size)))),
+    100% calc(100% * (1 - var(--size))),
+    100% 100%,
+    0 100%
+  );
+}
+
 .line[data-mode='empty']::before {
   background: linear-gradient(
     90deg,
     transparent 50%,
-    theme('colors.ds.gray.quaternary') 50%
+    theme('colors.ds.pink.DEFAULT') 50%
   );
   background-size: var(--dot-size) var(--dot-size);
 }

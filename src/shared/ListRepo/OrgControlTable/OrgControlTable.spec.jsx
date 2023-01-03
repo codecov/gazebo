@@ -15,8 +15,8 @@ describe('OrgControlTable', () => {
     props = {
       sortItem: orderingOptions[0],
       setSortItem: jest.fn(),
-      active: true,
-      setActive: jest.fn(),
+      repoDisplay: 'All',
+      setRepoDisplay: jest.fn(),
       setSearchValue: jest.fn(),
       searchValue: '',
       canRefetch: true,
@@ -25,70 +25,70 @@ describe('OrgControlTable', () => {
     render(<OrgControlTable {...props} />)
   }
 
-  describe('when rendering with active true', () => {
+  describe('when rendering with repo display set to active', () => {
     beforeEach(() => {
       setup({
-        active: true,
+        repoDisplay: 'Active',
       })
     })
 
     it('renders the active button selected', () => {
       const buttonEnabled = screen.getByRole('button', {
-        name: /enabled/i,
+        name: /Active/,
       })
       const buttonDisabled = screen.getByRole('button', {
-        name: /Not yet setup/i,
+        name: /Inactive/i,
       })
       // no better way to assert the button is selected yet
       expect(buttonEnabled).toHaveClass('bg-ds-blue-darker')
       expect(buttonDisabled).not.toHaveClass('bg-ds-blue-darker')
     })
 
-    describe('when clicking on not yet setup button', () => {
+    describe('when clicking on inactive button', () => {
       beforeEach(() => {
         screen
           .getByRole('button', {
-            name: /Not yet setup/i,
+            name: /Inactive/,
           })
           .click()
       })
 
-      it('calls setActive with false', () => {
-        expect(props.setActive).toHaveBeenCalledWith(false)
+      it('calls setRepoDisplay with false', () => {
+        expect(props.setRepoDisplay).toHaveBeenCalledWith('Inactive')
       })
     })
   })
 
-  describe('when rendering with active false', () => {
+  describe('when rendering with repo display set to inactive', () => {
     beforeEach(() => {
       setup({
-        active: false,
+        repoDisplay: 'Inactive',
       })
     })
 
     it('renders the not yet active button selected', () => {
       const buttonEnabled = screen.getByRole('button', {
-        name: /enabled/i,
+        name: /Active/,
       })
       const buttonDisabled = screen.getByRole('button', {
-        name: /Not yet setup/i,
+        name: /Inactive/,
       })
       // no better way to assert the button is selected yet
       expect(buttonEnabled).not.toHaveClass('bg-ds-blue-darker')
       expect(buttonDisabled).toHaveClass('bg-ds-blue-darker')
     })
 
-    describe('when clicking on enabled button', () => {
+    describe('when clicking on Active button', () => {
       beforeEach(() => {
         screen
           .getByRole('button', {
-            name: /enabled/i,
+            name: /Active/,
           })
           .click()
       })
 
       it('calls setActive with false', () => {
-        expect(props.setActive).toHaveBeenCalledWith(true)
+        expect(props.setRepoDisplay).toHaveBeenCalledWith('Active')
       })
     })
   })

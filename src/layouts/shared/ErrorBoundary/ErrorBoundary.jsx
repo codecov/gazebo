@@ -5,14 +5,16 @@ import A from 'ui/A'
 
 function DefaultUI() {
   return (
-    <p>
-      There&apos;s been an error. Please try refreshing your browser, if this
-      error persists please{' '}
-      <A to={{ pageName: 'support' }} variant="link">
-        contact support
-      </A>
-      .
-    </p>
+    <div className="flex-1 flex justify-center items-center">
+      <p>
+        There&apos;s been an error. Please try refreshing your browser, if this
+        error persists please{' '}
+        <A to={{ pageName: 'support' }} variant="link">
+          contact support
+        </A>
+        .
+      </p>
+    </div>
   )
 }
 

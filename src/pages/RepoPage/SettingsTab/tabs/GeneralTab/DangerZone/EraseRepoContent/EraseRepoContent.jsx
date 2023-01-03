@@ -13,7 +13,7 @@ function EraseRepoContent() {
     <div className="flex">
       <div className="flex flex-col flex-1 gap-1">
         <h2 className="font-semibold">Erase repo coverage content</h2>
-        <p>This will remove all coverage reporting from the repo</p>
+        <p>This will remove all coverage reporting from the repo.</p>
       </div>
       <div>
         <Button

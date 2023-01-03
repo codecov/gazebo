@@ -11,14 +11,14 @@ function ResyncButton() {
   const isGh = providerToName(provider) === 'Github'
 
   return isSyncing ? (
-    <div className="flex items-center text-ds-gray-senary">
+    <div className="lg:col-span-2 flex text-ds-gray-senary">
       <div className="mr-2 text-ds-blue">
         <Spinner />
       </div>
       Syncing...
     </div>
   ) : (
-    <div className="text-xs flex flex-col lg:text-sm">
+    <div className="lg:col-span-2 text-sm">
       <p className="text-ds-gray-quinary font-semibold">
         Can’t find your repo{isGh ? ' or org?' : '?'}
       </p>
