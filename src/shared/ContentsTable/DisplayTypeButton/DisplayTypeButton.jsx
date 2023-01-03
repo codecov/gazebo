@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
 import OptionButton from 'ui/OptionButton'
+import Spinner from 'ui/Spinner'
 
 import { displayTypeParameter } from '../constants'
 
@@ -25,7 +26,7 @@ function initialState(urlParams) {
     : treeView
 }
 
-function DisplayTypeButton({ dataLength }) {
+function DisplayTypeButton({ dataLength, isLoading }) {
   const { params, updateParams } = useLocationParams()
   const [active, setActive] = useState(() => initialState(params))
 
@@ -41,8 +42,11 @@ function DisplayTypeButton({ dataLength }) {
         options={options}
         onChange={(option) => handleOnChange(option)}
       />
-      {active?.displayType === displayTypeParameter.list && dataLength && (
-        <span>{dataLength} total files</span>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        active?.displayType === displayTypeParameter.list &&
+        dataLength && <span>{dataLength} total files</span>
       )}
     </div>
   )
@@ -50,6 +54,7 @@ function DisplayTypeButton({ dataLength }) {
 
 DisplayTypeButton.propTypes = {
   dataLength: PropTypes.number,
+  isLoading: PropTypes.bool,
 }
 
 export default DisplayTypeButton
