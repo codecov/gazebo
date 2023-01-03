@@ -16,6 +16,8 @@ function repoPageRender({
   renderNew = noop,
   renderCompare = noop,
   renderSettings = noop,
+  renderTree = noop,
+  renderBlob = noop,
   options = {},
 }) {
   let testLocation
@@ -40,6 +42,12 @@ function repoPageRender({
         </Route>
         <Route path="/:provider/:owner/:repo" exact>
           <RepoBreadcrumbProvider>{renderRoot()}</RepoBreadcrumbProvider>
+        </Route>
+        <Route path="/:provider/:owner/:repo/tree">
+          <RepoBreadcrumbProvider>{renderTree()}</RepoBreadcrumbProvider>
+        </Route>
+        <Route path="/:provider/:owner/:repo/blob">
+          <RepoBreadcrumbProvider>{renderBlob()}</RepoBreadcrumbProvider>
         </Route>
         <Route
           path="*"
