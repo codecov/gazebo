@@ -8,11 +8,11 @@ import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
 
 import SideMenuSettings from './SideMenuSettings'
-import BadgesAndGraphsTab from './tabs/BadgesAndGraphsTab'
-import YamlTab from './tabs/YamlTab'
 
 const NotFound = lazy(() => import('../../NotFound'))
 const GeneralTab = lazy(() => import('./tabs/GeneralTab'))
+const YamlTab = lazy(() => import('./tabs/YamlTab'))
+const BadgesAndGraphsTab = lazy(() => import('./tabs/BadgesAndGraphsTab'))
 
 const tabLoading = (
   <div className="h-full w-full flex items-center justify-center">
