@@ -70,16 +70,15 @@ export default function HeaderBanners({ provider, owner }) {
   const showFeedbackBanner =
     hasGhApp && !isUploadsReachingLimit && !isUploadsExceeded
 
-  if (showFeedbackBanner) {
-    return <FeedbackBanner provider={provider} />
-  }
-
   return (
-    <AlertBanners
-      isUploadsExceeded={isUploadsExceeded}
-      isUploadsReachingLimit={isUploadsReachingLimit}
-      hasGhApp={hasGhApp}
-    />
+    <>
+      {showFeedbackBanner && <FeedbackBanner provider={provider} />}
+      <AlertBanners
+        isUploadsExceeded={isUploadsExceeded}
+        isUploadsReachingLimit={isUploadsReachingLimit}
+        hasGhApp={hasGhApp}
+      />
+    </>
   )
 }
 
