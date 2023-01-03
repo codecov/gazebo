@@ -91,7 +91,7 @@ describe('DiffLine', () => {
       expect(screen.getAllByLabelText('uncovered line of code').length).toBe(2)
     })
 
-    it('render partial select icon', () => {
+    it('render uncovered select icon', () => {
       expect(screen.getAllByText('exclamation-triangle.svg').length).toBe(1)
     })
   })
