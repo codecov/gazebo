@@ -28,15 +28,18 @@ function FileEntry({
   path,
   displayType,
   runPrefetch,
+  pageName = 'fileViewer',
+  commitSha,
 }) {
   const displayAsList = displayType === displayTypeParameter.list
   return (
     <div onMouseEnter={async () => await runPrefetch()}>
       <A
         to={{
-          pageName: 'fileViewer',
+          pageName,
           options: {
             ref: linkRef,
+            commitSha: commitSha,
             tree: displayAsList ? filePath : !!path ? `${path}/${name}` : name,
           },
         }}
@@ -57,13 +60,15 @@ function FileEntry({
 }
 
 FileEntry.propTypes = {
-  linkRef: PropTypes.string.isRequired,
+  linkRef: PropTypes.string,
   filePath: PropTypes.string.isRequired,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   path: PropTypes.string,
   runPrefetch: PropTypes.func,
+  pageName: PropTypes.string,
+  commitSha: PropTypes.string,
 }
 
 export default FileEntry

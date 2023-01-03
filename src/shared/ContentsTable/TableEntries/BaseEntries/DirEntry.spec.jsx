@@ -78,4 +78,25 @@ describe('DirEntry', () => {
 
     await waitFor(() => expect(runPrefetchMock).toHaveBeenCalled())
   })
+
+  describe('pageName prop is passed', () => {
+    it('sets the correct href', () => {
+      render(
+        <DirEntry
+          commitSha="coolCommitSha"
+          name="dir"
+          path="path/to/directory"
+          runPrefetch={runPrefetchMock}
+          pageName="commitTreeView"
+        />,
+        { wrapper }
+      )
+
+      const a = screen.getByRole('link')
+      expect(a).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/commit/coolCommitSha/tree/path/to/directory/dir'
+      )
+    })
+  })
 })
