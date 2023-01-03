@@ -36,7 +36,7 @@ export function useCoverageWithFlags(
 
   fragment CoverageForFile on Commit {
     commitid
-    coverageFile(path: $path) {
+    coverageFile(path: $path, flags: $flags) {
       isCriticalFile
       coverage {
         line
