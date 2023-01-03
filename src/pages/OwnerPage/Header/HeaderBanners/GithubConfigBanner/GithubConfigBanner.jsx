@@ -14,26 +14,18 @@ const GithubConfigBanner = () => {
     <div className="mt-8">
       <Banner>
         <BannerHeading>
-          <div className="flex justify-center gap-2 font-semibold">
-            <h2>Install Codecov GitHub app</h2>
-          </div>
-        </BannerHeading>
-        <BannerContent>
-          <p>
-            The best way to integrate with Codecov.io is to{' '}
+          <h2 className="flex justify-center gap-2 font-semibold">
+            Configure{' '}
             <A
               data-testid="codecovGithubApp-link"
               to={{ pageName: 'codecovGithubApp' }}
             >
-              Install Codecov&apos;s GitHub App
+              Codecov&apos;s GitHub app
             </A>
-            . Once installed, you will not need to set a{' '}
-            <A data-testid="teamBot-link" to={{ pageName: 'teamBot' }}>
-              Team Bot
-            </A>
-            because Codecov will use the integration to post statuses and
-            comments.
-          </p>
+          </h2>
+        </BannerHeading>
+        <BannerContent>
+          <p>Codecov will use the integration to post statuses and comments.</p>
         </BannerContent>
       </Banner>
     </div>

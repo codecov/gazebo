@@ -20,7 +20,7 @@ describe('GithubConfigBanner', () => {
     it('renders banner title', () => {
       render(<GithubConfigBanner />, { wrapper: wrapper({ provider: 'gh' }) })
 
-      const title = screen.queryByText(/Install Codecov GitHub app/)
+      const title = screen.getByText(/Codecov's GitHub app/)
       expect(title).toBeInTheDocument()
     })
 
@@ -30,7 +30,7 @@ describe('GithubConfigBanner', () => {
       })
 
       const body = screen.queryByText(
-        /Once installed, you will not need to set a/
+        /Codecov will use the integration to post statuses and comments./
       )
       expect(body).toBeInTheDocument()
     })
@@ -40,7 +40,7 @@ describe('GithubConfigBanner', () => {
     it('does not render banner title', () => {
       render(<GithubConfigBanner />, { wrapper: wrapper({ provider: 'gl' }) })
 
-      const title = screen.queryByText(/Install Codecov GitHub app/)
+      const title = screen.queryByText(/Configure Codecov's GitHub app/)
       expect(title).not.toBeInTheDocument()
     })
 
@@ -50,7 +50,7 @@ describe('GithubConfigBanner', () => {
       })
 
       const body = screen.queryByText(
-        /Once installed, you will not need to set a/
+        /Codecov will use the integration to post statuses and comments./
       )
       expect(body).not.toBeInTheDocument()
     })

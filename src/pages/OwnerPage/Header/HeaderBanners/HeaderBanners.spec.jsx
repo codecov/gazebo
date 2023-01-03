@@ -216,7 +216,7 @@ describe('HeaderBanners', () => {
         { wrapper }
       )
 
-      const banner = screen.getByText('Install Codecov GitHub app')
+      const banner = screen.getByText(/Codecov's GitHub app/)
       expect(banner).toBeInTheDocument()
     })
   })
