@@ -1,7 +1,6 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import CoverageSelectIcon from 'pages/PullRequestPage/subroute/Root/FileDiff/CoverageSelectIcon'
 import {
   classNamePerLineContent,
   classNamePerLineState,
@@ -9,6 +8,7 @@ import {
   LINE_TYPE,
   lineStateToLabel,
 } from 'shared/utils/fileviewer'
+import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
 function DiffLine({
   getTokenProps,

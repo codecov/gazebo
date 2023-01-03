@@ -1,8 +1,8 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import CoverageSelectIcon from 'pages/PullRequestPage/subroute/Root/FileDiff/CoverageSelectIcon'
 import { LINE_STATE } from 'shared/utils/fileviewer'
+import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]:
