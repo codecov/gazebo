@@ -41,7 +41,7 @@ describe('EraseRepoContent', () => {
     })
     it('renders body', () => {
       const p = screen.getByText(
-        'This will remove all coverage reporting from the repo'
+        'This will remove all coverage reporting from the repo.'
       )
       expect(p).toBeInTheDocument()
     })

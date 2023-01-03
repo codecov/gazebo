@@ -11,24 +11,24 @@ function ResyncButton() {
   const isGh = providerToName(provider) === 'Github'
 
   return isSyncing ? (
-    <div className="flex items-center text-ds-gray-senary">
+    <div className="lg:col-span-2 flex text-ds-gray-senary">
       <div className="mr-2 text-ds-blue">
         <Spinner />
       </div>
       Syncing...
     </div>
   ) : (
-    <div className="text-xs flex flex-col lg:text-sm">
+    <div className="lg:col-span-2 text-sm">
       <p className="text-ds-gray-quinary font-semibold">
         Can’t find your repo{isGh ? ' or org?' : '?'}
       </p>
-      <div className="block lg:flex lg:flex-row gap-1">
+      <div className="block lg:flex lg:flex-row gap-1 items-start flex-wrap">
         Try{' '}
-        <button className="text-ds-blue" onClick={triggerResync}>
+        <button className="text-ds-blue flex-none" onClick={triggerResync}>
           re-syncing
         </button>
         {isGh && (
-          <div>
+          <>
             {' '}
             or <A to={{ pageName: 'userAppManagePage' }}>check org access</A>.
             Learn more in{' '}
@@ -36,7 +36,7 @@ function ResyncButton() {
               our docs
             </A>
             .
-          </div>
+          </>
         )}
       </div>
     </div>

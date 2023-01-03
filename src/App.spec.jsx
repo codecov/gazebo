@@ -25,6 +25,8 @@ jest.mock('./pages/PlanPage/PlanPage', () => () => 'PlanPage')
 jest.mock('./pages/PullRequestPage', () => () => 'PullRequestPage')
 jest.mock('./pages/RepoPage/RepoPage', () => () => 'RepoPage')
 
+jest.mock('./shared/GlobalBanners', () => () => '')
+
 jest.mock('@tanstack/react-query-devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
 }))

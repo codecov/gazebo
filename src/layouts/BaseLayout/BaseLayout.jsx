@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useTracking } from 'services/tracking'
+import GlobalBanners from 'shared/GlobalBanners'
 
 import Footer from '../Footer'
 import Header from '../Header'
@@ -23,14 +24,15 @@ function BaseLayout({ children }) {
     <>
       <Header />
       <Suspense fallback={fullPageLoader}>
-        <main className="container grow mt-4 mb-8 md:p-0">
-          <ErrorBoundary sentryScopes={[['layout', 'base']]}>
-            <NetworkErrorBoundary>
+        <ErrorBoundary sentryScopes={[['layout', 'base']]}>
+          <NetworkErrorBoundary>
+            <main className="container grow flex flex-col gap-4 mt-4 mb-8 md:p-0">
+              <GlobalBanners />
               {children}
               <UserOnboarding />
-            </NetworkErrorBoundary>
-          </ErrorBoundary>
-        </main>
+            </main>
+          </NetworkErrorBoundary>
+        </ErrorBoundary>
       </Suspense>
       <Footer />
       <ToastNotifications />
