@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -37,6 +37,7 @@ describe('HeaderBanners', () => {
     isSelfHosted = false,
     hasReachedLimit = false,
     isReachingLimit = false,
+    integrationId = 9,
   }) {
     config.IS_SELF_HOSTED = isSelfHosted
     server.use(
@@ -64,7 +65,10 @@ describe('HeaderBanners', () => {
         }
 
         return res(ctx.status(200), ctx.data({}))
-      })
+      }),
+      rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json({ integrationId }))
+      )
     )
   }
 
@@ -193,6 +197,27 @@ describe('HeaderBanners', () => {
         const banner = screen.queryByText('Upload limit almost reached')
         expect(banner).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('user does not have gh app installed', () => {
+    beforeEach(() => {
+      setup({
+        integrationId: null,
+      })
+    })
+
+    it('displays github app config banner', async () => {
+      render(
+        <HeaderBanners
+          provider="gh"
+          owner={{ username: 'codecov', isCurrentUserPartOfOrg: true }}
+        />,
+        { wrapper }
+      )
+
+      const banner = screen.getByText(/Codecov's GitHub app/)
+      expect(banner).toBeInTheDocument()
     })
   })
 })
