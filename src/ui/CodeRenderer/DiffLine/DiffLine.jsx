@@ -8,6 +8,7 @@ import {
   LINE_TYPE,
   lineStateToLabel,
 } from 'shared/utils/fileviewer'
+import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
 function DiffLine({
   getTokenProps,
@@ -44,9 +45,14 @@ function DiffLine({
         data-testid="affected-lines"
         className={cs('pl-2 break-all', classNamePerLineContent[headLineState])}
       >
-        {lineContent.map((token, key) => (
-          <span key={key} {...getTokenProps({ token, key })} />
-        ))}
+        <div className="flex items-center justify-between">
+          <div>
+            {lineContent.map((token, key) => (
+              <span key={key} {...getTokenProps({ token, key })} />
+            ))}
+          </div>
+          <CoverageSelectIcon coverage={headLineState} />
+        </div>
       </td>
     </tr>
   )
