@@ -32,7 +32,6 @@ OptionButton.propTypes = {
       text: PropTypes.string,
     })
   ),
-  name: PropTypes.string,
   onChange: PropTypes.func.isRequired,
 }
 
