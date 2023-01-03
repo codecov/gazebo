@@ -181,8 +181,9 @@ describe('RepoContentsTable', () => {
       setup({ isLoading: true })
     })
 
-    it('renders spinner', () => {
-      expect(screen.getByTestId('spinner')).toBeInTheDocument()
+    it('renders two spinners', () => {
+      const spinners = screen.getAllByTestId('spinner')
+      expect(spinners.length).toBe(2)
     })
   })
 
