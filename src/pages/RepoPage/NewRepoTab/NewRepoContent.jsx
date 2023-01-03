@@ -6,7 +6,6 @@ import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTrack
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 
-import GithubConfig from './GithubConfig'
 import TerminalInstructions from './TerminalInstructions'
 import Token from './Token'
 
@@ -28,8 +27,6 @@ function NewRepoContent() {
         </A>{' '}
         to learn more.
       </p>
-
-      <GithubConfig privateRepo={data?.repository?.private} />
 
       <>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>

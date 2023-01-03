@@ -135,7 +135,7 @@ const Loader = () => {
 }
 
 function CommitsTable({ branch, paramCIStatus }) {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo, pullId } = useParams()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommits({
@@ -145,6 +145,7 @@ function CommitsTable({ branch, paramCIStatus }) {
       filters: {
         hideFailedCI: paramCIStatus,
         branchName: branch,
+        pullId: +pullId,
       },
       opts: { suspense: false },
     })

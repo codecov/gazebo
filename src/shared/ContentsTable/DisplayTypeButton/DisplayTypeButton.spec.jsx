@@ -1,6 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import userEvent from '@testing-library/user-event'
 
 import { useLocationParams } from 'services/navigation'
 
@@ -50,17 +51,12 @@ const mockUrlParams = {
 
 describe('Coverage Tab', () => {
   const mockUpdateParams = jest.fn()
+
   function setup(urlParams = mockUrlParams) {
     useLocationParams.mockReturnValue({
       updateParams: mockUpdateParams,
       params: urlParams,
     })
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <DisplayTypeButton dataLength={mockRepoContents.data.length} />
-      </QueryClientProvider>
-    )
   }
 
   describe('when rendered', () => {
@@ -69,87 +65,122 @@ describe('Coverage Tab', () => {
     })
 
     it('renders code tree and file list buttons', () => {
-      expect(screen.getByText(/Code tree/)).toBeInTheDocument()
-      expect(screen.getByText(/File list/)).toBeInTheDocument()
+      render(
+        <QueryClientProvider client={queryClient}>
+          <DisplayTypeButton dataLength={mockRepoContents.data.length} />
+        </QueryClientProvider>
+      )
+
+      const codeTree = screen.getByText(/Code tree/)
+      expect(codeTree).toBeInTheDocument()
+
+      const fileList = screen.getByText(/File list/)
+      expect(fileList).toBeInTheDocument()
     })
 
     it('shows tree as the selected option', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass(
-        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      render(
+        <QueryClientProvider client={queryClient}>
+          <DisplayTypeButton dataLength={mockRepoContents.data.length} />
+        </QueryClientProvider>
       )
-      expect(screen.getByText(/File list/)).not.toHaveClass(
-        'py-1 px-2 text-sm cursor-pointer rounded-l'
-      )
+
+      const codeTree = screen.getByText(/Code tree/)
+      expect(codeTree).toHaveClass('bg-ds-blue-darker')
+
+      const fileList = screen.getByText(/File list/)
+      expect(fileList).not.toHaveClass('bg-ds-blue-darker')
     })
   })
 
   describe('when list button is clicked', () => {
     beforeEach(() => {
       setup()
-      screen
-        .getByRole('button', {
-          name: /File list/i,
-        })
-        .click()
     })
 
     it('renders sets the list button as selected', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass(
-        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      render(
+        <QueryClientProvider client={queryClient}>
+          <DisplayTypeButton dataLength={mockRepoContents.data.length} />
+        </QueryClientProvider>
       )
-      expect(screen.getByText(/File list/)).toHaveClass(
-        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-r'
-      )
+
+      const fileList = screen.getByRole('button', {
+        name: /File list/i,
+      })
+      userEvent.click(fileList)
+
+      const codeTree = screen.getByText(/Code tree/)
+      expect(codeTree).not.toHaveClass('bg-ds-blue-darker')
+
+      expect(fileList).toHaveClass('bg-ds-blue-darker')
     })
 
     it('renders length of files if data is not empty', () => {
-      expect(
-        screen.getByText(`${mockRepoContents.data.length} total files`)
-      ).toBeInTheDocument()
+      render(
+        <QueryClientProvider client={queryClient}>
+          <DisplayTypeButton dataLength={mockRepoContents.data.length} />
+        </QueryClientProvider>
+      )
+
+      const fileList = screen.getByRole('button', {
+        name: /File list/i,
+      })
+      userEvent.click(fileList)
+
+      const fileCount = screen.getByText(
+        `${mockRepoContents.data.length} total files`
+      )
+      expect(fileCount).toBeInTheDocument()
     })
   })
 
   describe('when tree button is clicked', () => {
     beforeEach(() => {
       setup()
-      // This is clicked 2 cause code tree is the default, so we want to change and then click back
-      screen
-        .getByRole('button', {
-          name: /File list/i,
-        })
-        .click()
-      screen
-        .getByRole('button', {
-          name: /Code tree/i,
-        })
-        .click()
     })
 
     it('renders sets the list button as selected', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass(
-        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-l'
+      render(
+        <QueryClientProvider client={queryClient}>
+          <DisplayTypeButton dataLength={mockRepoContents.data.length} />
+        </QueryClientProvider>
       )
-      expect(screen.getByText(/File list/)).not.toHaveClass(
-        'py-1 px-2 text-sm cursor-pointer rounded-l'
-      )
+
+      const fileList = screen.getByRole('button', {
+        name: /File list/i,
+      })
+      userEvent.click(fileList)
+
+      const codeTree = screen.getByRole('button', {
+        name: /Code tree/i,
+      })
+      userEvent.click(codeTree)
+
+      expect(codeTree).toHaveClass('bg-ds-blue-darker')
+      expect(fileList).not.toHaveClass('bg-ds-blue-darker')
     })
   })
 
   describe('when url param is list', () => {
     beforeEach(() => {
-      const mockUrlParams = {
+      setup({
         displayType: 'list',
-      }
-      setup(mockUrlParams)
+      })
     })
 
     it('renders list view as selected', () => {
-      expect(screen.getByText(/Code tree/)).toHaveClass(
-        'py-1 px-2 text-sm cursor-pointer rounded-l'
+      render(
+        <QueryClientProvider client={queryClient}>
+          <DisplayTypeButton dataLength={mockRepoContents.data.length} />
+        </QueryClientProvider>
       )
-      expect(screen.getByText(/File list/)).toHaveClass(
-        'py-1 px-2 text-sm cursor-pointer bg-ds-blue-darker text-white font-semibold rounded-r'
-      )
+
+      const codeTree = screen.getByText(/Code tree/)
+      expect(codeTree).not.toHaveClass('bg-ds-blue-darker')
+
+      const fileList = screen.getByText(/File list/)
+      expect(fileList).toHaveClass('bg-ds-blue-darker')
     })
   })
 })

@@ -6,6 +6,7 @@ import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
+import CommitsTable from 'pages/RepoPage/CommitsTab/CommitsTable'
 import { usePull } from 'services/pull'
 import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -105,7 +106,7 @@ function PullRequestPage() {
                       path="/:provider/:owner/:repo/pull/:pullId/commits"
                       exact={true}
                     >
-                      pull commits
+                      <CommitsTable />
                     </SentryRoute>
                     <SentryRoute
                       path="/:provider/:owner/:repo/pull/:pullId/flags"
