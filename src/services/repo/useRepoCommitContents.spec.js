@@ -66,7 +66,7 @@ describe('useRepoCommitContents', () => {
             provider: 'gh',
             owner: 'codecov',
             repo: 'test',
-            commitSha: 'commit-1234',
+            commit: 'commit-1234',
             path: '',
           }),
         { wrapper }
@@ -82,7 +82,7 @@ describe('useRepoCommitContents', () => {
             provider: 'gh',
             owner: 'codecov',
             repo: 'test',
-            commitSha: 'commit-1234',
+            commit: 'commit-1234',
             path: '',
           }),
         { wrapper }
