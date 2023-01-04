@@ -2,30 +2,13 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import flagManagement from 'assets/svg/flagManagement.svg'
+import FlagsNotConfigured from 'pages/RepoPage/FlagsTab/FlagsNotConfigured'
 import { usePull } from 'services/pull'
 import { useFlags } from 'shared/featureFlags'
-import A from 'ui/A'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import Card from '../Card'
-
-const NoFlagsBanner = () => {
-  return (
-    <div className="flex flex-col items-center gap-4">
-      <img alt="FlagManagement" src={flagManagement} />
-      <h2 className="text-lg">See how flags can help you today!</h2>
-      <p className="w-2/4 text-center">
-        Codecov Flags allow you to isolate and categorize coverage reports for
-        different tests and features in your project Learn how flags can{' '}
-        <A hook="flags" to={{ pageName: 'flags' }}>
-          help your team today.
-        </A>
-      </p>
-    </div>
-  )
-}
 
 const tableColumns = [
   {
@@ -129,17 +112,16 @@ function getTableInfo({ tableData, isTableDataEmpty, setIsCardDismissed }) {
           </button>
         </div>
       ),
-      value: <NoFlagsBanner />,
+      value: <FlagsNotConfigured />,
     },
   }[cardInfo]
 }
 
 function NewFlagsTab({ isTableDataEmpty, tableData }) {
-  return isTableDataEmpty ? (
-    <NoFlagsBanner />
-  ) : (
-    <Table data={tableData} columns={tableColumns} />
-  )
+  if (isTableDataEmpty) {
+    return <FlagsNotConfigured />
+  }
+  return <Table data={tableData} columns={tableColumns} />
 }
 
 NewFlagsTab.propTypes = {
@@ -189,9 +171,13 @@ function Flags() {
   const tableData = getTableData(flagComparison)
   const isTableDataEmpty = tableData && tableData?.length <= 0
 
-  return pullPageTabs ? (
-    <NewFlagsTab isTableDataEmpty={isTableDataEmpty} tableData={tableData} />
-  ) : (
+  if (pullPageTabs) {
+    return (
+      <NewFlagsTab isTableDataEmpty={isTableDataEmpty} tableData={tableData} />
+    )
+  }
+
+  return (
     <OldFlagsSection
       tableData={tableData}
       isTableDataEmpty={isTableDataEmpty}

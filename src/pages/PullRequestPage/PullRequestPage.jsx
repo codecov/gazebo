@@ -16,11 +16,11 @@ import TabNavigation from 'ui/TabNavigation'
 import Commits from './Commits'
 import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
-import Flags from './Flags'
 import Header from './Header'
 import CompareSummary from './Summary'
 
 const Root = lazy(() => import('./subroute/Root'))
+const Flags = lazy(() => import('./Flags'))
 
 const Loader = (
   <div className="flex items-center justify-center py-16">

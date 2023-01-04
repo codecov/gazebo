@@ -114,7 +114,7 @@ describe('Flags Card', () => {
       const dismissButton = screen.getByText('Dismiss')
       expect(dismissButton).toBeInTheDocument()
       const flagsDescription = screen.getByText(
-        /Codecov Flags allow you to isolate and categorize coverage reports for/i
+        /The Flags feature is not yet configured/i
       )
       expect(flagsDescription).toBeInTheDocument()
       const flagsAnchor = screen.getByRole('link', /help your team today/i)
@@ -124,11 +124,14 @@ describe('Flags Card', () => {
       )
       expect(flagsDescription).toBeInTheDocument()
       const flagsMarketingImg = screen.getByRole('img', {
-        name: /FlagManagement/,
+        name: /Flags feature not configured/,
       })
       expect(flagsMarketingImg).toBeInTheDocument()
       expect(flagsMarketingImg).toHaveAttribute('src', 'flagManagement.svg')
-      expect(flagsMarketingImg).toHaveAttribute('alt', 'FlagManagement')
+      expect(flagsMarketingImg).toHaveAttribute(
+        'alt',
+        'Flags feature not configured'
+      )
     })
 
     it('dismisses the card after dismiss button is pressed', () => {
