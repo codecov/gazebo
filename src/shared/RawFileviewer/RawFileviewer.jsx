@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import PropType from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -26,8 +27,8 @@ function ErrorDisplayMessage() {
 
 // Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
 // component will affect both places
-function RawFileviewer({ title }) {
-  const { owner, repo, provider, ref, path } = useParams()
+function RawFileviewer({ title, showTopBorder = true }) {
+  const { owner, repo, provider, ref, path, commit } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const [selectedFlags, setSelectedFlags] = useState([])
 
@@ -43,7 +44,7 @@ function RawFileviewer({ title }) {
     owner,
     repo,
     provider,
-    commit: ref,
+    commit: ref || commit,
     path,
     selectedFlags,
   })
@@ -53,7 +54,12 @@ function RawFileviewer({ title }) {
   }
 
   return (
-    <div className="border-t border-solid border-ds-gray-tertiary pt-6 flex flex-col gap-2">
+    <div
+      className={cs('pt-6 flex flex-col gap-2', {
+        'border-t border-solid border-ds-gray-tertiary': showTopBorder,
+      })}
+      data-testid="file-viewer-wrapper"
+    >
       <ToggleHeader
         title={title}
         flagNames={flagNames}
@@ -93,6 +99,7 @@ function RawFileviewer({ title }) {
 
 RawFileviewer.propTypes = {
   title: PropType.oneOfType([PropType.string, PropType.object]),
+  showTopBorder: PropType.bool,
 }
 
 export default RawFileviewer
