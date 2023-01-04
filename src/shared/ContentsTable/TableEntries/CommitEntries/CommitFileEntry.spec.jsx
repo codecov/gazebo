@@ -41,8 +41,10 @@ const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo/main/blob/file.js']}>
-      <Route path="/:provider/:owner/:repo/:branch/blob/:path+">
+    <MemoryRouter
+      initialEntries={['/gh/codecov/test-repo/coolCommitSha/blob/file.js']}
+    >
+      <Route path="/:provider/:owner/:repo/:commit/blob/:path+">
         {children}
       </Route>
     </MemoryRouter>

@@ -19,13 +19,14 @@ function CommitFileEntry({
 
   return (
     <FileEntry
-      linkRef={commitSha}
+      commitSha={commitSha}
       filePath={filePath}
       isCriticalFile={isCriticalFile}
       name={name}
       displayType={displayType}
       path={path}
       runPrefetch={runPrefetch}
+      pageName="commitFileView"
     />
   )
 }

@@ -13,10 +13,11 @@ function CommitDirEntry({ commitSha, path, name, filters }) {
 
   return (
     <DirEntry
-      linkRef={commitSha}
       name={name}
       path={path}
       runPrefetch={runPrefetch}
+      pageName="commitTreeView"
+      commitSha={commitSha}
     />
   )
 }
