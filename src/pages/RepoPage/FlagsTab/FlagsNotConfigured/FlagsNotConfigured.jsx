@@ -1,9 +1,9 @@
-import flagManagement from 'assets/svg/flagManagement.svg'
+import flagManagement from 'assets/flagManagment.png'
 import A from 'ui/A'
 
 function FlagsNotConfigured() {
   return (
-    <div className="flex items-center justify-center flex-col text-ds-gray-octonary gap-2">
+    <div className="flex items-center justify-center flex-col text-ds-gray-octonary gap-2 mt-2">
       <div className="flex flex-col text-center justify-center gap-2 min-w-[60%]">
         <img
           alt="Flags feature not configured"
