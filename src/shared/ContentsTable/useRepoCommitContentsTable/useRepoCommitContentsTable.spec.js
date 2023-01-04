@@ -18,22 +18,24 @@ const mockCommitContentData = {
   owner: {
     repository: {
       commit: {
-        pathContents: [
-          {
-            name: 'src',
-            filePath: null,
-            percentCovered: 50.0,
-            type: 'dir',
-            __typename: 'PathContentDir',
-          },
-          {
-            name: 'file.ts',
-            filePath: null,
-            percentCovered: 50.0,
-            type: 'file',
-            __typename: 'PathContentFile',
-          },
-        ],
+        pathContents: {
+          results: [
+            {
+              name: 'src',
+              filePath: null,
+              percentCovered: 50.0,
+              type: 'dir',
+              __typename: 'PathContentDir',
+            },
+            {
+              name: 'file.ts',
+              filePath: null,
+              percentCovered: 50.0,
+              type: 'file',
+              __typename: 'PathContentFile',
+            },
+          ],
+        },
       },
     },
   },
@@ -43,7 +45,7 @@ const mockCommitNoContentData = {
   owner: {
     repository: {
       commit: {
-        pathContents: [],
+        pathContents: { results: [] },
       },
     },
   },
@@ -69,10 +71,10 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <Route path={'/:provider/:owner/:repo/commit/:commitSha/tree'}>
+          <Route path={'/:provider/:owner/:repo/commit/:commit/tree'}>
             {children}
           </Route>
-          <Route path={'/:provider/:owner/:repo/commit/:commitSha/tree/:path+'}>
+          <Route path={'/:provider/:owner/:repo/commit/:commit/tree/:path+'}>
             {children}
           </Route>
         </MemoryRouter>
@@ -208,12 +210,13 @@ describe('useRepoCommitContentsTable', () => {
 
       expect(calledCommitContents).toHaveBeenCalled()
       expect(calledCommitContents).toHaveBeenCalledWith({
-        commitSha: 'sha256',
+        commit: 'sha256',
         filters: {
           searchValue: 'file.js',
         },
         name: 'test-org',
         repo: 'test-repo',
+        path: '',
       })
     })
   })
@@ -238,12 +241,13 @@ describe('useRepoCommitContentsTable', () => {
 
       expect(calledCommitContents).toHaveBeenCalled()
       expect(calledCommitContents).toHaveBeenCalledWith({
-        commitSha: 'sha256',
+        commit: 'sha256',
         filters: {
           displayType: 'LIST',
         },
         name: 'test-org',
         repo: 'test-repo',
+        path: '',
       })
     })
   })
@@ -275,7 +279,7 @@ describe('useRepoCommitContentsTable', () => {
 
       expect(calledCommitContents).toHaveBeenCalledTimes(2)
       expect(calledCommitContents).toHaveBeenNthCalledWith(2, {
-        commitSha: 'sha256',
+        commit: 'sha256',
         filters: {
           ordering: {
             direction: 'ASC',
@@ -284,6 +288,7 @@ describe('useRepoCommitContentsTable', () => {
         },
         name: 'test-org',
         repo: 'test-repo',
+        path: '',
       })
     })
   })
