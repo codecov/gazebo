@@ -1,4 +1,4 @@
-import flagManagement from 'assets/flagManagment.png'
+import flagManagement from 'assets/flagManagment.jpg'
 import A from 'ui/A'
 
 function FlagsNotConfigured() {

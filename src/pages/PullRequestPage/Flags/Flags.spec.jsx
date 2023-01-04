@@ -127,7 +127,7 @@ describe('Flags Card', () => {
         name: /Flags feature not configured/,
       })
       expect(flagsMarketingImg).toBeInTheDocument()
-      expect(flagsMarketingImg).toHaveAttribute('src', 'flagManagment.png')
+      expect(flagsMarketingImg).toHaveAttribute('src', 'flagManagment.jpg')
       expect(flagsMarketingImg).toHaveAttribute(
         'alt',
         'Flags feature not configured'
