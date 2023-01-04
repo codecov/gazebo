@@ -1,9 +1,10 @@
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import flagManagement from 'assets/svg/flagManagement.svg'
+import FlagsNotConfigured from 'pages/RepoPage/FlagsTab/FlagsNotConfigured'
 import { usePull } from 'services/pull'
-import A from 'ui/A'
+import { useFlags } from 'shared/featureFlags'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -111,32 +112,34 @@ function getTableInfo({ tableData, isTableDataEmpty, setIsCardDismissed }) {
           </button>
         </div>
       ),
-      value: (
-        <div className="flex flex-col">
-          <img alt="FlagManagement" src={flagManagement} />
-          <p>
-            Flags feature is not yet configured. Learn how flags can{' '}
-            <A hook="flags" to={{ pageName: 'flags' }}>
-              help your team today
-            </A>
-            .
-          </p>
-        </div>
-      ),
+      value: <FlagsNotConfigured />,
     },
   }[cardInfo]
 }
 
-function Flags() {
-  const { owner, repo, pullId, provider } = useParams()
-  const { data } = usePull({ provider, owner, repo, pullId })
-  const flagComparison = data?.pull?.compareWithBase?.flagComparisons || []
+function NewFlagsTab({ isTableDataEmpty, tableData }) {
+  if (isTableDataEmpty) {
+    return <FlagsNotConfigured />
+  }
+  return <Table data={tableData} columns={tableColumns} />
+}
 
+NewFlagsTab.propTypes = {
+  isTableDataEmpty: PropTypes.bool.isRequired,
+  tableData: PropTypes.arrayOf(
+    PropTypes.shape({
+      changeCoverage: PropTypes.object,
+      headCoverage: PropTypes.object,
+      name: PropTypes.object,
+      patchCoverage: PropTypes.object,
+    })
+  ),
+}
+
+function OldFlagsSection({ isTableDataEmpty, tableData }) {
   const [isCardDismissed, setIsCardDismissed] = useState(
     !!JSON.parse(localStorage.getItem(localStorageKey))
   )
-  const tableData = getTableData(flagComparison)
-  const isTableDataEmpty = tableData && tableData?.length <= 0
   const { title, value } = getTableInfo({
     tableData,
     isTableDataEmpty,
@@ -145,6 +148,40 @@ function Flags() {
 
   return (
     !(isTableDataEmpty && isCardDismissed) && <Card title={title}>{value}</Card>
+  )
+}
+OldFlagsSection.propTypes = {
+  isTableDataEmpty: PropTypes.bool.isRequired,
+  tableData: PropTypes.arrayOf(
+    PropTypes.shape({
+      changeCoverage: PropTypes.object,
+      headCoverage: PropTypes.object,
+      name: PropTypes.object,
+      patchCoverage: PropTypes.object,
+    })
+  ),
+}
+
+function Flags() {
+  const { owner, repo, pullId, provider } = useParams()
+  const { data } = usePull({ provider, owner, repo, pullId })
+  const flagComparison = data?.pull?.compareWithBase?.flagComparisons || []
+  const { pullPageTabs } = useFlags({ pullPageTabs: true })
+
+  const tableData = getTableData(flagComparison)
+  const isTableDataEmpty = tableData && tableData?.length <= 0
+
+  if (pullPageTabs) {
+    return (
+      <NewFlagsTab isTableDataEmpty={isTableDataEmpty} tableData={tableData} />
+    )
+  }
+
+  return (
+    <OldFlagsSection
+      tableData={tableData}
+      isTableDataEmpty={isTableDataEmpty}
+    />
   )
 }
 
