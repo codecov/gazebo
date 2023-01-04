@@ -7,7 +7,7 @@ function FlagsNotConfigured() {
       <div className="flex flex-col text-center justify-center gap-2 min-w-[60%]">
         <img
           alt="Flags feature not configured"
-          className="mx-auto mb-8"
+          className="mx-auto mb-8 w-screen"
           src={flagManagement}
         />
         <span className="text-3xl">
