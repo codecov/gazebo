@@ -13,6 +13,7 @@ function FileViewer() {
         </div>
       }
       showTopBorder={false}
+      addTopPadding={false}
     />
   )
 }
