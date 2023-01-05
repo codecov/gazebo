@@ -73,7 +73,7 @@ const data = {
     },
     compareWithParent: {
       state: 'processed',
-      patchTotals: { coverage: 0.75 },
+      patchTotals: { coverage: 75 },
       impactedFiles: [
         {
           patchCoverage: { coverage: 75 },
@@ -93,7 +93,7 @@ const headCoverage = commit?.totals?.coverage
 
 const successfulExpectedData = {
   headCoverage: commit?.totals?.coverage,
-  patchCoverage: isNumber(rawPatch) ? rawPatch * 100 : Number.NaN,
+  patchCoverage: isNumber(rawPatch) ? rawPatch : Number.NaN,
   changeCoverage: headCoverage - parentCoverage,
   headCommitId: commit?.commitid,
   parentCommitId: commit?.parent?.commitid,

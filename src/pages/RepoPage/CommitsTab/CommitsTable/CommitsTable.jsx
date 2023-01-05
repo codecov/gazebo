@@ -81,7 +81,7 @@ function transformPullToTable(commits) {
       } = commit
       const change = totals?.coverage - parent?.totals?.coverage
       const patchValue = compareWithParent?.patchTotals?.coverage
-        ? compareWithParent?.patchTotals?.coverage * 100
+        ? compareWithParent?.patchTotals?.coverage
         : Number.NaN
 
       return {
