@@ -1,9 +1,6 @@
-import { isEmpty } from 'lodash'
 import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
 
-import ErroredUploads from 'pages/CommitPage/ErroredUploads'
-import { useExtractUploads } from 'pages/CommitPage/UploadsCard/useExtractUploads'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
@@ -16,22 +13,16 @@ const Loader = () => (
 )
 
 function ImpactedFiles({ commit, commitSHA }) {
-  const { erroredUploads } = useExtractUploads({ uploads: commit?.uploads })
-
   return (
     <>
       <ToggleHeader title="" coverageIsLoading={false} />
-      {!isEmpty(erroredUploads) ? (
-        <ErroredUploads erroredUploads={erroredUploads} />
-      ) : (
-        <Suspense fallback={<Loader />}>
-          <CommitsTable
-            commit={commitSHA}
-            state={commit?.state}
-            data={commit?.compareWithParent?.impactedFiles}
-          />
-        </Suspense>
-      )}
+      <Suspense fallback={<Loader />}>
+        <CommitsTable
+          commit={commitSHA}
+          state={commit?.state}
+          data={commit?.compareWithParent?.impactedFiles}
+        />
+      </Suspense>
     </>
   )
 }
