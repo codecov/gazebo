@@ -3,9 +3,8 @@ import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoCommitContents, useRepoOverview } from 'services/repo'
+import { useRepoCommitContents } from 'services/repo'
 import { useCommitTreePaths } from 'shared/treePaths'
-import { CommitErrorTypes } from 'shared/utils/commit'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../constants'
@@ -162,12 +161,6 @@ export function useRepoCommitContentsTable() {
   const { treePaths } = useCommitTreePaths()
   const [sortBy, setSortBy] = useState([])
 
-  const { data: repoData, isLoading: repoIsLoading } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-
   const { data: commitData, isLoading: commitIsLoading } =
     useRepoCommitContents({
       provider,
@@ -207,9 +200,7 @@ export function useRepoCommitContentsTable() {
     data,
     headers,
     handleSort,
-    isLoading: repoIsLoading || commitIsLoading,
+    isLoading: commitIsLoading,
     isSearching: !!params?.search,
-    isMissingHeadReport:
-      repoData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
   }
 }

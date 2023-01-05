@@ -51,17 +51,6 @@ const mockCommitNoContentData = {
   },
 }
 
-const mockRepoOverviewData = {
-  owner: {
-    repository: {
-      defaultBranch: 'main',
-      branches: {
-        edges: [{ node: { name: 'test', head: { commitid: '1234567' } } }],
-      },
-    },
-  },
-}
-
 const queryClient = new QueryClient()
 const server = setupServer()
 
@@ -97,10 +86,7 @@ describe('useRepoCommitContentsTable', () => {
 
   function setup({ noData } = { noData: false }) {
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverviewData))
-      }),
-      graphql.query('CommitPathContents', (req, res, ctx) => {
+      graphql.query('CommitContents', (req, res, ctx) => {
         calledCommitContents(req?.variables)
 
         if (noData) {
