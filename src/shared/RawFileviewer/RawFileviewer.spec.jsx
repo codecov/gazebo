@@ -351,4 +351,25 @@ describe('RawFileviewer', () => {
       expect(fileViewer).not.toHaveClass('border-t')
     })
   })
+
+  describe('user passes false to addTopPadding prop', () => {
+    beforeEach(() => {
+      const owner = {
+        username: 'cool-user',
+        isCurrentUserPartOfOrg: true,
+      }
+      setup({ content: null, owner, coverage: null })
+    })
+
+    it('does not apply the border class', async () => {
+      render(<RawFileviewer addTopPadding={false} />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const fileViewer = await screen.findByTestId('file-viewer-wrapper')
+      expect(fileViewer).toHaveClass('flex')
+      expect(fileViewer).not.toHaveClass('pt-6')
+    })
+  })
 })
