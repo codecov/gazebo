@@ -18,6 +18,7 @@ import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
 import { usePullPageData } from './hooks'
+import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 
 const CompareSummary = lazy(() => import('./Summary'))
 const Root = lazy(() => import('./subroute/Root'))
@@ -57,7 +58,7 @@ function PullRequestPage() {
         ]}
       />
       <Header />
-      <Suspense fallback={Loader}>
+      <Suspense fallback={<CompareSummarySkeleton />}>
         <CompareSummary />
       </Suspense>
       {resultType !== ComparisonReturnType.SUCCESFUL_COMPARISON ? (
