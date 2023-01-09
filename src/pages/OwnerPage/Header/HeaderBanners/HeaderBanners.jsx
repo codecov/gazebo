@@ -6,7 +6,6 @@ import { useAccountDetails } from 'services/account'
 import { useUploadsNumber } from 'services/uploadsNumber'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
-import FeedbackBanner from './FeedbackBanner'
 import GithubConfigBanner from './GithubConfigBanner'
 import ReachingUploadLimit from './ReachingUploadLimit'
 
@@ -67,18 +66,12 @@ export default function HeaderBanners({ provider, owner }) {
     return null
   }
 
-  const showFeedbackBanner =
-    hasGhApp && !isUploadsReachingLimit && !isUploadsExceeded
-
   return (
-    <>
-      {showFeedbackBanner && <FeedbackBanner provider={provider} />}
-      <AlertBanners
-        isUploadsExceeded={isUploadsExceeded}
-        isUploadsReachingLimit={isUploadsReachingLimit}
-        hasGhApp={hasGhApp}
-      />
-    </>
+    <AlertBanners
+      isUploadsExceeded={isUploadsExceeded}
+      isUploadsReachingLimit={isUploadsReachingLimit}
+      hasGhApp={hasGhApp}
+    />
   )
 }
 
