@@ -1,411 +1,500 @@
-import { render, screen } from 'custom-testing-library'
-
-import userEvent from '@testing-library/user-event'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql, rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useAccountDetails } from 'services/account'
-import { useCommit } from 'services/commit'
-import { useCommitErrors } from 'services/commitErrors'
-import { useFileWithMainCoverage } from 'services/file'
-import { useOwner } from 'services/user'
 
 import CommitPage from './CommitPage'
 
-jest.mock('services/account')
-jest.mock('services/commitErrors')
-jest.mock('services/commit')
-jest.mock('services/file')
-jest.mock('./Header/Header.jsx', () => () => 'The Header')
-jest.mock('./subroute/CommitFileView.jsx', () => () => 'The Commit File View')
-jest.mock(
-  './Summary/CommitDetailsSummary.jsx',
-  () => () => 'Commit Details Summary'
-)
-jest.mock('./ErroredUploads', () => () => 'Errored Uploads')
-jest.mock('services/user')
+jest.mock('./subroute/CommitFileExplorer', () => () => 'CommitFileExplorer')
+jest.mock('./subroute/CommitFileViewer', () => () => 'CommitFileViewer')
+jest.mock('./subroute/ImpactedFiles', () => () => 'ImpactedFiles')
+jest.mock('./UploadsCard', () => () => 'UploadsCard')
 
-const dataReturned = {
-  commit: {
-    state: 'COMPLETE',
-    totals: {
-      coverage: 38.30846,
-    },
-    compareWithParent: {
-      impactedFiles: [
-        {
-          headName: 'src/index2.py',
-          baseCoverage: {
-            coverage: 62.5,
-          },
-          headCoverage: {
-            coverage: 75.0,
-          },
-          patchCoverage: {
-            coverage: 37.5,
+const mockCommit = {
+  owner: {
+    repository: {
+      commit: {
+        totals: {
+          coverage: 25,
+          diff: {
+            coverage: 0,
           },
         },
-      ],
-    },
-    commitid: '7200398h48a3cebc0728d915763c2fd9e92132408',
-    pullId: 10,
-    createdAt: '2020-08-25T16:35:32',
-    author: {
-      username: 'febg',
-    },
-    uploads: [
-      {
-        state: 'PROCESSED',
-        provider: 'travis',
-        createdAt: '2020-08-25T16:36:19.559474+00:00',
-        updatedAt: '2020-08-25T16:36:19.679868+00:00',
-        flags: ['flagone'],
-        downloadUrl:
-          '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
-        ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
-        uploadType: 'uploaded',
-      },
-      {
-        state: 'PROCESSED',
-        provider: 'travis',
-        createdAt: '2020-08-25T16:36:25.820340+00:00',
-        updatedAt: '2020-08-25T16:36:25.859889+00:00',
-        flags: [],
-        downloadUrl:
-          '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
-        ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
-        uploadType: 'uploaded',
-      },
-    ],
-
-    yaml: 'codecov:\n  max_report_age: false\n  require_ci_to_pass: true\ncomment:\n  behavior: default\n  layout: reach,diff,flags,tree,reach\n  show_carryforward_flags: false\ncoverage:\n  precision: 2\n  range:\n  - 70.0\n  - 100.0\n  round: down\n  status:\n    changes: false\n    default_rules:\n      flag_coverage_not_uploaded_behavior: include\n    patch:\n      default:\n        target: 80.0\n    project:\n      library:\n        paths:\n        - src/path1/.*\n        target: auto\n        threshold: 0.1\n      tests:\n        paths:\n        - src/path2/.*\n        target: 100.0\ngithub_checks:\n  annotations: true\n',
-    message: 'paths test',
-    ciPassed: true,
-    parent: {
-      commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-      totals: {
-        coverage: 38.30846,
+        commitid: 'e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
+        pullId: 10,
+        createdAt: '2020-08-25T16:35:32',
+        author: {
+          username: 'febg',
+        },
+        state: 'complete',
+        uploads: {
+          edges: [
+            {
+              node: {
+                state: 'processed',
+                provider: 'travis',
+                createdAt: '2020-08-25T16:36:19.559474+00:00',
+                updatedAt: '2020-08-25T16:36:19.679868+00:00',
+                flags: [],
+                downloadUrl:
+                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+                uploadType: 'uploaded',
+                errors: [],
+                name: 'upload name',
+              },
+            },
+            {
+              node: {
+                state: 'processed',
+                provider: 'travis',
+                createdAt: '2020-08-25T16:36:25.820340+00:00',
+                updatedAt: '2020-08-25T16:36:25.859889+00:00',
+                flags: [],
+                downloadUrl:
+                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
+                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
+                uploadType: 'uploaded',
+                errors: [],
+                name: 'upload name',
+              },
+            },
+            {
+              node: {
+                state: 'ERROR',
+                provider: 'travis',
+                createdAt: '2020-08-25T16:36:25.820340+00:00',
+                updatedAt: '2020-08-25T16:36:25.859889+00:00',
+                flags: [],
+                downloadUrl:
+                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
+                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
+                uploadType: 'uploaded',
+                errors: [],
+              },
+            },
+          ],
+        },
+        message: 'paths test',
+        ciPassed: true,
+        compareWithParent: {
+          state: 'processed',
+        },
+        parent: {
+          commitid: 'e736f78b3cb5c8abb1d6b2ec5e5102de455f98ea',
+          totals: {
+            coverage: 25,
+          },
+        },
       },
     },
   },
 }
 
-const fileData = {
-  coverage: {},
-  content: '',
-  totals: 25,
-  flagNames: [],
+const mockCommitNoYamlErrors = {
+  owner: {
+    repository: {
+      commit: {
+        yamlErrors: {
+          edges: [],
+        },
+        botErrors: {
+          edges: [],
+        },
+      },
+    },
+  },
 }
 
-describe('CommitPage', () => {
-  function setup(data) {
-    useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: true } })
-    useCommit.mockReturnValue(data)
-    useFileWithMainCoverage.mockReturnValue(fileData)
-    useAccountDetails.mockReturnValue({ data: {} })
-    useCommitErrors.mockReturnValue({
-      data: {
-        yamlErrors: [{ errorCode: 'invalid_yaml' }],
-        botErrors: [{ errorCode: 'repo_bot_invalid' }],
+const mockCommitYamlErrors = {
+  owner: {
+    repository: {
+      commit: {
+        yamlErrors: {
+          edges: [{ node: { errorCode: 'invalid_yaml' } }],
+        },
+        botErrors: {
+          edges: [{ node: { errorCode: 'repo_bot_invalid' } }],
+        },
       },
-    })
-    render(
-      <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-        <Route path="/:provider/:owner/:repo/commit/:commit">
-          <CommitPage />
-        </Route>
-      </MemoryRouter>
+    },
+  },
+}
+
+const mockFileData = {
+  owner: {
+    repository: {
+      commit: {
+        compareWithParent: {
+          state: 'processed',
+        },
+      },
+    },
+  },
+}
+
+const mockOwner = {
+  owner: {
+    isCurrentUserPartOfOrg: true,
+  },
+}
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
+const server = setupServer()
+
+let testLocation
+const wrapper =
+  (
+    initialEntries = [
+      '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
+    ]
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+              '/:provider/:owner/:repo/commit/:commit/tree/:path+',
+              '/:provider/:owner/:repo/commit/:commit/tree/',
+              '/:provider/:owner/:repo/commit/:commit/*',
+              '/:provider/:owner/:repo/commit/:commit',
+            ]}
+          >
+            {children}
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
+describe('CommitPage', () => {
+  function setup(
+    { hasYamlErrors, noCommit } = { hasYamlErrors: false, noCommit: false }
+  ) {
+    server.use(
+      graphql.query('Commit', (req, res, ctx) => {
+        if (noCommit) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { repository: { commit: null } } })
+          )
+        }
+
+        return res(ctx.status(200), ctx.data(mockCommit))
+      }),
+      graphql.query('CommitErrors', (req, res, ctx) => {
+        if (hasYamlErrors) {
+          return res(ctx.status(200), ctx.data(mockCommitYamlErrors))
+        }
+
+        return res(ctx.status(200), ctx.data(mockCommitNoYamlErrors))
+      }),
+      graphql.query('DetailOwner', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockOwner))
+      }),
+      graphql.query('CompareTotals', (req, res, ctx) => {
+        res(ctx.status(200), ctx.data(mockFileData))
+      }),
+      rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json({}))
+      })
     )
   }
-  describe('renders', () => {
-    beforeEach(() => {
-      setup({ data: dataReturned, isSuccess: true })
-    })
-    it('the Uploads', () => {
-      expect(screen.getByText(/Uploads/)).toBeInTheDocument()
-    })
-    it('the Header', () => {
-      expect(screen.getByText(/The Header/)).toBeInTheDocument()
-    })
-    it('Commit Details Summary', () => {
-      expect(screen.getByText(/Commit Details Summary/)).toBeInTheDocument()
-    })
-    it('the impacted files, and not the errored uploads', () => {
-      expect(screen.getByText(/Impacted Files/)).toBeInTheDocument()
-      expect(screen.queryByText(/Errored Uploads/)).not.toBeInTheDocument()
-    })
-  })
-  describe('Errored Uploads', () => {
-    function setup(data) {
-      useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: true } })
-      useCommit.mockReturnValue(data)
-      useAccountDetails.mockReturnValue({ data: {} })
-      useCommitErrors.mockReturnValue({
-        data: { yamlErrors: [], botErrors: [] },
-      })
-      render(
-        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            <CommitPage />
-          </Route>
-        </MemoryRouter>
-      )
-    }
-    describe('when uploads have errors', () => {
+
+  describe('rendering component', () => {
+    describe('testing not found', () => {
       beforeEach(() => {
-        const dataReturned = {
-          commit: {
-            state: 'COMPLETE',
-            uploads: [
-              {
-                state: 'ERROR',
-                provider: 'travis',
-                createdAt: '2020-08-25T16:36:19.559474+00:00',
-                updatedAt: '2020-08-25T16:36:19.679868+00:00',
-                flags: ['flagone'],
-                downloadUrl:
-                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
-                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
-                uploadType: 'uploaded',
-              },
-            ],
-          },
-        }
-        setup({ data: dataReturned, isSuccess: true })
+        setup({ noCommit: true })
       })
-      it('renders the errored uploads', async () => {
-        expect(screen.getByText(/Errored Uploads/)).toBeInTheDocument()
+
+      it('renders not found page', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const notFound = await screen.findByText('Error 404')
+        expect(notFound).toBeInTheDocument()
       })
     })
-  })
-  describe('Not Found', () => {
-    function setup(data) {
-      useOwner.mockReturnValue({
-        data: { isCurrentUserPartOfOrg: true },
-      })
-      useCommit.mockReturnValue(data)
-      useAccountDetails.mockReturnValue({ data: {} })
-      useCommitErrors.mockReturnValue({
-        data: {
-          yamlErrors: [{ errorCode: 'invalid_yaml' }],
-          botErrors: [{ errorCode: 'repo_bot_invalid' }],
-        },
-      })
-      render(
-        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            <CommitPage />
-          </Route>
-        </MemoryRouter>
-      )
-    }
-    describe('renders 404', () => {
+
+    describe('testing breadcrumb', () => {
       beforeEach(() => {
-        setup({ data: null, isLoading: false })
+        setup()
       })
-      it('renders the Uploads', async () => {
-        expect(await screen.findByText(/Not found/)).toBeInTheDocument()
+
+      it('renders owner link', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const ownerLink = await screen.findByRole('link', { name: 'codecov' })
+        expect(ownerLink).toBeInTheDocument()
+        expect(ownerLink).toHaveAttribute('href', '/gh/codecov')
+      })
+
+      it('renders repo link', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const ownerLink = await screen.findByRole('link', { name: 'cool-repo' })
+        expect(ownerLink).toBeInTheDocument()
+        expect(ownerLink).toHaveAttribute('href', '/gh/codecov/cool-repo')
+      })
+
+      it('renders commits page link', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const ownerLink = await screen.findByRole('link', { name: 'commits' })
+        expect(ownerLink).toBeInTheDocument()
+        expect(ownerLink).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/commits'
+        )
+      })
+
+      it('renders read only current short sha', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const ownerLink = await screen.findAllByText('e736f78')
+        expect(ownerLink.length).toBeGreaterThanOrEqual(1)
       })
     })
-    describe('renders empty data', () => {
+
+    describe('testing header', () => {
       beforeEach(() => {
-        setup({ data: { commit: {} }, isSuccess: true })
+        setup()
       })
-      it('renders the Uploads', () => {
-        expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+
+      it('displays commit sha link', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const commitShaLink = await screen.findByRole('link', {
+          name: /e736f78/,
+        })
+        expect(commitShaLink).toBeInTheDocument()
+      })
+    })
+
+    describe('testing commit details summary', () => {
+      beforeEach(() => {
+        setup()
+      })
+
+      it('displays head change percentage', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const head = await screen.findByText(/HEAD/)
+        expect(head).toBeInTheDocument()
+      })
+    })
+
+    describe('testing commit error banners', () => {
+      beforeEach(() => {
+        setup({ hasYamlErrors: true })
+      })
+
+      it('displays bot error banner', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const teamBot = await screen.findByText(/Team bot/)
+        expect(teamBot).toBeInTheDocument()
+      })
+
+      it('displays yaml error banner', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const yamlError = await screen.findByText('Commit YAML is invalid')
+        expect(yamlError).toBeInTheDocument()
+      })
+    })
+
+    describe('testing uploads card', () => {
+      beforeEach(() => {
+        setup()
+      })
+
+      it('displays uploads card section', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const uploads = await screen.findByText('UploadsCard')
+        expect(uploads).toBeInTheDocument()
+      })
+    })
+
+    describe('testing errored uploads', () => {
+      beforeEach(() => {
+        setup()
+      })
+
+      it('displays errored uploads message', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const failedUploads = await screen.findByText(
+          /The following uploads failed/
+        )
+        expect(failedUploads).toBeInTheDocument()
+      })
+    })
+
+    describe('testing page tabs', () => {
+      beforeEach(() => {
+        setup()
+      })
+
+      it('displays the impacted files tab', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const impactedFiles = await screen.findByText('Impacted Files')
+        expect(impactedFiles).toBeInTheDocument()
+        expect(impactedFiles).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed'
+        )
+      })
+
+      it('displays the files tab', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        const filesTab = await screen.findByRole('link', { name: 'Files' })
+        expect(filesTab).toBeInTheDocument()
+        expect(filesTab).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed/tree'
+        )
       })
     })
   })
 
-  describe('When render on public repos and current user is not part of org', () => {
-    function setup(data) {
-      useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: false } })
-      useCommit.mockReturnValue(data)
-      useAccountDetails.mockReturnValue({ data: {} })
-      useCommitErrors.mockReturnValue({
-        data: {
-          yamlErrors: [{ errorCode: 'invalid_yaml' }],
-          botErrors: [{ errorCode: 'repo_bot_invalid' }],
-        },
-      })
-      render(
-        <MemoryRouter initialEntries={['/gh/test/test-repo/commit/abcd']}>
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            <CommitPage />
-          </Route>
-        </MemoryRouter>
-      )
-    }
-    describe('renders the correct data', () => {
-      const dataReturned = {
-        commit: {
-          state: 'COMPLETE',
-          uploads: [
-            {
-              state: 'ERROR',
-              provider: 'travis',
-              createdAt: '2020-08-25T16:36:19.559474+00:00',
-              updatedAt: '2020-08-25T16:36:19.679868+00:00',
-              flags: ['flagone'],
-              downloadUrl:
-                '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
-              ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
-              uploadType: 'uploaded',
-            },
-          ],
-        },
-      }
+  describe('testing sub-routes', () => {
+    describe('rendering on root route', () => {
       beforeEach(() => {
-        setup({ data: dataReturned, isLoading: false })
+        setup()
       })
-      it('does not render bot errors', () => {
-        expect(screen.queryByText(/Team bot/)).not.toBeInTheDocument()
-      })
-      it('does not render 404', () => {
-        expect(screen.queryByText(/Error 404/)).not.toBeInTheDocument()
-      })
-      it('renders rest of the page', () => {
-        expect(screen.getByText(/Commit YAML is invalid/)).toBeInTheDocument()
-      })
-    })
-  })
 
-  describe('Commits Table', () => {
-    function setup(data) {
-      useOwner.mockReturnValue({
-        data: { isCurrentUserPartOfOrg: true },
-      })
-      useCommit.mockReturnValue(data)
-      useAccountDetails.mockReturnValue({ data: {} })
-      useCommitErrors.mockReturnValue({
-        data: {
-          yamlErrors: [{ errorCode: 'invalid_yaml' }],
-          botErrors: [{ errorCode: 'repo_bot_invalid' }],
-        },
-      })
-      render(
-        <MemoryRouter
-          initialEntries={[
-            '/gh/test/test-repo/commit/fc3d5cbddd90689344dc77f49b6ae6ef9ebdf7ec',
-          ]}
-        >
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            <CommitPage />
-          </Route>
-        </MemoryRouter>
-      )
-    }
-    it('renders spinner if state is pending', async () => {
-      setup({ data: { commit: { state: 'pending' } }, isLoading: false })
-      expect(screen.getByTestId('spinner')).toBeInTheDocument()
-    })
-    it('renders no files if there impacted files is empty', async () => {
-      setup({ data: { commit: { compareWithParent: {} } }, isLoading: false })
-      const coverage = screen.getByText(
-        'No Files covered by tests were changed'
-      )
-      expect(coverage).toBeInTheDocument()
-    })
-    it('renders table data if data is populated', async () => {
-      setup({ data: dataReturned, isLoading: false })
-      const impactedFile =
-        dataReturned.commit.compareWithParent.impactedFiles[0]
-      expect(screen.getByText(impactedFile.headName)).toBeInTheDocument()
-      const change =
-        impactedFile.headCoverage.coverage - impactedFile.baseCoverage.coverage
-      const formattedChange = `${change.toFixed(2)}%`
-      const changeValue = screen.getByText(formattedChange)
-      expect(changeValue).toBeInTheDocument()
-      expect(changeValue).toHaveClass("before:content-['+']")
-      const formattedPatch = `${impactedFile.patchCoverage.coverage.toFixed(
-        2
-      )}%`
-      expect(screen.getByText(formattedPatch)).toBeInTheDocument()
-      const formattedHeadCoverage = `${impactedFile.headCoverage.coverage.toFixed(
-        2
-      )}%`
-      expect(screen.getByText(formattedHeadCoverage)).toBeInTheDocument()
-    })
-  })
-  describe('FileViewer', () => {
-    function setup(data) {
-      useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg: true } })
-      useCommitErrors.mockReturnValue({
-        data: {
-          yamlErrors: [{ errorCode: 'invalid_yaml' }],
-          botErrors: [{ errorCode: 'repo_bot_invalid' }],
-        },
-      })
-      useAccountDetails.mockReturnValue({ data: {} })
-      useCommit.mockReturnValue(data)
-      useFileWithMainCoverage.mockReturnValue({
-        data: fileData,
-        isSuccess: true,
-      })
-      render(
-        <MemoryRouter
-          initialEntries={['/gh/test/test-repo/commit/abcd/file/index.js']}
-        >
-          <Route path="/:provider/:owner/:repo/commit/:commit/file/:path+">
-            <CommitPage />
-          </Route>
-        </MemoryRouter>
-      )
-    }
-    describe('renders with correct data', () => {
-      beforeEach(() => {
-        setup({ data: dataReturned, isSuccess: true })
-      })
-      it('the impacted file', () => {
-        expect(screen.getByText(/abcd/)).toBeInTheDocument()
-        expect(screen.getByText(/test-repo/)).toBeInTheDocument()
-      })
-    })
-    describe('handles when a path is not part of the impacted files', () => {
-      beforeEach(() => {
-        useAccountDetails.mockReturnValue({ data: {} })
+      it('renders impacted files tab', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
 
-        const data = {
-          commit: {
-            compareWithParent: {
-              impactedFiles: [
-                {
-                  headName: 'src/notInUrl.py',
-                },
-              ],
-            },
-          },
-        }
-        setup({ data, isSuccess: true })
-      })
-      it('the Commit File View', () => {
-        userEvent.click(screen.getByText('chevron-right.svg'))
-        expect(screen.getByText(/The Commit File View/)).toBeInTheDocument()
+        const impactedFiles = await screen.findByText('ImpactedFiles')
+        expect(impactedFiles).toBeInTheDocument()
       })
     })
-    describe('renders without availble commit data', () => {
+
+    describe('rendering on blob route', () => {
       beforeEach(() => {
-        setup({ data: {}, isSuccess: true })
+        setup()
       })
-      it('without change values', () => {
-        expect(screen.getByText(/Error 404/)).toBeInTheDocument()
-        expect(screen.getByText(/Not found/)).toBeInTheDocument()
+
+      it('renders file viewer', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper([
+            '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed/blob/file.js',
+          ]),
+        })
+
+        const fileViewer = await screen.findByText('CommitFileViewer')
+        expect(fileViewer).toBeInTheDocument()
       })
     })
-    describe('renders with commit errors', () => {
+
+    describe('rendering on tree route', () => {
       beforeEach(() => {
-        setup({ data: dataReturned, isSuccess: true })
+        setup()
       })
-      it('renders yaml warning banner', () => {
-        const banner = screen.getByText(/Commit YAML is invalid/)
-        expect(banner).toBeInTheDocument()
+
+      describe('on root tree route', () => {
+        it('renders file explorer', async () => {
+          render(<CommitPage />, {
+            wrapper: wrapper([
+              '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed/tree',
+            ]),
+          })
+
+          const fileExplorer = await screen.findByText('CommitFileExplorer')
+          expect(fileExplorer).toBeInTheDocument()
+        })
       })
-      it('renders bot warning banner', () => {
-        expect(screen.getByText(/Team bot/)).toBeInTheDocument()
+
+      describe('on sub tree route', () => {
+        it('renders file explorer', async () => {
+          render(<CommitPage />, {
+            wrapper: wrapper([
+              '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed/tree/a/b/c',
+            ]),
+          })
+
+          const fileExplorer = await screen.findByText('CommitFileExplorer')
+          expect(fileExplorer).toBeInTheDocument()
+        })
       })
-      it('renders yaml modal warning banner', () => {
-        const viewYaml = screen.getByText('view yml file')
-        viewYaml.click()
-        expect(screen.getByText(/When the commit-level/)).toBeInTheDocument()
+    })
+
+    describe('rendering on random route', () => {
+      beforeEach(() => {
+        setup()
+      })
+
+      it('redirects the user to root route', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper([
+            '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed/random/route',
+          ]),
+        })
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed'
+          )
+        )
       })
     })
   })
