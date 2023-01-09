@@ -15,6 +15,7 @@ function CommitFileEntry({
 }) {
   const { runPrefetch } = usePrefetchCommitFileEntry({
     path: filePath,
+    commitSha: commitSha,
   })
 
   return (
