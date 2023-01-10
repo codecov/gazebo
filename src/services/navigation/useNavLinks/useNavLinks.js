@@ -203,16 +203,16 @@ export function useNavLinks() {
     },
     commitTreeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, commitSha } = {
+        { provider = p, owner = o, repo = r, dirPath, commitSha } = {
           provider: p,
           owner: o,
           repo: r,
         }
       ) => {
-        if (!tree) {
+        if (!dirPath) {
           return `/${provider}/${owner}/${repo}/commit/${commitSha}/tree/`
         } else {
-          return `/${provider}/${owner}/${repo}/commit/${commitSha}/tree/${tree}`
+          return `/${provider}/${owner}/${repo}/commit/${commitSha}/tree/${dirPath}`
         }
       },
       isExternalLink: false,
@@ -220,13 +220,13 @@ export function useNavLinks() {
     },
     commitFileView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, commitSha } = {
+        { provider = p, owner = o, repo = r, filePath, commitSha } = {
           provider: p,
           owner: o,
           repo: r,
         }
       ) => {
-        return `/${provider}/${owner}/${repo}/commit/${commitSha}/blob/${tree}`
+        return `/${provider}/${owner}/${repo}/commit/${commitSha}/blob/${filePath}`
       },
       isExternalLink: false,
       text: 'Commit File View',

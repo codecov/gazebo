@@ -599,21 +599,21 @@ describe('useNavLinks', () => {
     it('accepts a tree option', () => {
       expect(
         hookData.result.current.commitTreeView.path({
-          tree: 'src/view/catWatch.php',
+          dirPath: 'src/view/catWatch.php',
           commitSha: 'sha128',
         })
       ).toBe('/gl/doggo/watch/commit/sha128/tree/src/view/catWatch.php')
 
       expect(
         hookData.result.current.commitTreeView.path({
-          tree: 'src',
+          dirPath: 'src',
           commitSha: 'sha128',
         })
       ).toBe('/gl/doggo/watch/commit/sha128/tree/src')
 
       expect(
         hookData.result.current.commitTreeView.path({
-          tree: 'src/view',
+          dirPath: 'src/view',
           commitSha: 'sha128',
         })
       ).toBe('/gl/doggo/watch/commit/sha128/tree/src/view')
@@ -629,7 +629,7 @@ describe('useNavLinks', () => {
       expect(
         hookData.result.current.commitFileView.path({
           commitSha: 'sha256',
-          tree: 'index.js',
+          filePath: 'index.js',
         })
       ).toBe('/gh/codecov-owner/another-test/commit/sha256/blob/index.js')
     })
@@ -639,7 +639,7 @@ describe('useNavLinks', () => {
         hookData.result.current.commitFileView.path({
           provider: 'bb',
           commitSha: 'sha256',
-          tree: 'index.js',
+          filePath: 'index.js',
         })
       ).toBe('/bb/codecov-owner/another-test/commit/sha256/blob/index.js')
 
@@ -647,7 +647,7 @@ describe('useNavLinks', () => {
         hookData.result.current.commitFileView.path({
           owner: 'cat',
           commitSha: 'sha256',
-          tree: 'index.js',
+          filePath: 'index.js',
         })
       ).toBe('/gh/cat/another-test/commit/sha256/blob/index.js')
 
@@ -655,7 +655,7 @@ describe('useNavLinks', () => {
         hookData.result.current.commitFileView.path({
           repo: 'cool-new-repo',
           commitSha: 'sha256',
-          tree: 'flags1/mafs.js',
+          filePath: 'flags1/mafs.js',
         })
       ).toBe(
         '/gh/codecov-owner/cool-new-repo/commit/sha256/blob/flags1/mafs.js'
