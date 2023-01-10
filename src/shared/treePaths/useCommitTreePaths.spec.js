@@ -28,12 +28,12 @@ describe('useCommitTreePaths', () => {
             options: { commitSha: 'sha256' },
           },
           {
-            options: { tree: 'src', commitSha: 'sha256' },
+            options: { dirPath: 'src', commitSha: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { tree: 'src/tests', commitSha: 'sha256' },
+            options: { dirPath: 'src/tests', commitSha: 'sha256' },
             pageName: 'commitTreeView',
             text: 'tests',
           },
@@ -63,28 +63,28 @@ describe('useCommitTreePaths', () => {
             options: { commitSha: 'sha256' },
           },
           {
-            options: { tree: 'src', commitSha: 'sha256' },
+            options: { dirPath: 'src', commitSha: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { tree: 'src/temp', commitSha: 'sha256' },
+            options: { dirPath: 'src/temp', commitSha: 'sha256' },
             pageName: 'commitTreeView',
             text: 'temp',
           },
           {
-            options: { tree: 'src/temp/src', commitSha: 'sha256' },
+            options: { dirPath: 'src/temp/src', commitSha: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { tree: 'src/temp/src/temp', commitSha: 'sha256' },
+            options: { dirPath: 'src/temp/src/temp', commitSha: 'sha256' },
             pageName: 'commitTreeView',
             text: 'temp',
           },
           {
             options: {
-              tree: 'src/temp/src/temp/component',
+              dirPath: 'src/temp/src/temp/component',
               commitSha: 'sha256',
             },
             pageName: 'commitTreeView',
@@ -141,12 +141,12 @@ describe('useCommitTreePaths', () => {
             options: { commitSha: 'sha256' },
           },
           {
-            options: { tree: 'src', commitSha: 'sha256' },
+            options: { dirPath: 'src', commitSha: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { tree: 'src/file.js', commitSha: 'sha256' },
+            options: { dirPath: 'src/file.js', commitSha: 'sha256' },
             pageName: 'commitTreeView',
             text: 'file.js',
           },

@@ -17,7 +17,7 @@ export function useCommitTreePaths() {
       pageName: 'commitTreeView',
       text: location,
       options: {
-        tree: getTreeLocation(filePaths, location, index),
+        dirPath: getTreeLocation(filePaths, location, index),
         commitSha,
       },
     }))
