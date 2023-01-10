@@ -7,7 +7,6 @@ import { SentryRoute } from 'sentry'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
 import CommitsTable from 'pages/RepoPage/CommitsTab/CommitsTable'
-import { usePull } from 'services/pull'
 import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
@@ -18,8 +17,10 @@ import Commits from './Commits'
 import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
-import CompareSummary from './Summary'
+import { usePullPageData } from './hooks'
+import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 
+const CompareSummary = lazy(() => import('./Summary'))
 const Root = lazy(() => import('./subroute/Root'))
 const Flags = lazy(() => import('./Flags'))
 
@@ -32,7 +33,7 @@ const Loader = (
 // eslint-disable-next-line complexity
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
-  const { data, isLoading } = usePull({ provider, owner, repo, pullId })
+  const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
   const { pullPageTabs } = useFlags({ pullPageTabs: true })
 
   if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
@@ -57,7 +58,9 @@ function PullRequestPage() {
         ]}
       />
       <Header />
-      <CompareSummary />
+      <Suspense fallback={<CompareSummarySkeleton />}>
+        <CompareSummary />
+      </Suspense>
       {resultType !== ComparisonReturnType.SUCCESFUL_COMPARISON ? (
         <ErrorBanner errorType={resultType} />
       ) : (

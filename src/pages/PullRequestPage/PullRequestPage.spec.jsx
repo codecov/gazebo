@@ -5,10 +5,10 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
 import { useFlags } from 'shared/featureFlags'
 
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
+import { usePullPageData } from './hooks/usePullPageData'
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('./Header', () => () => 'Header')
@@ -19,7 +19,7 @@ jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./ErrorBanner', () => () => 'Error Banner')
 jest.mock('pages/RepoPage/CommitsTab/CommitsTable', () => () => 'Commits Table')
 
-jest.mock('services/pull')
+jest.mock('./hooks/usePullPageData')
 jest.mock('shared/featureFlags')
 
 const commits = {
@@ -85,7 +85,7 @@ describe('PullRequestPage', () => {
       )
     )
 
-    usePull.mockReturnValue({
+    usePullPageData.mockReturnValue({
       data: { hasAccess, pull: pullData },
     })
 
