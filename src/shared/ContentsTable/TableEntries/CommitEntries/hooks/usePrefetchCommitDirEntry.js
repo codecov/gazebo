@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import Api from 'shared/api'
 
 const query = `
-  query CommitContents(
+  query CommitPathContents(
     $name: String!
     $commitSha: String!
     $repo: String!
@@ -50,7 +50,7 @@ export function usePrefetchCommitDirEntry({
 
   const runPrefetch = async () =>
     await queryClient.prefetchQuery(
-      ['CommitContents', provider, owner, repo, commitSha, path, filters],
+      ['CommitPathContents', provider, owner, repo, commitSha, path, filters],
       ({ signal }) =>
         Api.graphql({
           provider,

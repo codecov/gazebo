@@ -98,7 +98,7 @@ describe('useRepoCommitContentsTable', () => {
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverviewData))
       }),
-      graphql.query('CommitContents', (req, res, ctx) => {
+      graphql.query('CommitPathContents', (req, res, ctx) => {
         calledCommitContents(req?.variables)
 
         if (noData) {

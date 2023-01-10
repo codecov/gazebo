@@ -61,7 +61,7 @@ describe('usePrefetchCommitDirEntry', () => {
     })
 
     server.use(
-      graphql.query('CommitContents', (req, res, ctx) =>
+      graphql.query('CommitPathContents', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))
       )
     )
