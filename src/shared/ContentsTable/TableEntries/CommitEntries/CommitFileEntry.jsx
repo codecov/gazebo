@@ -32,7 +32,7 @@ function CommitFileEntry({
 
 CommitFileEntry.propTypes = {
   commitSha: PropTypes.string.isRequired,
-  filePath: PropTypes.string,
+  filePath: PropTypes.string.isRequired,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
