@@ -75,17 +75,28 @@ describe('CommitDirEntry', () => {
     expect(screen.getByText('dir')).toBeInTheDocument()
   })
 
-  it('sets the correct href', () => {
-    render(
-      <CommitDirEntry commitSha="1234" name="dir" path="path/to/directory" />,
-      { wrapper }
-    )
+  describe('path is provided', () => {
+    it('sets the correct href', () => {
+      render(
+        <CommitDirEntry commitSha="1234" name="dir" path="path/to/directory" />,
+        { wrapper }
+      )
 
-    const a = screen.getByRole('link')
-    expect(a).toHaveAttribute(
-      'href',
-      '/gh/codecov/test-repo/tree/1234/path/to/directory/dir'
-    )
+      const a = screen.getByRole('link')
+      expect(a).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/tree/1234/path/to/directory/dir'
+      )
+    })
+  })
+
+  describe('no path is provided', () => {
+    it('sets the correct href', () => {
+      render(<CommitDirEntry commitSha="1234" name="dir" />, { wrapper })
+
+      const a = screen.getByRole('link')
+      expect(a).toHaveAttribute('href', '/gh/codecov/test-repo/tree/1234/dir')
+    })
   })
 
   it('fires the prefetch function on hover', async () => {
