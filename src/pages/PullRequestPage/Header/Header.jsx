@@ -19,44 +19,43 @@ const pullStateToColor = {
 function Header() {
   const { provider, owner, repo, pullId } = useParams()
   const { data } = usePullHeadData({ provider, owner, repo, pullId })
-  const pull = data?.owner?.repository?.pull
 
   return (
     <div className="border-b border-ds-gray-secondary pb-4 text-xs">
       <h1 className="flex items-center gap-2 text-lg font-semibold">
-        {pull?.title}
+        {data?.title}
         <span
           className={cs(
             'text-white font-bold px-3 py-0.5 text-xs rounded',
-            pullStateToColor[pull?.state]
+            pullStateToColor[data?.state]
           )}
         >
-          {capitalize(pull?.state)}
+          {capitalize(data?.state)}
         </span>
       </h1>
       <p className="flex items-center gap-2">
         <span>
-          {pull?.updatestamp && formatTimeToNow(pull?.updatestamp)}{' '}
-          <span className="bold">{pull?.author?.username}</span> authored{' '}
-          {pull?.pullId && (
+          {data?.updatestamp && formatTimeToNow(data?.updatestamp)}{' '}
+          <span className="bold">{data?.author?.username}</span> authored{' '}
+          {data?.pullId && (
             <A
               href={getProviderPullURL({
                 provider,
                 owner,
                 repo,
-                pullId: pull?.pullId,
+                pullId: data?.pullId,
               })}
               hook="provider-pr-link"
               isExternal={true}
             >
-              #{pull?.pullId}
+              #{data?.pullId}
             </A>
           )}
         </span>
-        <CIStatusLabel ciPassed={pull?.head?.ciPassed} />
+        <CIStatusLabel ciPassed={data?.head?.ciPassed} />
         <span className="flex items-center">
           <Icon name="branch" variant="developer" size="sm" />
-          {pull?.head?.branchName}
+          {data?.head?.branchName}
         </span>
       </p>
     </div>

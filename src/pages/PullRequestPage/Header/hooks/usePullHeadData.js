@@ -39,4 +39,5 @@ export const usePullHeadData = ({ provider, owner, repo, pullId }) =>
           pullId: parseInt(pullId, 10),
         },
       }).then((res) => res?.data),
+    select: (data) => data?.owner?.repository?.pull || {},
   })

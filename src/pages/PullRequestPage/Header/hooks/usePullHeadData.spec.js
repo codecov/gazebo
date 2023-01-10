@@ -46,54 +46,80 @@ afterAll(() => {
 })
 
 describe('usePullHeadData', () => {
-  function setup() {
+  function setup({ noPullData } = { noPullData: false }) {
     server.use(
-      graphql.query('PullHeadData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockPullData))
-      )
+      graphql.query('PullHeadData', (req, res, ctx) => {
+        if (noPullData) {
+          return res(ctx.status(200), ctx.data({ owner: { repository: {} } }))
+        }
+
+        return res(ctx.status(200), ctx.data(mockPullData))
+      })
     )
   }
 
   describe('calling hook', () => {
-    beforeEach(() => {
-      setup()
+    describe('when there is pull data', () => {
+      beforeEach(() => {
+        setup()
+      })
+
+      it('returns the correct data', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            usePullHeadData({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              pullId: '1',
+            }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        expect(result.current.data).toStrictEqual({
+          pullId: 1,
+          title: 'Cool Pull Request',
+          state: 'open',
+          author: {
+            username: 'cool-user',
+          },
+          head: {
+            branchName: 'cool-branch',
+            ciPassed: true,
+          },
+          updatestamp: '',
+        })
+      })
     })
 
-    it('returns the correct data', async () => {
-      const { result, waitFor } = renderHook(
-        () =>
-          usePullHeadData({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-            pullId: '1',
-          }),
-        {
-          wrapper,
-        }
-      )
+    describe('when there is no pull data', () => {
+      beforeEach(() => {
+        setup({ noPullData: true })
+      })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
+      it('returns an empty object', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            usePullHeadData({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              pullId: '1',
+            }),
+          {
+            wrapper,
+          }
+        )
 
-      expect(result.current.data).toStrictEqual({
-        owner: {
-          repository: {
-            pull: {
-              pullId: 1,
-              title: 'Cool Pull Request',
-              state: 'open',
-              author: {
-                username: 'cool-user',
-              },
-              head: {
-                branchName: 'cool-branch',
-                ciPassed: true,
-              },
-              updatestamp: '',
-            },
-          },
-        },
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        expect(result.current.data).toStrictEqual({})
       })
     })
   })
