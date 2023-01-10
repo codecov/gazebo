@@ -90,6 +90,10 @@ describe('DiffLine', () => {
     it('render uncovered line', () => {
       expect(screen.getAllByLabelText('uncovered line of code').length).toBe(2)
     })
+
+    it('render uncovered select icon', () => {
+      expect(screen.getAllByText('exclamation-triangle.svg').length).toBe(1)
+    })
   })
 
   describe('renders highlighted uncovered base', () => {
@@ -123,6 +127,10 @@ describe('DiffLine', () => {
 
     it('render partial lines', () => {
       expect(screen.getAllByLabelText('partial line of code').length).toBe(2)
+    })
+
+    it('render partial select icon', () => {
+      expect(screen.getAllByTestId('partial-icon').length).toBe(1)
     })
   })
 

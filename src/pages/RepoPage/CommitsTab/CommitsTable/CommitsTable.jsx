@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
-import { commitRequestType } from 'shared/propTypes'
+import { useCommits } from 'services/commits'
+import Button from 'ui/Button'
+import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -63,82 +66,116 @@ const handleOnNull = () => {
 }
 
 function transformPullToTable(commits) {
-  // if there are no repos show empty message
-  if (commits.length <= 0) {
-    return [
-      {
-        title: <span className="text-sm">no results found</span>,
-        ciStatus: null,
-        coverage: null,
-        patch: null,
-        change: null,
-      },
-    ]
+  if (commits?.length > 0) {
+    return commits.map((commit) => {
+      if (!commit) return handleOnNull()
+      const {
+        message,
+        author,
+        commitid,
+        createdAt,
+        totals,
+        compareWithParent,
+        parent,
+        ciPassed,
+      } = commit
+      const change = totals?.coverage - parent?.totals?.coverage
+      const patchValue = compareWithParent?.patchTotals?.coverage
+        ? compareWithParent?.patchTotals?.coverage
+        : Number.NaN
+
+      return {
+        title: (
+          <Title
+            message={message}
+            author={author}
+            commitid={commitid}
+            createdAt={createdAt}
+          />
+        ),
+        ciStatus: (
+          <CIStatus
+            commitid={commitid}
+            coverage={totals?.coverage}
+            ciPassed={ciPassed}
+          />
+        ),
+        coverage: (
+          <span className="font-lato w-full">
+            <Coverage totals={totals} />
+          </span>
+        ),
+        /*
+            The container div fot TotalsNumber is added due to the current state of table cells styling,
+            shouldn't be necessary in the future if fixed/updated
+        */
+        patch: (
+          <div className="w-full flex justify-end">
+            <TotalsNumber value={patchValue} data-testid="patch-value" />
+          </div>
+        ),
+        change: (
+          <div className="w-full flex justify-end">
+            <TotalsNumber value={change} showChange />
+          </div>
+        ),
+      }
+    })
   }
 
-  return commits.map((commit) => {
-    if (!commit) return handleOnNull()
-    const {
-      message,
-      author,
-      commitid,
-      createdAt,
-      totals,
-      compareWithParent,
-      parent,
-      ciPassed,
-    } = commit
-    const change = totals?.coverage - parent?.totals?.coverage
-    const patchValue = compareWithParent?.patchTotals?.coverage
-      ? compareWithParent?.patchTotals?.coverage * 100
-      : Number.NaN
-
-    return {
-      title: (
-        <Title
-          message={message}
-          author={author}
-          commitid={commitid}
-          createdAt={createdAt}
-        />
-      ),
-      ciStatus: (
-        <CIStatus
-          commitid={commitid}
-          coverage={totals?.coverage}
-          ciPassed={ciPassed}
-        />
-      ),
-      coverage: (
-        <span className="font-lato w-full">
-          <Coverage totals={totals} />
-        </span>
-      ),
-      /*
-          The container div fot TotalsNumber is added due to the current state of table cells styling,
-          shouldn't be necessary in the future if fixed/updated
-      */
-      patch: (
-        <div className="w-full flex justify-end">
-          <TotalsNumber value={patchValue} data-testid="patch-value" />
-        </div>
-      ),
-      change: (
-        <div className="w-full flex justify-end">
-          <TotalsNumber value={change} showChange />
-        </div>
-      ),
-    }
-  })
+  return []
 }
 
-function CommitsTable({ commits = [] }) {
+const Loader = () => {
+  return (
+    <div className="flex-1 flex justify-center">
+      <Spinner size={60} />
+    </div>
+  )
+}
+
+function CommitsTable({ branch, paramCIStatus }) {
+  const { provider, owner, repo, pullId } = useParams()
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useCommits({
+      provider,
+      owner,
+      repo,
+      filters: {
+        hideFailedCI: paramCIStatus,
+        branchName: branch,
+        pullId: +pullId,
+      },
+      opts: { suspense: false },
+    })
+
+  const commits = data?.commits
+
   const dataTable = transformPullToTable(commits)
-  return <Table data={dataTable} columns={headers} />
+
+  return (
+    <>
+      <Table data={dataTable} columns={headers} />
+      {isLoading && <Loader />}
+      {hasNextPage && (
+        <div className="flex-1 mt-4 flex justify-center">
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
+    </>
+  )
 }
 
 CommitsTable.propTypes = {
-  commits: PropTypes.arrayOf(commitRequestType),
+  branch: PropTypes.string,
+  paramCIStatus: PropTypes.bool,
 }
 
 export default CommitsTable

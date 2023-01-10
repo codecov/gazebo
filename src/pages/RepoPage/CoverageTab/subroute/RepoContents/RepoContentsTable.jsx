@@ -1,10 +1,13 @@
 import PropType from 'prop-types'
 
-import Button from 'ui/Button'
+import { useLocationParams } from 'services/navigation'
+import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
+import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
+import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
+import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
+import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
-
-import useRepoContentsTable from './hooks'
 
 const Loader = ({ isLoading }) => {
   return (
@@ -43,40 +46,49 @@ RepoContentsResult.propTypes = {
   isMissingHeadReport: PropType.bool,
 }
 
+const defaultQueryParams = {
+  search: '',
+}
+
 function RepoContentsTable() {
   const {
-    paginatedData,
+    data,
     headers,
     handleSort,
-    isLoading,
     isSearching,
-    handlePaginationClick,
-    hasNextPage,
     isMissingHeadReport,
-  } = useRepoContentsTable()
+    isLoading,
+  } = useRepoBranchContentsTable()
+
+  const { params, updateParams } = useLocationParams(defaultQueryParams)
 
   return (
     <>
+      <ContentsTableHeader>
+        <div className="flex gap-4">
+          <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
+          <FileBreadcrumb />
+        </div>
+        <SearchField
+          dataMarketing="files-search"
+          placeholder="Search for files"
+          searchValue={params?.search}
+          setSearchValue={(search) => updateParams({ search })}
+        />
+      </ContentsTableHeader>
       <Table
-        data={paginatedData}
+        data={data}
         columns={headers}
         onSort={handleSort}
         defaultSort={[{ id: 'name', desc: false }]}
         enableHover={true}
       />
       <Loader isLoading={isLoading} />
-      {paginatedData?.length === 0 && !isLoading && (
+      {data?.length === 0 && !isLoading && (
         <RepoContentsResult
           isSearching={isSearching}
           isMissingHeadReport={isMissingHeadReport}
         />
-      )}
-      {hasNextPage && (
-        <div className="w-full mt-4 flex justify-center">
-          <Button hook="load-more" onClick={handlePaginationClick}>
-            Load More
-          </Button>
-        </div>
       )}
     </>
   )

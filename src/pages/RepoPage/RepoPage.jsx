@@ -14,22 +14,37 @@ import { RepoBreadcrumbProvider } from './context'
 import DeactivatedRepo from './CoverageTab/DeactivatedRepo'
 import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
-import SettingsTab from './SettingsTab'
 
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./NewRepoTab'))
 const PullsTab = lazy(() => import('./PullsTab'))
 const FlagsTab = lazy(() => import('./FlagsTab'))
+const SettingsTab = lazy(() => import('./SettingsTab'))
 
 const path = '/:provider/:owner/:repo'
 
-const getRepoTabs = ({ matchTree, matchBlobs, isCurrentUserPartOfOrg }) => {
+const getRepoTabs = ({
+  matchTree,
+  matchBlobs,
+  isCurrentUserPartOfOrg,
+  provider,
+  owner,
+  repo,
+}) => {
+  let location = undefined
+  if (matchTree) {
+    location = { pathname: `/${provider}/${owner}/${repo}/tree` }
+  } else if (matchBlobs) {
+    location = { pathname: `/${provider}/${owner}/${repo}/blob` }
+  }
+
   return [
     {
       pageName: 'overview',
       children: 'Coverage',
-      exact: `${!matchTree && !matchBlobs}`,
+      exact: !matchTree && !matchBlobs,
+      location,
     },
     { pageName: 'flagsTab' },
     { pageName: 'commits' },
@@ -85,6 +100,9 @@ function RepoPage() {
               matchTree,
               matchBlobs,
               isCurrentUserPartOfOrg,
+              provider,
+              owner,
+              repo,
             })}
           />
         )}

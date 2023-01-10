@@ -3,6 +3,7 @@ import { render, screen } from 'custom-testing-library'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
+import { useFlags } from 'shared/featureFlags'
 
 import Flags from './Flags'
 
@@ -11,6 +12,7 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => {}),
 }))
 jest.mock('services/pull')
+jest.mock('shared/featureFlags')
 
 jest.spyOn(window.localStorage.__proto__, 'setItem')
 window.localStorage.__proto__.setItem = jest.fn()
@@ -41,7 +43,7 @@ const mockFlagsData = {
 const initialEntries = ['/gh/test-org/test-repo/pull/5']
 
 describe('Flags Card', () => {
-  function setup(data) {
+  function setup(data, pullPageTabs = false) {
     useParams.mockReturnValue({
       owner: 'laudna',
       provider: 'gh',
@@ -49,6 +51,7 @@ describe('Flags Card', () => {
       pullId: 5,
     })
     usePull.mockReturnValue(data)
+    useFlags.mockReturnValue({ pullPageTabs })
 
     render(
       <MemoryRouter initialEntries={initialEntries}>
@@ -111,7 +114,7 @@ describe('Flags Card', () => {
       const dismissButton = screen.getByText('Dismiss')
       expect(dismissButton).toBeInTheDocument()
       const flagsDescription = screen.getByText(
-        /Flags feature is not yet configured. Learn how flags can/i
+        /The Flags feature is not yet configured/i
       )
       expect(flagsDescription).toBeInTheDocument()
       const flagsAnchor = screen.getByRole('link', /help your team today/i)
@@ -121,11 +124,14 @@ describe('Flags Card', () => {
       )
       expect(flagsDescription).toBeInTheDocument()
       const flagsMarketingImg = screen.getByRole('img', {
-        name: /FlagManagement/,
+        name: /Flags feature not configured/,
       })
       expect(flagsMarketingImg).toBeInTheDocument()
       expect(flagsMarketingImg).toHaveAttribute('src', 'flagManagement.svg')
-      expect(flagsMarketingImg).toHaveAttribute('alt', 'FlagManagement')
+      expect(flagsMarketingImg).toHaveAttribute(
+        'alt',
+        'Flags feature not configured'
+      )
     })
 
     it('dismisses the card after dismiss button is pressed', () => {
@@ -165,6 +171,61 @@ describe('Flags Card', () => {
         /Flags feature is not yet configured. Learn how flags can/i
       )
       expect(flagsDescription).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when there are no flags in the new tab', () => {
+    beforeEach(() => {
+      const mockEmptyResponse = { data: [] }
+      setup(mockEmptyResponse, true)
+    })
+
+    it('will render card with no dismiss button', () => {
+      const nameTableField = screen.queryByText(`Name`)
+      expect(nameTableField).not.toBeInTheDocument()
+      const headTableField = screen.queryByText(`HEAD %`)
+      expect(headTableField).not.toBeInTheDocument()
+      const patchTableField = screen.queryByText(`Patch %`)
+      expect(patchTableField).not.toBeInTheDocument()
+      const changeTableField = screen.queryByText(`+/-`)
+      expect(changeTableField).not.toBeInTheDocument()
+
+      const flagsCardTitle = screen.queryByText('Flags')
+      expect(flagsCardTitle).not.toBeInTheDocument()
+      const dismissButton = screen.queryByText('Dismiss')
+      expect(dismissButton).not.toBeInTheDocument()
+      const flagsDescription = screen.queryByText(
+        /Flags feature is not yet configured. Learn how flags can/i
+      )
+      expect(flagsDescription).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with populated data in the new tab', () => {
+    beforeEach(() => {
+      setup(mockFlagsData, true)
+    })
+
+    it('renders columns with no card', () => {
+      const flagsCardTitle = screen.queryByText('Flags')
+      expect(flagsCardTitle).not.toBeInTheDocument()
+      const nameTableField = screen.getByText(`Name`)
+      expect(nameTableField).toBeInTheDocument()
+      const headTableField = screen.getByText(`HEAD %`)
+      expect(headTableField).toBeInTheDocument()
+      const patchTableField = screen.getByText(`Patch %`)
+      expect(patchTableField).toBeInTheDocument()
+      const changeTableField = screen.getByText(`+/-`)
+      expect(changeTableField).toBeInTheDocument()
+
+      const flagName = screen.getByText('secondTest')
+      expect(flagName).toBeInTheDocument()
+      const flagHeadCoverage = screen.getByText('82.71%')
+      expect(flagHeadCoverage).toBeInTheDocument()
+      const flagPatchCoverage = screen.getByText('59.00%')
+      expect(flagPatchCoverage).toBeInTheDocument()
+      const flagChangeCoverage = screen.getByText('2.71%')
+      expect(flagChangeCoverage).toBeInTheDocument()
     })
   })
 })

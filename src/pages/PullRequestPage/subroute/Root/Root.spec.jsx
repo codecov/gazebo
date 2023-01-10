@@ -50,12 +50,6 @@ describe('Root', () => {
     beforeEach(() => {
       setup({})
     })
-    it('renders the name of the header and coverage labels', () => {
-      expect(screen.getByText('Impacted Files')).toBeInTheDocument()
-      expect(screen.getByText('covered')).toBeInTheDocument()
-      expect(screen.getByText('partial')).toBeInTheDocument()
-      expect(screen.getByText('uncovered')).toBeInTheDocument()
-    })
     it('renders the impacted files component', () => {
       expect(screen.getByText('ImpactedFiles Component')).toBeInTheDocument()
     })

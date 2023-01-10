@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
@@ -5,18 +6,22 @@ import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
+import CommitsTable from 'pages/RepoPage/CommitsTab/CommitsTable'
 import { usePull } from 'services/pull'
+import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
+import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
+import TabNavigation from 'ui/TabNavigation'
 
 import Commits from './Commits'
 import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
-import Flags from './Flags'
 import Header from './Header'
 import CompareSummary from './Summary'
 
 const Root = lazy(() => import('./subroute/Root'))
+const Flags = lazy(() => import('./Flags'))
 
 const Loader = (
   <div className="flex items-center justify-center py-16">
@@ -28,6 +33,7 @@ const Loader = (
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePull({ provider, owner, repo, pullId })
+  const { pullPageTabs } = useFlags({ pullPageTabs: true })
 
   if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
     return <NotFound />
@@ -55,29 +61,78 @@ function PullRequestPage() {
       {resultType !== ComparisonReturnType.SUCCESFUL_COMPARISON ? (
         <ErrorBanner errorType={resultType} />
       ) : (
-        <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2">
-          <article className="col-span-2">
+        <div
+          className={cs('grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2', {
+            'lg:grid-cols-2': pullPageTabs,
+          })}
+        >
+          <article className="col-span-2 flex flex-col">
+            <TabNavigation
+              tabs={[
+                {
+                  pageName: 'pullDetail',
+                  children: 'Impacted files',
+                  exact: true,
+                },
+                ...(pullPageTabs
+                  ? [
+                      { pageName: 'pullIndirectChanges' },
+                      { pageName: 'pullCommits' },
+                      { pageName: 'pullFlags' },
+                    ]
+                  : []),
+              ]}
+            />
+            <div className="md:mt-[-25px] md:pb-2 w-fit self-end">
+              <ToggleHeader title="" coverageIsLoading={false} />
+            </div>
             <Switch>
-              <SentryRoute
-                path="/:provider/:owner/:repo/pull/:pullId"
-                exact={true}
-              >
-                <Suspense fallback={Loader}>
+              <Suspense fallback={Loader}>
+                <SentryRoute
+                  path="/:provider/:owner/:repo/pull/:pullId"
+                  exact={true}
+                >
                   <Root />
-                </Suspense>
-              </SentryRoute>
+                </SentryRoute>
+                {pullPageTabs && (
+                  <>
+                    <SentryRoute
+                      path="/:provider/:owner/:repo/pull/:pullId/indirectChanges"
+                      exact={true}
+                    >
+                      indirect changes
+                    </SentryRoute>
+                    <SentryRoute
+                      path="/:provider/:owner/:repo/pull/:pullId/commits"
+                      exact={true}
+                    >
+                      <CommitsTable />
+                    </SentryRoute>
+                    <SentryRoute
+                      path="/:provider/:owner/:repo/pull/:pullId/flags"
+                      exact={true}
+                    >
+                      <SilentNetworkErrorWrapper>
+                        <Flags />
+                      </SilentNetworkErrorWrapper>
+                    </SentryRoute>
+                  </>
+                )}
+              </Suspense>
               <Redirect
                 from="/:provider/:owner/:repo/pull/:pullId/*"
                 to="/:provider/:owner/:repo/pull/:pullId"
               />
             </Switch>
           </article>
-          <aside className="flex flex-col gap-4 self-start sticky top-1.5">
-            <Commits />
-            <SilentNetworkErrorWrapper>
-              <Flags />
-            </SilentNetworkErrorWrapper>
-          </aside>
+          {!pullPageTabs && (
+            <aside className="flex flex-col gap-4 self-start sticky top-1.5">
+              <Commits />
+              <SilentNetworkErrorWrapper>
+                <Flags />
+              </SilentNetworkErrorWrapper>
+            </aside>
+          )}
         </div>
       )}
     </div>

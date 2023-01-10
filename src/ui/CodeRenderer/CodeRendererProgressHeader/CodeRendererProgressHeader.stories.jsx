@@ -23,6 +23,6 @@ CodeRendererProgressHeaderWithoutChange.args = {
 }
 
 export default {
-  title: 'Components/CodeRendererProgressHeader',
+  title: 'Components/CodeRenderer/CodeRendererProgressHeader',
   component: CodeRendererProgressHeader,
 }

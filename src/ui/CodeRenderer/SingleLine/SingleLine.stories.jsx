@@ -47,6 +47,6 @@ UncoveredSingleLine.args = {
 }
 
 export default {
-  title: 'Components/SingleLine',
+  title: 'Components/CodeRenderer/SingleLine',
   component: SingleLine,
 }
