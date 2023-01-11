@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { usePrefetchBranchDirEntry } from './usePrefetchBranchDirEntry'
+import { usePrefetchCommitDirEntry } from './usePrefetchCommitDirEntry'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -27,32 +27,30 @@ const mockData = {
   owner: {
     username: 'codecov',
     repository: {
-      branch: {
-        head: {
-          pathContents: {
-            results: [
-              {
-                __typename: 'PathContentDir',
-                name: 'src',
-                path: null,
-                percentCovered: 0.0,
-                hits: 4,
-                misses: 2,
-                lines: 7,
-                partials: 1,
-              },
-            ],
-          },
+      commit: {
+        pathContents: {
+          results: [
+            {
+              __typename: 'PathContentDir',
+              name: 'src',
+              path: null,
+              percentCovered: 0.0,
+              hits: 4,
+              misses: 2,
+              lines: 7,
+              partials: 1,
+            },
+          ],
         },
       },
     },
   },
 }
 
-describe('usePrefetchBranchDirEntry', () => {
+describe('usePrefetchCommitDirEntry', () => {
   function setup() {
     server.use(
-      graphql.query('BranchContents', (req, res, ctx) =>
+      graphql.query('CommitPathContents', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))
       )
     )
@@ -64,7 +62,7 @@ describe('usePrefetchBranchDirEntry', () => {
 
   it('returns runPrefetch function', () => {
     const { result } = renderHook(
-      () => usePrefetchBranchDirEntry({ branch: 'main', path: 'src' }),
+      () => usePrefetchCommitDirEntry({ branch: 'main', path: 'src' }),
       { wrapper }
     )
 
@@ -74,7 +72,7 @@ describe('usePrefetchBranchDirEntry', () => {
 
   it('queries the api', async () => {
     const { result, waitFor } = renderHook(
-      () => usePrefetchBranchDirEntry({ branch: 'main', path: 'src' }),
+      () => usePrefetchCommitDirEntry({ branch: 'main', path: 'src' }),
       { wrapper }
     )
 
