@@ -36,8 +36,10 @@ const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo/main/tree']}>
-      <Route path="/:provider/:owner/:repo/:branch/:path+">{children}</Route>
+    <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/1234/tree']}>
+      <Route path="/:provider/:owner/:repo/commit/:commit/:path+">
+        {children}
+      </Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -85,7 +87,7 @@ describe('CommitDirEntry', () => {
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/tree/1234/path/to/directory/dir'
+        '/gh/codecov/test-repo/commit/1234/tree/path/to/directory/dir'
       )
     })
   })
@@ -95,7 +97,10 @@ describe('CommitDirEntry', () => {
       render(<CommitDirEntry commitSha="1234" name="dir" />, { wrapper })
 
       const a = screen.getByRole('link')
-      expect(a).toHaveAttribute('href', '/gh/codecov/test-repo/tree/1234/dir')
+      expect(a).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/commit/1234/tree/dir'
+      )
     })
   })
 

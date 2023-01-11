@@ -17,7 +17,7 @@ export function useCommitTreePaths() {
       pageName: 'commitTreeView',
       text: location,
       options: {
-        dirPath: getTreeLocation(filePaths, location, index),
+        tree: getTreeLocation(filePaths, location, index),
         commit,
       },
     }))
@@ -25,7 +25,7 @@ export function useCommitTreePaths() {
   const repoPath = {
     pageName: 'commitTreeView',
     text: repo,
-    options: { commitSha: commit },
+    options: { commit },
   }
   const treePaths = [repoPath, ...paths]
   return { treePaths }

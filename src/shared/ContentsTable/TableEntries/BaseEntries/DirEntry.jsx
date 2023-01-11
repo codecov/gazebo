@@ -18,7 +18,7 @@ function DirEntry({
           pageName: pageName,
           options: {
             ref: linkRef,
-            commitSha: commitSha,
+            commit: commitSha,
             tree: !!path ? `${path}/${name}` : name,
           },
         }}

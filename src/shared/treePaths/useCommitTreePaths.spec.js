@@ -25,15 +25,15 @@ describe('useCommitTreePaths', () => {
           {
             pageName: 'commitTreeView',
             text: 'cool-repo',
-            options: { commitSha: 'sha256' },
+            options: { commit: 'sha256' },
           },
           {
-            options: { dirPath: 'src', commitSha: 'sha256' },
+            options: { tree: 'src', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { dirPath: 'src/tests', commitSha: 'sha256' },
+            options: { tree: 'src/tests', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'tests',
           },
@@ -60,32 +60,32 @@ describe('useCommitTreePaths', () => {
           {
             pageName: 'commitTreeView',
             text: 'cool-repo',
-            options: { commitSha: 'sha256' },
+            options: { commit: 'sha256' },
           },
           {
-            options: { dirPath: 'src', commitSha: 'sha256' },
+            options: { tree: 'src', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { dirPath: 'src/temp', commitSha: 'sha256' },
+            options: { tree: 'src/temp', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'temp',
           },
           {
-            options: { dirPath: 'src/temp/src', commitSha: 'sha256' },
+            options: { tree: 'src/temp/src', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { dirPath: 'src/temp/src/temp', commitSha: 'sha256' },
+            options: { tree: 'src/temp/src/temp', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'temp',
           },
           {
             options: {
-              dirPath: 'src/temp/src/temp/component',
-              commitSha: 'sha256',
+              tree: 'src/temp/src/temp/component',
+              commit: 'sha256',
             },
             pageName: 'commitTreeView',
             text: 'component',
@@ -111,7 +111,7 @@ describe('useCommitTreePaths', () => {
         {
           pageName: 'commitTreeView',
           text: 'cool-repo',
-          options: { commitSha: 'sha256' },
+          options: { commit: 'sha256' },
         },
       ])
     })
@@ -138,15 +138,15 @@ describe('useCommitTreePaths', () => {
           {
             pageName: 'commitTreeView',
             text: 'cool-repo',
-            options: { commitSha: 'sha256' },
+            options: { commit: 'sha256' },
           },
           {
-            options: { dirPath: 'src', commitSha: 'sha256' },
+            options: { tree: 'src', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { dirPath: 'src/file.js', commitSha: 'sha256' },
+            options: { tree: 'src/file.js', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'file.js',
           },

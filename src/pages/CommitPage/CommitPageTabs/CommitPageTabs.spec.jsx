@@ -11,9 +11,9 @@ const wrapper =
         <Route
           path={[
             '/:provider/:owner/:repo/commit/:commit',
-            '/:provider/:owner/:repo/commit/:commitSha/tree',
-            '/:provider/:owner/:repo/commit/:commitSha/tree/:path+',
-            '/:provider/:owner/:repo/:commit/:commitSha/blob/:path+',
+            '/:provider/:owner/:repo/commit/:commit/tree',
+            '/:provider/:owner/:repo/commit/:commit/tree/:path+',
+            '/:provider/:owner/:repo/:commit/:commit/blob/:path+',
           ]}
         >
           {children}

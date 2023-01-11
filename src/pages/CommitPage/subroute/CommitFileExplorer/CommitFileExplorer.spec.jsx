@@ -120,7 +120,7 @@ describe('CommitFileExplorer', () => {
 
   function setup(noFiles = false) {
     server.use(
-      graphql.query('CommitContents', (req, res, ctx) => {
+      graphql.query('CommitPathContents', (req, res, ctx) => {
         if (req.variables?.filters) {
           requestFilters(req.variables?.filters)
         }
@@ -525,7 +525,7 @@ describe('CommitFileExplorer', () => {
         setup(true)
       })
 
-      it.only('displays no items found message', async () => {
+      it('displays no items found message', async () => {
         render(<CommitFileExplorer />, { wrapper: wrapper() })
 
         await waitFor(() => queryClient.isFetching)

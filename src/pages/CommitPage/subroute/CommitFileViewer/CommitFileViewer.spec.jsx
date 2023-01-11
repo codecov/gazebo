@@ -98,7 +98,7 @@ describe('CommitFileViewer', () => {
     beforeEach(() => setup())
 
     describe('displaying the tree path', () => {
-      it('displays repo link', async () => {
+      it.only('displays repo link', async () => {
         render(<CommitFileViewer />, { wrapper })
 
         const repoName = await screen.findByRole('link', { name: 'cool-repo' })

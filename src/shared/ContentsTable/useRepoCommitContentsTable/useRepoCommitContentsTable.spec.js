@@ -86,7 +86,7 @@ describe('useRepoCommitContentsTable', () => {
 
   function setup({ noData } = { noData: false }) {
     server.use(
-      graphql.query('CommitContents', (req, res, ctx) => {
+      graphql.query('CommitPathContents', (req, res, ctx) => {
         calledCommitContents(req?.variables)
 
         if (noData) {

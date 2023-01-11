@@ -39,7 +39,7 @@ function CommitPageTabs({ commitSHA }) {
         {
           pageName: 'commitTreeView',
           children: 'Files',
-          options: { commitSha: commitSHA },
+          options: { commit: commitSHA },
           location: customLocation,
         },
       ]}

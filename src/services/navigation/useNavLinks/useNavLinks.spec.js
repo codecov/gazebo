@@ -561,9 +561,9 @@ describe('useNavLinks', () => {
       setup(['/gl/doggo/watch/src/view/catWatch.php'])
     })
 
-    it('Returns the correct link with only commitSha passed', () => {
+    it('Returns the correct link with only commit passed', () => {
       expect(
-        hookData.result.current.commitTreeView.path({ commitSha: 'sha256' })
+        hookData.result.current.commitTreeView.path({ commit: 'sha256' })
       ).toBe('/gl/doggo/watch/commit/sha256/tree')
     })
 
@@ -571,27 +571,27 @@ describe('useNavLinks', () => {
       expect(
         hookData.result.current.commitTreeView.path({
           provider: 'bb',
-          commitSha: 'sha256',
+          commit: 'sha256',
         })
       ).toBe('/bb/doggo/watch/commit/sha256/tree')
       expect(
         hookData.result.current.commitTreeView.path({
           owner: 'cat',
-          commitSha: 'sha256',
+          commit: 'sha256',
         })
       ).toBe('/gl/cat/watch/commit/sha256/tree')
       expect(
         hookData.result.current.commitTreeView.path({
           repo: 'sleep',
-          commitSha: 'sha256',
+          commit: 'sha256',
         })
       ).toBe('/gl/doggo/sleep/commit/sha256/tree')
     })
 
-    it('accepts a commitSha option', () => {
+    it('accepts a commit option', () => {
       expect(
         hookData.result.current.commitTreeView.path({
-          commitSha: 'sha256',
+          commit: 'sha256',
         })
       ).toBe('/gl/doggo/watch/commit/sha256/tree')
     })
@@ -599,22 +599,22 @@ describe('useNavLinks', () => {
     it('accepts a tree option', () => {
       expect(
         hookData.result.current.commitTreeView.path({
-          dirPath: 'src/view/catWatch.php',
-          commitSha: 'sha128',
+          tree: 'src/view/catWatch.php',
+          commit: 'sha128',
         })
       ).toBe('/gl/doggo/watch/commit/sha128/tree/src/view/catWatch.php')
 
       expect(
         hookData.result.current.commitTreeView.path({
-          dirPath: 'src',
-          commitSha: 'sha128',
+          tree: 'src',
+          commit: 'sha128',
         })
       ).toBe('/gl/doggo/watch/commit/sha128/tree/src')
 
       expect(
         hookData.result.current.commitTreeView.path({
-          dirPath: 'src/view',
-          commitSha: 'sha128',
+          tree: 'src/view',
+          commit: 'sha128',
         })
       ).toBe('/gl/doggo/watch/commit/sha128/tree/src/view')
     })
@@ -628,8 +628,8 @@ describe('useNavLinks', () => {
     it('Returns the correct link with nothing passed', () => {
       expect(
         hookData.result.current.commitFileView.path({
-          commitSha: 'sha256',
-          filePath: 'index.js',
+          commit: 'sha256',
+          tree: 'index.js',
         })
       ).toBe('/gh/codecov-owner/another-test/commit/sha256/blob/index.js')
     })
@@ -638,24 +638,24 @@ describe('useNavLinks', () => {
       expect(
         hookData.result.current.commitFileView.path({
           provider: 'bb',
-          commitSha: 'sha256',
-          filePath: 'index.js',
+          commit: 'sha256',
+          tree: 'index.js',
         })
       ).toBe('/bb/codecov-owner/another-test/commit/sha256/blob/index.js')
 
       expect(
         hookData.result.current.commitFileView.path({
           owner: 'cat',
-          commitSha: 'sha256',
-          filePath: 'index.js',
+          commit: 'sha256',
+          tree: 'index.js',
         })
       ).toBe('/gh/cat/another-test/commit/sha256/blob/index.js')
 
       expect(
         hookData.result.current.commitFileView.path({
           repo: 'cool-new-repo',
-          commitSha: 'sha256',
-          filePath: 'flags1/mafs.js',
+          commit: 'sha256',
+          tree: 'flags1/mafs.js',
         })
       ).toBe(
         '/gh/codecov-owner/cool-new-repo/commit/sha256/blob/flags1/mafs.js'

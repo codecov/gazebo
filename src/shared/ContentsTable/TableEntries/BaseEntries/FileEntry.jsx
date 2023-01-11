@@ -39,7 +39,7 @@ function FileEntry({
           pageName,
           options: {
             ref: linkRef,
-            commitSha: commitSha,
+            commit: commitSha,
             tree: displayAsList ? filePath : !!path ? `${path}/${name}` : name,
           },
         }}

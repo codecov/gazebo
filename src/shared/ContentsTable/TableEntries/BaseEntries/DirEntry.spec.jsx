@@ -4,14 +4,11 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import DirEntry from './DirEntry'
 
-const wrapper =
-  (initialEntries = ['/gh/codecov/test-repo']) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/">{children}</Route>
-      </MemoryRouter>
-    )
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
+    <Route path="/:provider/:owner/:repo/">{children}</Route>
+  </MemoryRouter>
+)
 
 describe('DirEntry', () => {
   const runPrefetchMock = jest.fn()
@@ -24,7 +21,7 @@ describe('DirEntry', () => {
         path="path/to/directory"
         runPrefetch={runPrefetchMock}
       />,
-      { wrapper: wrapper() }
+      { wrapper }
     )
 
     const dir = screen.getByText('dir')
@@ -40,7 +37,7 @@ describe('DirEntry', () => {
           path="path/to/directory"
           runPrefetch={runPrefetchMock}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const a = screen.getByRole('link')
@@ -55,7 +52,7 @@ describe('DirEntry', () => {
     it('sets the correct href', () => {
       render(
         <DirEntry linkRef="branch" name="dir" runPrefetch={runPrefetchMock} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const a = screen.getByRole('link')
@@ -71,7 +68,7 @@ describe('DirEntry', () => {
         path="path/to/directory"
         runPrefetch={runPrefetchMock}
       />,
-      { wrapper: wrapper() }
+      { wrapper }
     )
 
     userEvent.hover(screen.getByText('dir'))
