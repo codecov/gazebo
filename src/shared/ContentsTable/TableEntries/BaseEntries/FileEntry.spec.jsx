@@ -30,7 +30,7 @@ describe('FileEntry', () => {
       <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
         <Route path="/:provider/:owner/:repo/">
           <FileEntry
-            branch="main"
+            linkRef="main"
             filePath="dir/file.js"
             name="file.js"
             path="dir"

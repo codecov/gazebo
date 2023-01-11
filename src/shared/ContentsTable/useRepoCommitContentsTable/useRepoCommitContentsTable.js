@@ -1,17 +1,17 @@
-import isEqual from 'lodash/isEqual'
+import { isEqual } from 'lodash'
 import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoBranchContents, useRepoOverview } from 'services/repo'
-import { useTreePaths } from 'shared/treePaths'
+import { useRepoCommitContents, useRepoOverview } from 'services/repo'
+import { useCommitTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../constants'
 import CoverageEntry from '../TableEntries/BaseEntries/CoverageEntry'
-import BranchDirEntry from '../TableEntries/BranchEntries/BranchDirEntry'
-import BranchFileEntry from '../TableEntries/BranchEntries/BranchFileEntry'
+import CommitDirEntry from '../TableEntries/CommitEntries/CommitDirEntry'
+import CommitFileEntry from '../TableEntries/CommitEntries/CommitFileEntry'
 import { adjustListIfUpDir } from '../utils'
 
 function determineDisplayType({ filters, isSearching }) {
@@ -22,7 +22,7 @@ function determineDisplayType({ filters, isSearching }) {
 
 function createTableData({
   tableData,
-  branch,
+  commitSha,
   path,
   isSearching,
   filters,
@@ -45,17 +45,17 @@ function createTableData({
       }) => ({
         name:
           __typename === 'PathContentDir' ? (
-            <BranchDirEntry
+            <CommitDirEntry
               name={name}
-              branch={branch}
+              commitSha={commitSha}
               path={path}
               filters={filters}
             />
           ) : (
-            <BranchFileEntry
+            <CommitFileEntry
               name={name}
               path={path}
-              branch={branch}
+              commitSha={commitSha}
               filePath={filePath}
               displayType={displayType}
               isCriticalFile={isCriticalFile}
@@ -164,47 +164,41 @@ const getQueryFilters = ({ params, sortBy }) => {
   }
 }
 
-export function useRepoBranchContentsTable() {
-  const { provider, owner, repo, path, branch } = useParams()
+export function useRepoCommitContentsTable() {
+  const { provider, owner, repo, path, commitSha } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
-  const { treePaths } = useTreePaths()
+  const { treePaths } = useCommitTreePaths()
   const [sortBy, setSortBy] = useState([])
 
-  const { data: repoOverview, isLoadingRepo } = useRepoOverview({
+  const { data: repoData, isLoading: repoIsLoading } = useRepoOverview({
     provider,
     repo,
     owner,
   })
 
-  const { data: pathContentData, isLoading } = useRepoBranchContents({
+  const { data: commitData, commitIsLoading } = useRepoCommitContents({
     provider,
     owner,
     repo,
-    branch: branch || repoOverview?.defaultBranch,
-    path: path || '',
+    commitSha,
+    path,
     filters: getQueryFilters({ params, sortBy: sortBy[0] }),
-    suspense: false,
+    opts: {
+      suspense: false,
+    },
   })
 
   const data = useMemo(
     () =>
       createTableData({
-        tableData: pathContentData?.results,
-        branch: branch || repoOverview?.defaultBranch,
+        tableData: commitData,
+        commitSha: commitSha,
         path: path || '',
         isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
         treePaths,
       }),
-    [
-      pathContentData?.results,
-      branch,
-      repoOverview?.defaultBranch,
-      path,
-      params,
-      sortBy,
-      treePaths,
-    ]
+    [commitData, commitSha, path, params, sortBy, treePaths]
   )
 
   const handleSort = useCallback(
@@ -220,9 +214,9 @@ export function useRepoBranchContentsTable() {
     data,
     headers,
     handleSort,
-    isLoading: isLoadingRepo || isLoading,
+    isLoading: repoIsLoading || commitIsLoading,
     isSearching: !!params?.search,
     isMissingHeadReport:
-      pathContentData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
+      repoData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
   }
 }
