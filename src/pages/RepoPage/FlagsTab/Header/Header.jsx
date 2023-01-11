@@ -59,7 +59,7 @@ const Header = ({ controlsDisabled, children }) => {
             items={TimeOptions}
             value={
               value ??
-              TimeOptions.filter((option) => option.value === 'LAST_30_DAYS')
+              TimeOptions.find((option) => option.value === 'LAST_30_DAYS')
             }
             onChange={(historicalTrend) =>
               updateParams({ historicalTrend: historicalTrend.value })
