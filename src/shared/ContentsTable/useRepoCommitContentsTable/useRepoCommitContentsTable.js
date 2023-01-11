@@ -6,13 +6,13 @@ import { useLocationParams } from 'services/navigation'
 import { useRepoCommitContents, useRepoOverview } from 'services/repo'
 import { useCommitTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
-import A from 'ui/A'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../constants'
 import CoverageEntry from '../TableEntries/BaseEntries/CoverageEntry'
 import CommitDirEntry from '../TableEntries/CommitEntries/CommitDirEntry'
 import CommitFileEntry from '../TableEntries/CommitEntries/CommitFileEntry'
+import { adjustListIfUpDir } from '../utils'
 
 function determineDisplayType({ filters, isSearching }) {
   return filters?.displayType === displayTypeParameter.list || isSearching
@@ -31,7 +31,7 @@ function createTableData({
   if (tableData?.length > 0) {
     const displayType = determineDisplayType({ filters, isSearching })
 
-    const filesAndDirs = tableData?.map(
+    const rawTableRows = tableData?.map(
       ({
         name,
         percentCovered,
@@ -77,27 +77,13 @@ function createTableData({
       })
     )
 
-    if (treePaths.length > 1 && displayType === 'TREE') {
-      const upDir = treePaths?.at(-2)
-      const items = [
-        {
-          name: (
-            <A to={upDir} variant="upDirectory">
-              <div className="pl-1 ">..</div>
-            </A>
-          ),
-          lines: '',
-          hits: '',
-          misses: '',
-          partials: '',
-          coverage: '',
-        },
-        ...filesAndDirs,
-      ]
-      return items
-    }
+    const finalizedTableRows = adjustListIfUpDir({
+      treePaths,
+      displayType,
+      rawTableRows,
+    })
 
-    return filesAndDirs
+    return finalizedTableRows
   }
 
   return []
