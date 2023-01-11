@@ -1,11 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
+import useIntersection from 'react-use/lib/useIntersection'
 
 import { useImage } from 'services/image'
 
 import ContextSwitcher from '.'
 
+jest.mock('react-use/lib/useIntersection')
 jest.mock('services/image')
 
 const defaultProps = {
@@ -35,9 +37,15 @@ const defaultProps = {
   ],
 }
 
-function fireClickAndMouseEvents(element) {
-  userEvent.click(element)
-}
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh']}>
+    <Switch>
+      <Route path="/:provider" exact>
+        {children}
+      </Route>
+    </Switch>
+  </MemoryRouter>
+)
 
 describe('ContextSwitcher', () => {
   let props
@@ -47,23 +55,18 @@ describe('ContextSwitcher', () => {
       ...defaultProps,
       ...over,
     }
-    render(<ContextSwitcher {...props} />, {
-      wrapper: ({ children }) => (
-        <MemoryRouter initialEntries={['/gh']}>
-          <Switch>
-            <Route path="/:provider" exact>
-              {children}
-            </Route>
-          </Switch>
-        </MemoryRouter>
-      ),
-    })
   }
+
+  afterEach(() => jest.resetAllMocks())
 
   describe('when rendered', () => {
     beforeEach(setup)
 
     it('does not render any link', () => {
+      render(<ContextSwitcher {...props} />, {
+        wrapper,
+      })
+
       expect(screen.queryAllByRole('link')).toHaveLength(0)
     })
   })
@@ -71,11 +74,17 @@ describe('ContextSwitcher', () => {
   describe('when the button is clicked', () => {
     beforeEach(() => {
       setup()
-      fireClickAndMouseEvents(screen.getByRole('button'))
     })
 
-    it('renders the menu', () => {
-      const popover = screen.getByRole('menu')
+    it('renders the menu', async () => {
+      render(<ContextSwitcher {...props} />, {
+        wrapper,
+      })
+
+      const button = await screen.findByRole('button')
+      userEvent.click(button)
+
+      const popover = await screen.findByRole('menu')
       expect(popover).toBeVisible()
     })
   })
@@ -87,14 +96,76 @@ describe('ContextSwitcher', () => {
       })
     })
 
-    it('renders all orgs and repos', () => {
-      expect(screen.getByText(/all my orgs and repos/i)).toBeInTheDocument()
+    it('renders all orgs and repos', async () => {
+      render(<ContextSwitcher {...props} />, {
+        wrapper,
+      })
+
+      const allOrgsAndRepos = await /all my orgs and repos/i
+      expect(screen.getByText(allOrgsAndRepos)).toBeInTheDocument()
     })
 
-    it('renders manage access restrictions', () => {
-      expect(
-        screen.getByText(/Manage access restrictions/i)
-      ).toBeInTheDocument()
+    it('renders manage access restrictions', async () => {
+      render(<ContextSwitcher {...props} />, {
+        wrapper,
+      })
+
+      const manageAccess = await screen.findByText(
+        /Manage access restrictions/i
+      )
+      expect(manageAccess).toBeInTheDocument()
+    })
+  })
+
+  describe('when isLoading is passed', () => {
+    describe('isLoading set to true', () => {
+      beforeEach(() => setup({ isLoading: true }))
+      it('renders spinner', async () => {
+        render(<ContextSwitcher {...props} />, {
+          wrapper,
+        })
+
+        const button = await screen.findByRole('button')
+        userEvent.click(button)
+
+        const spinner = await screen.findByTestId('spinner')
+        expect(spinner).toBeInTheDocument()
+      })
+    })
+    describe('isLoading set to false', () => {
+      beforeEach(() => setup({ isLoading: false }))
+      it('does not render spinner', async () => {
+        render(<ContextSwitcher {...props} />, {
+          wrapper,
+        })
+
+        const button = await screen.findByRole('button')
+        userEvent.click(button)
+
+        const spinner = screen.queryByTestId('spinner')
+        expect(spinner).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('when onLoadMore is passed and is intersecting', () => {
+    const onLoadMoreFunc = jest.fn()
+
+    beforeEach(() => {
+      setup({ onLoadMore: onLoadMoreFunc })
+      useIntersection.mockReturnValue({ isIntersecting: true })
+    })
+    afterEach(() => jest.restoreAllMocks())
+
+    it('calls onLoadMore', async () => {
+      render(<ContextSwitcher {...props} />, {
+        wrapper,
+      })
+
+      const button = await screen.findByRole('button')
+      userEvent.click(button)
+
+      await waitFor(() => expect(onLoadMoreFunc).toHaveBeenCalled())
     })
   })
 })

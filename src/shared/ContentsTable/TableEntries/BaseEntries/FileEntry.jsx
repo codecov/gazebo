@@ -21,7 +21,7 @@ FileHeader.propTypes = {
 }
 
 function FileEntry({
-  branch,
+  linkRef,
   filePath,
   isCriticalFile,
   name,
@@ -40,7 +40,7 @@ function FileEntry({
           to={{
             pageName: 'fileViewer',
             options: {
-              ref: branch,
+              ref: linkRef,
               tree: displayAsList
                 ? filePath
                 : !!path
@@ -66,7 +66,7 @@ function FileEntry({
 }
 
 FileEntry.propTypes = {
-  branch: PropTypes.string.isRequired,
+  linkRef: PropTypes.string.isRequired,
   filePath: PropTypes.string.isRequired,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
