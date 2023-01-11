@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, renderHook } from '@testing-library/react-hooks'
-import { graphql, rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -8,7 +8,6 @@ import config from 'config'
 
 import {
   useIsCurrentUserAnAdmin,
-  useMyContexts,
   useOnboardUser,
   useOwner,
   useResyncUser,
@@ -273,75 +272,6 @@ describe('useOnboardUser', () => {
     it('returns onSuccess from opts', () => {
       expect(hookData.result.current.isSuccess).toBeTruthy()
       expect(onSuccessFn).toHaveBeenCalled()
-    })
-  })
-})
-
-describe('useMyContexts', () => {
-  let hookData
-
-  function setup(dataReturned) {
-    server.use(
-      rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            data: dataReturned,
-          })
-        )
-      })
-    )
-    hookData = renderHook(() => useMyContexts(), { wrapper })
-  }
-
-  describe('when called and user is unauthenticated', () => {
-    beforeEach(() => {
-      setup({
-        me: null,
-      })
-    })
-
-    it('returns isLoading', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
-    describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
-
-      it('returns null', () => {
-        expect(hookData.result.current.data).toEqual(null)
-      })
-    })
-  })
-
-  describe('when called and user is authenticated', () => {
-    const org1 = {
-      username: 'codecov',
-      avatarUrl: '',
-    }
-    const org2 = {
-      username: 'codecov',
-      avatarUrl: '',
-    }
-    beforeEach(() => {
-      setup({
-        me: {
-          owner: user,
-          myOrganizations: {
-            edges: [{ node: org1 }, { node: org2 }],
-          },
-        },
-      })
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
-    })
-
-    it('returns the user and their orgs', () => {
-      expect(hookData.result.current.data).toEqual({
-        currentUser: user,
-        myOrganizations: [org1, org2],
-      })
     })
   })
 })
