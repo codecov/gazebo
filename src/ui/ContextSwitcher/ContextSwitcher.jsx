@@ -27,17 +27,17 @@ function getCurrentContext({ activeContext, contexts }) {
 }
 
 function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
+  if (!onLoadMore) {
+    return null
+  }
+
   return (
-    <>
-      {onLoadMore ? (
-        <span
-          ref={intersectionRef}
-          className="relative top-[-65px] invisible block leading-[0]"
-        >
-          Loading more organizations...
-        </span>
-      ) : null}
-    </>
+    <span
+      ref={intersectionRef}
+      className="relative top-[-65px] invisible block leading-[0]"
+    >
+      Loading more organizations...
+    </span>
   )
 }
 
