@@ -66,10 +66,7 @@ function InvoiceDetail() {
   return (
     <>
       <div
-        className={cs(
-          'bg-white shadow-card border-pink-500 border-t-2',
-          printClassnames
-        )}
+        className={cs('bg-white  border-pink-500 border-t-2', printClassnames)}
       >
         <div className={classNameSection}>
           <InvoiceHeader invoice={invoice} />

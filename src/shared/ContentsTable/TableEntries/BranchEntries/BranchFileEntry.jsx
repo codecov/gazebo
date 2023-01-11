@@ -20,7 +20,7 @@ function BranchFileEntry({
 
   return (
     <FileEntry
-      branch={branch}
+      linkRef={branch}
       filePath={filePath}
       isCriticalFile={isCriticalFile}
       name={name}
