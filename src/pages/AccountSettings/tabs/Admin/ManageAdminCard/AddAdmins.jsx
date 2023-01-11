@@ -13,7 +13,7 @@ import { getOwnerImg } from 'shared/utils'
 const styles = {
   listResult: (isOpen) =>
     cs(
-      'overflow-hidden rounded-b-md bg-gray-100 border border-gray-200 outline-none absolute w-full z-10 shadow-card',
+      'overflow-hidden rounded-b-md bg-gray-100 border border-gray-200 outline-none absolute w-full z-10 ',
       { hidden: !isOpen }
     ),
   item: (highlighted) =>
