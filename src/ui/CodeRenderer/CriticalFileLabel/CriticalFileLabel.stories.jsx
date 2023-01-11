@@ -5,6 +5,6 @@ const Template = (args) => <CriticalFileLabel />
 export const CriticalFileLabelDefault = Template.bind({})
 
 export default {
-  title: 'Components/CriticalFileLabel',
+  title: 'Components/CodeRenderer/CriticalFileLabel',
   component: CriticalFileLabel,
 }

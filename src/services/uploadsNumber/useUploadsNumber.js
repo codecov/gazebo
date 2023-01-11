@@ -19,7 +19,7 @@ function fetchOwnerUploadsNumber({ provider, owner, signal }) {
       owner,
     },
   }).then((res) => {
-    const { numberOfUploads } = res?.data?.owner
+    const numberOfUploads = res?.data?.owner?.numberOfUploads || 0
     return numberOfUploads
   })
 }

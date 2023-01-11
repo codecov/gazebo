@@ -76,7 +76,7 @@ describe('Footer', () => {
     })
   })
 
-  describe('pricing link', () => {
+  describe('build mode specific links', () => {
     describe('on cloud', () => {
       beforeEach(() => {
         setup()
@@ -86,6 +86,9 @@ describe('Footer', () => {
         const pricing = screen.getByText('Pricing')
         expect(pricing).toBeInTheDocument()
       })
+      it('renders licensing link', () => {
+        expect(screen.queryByText('Licensing')).not.toBeInTheDocument()
+      })
     })
     describe('self hosted build', () => {
       beforeEach(() => {
@@ -94,6 +97,9 @@ describe('Footer', () => {
       afterEach(() => jest.resetAllMocks())
       it('does not render pricing link', () => {
         expect(screen.queryByText('Pricing')).not.toBeInTheDocument()
+      })
+      it('renders licensing link', () => {
+        expect(screen.getByText('Licensing')).toBeInTheDocument()
       })
     })
   })
