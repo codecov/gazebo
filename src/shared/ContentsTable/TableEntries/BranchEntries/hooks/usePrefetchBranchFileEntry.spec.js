@@ -3,14 +3,9 @@ import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchBranchFileEntry } from './usePrefetchBranchFileEntry'
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(),
-}))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -89,12 +84,6 @@ const mockData = {
 describe('usePrefetchBranchFileEntry', () => {
   let hookData
   function setup() {
-    useParams.mockReturnValue({
-      provider: 'gh',
-      owner: 'codecov',
-      repo: 'test-repo',
-    })
-
     server.use(
       graphql.query('CoverageForFile', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))
