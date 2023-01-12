@@ -1,11 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { usePrefetchBranchFileEntry } from './usePrefetchBranchFileEntry'
+import { usePrefetchCommitFileEntry } from './usePrefetchCommitFileEntry'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -81,18 +80,12 @@ const mockData = {
   },
 }
 
-describe('usePrefetchBranchFileEntry', () => {
-  let hookData
+describe('usePrefetchCommitFileEntry', () => {
   function setup() {
     server.use(
       graphql.query('CoverageForFile', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))
       )
-    )
-
-    hookData = renderHook(
-      () => usePrefetchBranchFileEntry({ branch: 'main', path: 'src/file.js' }),
-      { wrapper }
     )
   }
 
@@ -101,12 +94,30 @@ describe('usePrefetchBranchFileEntry', () => {
   })
 
   it('returns runPrefetch function', () => {
-    expect(hookData.result.current.runPrefetch).toBeDefined()
-    expect(typeof hookData.result.current.runPrefetch).toBe('function')
+    const { result } = renderHook(
+      () =>
+        usePrefetchCommitFileEntry({
+          commitSha: 'f00162848a3cebc0728d915763c2fd9e92132408',
+          path: 'src/file.js',
+        }),
+      { wrapper }
+    )
+
+    expect(result.current.runPrefetch).toBeDefined()
+    expect(typeof result.current.runPrefetch).toBe('function')
   })
 
   it('queries the api', async () => {
-    await hookData.result.current.runPrefetch()
+    const { result, waitFor } = renderHook(
+      () =>
+        usePrefetchCommitFileEntry({
+          commitSha: 'f00162848a3cebc0728d915763c2fd9e92132408',
+          path: 'src/file.js',
+        }),
+      { wrapper }
+    )
+
+    await result.current.runPrefetch()
 
     await waitFor(() => queryClient.getQueryState().isFetching)
 

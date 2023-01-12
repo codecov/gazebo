@@ -57,7 +57,10 @@ const Header = ({ controlsDisabled, children }) => {
             disabled={controlsDisabled}
             ariaName="Select Historical Trend"
             items={TimeOptions}
-            value={value ?? TimeOptions[0]}
+            value={
+              value ??
+              TimeOptions.find((option) => option.value === 'LAST_30_DAYS')
+            }
             onChange={(historicalTrend) =>
               updateParams({ historicalTrend: historicalTrend.value })
             }

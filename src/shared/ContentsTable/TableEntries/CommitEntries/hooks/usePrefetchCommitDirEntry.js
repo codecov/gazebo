@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
@@ -38,30 +39,36 @@ const query = `
   }
 `
 
-export const useRepoCommitContents = ({
-  provider,
-  owner,
-  repo,
+export function usePrefetchCommitDirEntry({
   commitSha,
   path,
   filters,
   opts = {},
-}) => {
-  return useQuery(
-    ['CommitPathContents', provider, owner, repo, commitSha, path, filters],
-    ({ signal }) =>
-      Api.graphql({
-        provider,
-        query,
-        signal,
-        variables: {
-          name: owner,
-          repo,
-          commitSha,
-          path,
-          filters,
-        },
-      }).then((res) => res?.data?.owner?.repository?.commit?.pathContents),
-    opts
-  )
+}) {
+  const { provider, owner, repo } = useParams()
+  const queryClient = useQueryClient()
+
+  const runPrefetch = async () =>
+    await queryClient.prefetchQuery(
+      ['CommitPathContents', provider, owner, repo, commitSha, path, filters],
+      ({ signal }) =>
+        Api.graphql({
+          provider,
+          query,
+          signal,
+          variables: {
+            name: owner,
+            repo,
+            commitSha,
+            path,
+            filters,
+          },
+        }).then((res) => res?.data?.owner?.repository?.commit?.pathContents),
+      {
+        staleTime: 10000,
+        ...opts,
+      }
+    )
+
+  return { runPrefetch }
 }
