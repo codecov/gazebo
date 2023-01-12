@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -125,7 +125,7 @@ describe('CommitFileExplorer', () => {
           requestFilters(req.variables?.filters)
         }
 
-        if (noFiles) {
+        if (noFiles || req.variables?.filters?.searchValue) {
           return res(ctx.status(200), ctx.data(mockNoFiles))
         }
 
@@ -485,14 +485,6 @@ describe('CommitFileExplorer', () => {
   })
 
   describe('searching on the table', () => {
-    beforeEach(() => {
-      jest.useFakeTimers()
-    })
-
-    afterEach(() => {
-      jest.clearAllTimers()
-    })
-
     describe('api variables are being set', () => {
       beforeEach(() => {
         setup()
@@ -504,12 +496,7 @@ describe('CommitFileExplorer', () => {
         const search = await screen.findByRole('textbox', {
           name: 'Search for files',
         })
-
-        await userEvent.type(search, 'cool-file.rs')
-
-        act(() => {
-          jest.advanceTimersByTime(5000)
-        })
+        userEvent.type(search, 'cool-file.rs')
 
         await waitFor(() => {
           expect(requestFilters).toHaveBeenCalledWith({
@@ -522,37 +509,22 @@ describe('CommitFileExplorer', () => {
 
     describe('there are no files to be found', () => {
       beforeEach(() => {
-        setup(true)
+        setup()
       })
 
       it('displays no items found message', async () => {
         render(<CommitFileExplorer />, { wrapper: wrapper() })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        const dir = await screen.findByText('src')
+        expect(dir).toBeInTheDocument()
 
         const search = await screen.findByRole('textbox', {
           name: 'Search for files',
         })
-
         userEvent.type(search, 'cool-file.rs')
 
-        act(() => {
-          jest.advanceTimersByTime(5000)
-        })
-
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
-        const noResults = await screen.findByText('No results found')
+        const noResults = await screen.findByText(/no results found/i)
         expect(noResults).toBeInTheDocument()
-
-        await waitFor(() => {
-          expect(requestFilters).toHaveBeenCalledWith({
-            searchValue: 'cool-file.rs',
-            ordering: { direction: 'ASC', parameter: 'NAME' },
-          })
-        })
       })
     })
   })

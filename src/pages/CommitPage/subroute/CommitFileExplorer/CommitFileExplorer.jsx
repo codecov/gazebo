@@ -42,8 +42,6 @@ function FileExplorer() {
   const { data, headers, handleSort, isSearching, isLoading } =
     useRepoCommitContentsTable()
 
-  console.debug(data, isLoading)
-
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
 
