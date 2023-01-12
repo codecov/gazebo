@@ -119,10 +119,13 @@ describe('RawFileviewer', () => {
         )
         expect(progressHeader).toBeInTheDocument()
 
-        const errorMessage = screen.queryByText(
-          /There was a problem getting the source code from your provider./
+        await waitFor(() =>
+          expect(
+            screen.queryByText(
+              /There was a problem getting the source code from your provider./
+            )
+          ).not.toBeInTheDocument()
         )
-        expect(errorMessage).not.toBeInTheDocument()
 
         const allTestIds = await screen.findAllByTestId('fv-single-line')
         expect(allTestIds.length).toEqual(21)
@@ -146,10 +149,13 @@ describe('RawFileviewer', () => {
         )
         expect(progressHeader).toBeInTheDocument()
 
-        const errorMessage = screen.queryByText(
-          /There was a problem getting the source code from your provider./
+        await waitFor(() =>
+          expect(
+            screen.queryByText(
+              /There was a problem getting the source code from your provider./
+            )
+          ).not.toBeInTheDocument()
         )
-        expect(errorMessage).not.toBeInTheDocument()
 
         const allTestIds = await screen.findAllByTestId('fv-single-line')
         expect(allTestIds.length).toEqual(21)
@@ -202,10 +208,13 @@ describe('RawFileviewer', () => {
       )
       expect(codeRenderer).toBeInTheDocument()
 
-      const errorMessage = screen.queryByText(
-        /There was a problem getting the source code from your provider./
+      await waitFor(() =>
+        expect(
+          screen.queryByText(
+            /There was a problem getting the source code from your provider./
+          )
+        ).not.toBeInTheDocument()
       )
-      expect(errorMessage).not.toBeInTheDocument()
 
       const allTestIds = await screen.findAllByTestId('fv-single-line')
       expect(allTestIds.length).toEqual(21)
@@ -228,6 +237,9 @@ describe('RawFileviewer', () => {
     it('renders the Fileviewer Header, CodeRenderer Header, and CodeRenderer', async () => {
       render(<RawFileviewer />, { wrapper })
 
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
       const toggleHeader = await screen.findByText(
         /The FileViewer Toggle Header/
       )
@@ -238,10 +250,13 @@ describe('RawFileviewer', () => {
       )
       expect(progressHeader).toBeInTheDocument()
 
-      const errorMessage = screen.queryByText(
-        /There was a problem getting the source code from your provider./
+      await waitFor(() =>
+        expect(
+          screen.queryByText(
+            /There was a problem getting the source code from your provider./
+          )
+        ).not.toBeInTheDocument()
       )
-      expect(errorMessage).not.toBeInTheDocument()
 
       const allTestIds = await screen.findAllByTestId('fv-single-line')
       expect(allTestIds.length).toEqual(21)
@@ -272,6 +287,9 @@ describe('RawFileviewer', () => {
     it('renders the 404 message', async () => {
       render(<RawFileviewer />, { wrapper })
 
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
       const notFound = await screen.findByText(/Not found/)
       expect(notFound).toBeInTheDocument()
 
@@ -292,6 +310,9 @@ describe('RawFileviewer', () => {
     it('renders the Fileviewer Header, CodeRenderer Header, and error message', async () => {
       render(<RawFileviewer />, { wrapper })
 
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
       const toggleHeader = await screen.findByText(
         /The FileViewer Toggle Header/
       )
@@ -302,8 +323,9 @@ describe('RawFileviewer', () => {
       )
       expect(progressHeader).toBeInTheDocument()
 
-      const codeRenderer = screen.queryByText(/The CodeRenderer/)
-      expect(codeRenderer).not.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByText(/The CodeRenderer/)).not.toBeInTheDocument()
+      )
 
       const errorMessage = await screen.findByText(
         /There was a problem getting the source code from your provider./
@@ -324,6 +346,9 @@ describe('RawFileviewer', () => {
     it('does not apply the border class', async () => {
       render(<RawFileviewer showTopBorder={false} />, { wrapper })
 
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
       const fileViewer = await screen.findByTestId('file-viewer-wrapper')
       expect(fileViewer).toHaveClass('flex')
       expect(fileViewer).not.toHaveClass('border-t')
@@ -341,6 +366,9 @@ describe('RawFileviewer', () => {
 
     it('does not apply the border class', async () => {
       render(<RawFileviewer addTopPadding={false} />, { wrapper })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       const fileViewer = await screen.findByTestId('file-viewer-wrapper')
       expect(fileViewer).toHaveClass('flex')
