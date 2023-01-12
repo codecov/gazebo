@@ -7,7 +7,6 @@ import {
 } from 'pages/RepoPage/utils'
 import TabNavigation from 'ui/TabNavigation'
 
-// eslint-disable-next-line max-statements
 function CommitPageTabs({ commitSHA }) {
   const location = useLocation()
   const { provider, owner, repo } = useParams()

@@ -17,74 +17,68 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockNoFiles = {
-  owner: {
-    username: 'nicholas-codecov',
-    repository: {
-      commit: {
-        pathContents: {
-          results: [],
-          __typename: 'PathContents',
-        },
+  username: 'nicholas-codecov',
+  repository: {
+    commit: {
+      pathContents: {
+        results: [],
+        __typename: 'PathContents',
       },
     },
   },
 }
 
 const mockListData = {
-  owner: {
-    username: 'nicholas-codecov',
-    repository: {
-      commit: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentFile',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'file.js',
-              path: 'a/b/c/file.js',
-              percentCovered: 100.0,
-            },
-          ],
-          __typename: 'PathContents',
-        },
+  username: 'nicholas-codecov',
+  repository: {
+    commit: {
+      pathContents: {
+        results: [
+          {
+            __typename: 'PathContentFile',
+            hits: 9,
+            misses: 0,
+            partials: 0,
+            lines: 10,
+            name: 'file.js',
+            path: 'a/b/c/file.js',
+            percentCovered: 100.0,
+          },
+        ],
+        __typename: 'PathContents',
       },
     },
   },
 }
 
 const mockTreeData = {
-  owner: {
-    username: 'nicholas-codecov',
-    repository: {
-      commit: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentDir',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'src',
-              path: 'src',
-              percentCovered: 100.0,
-            },
-            {
-              __typename: 'PathContentFile',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
-              name: 'file.js',
-              path: 'a/b/c/file.js',
-              percentCovered: 100.0,
-            },
-          ],
-          __typename: 'PathContents',
-        },
+  username: 'nicholas-codecov',
+  repository: {
+    commit: {
+      pathContents: {
+        results: [
+          {
+            __typename: 'PathContentDir',
+            hits: 9,
+            misses: 0,
+            partials: 0,
+            lines: 10,
+            name: 'src',
+            path: 'src',
+            percentCovered: 100.0,
+          },
+          {
+            __typename: 'PathContentFile',
+            hits: 9,
+            misses: 0,
+            partials: 0,
+            lines: 10,
+            name: 'file.js',
+            path: 'a/b/c/file.js',
+            percentCovered: 100.0,
+          },
+        ],
+        __typename: 'PathContents',
       },
     },
   },
@@ -126,17 +120,17 @@ describe('CommitFileExplorer', () => {
         }
 
         if (noFiles || req.variables?.filters?.searchValue) {
-          return res(ctx.status(200), ctx.data(mockNoFiles))
+          return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
         }
 
         if (
           req.variables?.filters?.displayType &&
           req.variables?.filters?.displayType === 'LIST'
         ) {
-          return res(ctx.status(200), ctx.data(mockListData))
+          return res(ctx.status(200), ctx.data({ owner: mockListData }))
         }
 
-        return res(ctx.status(200), ctx.data(mockTreeData))
+        return res(ctx.status(200), ctx.data({ owner: mockTreeData }))
       })
     )
   }

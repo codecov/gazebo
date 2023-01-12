@@ -8,24 +8,22 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import CommitDirEntry from './CommitDirEntry'
 
 const mockData = {
-  owner: {
-    username: 'codecov',
-    repository: {
-      commit: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentDir',
-              name: 'src',
-              path: null,
-              percentCovered: 0.0,
-              hits: 4,
-              misses: 2,
-              lines: 7,
-              partials: 1,
-            },
-          ],
-        },
+  username: 'codecov',
+  repository: {
+    commit: {
+      pathContents: {
+        results: [
+          {
+            __typename: 'PathContentDir',
+            name: 'src',
+            path: null,
+            percentCovered: 0.0,
+            hits: 4,
+            misses: 2,
+            lines: 7,
+            partials: 1,
+          },
+        ],
       },
     },
   },
@@ -59,7 +57,7 @@ describe('CommitDirEntry', () => {
   function setup() {
     server.use(
       graphql.query('CommitPathContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
+        res(ctx.status(200), ctx.data({ owner: mockData }))
       )
     )
   }
@@ -110,10 +108,8 @@ describe('CommitDirEntry', () => {
       { wrapper }
     )
 
-    userEvent.hover(screen.getByText('dir'))
-
-    await waitFor(() => queryClient.getQueryState().isFetching)
-    await waitFor(() => !queryClient.getQueryState().isFetching)
+    const dir = screen.getByText('dir')
+    userEvent.hover(dir)
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({

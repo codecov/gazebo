@@ -7,51 +7,45 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import CommitFileViewer from './CommitFileViewer'
 
 const mockOwner = {
-  owner: {
-    username: 'cool-user',
-  },
+  username: 'cool-user',
 }
 
 const mockCoverage = {
-  owner: {
-    repository: {
-      commit: {
-        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-        flagNames: ['a', 'b'],
-        coverageFile: {
-          content:
-            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
-          coverage: [
-            {
-              line: 1,
-              coverage: 'H',
-            },
-            {
-              line: 2,
-              coverage: 'H',
-            },
-            {
-              line: 4,
-              coverage: 'H',
-            },
-            {
-              line: 5,
-              coverage: 'H',
-            },
-            {
-              line: 7,
-              coverage: 'H',
-            },
-            {
-              line: 8,
-              coverage: 'H',
-            },
-          ],
+  commit: {
+    commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+    flagNames: ['a', 'b'],
+    coverageFile: {
+      content:
+        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
+      coverage: [
+        {
+          line: 1,
+          coverage: 'H',
         },
-      },
-      branch: null,
+        {
+          line: 2,
+          coverage: 'H',
+        },
+        {
+          line: 4,
+          coverage: 'H',
+        },
+        {
+          line: 5,
+          coverage: 'H',
+        },
+        {
+          line: 7,
+          coverage: 'H',
+        },
+        {
+          line: 8,
+          coverage: 'H',
+        },
+      ],
     },
   },
+  branch: null,
 }
 
 const queryClient = new QueryClient()
@@ -86,10 +80,10 @@ describe('CommitFileViewer', () => {
   function setup() {
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockOwner))
+        res(ctx.status(200), ctx.data({ owner: mockOwner }))
       ),
       graphql.query('CoverageForFile', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockCoverage))
+        res(ctx.status(200), ctx.data({ owner: { repository: mockCoverage } }))
       )
     )
   }

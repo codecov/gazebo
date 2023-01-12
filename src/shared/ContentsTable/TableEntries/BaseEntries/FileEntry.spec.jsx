@@ -13,17 +13,20 @@ const wrapper = ({ children }) => (
 )
 
 describe('FileEntry', () => {
+  let commonProps = {
+    linkRef: 'main',
+    filePath: 'dir/file.js',
+    name: 'file.js',
+    path: 'dir',
+    isCriticalFile: false,
+  }
   const runPrefetchMock = jest.fn()
 
   describe('checking properties on list display', () => {
     it('displays the file path', () => {
       render(
         <FileEntry
-          linkRef="main"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
         />,
@@ -38,11 +41,7 @@ describe('FileEntry', () => {
     it('displays the file name', () => {
       render(
         <FileEntry
-          linkRef="main"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
@@ -55,11 +54,7 @@ describe('FileEntry', () => {
     it('does not display the file name', () => {
       render(
         <FileEntry
-          linkRef="main"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
@@ -74,10 +69,7 @@ describe('FileEntry', () => {
     it('displays critical file label', () => {
       render(
         <FileEntry
-          linkRef="main"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
+          {...commonProps}
           isCriticalFile={true}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
@@ -93,11 +85,7 @@ describe('FileEntry', () => {
     it('displays the file path label', () => {
       render(
         <FileEntry
-          linkRef="main"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
         />,
@@ -112,11 +100,7 @@ describe('FileEntry', () => {
     it('fires the prefetch function on hover', async () => {
       render(
         <FileEntry
-          linkRef="main"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
@@ -133,11 +117,8 @@ describe('FileEntry', () => {
     it('sets the correct href', () => {
       render(
         <FileEntry
+          {...commonProps}
           commitSha="coolCommitSha"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
           pageName="commitFileView"

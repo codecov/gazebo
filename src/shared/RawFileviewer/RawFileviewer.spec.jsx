@@ -18,23 +18,20 @@ jest.mock(
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper =
-  (initialEntries = ['/gh/codecov/cool-repo/blob/branch-name/a/file.js']) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/blob/:ref/:path+',
-            '/:provider/:owner/:repo/commit/:commit/blob/:path+',
-          ]}
-        >
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+const wrapper = ({ children }) => (
+  <MemoryRouter
+    initialEntries={['/gh/codecov/cool-repo/blob/branch-name/a/file.js']}
+  >
+    <Route
+      path={[
+        '/:provider/:owner/:repo/blob/:ref/:path+',
+        '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+      ]}
+    >
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
 
 beforeAll(() => {
   server.listen()
@@ -107,7 +104,7 @@ describe('RawFileviewer', () => {
 
     describe('getting data from ref', () => {
       it('renders the FileViewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-        render(<RawFileviewer />, { wrapper: wrapper() })
+        render(<RawFileviewer />, { wrapper })
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
@@ -134,11 +131,7 @@ describe('RawFileviewer', () => {
 
     describe('getting data from commit', () => {
       it('renders the FileViewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-        render(<RawFileviewer />, {
-          wrapper: wrapper([
-            '/gh/codecov/cool-repo/commit/sha256/blob/a/file.js',
-          ]),
-        })
+        render(<RawFileviewer />, { wrapper })
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
@@ -191,7 +184,7 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the FileViewer Header, CriticalFileLabel, CodeRenderer Header, and CodeRenderer', async () => {
-      render(<RawFileviewer />, { wrapper: wrapper() })
+      render(<RawFileviewer />, { wrapper })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -233,13 +226,7 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the Fileviewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-      render(<RawFileviewer />, { wrapper: wrapper() })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<RawFileviewer />, { wrapper })
 
       const toggleHeader = await screen.findByText(
         /The FileViewer Toggle Header/
@@ -283,10 +270,7 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the 404 message', async () => {
-      render(<RawFileviewer />, { wrapper: wrapper() })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<RawFileviewer />, { wrapper })
 
       const notFound = await screen.findByText(/Not found/)
       expect(notFound).toBeInTheDocument()
@@ -306,10 +290,7 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the Fileviewer Header, CodeRenderer Header, and error message', async () => {
-      render(<RawFileviewer />, { wrapper: wrapper() })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<RawFileviewer />, { wrapper })
 
       const toggleHeader = await screen.findByText(
         /The FileViewer Toggle Header/
@@ -341,10 +322,7 @@ describe('RawFileviewer', () => {
     })
 
     it('does not apply the border class', async () => {
-      render(<RawFileviewer showTopBorder={false} />, { wrapper: wrapper() })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<RawFileviewer showTopBorder={false} />, { wrapper })
 
       const fileViewer = await screen.findByTestId('file-viewer-wrapper')
       expect(fileViewer).toHaveClass('flex')
@@ -362,10 +340,7 @@ describe('RawFileviewer', () => {
     })
 
     it('does not apply the border class', async () => {
-      render(<RawFileviewer addTopPadding={false} />, { wrapper: wrapper() })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<RawFileviewer addTopPadding={false} />, { wrapper })
 
       const fileViewer = await screen.findByTestId('file-viewer-wrapper')
       expect(fileViewer).toHaveClass('flex')

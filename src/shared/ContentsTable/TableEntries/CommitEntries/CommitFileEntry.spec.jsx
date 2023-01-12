@@ -10,30 +10,26 @@ import CommitFileEntry from './CommitFileEntry'
 import { displayTypeParameter } from '../../constants'
 
 const mockData = {
-  owner: {
-    repository: {
-      commit: {
-        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-        flagNames: ['a', 'b'],
-        coverageFile: {
-          isCriticalFile: true,
-          content:
-            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n',
-          coverage: [
-            {
-              line: 1,
-              coverage: 1,
-            },
-            {
-              line: 2,
-              coverage: 1,
-            },
-          ],
+  commit: {
+    commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+    flagNames: ['a', 'b'],
+    coverageFile: {
+      isCriticalFile: true,
+      content:
+        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n',
+      coverage: [
+        {
+          line: 1,
+          coverage: 1,
         },
-      },
-      branch: null,
+        {
+          line: 2,
+          coverage: 1,
+        },
+      ],
     },
   },
+  branch: null,
 }
 
 const queryClient = new QueryClient()
@@ -63,10 +59,18 @@ afterAll(() => {
 })
 
 describe('CommitFileEntry', () => {
+  let commonProps = {
+    commitSha: '1234',
+    filePath: 'dir/file.js',
+    name: 'file.js',
+    path: 'dir',
+    isCriticalFile: false,
+  }
+
   function setup() {
     server.use(
       graphql.query('CoverageForFile', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
+        res(ctx.status(200), ctx.data({ owner: { repository: mockData } }))
       )
     )
   }
@@ -79,11 +83,7 @@ describe('CommitFileEntry', () => {
     it('displays the file path', () => {
       render(
         <CommitFileEntry
-          commitSha="1234"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.list}
         />,
         { wrapper }
@@ -101,11 +101,7 @@ describe('CommitFileEntry', () => {
     it('displays the file name', () => {
       render(
         <CommitFileEntry
-          commitSha="1234"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }
@@ -117,11 +113,7 @@ describe('CommitFileEntry', () => {
     it('does not display the file name', () => {
       render(
         <CommitFileEntry
-          commitSha="1234"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }
@@ -139,10 +131,7 @@ describe('CommitFileEntry', () => {
     it('displays critical file label', () => {
       render(
         <CommitFileEntry
-          commitSha="1234"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
+          {...commonProps}
           isCriticalFile={true}
           displayType={displayTypeParameter.tree}
         />,
@@ -161,11 +150,7 @@ describe('CommitFileEntry', () => {
     it('displays the file path label', () => {
       render(
         <CommitFileEntry
-          commitSha="1234"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.list}
         />,
         { wrapper }
@@ -183,11 +168,7 @@ describe('CommitFileEntry', () => {
     it('fires the prefetch function on hover', async () => {
       render(
         <CommitFileEntry
-          commitSha="1234"
-          filePath="dir/file.js"
-          name="file.js"
-          path="dir"
-          isCriticalFile={false}
+          {...commonProps}
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }

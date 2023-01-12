@@ -23,20 +23,17 @@ const mockCommit = {
   },
 }
 
-const wrapper =
-  (initialEntries = ['/gh/codecov/cool-repo/commit']) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/commit">{children}</Route>
-      </MemoryRouter>
-    )
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/cool-repo/commit']}>
+    <Route path="/:provider/:owner/:repo/commit">{children}</Route>
+  </MemoryRouter>
+)
 
 describe('ImpactedFiles', () => {
   describe('rendering with data', () => {
     it('displays commits table', async () => {
       render(<ImpactedFiles commit={mockCommit} commitSHA="sha256" />, {
-        wrapper: wrapper(),
+        wrapper,
       })
 
       const head = await screen.findByText('HEAD')
