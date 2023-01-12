@@ -4,11 +4,12 @@ import A from 'ui/A'
 
 import ActionsBilling from '../ActionsBilling'
 
-const INVOICED_CUSTOMER = 'send_invoice'
+const INVOICED_CUSTOMER_METHOD = 'send_invoice'
 function PlanControls({ accountDetails }) {
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const isInvoicedCustomer =
-    accountDetails?.subscriptionDetail?.collectionMethod === INVOICED_CUSTOMER
+    accountDetails?.subscriptionDetail?.collectionMethod ===
+    INVOICED_CUSTOMER_METHOD
 
   if (isEnterprisePlan(plan?.value) || isInvoicedCustomer) {
     return (
