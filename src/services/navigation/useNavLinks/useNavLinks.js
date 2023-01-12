@@ -389,7 +389,7 @@ export function useNavLinks() {
           repo: r,
           pullId: pi,
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirectChanges`,
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirect-changes`,
       isExternalLink: false,
     },
     pullCommits: {
