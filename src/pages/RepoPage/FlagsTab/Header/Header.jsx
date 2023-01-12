@@ -9,7 +9,7 @@ import MultiSelect from 'ui/MultiSelect'
 import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 
-import { TimeOptions } from '../constants'
+import { TIME_OPTION_VALUES, TimeOptions } from '../constants'
 
 const Header = ({ controlsDisabled, children }) => {
   const [selectedFlags, setSelectedFlags] = useState([])
@@ -38,7 +38,7 @@ const Header = ({ controlsDisabled, children }) => {
   )
 
   const defaultValue = TimeOptions.find(
-    (option) => option.value === 'LAST_3_MONTHS'
+    (option) => option.value === TIME_OPTION_VALUES.LAST_3_MONTHS
   )
 
   return (
