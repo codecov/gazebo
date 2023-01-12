@@ -31,11 +31,11 @@ const Loader = (
 )
 
 const getTabsCounts = (commits, compareWithBase) => {
-  const flagsCount = compareWithBase?.flagComparisonsCount
-  const indirectChangesCount = compareWithBase?.indirectChangedFilesCount
-  const impactedFilesCount = compareWithBase?.impactedFilesCount
+  const flagsCount = compareWithBase?.flagComparisonsCount || 0
+  const indirectChangesCount = compareWithBase?.indirectChangedFilesCount || 0
+  const impactedFilesCount = compareWithBase?.impactedFilesCount || 0
 
-  const commitsCount = commits?.totalCount
+  const commitsCount = commits?.totalCount || 0
   return { flagsCount, commitsCount, impactedFilesCount, indirectChangesCount }
 }
 
@@ -86,10 +86,10 @@ function PullRequestPage() {
                 {
                   pageName: 'pullDetail',
                   children: (
-                    <div className="flex">
-                      <p>Impacted Files</p>
-                      <span className="text-xs">{impactedFilesCount}</span>
-                    </div>
+                    <>
+                      Impacted Files
+                      <sup className="text-xs">{impactedFilesCount}</sup>
+                    </>
                   ),
                   exact: true,
                 },
@@ -98,30 +98,30 @@ function PullRequestPage() {
                       {
                         pageName: 'pullIndirectChanges',
                         children: (
-                          <div className="flex">
-                            <p>Indirect Changes</p>
-                            <span className="text-xs">
+                          <>
+                            Indirect Changes
+                            <sup className="text-xs">
                               {indirectChangesCount}
-                            </span>
-                          </div>
+                            </sup>
+                          </>
                         ),
                       },
                       {
                         pageName: 'pullCommits',
                         children: (
-                          <div className="flex">
-                            <p>Commits</p>
-                            <span className="text-xs">{commitsCount}</span>
-                          </div>
+                          <>
+                            Commits
+                            <sup className="text-xs">{commitsCount}</sup>
+                          </>
                         ),
                       },
                       {
                         pageName: 'pullFlags',
                         children: (
-                          <div className="flex">
-                            <p>Flags</p>
-                            <span className="text-xs">{flagsCount}</span>
-                          </div>
+                          <>
+                            Flags
+                            <sup className="text-xs">{flagsCount}</sup>
+                          </>
                         ),
                       },
                     ]
