@@ -4,12 +4,16 @@ import A from 'ui/A'
 
 import ActionsBilling from '../ActionsBilling'
 
-const INVOICED_CUSTOMER_METHOD = 'send_invoice'
+const CollectionMethods = Object.freeze({
+  INVOICED_CUSTOMER_METHOD: 'send_invoice',
+  AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
+})
+
 function PlanControls({ accountDetails }) {
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const isInvoicedCustomer =
     accountDetails?.subscriptionDetail?.collectionMethod ===
-    INVOICED_CUSTOMER_METHOD
+    CollectionMethods.INVOICED_CUSTOMER_METHOD
 
   if (isEnterprisePlan(plan?.value) || isInvoicedCustomer) {
     return (
