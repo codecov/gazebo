@@ -18,6 +18,7 @@ import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
 import { usePullPageData } from './hooks'
+import IndirectChangesTab from './IndirectChangesTab'
 import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 
 const CompareSummary = lazy(() => import('./Summary'))
@@ -100,10 +101,10 @@ function PullRequestPage() {
                 {pullPageTabs && (
                   <>
                     <SentryRoute
-                      path="/:provider/:owner/:repo/pull/:pullId/indirectChanges"
+                      path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
                       exact={true}
                     >
-                      indirect changes
+                      <IndirectChangesTab />
                     </SentryRoute>
                     <SentryRoute
                       path="/:provider/:owner/:repo/pull/:pullId/commits"
