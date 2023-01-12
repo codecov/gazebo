@@ -1,33 +1,9 @@
 import { fromUnixTime } from 'date-fns'
 import { format, utcToZonedTime } from 'date-fns-tz'
-import PropTypes from 'prop-types'
 
-import { invoicePropType } from 'services/account'
+import { accountDetailsPropType, invoicePropType } from 'services/account'
 
-function generateAddressInfo(accountDetails) {
-  const billingDetails =
-    accountDetails.subscriptionDetail?.defaultPaymentMethod?.billingDetails
-
-  if (!billingDetails) return []
-
-  // merge all the billingDetails without empty value in a the following:
-  // ['Donald Duck',
-  // '180 Broadway',
-  // 'Floor 2',
-  // 'Boulder CO 10789 USA']
-
-  const { name, address } = billingDetails
-  const addressInfo = [
-    name,
-    address.line1,
-    address.line2,
-    [address.city, address.state, address.postalCode, address.country]
-      .filter(Boolean)
-      .join(' '),
-  ].filter(Boolean)
-
-  return addressInfo
-}
+import { generateAddressInfo } from './generateAddressInfo'
 
 function InvoiceHeader({ invoice, accountDetails }) {
   const addressInfo = generateAddressInfo(accountDetails)
@@ -125,23 +101,7 @@ function InvoiceHeader({ invoice, accountDetails }) {
 
 InvoiceHeader.propTypes = {
   invoice: invoicePropType,
-  accountDetails: PropTypes.shape({
-    subscriptionDetail: PropTypes.shape({
-      defaultPaymentMethod: PropTypes.shape({
-        billingDetails: PropTypes.shape({
-          name: PropTypes.string,
-          address: PropTypes.shape({
-            line1: PropTypes.string,
-            line2: PropTypes.string,
-            postalCode: PropTypes.string,
-            city: PropTypes.string,
-            state: PropTypes.string,
-            country: PropTypes.string,
-          }),
-        }),
-      }),
-    }),
-  }).isRequired,
+  accountDetails: accountDetailsPropType.isRequired,
 }
 
 export default InvoiceHeader
