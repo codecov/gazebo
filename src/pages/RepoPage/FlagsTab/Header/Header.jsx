@@ -37,6 +37,10 @@ const Header = ({ controlsDisabled, children }) => {
     (item) => item.value === params.historicalTrend
   )
 
+  const defaultValue = TimeOptions.find(
+    (option) => option.value === 'LAST_3_MONTHS'
+  )
+
   return (
     <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
       <div className="grid md:grid-cols-4 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x mb-4 divide-solid divide-ds-gray-secondary w-2/3 sm:w-full">
@@ -57,10 +61,7 @@ const Header = ({ controlsDisabled, children }) => {
             disabled={controlsDisabled}
             ariaName="Select Historical Trend"
             items={TimeOptions}
-            value={
-              value ??
-              TimeOptions.find((option) => option.value === 'LAST_3_MONTHS')
-            }
+            value={value ?? defaultValue}
             onChange={(historicalTrend) =>
               updateParams({ historicalTrend: historicalTrend.value })
             }
