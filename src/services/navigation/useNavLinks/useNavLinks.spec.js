@@ -946,29 +946,29 @@ describe('useNavLinks', () => {
 
   describe('pull indirect changes', () => {
     beforeAll(() => {
-      setup(['/gl/doggo/squirrel-locator/pull/409/indirectChanges'])
+      setup(['/gl/doggo/squirrel-locator/pull/409/indirect-changes'])
     })
 
     it('Returns the correct link with nothing passed', () => {
       expect(hookData.result.current.pullIndirectChanges.path()).toBe(
-        `/gl/doggo/squirrel-locator/pull/409/indirectChanges`
+        `/gl/doggo/squirrel-locator/pull/409/indirect-changes`
       )
     })
     it('can override the params', () => {
       expect(
         hookData.result.current.pullIndirectChanges.path({ provider: 'bb' })
-      ).toBe(`/bb/doggo/squirrel-locator/pull/409/indirectChanges`)
+      ).toBe(`/bb/doggo/squirrel-locator/pull/409/indirect-changes`)
       expect(
         hookData.result.current.pullIndirectChanges.path({ owner: 'cat' })
-      ).toBe(`/gl/cat/squirrel-locator/pull/409/indirectChanges`)
+      ).toBe(`/gl/cat/squirrel-locator/pull/409/indirect-changes`)
       expect(
         hookData.result.current.pullIndirectChanges.path({
           repo: 'tennis-ball',
         })
-      ).toBe(`/gl/doggo/tennis-ball/pull/409/indirectChanges`)
+      ).toBe(`/gl/doggo/tennis-ball/pull/409/indirect-changes`)
       expect(
         hookData.result.current.pullIndirectChanges.path({ pullId: 888 })
-      ).toBe(`/gl/doggo/squirrel-locator/pull/888/indirectChanges`)
+      ).toBe(`/gl/doggo/squirrel-locator/pull/888/indirect-changes`)
     })
   })
 
