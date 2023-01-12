@@ -512,7 +512,7 @@ describe('useNavLinks', () => {
 
   describe('fileViewer link', () => {
     beforeAll(() => {
-      setup(['/gh/Rabee-AbuBaker/another-test/blob/main/index.js'])
+      setup(['/gh/codecov-owner/another-test/blob/main/index.js'])
     })
 
     it('Returns the correct link with nothing passed', () => {
@@ -521,7 +521,7 @@ describe('useNavLinks', () => {
           ref: 'main',
           tree: 'index.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/main/index.js')
+      ).toBe('/gh/codecov-owner/another-test/blob/main/index.js')
     })
 
     it('can override the params', () => {
@@ -531,7 +531,7 @@ describe('useNavLinks', () => {
           ref: 'main',
           tree: 'index.js',
         })
-      ).toBe('/bb/Rabee-AbuBaker/another-test/blob/main/index.js')
+      ).toBe('/bb/codecov-owner/another-test/blob/main/index.js')
       expect(
         hookData.result.current.fileViewer.path({
           owner: 'cat',
@@ -545,14 +545,121 @@ describe('useNavLinks', () => {
           ref: 'main',
           tree: 'flags1/mafs.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/main/flags1/mafs.js')
+      ).toBe('/gh/codecov-owner/another-test/blob/main/flags1/mafs.js')
 
       expect(
         hookData.result.current.fileViewer.path({
           ref: 'test-br',
           tree: 'index.js',
         })
-      ).toBe('/gh/Rabee-AbuBaker/another-test/blob/test-br/index.js')
+      ).toBe('/gh/codecov-owner/another-test/blob/test-br/index.js')
+    })
+  })
+
+  describe('commitTreeView link', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/watch/src/view/catWatch.php'])
+    })
+
+    it('Returns the correct link with only commitSha passed', () => {
+      expect(
+        hookData.result.current.commitTreeView.path({ commitSha: 'sha256' })
+      ).toBe('/gl/doggo/watch/commit/sha256/tree/')
+    })
+
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.commitTreeView.path({
+          provider: 'bb',
+          commitSha: 'sha256',
+        })
+      ).toBe('/bb/doggo/watch/commit/sha256/tree/')
+      expect(
+        hookData.result.current.commitTreeView.path({
+          owner: 'cat',
+          commitSha: 'sha256',
+        })
+      ).toBe('/gl/cat/watch/commit/sha256/tree/')
+      expect(
+        hookData.result.current.commitTreeView.path({
+          repo: 'sleep',
+          commitSha: 'sha256',
+        })
+      ).toBe('/gl/doggo/sleep/commit/sha256/tree/')
+    })
+
+    it('accepts a commitSha option', () => {
+      expect(
+        hookData.result.current.commitTreeView.path({
+          commitSha: 'sha256',
+        })
+      ).toBe('/gl/doggo/watch/commit/sha256/tree/')
+    })
+
+    it('accepts a tree option', () => {
+      expect(
+        hookData.result.current.commitTreeView.path({
+          dirPath: 'src/view/catWatch.php',
+          commitSha: 'sha128',
+        })
+      ).toBe('/gl/doggo/watch/commit/sha128/tree/src/view/catWatch.php')
+
+      expect(
+        hookData.result.current.commitTreeView.path({
+          dirPath: 'src',
+          commitSha: 'sha128',
+        })
+      ).toBe('/gl/doggo/watch/commit/sha128/tree/src')
+
+      expect(
+        hookData.result.current.commitTreeView.path({
+          dirPath: 'src/view',
+          commitSha: 'sha128',
+        })
+      ).toBe('/gl/doggo/watch/commit/sha128/tree/src/view')
+    })
+  })
+
+  describe('commitFileView link', () => {
+    beforeAll(() => {
+      setup(['/gh/codecov-owner/another-test/blob/main/index.js'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(
+        hookData.result.current.commitFileView.path({
+          commitSha: 'sha256',
+          filePath: 'index.js',
+        })
+      ).toBe('/gh/codecov-owner/another-test/commit/sha256/blob/index.js')
+    })
+
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.commitFileView.path({
+          provider: 'bb',
+          commitSha: 'sha256',
+          filePath: 'index.js',
+        })
+      ).toBe('/bb/codecov-owner/another-test/commit/sha256/blob/index.js')
+
+      expect(
+        hookData.result.current.commitFileView.path({
+          owner: 'cat',
+          commitSha: 'sha256',
+          filePath: 'index.js',
+        })
+      ).toBe('/gh/cat/another-test/commit/sha256/blob/index.js')
+
+      expect(
+        hookData.result.current.commitFileView.path({
+          repo: 'cool-new-repo',
+          commitSha: 'sha256',
+          filePath: 'flags1/mafs.js',
+        })
+      ).toBe(
+        '/gh/codecov-owner/cool-new-repo/commit/sha256/blob/flags1/mafs.js'
+      )
     })
   })
 
@@ -782,6 +889,86 @@ describe('useNavLinks', () => {
       expect(hookData.result.current.pullDetail.path({ pullId: 888 })).toBe(
         `/gl/doggo/squirrel-locator/pull/888`
       )
+    })
+  })
+
+  describe('pull commits', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/pull/409/commits'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.pullCommits.path()).toBe(
+        `/gl/doggo/squirrel-locator/pull/409/commits`
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.pullCommits.path({ provider: 'bb' })).toBe(
+        `/bb/doggo/squirrel-locator/pull/409/commits`
+      )
+      expect(hookData.result.current.pullCommits.path({ owner: 'cat' })).toBe(
+        `/gl/cat/squirrel-locator/pull/409/commits`
+      )
+      expect(
+        hookData.result.current.pullCommits.path({ repo: 'tennis-ball' })
+      ).toBe(`/gl/doggo/tennis-ball/pull/409/commits`)
+      expect(hookData.result.current.pullCommits.path({ pullId: 888 })).toBe(
+        `/gl/doggo/squirrel-locator/pull/888/commits`
+      )
+    })
+  })
+
+  describe('pull flags', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/pull/409/flags'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.pullFlags.path()).toBe(
+        `/gl/doggo/squirrel-locator/pull/409/flags`
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.pullFlags.path({ provider: 'bb' })).toBe(
+        `/bb/doggo/squirrel-locator/pull/409/flags`
+      )
+      expect(hookData.result.current.pullFlags.path({ owner: 'cat' })).toBe(
+        `/gl/cat/squirrel-locator/pull/409/flags`
+      )
+      expect(
+        hookData.result.current.pullFlags.path({ repo: 'tennis-ball' })
+      ).toBe(`/gl/doggo/tennis-ball/pull/409/flags`)
+      expect(hookData.result.current.pullFlags.path({ pullId: 888 })).toBe(
+        `/gl/doggo/squirrel-locator/pull/888/flags`
+      )
+    })
+  })
+
+  describe('pull indirect changes', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/pull/409/indirectChanges'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.pullIndirectChanges.path()).toBe(
+        `/gl/doggo/squirrel-locator/pull/409/indirectChanges`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.pullIndirectChanges.path({ provider: 'bb' })
+      ).toBe(`/bb/doggo/squirrel-locator/pull/409/indirectChanges`)
+      expect(
+        hookData.result.current.pullIndirectChanges.path({ owner: 'cat' })
+      ).toBe(`/gl/cat/squirrel-locator/pull/409/indirectChanges`)
+      expect(
+        hookData.result.current.pullIndirectChanges.path({
+          repo: 'tennis-ball',
+        })
+      ).toBe(`/gl/doggo/tennis-ball/pull/409/indirectChanges`)
+      expect(
+        hookData.result.current.pullIndirectChanges.path({ pullId: 888 })
+      ).toBe(`/gl/doggo/squirrel-locator/pull/888/indirectChanges`)
     })
   })
 

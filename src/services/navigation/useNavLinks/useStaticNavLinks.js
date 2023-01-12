@@ -238,5 +238,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    selfHostedLicensing: {
+      text: 'Licensing',
+      path: () =>
+        'https://docs.codecov.com/docs/self-hosted-dependency-licensing',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

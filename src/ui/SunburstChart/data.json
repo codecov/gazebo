@@ -1,0 +1,407 @@
+{
+  "name": "flare",
+  "children": [
+    {
+      "name": "analytics",
+      "children": [
+        {
+          "name": "cluster",
+          "children": [
+            { "name": "AgglomerativeCluster", "value": 38 },
+            { "name": "CommunityStructure", "value": 12 },
+            { "name": "HierarchicalCluster", "value": 14 },
+            { "name": "MergeEdge", "value": 3 }
+          ],
+          "value": 16.75
+        },
+        {
+          "name": "graph",
+          "children": [
+            { "name": "BetweennessCentrality", "value": 34 },
+            { "name": "LinkDistance", "value": 31 },
+            { "name": "MaxFlowMinCut", "value": 40 },
+            { "name": "ShortestPaths", "value": 14 },
+            { "name": "SpanningTree", "value": 16 }
+          ],
+          "value": 27
+        },
+        {
+          "name": "optimization",
+          "children": [{ "name": "AspectRatioBanker", "value": 74 }],
+          "value": 74
+        }
+      ],
+      "value": 24.666666666666668
+    },
+    {
+      "name": "animate",
+      "children": [
+        { "name": "Easing", "value": 10 },
+        { "name": "FunctionSequence", "value": 42 },
+        {
+          "name": "interpolate",
+          "children": [
+            { "name": "ArrayInterpolator", "value": 83 },
+            { "name": "ColorInterpolator", "value": 47 },
+            { "name": "DateInterpolator", "value": 75 },
+            { "name": "Interpolator", "value": 46 },
+            { "name": "MatrixInterpolator", "value": 2 },
+            { "name": "NumberInterpolator", "value": 82 },
+            { "name": "ObjectInterpolator", "value": 29 },
+            { "name": "PointInterpolator", "value": 75 },
+            { "name": "RectangleInterpolator", "value": 42 }
+          ],
+          "value": 53.44444444444444
+        },
+        { "name": "ISchedulable", "value": 41 },
+        { "name": "Parallel", "value": 76 },
+        { "name": "Pause", "value": 9 },
+        { "name": "Scheduler", "value": 93 },
+        { "name": "Sequence", "value": 34 },
+        { "name": "Transition", "value": 1 },
+        { "name": "Transitioner", "value": 75 },
+        { "name": "TransitionEvent", "value": 16 },
+        { "name": "Tween", "value": 6 }
+      ],
+      "value": 29.74485596707819
+    },
+    {
+      "name": "data",
+      "children": [
+        {
+          "name": "converters",
+          "children": [
+            { "name": "Converters", "value": 1 },
+            { "name": "DelimitedTextConverter", "value": 94 },
+            { "name": "GraphMLConverter", "value": 0 },
+            { "name": "IDataConverter", "value": 14 },
+            { "name": "JSONConverter", "value": 20 }
+          ],
+          "value": 25.8
+        },
+        { "name": "DataField", "value": 59 },
+        { "name": "DataSchema", "value": 65 },
+        { "name": "DataSet", "value": 6 },
+        { "name": "DataSource", "value": 31 },
+        { "name": "DataTable", "value": 2 },
+        { "name": "DataUtil", "value": 22 }
+      ],
+      "value": 27.165714285714284
+    },
+    {
+      "name": "display",
+      "children": [
+        { "name": "DirtySprite", "value": 33 },
+        { "name": "LineSprite", "value": 32 },
+        { "name": "RectSprite", "value": 23 },
+        { "name": "TextSprite", "value": 66 }
+      ],
+      "value": 38.5
+    },
+    {
+      "name": "flex",
+      "children": [{ "name": "FlareVis", "value": 16 }],
+      "value": 16
+    },
+    {
+      "name": "physics",
+      "children": [
+        { "name": "DragForce", "value": 82 },
+        { "name": "GravityForce", "value": 36 },
+        { "name": "IForce", "value": 9 },
+        { "name": "NBodyForce", "value": 48 },
+        { "name": "Particle", "value": 22 },
+        { "name": "Simulation", "value": 83 },
+        { "name": "Spring", "value": 13 },
+        { "name": "SpringForce", "value": 81 }
+      ],
+      "value": 46.75
+    },
+    {
+      "name": "query",
+      "children": [
+        { "name": "AggregateExpression", "value": 16 },
+        { "name": "And", "value": 27 },
+        { "name": "Arithmetic", "value": 91 },
+        { "name": "Average", "value": 1 },
+        { "name": "BinaryExpression", "value": 93 },
+        { "name": "Comparison", "value": 3 },
+        { "name": "CompositeExpression", "value": 77 },
+        { "name": "Count", "value": 1 },
+        { "name": "DateUtil", "value": 41 },
+        { "name": "Distinct", "value": 3 },
+        { "name": "Expression", "value": 30 },
+        { "name": "ExpressionIterator", "value": 17 },
+        { "name": "Fn", "value": 40 },
+        { "name": "If", "value": 32 },
+        { "name": "IsA", "value": 39 },
+        { "name": "Literal", "value": 14 },
+        { "name": "Match", "value": 48 },
+        { "name": "Maximum", "value": 3 },
+        {
+          "name": "methods",
+          "children": [
+            { "name": "add", "value": 3 },
+            { "name": "and", "value": 0 },
+            { "name": "average", "value": 7 },
+            { "name": "count", "value": 7 },
+            { "name": "distinct", "value": 2 },
+            { "name": "div", "value": 5 },
+            { "name": "eq", "value": 4 },
+            { "name": "fn", "value": 0 },
+            { "name": "gt", "value": 3 },
+            { "name": "gte", "value": 5 },
+            { "name": "iff", "value": 8 },
+            { "name": "isa", "value": 1 },
+            { "name": "lt", "value": 7 },
+            { "name": "lte", "value": 9 },
+            { "name": "max", "value": 3 },
+            { "name": "min", "value": 3 },
+            { "name": "mod", "value": 1 },
+            { "name": "mul", "value": 3 },
+            { "name": "neq", "value": 9 },
+            { "name": "not", "value": 6 },
+            { "name": "or", "value": 3 },
+            { "name": "orderby", "value": 7 },
+            { "name": "range", "value": 2 },
+            { "name": "select", "value": 6 },
+            { "name": "stddev", "value": 3 },
+            { "name": "sub", "value": 0 },
+            { "name": "sum", "value": 0 },
+            { "name": "update", "value": 7 },
+            { "name": "variance", "value": 5 },
+            { "name": "where", "value": 9 },
+            { "name": "xor", "value": 4 },
+            { "name": "_", "value": 4 }
+          ],
+          "value": 4.25
+        },
+        { "name": "Minimum", "value": 3 },
+        { "name": "Not", "value": 54 },
+        { "name": "Or", "value": 0 },
+        { "name": "Query", "value": 96 },
+        { "name": "Range", "value": 94 },
+        { "name": "StringUtil", "value": 30 },
+        { "name": "Sum", "value": 1 },
+        { "name": "Variable", "value": 24 },
+        { "name": "Variance", "value": 76 },
+        { "name": "Xor", "value": 1 }
+      ],
+      "value": 13.07354525862069
+    },
+    {
+      "name": "scale",
+      "children": [
+        { "name": "IScaleMap", "value": 5 },
+        { "name": "LinearScale", "value": 16 },
+        { "name": "LogScale", "value": 51 },
+        { "name": "OrdinalScale", "value": 70 },
+        { "name": "QuantileScale", "value": 35 },
+        { "name": "QuantitativeScale", "value": 39 },
+        { "name": "RootScale", "value": 56 },
+        { "name": "Scale", "value": 68 },
+        { "name": "ScaleType", "value": 21 },
+        { "name": "TimeScale", "value": 33 }
+      ],
+      "value": 39.4
+    },
+    {
+      "name": "util",
+      "children": [
+        { "name": "Arrays", "value": 58 },
+        { "name": "Colors", "value": 1 },
+        { "name": "Dates", "value": 17 },
+        { "name": "Displays", "value": 55 },
+        { "name": "Filter", "value": 24 },
+        { "name": "Geometry", "value": 93 },
+        {
+          "name": "heap",
+          "children": [
+            { "name": "FibonacciHeap", "value": 54 },
+            { "name": "HeapNode", "value": 33 }
+          ],
+          "value": 43.5
+        },
+        { "name": "IEvaluable", "value": 5 },
+        { "name": "IPredicate", "value": 3 },
+        { "name": "IValueProxy", "value": 4 },
+        {
+          "name": "math",
+          "children": [
+            { "name": "DenseMatrix", "value": 65 },
+            { "name": "IMatrix", "value": 15 },
+            { "name": "SparseMatrix", "value": 66 }
+          ],
+          "value": 48.666666666666664
+        },
+        { "name": "Maths", "value": 75 },
+        { "name": "Orientation", "value": 86 },
+        {
+          "name": "palette",
+          "children": [
+            { "name": "ColorPalette", "value": 67 },
+            { "name": "Palette", "value": 29 },
+            { "name": "ShapePalette", "value": 59 },
+            { "name": "SizePalette", "value": 91 }
+          ],
+          "value": 61.5
+        },
+        { "name": "Property", "value": 59 },
+        { "name": "Shapes", "value": 18 },
+        { "name": "Sort", "value": 87 },
+        { "name": "Stats", "value": 57 },
+        { "name": "Strings", "value": 26 }
+      ],
+      "value": 13.80921052631579
+    },
+    {
+      "name": "vis",
+      "children": [
+        {
+          "name": "axis",
+          "children": [
+            { "name": "Axes", "value": 2 },
+            { "name": "Axis", "value": 93 },
+            { "name": "AxisGridLine", "value": 2 },
+            { "name": "AxisLabel", "value": 6 },
+            { "name": "CartesianAxes", "value": 3 }
+          ],
+          "value": 21.2
+        },
+        {
+          "name": "controls",
+          "children": [
+            { "name": "AnchorControl", "value": 38 },
+            { "name": "ClickControl", "value": 24 },
+            { "name": "Control", "value": 53 },
+            { "name": "ControlList", "value": 65 },
+            { "name": "DragControl", "value": 49 },
+            { "name": "ExpandControl", "value": 32 },
+            { "name": "HoverControl", "value": 96 },
+            { "name": "IControl", "value": 3 },
+            { "name": "PanZoomControl", "value": 22 },
+            { "name": "SelectionControl", "value": 62 },
+            { "name": "TooltipControl", "value": 35 }
+          ],
+          "value": 43.54545454545455
+        },
+        {
+          "name": "data",
+          "children": [
+            { "name": "Data", "value": 44 },
+            { "name": "DataList", "value": 78 },
+            { "name": "DataSprite", "value": 39 },
+            { "name": "EdgeSprite", "value": 1 },
+            { "name": "NodeSprite", "value": 32 },
+            {
+              "name": "render",
+              "children": [
+                { "name": "ArrowType", "value": 8 },
+                { "name": "EdgeRenderer", "value": 69 },
+                { "name": "IRenderer", "value": 3 },
+                { "name": "ShapeRenderer", "value": 47 }
+              ],
+              "value": 31.75
+            },
+            { "name": "ScaleBinding", "value": 75 },
+            { "name": "Tree", "value": 47 },
+            { "name": "TreeBuilder", "value": 30 }
+          ],
+          "value": 17.770833333333332
+        },
+        {
+          "name": "events",
+          "children": [
+            { "name": "DataEvent", "value": 13 },
+            { "name": "SelectionEvent", "value": 80 },
+            { "name": "TooltipEvent", "value": 1 },
+            { "name": "VisualizationEvent", "value": 17 }
+          ],
+          "value": 27.75
+        },
+        {
+          "name": "legend",
+          "children": [
+            { "name": "Legend", "value": 59 },
+            { "name": "LegendItem", "value": 14 },
+            { "name": "LegendRange", "value": 30 }
+          ],
+          "value": 34.333333333333336
+        },
+        {
+          "name": "operator",
+          "children": [
+            {
+              "name": "distortion",
+              "children": [
+                { "name": "BifocalDistortion", "value": 61 },
+                { "name": "Distortion", "value": 14 },
+                { "name": "FisheyeDistortion", "value": 44 }
+              ],
+              "value": 39.666666666666664
+            },
+            {
+              "name": "encoder",
+              "children": [
+                { "name": "ColorEncoder", "value": 79 },
+                { "name": "Encoder", "value": 60 },
+                { "name": "PropertyEncoder", "value": 38 },
+                { "name": "ShapeEncoder", "value": 90 },
+                { "name": "SizeEncoder", "value": 30 }
+              ],
+              "value": 59.4
+            },
+            {
+              "name": "filter",
+              "children": [
+                { "name": "FisheyeTreeFilter", "value": 19 },
+                { "name": "GraphDistanceFilter", "value": 65 },
+                { "name": "VisibilityFilter", "value": 9 }
+              ],
+              "value": 31
+            },
+            { "name": "IOperator", "value": 86 },
+            {
+              "name": "label",
+              "children": [
+                { "name": "Labeler", "value": 56 },
+                { "name": "RadialLabeler", "value": 99 },
+                { "name": "StackedAreaLabeler", "value": 2 }
+              ],
+              "value": 52.333333333333336
+            },
+            {
+              "name": "layout",
+              "children": [
+                { "name": "AxisLayout", "value": 25 },
+                { "name": "BundledEdgeRouter", "value": 27 },
+                { "name": "CircleLayout", "value": 17 },
+                { "name": "CirclePackingLayout", "value": 3 },
+                { "name": "DendrogramLayout", "value": 53 },
+                { "name": "ForceDirectedLayout", "value": 11 },
+                { "name": "IcicleTreeLayout", "value": 64 },
+                { "name": "IndentedTreeLayout", "value": 74 },
+                { "name": "Layout", "value": 81 },
+                { "name": "NodeLinkTreeLayout", "value": 70 },
+                { "name": "PieLayout", "value": 28 },
+                { "name": "RadialTreeLayout", "value": 48 },
+                { "name": "RandomLayout", "value": 0 },
+                { "name": "StackedAreaLayout", "value": 40 },
+                { "name": "TreeMapLayout", "value": 91 }
+              ],
+              "value": 42.13333333333333
+            },
+            { "name": "Operator", "value": 90 },
+            { "name": "OperatorList", "value": 48 },
+            { "name": "OperatorSequence", "value": 90 },
+            { "name": "OperatorSwitch", "value": 81 },
+            { "name": "SortOperator", "value": 23 }
+          ],
+          "value": 30.437171717171715
+        },
+        { "name": "Visualization", "value": 40 }
+      ],
+      "value": 6.1095736586645675
+    }
+  ]
+}

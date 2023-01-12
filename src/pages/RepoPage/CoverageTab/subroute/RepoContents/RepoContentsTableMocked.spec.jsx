@@ -1,16 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useRepoContents, useRepoOverview } from 'services/repo'
+import { useRepoBranchContents, useRepoOverview } from 'services/repo'
+import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Progress from 'ui/Progress'
 
-import useRepoContentsTable from './hooks'
 import RepoContentsTable from './RepoContentsTable'
 
 jest.mock('services/repo')
-jest.mock('./hooks')
+jest.mock('shared/ContentsTable/useRepoBranchContentsTable')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(() => {}),
@@ -26,7 +26,7 @@ const repoContents = [
 ]
 
 const useRepoOverviewMock = {
-  paginatedData: {
+  data: {
     defaultBranch: 'default-branch',
     private: true,
   },
@@ -88,12 +88,12 @@ describe('RepoContentsTableMocked', () => {
   const path = 'src/flags'
 
   function setup({
-    paginatedData = repoContents,
+    data = repoContents,
     isSearching = false,
     hasNextPage = true,
   } = {}) {
-    useRepoContents.mockReturnValue({
-      paginatedData,
+    useRepoBranchContents.mockReturnValue({
+      data,
       isLoading: false,
     })
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
@@ -105,9 +105,9 @@ describe('RepoContentsTableMocked', () => {
       path,
     })
 
-    useRepoContentsTable.mockReturnValue({
-      paginatedData: createTable({
-        tableData: paginatedData,
+    useRepoBranchContentsTable.mockReturnValue({
+      data: createTable({
+        tableData: data,
         branch,
         path,
         isSearching,
@@ -150,18 +150,6 @@ describe('RepoContentsTableMocked', () => {
     })
   })
 
-  describe('when clicking on more data', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('calls handlePaginationClick', async () => {
-      expect(screen.getByText(/Load More/)).toBeInTheDocument()
-      screen.getByText(/Load More/).click()
-      await waitFor(() => expect(handlePaginationClick).toHaveBeenCalled())
-    })
-  })
-
   describe('when searching', () => {
     it('renders path in the table', () => {
       setup({ isSearching: true })
@@ -170,7 +158,7 @@ describe('RepoContentsTableMocked', () => {
 
     describe('when there are no results', () => {
       it('shows correct empty state message', () => {
-        setup({ paginatedData: [], isSearching: true })
+        setup({ data: [], isSearching: true })
         expect(screen.getByText(/No results found/)).toBeInTheDocument()
       })
     })

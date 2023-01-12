@@ -1,3 +1,4 @@
+import isNumber from 'lodash/isNumber'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -18,9 +19,11 @@ export function getPullDataForCompareSummary({
     }
   }
 
+  const rawPatch = compareWithBase?.patchTotals?.percentCovered
+
   return {
     headCoverage: head?.totals?.percentCovered,
-    patchCoverage: compareWithBase?.patchTotals?.percentCovered * 100,
+    patchCoverage: isNumber(rawPatch) ? rawPatch : Number.NaN,
     changeCoverage: compareWithBase?.changeWithParent,
     hasDifferentNumberOfHeadAndBaseReports:
       compareWithBase?.hasDifferentNumberOfHeadAndBaseReports,

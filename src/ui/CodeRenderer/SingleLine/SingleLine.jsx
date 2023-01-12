@@ -8,6 +8,7 @@ import {
   LINE_TYPE,
   lineStateToLabel,
 } from 'shared/utils/fileviewer'
+import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
 function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
   const lineState = getLineState({ coverage })
@@ -24,9 +25,14 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
         {number}
       </td>
       <td className={cs('pl-2 break-all', classNamePerLineContent[lineState])}>
-        {line.map((token, key) => (
-          <span key={key} {...getTokenProps({ token, key })} />
-        ))}
+        <div className="flex items-center justify-between">
+          <div>
+            {line.map((token, key) => (
+              <span key={key} {...getTokenProps({ token, key })} />
+            ))}
+          </div>
+          <CoverageSelectIcon coverage={lineState} />
+        </div>
       </td>
     </tr>
   )

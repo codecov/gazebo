@@ -12,8 +12,6 @@ import BaseLayout from 'layouts/BaseLayout'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
 
-// Not lazy loading because the page is very small and is accessed often
-
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
@@ -38,7 +36,6 @@ const queryClient = new QueryClient({
   },
 })
 
-// eslint-disable-next-line complexity
 function App() {
   useUTM()
 
@@ -89,26 +86,26 @@ function App() {
               <PlanPage />
             </BaseLayout>
           </SentryRoute>
-          <SentryRoute path="/:provider/+" exact>
+          <SentryRoute path="/:provider/" exact>
             <BaseLayout>
               <HomePage />
             </BaseLayout>
           </SentryRoute>
-          <SentryRoute path="/:provider/" exact>
-            <BaseLayout>
-              <HomePage active={true} />
-            </BaseLayout>
-          </SentryRoute>
+          <Redirect
+            from="/:provider/+"
+            exact
+            to="/:provider\?repoDisplay=Inactive"
+          />
           <SentryRoute path="/:provider/:owner/" exact>
-            <BaseLayout>
-              <OwnerPage active={true} />
-            </BaseLayout>
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/+" exact>
             <BaseLayout>
               <OwnerPage />
             </BaseLayout>
           </SentryRoute>
+          <Redirect
+            from="/:provider/:owner/+"
+            exact
+            to="/:provider/:owner\?repoDisplay=Inactive"
+          />
           <Redirect
             from="/:provider/:owner/:repo/compare/*"
             to="/:provider/:owner/:repo/pull/*"
