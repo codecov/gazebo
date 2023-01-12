@@ -10,7 +10,7 @@ const orderingDirection = Object.freeze({
   asc: 'ASC',
 })
 
-const orderingParameter = Object.freeze({
+export const orderingParameter = Object.freeze({
   name: 'FILE_NAME',
   change: 'CHANGE_COVERAGE',
   patch: 'PATCH_COVERAGE',

@@ -5,7 +5,10 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
-import { useImpactedFilesTable } from './useImpactedFilesTable'
+import {
+  orderingParameter,
+  useImpactedFilesTable,
+} from './useImpactedFilesTable'
 
 const mockImpactedFiles = [
   {
@@ -22,6 +25,7 @@ const mockImpactedFiles = [
     patchCoverage: {
       percentCovered: 27.43,
     },
+    missesInComparison: 3,
   },
   {
     isCriticalFile: true,
@@ -37,6 +41,7 @@ const mockImpactedFiles = [
     patchCoverage: {
       percentCovered: 48.23,
     },
+    missesInComparison: 7,
   },
 ]
 
@@ -219,7 +224,7 @@ describe('useImpactedFilesTable', () => {
       expect(callsHandleSort).toBeCalledTimes(1)
       expect(callsHandleSort).toHaveBeenNthCalledWith(1, {
         direction: 'DESC',
-        parameter: 'PATCH_COVERAGE_MISSES',
+        parameter: orderingParameter.missesInComparison,
       })
 
       act(() => {
