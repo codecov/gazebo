@@ -65,16 +65,16 @@ function RepoContentsTable() {
   return (
     <>
       <ContentsTableHeader>
-        <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
-        <FileBreadcrumb />
-        <div className="col-span-2 lg:col-span-4 2xl:col-span-6 sm:col-start-3 lg:col-start-5 2xl:col-start-8">
-          <SearchField
-            dataMarketing="files-search"
-            placeholder="Search for files"
-            searchValue={params?.search}
-            setSearchValue={(search) => updateParams({ search })}
-          />
+        <div className="flex gap-4">
+          <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
+          <FileBreadcrumb />
         </div>
+        <SearchField
+          dataMarketing="files-search"
+          placeholder="Search for files"
+          searchValue={params?.search}
+          setSearchValue={(search) => updateParams({ search })}
+        />
       </ContentsTableHeader>
       <Table
         data={data}
