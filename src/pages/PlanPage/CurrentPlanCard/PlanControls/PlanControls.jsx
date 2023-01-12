@@ -4,10 +4,13 @@ import A from 'ui/A'
 
 import ActionsBilling from '../ActionsBilling'
 
+const INVOICED_CUSTOMER = 'send_invoice'
 function PlanControls({ accountDetails }) {
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const isInvoicedCustomer =
+    accountDetails?.subscriptionDetail?.collectionMethod === INVOICED_CUSTOMER
 
-  if (isEnterprisePlan(plan?.value)) {
+  if (isEnterprisePlan(plan?.value) || isInvoicedCustomer) {
     return (
       <div className="items-center mt-1 text-ds-gray-quinary">
         To change or cancel your plan please contact{' '}

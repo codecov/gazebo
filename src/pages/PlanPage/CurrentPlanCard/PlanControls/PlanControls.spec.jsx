@@ -9,29 +9,22 @@ jest.mock('react-router-dom', () => ({
 }))
 
 describe('PlanPricing', () => {
-  function setup(value) {
-    const accountDetails = {
-      plan: {
-        marketingName: 'Team Name',
-        baseUnitPrice: 12,
-        benefits: [],
-        quantity: 5,
-        value,
-      },
-      activatedUserCount: 2,
-    }
-    render(<PlanControls accountDetails={accountDetails} />, {
-      wrapper: MemoryRouter,
-    })
-  }
-
   describe('user is on an enterprise plan', () => {
     describe('user is on a monthly plan', () => {
-      beforeEach(() => {
-        setup('users-enterprisem')
-      })
-
       it('renders contact message', () => {
+        const accountDetails = {
+          plan: {
+            marketingName: 'Team Name',
+            baseUnitPrice: 12,
+            benefits: [],
+            quantity: 5,
+            value: 'users-enterprisem',
+          },
+          activatedUserCount: 2,
+        }
+        render(<PlanControls accountDetails={accountDetails} />, {
+          wrapper: MemoryRouter,
+        })
         expect(
           screen.getByText('To change or cancel your plan please contact')
         ).toBeInTheDocument()
@@ -39,11 +32,44 @@ describe('PlanPricing', () => {
     })
 
     describe('user is on a yearly plan', () => {
-      beforeEach(() => {
-        setup('users-enterprisey')
-      })
-
       it('renders contact message', () => {
+        const accountDetails = {
+          plan: {
+            marketingName: 'Team Name',
+            baseUnitPrice: 12,
+            benefits: [],
+            quantity: 5,
+            value: 'users-enterprisey',
+          },
+          activatedUserCount: 2,
+        }
+        render(<PlanControls accountDetails={accountDetails} />, {
+          wrapper: MemoryRouter,
+        })
+        expect(
+          screen.getByText('To change or cancel your plan please contact')
+        ).toBeInTheDocument()
+      })
+    })
+
+    describe('user is an invoiced customer', () => {
+      it('renders contact message', () => {
+        const accountDetails = {
+          plan: {
+            marketingName: 'Team Name',
+            baseUnitPrice: 12,
+            benefits: [],
+            quantity: 5,
+            value: 'users-basic',
+          },
+          activatedUserCount: 2,
+          subscriptionDetail: {
+            collectionMethod: 'send_invoice',
+          },
+        }
+        render(<PlanControls accountDetails={accountDetails} />, {
+          wrapper: MemoryRouter,
+        })
         expect(
           screen.getByText('To change or cancel your plan please contact')
         ).toBeInTheDocument()
