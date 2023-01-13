@@ -119,7 +119,10 @@ function _renderBody({ table, columnsWidth, renderSubComponent, enableHover }) {
                         key={uniqueId(`cell_${cell.id}_`)}
                         className={cs(
                           TableClasses.tableCell,
-                          columnsWidth[cell.column.columnDef.accessorKey]
+                          columnsWidth[cell.column.columnDef.accessorKey],
+                          {
+                            pointer: enableHover,
+                          }
                         )}
                       >
                         {flexRender(
@@ -188,7 +191,7 @@ const Table = memo(function ({
   )
 
   return (
-    <table className="flex flex-col">
+    <table className="flex-1 flex flex-col">
       {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
       {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
     </table>
