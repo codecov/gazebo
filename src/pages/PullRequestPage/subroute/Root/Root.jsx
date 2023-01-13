@@ -50,7 +50,7 @@ const Root = () => {
           pullBaseCoverage: data?.pullBaseCoverage,
           pullPatchCoverage: data?.pullPatchCoverage,
         }) ? (
-        <>
+        <div className="mt-4">
           <p>
             Everything is accounted for! No changes detected that need to be
             reviewed.
@@ -65,7 +65,7 @@ const Root = () => {
               Files that have missing coverage data that once were tracked.
             </li>
           </ul>
-        </>
+        </div>
       ) : (
         // No impacted files nor head, patch or change coverage
         <p>No Files covered by tests were changed</p>

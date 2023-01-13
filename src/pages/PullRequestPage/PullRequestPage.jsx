@@ -70,7 +70,7 @@ function PullRequestPage() {
             'lg:grid-cols-2': pullPageTabs,
           })}
         >
-          <article className="col-span-2 flex flex-col">
+          <article className="col-span-2 flex flex-col gap-3 md:gap-0">
             <TabNavigation
               tabs={[
                 {
