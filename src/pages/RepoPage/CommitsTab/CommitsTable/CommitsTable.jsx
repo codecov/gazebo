@@ -24,7 +24,7 @@ const headers = [
     id: 'ciStatus',
     header: 'CI status',
     accessorKey: 'ciStatus',
-    width: 'w-2/12 lg:w-1/12 justify-end',
+    width: 'w-2/12 lg:w-1/12',
     cell: (info) => info.getValue(),
     justifyStart: true,
   },

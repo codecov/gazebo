@@ -13,9 +13,9 @@ import Icon from 'ui/Icon'
 
 const TableClasses = {
   headerCell:
-    'py-2 text-sm flex grow font-semibold px-3.5 text-ds-gray-quinary gap-1 items-center whitespace-nowrap',
-  headerRow: 'flex text-left border-t border-b border-ds-black-secondary',
-  tableRow: 'flex border-t border-ds-black-secondary',
+    'flex grow !font-sans font-semibold py-2 text-sm px-0 sm:px-3.5 text-ds-gray-quinary gap-1 items-center whitespace-nowrap',
+  headerRow: 'flex gap-2 text-left border-t border-b border-ds-black-secondary',
+  tableRow: 'flex gap-2 border-t border-ds-black-secondary',
   tableCell:
     'py-3 items-center flex sm:px-4 text-ds-gray-octonary text-sm last:justify-end gap-1',
 }
@@ -100,7 +100,7 @@ function _renderHead({ table, columnsWidth, onSort, colJustifyStart }) {
 function _renderBody({ table, columnsWidth, renderSubComponent, enableHover }) {
   // Apply the table body props
   return (
-    <tbody className="font-lato" data-testid="body-row">
+    <tbody data-testid="body-row">
       {
         // Loop over the table rows
         table.getRowModel().rows.map((row) => {
@@ -188,7 +188,7 @@ const Table = memo(function ({
   )
 
   return (
-    <table className="flex flex-col mx-4 sm:mx-0">
+    <table className="flex flex-col">
       {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
       {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
     </table>
