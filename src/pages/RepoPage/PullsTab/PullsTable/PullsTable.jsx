@@ -41,8 +41,8 @@ const headers = [
         Change from <span className="font-light ml-1">BASE</span>
       </>
     ),
-    accessorKey: 'change justify-end',
-    width: 'w-3/12',
+    accessorKey: 'change',
+    width: 'w-3/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
