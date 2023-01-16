@@ -156,11 +156,19 @@ const getQueryFilters = ({ params, sortBy }) => {
   }
 }
 
+function defaultSortBy(params) {
+  if (params?.displayType === displayTypeParameter.list.toLowerCase()) {
+    return [{ id: 'misses', desc: true }]
+  }
+
+  return [{ id: 'name', desc: true }]
+}
+
 export function useRepoBranchContentsTable() {
   const { provider, owner, repo, path, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useTreePaths()
-  const [sortBy, setSortBy] = useState([])
+  const [sortBy, setSortBy] = useState(() => defaultSortBy(params))
 
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
@@ -201,7 +209,7 @@ export function useRepoBranchContentsTable() {
 
   const handleSort = useCallback(
     (tableSortBy) => {
-      if (!isEqual(sortBy, tableSortBy)) {
+      if (tableSortBy.length > 0 && !isEqual(sortBy, tableSortBy)) {
         setSortBy(tableSortBy)
       }
     },

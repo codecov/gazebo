@@ -80,7 +80,6 @@ function RepoContentsTable() {
         data={data}
         columns={headers}
         onSort={handleSort}
-        defaultSort={[{ id: 'lines', desc: true }]}
         enableHover={true}
       />
       <Loader isLoading={isLoading} />
