@@ -8,14 +8,14 @@ import {
 import TabNavigation from 'ui/TabNavigation'
 
 function CommitPageTabs({ commitSHA }) {
-  const location = useLocation()
+  const { pathname } = useLocation()
   const { provider, owner, repo } = useParams()
 
-  const blobPath = location.pathname.includes(
+  const blobPath = pathname.includes(
     `/${provider}/${commitFileviewString({ owner, repo, commitSHA })}`
   )
 
-  const filePath = location.pathname.includes(
+  const filePath = pathname.includes(
     `/${provider}/${commitTreeviewString({ owner, repo, commitSHA })}`
   )
 
