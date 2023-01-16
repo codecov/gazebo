@@ -7,7 +7,7 @@ import { FileComparisonWithBase } from './fragments'
 import { transformImpactedFileData } from './utils'
 
 const query = `
-  query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!) {
+  query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!, $filters: SegmentsFilters) {
     owner(username: $owner) {
       repository(name: $repo) {
         pull(id: $pullId) {
@@ -19,13 +19,13 @@ const query = `
   ${FileComparisonWithBase}
 `
 
-export function usePrefetchSingleFileComp({ path }) {
+export function usePrefetchSingleFileComp({ path, filters = {} }) {
   const { provider, owner, repo, pullId } = useParams()
   const queryClient = useQueryClient()
 
   const runPrefetch = async () =>
     await queryClient.prefetchQuery(
-      ['ImpactedFileComparison', provider, owner, repo, pullId, path],
+      ['ImpactedFileComparison', provider, owner, repo, pullId, path, filters],
       ({ signal }) =>
         Api.graphql({
           provider,
@@ -38,6 +38,7 @@ export function usePrefetchSingleFileComp({ path }) {
             repo,
             pullId: parseInt(pullId, 10),
             path,
+            filters,
           },
         }).then((res) =>
           transformImpactedFileData(

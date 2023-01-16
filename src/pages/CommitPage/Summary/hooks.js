@@ -12,7 +12,7 @@ export function getCommitDataForSummary({
   commitid,
 }) {
   const rawPatch = compareWithParent?.patchTotals?.coverage
-  const patchCoverage = isNumber(rawPatch) ? rawPatch * 100 : Number.NaN
+  const patchCoverage = isNumber(rawPatch) ? rawPatch : Number.NaN
   const headCoverage = totals?.coverage
   const parentCoverage = parent?.totals?.coverage
 

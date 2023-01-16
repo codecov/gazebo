@@ -36,21 +36,21 @@ const headers = [
       </>
     ),
     accessorKey: 'coverage',
-    width: 'w-2/12 lg:w-3/12',
+    width: 'w-2/12 lg:w-3/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'patch',
     header: 'Patch %',
     accessorKey: 'patch',
-    width: 'w-2/12 xl:w-1/12',
+    width: 'w-2/12 xl:w-1/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
     header: 'Change',
     accessorKey: 'change',
-    width: 'w-2/12 xl:w-1/12',
+    width: 'w-2/12 xl:w-1/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -81,7 +81,7 @@ function transformPullToTable(commits) {
       } = commit
       const change = totals?.coverage - parent?.totals?.coverage
       const patchValue = compareWithParent?.patchTotals?.coverage
-        ? compareWithParent?.patchTotals?.coverage * 100
+        ? compareWithParent?.patchTotals?.coverage
         : Number.NaN
 
       return {
@@ -100,25 +100,13 @@ function transformPullToTable(commits) {
             ciPassed={ciPassed}
           />
         ),
-        coverage: (
-          <span className="font-lato w-full">
-            <Coverage totals={totals} />
-          </span>
-        ),
+        coverage: <Coverage totals={totals} />,
         /*
             The container div fot TotalsNumber is added due to the current state of table cells styling,
             shouldn't be necessary in the future if fixed/updated
         */
-        patch: (
-          <div className="w-full flex justify-end">
-            <TotalsNumber value={patchValue} data-testid="patch-value" />
-          </div>
-        ),
-        change: (
-          <div className="w-full flex justify-end">
-            <TotalsNumber value={change} showChange />
-          </div>
-        ),
+        patch: <TotalsNumber value={patchValue} data-testid="patch-value" />,
+        change: <TotalsNumber value={change} showChange />,
       }
     })
   }
@@ -135,7 +123,7 @@ const Loader = () => {
 }
 
 function CommitsTable({ branch, paramCIStatus }) {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo, pullId } = useParams()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommits({
@@ -145,6 +133,7 @@ function CommitsTable({ branch, paramCIStatus }) {
       filters: {
         hideFailedCI: paramCIStatus,
         branchName: branch,
+        pullId: +pullId,
       },
       opts: { suspense: false },
     })

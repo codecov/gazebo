@@ -16,6 +16,6 @@ const Template = () => {
 export const DefaultCodeRendererInfoRow = Template.bind({})
 
 export default {
-  title: 'Components/CodeRendererInfoRow',
+  title: 'Components/CodeRenderer/CodeRendererInfoRow',
   component: CodeRendererInfoRow,
 }

@@ -1,8 +1,8 @@
+/* */
 import PropTypes from 'prop-types'
 import { Suspense, useContext } from 'react'
-import { useHistory } from 'react-router-dom'
 
-import { useLocationParams, useNavLinks } from 'services/navigation'
+import { useLocationParams } from 'services/navigation'
 import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
 import { ActiveContext } from 'shared/context'
 import Spinner from 'ui/Spinner'
@@ -14,20 +14,24 @@ const defaultQueryParams = {
   search: '',
   ordering: orderingOptions[0]['ordering'],
   direction: orderingOptions[0]['direction'],
+  repoDisplay: 'All',
 }
+
+export const repoDisplayOptions = Object.freeze({
+  ACTIVE: { text: 'Active', status: true },
+  INACTIVE: { text: 'Inactive', status: false },
+  ALL: { text: 'All', status: null },
+})
 
 function ListRepo({ owner, canRefetch }) {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const { push } = useHistory()
-  const {
-    owner: ownerLink,
-    ownerAddRepo,
-    provider: providerLink,
-    providerAddRepo,
-  } = useNavLinks()
 
-  const active = useContext(ActiveContext)
-  const orderOptions = active ? orderingOptions : nonActiveOrderingOptions
+  const repoDisplay = useContext(ActiveContext)
+
+  const orderOptions =
+    repoDisplay === repoDisplayOptions.INACTIVE.text
+      ? nonActiveOrderingOptions
+      : orderingOptions
 
   const sortItem =
     orderOptions.find(
@@ -42,22 +46,6 @@ function ListRepo({ owner, canRefetch }) {
     </div>
   )
 
-  function handleOwnerLinks(active) {
-    if (active) {
-      push(ownerLink.path())
-    } else {
-      push(ownerAddRepo.path())
-    }
-  }
-
-  function handleUserLinks(active) {
-    if (active) {
-      push(providerLink.path())
-    } else {
-      push(providerAddRepo.path())
-    }
-  }
-
   return (
     <>
       <OrgControlTable
@@ -69,14 +57,12 @@ function ListRepo({ owner, canRefetch }) {
             direction: sort.direction,
           })
         }}
-        active={active}
-        setActive={(active) => {
-          if (owner) {
-            handleOwnerLinks(active)
-          } else {
-            handleUserLinks(active)
-          }
-        }}
+        repoDisplay={repoDisplay}
+        setRepoDisplay={(repoDisplay) =>
+          updateParams({
+            repoDisplay,
+          })
+        }
         setSearchValue={(search) => {
           updateParams({ search })
         }}

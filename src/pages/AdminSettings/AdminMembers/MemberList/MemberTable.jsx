@@ -53,17 +53,15 @@ const createTable = ({ tableData, mutate, disableToggle }) =>
           type: <p>{isAdmin ? 'Admin' : 'Developer'}</p>,
           email: <p>{email}</p>,
           activationStatus: (
-            <div className="flex flex-row-reverse grow">
-              <Toggle
-                dataMarketing="handle-members-activation"
-                label={activated ? 'Activated' : 'Non-Active'}
-                value={activated}
-                onClick={() => {
-                  mutate({ ownerid, activated: !activated })
-                }}
-                disabled={!activated && disableToggle}
-              />
-            </div>
+            <Toggle
+              dataMarketing="handle-members-activation"
+              label={activated ? 'Activated' : 'Non-Active'}
+              value={activated}
+              onClick={() => {
+                mutate({ ownerid, activated: !activated })
+              }}
+              disabled={!activated && disableToggle}
+            />
           ),
         })
       )

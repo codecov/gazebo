@@ -13,12 +13,11 @@ import Icon from 'ui/Icon'
 
 const TableClasses = {
   headerCell:
-    'py-2 text-sm flex font-semibold px-3.5 text-ds-gray-quinary gap-1 items-center',
-  headerRow:
-    'flex flex-row text-left border-t border-b border-ds-black-secondary',
-  tableRow: 'flex flex-row border-t border-ds-black-secondary',
+    'flex grow !font-sans font-semibold py-2 text-sm px-0 sm:px-3.5 text-ds-gray-quinary gap-1 items-center whitespace-nowrap',
+  headerRow: 'flex gap-2 text-left border-t border-b border-ds-black-secondary',
+  tableRow: 'flex gap-2 border-t border-ds-black-secondary',
   tableCell:
-    'py-3 items-center flex pr-2 sm:px-4 text-ds-gray-octonary text-sm',
+    'py-3 items-center flex sm:px-4 text-ds-gray-octonary text-sm last:justify-end gap-1',
 }
 
 function _renderHeadColumn({ colJustifyStart, header }) {
@@ -74,22 +73,19 @@ function _renderHead({ table, columnsWidth, onSort, colJustifyStart }) {
                     key={key}
                     className={cs(
                       TableClasses.headerCell,
-                      columnsWidth[header.id]
-                    )}
-                  >
-                    <div
-                      className={cs('flex flex-row grow', {
+                      columnsWidth[header.id],
+                      {
                         'gap-1 items-center cursor-pointer select-none':
                           !!onSort,
                         'justify-start': colJustifyStart[header.id],
                         'justify-end': !colJustifyStart[header.id],
-                      })}
-                      {...(!!onSort && {
-                        onClick: header.column.getToggleSortingHandler(),
-                      })}
-                    >
-                      {_renderHeadColumn({ colJustifyStart, header })}
-                    </div>
+                      }
+                    )}
+                    {...(!!onSort && {
+                      onClick: header.column.getToggleSortingHandler(),
+                    })}
+                  >
+                    {_renderHeadColumn({ colJustifyStart, header })}
                   </th>
                 )
               })
@@ -123,7 +119,10 @@ function _renderBody({ table, columnsWidth, renderSubComponent, enableHover }) {
                         key={uniqueId(`cell_${cell.id}_`)}
                         className={cs(
                           TableClasses.tableCell,
-                          columnsWidth[cell.column.columnDef.accessorKey]
+                          columnsWidth[cell.column.columnDef.accessorKey],
+                          {
+                            pointer: enableHover,
+                          }
                         )}
                       >
                         {flexRender(
@@ -192,12 +191,10 @@ const Table = memo(function ({
   )
 
   return (
-    <div className="overflow-x-auto">
-      <table className="flex flex-col mx-4 sm:mx-0 overflow-x-auto">
-        {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
-        {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
-      </table>
-    </div>
+    <table className="flex-1 flex flex-col">
+      {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
+      {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
+    </table>
   )
 })
 

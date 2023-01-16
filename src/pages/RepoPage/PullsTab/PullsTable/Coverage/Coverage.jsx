@@ -22,7 +22,7 @@ PullState.propTypes = {
 
 const Coverage = ({ head, state, pullId }) =>
   typeof head?.totals?.coverage === 'number' ? (
-    <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
+    <div className="flex-1 justify-end flex flex-wrap md:flex-row md:flex-nowrap">
       <PullState state={state} />
       <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
@@ -30,12 +30,12 @@ const Coverage = ({ head, state, pullId }) =>
       <Progress amount={head?.totals?.coverage} label />
     </div>
   ) : (
-    <div className="w-full justify-end flex flex-wrap md:flex-row md:flex-nowrap">
+    <div className="flex-1 justify-end flex flex-wrap md:flex-row md:flex-nowrap">
       <PullState state={state} />
       <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
       </A>
-      <span className="text-ds-gray-quinary text-sm">
+      <span className="flex-1 text-right text-ds-gray-quinary text-sm">
         No report uploaded yet
       </span>
     </div>

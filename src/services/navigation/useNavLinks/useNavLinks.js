@@ -48,18 +48,9 @@ export function useNavLinks() {
       path: ({ provider = p } = { provider: p }) => `/${provider}`,
       isExternalLink: false,
     },
-    providerAddRepo: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}/+`,
-      isExternalLink: false,
-    },
     owner: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/${provider}/${owner}`,
-      isExternalLink: false,
-    },
-    ownerAddRepo: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}/+`,
       isExternalLink: false,
     },
     analytics: {
@@ -210,6 +201,36 @@ export function useNavLinks() {
       isExternalLink: false,
       text: 'File Viewer',
     },
+    commitTreeView: {
+      path: (
+        { provider = p, owner = o, repo = r, dirPath, commitSha } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        if (!dirPath) {
+          return `/${provider}/${owner}/${repo}/commit/${commitSha}/tree/`
+        } else {
+          return `/${provider}/${owner}/${repo}/commit/${commitSha}/tree/${dirPath}`
+        }
+      },
+      isExternalLink: false,
+      text: 'Commit Tree View',
+    },
+    commitFileView: {
+      path: (
+        { provider = p, owner = o, repo = r, filePath, commitSha } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/commit/${commitSha}/blob/${filePath}`
+      },
+      isExternalLink: false,
+      text: 'Commit File View',
+    },
     new: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -270,7 +291,7 @@ export function useNavLinks() {
           pullId: pi,
         }
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}`,
-      text: 'Pull',
+      text: 'Impacted Files',
     },
     settings: {
       path: (
@@ -357,6 +378,42 @@ export function useNavLinks() {
       text: 'Profile',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/account/${provider}/${owner}`,
+      isExternalLink: false,
+    },
+    pullIndirectChanges: {
+      text: 'Indirect changes',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirect-changes`,
+      isExternalLink: false,
+    },
+    pullCommits: {
+      text: 'Commits',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/commits`,
+      isExternalLink: false,
+    },
+    pullFlags: {
+      text: 'Flags',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/flags`,
       isExternalLink: false,
     },
   }

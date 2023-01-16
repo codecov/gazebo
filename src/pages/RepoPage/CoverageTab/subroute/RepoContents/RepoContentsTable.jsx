@@ -5,7 +5,6 @@ import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
 import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
-import Button from 'ui/Button'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
@@ -53,12 +52,10 @@ const defaultQueryParams = {
 
 function RepoContentsTable() {
   const {
-    paginatedData,
+    data,
     headers,
     handleSort,
     isSearching,
-    handlePaginationClick,
-    hasNextPage,
     isMissingHeadReport,
     isLoading,
   } = useRepoBranchContentsTable()
@@ -69,7 +66,7 @@ function RepoContentsTable() {
     <>
       <ContentsTableHeader>
         <div className="flex gap-4">
-          <DisplayTypeButton dataLength={paginatedData?.length} />
+          <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
           <FileBreadcrumb />
         </div>
         <SearchField
@@ -80,25 +77,18 @@ function RepoContentsTable() {
         />
       </ContentsTableHeader>
       <Table
-        data={paginatedData}
+        data={data}
         columns={headers}
         onSort={handleSort}
         defaultSort={[{ id: 'lines', desc: true }]}
         enableHover={true}
       />
       <Loader isLoading={isLoading} />
-      {paginatedData?.length === 0 && !isLoading && (
+      {data?.length === 0 && !isLoading && (
         <RepoContentsResult
           isSearching={isSearching}
           isMissingHeadReport={isMissingHeadReport}
         />
-      )}
-      {hasNextPage && (
-        <div className="w-full mt-4 flex justify-center">
-          <Button hook="load-more" onClick={handlePaginationClick}>
-            Load More
-          </Button>
-        </div>
       )}
     </>
   )

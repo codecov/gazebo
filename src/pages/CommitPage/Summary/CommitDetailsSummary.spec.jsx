@@ -53,7 +53,7 @@ const commit = {
   },
   compareWithParent: {
     state: 'processed',
-    patchTotals: { coverage: 0.75 },
+    patchTotals: { coverage: 75 },
     impactedFiles: [
       {
         patchCoverage: { coverage: 75 },

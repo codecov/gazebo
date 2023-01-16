@@ -1,20 +1,34 @@
 import { render, screen } from 'custom-testing-library'
 
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useHistory } from 'react-router-dom'
 
 import { ActiveContext } from 'shared/context'
 
 import NoReposBlock from './NoReposBlock'
 
+jest.mock('services/navigation', () => ({
+  ...jest.requireActual('services/navigation'),
+  useLocationParams: jest.fn(),
+}))
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: jest.fn(),
+}))
+
+const mockHistoryPush = jest.fn()
+
 describe('NoReposBlock', () => {
-  function setup({ owner, active }) {
+  function setup({ owner, repoDisplay }) {
     const props = {
       owner,
     }
+    useHistory.mockReturnValue({ push: mockHistoryPush })
+
     render(
-      <MemoryRouter>
-        <Route>
-          <ActiveContext.Provider value={active}>
+      <MemoryRouter initialEntries={['/gh/codecov/']}>
+        <Route path="/:provider/:owner">
+          <ActiveContext.Provider value={repoDisplay}>
             <NoReposBlock {...props} />
           </ActiveContext.Provider>
         </Route>
@@ -26,18 +40,32 @@ describe('NoReposBlock', () => {
     beforeEach(() => {
       setup({
         owner: 'rula',
-        active: true,
+        repoDisplay: 'Active',
       })
     })
 
-    it('renders the link select the repo', () => {
-      const link = screen.getByRole('link', { name: 'Select the repo' })
-      expect(link).toBeInTheDocument()
+    it('renders select the repo text', () => {
+      const p = screen.getByText('Select the repo')
+      expect(p).toBeInTheDocument()
+    })
+
+    it('updates the params when clicking on select the repo text', () => {
+      const p = screen.getByText('Select the repo')
+      p.click()
+
+      expect(mockHistoryPush).toBeCalledWith('/gh/codecov?repoDisplay=Inactive')
     })
 
     it('renders the button the set up link', () => {
       const buttons = screen.getAllByText(/No repos setup yet/)
       expect(buttons.length).toBe(1)
+    })
+
+    it('updates the params when clicking on View repos for setup button', () => {
+      const btn = screen.getByText('View repos for setup')
+      btn.click()
+
+      expect(mockHistoryPush).toBeCalledWith('/gh/codecov?repoDisplay=Inactive')
     })
   })
 
@@ -45,7 +73,7 @@ describe('NoReposBlock', () => {
     beforeEach(() => {
       setup({
         owner: 'rula',
-        active: false,
+        repoDisplay: 'Inactive',
       })
     })
 

@@ -31,7 +31,7 @@ Status.propTypes = {
 
 function CIStatus({ commitid, coverage, ciPassed }) {
   return (
-    <div className="w-full lg:flex flex-col gap-.5">
+    <div className="flex-1 lg:flex flex-col gap-.5 items-end">
       <A to={{ pageName: 'commit', options: { commit: commitid } }}>
         <span className="text-ds-gray-quinary font-mono">
           {commitid?.slice(0, 8)}

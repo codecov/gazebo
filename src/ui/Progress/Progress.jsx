@@ -19,7 +19,7 @@ function Progress({ amount, label, color = 'default', variant = 'default' }) {
   const totalsProps = variant === 'tall' ? { light: true } : {}
 
   return (
-    <div className="w-full items-center flex gap-4">
+    <div className="flex-1 flex items-center gap-4">
       <div
         className={cs('flex-1 bg-ds-gray-secondary', variantClasses[variant])}
       >
