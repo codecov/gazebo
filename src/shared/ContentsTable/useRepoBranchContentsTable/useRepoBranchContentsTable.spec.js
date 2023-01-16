@@ -149,7 +149,7 @@ describe('useRepoBranchContentsTable', () => {
         branch: 'main',
         filters: {
           searchValue: 'file.js',
-          ordering: { direction: 'DESC', parameter: 'NAME' },
+          ordering: { direction: 'ASC', parameter: 'NAME' },
         },
         owner: 'Rabee-AbuBaker',
         path: '',

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -156,19 +156,26 @@ const getQueryFilters = ({ params, sortBy }) => {
   }
 }
 
-function defaultSortBy(params) {
-  if (params?.displayType === displayTypeParameter.list.toLowerCase()) {
-    return [{ id: 'misses', desc: true }]
-  }
+function useTableDefaultSort() {
+  const { params } = useLocationParams()
+  const [sortBy, setSortBy] = useState([])
 
-  return [{ id: 'name', desc: true }]
+  useEffect(() => {
+    if (params?.displayType === displayTypeParameter.list.toLowerCase()) {
+      setSortBy([{ id: 'misses', desc: true }])
+    } else {
+      setSortBy([{ id: 'name', desc: false }])
+    }
+  }, [params?.displayType])
+
+  return [sortBy, setSortBy]
 }
 
 export function useRepoBranchContentsTable() {
   const { provider, owner, repo, path, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useTreePaths()
-  const [sortBy, setSortBy] = useState(() => defaultSortBy(params))
+  const [sortBy, setSortBy] = useTableDefaultSort()
 
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
@@ -213,7 +220,7 @@ export function useRepoBranchContentsTable() {
         setSortBy(tableSortBy)
       }
     },
-    [sortBy]
+    [sortBy, setSortBy]
   )
 
   return {
