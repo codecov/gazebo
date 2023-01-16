@@ -85,62 +85,111 @@ describe('useSummary', () => {
   })
 
   describe('both services have resolved', () => {
-    beforeEach(() => {
-      setup({
-        useRepoOverviewMock: {
-          data: {
-            defaultBranch: 'c3',
-            private: true,
-            branches: {
-              edges: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
+    describe('useBranches returns list of branches', () => {
+      beforeEach(() => {
+        setup({
+          useRepoOverviewMock: {
+            data: {
+              defaultBranch: 'c3',
+              private: true,
+              branches: {
+                edges: [
+                  { node: { name: 'fcg' } },
+                  { node: { name: 'imogen' } },
+                ],
+              },
+            },
+            isLoading: false,
+          },
+          useRepoCoverageMock: {
+            data: { show: 'Critical Role' },
+            isLoading: false,
+          },
+          useBranchesMock: {
+            data: {
+              branches: [
+                { node: { name: 'fcg', head: { commitid: '1' } } },
+                { node: { name: 'imogen', head: { commitid: '2' } } },
+              ],
             },
           },
-          isLoading: false,
-        },
-        useRepoCoverageMock: {
-          data: { show: 'Critical Role' },
-          isLoading: false,
-        },
-        useBranchesMock: {
-          data: {
-            branches: [
-              { node: { name: 'fcg', head: { commitid: '1' } } },
-              { node: { name: 'imogen', head: { commitid: '2' } } },
-            ],
+        })
+
+        return hookData.waitFor(() => !hookData.result.current.isLoading)
+      })
+
+      it('isLoading is correct', () => {
+        expect(hookData.result.current.isLoading).toEqual(false)
+      })
+
+      it('passes down useRepoCoverage', () => {
+        expect(hookData.result.current.data).toEqual({ show: 'Critical Role' })
+      })
+
+      it('passed down branch selector props', () => {
+        expect(hookData.result.current.branchSelectorProps).toEqual({
+          someProps: 1,
+        })
+      })
+
+      it('passed down the currentBranchSelected', () => {
+        expect(hookData.result.current.currentBranchSelected).toEqual({
+          name: 'my branch',
+          head: { commitid: '1234' },
+        })
+      })
+
+      it('passed down the defaultBranch', () => {
+        expect(hookData.result.current.defaultBranch).toEqual('c3')
+      })
+
+      it('passed down the privateRepo', () => {
+        expect(hookData.result.current.privateRepo).toEqual(true)
+      })
+
+      it('sets branchList to list of branches', () => {
+        expect(hookData.result.current.branchList).toStrictEqual({
+          branches: [
+            { node: { name: 'fcg', head: { commitid: '1' } } },
+            { node: { name: 'imogen', head: { commitid: '2' } } },
+          ],
+        })
+      })
+    })
+
+    describe('useBranches returns empty list of branches', () => {
+      beforeEach(() => {
+        setup({
+          useRepoOverviewMock: {
+            data: {
+              defaultBranch: 'c3',
+              private: true,
+              branches: {
+                edges: [
+                  { node: { name: 'fcg' } },
+                  { node: { name: 'imogen' } },
+                ],
+              },
+            },
+            isLoading: false,
           },
-        },
+          useRepoCoverageMock: {
+            data: { show: 'Critical Role' },
+            isLoading: false,
+          },
+          useBranchesMock: {
+            data: null,
+          },
+        })
+
+        return hookData.waitFor(() => !hookData.result.current.isLoading)
       })
 
-      return hookData.waitFor(() => !hookData.result.current.isLoading)
-    })
-
-    it('isLoading is correct', () => {
-      expect(hookData.result.current.isLoading).toEqual(false)
-    })
-
-    it('passes down useRepoCoverage', () => {
-      expect(hookData.result.current.data).toEqual({ show: 'Critical Role' })
-    })
-
-    it('passed down branch selector props', () => {
-      expect(hookData.result.current.branchSelectorProps).toEqual({
-        someProps: 1,
+      it('sets branchList to empty list', () => {
+        expect(hookData.result.current.branchList).toStrictEqual({
+          branches: [],
+        })
       })
-    })
-
-    it('passed down the currentBranchSelected', () => {
-      expect(hookData.result.current.currentBranchSelected).toEqual({
-        name: 'my branch',
-        head: { commitid: '1234' },
-      })
-    })
-
-    it('passed down the defaultBranch', () => {
-      expect(hookData.result.current.defaultBranch).toEqual('c3')
-    })
-
-    it('passed down the privateRepo', () => {
-      expect(hookData.result.current.privateRepo).toEqual(true)
     })
   })
 })

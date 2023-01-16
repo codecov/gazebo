@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
@@ -6,6 +7,7 @@ import { useRepoCoverage, useRepoOverview } from 'services/repo'
 import { useBranchSelector } from '../../hooks'
 
 export function useSummary() {
+  const [branchSearchTerm, setBranchSearchTerm] = useState()
   const { repo, owner, provider } = useParams()
   const { data: overview, isLoading } = useRepoOverview({
     provider,
@@ -14,16 +16,28 @@ export function useSummary() {
   })
 
   const {
-    data: branchesData,
-    isFetching: branchesIsFetching,
-    hasNextPage: branchesHasNextPage,
-    fetchNextPage: branchesFetchNextPage,
-  } = useBranches({ repo, owner, provider })
+    data: branchList,
+    isFetching: branchListIsFetching,
+    hasNextPage: branchListHasNextPage,
+    fetchNextPage: branchListFetchNextPage,
+  } = useBranches({
+    repo,
+    owner,
+    provider,
+    filters: { searchValue: branchSearchTerm },
+    opts: {
+      suspense: false,
+    },
+  })
+
+  const { data: branchesData, fetchNextPage: branchesFetchNextPage } =
+    useBranches({ repo, owner, provider })
 
   const { selection, branchSelectorProps } = useBranchSelector(
     branchesData?.branches,
     overview?.defaultBranch
   )
+
   const { data, isLoading: isLoadingRepoCoverage } = useRepoCoverage({
     provider,
     repo,
@@ -39,8 +53,11 @@ export function useSummary() {
     currentBranchSelected: selection,
     defaultBranch: overview?.defaultBranch,
     privateRepo: overview?.private,
-    branchesIsFetching,
-    branchesHasNextPage,
     branchesFetchNextPage,
+    branchList: branchList || { branches: [] },
+    branchListIsFetching,
+    branchListHasNextPage,
+    branchListFetchNextPage,
+    setBranchSearchTerm,
   }
 }
