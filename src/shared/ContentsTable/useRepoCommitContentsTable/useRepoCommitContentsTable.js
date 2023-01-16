@@ -61,19 +61,11 @@ function createTableData({
               isCriticalFile={isCriticalFile}
             />
           ),
-        lines: <div className="flex w-full justify-end font-lato">{lines}</div>,
-        misses: (
-          <div className="flex w-full justify-end font-lato">{misses}</div>
-        ),
-        hits: <div className="flex w-full justify-end font-lato">{hits}</div>,
-        partials: (
-          <div className="flex w-full justify-end font-lato">{partials}</div>
-        ),
-        coverage: (
-          <span className="font-lato w-full">
-            <CoverageEntry percentCovered={percentCovered} />
-          </span>
-        ),
+        lines: <p className="flex flex-1 justify-end">{lines}</p>,
+        misses: <p className="flex flex-1 justify-end">{misses}</p>,
+        hits: <p className="flex flex-1 justify-end">{hits}</p>,
+        partials: <p className="flex flex-1 justify-end">{partials}</p>,
+        coverage: <CoverageEntry percentCovered={percentCovered} />,
       })
     )
 

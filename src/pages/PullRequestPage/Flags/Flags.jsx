@@ -15,7 +15,7 @@ const tableColumns = [
     id: 'name',
     header: <span>Name</span>,
     accessorKey: 'name',
-    width: 'w-7/12 min-w-min',
+    width: 'w-7/12',
     cell: (info) => info.getValue(),
     justifyStart: true,
   },
@@ -23,21 +23,21 @@ const tableColumns = [
     id: 'headCoverage',
     header: <span className="w-full text-right">HEAD %</span>,
     accessorKey: 'headCoverage',
-    width: 'w-3/12 min-w-min',
+    width: 'w-3/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'patchCoverage',
     header: <span className="w-full text-right">Patch %</span>,
     accessorKey: 'patchCoverage',
-    width: 'w-28 min-w-min',
+    width: 'w-28 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'changeCoverage',
     header: <span className="w-full text-right">+/-</span>,
     accessorKey: 'changeCoverage',
-    width: 'w-28 min-w-min',
+    width: 'w-28 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -62,25 +62,15 @@ function getTableData(data) {
             {name}
           </h2>
         ),
-        headCoverage: (
-          <div className="w-full flex justify-end">
-            <TotalsNumber value={headCoverage} plain light />
-          </div>
-        ),
-        patchCoverage: (
-          <div className="w-full flex justify-end">
-            <TotalsNumber value={patchCoverage} plain light />
-          </div>
-        ),
+        headCoverage: <TotalsNumber value={headCoverage} plain light />,
+        patchCoverage: <TotalsNumber value={patchCoverage} plain light />,
         changeCoverage: (
-          <div className="w-full flex justify-end">
-            <TotalsNumber
-              value={changeCoverage}
-              showChange
-              data-testid="change-value"
-              light
-            />
-          </div>
+          <TotalsNumber
+            value={changeCoverage}
+            showChange
+            data-testid="change-value"
+            light
+          />
         ),
       }
     })

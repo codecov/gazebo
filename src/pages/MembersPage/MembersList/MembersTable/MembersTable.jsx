@@ -50,7 +50,7 @@ const columns = [
 
 function _renderUsername({ name, username, user }) {
   return (
-    <div className="flex flex-row gap-3 items-center truncate">
+    <div className="flex-1 flex flex-row gap-3 items-center truncate">
       <Avatar user={user} />
       {name || username}
     </div>
@@ -64,15 +64,13 @@ function _renderActivationStatus({
   ownerid,
 }) {
   return (
-    <div className="flex flex-row-reverse grow">
-      <Toggle
-        dataMarketing="handle-members-activation"
-        label={activated ? 'Activated' : 'Non-Active'}
-        value={activated}
-        onClick={() => handleActivate({ ownerid, activated })}
-        disabled={maxSeatsReached && !activated}
-      />
-    </div>
+    <Toggle
+      dataMarketing="handle-members-activation"
+      label={activated ? 'Activated' : 'Non-Active'}
+      value={activated}
+      onClick={() => handleActivate({ ownerid, activated })}
+      disabled={maxSeatsReached && !activated}
+    />
   )
 }
 

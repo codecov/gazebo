@@ -5,7 +5,7 @@ import Icon from 'ui/Icon'
 
 function DirEntry({ linkRef, name, path, runPrefetch }) {
   return (
-    <div className="flex gap-2" onMouseEnter={async () => await runPrefetch()}>
+    <div className="flex gap-3" onMouseEnter={async () => await runPrefetch()}>
       <A
         to={{
           pageName: 'treeView',
@@ -15,10 +15,8 @@ function DirEntry({ linkRef, name, path, runPrefetch }) {
           },
         }}
       >
-        <div className="flex gap-2 items-center">
-          <Icon name="folder" size="md" variant="solid" />
-          {name}
-        </div>
+        <Icon name="folder" size="md" variant="solid" />
+        <span className="whitespace-pre">{name}</span>
       </A>
     </div>
   )
