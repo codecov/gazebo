@@ -31,8 +31,7 @@ export function getTrendEnum(trend) {
       return Trend[key]
     }
   }
-
-  return Trend.TWELVE_MONTHS
+  return Trend.THREE_MONTHS
 }
 
 // eslint-disable-next-line complexity

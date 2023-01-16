@@ -47,7 +47,7 @@ function UpgradePlan() {
   return (
     <>
       {/* TODO: Refactor this layout to be it's own reusable component (also used in CurrentPlanCard and the CancelPlan card) */}
-      <div className="flex flex-col md:flex-row gap-8 mt-6  md:w-10/12">
+      <div className="flex flex-col md:flex-row gap-8 mt-6 md:w-11/12 lg:w-10/12">
         <Card variant="large">
           <div className="flex flex-col gap-4">
             <div className="-mt-16">
@@ -77,7 +77,7 @@ function UpgradePlan() {
             )}
           </div>
         </Card>
-        <div className="flex flex-col gap-4 w-2/3">
+        <div className="flex flex-col gap-4 md:w-2/3">
           {isFreePlan(plan?.value) && <UpgradeFreePlanBanner owner={owner} />}
           <Card variant="upgradeForm">
             <UpgradePlanForm

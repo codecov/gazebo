@@ -19,10 +19,18 @@ export const AFTER_DATE_FORMAT_OPTIONS = Object.freeze({
   LAST_7_DAYS: { days: 7 },
 })
 
+export const TIME_OPTION_VALUES = Object.freeze({
+  ALL_TIME: 'ALL_TIME',
+  LAST_6_MONTHS: 'LAST_6_MONTHS',
+  LAST_3_MONTHS: 'LAST_3_MONTHS',
+  LAST_30_DAYS: 'LAST_30_DAYS',
+  LAST_7_DAYS: 'LAST_7_DAYS',
+})
+
 export const TimeOptions = [
-  { label: 'All time', value: 'ALL_TIME' },
-  { label: 'Last 6 months', value: 'LAST_6_MONTHS' },
-  { label: 'Last 3 months', value: 'LAST_3_MONTHS' },
-  { label: 'Last 30 days', value: 'LAST_30_DAYS' },
-  { label: 'Last 7 days', value: 'LAST_7_DAYS' },
+  { label: 'All time', value: TIME_OPTION_VALUES.ALL_TIME },
+  { label: 'Last 6 months', value: TIME_OPTION_VALUES.LAST_6_MONTHS },
+  { label: 'Last 3 months', value: TIME_OPTION_VALUES.LAST_3_MONTHS },
+  { label: 'Last 30 days', value: TIME_OPTION_VALUES.LAST_30_DAYS },
+  { label: 'Last 7 days', value: TIME_OPTION_VALUES.LAST_7_DAYS },
 ]

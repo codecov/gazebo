@@ -2,14 +2,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchBranchDirEntry } from './usePrefetchBranchDirEntry'
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(),
-}))
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -56,12 +51,6 @@ const mockData = {
 
 describe('usePrefetchBranchDirEntry', () => {
   function setup() {
-    useParams.mockReturnValue({
-      provider: 'gh',
-      owner: 'codecov',
-      repo: 'test-repo',
-    })
-
     server.use(
       graphql.query('BranchContents', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))

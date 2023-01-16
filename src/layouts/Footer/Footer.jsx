@@ -12,23 +12,25 @@ function Footer() {
   })
 
   const year = new Date().getUTCFullYear()
-  const version = config.IS_SELF_HOSTED
+  const buildModeLeftMenu = config.IS_SELF_HOSTED
     ? [{ text: config?.CODECOV_VERSION }]
     : []
+
   const leftMenu = [
     { text: `© ${year} Codecov` },
-    ...version,
+    ...buildModeLeftMenu,
     { to: { pageName: 'terms' } },
     { to: { pageName: 'privacy' } },
     { to: { pageName: 'security' } },
     { to: { pageName: 'gdpr' } },
   ]
 
-  const pricing = !config.IS_SELF_HOSTED
-    ? [{ to: { pageName: 'pricing' } }]
-    : []
+  const buildModeRightMenu = config.IS_SELF_HOSTED
+    ? [{ to: { pageName: 'selfHostedLicensing' } }]
+    : [{ to: { pageName: 'pricing' } }]
+
   const rightMenu = [
-    ...pricing,
+    ...buildModeRightMenu,
     { to: { pageName: 'support' } },
     { to: { pageName: 'docs' } },
     { to: { pageName: 'enterprise' } },

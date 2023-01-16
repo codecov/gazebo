@@ -1,86 +1,138 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import useIntersection from 'react-use/lib/useIntersection'
 
 import { useImage } from 'services/image'
-import { useMyContexts } from 'services/user'
 
 import MyContextSwitcher from './MyContextSwitcher'
 
 jest.mock('services/image')
-jest.mock('services/user')
+jest.mock('react-use/lib/useIntersection')
 
-const currentUser = {
-  username: 'dorianamouroux',
-  avatarUrl: 'https://github.com/dorianamouroux.png?size=40',
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const org1 = {
+  username: 'codecov',
+  avatarUrl: 'https://github.com/codecov.png?size=40',
 }
-const myOrganizations = [
-  {
-    username: 'spotify',
-    avatarUrl: 'https://github.com/spotify.png?size=40',
-  },
-  {
-    username: 'codecov',
-    avatarUrl: 'https://github.com/codecov.png?size=40',
-  },
-]
+
+const org2 = {
+  username: 'spotify',
+  avatarUrl: 'https://github.com/spotify.png?size=40',
+}
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gl']}>
+      <Route path="/:provider" exact>
+        {children}
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => server.listen())
+
+afterEach(() => {
+  queryClient.clear()
+  server.restoreHandlers()
+})
+
+afterAll(() => server.close())
 
 describe('MyContextSwitcher', () => {
-  let wrapper
-
-  const defaultProps = {
-    activeContext: null,
-    pageName: 'accountPage',
-  }
-
-  function setup(over = {}, myContexts) {
+  function setup(noData = false) {
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
-    useMyContexts.mockReturnValue({
-      data: myContexts,
-    })
-    const props = {
-      ...defaultProps,
-      ...over,
-    }
-    wrapper = render(<MyContextSwitcher {...props} />, {
-      wrapper: ({ children }) => (
-        <MemoryRouter initialEntries={['/gh']}>
-          <Route path="/:provider" exact>
-            {children}
-          </Route>
-        </MemoryRouter>
-      ),
-    })
+    server.use(
+      graphql.query('MyContexts', (req, res, ctx) => {
+        if (noData) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+
+        const orgList = !!req.variables?.after ? org2 : org1
+        const hasNextPage = req.variables?.after ? false : true
+        const endCursor = req.variables?.after ? 'second' : 'first'
+
+        const queryData = {
+          me: {
+            owner: {
+              username: 'cool-user',
+              avatarUrl: '',
+            },
+            myOrganizations: {
+              edges: [{ node: orgList }],
+              pageInfo: {
+                hasNextPage,
+                endCursor,
+              },
+            },
+          },
+        }
+
+        return res(ctx.status(200), ctx.data(queryData))
+      })
+    )
   }
 
   describe('when there are no contexts (user not logged in)', () => {
     beforeEach(() => {
-      setup()
+      setup(true)
     })
 
-    it('renders nothing', () => {
-      expect(wrapper.container).toBeEmptyDOMElement()
+    it('renders nothing', async () => {
+      const { container } = render(
+        <MyContextSwitcher activeContext={null} pageName="accountPage" />,
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => expect(container).toBeEmptyDOMElement())
     })
   })
 
   describe('when the user has some contexts and activeContext is passed to an organization', () => {
     beforeEach(() => {
-      setup(
-        {
-          activeContext: 'codecov',
-        },
-        {
-          currentUser,
-          myOrganizations,
-        }
-      )
+      setup()
     })
 
-    it('renders the button with the organization', () => {
-      expect(
-        screen.getByRole('button', {
-          name: /codecov/i,
-        })
-      ).toBeInTheDocument()
+    it('renders the button with the organization', async () => {
+      render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
+        wrapper,
+      })
+
+      const button = await screen.findByRole('button', {
+        name: /codecov/i,
+      })
+      expect(button).toBeInTheDocument()
+    })
+  })
+
+  describe('user "scrolls" and fetches next page', () => {
+    beforeEach(() => {
+      setup()
+      useIntersection.mockReturnValue({ isIntersecting: true })
+    })
+
+    it('loads second item', async () => {
+      render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
+        wrapper,
+      })
+
+      const button = await screen.findByRole('button', {
+        name: /codecov/i,
+      })
+      expect(button).toBeInTheDocument()
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const spotify = await screen.findByText(/spotify/i)
+      expect(spotify).toBeInTheDocument()
     })
   })
 })

@@ -44,7 +44,7 @@ function PlanPage() {
       <Elements stripe={stripePromise}>
         <PlanBreadcrumbProvider>
           <PlanBreadcrumb />
-          <hr className="md:w-10/12" />
+          <hr className="md:w-11/12 lg:w-10/12" />
           <Suspense fallback={Loader}>
             <Switch>
               <SentryRoute path={path} exact>

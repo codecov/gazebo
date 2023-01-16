@@ -1,4 +1,4 @@
-import { useTreePaths } from 'shared/useTreePaths'
+import { useTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 
 function FileBreadcrumb() {

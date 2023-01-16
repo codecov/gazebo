@@ -73,39 +73,35 @@ function MembersList() {
   return (
     <article className={UserManagementClasses.root}>
       <UpgradeModal isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className="flex flex-row grow justify-between items-center">
-        <div className="w-3/12">
-          <Select
-            ariaName="members status selector"
-            dataMarketing="members-status-selector"
-            items={ActivatedItems.map(({ label }) => label)}
-            value={
-              ActivatedItems.find((value) => value.value === params.activated)
-                ?.label
-            }
-            onChange={(value) => {
-              updateParams({
-                activated: ActivatedItems.find((v) => v.label === value)?.value,
-              })
-            }}
-          />
-        </div>
-        <div className="w-3/12">
-          <Select
-            ariaName="members role selector"
-            dataMarketing="members-role-selector"
-            items={AdminItems.map(({ label }) => label)}
-            value={
-              AdminItems.find((value) => value.value === params.isAdmin)?.label
-            }
-            onChange={(value) => {
-              updateParams({
-                isAdmin: AdminItems.find((v) => v.label === value)?.value,
-              })
-            }}
-          />
-        </div>
-        <div className="w-5/12">
+      <div className="grid grid-cols-2 sm:grid-cols-3 items-center gap-4 mx-4 sm:mx-0">
+        <Select
+          ariaName="members status selector"
+          dataMarketing="members-status-selector"
+          items={ActivatedItems.map(({ label }) => label)}
+          value={
+            ActivatedItems.find((value) => value.value === params.activated)
+              ?.label
+          }
+          onChange={(value) => {
+            updateParams({
+              activated: ActivatedItems.find((v) => v.label === value)?.value,
+            })
+          }}
+        />
+        <Select
+          ariaName="members role selector"
+          dataMarketing="members-role-selector"
+          items={AdminItems.map(({ label }) => label)}
+          value={
+            AdminItems.find((value) => value.value === params.isAdmin)?.label
+          }
+          onChange={(value) => {
+            updateParams({
+              isAdmin: AdminItems.find((v) => v.label === value)?.value,
+            })
+          }}
+        />
+        <div className="col-span-2 sm:col-span-1">
           <SearchField
             dataMarketing="members-search"
             placeholder="Search"
