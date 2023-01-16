@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ImpactedFiles from './ImpactedFiles'
+
+jest.mock('./CommitFileView.jsx', () => () => 'Commit File View')
 
 const mockCommit = {
   state: 'state?',
@@ -38,6 +41,20 @@ describe('ImpactedFiles', () => {
 
       const head = await screen.findByText('HEAD')
       expect(head).toBeInTheDocument()
+    })
+  })
+
+  describe('user can open and view code segments', () => {
+    it('displays code segments', async () => {
+      render(<ImpactedFiles commit={mockCommit} commitSHA="sha256" />, {
+        wrapper,
+      })
+
+      const icon = await screen.findByText('chevron-right.svg')
+      userEvent.click(icon)
+
+      const commitFileView = await screen.findByText('Commit File View')
+      expect(commitFileView).toBeInTheDocument()
     })
   })
 })
