@@ -14,7 +14,7 @@ const headers = [
     header: 'Flags',
     accessorKey: 'name',
     cell: (info) => info.getValue(),
-    width: 'w-6/12 min-w-min',
+    width: 'w-6/12',
     justifyStart: true,
   },
   {
@@ -22,7 +22,7 @@ const headers = [
     header: 'Coverage %',
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
-    width: 'w-3/12 min-w-min',
+    width: 'w-3/12',
     enableSorting: false,
     justifyStart: true,
   },
@@ -31,7 +31,7 @@ const headers = [
     header: 'Trend',
     accessorKey: 'trend',
     cell: (info) => info.getValue(),
-    width: 'w-3/12 min-w-min',
+    width: 'w-3/12',
     enableSorting: false,
   },
 ]
@@ -41,11 +41,7 @@ function createTableData({ tableData }) {
     ? tableData.map(
         ({ name, percentCovered, percentChange, measurements }) => ({
           name: <span>{name}</span>,
-          coverage: (
-            <div className="flex flex-1 gap-2 items-center font-lato">
-              <Progress amount={percentCovered} label />
-            </div>
-          ),
+          coverage: <Progress amount={percentCovered} label />,
           trend: (
             <TableSparkline
               measurements={measurements}

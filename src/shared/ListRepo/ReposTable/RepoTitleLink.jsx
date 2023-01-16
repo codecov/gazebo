@@ -25,7 +25,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
 
   if (disabledLink) {
     return (
-      <div className="flex items-center">
+      <>
         <div className="flex text-ds-gray-quinary items-center cursor-default">
           <Icon
             size="sm"
@@ -39,12 +39,12 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
         </div>
         {isRepoPrivate && <Badge>Private</Badge>}
         {active && !activated && <Badge>Deactivated</Badge>}
-      </div>
+      </>
     )
   }
 
   return (
-    <div className="flex items-center">
+    <>
       <AppLink
         pageName={pageName}
         options={options}
@@ -62,7 +62,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
       </AppLink>
       {isRepoPrivate && <Badge>Private</Badge>}
       {active && !activated && <Badge>Deactivated</Badge>}
-    </div>
+    </>
   )
 }
 

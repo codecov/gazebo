@@ -36,7 +36,7 @@ const table = [
     id: 'name',
     header: 'Name',
     accessorKey: 'name',
-    width: 'w-7/12 min-w-min',
+    width: 'w-7/12',
     cell: ({ row, getValue }) => {
       return (
         <div
@@ -69,21 +69,21 @@ const table = [
       </>
     ),
     accessorKey: 'coverage',
-    width: 'w-3/12 min-w-min',
+    width: 'w-3/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'patch',
     header: 'Patch %',
     accessorKey: 'patch',
-    width: 'w-28 min-w-min',
+    width: 'w-1/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
     header: 'Change',
     accessorKey: 'change',
-    width: 'w-28 min-w-min',
+    width: 'w-1/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -110,24 +110,14 @@ function createTable({ tableData }) {
           </A>
         </div>
       ),
-      coverage: (
-        <div className="flex flex-1 gap-2 items-center">
-          <Progress amount={headCoverage} label />
-        </div>
-      ),
+      coverage: <Progress amount={headCoverage} label />,
       /*
           The container div fot TotalsNumber is added due to the current state of table cells styling,
           shouldn't be necessary in the future if fixed/updated
       */
-      patch: (
-        <div className="w-full flex justify-end">
-          <TotalsNumber value={patchCoverage} />
-        </div>
-      ),
+      patch: <TotalsNumber value={patchCoverage} />,
       change: hasData ? (
-        <div className="w-full flex justify-end">
-          <TotalsNumber value={change} showChange data-testid="change-value" />
-        </div>
+        <TotalsNumber value={change} showChange data-testid="change-value" />
       ) : (
         <span className="text-ds-gray-quinary text-sm ml-4">
           No data available
