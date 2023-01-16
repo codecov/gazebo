@@ -11,10 +11,8 @@ import YamlModalErrorBanner from './YamlModalErrorBanner'
 const YAMLViewer = lazy(() => import('./YAMLViewer'))
 
 function YamlModal({ showYAMLModal, setShowYAMLModal }) {
-  const {
-    data: { yamlErrors },
-  } = useCommitErrors()
-  const invalidYaml = yamlErrors?.find(
+  const { data: commitErrors } = useCommitErrors()
+  const invalidYaml = commitErrors?.yamlErrors?.find(
     (err) => err?.errorCode === 'invalid_yaml'
   )
 

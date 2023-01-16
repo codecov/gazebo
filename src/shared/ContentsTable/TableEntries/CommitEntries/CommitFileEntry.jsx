@@ -15,24 +15,26 @@ function CommitFileEntry({
 }) {
   const { runPrefetch } = usePrefetchCommitFileEntry({
     path: filePath,
+    commitSha: commitSha,
   })
 
   return (
     <FileEntry
-      linkRef={commitSha}
+      commitSha={commitSha}
       filePath={filePath}
       isCriticalFile={isCriticalFile}
       name={name}
       displayType={displayType}
       path={path}
       runPrefetch={runPrefetch}
+      pageName="commitFileView"
     />
   )
 }
 
 CommitFileEntry.propTypes = {
   commitSha: PropTypes.string.isRequired,
-  filePath: PropTypes.string.isRequired,
+  filePath: PropTypes.string,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
