@@ -84,13 +84,11 @@ function createTable({ tableData }) {
             </div>
           ),
           change: hasHeadOrPatchCoverage ? (
-            <div className="w-full flex justify-end">
-              <TotalsNumber
-                value={changeCoverage}
-                showChange
-                data-testid="change-value"
-              />
-            </div>
+            <TotalsNumber
+              value={changeCoverage}
+              showChange
+              data-testid="change-value"
+            />
           ) : (
             <span className="text-ds-gray-quinary text-sm ml-4">No data</span>
           ),

@@ -59,7 +59,7 @@ export default {
   argTypes: {
     color: {
       type: 'select',
-      options: ['default', 'neutral', 'danger'],
+      options: ['default', 'neutral', 'danger', 'warning'],
     },
     variant: {
       type: 'select',

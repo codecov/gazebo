@@ -1,12 +1,12 @@
 import { useHistory, useParams } from 'react-router-dom'
 
+import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useLocationParams } from 'services/navigation'
 import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
-import Header from './Header'
 import Tabs from './Tabs'
 
 function HomePage() {
@@ -35,7 +35,7 @@ function HomePage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Header />
+      <MyContextSwitcher pageName="owner" activeContext={null} />
       <div>
         <ActiveContext.Provider value={params.repoDisplay}>
           <Tabs currentUsername={currentUser?.user?.username} />

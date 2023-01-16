@@ -34,7 +34,7 @@ describe('calculateDayDifference', () => {
 
 describe.each`
   value         | expected
-  ${undefined}  | ${Trend.THIRTY_DAYS}
+  ${undefined}  | ${Trend.THREE_MONTHS}
   ${'24 HOURS'} | ${Trend.TWENTY_FOUR_HOURS}
   ${'24 hours'} | ${Trend.TWENTY_FOUR_HOURS}
   ${'7 days'}   | ${Trend.SEVEN_DAYS}

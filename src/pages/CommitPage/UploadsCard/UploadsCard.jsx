@@ -26,11 +26,11 @@ function UploadsCard() {
           </div>
           <span className="text-ds-gray-quinary">{uploadsOverview}</span>
         </div>
-        <div className="bg-ds-gray-primary h-64 max-h-64 min-w-[24rem] overflow-auto flex flex-col flex-1 divide-y divide-solid divide-ds-gray-secondary">
+        <div className="bg-ds-gray-primary max-h-64 min-w-[24rem] overflow-auto flex flex-col flex-1 divide-y divide-solid divide-ds-gray-secondary">
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
               {title !== NULL && (
-                <span className="sticky top-0 bg-ds-gray-primary text-sm font-semibold flex-1 py-1 px-4">
+                <span className="sticky top-0 bg-ds-gray-primary text-sm font-semibold flex-1 py-1 px-4 border-r border-ds-gray-secondary">
                   {title}
                 </span>
               )}
