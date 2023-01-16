@@ -60,10 +60,10 @@ function createTableData({
               isCriticalFile={isCriticalFile}
             />
           ),
-        lines: <p className="flex flex-1 justify-end">{lines}</p>,
-        misses: <p className="flex flex-1 justify-end">{misses}</p>,
-        hits: <p className="flex flex-1 justify-end">{hits}</p>,
-        partials: <p className="flex flex-1 justify-end">{partials}</p>,
+        lines,
+        misses,
+        hits,
+        partials,
         coverage: <CoverageEntry percentCovered={percentCovered} />,
       })
     )
