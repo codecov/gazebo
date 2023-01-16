@@ -85,6 +85,7 @@ const Select = forwardRef(
     },
     ref
   ) => {
+    const inputRef = useRef(null)
     const intersectionRef = useRef(null)
 
     const intersection = useIntersection(intersectionRef, {
@@ -153,7 +154,13 @@ const Select = forwardRef(
             aria-label={ariaName}
             type="button"
             className={cs(SelectClasses.button, ButtonVariantClass[variant])}
-            {...getToggleButtonProps()}
+            {...getToggleButtonProps({
+              onClick: () => {
+                if (!isOpen && onSearch) {
+                  inputRef.current.focus()
+                }
+              },
+            })}
           >
             {renderButton()}
             <Icon
@@ -171,7 +178,7 @@ const Select = forwardRef(
                 placeholder={getSearchPlaceholder(resourceName)}
                 searchValue={searchValue}
                 setSearchValue={(search) => !!onSearch && onSearch(search)}
-                {...getInputProps()}
+                {...getInputProps({ ref: inputRef })}
               />
             </div>
           </div>
@@ -190,6 +197,11 @@ const Select = forwardRef(
             {isOpen && (
               <>
                 {items.map(_renderItem)}
+                {items.length === 0 && onSearch && !isLoading && (
+                  <span className="block py-1 px-3 text-sm font-semibold">
+                    No results found
+                  </span>
+                )}
                 {isLoading && (
                   <span className="flex py-2 px-3">
                     <Spinner />
