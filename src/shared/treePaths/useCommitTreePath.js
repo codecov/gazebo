@@ -8,7 +8,7 @@ function getTreeLocation(paths, location, index) {
 }
 
 export function useCommitTreePaths() {
-  const { repo, path, commitSha } = useParams()
+  const { repo, path, commit } = useParams()
   const filePaths = getFilePathParts(path)
 
   const paths =
@@ -17,15 +17,15 @@ export function useCommitTreePaths() {
       pageName: 'commitTreeView',
       text: location,
       options: {
-        dirPath: getTreeLocation(filePaths, location, index),
-        commitSha,
+        tree: getTreeLocation(filePaths, location, index),
+        commit,
       },
     }))
 
   const repoPath = {
     pageName: 'commitTreeView',
     text: repo,
-    options: { commitSha },
+    options: { commit },
   }
   const treePaths = [repoPath, ...paths]
   return { treePaths }

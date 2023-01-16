@@ -3,9 +3,8 @@ import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoCommitContents, useRepoOverview } from 'services/repo'
+import { useRepoCommitContents } from 'services/repo'
 import { useCommitTreePaths } from 'shared/treePaths'
-import { CommitErrorTypes } from 'shared/utils/commit'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../constants'
@@ -157,40 +156,35 @@ const getQueryFilters = ({ params, sortBy }) => {
 }
 
 export function useRepoCommitContentsTable() {
-  const { provider, owner, repo, path, commitSha } = useParams()
+  const { provider, owner, repo, path, commit } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
   const [sortBy, setSortBy] = useState([])
 
-  const { data: repoData, isLoading: repoIsLoading } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-
-  const { data: commitData, commitIsLoading } = useRepoCommitContents({
-    provider,
-    owner,
-    repo,
-    commitSha,
-    path,
-    filters: getQueryFilters({ params, sortBy: sortBy[0] }),
-    opts: {
-      suspense: false,
-    },
-  })
+  const { data: commitData, isLoading: commitIsLoading } =
+    useRepoCommitContents({
+      provider,
+      owner,
+      repo,
+      commit,
+      path: path || '',
+      filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+      opts: {
+        suspense: false,
+      },
+    })
 
   const data = useMemo(
     () =>
       createTableData({
-        tableData: commitData,
-        commitSha: commitSha,
+        tableData: commitData?.results,
+        commitSha: commit,
         path: path || '',
         isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
         treePaths,
       }),
-    [commitData, commitSha, path, params, sortBy, treePaths]
+    [commitData, commit, path, params, sortBy, treePaths]
   )
 
   const handleSort = useCallback(
@@ -206,9 +200,7 @@ export function useRepoCommitContentsTable() {
     data,
     headers,
     handleSort,
-    isLoading: repoIsLoading || commitIsLoading,
+    isLoading: commitIsLoading,
     isSearching: !!params?.search,
-    isMissingHeadReport:
-      repoData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
   }
 }

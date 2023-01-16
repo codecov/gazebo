@@ -10,7 +10,7 @@ describe('useCommitTreePaths', () => {
         <MemoryRouter
           initialEntries={['/gh/owner/cool-repo/commit/sha256/tree/src/tests']}
         >
-          <Route path="/:provider/:owner/:repo/commit/:commitSha/tree/:path+">
+          <Route path="/:provider/:owner/:repo/commit/:commit/tree/:path+">
             <div>{children}</div>
           </Route>
         </MemoryRouter>
@@ -25,15 +25,15 @@ describe('useCommitTreePaths', () => {
           {
             pageName: 'commitTreeView',
             text: 'cool-repo',
-            options: { commitSha: 'sha256' },
+            options: { commit: 'sha256' },
           },
           {
-            options: { dirPath: 'src', commitSha: 'sha256' },
+            options: { tree: 'src', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { dirPath: 'src/tests', commitSha: 'sha256' },
+            options: { tree: 'src/tests', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'tests',
           },
@@ -47,7 +47,7 @@ describe('useCommitTreePaths', () => {
             '/gh/owner/cool-repo/commit/sha256/tree/src/temp/src/temp/component',
           ]}
         >
-          <Route path="/:provider/:owner/:repo/commit/:commitSha/tree/:path+">
+          <Route path="/:provider/:owner/:repo/commit/:commit/tree/:path+">
             <div>{children}</div>
           </Route>
         </MemoryRouter>
@@ -60,32 +60,32 @@ describe('useCommitTreePaths', () => {
           {
             pageName: 'commitTreeView',
             text: 'cool-repo',
-            options: { commitSha: 'sha256' },
+            options: { commit: 'sha256' },
           },
           {
-            options: { dirPath: 'src', commitSha: 'sha256' },
+            options: { tree: 'src', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { dirPath: 'src/temp', commitSha: 'sha256' },
+            options: { tree: 'src/temp', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'temp',
           },
           {
-            options: { dirPath: 'src/temp/src', commitSha: 'sha256' },
+            options: { tree: 'src/temp/src', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { dirPath: 'src/temp/src/temp', commitSha: 'sha256' },
+            options: { tree: 'src/temp/src/temp', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'temp',
           },
           {
             options: {
-              dirPath: 'src/temp/src/temp/component',
-              commitSha: 'sha256',
+              tree: 'src/temp/src/temp/component',
+              commit: 'sha256',
             },
             pageName: 'commitTreeView',
             text: 'component',
@@ -98,7 +98,7 @@ describe('useCommitTreePaths', () => {
   describe('no path is given', () => {
     const wrapper = ({ children }) => (
       <MemoryRouter initialEntries={['/gh/owner/cool-repo/commit/sha256/tree']}>
-        <Route path="/:provider/:owner/:repo/commit/:commitSha/tree/">
+        <Route path="/:provider/:owner/:repo/commit/:commit/tree/">
           <div>{children}</div>
         </Route>
       </MemoryRouter>
@@ -111,7 +111,7 @@ describe('useCommitTreePaths', () => {
         {
           pageName: 'commitTreeView',
           text: 'cool-repo',
-          options: { commitSha: 'sha256' },
+          options: { commit: 'sha256' },
         },
       ])
     })
@@ -125,7 +125,7 @@ describe('useCommitTreePaths', () => {
             '/gh/owner/cool-repo/commit/sha256/tree/src/file.js',
           ]}
         >
-          <Route path="/:provider/:owner/:repo/commit/:commitSha/tree/:path+">
+          <Route path="/:provider/:owner/:repo/commit/:commit/tree/:path+">
             <div>{children}</div>
           </Route>
         </MemoryRouter>
@@ -138,15 +138,15 @@ describe('useCommitTreePaths', () => {
           {
             pageName: 'commitTreeView',
             text: 'cool-repo',
-            options: { commitSha: 'sha256' },
+            options: { commit: 'sha256' },
           },
           {
-            options: { dirPath: 'src', commitSha: 'sha256' },
+            options: { tree: 'src', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'src',
           },
           {
-            options: { dirPath: 'src/file.js', commitSha: 'sha256' },
+            options: { tree: 'src/file.js', commit: 'sha256' },
             pageName: 'commitTreeView',
             text: 'file.js',
           },
