@@ -35,16 +35,16 @@ const Loader = () => {
 function CommitErrorBanners() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  const { data } = useCommitErrors()
+  const { data: commitErrorData } = useCommitErrors()
 
-  const invalidYaml = data?.yamlErrors?.find(
+  const invalidYaml = commitErrorData?.yamlErrors?.find(
     (err) => err?.errorCode === 'invalid_yaml'
   )
 
   return (
     <>
       {ownerData?.isCurrentUserPartOfOrg && (
-        <BotErrorBanner botErrorsCount={data?.botErrors?.length} />
+        <BotErrorBanner botErrorsCount={commitErrorData?.botErrors?.length} />
       )}
       {invalidYaml && <YamlErrorBanner />}
     </>
