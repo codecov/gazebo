@@ -7,6 +7,7 @@ const progressClasses = {
   default: `bg-ds-primary-green`,
   neutral: `bg-ds-gray-senary`,
   danger: `bg-ds-primary-red`,
+  warning: `bg-ds-primary-yellow`,
 }
 
 const variantClasses = {
@@ -19,7 +20,7 @@ function Progress({ amount, label, color = 'default', variant = 'default' }) {
   const totalsProps = variant === 'tall' ? { light: true } : {}
 
   return (
-    <div className="w-full items-center flex gap-4">
+    <div className="flex-1 flex items-center gap-4">
       <div
         className={cs('flex-1 bg-ds-gray-secondary', variantClasses[variant])}
       >
@@ -48,7 +49,7 @@ Progress.propTypes = {
   amount: PropTypes.number,
   label: PropTypes.bool,
   variant: PropTypes.oneOf(['default', 'tall']),
-  color: PropTypes.oneOf(['default', 'neutral', 'danger']),
+  color: PropTypes.oneOf(['default', 'neutral', 'danger', 'warning']),
 }
 
 export default Progress

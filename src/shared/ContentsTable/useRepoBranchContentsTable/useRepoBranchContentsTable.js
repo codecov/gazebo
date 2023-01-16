@@ -61,19 +61,11 @@ function createTableData({
               isCriticalFile={isCriticalFile}
             />
           ),
-        lines: <div className="flex w-full justify-end font-lato">{lines}</div>,
-        misses: (
-          <div className="flex w-full justify-end font-lato">{misses}</div>
-        ),
-        hits: <div className="flex w-full justify-end font-lato">{hits}</div>,
-        partials: (
-          <div className="flex w-full justify-end font-lato">{partials}</div>
-        ),
-        coverage: (
-          <span className="font-lato w-full">
-            <CoverageEntry percentCovered={percentCovered} />
-          </span>
-        ),
+        lines,
+        misses,
+        hits,
+        partials,
+        coverage: <CoverageEntry percentCovered={percentCovered} />,
       })
     )
 
@@ -95,7 +87,7 @@ const headers = [
     header: 'Files',
     accessorKey: 'name',
     cell: (info) => info.getValue(),
-    width: 'w-9/12 min-w-min',
+    width: 'w-2/12 md:w-5/12',
     justifyStart: true,
   },
   {
@@ -103,35 +95,35 @@ const headers = [
     header: <span className="md:whitespace-nowrap">Tracked lines</span>,
     accessorKey: 'lines',
     cell: (info) => info.getValue(),
-    width: 'md:w-36 min-w-min',
+    width: 'w-2/12 md:w-1/12 justify-end font-lato',
   },
   {
     id: 'hits',
     header: 'Covered',
     accessorKey: 'hits',
     cell: (info) => info.getValue(),
-    width: 'lg:w-1/12 w-1/5 min-w-min',
+    width: 'w-2/12 md:w-1/12 justify-end font-lato',
   },
   {
     id: 'partials',
     header: 'Partial',
     accessorKey: 'partials',
     cell: (info) => info.getValue(),
-    width: 'lg:w-1/12 w-1/5 min-w-min',
+    width: 'w-2/12 md:w-1/12 justify-end font-lato',
   },
   {
     id: 'misses',
     header: 'Missed',
     accessorKey: 'misses',
     cell: (info) => info.getValue(),
-    width: 'lg:w-1/12 w-1/5 min-w-min',
+    width: 'w-2/12 justify-end font-lato',
   },
   {
     id: 'coverage',
     header: 'Coverage %',
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
-    width: 'w-3/12 min-w-min',
+    width: 'w-2/12 md:w-3/12',
   },
 ]
 

@@ -31,36 +31,27 @@ function FileEntry({
 }) {
   const displayAsList = displayType === displayTypeParameter.list
   return (
-    <div className="flex flex-col">
-      <div
-        className="flex gap-2 items-center"
-        onMouseEnter={async () => await runPrefetch()}
+    <div onMouseEnter={async () => await runPrefetch()}>
+      <A
+        to={{
+          pageName: 'fileViewer',
+          options: {
+            ref: linkRef,
+            tree: displayAsList ? filePath : !!path ? `${path}/${name}` : name,
+          },
+        }}
       >
-        <A
-          to={{
-            pageName: 'fileViewer',
-            options: {
-              ref: linkRef,
-              tree: displayAsList
-                ? filePath
-                : !!path
-                ? `${path}/${name}`
-                : name,
-            },
-          }}
-        >
-          <FileHeader
-            displayAsList={displayAsList}
-            filePath={filePath}
-            name={name}
-          />
-        </A>
-        {isCriticalFile && (
-          <span className="ml-2 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
-            Critical File
-          </span>
-        )}
-      </div>
+        <FileHeader
+          displayAsList={displayAsList}
+          filePath={filePath}
+          name={name}
+        />
+      </A>
+      {isCriticalFile && (
+        <span className="ml-2 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
+          Critical File
+        </span>
+      )}
     </div>
   )
 }

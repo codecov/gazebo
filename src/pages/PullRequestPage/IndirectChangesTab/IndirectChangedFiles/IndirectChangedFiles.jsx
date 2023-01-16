@@ -14,26 +14,26 @@ const columns = [
     id: 'name',
     header: 'Name',
     accessorKey: 'name',
-    width: 'w-7/12 min-w-min',
+    width: 'w-7/12',
     cell: ({ row, getValue }) => <NameColumn row={row} getValue={getValue} />,
     justifyStart: true,
   },
   {
     id: 'head',
     header: (
-      <span className="w-full text-right">
+      <span className="flex-1 text-right">
         <span className="font-mono">HEAD</span> file coverage %
       </span>
     ),
     accessorKey: 'head',
-    width: 'w-4/12 min-w-min',
+    width: 'w-4/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
-    header: <span className="w-full text-right">Change</span>,
+    header: <span className="flex-1 text-right">Change</span>,
     accessorKey: 'change',
-    width: 'w-2/12 min-w-min',
+    width: 'w-2/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -66,19 +66,13 @@ function createTable({ tableData }) {
               <Progress amount={headCoverage} label />
             </div>
           ),
-          patch: (
-            <div className="w-full flex justify-end">
-              <TotalsNumber value={patchCoverage} />
-            </div>
-          ),
+          patch: <TotalsNumber value={patchCoverage} />,
           change: hasHeadOrPatchCoverage ? (
-            <div className="w-full flex justify-end">
-              <TotalsNumber
-                value={changeCoverage}
-                showChange
-                data-testid="change-value"
-              />
-            </div>
+            <TotalsNumber
+              value={changeCoverage}
+              showChange
+              data-testid="change-value"
+            />
           ) : (
             <span className="text-ds-gray-quinary text-sm ml-4">
               No data available
