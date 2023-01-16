@@ -22,7 +22,13 @@ function YamlModal({ showYAMLModal, setShowYAMLModal }) {
       onClose={() => setShowYAMLModal(false)}
       title="Yaml"
       body={
-        <Suspense fallback={<Spinner size={40} />}>
+        <Suspense
+          fallback={
+            <div className="mx-auto w-fit">
+              <Spinner size={40} />
+            </div>
+          }
+        >
           <div className="flex flex-col gap-3">
             {invalidYaml && <YamlModalErrorBanner />}
             <YAMLViewer />
