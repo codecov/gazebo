@@ -19,9 +19,22 @@ const Summary = () => {
     currentBranchSelected,
     branchSelectorProps,
     branchesFetchNextPage,
-    branchesHasNextPage,
-    branchesIsFetching,
+    branchList,
+    branchListIsFetching,
+    branchListHasNextPage,
+    branchListFetchNextPage,
+    setBranchSearchTerm,
   } = useSummary()
+
+  const branchesNames = branchList?.branches?.map((branch) => branch) || []
+
+  console.debug(
+    'current branch: ',
+    currentBranchSelected,
+    '\nselector props ',
+    branchSelectorProps
+  )
+
   useLayoutEffect(() => {
     setCrumbs([
       {
@@ -43,7 +56,6 @@ const Summary = () => {
 
   return (
     <>
-      {redirectState?.newPath}
       {redirectState?.isRedirectionEnabled && (
         <Redirect to={redirectState?.newPath} />
       )}
@@ -63,8 +75,15 @@ const Summary = () => {
               onChange={onChangeHandler}
               variant="gray"
               renderItem={(item) => <span>{item?.name}</span>}
-              isLoading={branchesIsFetching}
-              onLoadMore={() => branchesHasNextPage && branchesFetchNextPage()}
+              isLoading={branchListIsFetching}
+              onLoadMore={() => {
+                if (branchListHasNextPage) {
+                  branchesFetchNextPage()
+                  branchListFetchNextPage()
+                }
+              }}
+              onSearch={(term) => setBranchSearchTerm(term)}
+              items={branchesNames}
             />
           </span>
 
