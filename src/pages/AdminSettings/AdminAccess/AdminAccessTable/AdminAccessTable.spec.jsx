@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 
 import AdminAccessTable from './AdminAccessTable'
 
@@ -40,7 +41,13 @@ const mockSecondResponse = {
   total_pages: 2,
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
 
 const server = setupServer()
 beforeAll(() => server.listen())
@@ -83,7 +90,9 @@ describe('AdminAccessTable', () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <AdminAccessTable />
+        <Suspense fallback={null}>
+          <AdminAccessTable />
+        </Suspense>
       </QueryClientProvider>
     )
   }
