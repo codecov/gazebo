@@ -1,45 +1,23 @@
-import { fromUnixTime } from 'date-fns'
-import { format, utcToZonedTime } from 'date-fns-tz'
 import PropTypes from 'prop-types'
-
-function formatPeriod(period) {
-  if (period.start === period.end) return null
-
-  const start = format(
-    utcToZonedTime(fromUnixTime(period.start), 'UTC'),
-    'MMMM do yyyy',
-    { timeZone: 'UTC' }
-  )
-  const end = format(
-    utcToZonedTime(fromUnixTime(period.end), 'UTC'),
-    'MMMM do yyyy',
-    { timeZone: 'UTC' }
-  )
-
-  return ` - Period from ${start} to ${end}`
-}
 
 function InvoiceItems({ invoice }) {
   return (
-    <div>
-      <h4 className="text-lg bold">Description</h4>
-      {invoice.lineItems.map((line, i) => (
-        <div key={i} className="flex mt-4 ">
-          <p className="text-gray-800">
-            ({line.quantity}) {line.planName} {formatPeriod(line.period)}
-            {line.description && (
-              <>
-                <br />
-                {line.description}
-              </>
-            )}
-          </p>
-          <span className="ml-auto text-lg text-gray-800">
-            ${(line.amount / 100).toFixed(2)}
-          </span>
-        </div>
-      ))}
-    </div>
+    <table className="w-full text-left text-base font-normal">
+      <thead>
+        <tr className="border-b-2 border-black b-y-4">
+          <th>Description</th>
+          <th className="text-right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {invoice.lineItems.map((line, i) => (
+          <tr key={i}>
+            <td className="p-2">{line.description}</td>
+            <td className=" text-right">${(line.amount / 100).toFixed(2)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }
 

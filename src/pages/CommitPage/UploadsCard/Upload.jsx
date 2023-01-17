@@ -26,7 +26,7 @@ const Upload = ({
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
 
   return (
-    <div className="py-2 px-4 flex flex-col gap-1">
+    <div className="py-2 px-4 flex flex-col gap-1 border-r border-ds-gray-secondary">
       <div className="flex justify-between ">
         <div className="flex-1 flex gap-1 flex-wrap">
           <UploadReference ciUrl={ciUrl} name={name} buildCode={buildCode} />
