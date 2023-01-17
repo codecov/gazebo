@@ -1,19 +1,33 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useRepoContents, useRepoOverview } from 'services/repo'
+import { useLocationParams } from 'services/navigation'
+import { useRepoBranchContents, useRepoOverview } from 'services/repo'
+import { usePrefetchBranchDirEntry } from 'shared/ContentsTable/TableEntries/BranchEntries/hooks/usePrefetchBranchDirEntry'
+import { usePrefetchBranchFileEntry } from 'shared/ContentsTable/TableEntries/BranchEntries/hooks/usePrefetchBranchFileEntry'
 
 import RepoContentsTable from './RepoContentsTable'
-import { usePrefetchDirEntry } from './TableEntries/hooks/usePrefetchDirEntry'
-import { usePrefetchFileEntry } from './TableEntries/hooks/usePrefetchFileEntry'
 
 jest.mock('services/repo')
+
+jest.mock('services/navigation', () => ({
+  ...jest.requireActual('services/navigation'),
+  useLocationParams: jest.fn(),
+}))
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(() => {}),
 }))
-jest.mock('./TableEntries/hooks/usePrefetchDirEntry')
-jest.mock('./TableEntries/hooks/usePrefetchFileEntry')
+
+jest.mock(
+  'shared/ContentsTable/TableEntries/BranchEntries/hooks/usePrefetchBranchDirEntry'
+)
+
+jest.mock(
+  'shared/ContentsTable/TableEntries/BranchEntries/hooks/usePrefetchBranchFileEntry'
+)
 
 const repoContents = {
   results: [
@@ -50,17 +64,21 @@ const useRepoOverviewMock = {
 }
 
 describe('RepoContentsTable', () => {
+  const mockUpdateParams = jest.fn()
+
   function setup({
     isLoading = false,
     data = repoContents,
     branch,
     path,
   } = {}) {
-    useRepoContents.mockReturnValue({
+    useRepoBranchContents.mockReturnValue({
       data,
       isLoading,
     })
+
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
+
     useParams.mockReturnValue({
       owner: 'Rabee-AbuBaker',
       provider: 'gh',
@@ -68,8 +86,14 @@ describe('RepoContentsTable', () => {
       branch: branch,
       path: path || '',
     })
-    usePrefetchDirEntry.mockReturnValue({ runPrefetch: jest.fn() })
-    usePrefetchFileEntry.mockReturnValue({ runPrefetch: jest.fn() })
+
+    usePrefetchBranchDirEntry.mockReturnValue({ runPrefetch: jest.fn() })
+    usePrefetchBranchFileEntry.mockReturnValue({ runPrefetch: jest.fn() })
+
+    useLocationParams.mockReturnValue({
+      params: { search: '' },
+      updateParams: mockUpdateParams,
+    })
 
     render(
       <MemoryRouter initialEntries={['/gh/Rabee-AbuBaker/another-test']}>
@@ -128,7 +152,7 @@ describe('RepoContentsTable', () => {
     it('renders corresponding links', () => {
       // Open to better ways of doing this if anyone has an idea :)
       const links = screen.getAllByRole('link')
-      const flag2Link = links[1]
+      const flag2Link = links[2]
       expect(flag2Link).toHaveAttribute(
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/default-branch/flag2'
@@ -144,7 +168,7 @@ describe('RepoContentsTable', () => {
     it('renders corresponding links correctly', () => {
       // Open to better ways of doing this if anyone has an idea :)
       const links = screen.getAllByRole('link')
-      const flag2Link = links[1]
+      const flag2Link = links[2]
       expect(flag2Link).toHaveAttribute(
         'href',
         '/gh/Rabee-AbuBaker/another-test/tree/main/src/flag2'
@@ -157,8 +181,9 @@ describe('RepoContentsTable', () => {
       setup({ isLoading: true })
     })
 
-    it('renders spinner', () => {
-      expect(screen.getByTestId('spinner')).toBeInTheDocument()
+    it('renders two spinners', () => {
+      const spinners = screen.getAllByTestId('spinner')
+      expect(spinners.length).toBe(2)
     })
   })
 
@@ -187,6 +212,27 @@ describe('RepoContentsTable', () => {
           /No coverage report uploaded for this branch head commit/
         )
       ).toBeInTheDocument()
+    })
+  })
+
+  describe.each([
+    '/gh/test-org/test-repo/',
+    '/gh/test-org/test-repo/tree/main',
+    '/gh/test-org/test-repo/tree/master/src',
+  ])('update search params after typing on route %s', (entries) => {
+    beforeEach(() => {
+      setup({ initialEntries: [entries] })
+    })
+    it('calls setSearchValue', async () => {
+      const searchInput = await screen.findByRole('textbox', {
+        name: 'Search for files',
+      })
+      userEvent.type(searchInput, 'file.js')
+
+      await waitFor(() => expect(mockUpdateParams).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(mockUpdateParams).toHaveBeenCalledWith({ search: 'file.js' })
+      )
     })
   })
 })

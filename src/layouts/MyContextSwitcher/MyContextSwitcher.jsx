@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
 import { useMyContexts } from 'services/user'
 import ContextSwitcher from 'ui/ContextSwitcher'
@@ -8,9 +9,15 @@ function MyContextSwitcher({
   pageName,
   pageNameCurrentUser = pageName,
 }) {
-  const { data: myContexts } = useMyContexts()
+  const { provider } = useParams()
+  const {
+    data: myContexts,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+  } = useMyContexts({ provider })
 
-  if (!myContexts) return null
+  if (!myContexts || !myContexts?.currentUser) return null
 
   const { currentUser, myOrganizations } = myContexts
 
@@ -25,7 +32,14 @@ function MyContextSwitcher({
     })),
   ]
 
-  return <ContextSwitcher activeContext={activeContext} contexts={contexts} />
+  return (
+    <ContextSwitcher
+      activeContext={activeContext}
+      contexts={contexts}
+      onLoadMore={() => hasNextPage && fetchNextPage()}
+      isLoading={isLoading}
+    />
+  )
 }
 
 MyContextSwitcher.propTypes = {

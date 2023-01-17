@@ -94,9 +94,9 @@ describe('useRepoCoverageTimeseries', () => {
           options: {},
         },
         coverageTimestampOrdering: 'increasing',
-        groupingUnit: 'month',
+        groupingUnit: 'week',
         repositories: ['mighty-nein'],
-        startDate: new Date('2021-01-01T00:00:00.000Z'),
+        startDate: new Date('2021-10-01T00:00:00.000Z'),
       })
     })
   })

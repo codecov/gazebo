@@ -30,3 +30,5 @@ ignore:
   - ./src/**/flags/**/*.js
   - ./src/**/mocks.js
   - ./src/pages/RepoPage/repo-jest-setup.js
+  - ./src/ui/SunburstChart/*.jsx
+  - ./src/ui/SunburstChart/*.js

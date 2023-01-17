@@ -28,6 +28,7 @@ const enabledIcons = [
   'document',
   'branch',
   'exclamation-circle',
+  'exclamation-triangle',
   'ban',
   'chevron-left',
   'download',
