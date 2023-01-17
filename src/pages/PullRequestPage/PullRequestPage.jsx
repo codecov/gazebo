@@ -6,7 +6,6 @@ import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
-import CommitsTable from 'pages/RepoPage/CommitsTab/CommitsTable'
 import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
@@ -18,12 +17,15 @@ import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
 import { usePullPageData } from './hooks'
-import IndirectChangesTab from './IndirectChangesTab'
 import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 
 const CompareSummary = lazy(() => import('./Summary'))
 const Root = lazy(() => import('./subroute/Root'))
 const Flags = lazy(() => import('./Flags'))
+const IndirectChangesTab = lazy(() => import('./IndirectChangesTab'))
+const CommitsTable = lazy(() =>
+  import('pages/RepoPage/CommitsTab/CommitsTable')
+)
 
 const Loader = (
   <div className="flex items-center justify-center py-16">

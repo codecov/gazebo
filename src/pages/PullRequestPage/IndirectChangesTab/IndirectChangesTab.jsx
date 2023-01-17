@@ -50,7 +50,7 @@ function IndirectChangesTab() {
           pullBaseCoverage: data?.pullBaseCoverage,
           pullPatchCoverage: data?.pullPatchCoverage,
         }) ? (
-        <div className="mt-4">
+        <div className="flex flex-col gap-3 mt-4">
           <p>
             Everything is accounted for! No changes detected that need to be
             reviewed.
