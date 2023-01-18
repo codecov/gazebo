@@ -68,6 +68,7 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
+// eslint-disable-next-line complexity
 function DropdownList({
   ariaName,
   isOpen,
@@ -114,6 +115,9 @@ function DropdownList({
                 : renderItem(item)}
             </li>
           ))}
+          {listItems.length <= 1 && onSearch && !isLoading && (
+            <p className="py-1 px-3 text-sm font-semibold">No results found</p>
+          )}
           {isLoading && (
             <span className="flex py-2 px-3">
               <Spinner />

@@ -266,35 +266,58 @@ describe('MultiSelect', () => {
   describe('when onSearch function is passed', () => {
     const onSearch = jest.fn()
 
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        onSearch,
-        resourceName: 'item',
-      }
-    })
+    describe('there are items found', () => {
+      beforeEach(() => {
+        props = {
+          ...defaultProps,
+          onSearch,
+          resourceName: 'item',
+        }
+      })
 
-    it('renders a search input', () => {
-      render(<MultiSelect {...props} />)
-
-      const button = screen.getByText(/All items/)
-      userEvent.click(button)
-
-      const searchField = screen.getByRole('textbox')
-      expect(searchField).toBeInTheDocument()
-    })
-
-    describe('when typing in the search field', () => {
-      it('calls onSearch with the search value', async () => {
+      it('renders a search input', () => {
         render(<MultiSelect {...props} />)
 
         const button = screen.getByText(/All items/)
         userEvent.click(button)
 
         const searchField = screen.getByRole('textbox')
-        userEvent.type(searchField, 'item1')
+        expect(searchField).toBeInTheDocument()
+      })
 
-        await waitFor(() => expect(onSearch).toHaveBeenCalledWith('item1'))
+      describe('when typing in the search field', () => {
+        it('calls onSearch with the search value', async () => {
+          render(<MultiSelect {...props} />)
+
+          const button = screen.getByText(/All items/)
+          userEvent.click(button)
+
+          const searchField = screen.getByRole('textbox')
+          userEvent.type(searchField, 'item1')
+
+          await waitFor(() => expect(onSearch).toHaveBeenCalledWith('item1'))
+        })
+      })
+    })
+
+    describe('when there are no items returned', () => {
+      beforeEach(() => {
+        props = {
+          ...defaultProps,
+          onSearch,
+          resourceName: 'item',
+          items: [],
+        }
+      })
+
+      it('renders no results found', async () => {
+        render(<MultiSelect {...props} />)
+
+        const button = screen.getByText(/All items/)
+        userEvent.click(button)
+
+        const noResults = await screen.findByText('No results found')
+        expect(noResults).toBeInTheDocument()
       })
     })
   })

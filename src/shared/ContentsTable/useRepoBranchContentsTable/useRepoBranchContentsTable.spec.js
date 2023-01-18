@@ -147,7 +147,10 @@ describe('useRepoBranchContentsTable', () => {
       expect(hookData.result.current.isSearching).toEqual(true)
       expect(useRepoBranchContents).toHaveBeenCalledWith({
         branch: 'main',
-        filters: { searchValue: 'file.js' },
+        filters: {
+          searchValue: 'file.js',
+          ordering: { direction: 'ASC', parameter: 'NAME' },
+        },
         owner: 'Rabee-AbuBaker',
         path: '',
         provider: 'gh',
@@ -167,7 +170,10 @@ describe('useRepoBranchContentsTable', () => {
       expect(hookData.result.current.data.length).toBe(3)
       expect(useRepoBranchContents).toHaveBeenCalledWith({
         branch: 'main',
-        filters: { displayType: 'LIST' },
+        filters: {
+          displayType: 'LIST',
+          ordering: { direction: 'DESC', parameter: 'MISSES' },
+        },
         owner: 'Rabee-AbuBaker',
         path: '',
         provider: 'gh',
