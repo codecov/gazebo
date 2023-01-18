@@ -3,7 +3,7 @@ import Icon from 'ui/Icon'
 
 function IndirectChangesInfo() {
   return (
-    <div className="flex gap-1 bg-slate-100 p-1 border-t mt-.5">
+    <div className="flex gap-1 bg-slate-100 p-1 border-t mt-.5 items-center">
       <Icon name="information-circle" size="sm" />
       <p>
         These are files that didn&apos;t have author revisions, but contain
