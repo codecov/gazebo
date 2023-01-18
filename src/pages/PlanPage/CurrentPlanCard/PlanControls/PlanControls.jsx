@@ -4,10 +4,18 @@ import A from 'ui/A'
 
 import ActionsBilling from '../ActionsBilling'
 
+const CollectionMethods = Object.freeze({
+  INVOICED_CUSTOMER_METHOD: 'send_invoice',
+  AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
+})
+
 function PlanControls({ accountDetails }) {
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const isInvoicedCustomer =
+    accountDetails?.subscriptionDetail?.collectionMethod ===
+    CollectionMethods.INVOICED_CUSTOMER_METHOD
 
-  if (isEnterprisePlan(plan?.value)) {
+  if (isEnterprisePlan(plan?.value) || isInvoicedCustomer) {
     return (
       <div className="items-center mt-1 text-ds-gray-quinary">
         To change or cancel your plan please contact{' '}
