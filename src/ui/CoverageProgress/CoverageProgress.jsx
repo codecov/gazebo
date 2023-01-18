@@ -11,9 +11,7 @@ const CoverageProgress = ({ color, totals }) => {
     )
   }
 
-  return (
-    <span className="text-ds-gray-quinary text-sm">No report uploaded yet</span>
-  )
+  return <p className="text-ds-gray-quinary text-sm">No report uploaded yet</p>
 }
 
 CoverageProgress.propTypes = {
