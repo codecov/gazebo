@@ -26,7 +26,7 @@ const Summary = () => {
     setBranchSearchTerm,
   } = useSummary()
 
-  const branchesNames = branchList?.branches?.map((branch) => branch) || []
+  const branchesNames = branchList?.map((branch) => branch)
 
   useLayoutEffect(() => {
     setCrumbs([

@@ -1,19 +1,58 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useBranches } from 'services/branches'
-import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
 import { useSummary } from './useSummary'
 
-import { useBranchSelector } from '../../hooks'
+const mockRepoOverview = {
+  private: false,
+  defaultBranch: 'main',
+}
 
-jest.mock('services/branches')
-jest.mock('services/repo')
-jest.mock('../../hooks')
+const mockBranches = {
+  branches: {
+    edges: [
+      {
+        node: {
+          name: 'branch-1',
+          head: {
+            commitid: 'asdf123',
+          },
+        },
+      },
+      {
+        node: {
+          name: 'main',
+          head: {
+            commitid: '321fdsa',
+          },
+        },
+      },
+    ],
+    pageInfo: {
+      hasNextPage: false,
+      endCursor: 'end-cursor',
+    },
+  },
+}
+
+const mockRepoCoverage = {
+  branch: {
+    name: 'main',
+    head: {
+      totals: {
+        percentCovered: 95.0,
+        lineCount: 100,
+        hitsCount: 100,
+      },
+    },
+  },
+}
 
 const queryClient = new QueryClient()
+const server = setupServer()
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/caleb/mighty-nein']}>
     <Route path="/:provider/:owner/:repo">
@@ -22,174 +61,170 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
 describe('useSummary', () => {
-  let hookData
-
-  function setup({
-    useRepoOverviewMock = {},
-    useRepoCoverageMock = {},
-    useBranchesMock = {},
-  }) {
-    useRepoOverview.mockReturnValue(useRepoOverviewMock)
-    useRepoCoverage.mockReturnValue(useRepoCoverageMock)
-    useBranches.mockReturnValue(useBranchesMock)
-    useBranchSelector.mockReturnValue({
-      selection: { name: 'my branch', head: { commitid: '1234' } },
-      branchSelectorProps: { someProps: 1 },
-      newPath: 'test/test/',
-      isRedirectionEnabled: true,
-    })
-
-    hookData = renderHook(() => useSummary(), { wrapper })
+  function setup({ hasNoBranches } = { hasBranches: false }) {
+    server.use(
+      graphql.query('GetRepoOverview', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: mockRepoOverview } })
+        )
+      ),
+      graphql.query('GetBranches', (req, res, ctx) => {
+        if (hasNoBranches) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: mockBranches } })
+        )
+      }),
+      graphql.query('GetRepoCoverage', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: mockRepoCoverage } })
+        )
+      )
+    )
   }
 
-  describe('both services are pending', () => {
+  describe('useBranches returns list of branches', () => {
     beforeEach(() => {
-      setup({
-        useRepoOverviewMock: { data: {}, isLoading: true },
-        useRepoCoverageMock: { data: {}, isLoading: true },
-        useBranchesMock: { data: {}, isFetching: true },
-      })
+      setup()
     })
 
-    it('isLoading is correct', () => {
-      expect(hookData.result.current.isLoading).toEqual(true)
-    })
-  })
+    it('passes down useRepoCoverage', async () => {
+      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
 
-  describe('useRepoCoverageMock is pending', () => {
-    beforeEach(() => {
-      setup({
-        useRepoOverviewMock: {
-          data: {
-            defaultBranch: 'c3',
-            branches: [{ node: { name: 'fcg' } }, { node: { name: 'imogen' } }],
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          name: 'main',
+          head: {
+            totals: {
+              percentCovered: 95.0,
+              lineCount: 100,
+              hitsCount: 100,
+            },
           },
-          isLoading: false,
-        },
-        useRepoCoverageMock: { data: {}, isLoading: true },
-        useBranchesMock: {
-          data: {
-            branches: [
-              { node: { name: 'fcg', head: { commitid: '1' } } },
-              { node: { name: 'imogen', head: { commitid: '2' } } },
-            ],
-          },
-        },
-      })
+        })
+      )
     })
 
-    it('isLoading is correct', () => {
-      expect(hookData.result.current.isLoading).toEqual(false)
-    })
-  })
+    it('passed down branch selector props', async () => {
+      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
 
-  describe('both services have resolved', () => {
-    describe('useBranches returns list of branches', () => {
-      beforeEach(() => {
-        setup({
-          useRepoOverviewMock: {
-            data: {
-              defaultBranch: 'c3',
-              private: true,
-              branches: {
-                edges: [
-                  { node: { name: 'fcg' } },
-                  { node: { name: 'imogen' } },
-                ],
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps).toStrictEqual({
+          items: [
+            {
+              name: 'branch-1',
+              head: {
+                commitid: 'asdf123',
               },
             },
-            isLoading: false,
-          },
-          useRepoCoverageMock: {
-            data: { show: 'Critical Role' },
-            isLoading: false,
-          },
-          useBranchesMock: {
-            data: {
-              branches: [
-                { node: { name: 'fcg', head: { commitid: '1' } } },
-                { node: { name: 'imogen', head: { commitid: '2' } } },
-              ],
+            {
+              name: 'main',
+              head: {
+                commitid: '321fdsa',
+              },
             },
-          },
-        })
-
-        return hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
-
-      it('isLoading is correct', () => {
-        expect(hookData.result.current.isLoading).toEqual(false)
-      })
-
-      it('passes down useRepoCoverage', () => {
-        expect(hookData.result.current.data).toEqual({ show: 'Critical Role' })
-      })
-
-      it('passed down branch selector props', () => {
-        expect(hookData.result.current.branchSelectorProps).toEqual({
-          someProps: 1,
-        })
-      })
-
-      it('passed down the currentBranchSelected', () => {
-        expect(hookData.result.current.currentBranchSelected).toEqual({
-          name: 'my branch',
-          head: { commitid: '1234' },
-        })
-      })
-
-      it('passed down the defaultBranch', () => {
-        expect(hookData.result.current.defaultBranch).toEqual('c3')
-      })
-
-      it('passed down the privateRepo', () => {
-        expect(hookData.result.current.privateRepo).toEqual(true)
-      })
-
-      it('sets branchList to list of branches', () => {
-        expect(hookData.result.current.branchList).toStrictEqual({
-          branches: [
-            { node: { name: 'fcg', head: { commitid: '1' } } },
-            { node: { name: 'imogen', head: { commitid: '2' } } },
           ],
+          value: {
+            name: 'main',
+            head: {
+              commitid: '321fdsa',
+            },
+          },
         })
-      })
+      )
     })
 
-    describe('useBranches returns empty list of branches', () => {
-      beforeEach(() => {
-        setup({
-          useRepoOverviewMock: {
-            data: {
-              defaultBranch: 'c3',
-              private: true,
-              branches: {
-                edges: [
-                  { node: { name: 'fcg' } },
-                  { node: { name: 'imogen' } },
-                ],
-              },
+    it('passed down the currentBranchSelected', async () => {
+      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(result.current.currentBranchSelected).toEqual({
+          name: 'main',
+          head: { commitid: '321fdsa' },
+        })
+      )
+    })
+
+    it('passed down the defaultBranch', async () => {
+      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(result.current.defaultBranch).toEqual('main'))
+    })
+
+    it('passed down the privateRepo', async () => {
+      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(result.current.privateRepo).toEqual(false))
+    })
+
+    it('sets branchList to list of branches', async () => {
+      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(result.current.branchList).toStrictEqual([
+          {
+            name: 'branch-1',
+            head: {
+              commitid: 'asdf123',
             },
-            isLoading: false,
           },
-          useRepoCoverageMock: {
-            data: { show: 'Critical Role' },
-            isLoading: false,
+          {
+            name: 'main',
+            head: {
+              commitid: '321fdsa',
+            },
           },
-          useBranchesMock: {
-            data: null,
-          },
-        })
+        ])
+      )
+    })
+  })
 
-        return hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
+  describe('useBranches returns empty list of branches', () => {
+    beforeEach(() => {
+      setup({ hasNoBranches: true })
+    })
 
-      it('sets branchList to empty list', () => {
-        expect(hookData.result.current.branchList).toStrictEqual({
-          branches: [],
-        })
-      })
+    it('sets branchList to empty list', async () => {
+      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(result.current.branchList).toStrictEqual([])
     })
   })
 })

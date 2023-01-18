@@ -54,7 +54,7 @@ export function useSummary() {
     defaultBranch: overview?.defaultBranch,
     privateRepo: overview?.private,
     branchesFetchNextPage,
-    branchList: branchList || { branches: [] },
+    branchList: branchList?.branches || [],
     branchListIsFetching,
     branchListHasNextPage,
     branchListFetchNextPage,
