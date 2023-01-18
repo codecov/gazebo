@@ -3,13 +3,7 @@ import { useCombobox } from 'downshift'
 import identity from 'lodash/identity'
 import pluralize from 'pluralize'
 import PropTypes from 'prop-types'
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef,
-} from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { useIntersection } from 'react-use'
 
 import { dataMarketingType } from 'shared/propTypes'
@@ -120,16 +114,11 @@ const Select = forwardRef(
       getItemProps,
       reset,
       selectedItem,
-      selectItem,
     } = useCombobox({
       items,
       initialSelectedItem: value,
       onSelectedItemChange: ({ selectedItem }) => onChange(selectedItem),
     })
-
-    useLayoutEffect(() => {
-      selectItem(value)
-    }, [value, selectItem])
 
     function renderButton() {
       const _render = renderSelected || renderItem
