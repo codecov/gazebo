@@ -39,6 +39,29 @@ describe('Select', () => {
     })
   })
 
+  describe('toggling dropdown', () => {
+    it('displays the dropdown', () => {
+      render(<Select {...props} />)
+
+      const button = screen.getByText('Select')
+      userEvent.click(button)
+
+      const item1 = screen.getByText('item1')
+      expect(item1).toBeInTheDocument()
+    })
+
+    it('hides the dropdown', () => {
+      render(<Select {...props} />)
+
+      const button = screen.getByText('Select')
+      userEvent.click(button)
+      userEvent.click(button)
+
+      const listbox = screen.getByRole('listbox')
+      expect(listbox).toBeEmptyDOMElement()
+    })
+  })
+
   describe('rendering with a resourceName', () => {
     beforeEach(() => {
       props = {
@@ -233,6 +256,34 @@ describe('Select', () => {
       userEvent.type(searchField, 'any text here')
 
       await waitFor(() => expect(onSearch).toHaveBeenCalled())
+    })
+
+    describe('when there are no items', () => {
+      beforeEach(() => {
+        props = {
+          ...defaultProps,
+          onSearch,
+          resourceName: 'item',
+          items: [],
+        }
+      })
+
+      it('renders no results found when item length is zero', async () => {
+        render(<Select {...props} />)
+
+        const button = screen.getByText('Select')
+        userEvent.click(button)
+
+        const searchField = await screen.findByPlaceholderText(
+          /Search for items/i
+        )
+        userEvent.type(searchField, 'any text here')
+
+        await waitFor(() => expect(onSearch).toHaveBeenCalled())
+
+        const noResults = await screen.findByText('No results found')
+        expect(noResults).toBeInTheDocument()
+      })
     })
   })
 
