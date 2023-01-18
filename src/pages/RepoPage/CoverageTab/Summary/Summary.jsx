@@ -26,8 +26,6 @@ const Summary = () => {
     setBranchSearchTerm,
   } = useSummary()
 
-  const branchesNames = branchList?.map((branch) => branch)
-
   useLayoutEffect(() => {
     setCrumbs([
       {
@@ -76,7 +74,7 @@ const Summary = () => {
                 }
               }}
               onSearch={(term) => setBranchSearchTerm(term)}
-              items={branchesNames}
+              items={branchList}
             />
           </span>
 
