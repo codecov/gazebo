@@ -35,7 +35,11 @@ export function useCommitForSummary() {
     commitid: commitSHA,
   })
 
-  const { compareWithParent, totals, parent, state, commitid } = data?.commit
+  const compareWithParent = data?.commit?.compareWithParent
+  const totals = data?.commit?.totals
+  const parent = data?.commit?.parent
+  const state = data?.commit?.state
+  const commitid = data?.commit?.commitid
 
   return useMemo(
     () =>

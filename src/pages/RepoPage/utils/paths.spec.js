@@ -1,4 +1,9 @@
-import { fileviewString, treeviewString } from './paths'
+import {
+  commitFileviewString,
+  commitTreeviewString,
+  fileviewString,
+  treeviewString,
+} from './paths'
 
 describe('treeviewString', () => {
   it('returns a string', () => {
@@ -9,5 +14,21 @@ describe('treeviewString', () => {
 describe('fileviewString', () => {
   it('returns a string', () => {
     expect(fileviewString({ owner: 'foo', repo: 'bar' })).toBe('foo/bar/blob')
+  })
+})
+
+describe('commitTreeviewString', () => {
+  it('returns a string', () => {
+    expect(
+      commitTreeviewString({ owner: 'foo', repo: 'bar', commitSHA: 'sha256' })
+    ).toBe('foo/bar/commit/sha256/tree')
+  })
+})
+
+describe('commitFileviewString', () => {
+  it('returns a string', () => {
+    expect(
+      commitFileviewString({ owner: 'foo', repo: 'bar', commitSHA: 'sha256' })
+    ).toBe('foo/bar/commit/sha256/blob')
   })
 })

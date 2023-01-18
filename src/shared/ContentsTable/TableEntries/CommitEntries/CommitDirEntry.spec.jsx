@@ -8,24 +8,22 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import CommitDirEntry from './CommitDirEntry'
 
 const mockData = {
-  owner: {
-    username: 'codecov',
-    repository: {
-      commit: {
-        pathContents: {
-          results: [
-            {
-              __typename: 'PathContentDir',
-              name: 'src',
-              path: null,
-              percentCovered: 0.0,
-              hits: 4,
-              misses: 2,
-              lines: 7,
-              partials: 1,
-            },
-          ],
-        },
+  username: 'codecov',
+  repository: {
+    commit: {
+      pathContents: {
+        results: [
+          {
+            __typename: 'PathContentDir',
+            name: 'src',
+            path: null,
+            percentCovered: 0.0,
+            hits: 4,
+            misses: 2,
+            lines: 7,
+            partials: 1,
+          },
+        ],
       },
     },
   },
@@ -36,8 +34,10 @@ const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo/main/tree']}>
-      <Route path="/:provider/:owner/:repo/:branch/:path+">{children}</Route>
+    <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/1234/tree']}>
+      <Route path="/:provider/:owner/:repo/commit/:commit/:path+">
+        {children}
+      </Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -57,7 +57,7 @@ describe('CommitDirEntry', () => {
   function setup() {
     server.use(
       graphql.query('CommitPathContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
+        res(ctx.status(200), ctx.data({ owner: mockData }))
       )
     )
   }
@@ -85,7 +85,7 @@ describe('CommitDirEntry', () => {
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/tree/1234/path/to/directory/dir'
+        '/gh/codecov/test-repo/commit/1234/tree/path/to/directory/dir'
       )
     })
   })
@@ -95,7 +95,10 @@ describe('CommitDirEntry', () => {
       render(<CommitDirEntry commitSha="1234" name="dir" />, { wrapper })
 
       const a = screen.getByRole('link')
-      expect(a).toHaveAttribute('href', '/gh/codecov/test-repo/tree/1234/dir')
+      expect(a).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/commit/1234/tree/dir'
+      )
     })
   })
 
@@ -105,10 +108,8 @@ describe('CommitDirEntry', () => {
       { wrapper }
     )
 
-    userEvent.hover(screen.getByText('dir'))
-
-    await waitFor(() => queryClient.getQueryState().isFetching)
-    await waitFor(() => !queryClient.getQueryState().isFetching)
+    const dir = screen.getByText('dir')
+    userEvent.hover(dir)
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
