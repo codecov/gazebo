@@ -138,7 +138,7 @@ describe('RepoContentsTableMocked', () => {
       screen.getByText(/Files/).click()
       await waitFor(() =>
         expect(handleSort).toHaveBeenLastCalledWith([
-          { desc: false, id: 'name' },
+          { desc: true, id: 'name' },
         ])
       )
       screen.getByText(/file coverage/).click()
