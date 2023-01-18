@@ -41,6 +41,7 @@ describe('Pulls Table', () => {
           node: {
             author: { username: 'cool-user', avatarUrl: 'random' },
             compareWithBase: {
+              __typename: 'Comparison',
               changeWithParent: 14,
             },
             head: {
