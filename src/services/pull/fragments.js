@@ -110,6 +110,7 @@ fragment ImpactedFilesOnPull on Pull {
         fileName
         headName
         isCriticalFile
+        missesInComparison
         baseCoverage {
           percentCovered
         }

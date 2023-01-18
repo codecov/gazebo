@@ -1,4 +1,3 @@
-import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -13,33 +12,36 @@ const columns = [
     id: 'name',
     header: 'Name',
     accessorKey: 'name',
-    width: 'w-7/12',
+    width: 'w-8/12 min-w-min',
     cell: ({ row, getValue }) => <NameColumn row={row} getValue={getValue} />,
     justifyStart: true,
   },
   {
+    id: 'missesInComparison',
+    header: 'Missed lines',
+    accessorKey: 'missesInComparison',
+    width: 'w-56 min-w-min',
+    cell: (info) => info.getValue(),
+  },
+  {
     id: 'head',
-    header: (
-      <span className="w-full text-right">
-        <span className="font-mono">HEAD</span> file coverage %
-      </span>
-    ),
+    header: <span className="w-full text-right font-mono">HEAD %</span>,
     accessorKey: 'head',
-    width: 'w-3/12 justify-end',
+    width: 'w-36 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
     id: 'patch',
     header: <span className="w-full text-sm text-right">Patch %</span>,
     accessorKey: 'patch',
-    width: 'w-1/12 justify-end',
+    width: 'w-36 min-w-min',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
     header: <span className="w-full text-right">Change</span>,
     accessorKey: 'change',
-    width: 'w-1/12 justify-end',
+    width: 'w-36 min-w-min',
     cell: (info) => info.getValue(),
   },
 ]
@@ -50,6 +52,7 @@ function createTable({ tableData }) {
         const {
           headCoverage,
           patchCoverage,
+          missesInComparison,
           changeCoverage,
           hasHeadOrPatchCoverage,
           headName,
@@ -67,8 +70,19 @@ function createTable({ tableData }) {
               )}
             </div>
           ),
-          head: <Progress amount={headCoverage} label />,
-          patch: <TotalsNumber value={patchCoverage} />,
+          missesInComparison: (
+            <div className="flex w-full justify-end">{missesInComparison}</div>
+          ),
+          head: (
+            <div className="w-full flex justify-end">
+              <TotalsNumber value={headCoverage} plain />
+            </div>
+          ),
+          patch: (
+            <div className="w-full flex justify-end">
+              <TotalsNumber value={patchCoverage} />
+            </div>
+          ),
           change: hasHeadOrPatchCoverage ? (
             <TotalsNumber
               value={changeCoverage}
@@ -76,9 +90,7 @@ function createTable({ tableData }) {
               data-testid="change-value"
             />
           ) : (
-            <span className="text-ds-gray-quinary text-sm ml-4">
-              No data available
-            </span>
+            <span className="text-ds-gray-quinary text-sm ml-4">No data</span>
           ),
         }
       })
@@ -114,6 +126,7 @@ function ImpactedFiles() {
         data={tableContent}
         columns={columns}
         onSort={handleSort}
+        defaultSort={[{ id: 'missesInComparison', desc: true }]}
         renderSubComponent={renderSubComponent}
       />
       {isLoading && <Loader />}
