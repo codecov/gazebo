@@ -116,7 +116,7 @@ function transformPullToTable(commits) {
 
 const Loader = () => {
   return (
-    <div className="flex-1 flex justify-center">
+    <div className="flex-1 flex justify-center py-16">
       <Spinner size={60} />
     </div>
   )
