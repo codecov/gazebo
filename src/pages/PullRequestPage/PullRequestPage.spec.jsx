@@ -389,7 +389,13 @@ describe('PullRequestPage', () => {
       setup({
         hasAccess: true,
         pullData: {
+          commits: {
+            totalCount: 11,
+          },
           compareWithBase: {
+            impactedFilesCount: 9,
+            indirectChangedFilesCount: 19,
+            flagComparisonsCount: 91,
             __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
           },
         },
@@ -409,14 +415,32 @@ describe('PullRequestPage', () => {
       expect(screen.getByText('Root')).toBeInTheDocument()
     })
 
+    it('renders impacted files tab count', () => {
+      expect(screen.getByText('9')).toBeInTheDocument()
+    })
+
     it('renders indirect changes tab', () => {
       expect(screen.getByText(/Indirect changes/i)).toBeInTheDocument()
     })
+
+    it('renders indirect changes tab count', () => {
+      expect(screen.getByText('19')).toBeInTheDocument()
+    })
+
     it('renders commits tab', () => {
       expect(screen.getByText(/Commits/i)).toBeInTheDocument()
     })
+
+    it('renders commits tab count', () => {
+      expect(screen.getByText('11')).toBeInTheDocument()
+    })
+
     it('renders flags tab', () => {
       expect(screen.getByText(/Flags/i)).toBeInTheDocument()
+    })
+
+    it('renders flags tab count', () => {
+      expect(screen.getByText('91')).toBeInTheDocument()
     })
 
     it('renders the name of the header and coverage labels', () => {
@@ -441,7 +465,7 @@ describe('PullRequestPage', () => {
 
     describe('when clicking on indirect changes tab', () => {
       beforeEach(async () => {
-        screen.getByText(/Indirect changes/).click()
+        screen.getByText(/Indirect changes/i).click()
 
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()

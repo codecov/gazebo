@@ -33,11 +33,22 @@ const Loader = (
   </div>
 )
 
+const getTabsCounts = (commits, compareWithBase) => {
+  const flagsCount = compareWithBase?.flagComparisonsCount || 0
+  const indirectChangesCount = compareWithBase?.indirectChangedFilesCount || 0
+  const impactedFilesCount = compareWithBase?.impactedFilesCount || 0
+
+  const commitsCount = commits?.totalCount || 0
+  return { flagsCount, commitsCount, impactedFilesCount, indirectChangesCount }
+}
+
 // eslint-disable-next-line complexity
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
   const { pullPageTabs } = useFlags({ pullPageTabs: true })
+  const { flagsCount, indirectChangesCount, impactedFilesCount, commitsCount } =
+    getTabsCounts(data?.pull?.commits, data?.pull?.compareWithBase)
 
   if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
     return <NotFound />
@@ -77,14 +88,45 @@ function PullRequestPage() {
               tabs={[
                 {
                   pageName: 'pullDetail',
-                  children: 'Impacted files',
+                  children: (
+                    <>
+                      Impacted Files
+                      <sup className="text-xs">{impactedFilesCount}</sup>
+                    </>
+                  ),
                   exact: true,
                 },
                 ...(pullPageTabs
                   ? [
-                      { pageName: 'pullIndirectChanges' },
-                      { pageName: 'pullCommits' },
-                      { pageName: 'pullFlags' },
+                      {
+                        pageName: 'pullIndirectChanges',
+                        children: (
+                          <>
+                            Indirect Changes
+                            <sup className="text-xs">
+                              {indirectChangesCount}
+                            </sup>
+                          </>
+                        ),
+                      },
+                      {
+                        pageName: 'pullCommits',
+                        children: (
+                          <>
+                            Commits
+                            <sup className="text-xs">{commitsCount}</sup>
+                          </>
+                        ),
+                      },
+                      {
+                        pageName: 'pullFlags',
+                        children: (
+                          <>
+                            Flags
+                            <sup className="text-xs">{flagsCount}</sup>
+                          </>
+                        ),
+                      },
                     ]
                   : []),
               ]}
