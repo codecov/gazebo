@@ -6,7 +6,6 @@ import { displayTypeParameter } from '../constants'
 
 export function useTableDefaultSort(locationParams = {}) {
   const { params } = useLocationParams(locationParams)
-  console.log(params)
   const [sortBy, setSortBy] = useState([])
 
   useEffect(() => {
