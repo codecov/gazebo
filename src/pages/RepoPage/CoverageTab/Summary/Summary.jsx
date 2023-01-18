@@ -28,13 +28,6 @@ const Summary = () => {
 
   const branchesNames = branchList?.branches?.map((branch) => branch) || []
 
-  console.debug(
-    'current branch: ',
-    currentBranchSelected,
-    '\nselector props ',
-    branchSelectorProps
-  )
-
   useLayoutEffect(() => {
     setCrumbs([
       {
