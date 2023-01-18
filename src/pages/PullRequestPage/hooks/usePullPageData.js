@@ -16,9 +16,9 @@ const query = `
           pullId
           compareWithBase {
             ... on Comparison {
-            impactedFilesCount
-            indirectChangedFilesCount
-            flagComparisonsCount
+              impactedFilesCount
+              indirectChangedFilesCount
+              flagComparisonsCount
             }
             __typename
           }
