@@ -12,15 +12,23 @@ const server = setupServer()
 const mockData = {
   owner: {
     repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
       commit: {
-        pathContents: [
-          {
-            name: 'file.ts',
-            filePath: null,
-            percentCovered: 50.0,
-            type: 'file',
-          },
-        ],
+        pathContents: {
+          results: [
+            {
+              name: 'file.ts',
+              filePath: null,
+              percentCovered: 50.0,
+              type: 'file',
+            },
+          ],
+        },
       },
     },
   },
@@ -91,14 +99,20 @@ describe('useRepoCommitContents', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      const expectedData = [
-        {
-          filePath: null,
-          name: 'file.ts',
-          percentCovered: 50,
-          type: 'file',
+      const expectedData = {
+        results: [
+          {
+            filePath: null,
+            name: 'file.ts',
+            percentCovered: 50,
+            type: 'file',
+          },
+        ],
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
         },
-      ]
+      }
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual(expectedData)
