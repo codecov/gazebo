@@ -198,9 +198,9 @@ const Select = forwardRef(
               <>
                 {items.map(_renderItem)}
                 {items.length === 0 && onSearch && !isLoading && (
-                  <span className="block py-1 px-3 text-sm font-semibold">
+                  <p className="py-1 px-3 text-sm font-semibold">
                     No results found
-                  </span>
+                  </p>
                 )}
                 {isLoading && (
                   <span className="flex py-2 px-3">
