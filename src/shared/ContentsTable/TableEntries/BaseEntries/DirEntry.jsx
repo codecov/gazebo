@@ -3,32 +3,40 @@ import PropTypes from 'prop-types'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-function DirEntry({ branch, name, path, runPrefetch }) {
+function DirEntry({
+  linkRef,
+  name,
+  path,
+  runPrefetch,
+  pageName = 'treeView',
+  commitSha,
+}) {
   return (
-    <div className="flex gap-2" onMouseEnter={async () => await runPrefetch()}>
+    <div className="flex gap-3" onMouseEnter={async () => await runPrefetch()}>
       <A
         to={{
-          pageName: 'treeView',
+          pageName: pageName,
           options: {
-            ref: branch,
+            ref: linkRef,
+            commit: commitSha,
             tree: !!path ? `${path}/${name}` : name,
           },
         }}
       >
-        <div className="flex gap-2 items-center">
-          <Icon name="folder" size="md" variant="solid" />
-          {name}
-        </div>
+        <Icon name="folder" size="md" variant="solid" />
+        <span className="whitespace-pre">{name}</span>
       </A>
     </div>
   )
 }
 
 DirEntry.propTypes = {
-  branch: PropTypes.string.isRequired,
+  linkRef: PropTypes.string,
   name: PropTypes.string.isRequired,
   path: PropTypes.string,
   runPrefetch: PropTypes.func,
+  pageName: PropTypes.string,
+  commitSha: PropTypes.string,
 }
 
 export default DirEntry

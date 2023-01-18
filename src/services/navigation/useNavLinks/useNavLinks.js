@@ -201,6 +201,36 @@ export function useNavLinks() {
       isExternalLink: false,
       text: 'File Viewer',
     },
+    commitTreeView: {
+      path: (
+        { provider = p, owner = o, repo = r, tree, commit } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        if (!tree) {
+          return `/${provider}/${owner}/${repo}/commit/${commit}/tree`
+        } else {
+          return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${tree}`
+        }
+      },
+      isExternalLink: false,
+      text: 'Commit Tree View',
+    },
+    commitFileView: {
+      path: (
+        { provider = p, owner = o, repo = r, tree, commit } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/commit/${commit}/blob/${tree}`
+      },
+      isExternalLink: false,
+      text: 'Commit File View',
+    },
     new: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -359,7 +389,7 @@ export function useNavLinks() {
           repo: r,
           pullId: pi,
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirectChanges`,
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirect-changes`,
       isExternalLink: false,
     },
     pullCommits: {

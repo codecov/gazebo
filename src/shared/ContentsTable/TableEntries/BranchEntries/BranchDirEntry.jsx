@@ -9,7 +9,7 @@ function BranchDirEntry({ branch, path, name, filters }) {
 
   return (
     <DirEntry
-      branch={branch}
+      linkRef={branch}
       name={name}
       path={path}
       runPrefetch={runPrefetch}

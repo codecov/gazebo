@@ -233,19 +233,8 @@ describe('ImpactedFiles', () => {
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
 
-        const head = await screen.findByText('HEAD')
+        const head = await screen.findByText('HEAD %')
         expect(head).toBeInTheDocument()
-      })
-
-      it('renders file coverage column', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const fileCoverage = await screen.findByText('file coverage %')
-        expect(fileCoverage).toBeInTheDocument()
       })
 
       it('renders patch column', async () => {
@@ -353,14 +342,14 @@ describe('ImpactedFiles', () => {
       setup(mockNoChange)
     })
 
-    it('renders no data available for the change', async () => {
+    it('renders no data for the change', async () => {
       render(<ImpactedFiles />, { wrapper: wrapper() })
 
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const noData = await screen.findByText('No data available')
+      const noData = await screen.findByText('No data')
       expect(noData).toBeInTheDocument()
     })
   })
@@ -388,19 +377,8 @@ describe('ImpactedFiles', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const head = await screen.findByText('HEAD')
+      const head = await screen.findByText('HEAD %')
       expect(head).toBeInTheDocument()
-    })
-
-    it('renders file coverage column', async () => {
-      render(<ImpactedFiles />, { wrapper: wrapper() })
-
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-
-      const fileCoverage = await screen.findByText('file coverage %')
-      expect(fileCoverage).toBeInTheDocument()
     })
 
     it('renders patch column', async () => {

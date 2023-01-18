@@ -1,13 +1,16 @@
 import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
+import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
+import { useIntersection } from 'react-use'
 
 import AppLink from 'shared/AppLink'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
 import Icon from 'ui/Icon'
+import Spinner from 'ui/Spinner'
 
 import './ContextSwitcher.css'
 
@@ -23,10 +26,43 @@ function getCurrentContext({ activeContext, contexts }) {
   })
 }
 
-function ContextSwitcher({ activeContext, contexts }) {
+function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
+  if (!onLoadMore) {
+    return null
+  }
+
+  return (
+    <span
+      ref={intersectionRef}
+      className="relative top-[-65px] invisible block leading-[0]"
+    >
+      Loading more organizations...
+    </span>
+  )
+}
+
+LoadMoreTrigger.propTypes = {
+  onLoadMore: PropTypes.func,
+  intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+}
+
+function ContextSwitcher({ activeContext, contexts, onLoadMore, isLoading }) {
+  const intersectionRef = useRef(null)
   const currentContext = getCurrentContext({ activeContext, contexts })
   const { provider } = useParams()
   const isGh = providerToName(provider) === 'Github'
+
+  const intersection = useIntersection(intersectionRef, {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0,
+  })
+
+  useEffect(() => {
+    if (intersection?.isIntersecting && onLoadMore) {
+      onLoadMore()
+    }
+  }, [intersection?.isIntersecting, onLoadMore])
 
   function renderContext(context) {
     const { owner, pageName } = context
@@ -74,6 +110,15 @@ function ContextSwitcher({ activeContext, contexts }) {
             </div>
           </MenuLink>
           {contexts.map(renderContext)}
+          {isLoading && (
+            <span className="flex pt-1 pb-2 justify-center">
+              <Spinner />
+            </span>
+          )}
+          <LoadMoreTrigger
+            intersectionRef={intersectionRef}
+            onLoadMore={onLoadMore}
+          />
         </div>
         {isGh && (
           <div className="max-h-64 overflow-y-auto text-ds-gray-quinary text-xsm px-4 py-2 border-t border-ds-gray-secondary">
@@ -101,6 +146,8 @@ ContextSwitcher.propTypes = {
       pageName: PropTypes.string.isRequired,
     })
   ).isRequired,
+  onLoadMore: PropTypes.func,
+  isLoading: PropTypes.bool,
 }
 
 export default ContextSwitcher

@@ -17,6 +17,7 @@ jest.mock('./Flags', () => () => 'Flags')
 jest.mock('./Commits', () => () => 'Commits')
 jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./ErrorBanner', () => () => 'Error Banner')
+jest.mock('./IndirectChangesTab', () => () => 'IndirectChangesTab')
 jest.mock('pages/RepoPage/CommitsTab/CommitsTable', () => () => 'Commits Table')
 
 jest.mock('./hooks/usePullPageData')
@@ -101,6 +102,12 @@ describe('PullRequestPage', () => {
           </Route>
           <Route
             path="/:provider/:owner/:repo/pull/:pullId/commits"
+            exact={true}
+          >
+            <PullRequestPage />
+          </Route>
+          <Route
+            path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
             exact={true}
           >
             <PullRequestPage />
@@ -453,6 +460,20 @@ describe('PullRequestPage', () => {
 
       it('renders commits table', () => {
         expect(screen.getByText(/Commits Table/i)).toBeInTheDocument()
+      })
+    })
+
+    describe('when clicking on indirect changes tab', () => {
+      beforeEach(async () => {
+        screen.getByText(/Indirect changes/).click()
+
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+      })
+
+      it('renders the indirect changes tab', () => {
+        expect(screen.getByText(/IndirectChangesTab/)).toBeInTheDocument()
       })
     })
   })

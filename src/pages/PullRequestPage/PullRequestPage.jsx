@@ -6,7 +6,6 @@ import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
-import CommitsTable from 'pages/RepoPage/CommitsTab/CommitsTable'
 import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
@@ -23,6 +22,10 @@ import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 const CompareSummary = lazy(() => import('./Summary'))
 const Root = lazy(() => import('./subroute/Root'))
 const Flags = lazy(() => import('./Flags'))
+const IndirectChangesTab = lazy(() => import('./IndirectChangesTab'))
+const CommitsTable = lazy(() =>
+  import('pages/RepoPage/CommitsTab/CommitsTable')
+)
 
 const Loader = (
   <div className="flex items-center justify-center py-16">
@@ -80,7 +83,7 @@ function PullRequestPage() {
             'lg:grid-cols-2': pullPageTabs,
           })}
         >
-          <article className="col-span-2 flex flex-col">
+          <article className="col-span-2 flex flex-col gap-3 md:gap-0">
             <TabNavigation
               tabs={[
                 {
@@ -142,10 +145,10 @@ function PullRequestPage() {
                 {pullPageTabs && (
                   <>
                     <SentryRoute
-                      path="/:provider/:owner/:repo/pull/:pullId/indirectChanges"
+                      path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
                       exact={true}
                     >
-                      indirect changes
+                      <IndirectChangesTab />
                     </SentryRoute>
                     <SentryRoute
                       path="/:provider/:owner/:repo/pull/:pullId/commits"

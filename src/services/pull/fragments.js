@@ -110,6 +110,7 @@ fragment ImpactedFilesOnPull on Pull {
         fileName
         headName
         isCriticalFile
+        missesInComparison
         baseCoverage {
           percentCovered
         }
@@ -147,7 +148,7 @@ fragment FileComparisonWithBase on Pull {
           percentCovered
         }
         changeCoverage
-        segments {
+        segments (filters: $filters) {
           header
           hasUnintendedChanges
           lines {

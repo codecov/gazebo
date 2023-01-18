@@ -3,15 +3,18 @@ import PropTypes from 'prop-types'
 
 function OptionButton({ active, options, onChange }) {
   return (
-    <div className="rounded border max-w-max">
+    <div className="flex flex-wrap rounded border divide-x">
       {options.map((o, index) => {
         return (
           <button
-            className={cs('py-1 px-2 text-sm cursor-pointer', {
-              'bg-ds-blue-darker text-white font-semibold': active === o.text,
-              'rounded-l': index === 0,
-              'rounded-r': index === options.length - 1,
-            })}
+            className={cs(
+              'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap',
+              {
+                'bg-ds-blue-darker text-white font-semibold': active === o.text,
+                'rounded-l': index === 0,
+                'rounded-r': index === options.length - 1,
+              }
+            )}
             onClick={() => {
               onChange(o)
             }}
