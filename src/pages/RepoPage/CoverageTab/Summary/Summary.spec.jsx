@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
@@ -18,7 +19,7 @@ const mockRepoOverview = {
   defaultBranch: 'main',
 }
 
-const mockBranches = {
+const mockBranches = (hasNextPage = false) => ({
   branches: {
     edges: [
       {
@@ -39,11 +40,11 @@ const mockBranches = {
       },
     ],
     pageInfo: {
-      hasNextPage: false,
+      hasNextPage: hasNextPage,
       endCursor: 'end-cursor',
     },
   },
-}
+})
 
 const mockRepoCoverage = {
   branch: {
@@ -58,23 +59,22 @@ const mockRepoCoverage = {
   },
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/test/critical-role']}>
-      <Route path="/:provider/:owner/:repo">{children}</Route>
-      {/* 
-    Route to render the current location to reduce complexity to track
-    the current location
-  */}
-      <Route
-        path="*"
-        render={({ location }) => {
-          return location.pathname
-        }}
-      />
+      <Route path="/:provider/:owner/:repo">
+        <Suspense fallback={<div>loading</div>}>{children}</Suspense>
+      </Route>
+      <Route path="*" render={({ location }) => location.pathname} />
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -91,7 +91,8 @@ afterAll(() => {
 })
 
 describe('Summary', () => {
-  const mockOnChange = jest.fn()
+  const fetchNextPage = jest.fn()
+  const mockSearching = jest.fn()
   const mockSetNewPath = jest.fn()
   const mockUseCoverageRedirectData = {
     redirectState: {
@@ -101,8 +102,13 @@ describe('Summary', () => {
     setNewPath: mockSetNewPath,
   }
 
-  function setup() {
-    useCoverageRedirect.mockReturnValue(mockUseCoverageRedirectData)
+  function setup(
+    { hasNextPage, coverageRedirectData } = {
+      hasNextPage: false,
+      coverageRedirectData: mockUseCoverageRedirectData,
+    }
+  ) {
+    useCoverageRedirect.mockReturnValue(coverageRedirectData)
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) =>
         res(
@@ -111,9 +117,17 @@ describe('Summary', () => {
         )
       ),
       graphql.query('GetBranches', (req, res, ctx) => {
+        if (req.variables?.after) {
+          fetchNextPage(req.variables?.after)
+        }
+
+        if (req.variables?.filters?.searchValue) {
+          mockSearching(req.variables?.filters?.searchValue)
+        }
+
         return res(
           ctx.status(200),
-          ctx.data({ owner: { repository: mockBranches } })
+          ctx.data({ owner: { repository: mockBranches(hasNextPage) } })
         )
       }),
       graphql.query('GetRepoCoverage', (req, res, ctx) =>
@@ -125,7 +139,7 @@ describe('Summary', () => {
     )
   }
 
-  describe.only('with populated data', () => {
+  describe('with populated data', () => {
     beforeEach(() => {
       setup()
     })
@@ -137,7 +151,7 @@ describe('Summary', () => {
       expect(branchContext).toBeInTheDocument()
     })
 
-    it.only('renders default branch as selected branch', async () => {
+    it('renders default branch as selected branch', async () => {
       render(<Summary />, { wrapper })
 
       const dropDownBtn = await screen.findByText('main')
@@ -152,88 +166,22 @@ describe('Summary', () => {
     })
   })
 
-  describe('before data has resolved', () => {
-    beforeEach(() => {
-      setup({
-        useCoverageRedirectData: mockUseCoverageRedirectData,
-        useSummaryData: {
-          isLoading: false,
-          data: {},
-          branchSelectorProps: {
-            items: [{}],
-            onChange: mockOnChange,
-            value: {},
-          },
-          currentBranchSelected: undefined,
-          defaultBranch: 'main',
-          privateRepo: false,
-          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
-          coverageChange: 40,
-          legacyApiIsSuccess: true,
-        },
-      })
-    })
-
-    it('renders the branch selector', () => {
-      render(<Summary />, { wrapper })
-
-      expect(screen.getByText(/Branch Context/)).toBeInTheDocument()
-    })
-
-    it('if no branch selected do not render the sha', () => {
-      render(<Summary />, { wrapper })
-
-      expect(screen.queryByText(/abs890d/)).not.toBeInTheDocument()
-    })
-  })
-
   describe('branch coverage', () => {
     beforeEach(() => {
-      const selectedBranch = {
-        name: 'something-else',
-        head: {
-          commitid: 'abs890dasf809',
-        },
-      }
-
-      setup({
-        useCoverageRedirectData: mockUseCoverageRedirectData,
-        useSummaryData: {
-          isLoading: false,
-          data: {
-            head: {
-              totals: { percentCovered: 60.4, hitsCount: 54, lineCount: 753 },
-            },
-          },
-          branchSelectorProps: {
-            items: [{ name: 'critical-role' }, selectedBranch],
-            onChange: mockOnChange,
-            value: {
-              name: 'something-else',
-              head: {
-                commitid: 'abs890dasf809',
-              },
-            },
-          },
-          currentBranchSelected: selectedBranch,
-          defaultBranch: 'main',
-          privateRepo: false,
-          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
-          coverageChange: 40,
-          legacyApiIsSuccess: true,
-        },
-      })
+      setup()
     })
 
-    it('renders the branch coverage', () => {
+    it('renders the branch coverage', async () => {
       render(<Summary />, { wrapper })
 
-      expect(screen.getByText('60.40%')).toBeInTheDocument()
+      const percentage = await screen.findByText('95.00%')
+      expect(percentage).toBeInTheDocument()
     })
-    it('renders the lines covered', () => {
+    it('renders the lines covered', async () => {
       render(<Summary />, { wrapper })
 
-      expect(screen.getByText('54 of 753 lines covered')).toBeInTheDocument()
+      const lineCoverage = await screen.findByText('100 of 100 lines covered')
+      expect(lineCoverage).toBeInTheDocument()
     })
   })
   /*
@@ -242,134 +190,60 @@ describe('Summary', () => {
   */
   describe('uses a conditional Redirect', () => {
     beforeEach(() => {
-      const selectedBranch = {
-        name: 'something-else',
-        head: {
-          commitid: 'abs890dasf809',
-        },
-      }
-
       setup({
-        useCoverageRedirectData: {
+        coverageRedirectData: {
           redirectState: {
             newPath: '/some/new/location',
             isRedirectionEnabled: true,
           },
           setNewPath: mockSetNewPath,
         },
-        useSummaryData: {
-          isLoading: false,
-          data: {},
-          branchSelectorProps: {
-            items: [selectedBranch],
-            onChange: mockOnChange,
-            value: selectedBranch,
-          },
-          currentBranchSelected: selectedBranch,
-          defaultBranch: 'main',
-          privateRepo: false,
-          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
-          coverageChange: 40,
-          legacyApiIsSuccess: true,
-        },
       })
     })
 
-    it('updates the location', () => {
+    it('updates the location', async () => {
       render(<Summary />, { wrapper })
 
-      expect(screen.getByText(/some\/new\/location/)).toBeInTheDocument()
-    })
-  })
+      const button = await screen.findByText('main')
+      userEvent.click(button)
 
-  describe('fires the setNewPath on branch selection', () => {
-    beforeEach(() => {
-      const selectedBranch = {
-        name: 'something-else',
-        head: {
-          commitid: 'abs890dasf809',
-        },
-      }
-
-      setup({
-        useCoverageRedirectData: {
-          redirectState: {
-            newPath: '/some/new/location',
-            isRedirectionEnabled: true,
-          },
-          setNewPath: mockSetNewPath,
-        },
-        useSummaryData: {
-          isLoading: false,
-          data: {},
-          branchSelectorProps: {
-            items: [
-              { name: 'foo', head: { commitid: '1234' } },
-              selectedBranch,
-            ],
-            onChange: mockOnChange,
-            value: selectedBranch,
-          },
-          currentBranchSelected: selectedBranch,
-          defaultBranch: 'main',
-          privateRepo: false,
-          coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
-          coverageChange: 40,
-          legacyApiIsSuccess: true,
-        },
-      })
-    })
-
-    it('updates the location', () => {
-      render(<Summary />, { wrapper })
-
-      // open select
-      userEvent.click(screen.getByRole('button', { name: /select branch/i }))
-      // pick foo branch
-      userEvent.click(screen.getByRole('option', { name: /foo/ }))
+      const branch1 = await screen.findByText('branch-1')
+      userEvent.click(branch1)
 
       expect(mockSetNewPath).toHaveBeenCalled()
     })
   })
 
+  describe('fires the setNewPath on branch selection', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('updates the location', async () => {
+      render(<Summary />, { wrapper })
+
+      const main = await screen.findByText('main')
+      userEvent.click(main)
+
+      const branch1 = await screen.findByText('branch-1')
+      userEvent.click(branch1)
+
+      expect(mockSetNewPath).toHaveBeenCalled()
+      expect(mockSetNewPath).toHaveBeenCalledWith('branch-1')
+    })
+  })
+
   describe('when onLoadMore is triggered', () => {
     describe('there is a next page', () => {
-      const fetchNextPage = jest.fn()
       beforeEach(() => {
-        const selectedBranch = {
-          name: 'something-else',
-          head: {
-            commitid: 'abs890dasf809',
-          },
-        }
-
         setup({
-          useCoverageRedirectData: {
+          hasNextPage: true,
+          coverageRedirectData: {
             redirectState: {
               newPath: '/some/new/location',
               isRedirectionEnabled: true,
             },
             setNewPath: mockSetNewPath,
-          },
-          useSummaryData: {
-            isLoading: false,
-            data: {},
-            branchSelectorProps: {
-              items: [
-                { name: 'foo', head: { commitid: '1234' } },
-                selectedBranch,
-              ],
-              onChange: mockOnChange,
-              value: selectedBranch,
-            },
-            currentBranchSelected: selectedBranch,
-            defaultBranch: 'main',
-            privateRepo: false,
-            coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
-            coverageChange: 40,
-            legacyApiIsSuccess: true,
-            branchesFetchNextPage: fetchNextPage,
-            branchesHasNextPage: true,
           },
         })
 
@@ -381,7 +255,9 @@ describe('Summary', () => {
       it('calls fetchNextPage', async () => {
         render(<Summary />, { wrapper })
 
-        const select = screen.getByRole('button', { name: 'select branch' })
+        const select = await screen.findByRole('button', {
+          name: 'select branch',
+        })
         userEvent.click(select)
 
         await waitFor(() => expect(fetchNextPage).toBeCalled())
@@ -391,45 +267,14 @@ describe('Summary', () => {
     describe('when there is not a next page', () => {
       const fetchNextPage = jest.fn()
       beforeEach(() => {
-        const selectedBranch = {
-          name: 'something-else',
-          head: {
-            commitid: 'abs890dasf809',
-          },
-        }
-
         setup({
-          useCoverageRedirectData: {
+          hasNextPage: false,
+          coverageRedirectData: {
             redirectState: {
               newPath: '/some/new/location',
               isRedirectionEnabled: true,
             },
             setNewPath: mockSetNewPath,
-          },
-          useSummaryData: {
-            isLoading: false,
-            data: {},
-            branchSelectorProps: {
-              items: [
-                { name: 'foo', head: { commitid: '1234' } },
-                selectedBranch,
-              ],
-              onChange: mockOnChange,
-              value: selectedBranch,
-            },
-            currentBranchSelected: selectedBranch,
-            defaultBranch: 'main',
-            privateRepo: false,
-            coverage: [{ coverage: 40 }, { coverage: 50 }, { coverage: 30 }],
-            coverageChange: 40,
-            legacyApiIsSuccess: true,
-            branchesFetchNextPage: fetchNextPage,
-            branchesHasNextPage: false,
-            branchList: [{ name: 'foo', head: { commitid: '1234' } }],
-            branchListIsFetching: false,
-            branchListHasNextPage: false,
-            branchListFetchNextPage: fetchNextPage,
-            setBranchSearchTerm: () => {},
           },
         })
 
@@ -440,11 +285,33 @@ describe('Summary', () => {
       it('does not call fetchNextPage', async () => {
         render(<Summary />, { wrapper })
 
-        const select = screen.getByRole('button', { name: 'select branch' })
+        const select = await screen.findByRole('button', {
+          name: 'select branch',
+        })
         userEvent.click(select)
 
         await waitFor(() => expect(fetchNextPage).not.toBeCalled())
       })
+    })
+  })
+
+  describe('user searches for branch', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('calls the api with the search value', async () => {
+      render(<Summary />, { wrapper })
+
+      const select = await screen.findByText('main')
+      userEvent.click(select)
+
+      const input = await screen.findByRole('textbox')
+      userEvent.type(input, 'searching for branch')
+
+      await waitFor(() =>
+        expect(mockSearching).toHaveBeenCalledWith('searching for branch')
+      )
     })
   })
 })
