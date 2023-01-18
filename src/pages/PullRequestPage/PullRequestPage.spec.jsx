@@ -465,7 +465,7 @@ describe('PullRequestPage', () => {
 
     describe('when clicking on indirect changes tab', () => {
       beforeEach(async () => {
-        screen.getByText(/Indirect changes/).click()
+        screen.getByText(/Indirect changes/i).click()
 
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
