@@ -72,46 +72,6 @@ describe('HeaderBanners', () => {
     )
   }
 
-  describe('displaying the FeedbackBanner', () => {
-    describe('running in cloud', () => {
-      beforeEach(() => {
-        setup({})
-      })
-
-      it('displays the banner', async () => {
-        render(
-          <HeaderBanners
-            provider="gh"
-            owner={{ username: 'codecov', isCurrentUserPartOfOrg: true }}
-          />,
-          { wrapper }
-        )
-
-        const banner = await screen.findByText('Updating our web app')
-        expect(banner).toBeInTheDocument()
-      })
-    })
-
-    describe('running in self hosted', () => {
-      beforeEach(() => {
-        setup({ isSelfHosted: true })
-      })
-
-      it('does not display the banner', async () => {
-        render(
-          <HeaderBanners
-            provider="gh"
-            owner={{ username: 'codecov', isCurrentUserPartOfOrg: true }}
-          />,
-          { wrapper }
-        )
-
-        const banner = screen.queryByText('Updating our web app')
-        expect(banner).not.toBeInTheDocument()
-      })
-    })
-  })
-
   describe('displaying ExceededUploadsAlert banner', () => {
     describe('org has exceeded limit', () => {
       beforeEach(() => {

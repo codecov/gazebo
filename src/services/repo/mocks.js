@@ -1,7 +1,55 @@
 import { graphql } from 'msw'
 
-export const randomFlagsHandler = graphql.query(
-  'FlagsFilter',
+export const flagsSelectHandler = graphql.query(
+  'FlagsSelect',
+  (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.data({
+        owner: {
+          repository: {
+            flags: {
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: 'bGF0ZXN0LXVwbG9hZGVy',
+              },
+              edges: [
+                {
+                  node: {
+                    name: 'unit-python-uploader',
+                  },
+                },
+                {
+                  node: {
+                    name: 'unit-latest-uploader',
+                  },
+                },
+                {
+                  node: {
+                    name: 'unit',
+                  },
+                },
+                {
+                  node: {
+                    name: 'new_python_uploader',
+                  },
+                },
+                {
+                  node: {
+                    name: 'latest-uploader',
+                  },
+                },
+              ],
+            },
+          },
+        },
+      })
+    )
+  }
+)
+
+export const flagMeasurementsHandler = graphql.query(
+  'FlagMeasurements',
   (req, res, ctx) => {
     return res(
       ctx.status(200),
@@ -51,6 +99,27 @@ export const randomFlagsHandler = graphql.query(
                 },
               ],
             },
+          },
+        },
+      })
+    )
+  }
+)
+
+export const backfillFlagMembershipsHandler = graphql.query(
+  'BackfillFlagMemberships',
+  (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.data({
+        config: {
+          isTimescaleEnabled: true,
+        },
+        owner: {
+          repository: {
+            flagsMeasurementsActive: true,
+            flagsMeasurementsBackfilled: true,
+            flagsCount: 12,
           },
         },
       })

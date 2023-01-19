@@ -31,7 +31,7 @@ const headers = [
       </>
     ),
     accessorKey: 'coverage',
-    width: 'w-3/12',
+    width: 'w-3/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
@@ -42,7 +42,7 @@ const headers = [
       </>
     ),
     accessorKey: 'change',
-    width: 'w-3/12',
+    width: 'w-3/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -87,15 +87,9 @@ function transformPullToTable(pulls, isLoading) {
           updatestamp={updatestamp}
         />
       ),
-      coverage: (
-        <span className="font-lato w-full">
-          <Coverage head={head} state={state} pullId={pullId} />
-        </span>
-      ),
+      coverage: <Coverage head={head} state={state} pullId={pullId} />,
       change: (
-        <div className="w-full flex justify-end">
-          <TotalsNumber value={change} showChange data-testid="change-value" />
-        </div>
+        <TotalsNumber value={change} showChange data-testid="change-value" />
       ),
     }
   })

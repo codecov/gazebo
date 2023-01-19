@@ -48,7 +48,7 @@ afterAll(() => {
 describe('useRepoCommitContents', () => {
   function setup() {
     server.use(
-      graphql.query('CommitContents', (req, res, ctx) =>
+      graphql.query('CommitPathContents', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))
       )
     )
@@ -66,7 +66,7 @@ describe('useRepoCommitContents', () => {
             provider: 'gh',
             owner: 'codecov',
             repo: 'test',
-            commitSha: 'commit-1234',
+            commit: 'commit-1234',
             path: '',
           }),
         { wrapper }
@@ -82,7 +82,7 @@ describe('useRepoCommitContents', () => {
             provider: 'gh',
             owner: 'codecov',
             repo: 'test',
-            commitSha: 'commit-1234',
+            commit: 'commit-1234',
             path: '',
           }),
         { wrapper }

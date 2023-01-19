@@ -9,16 +9,6 @@ function fetchRepoOverviewInitial({ provider, owner, repo, signal }) {
         repository(name:$repo){
           private
           defaultBranch
-          branches {
-            edges {
-              node {
-                name
-                head {
-                  commitid
-                }
-              }
-            }
-          }
         }
       }
     }

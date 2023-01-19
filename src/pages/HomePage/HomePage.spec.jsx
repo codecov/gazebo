@@ -5,7 +5,7 @@ import { useUser } from 'services/user'
 
 import HomePage from './HomePage'
 
-jest.mock('./Header', () => () => 'Header')
+jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 jest.mock('services/user')
 
@@ -43,8 +43,8 @@ describe('HomePage', () => {
       expect(screen.getByText(/ListRepo/)).toBeInTheDocument()
     })
 
-    it('renders the header', () => {
-      expect(screen.getByText(/Header/)).toBeInTheDocument()
+    it('renders the context switcher', () => {
+      expect(screen.getByText(/MyContextSwitcher/)).toBeInTheDocument()
     })
   })
 

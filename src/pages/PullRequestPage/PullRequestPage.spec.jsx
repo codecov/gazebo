@@ -5,10 +5,10 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { usePull } from 'services/pull'
 import { useFlags } from 'shared/featureFlags'
 
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
+import { usePullPageData } from './hooks/usePullPageData'
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('./Header', () => () => 'Header')
@@ -17,9 +17,10 @@ jest.mock('./Flags', () => () => 'Flags')
 jest.mock('./Commits', () => () => 'Commits')
 jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./ErrorBanner', () => () => 'Error Banner')
+jest.mock('./IndirectChangesTab', () => () => 'IndirectChangesTab')
 jest.mock('pages/RepoPage/CommitsTab/CommitsTable', () => () => 'Commits Table')
 
-jest.mock('services/pull')
+jest.mock('./hooks/usePullPageData')
 jest.mock('shared/featureFlags')
 
 const commits = {
@@ -85,7 +86,7 @@ describe('PullRequestPage', () => {
       )
     )
 
-    usePull.mockReturnValue({
+    usePullPageData.mockReturnValue({
       data: { hasAccess, pull: pullData },
     })
 
@@ -101,6 +102,12 @@ describe('PullRequestPage', () => {
           </Route>
           <Route
             path="/:provider/:owner/:repo/pull/:pullId/commits"
+            exact={true}
+          >
+            <PullRequestPage />
+          </Route>
+          <Route
+            path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
             exact={true}
           >
             <PullRequestPage />
@@ -382,7 +389,13 @@ describe('PullRequestPage', () => {
       setup({
         hasAccess: true,
         pullData: {
+          commits: {
+            totalCount: 11,
+          },
           compareWithBase: {
+            impactedFilesCount: 9,
+            indirectChangedFilesCount: 19,
+            flagComparisonsCount: 91,
             __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
           },
         },
@@ -402,14 +415,32 @@ describe('PullRequestPage', () => {
       expect(screen.getByText('Root')).toBeInTheDocument()
     })
 
+    it('renders impacted files tab count', () => {
+      expect(screen.getByText('9')).toBeInTheDocument()
+    })
+
     it('renders indirect changes tab', () => {
       expect(screen.getByText(/Indirect changes/i)).toBeInTheDocument()
     })
+
+    it('renders indirect changes tab count', () => {
+      expect(screen.getByText('19')).toBeInTheDocument()
+    })
+
     it('renders commits tab', () => {
       expect(screen.getByText(/Commits/i)).toBeInTheDocument()
     })
+
+    it('renders commits tab count', () => {
+      expect(screen.getByText('11')).toBeInTheDocument()
+    })
+
     it('renders flags tab', () => {
       expect(screen.getByText(/Flags/i)).toBeInTheDocument()
+    })
+
+    it('renders flags tab count', () => {
+      expect(screen.getByText('91')).toBeInTheDocument()
     })
 
     it('renders the name of the header and coverage labels', () => {
@@ -429,6 +460,20 @@ describe('PullRequestPage', () => {
 
       it('renders commits table', () => {
         expect(screen.getByText(/Commits Table/i)).toBeInTheDocument()
+      })
+    })
+
+    describe('when clicking on indirect changes tab', () => {
+      beforeEach(async () => {
+        screen.getByText(/Indirect changes/i).click()
+
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+      })
+
+      it('renders the indirect changes tab', () => {
+        expect(screen.getByText(/IndirectChangesTab/)).toBeInTheDocument()
       })
     })
   })

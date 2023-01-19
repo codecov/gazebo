@@ -4,7 +4,7 @@ import AppLink from 'shared/AppLink'
 
 function RepoNotSetup({ owner, repoName, isCurrentUserPartOfOrg }) {
   return (
-    <span className="flex w-full justify-end gap-1">
+    <>
       Not yet enabled{' '}
       {isCurrentUserPartOfOrg && (
         <AppLink
@@ -18,7 +18,7 @@ function RepoNotSetup({ owner, repoName, isCurrentUserPartOfOrg }) {
           setup repo
         </AppLink>
       )}
-    </span>
+    </>
   )
 }
 

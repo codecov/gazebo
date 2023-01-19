@@ -19,35 +19,36 @@ function Header() {
     commitid: commitSHA,
   })
 
-  const { author, pullId, message, createdAt, branchName, ciPassed } =
-    data?.commit
+  const commit = data?.commit
+  const username = data?.commit?.author?.username
 
   const shortSHA = commitSHA?.slice(0, 7)
   const providerPullUrl = getProviderPullURL({
     provider,
     owner,
     repo,
-    pullId,
+    pullId: commit?.pullId,
   })
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col">
-        {message && <TruncatedMessage message={message} />}
+        {commit?.message && <TruncatedMessage message={commit?.message} />}
         <div className="flex items-center text-ds-gray-quinary gap-2">
           <div>
-            {createdAt && (
-              <span className="font-light">{formatTimeToNow(createdAt)}</span>
+            {commit?.createdAt && (
+              <span className="font-light">
+                {formatTimeToNow(commit?.createdAt)}
+              </span>
             )}{' '}
-            {/* TODO: deconstruct username from author in a const above once we have less statements (after removing the top banner) */}
-            {author?.username && (
+            {username && (
               <A
                 to={{
                   pageName: 'owner',
-                  options: { owner: author.username },
+                  options: { owner: username },
                 }}
               >
-                {author.username}
+                {username}
               </A>
             )}{' '}
             <span className="font-light">authored commit</span>{' '}
@@ -65,13 +66,13 @@ function Header() {
               {shortSHA}
             </A>
           </div>
-          <CIStatusLabel ciPassed={ciPassed} />
+          <CIStatusLabel ciPassed={commit?.ciPassed} />
           <span className="flex items-center flex-none">
             <Icon name="branch" variant="developer" size="sm" />
-            {branchName}
+            {commit?.branchName}
           </span>
           <PullLabel
-            pullId={pullId}
+            pullId={commit?.pullId}
             provider={provider}
             providerPullUrl={providerPullUrl}
           />

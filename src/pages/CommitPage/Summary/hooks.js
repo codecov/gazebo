@@ -12,7 +12,7 @@ export function getCommitDataForSummary({
   commitid,
 }) {
   const rawPatch = compareWithParent?.patchTotals?.coverage
-  const patchCoverage = isNumber(rawPatch) ? rawPatch * 100 : Number.NaN
+  const patchCoverage = isNumber(rawPatch) ? rawPatch : Number.NaN
   const headCoverage = totals?.coverage
   const parentCoverage = parent?.totals?.coverage
 
@@ -35,7 +35,11 @@ export function useCommitForSummary() {
     commitid: commitSHA,
   })
 
-  const { compareWithParent, totals, parent, state, commitid } = data?.commit
+  const compareWithParent = data?.commit?.compareWithParent
+  const totals = data?.commit?.totals
+  const parent = data?.commit?.parent
+  const state = data?.commit?.state
+  const commitid = data?.commit?.commitid
 
   return useMemo(
     () =>

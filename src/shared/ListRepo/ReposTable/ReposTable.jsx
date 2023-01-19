@@ -91,15 +91,13 @@ function transformRepoToTable({
       />
     ),
     lastUpdated: (
-      <span className="w-full text-ds-gray-quinary">
+      <span className="flex-1 text-ds-gray-quinary">
         {repo?.latestCommitAt ? formatTimeToNow(repo?.latestCommitAt) : ''}
       </span>
     ),
     coverage:
       typeof repo?.coverage === 'number' ? (
-        <div className="w-full flex gap-2 justify-end items-center">
-          <Progress amount={repo?.coverage} label={true} />
-        </div>
+        <Progress amount={repo?.coverage} label={true} />
       ) : (
         <NoRepoCoverage
           active={repo.active}
