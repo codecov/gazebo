@@ -92,19 +92,21 @@ function RepoPage() {
 
   return (
     <RepoBreadcrumbProvider>
-      <div className="flex flex-col gap-4">
+      <div>
         <RepoBreadcrumb />
         {repoHasCommits && isRepoActivated && (
-          <TabNavigation
-            tabs={getRepoTabs({
-              matchTree,
-              matchBlobs,
-              isCurrentUserPartOfOrg,
-              provider,
-              owner,
-              repo,
-            })}
-          />
+          <div className="sticky top-8 z-30 bg-white mb-2">
+            <TabNavigation
+              tabs={getRepoTabs({
+                matchTree,
+                matchBlobs,
+                isCurrentUserPartOfOrg,
+                provider,
+                owner,
+                repo,
+              })}
+            />
+          </div>
         )}
         <Suspense fallback={Loader}>
           {isRepoActivated ? (

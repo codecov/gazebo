@@ -27,7 +27,7 @@ function ErrorDisplayMessage() {
 
 // Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
 // component will affect both places
-function RawFileviewer({ title, showTopBorder = true, addTopPadding = true }) {
+function RawFileviewer({ title }) {
   const { owner, repo, provider, ref, path, commit } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const [selectedFlags, setSelectedFlags] = useState([])
@@ -54,13 +54,7 @@ function RawFileviewer({ title, showTopBorder = true, addTopPadding = true }) {
   }
 
   return (
-    <div
-      className={cs('flex flex-col gap-2', {
-        'border-t border-solid border-ds-gray-tertiary': showTopBorder,
-        'pt-6': addTopPadding,
-      })}
-      data-testid="file-viewer-wrapper"
-    >
+    <div className={cs('flex flex-col')} data-testid="file-viewer-wrapper">
       <ToggleHeader
         title={title}
         flagNames={flagNames}
@@ -100,8 +94,6 @@ function RawFileviewer({ title, showTopBorder = true, addTopPadding = true }) {
 
 RawFileviewer.propTypes = {
   title: PropType.oneOfType([PropType.string, PropType.object]),
-  showTopBorder: PropType.bool,
-  addTopPadding: PropType.bool,
 }
 
 export default RawFileviewer

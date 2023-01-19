@@ -26,7 +26,7 @@ function BaseLayout({ children }) {
       <Suspense fallback={fullPageLoader}>
         <ErrorBoundary sentryScopes={[['layout', 'base']]}>
           <NetworkErrorBoundary>
-            <main className="container grow flex flex-col gap-4 mt-4 mb-8 md:p-0">
+            <main className="container grow flex flex-col gap-4 mt-2 mb-8 md:p-0">
               <GlobalBanners />
               {children}
               <UserOnboarding />

@@ -7,7 +7,7 @@ import CoverageSelect from './CoverageSelect'
 
 export default function Title({ title, children }) {
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap px-3 md:p-0">
+    <div className="z-10 sticky top-[4.5rem] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap bg-white px-3 md:px-0 py-3">
       <span className="text-ds-gray-senary font-semibold text-base">
         {title}
       </span>
