@@ -11,7 +11,7 @@ const progressClasses = {
 }
 
 const variantClasses = {
-  default: `h-1`,
+  default: `h-2`,
   tall: `h-5`,
 }
 
