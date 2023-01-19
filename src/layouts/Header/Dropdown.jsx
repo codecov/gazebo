@@ -41,7 +41,11 @@ function Dropdown({ currentUser }) {
   })
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      data-testid="dropdown"
+      data-cy="auth-user-dropdown"
+    >
       <label className="sr-only" {...getLabelProps()}>
         Logged in user sub navigation
       </label>
