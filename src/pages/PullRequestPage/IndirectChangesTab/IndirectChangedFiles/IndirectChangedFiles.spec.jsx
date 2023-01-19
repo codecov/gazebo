@@ -10,7 +10,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import IndirectChangedFiles from './IndirectChangedFiles'
 
 jest.mock('../FileDiff', () => () => 'FileDiff Component')
-jest.mock('../IndirectChangesInfo', () => () => 'IndirectChangesInfo')
 
 const mockImpactedFiles = [
   {
@@ -213,12 +212,6 @@ describe('IndirectChangedFiles', () => {
 
       const spinner = screen.getByTestId('spinner')
       expect(spinner).toBeInTheDocument()
-    })
-
-    it('renders the information text of indirect changes', () => {
-      render(<IndirectChangedFiles />, { wrapper: wrapper() })
-
-      expect(screen.getByText(/IndirectChangesInfo/)).toBeInTheDocument()
     })
 
     describe('renders the headers of the table', () => {

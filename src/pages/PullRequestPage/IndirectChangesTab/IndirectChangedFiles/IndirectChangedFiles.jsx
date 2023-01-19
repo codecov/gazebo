@@ -7,7 +7,6 @@ import { useIndirectChangedFilesTable } from './hooks'
 import NameColumn from './NameColumn'
 
 import FileDiff from '../FileDiff'
-import IndirechChangesInfo from '../IndirectChangesInfo'
 
 const columns = [
   {
@@ -106,17 +105,17 @@ function IndirectChangedFiles() {
     tableData: data?.impactedFiles,
   })
 
+  if (isLoading) {
+    return <Loader />
+  }
+
   return (
-    <div>
-      <IndirechChangesInfo />
-      <Table
-        data={tableContent}
-        columns={columns}
-        onSort={handleSort}
-        renderSubComponent={renderSubComponent}
-      />
-      {isLoading && <Loader />}
-    </div>
+    <Table
+      data={tableContent}
+      columns={columns}
+      onSort={handleSort}
+      renderSubComponent={renderSubComponent}
+    />
   )
 }
 

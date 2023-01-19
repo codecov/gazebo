@@ -19,6 +19,10 @@ jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./ErrorBanner', () => () => 'Error Banner')
 jest.mock('./IndirectChangesTab', () => () => 'IndirectChangesTab')
 jest.mock('pages/RepoPage/CommitsTab/CommitsTable', () => () => 'Commits Table')
+jest.mock(
+  './IndirectChangesTab/IndirectChangesInfo',
+  () => () => 'IndirectChangesInfo'
+)
 
 jest.mock('./hooks/usePullPageData')
 jest.mock('shared/featureFlags')
@@ -474,6 +478,10 @@ describe('PullRequestPage', () => {
 
       it('renders the indirect changes tab', () => {
         expect(screen.getByText(/IndirectChangesTab/)).toBeInTheDocument()
+      })
+
+      it('renders the information text of indirect changes', () => {
+        expect(screen.getByText(/IndirectChangesInfo/)).toBeInTheDocument()
       })
     })
   })

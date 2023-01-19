@@ -15,7 +15,7 @@ const tableColumns = [
     id: 'name',
     header: <span>Name</span>,
     accessorKey: 'name',
-    width: 'w-7/12',
+    width: 'w-3/12',
     cell: (info) => info.getValue(),
     justifyStart: true,
   },
@@ -23,7 +23,7 @@ const tableColumns = [
     id: 'headCoverage',
     header: <span className="w-full text-right">HEAD %</span>,
     accessorKey: 'headCoverage',
-    width: 'w-3/12 justify-end',
+    width: 'w-7/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
@@ -58,7 +58,7 @@ function getTableData(data) {
 
       return {
         name: (
-          <h2 key={name} className="break-words w-24">
+          <h2 key={name} className="w-full break-words">
             {name}
           </h2>
         ),
