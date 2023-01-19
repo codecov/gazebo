@@ -1,4 +1,3 @@
-import cs from 'classnames'
 import PropType from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -54,7 +53,7 @@ function RawFileviewer({ title }) {
   }
 
   return (
-    <div className={cs('flex flex-col')} data-testid="file-viewer-wrapper">
+    <div className="flex flex-col" data-testid="file-viewer-wrapper">
       <ToggleHeader
         title={title}
         flagNames={flagNames}
