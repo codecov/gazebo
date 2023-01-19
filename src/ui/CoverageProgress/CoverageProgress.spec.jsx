@@ -34,4 +34,21 @@ describe('CoverageProgress', () => {
       expect(text).toBeInTheDocument()
     })
   })
+
+  describe('when rendered as tall variant', () => {
+    it('light is not applied to totals number', () => {
+      render(
+        <CoverageProgress
+          commitid="123456789"
+          totals={{
+            coverage: 45,
+          }}
+          variant="tall"
+        />
+      )
+
+      const totalsNumber = screen.getByTestId('coverage-value')
+      expect(totalsNumber).not.toHaveClass('light')
+    })
+  })
 })
