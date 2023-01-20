@@ -30,21 +30,30 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
     }
   }, [hash, number, targeted])
 
-  if (hash === `#L${number}`) {
-    setTimeout(() => {
-      window.scrollTo({
-        top: lineRef.current.offsetTop,
-        behavior: 'auto',
-      })
-    }, 0)
-  }
+  useLayoutEffect(() => {
+    let timeout
+    if (hash === `#L${number}`) {
+      timeout = setTimeout(() => {
+        window.scrollTo({
+          top: lineRef.current.offsetTop,
+          left: 0,
+          behavior: 'smooth',
+        })
+      }, 0)
+    }
+
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout)
+      }
+    }
+  }, [hash, number])
 
   return (
     <tr
       {...getLineProps({ line, key: number })}
       data-testid="fv-single-line"
       ref={lineRef}
-      id={`L${number}`}
     >
       <td
         aria-label={lineStateToLabel[lineState]}

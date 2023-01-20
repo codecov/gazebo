@@ -14,16 +14,19 @@ export const LINE_STATE = Object.freeze({
   PARTIAL: 'PARTIAL',
 })
 
+const baseBorder = 'relative border-ds-gray-tertiary border-r'
 const afterBorder = 'after:absolute after:inset-y-0 after:right-0'
 
 export const classNamePerLineState = {
-  [LINE_STATE.COVERED]: cs('bg-ds-coverage-covered font-normal'),
+  [LINE_STATE.COVERED]: cs(baseBorder, 'bg-ds-coverage-covered font-normal'),
   [LINE_STATE.UNCOVERED]: cs(
+    baseBorder,
     'font-bold bg-ds-coverage-uncovered after:border-ds-primary-red after:border-r-2',
     afterBorder
   ),
-  [LINE_STATE.BLANK]: cs('font-normal'),
+  [LINE_STATE.BLANK]: cs(baseBorder, 'font-normal'),
   [LINE_STATE.PARTIAL]: cs(
+    baseBorder,
     'bg-ds-coverage-partial after:border-ds-primary-yellow after:border-dotted after:border-r-2 font-bold',
     afterBorder
   ),
