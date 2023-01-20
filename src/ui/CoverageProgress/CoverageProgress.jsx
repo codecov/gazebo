@@ -2,12 +2,15 @@ import PropTypes from 'prop-types'
 
 import Progress from 'ui/Progress'
 
-const CoverageProgress = ({ color, totals }) => {
+const CoverageProgress = ({ color, totals, variant = 'default' }) => {
   if (typeof totals?.coverage === 'number') {
     return (
-      <span className="w-64">
-        <Progress amount={totals?.coverage} label color={color} />
-      </span>
+      <Progress
+        amount={totals?.coverage}
+        label
+        color={color}
+        variant={variant}
+      />
     )
   }
 
@@ -18,6 +21,7 @@ CoverageProgress.propTypes = {
   totals: PropTypes.shape({
     coverage: PropTypes.number,
   }),
+  variant: PropTypes.oneOf(['default', 'tall']),
   color: PropTypes.oneOf(['default', 'danger', 'warning']),
 }
 

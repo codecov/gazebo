@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -11,6 +11,7 @@ import { displayTypeParameter } from '../constants'
 import CoverageEntry from '../TableEntries/BaseEntries/CoverageEntry'
 import CommitDirEntry from '../TableEntries/CommitEntries/CommitDirEntry'
 import CommitFileEntry from '../TableEntries/CommitEntries/CommitFileEntry'
+import { useTableDefaultSort } from '../useTableDefaultSort'
 import { adjustListIfUpDir } from '../utils'
 
 function determineDisplayType({ filters, isSearching }) {
@@ -159,7 +160,7 @@ export function useRepoCommitContentsTable() {
   const { provider, owner, repo, path, commit } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
-  const [sortBy, setSortBy] = useState([])
+  const [sortBy, setSortBy] = useTableDefaultSort()
 
   const { data: commitData, isLoading: commitIsLoading } =
     useRepoCommitContents({
@@ -189,11 +190,11 @@ export function useRepoCommitContentsTable() {
 
   const handleSort = useCallback(
     (tableSortBy) => {
-      if (!isEqual(sortBy, tableSortBy)) {
+      if (tableSortBy?.length > 0 && !isEqual(sortBy, tableSortBy)) {
         setSortBy(tableSortBy)
       }
     },
-    [sortBy]
+    [sortBy, setSortBy]
   )
 
   return {

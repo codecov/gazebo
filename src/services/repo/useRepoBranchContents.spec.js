@@ -19,17 +19,26 @@ const wrapper = ({ children }) => (
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
 afterAll(() => server.close())
 
-describe('useRepoContents', () => {
-  const dataReturned = {
-    owner: {
-      username: 'Rabee-AbuBaker',
-      repository: {
-        branch: {
-          head: {
-            pathContents: [
+const dataReturned = {
+  owner: {
+    username: 'Rabee-AbuBaker',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          pathContents: {
+            results: [
               {
                 name: 'flag1',
                 filePath: null,
@@ -41,8 +50,10 @@ describe('useRepoContents', () => {
         },
       },
     },
-  }
+  },
+}
 
+describe('useRepoContents', () => {
   function setup() {
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
@@ -52,15 +63,6 @@ describe('useRepoContents', () => {
   }
 
   describe('when called', () => {
-    const expectedResponse = [
-      {
-        name: 'flag1',
-        filePath: null,
-        percentCovered: 100.0,
-        type: 'dir',
-      },
-    ]
-
     beforeEach(() => {
       setup()
     })
@@ -101,10 +103,26 @@ describe('useRepoContents', () => {
 
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isSuccess)
 
-        await waitFor(() =>
-          expect(result.current.data).toEqual(expectedResponse)
-        )
+        const expectedResponse = {
+          results: [
+            {
+              name: 'flag1',
+              filePath: null,
+              percentCovered: 100.0,
+              type: 'dir',
+            },
+          ],
+          indicationRange: {
+            upperRange: 80,
+            lowerRange: 60,
+          },
+        }
+
+        // await waitFor(() =>
+        expect(result.current.data).toEqual(expectedResponse)
+        // )
       })
     })
   })

@@ -131,10 +131,8 @@ function PullRequestPage() {
                     ]
                   : []),
               ]}
+              component={<ToggleHeader coverageIsLoading={false} />}
             />
-            <div className="md:mt-[-25px] md:pb-2 w-fit self-end">
-              <ToggleHeader title="" coverageIsLoading={false} />
-            </div>
             <Switch>
               <Suspense fallback={Loader}>
                 <SentryRoute

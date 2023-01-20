@@ -1,5 +1,4 @@
-import cs from 'classnames'
-import PropType from 'prop-types'
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -13,6 +12,7 @@ import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHead
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import SingleLine from 'ui/CodeRenderer/SingleLine'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
+import Title from 'ui/FileViewer/ToggleHeader/Title'
 
 function ErrorDisplayMessage() {
   return (
@@ -25,9 +25,37 @@ function ErrorDisplayMessage() {
   )
 }
 
+function FileTitle({
+  title,
+  sticky,
+  withKey,
+  coverageIsLoading,
+  setSelectedFlags,
+}) {
+  if (withKey) {
+    return (
+      <ToggleHeader
+        title={title}
+        sticky={sticky}
+        coverageIsLoading={coverageIsLoading}
+        onFlagsChange={setSelectedFlags}
+      />
+    )
+  }
+  return <Title title={title} sticky={sticky} />
+}
+
+FileTitle.propTypes = {
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  sticky: PropTypes.bool,
+  withKey: PropTypes.bool,
+  coverageIsLoading: PropTypes.bool,
+  setSelectedFlags: PropTypes.func,
+}
+
 // Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
 // component will affect both places
-function RawFileviewer({ title, showTopBorder = true, addTopPadding = true }) {
+function RawFileviewer({ title, sticky = false, withKey = true }) {
   const { owner, repo, provider, ref, path, commit } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const [selectedFlags, setSelectedFlags] = useState([])
@@ -35,7 +63,6 @@ function RawFileviewer({ title, showTopBorder = true, addTopPadding = true }) {
   // TODO: This hook needs revision/enhancement
   const {
     content,
-    flagNames,
     totals: fileCoverage,
     coverage: coverageData,
     isLoading: coverageIsLoading,
@@ -54,23 +81,18 @@ function RawFileviewer({ title, showTopBorder = true, addTopPadding = true }) {
   }
 
   return (
-    <div
-      className={cs('flex flex-col gap-2', {
-        'border-t border-solid border-ds-gray-tertiary': showTopBorder,
-        'pt-6': addTopPadding,
-      })}
-      data-testid="file-viewer-wrapper"
-    >
-      <ToggleHeader
+    <div className="flex flex-col" data-testid="file-viewer-wrapper">
+      <FileTitle
+        withKey={withKey}
         title={title}
-        flagNames={flagNames}
+        sticky={sticky}
         coverageIsLoading={coverageIsLoading}
         onFlagsChange={setSelectedFlags}
       />
       <div id={path} className="target:ring">
         <CodeRendererProgressHeader
-          path={path} // This is only populated in standalone fileviewer
-          pathRef={ref} // This is only populated in standalone fileviewer
+          path={path}
+          pathRef={ref}
           fileCoverage={fileCoverage}
         />
         {!!isCriticalFile && <CriticalFileLabel variant="borderTop" />}
@@ -99,9 +121,9 @@ function RawFileviewer({ title, showTopBorder = true, addTopPadding = true }) {
 }
 
 RawFileviewer.propTypes = {
-  title: PropType.oneOfType([PropType.string, PropType.object]),
-  showTopBorder: PropType.bool,
-  addTopPadding: PropType.bool,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  sticky: PropTypes.bool,
+  withKey: PropTypes.bool,
 }
 
 export default RawFileviewer

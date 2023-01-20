@@ -1,7 +1,6 @@
 import PropType from 'prop-types'
 
 import { useLocationParams } from 'services/navigation'
-import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
 import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
@@ -64,8 +63,8 @@ function RepoContentsTable() {
 
   return (
     <>
-      <ContentsTableHeader>
-        <div className="flex gap-4">
+      <div className="flex justify-between gap-2 py-2 sticky top-[4.5rem] bg-white">
+        <div className="flex-1 flex gap-4">
           <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
           <FileBreadcrumb />
         </div>
@@ -75,20 +74,26 @@ function RepoContentsTable() {
           searchValue={params?.search}
           setSearchValue={(search) => updateParams({ search })}
         />
-      </ContentsTableHeader>
-      <Table
-        data={data}
-        columns={headers}
-        onSort={handleSort}
-        enableHover={true}
-      />
-      <Loader isLoading={isLoading} />
-      {data?.length === 0 && !isLoading && (
-        <RepoContentsResult
-          isSearching={isSearching}
-          isMissingHeadReport={isMissingHeadReport}
-        />
-      )}
+      </div>
+      <div className=" flex-1 grid grid-cols-12 gap-8">
+        <div className="flex flex-col col-span-12 md:col-span-12">
+          <Table
+            data={data}
+            columns={headers}
+            onSort={handleSort}
+            enableHover
+          />
+          <div className="mt-4">
+            <Loader isLoading={isLoading} />
+            {data?.length === 0 && !isLoading && (
+              <RepoContentsResult
+                isSearching={isSearching}
+                isMissingHeadReport={isMissingHeadReport}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </>
   )
 }
