@@ -68,7 +68,7 @@ function IndirectChangesTab() {
         </div>
       ) : (
         // No impacted files nor head, patch or change coverage
-        <p>No Files covered by tests were changed</p>
+        <p className="mt-4">No Files covered by tests were changed</p>
       )}
     </>
   )

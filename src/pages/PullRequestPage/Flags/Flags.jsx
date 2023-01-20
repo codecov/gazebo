@@ -35,7 +35,7 @@ const tableColumns = [
   },
   {
     id: 'changeCoverage',
-    header: <span className="w-full text-right">+/-</span>,
+    header: <span className="w-full text-right pr-1">+/-</span>,
     accessorKey: 'changeCoverage',
     width: 'w-28 justify-end',
     cell: (info) => info.getValue(),
