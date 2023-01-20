@@ -12,6 +12,7 @@ function FileView() {
           <FileBreadcrumb paths={[...treePaths]} />
         </div>
       }
+      sticky
     />
   )
 }

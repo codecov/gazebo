@@ -34,7 +34,8 @@ function HomePage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    // mt-2 until we sticky this view
+    <div className="flex flex-col gap-4 mt-2">
       <MyContextSwitcher pageName="owner" activeContext={null} />
       <div>
         <ActiveContext.Provider value={params.repoDisplay}>

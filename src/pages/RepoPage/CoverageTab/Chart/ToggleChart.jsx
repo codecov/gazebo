@@ -46,32 +46,28 @@ function ToggleChart() {
 
   return (
     <SilentNetworkErrorWrapper>
-      <div className="mt-2">
-        <div className="flex text-ds-blue">
-          <Icon
-            size="md"
-            name={isHidden ? 'chevron-right' : 'chevron-down'}
-            variant="solid"
-          />
-          <p
-            className="flex font-sans cursor-pointer hover:underline focus:ring-2 items-center"
-            data-cy="toggle-chart"
-            data-marketing="toggle-chart"
-            onClick={() => {
-              setIsHidden(!isHidden)
-              localStorage.setItem(chartKey, !isHidden)
-            }}
-          >
-            {isHidden ? 'Show Chart' : 'Hide Chart'}
-          </p>
-        </div>
-        <div
-          className={cs({
-            hidden: isHidden,
-          })}
-        >
-          <Chart />
-        </div>
+      <button
+        className="flex items-center text-ds-blue cursor-pointer hover:underline mt-2"
+        onClick={() => {
+          setIsHidden(!isHidden)
+          localStorage.setItem(chartKey, !isHidden)
+        }}
+        data-cy="toggle-chart"
+        data-marketing="toggle-chart"
+      >
+        <Icon
+          size="md"
+          name={isHidden ? 'chevron-right' : 'chevron-down'}
+          variant="solid"
+        />
+        {isHidden ? 'Show Chart' : 'Hide Chart'}
+      </button>
+      <div
+        className={cs({
+          hidden: isHidden,
+        })}
+      >
+        <Chart />
       </div>
     </SilentNetworkErrorWrapper>
   )

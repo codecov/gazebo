@@ -12,8 +12,7 @@ function FileViewer() {
           <Breadcrumb paths={treePaths} />
         </div>
       }
-      showTopBorder={false}
-      addTopPadding={false}
+      withKey={false}
     />
   )
 }
