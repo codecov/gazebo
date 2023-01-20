@@ -71,28 +71,6 @@ describe('FileDiff', () => {
     })
   })
 
-  describe('when coverage has changed outside of the git diff', () => {
-    beforeEach(() => {
-      const impactedFile = {
-        data: {
-          isCriticalFile: false,
-          headName: 'flag1/mafs.js',
-          segments: [
-            {
-              header: '-0,0 +1,48',
-              hasUnintendedChanges: true,
-              lines: [{ content: 'abc' }, { content: 'def' }],
-            },
-          ],
-        },
-      }
-      setup({ path: 'flag1/mafs.js', impactedFile })
-    })
-    it('renders unexpected changes', () => {
-      expect(screen.getByText(/indirect coverage change/i)).toBeInTheDocument()
-    })
-  })
-
   describe('when segment is an empty array', () => {
     beforeEach(() => {
       const impactedFile = {

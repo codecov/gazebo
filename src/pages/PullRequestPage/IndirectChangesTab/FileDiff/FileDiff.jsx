@@ -4,12 +4,10 @@ import { useParams } from 'react-router-dom'
 
 import { useSingularImpactedFileComparison } from 'services/pull'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
-import A from 'ui/A'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
-import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
 const Loader = () => (
@@ -43,15 +41,6 @@ function FileDiff({ path }) {
           <Fragment key={`${headName}-${segmentIndex}`}>
             <CodeRendererInfoRow>
               <span data-testid="patch">{segment?.header}</span>
-              {segment?.hasUnintendedChanges && (
-                <div className="flex gap-1">
-                  <Icon variant="outline" name="information-circle" size="sm" />
-                  <span>
-                    indirect coverage change{' '}
-                    <A to={{ pageName: 'unexpectedChanges' }}>learn more</A>
-                  </span>
-                </div>
-              )}
               {fileLabel && (
                 <span className="border-l-2 pl-2">{fileLabel}</span>
               )}
