@@ -12,11 +12,11 @@ import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
+import Commits from './Commits'
 import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
 import { usePullPageData } from './hooks'
-import Commits from './subroute/Commits'
 import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 
 const CompareSummary = lazy(() => import('./Summary'))

@@ -12,10 +12,10 @@ import { usePullPageData } from './hooks/usePullPageData'
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('./Header', () => () => 'Header')
+jest.mock('./Commits', () => () => 'Commits')
 jest.mock('./Summary', () => () => 'CompareSummary')
 jest.mock('./ErrorBanner', () => () => 'Error Banner')
 jest.mock('./subroute/Flags', () => () => 'Flags')
-jest.mock('./subroute/Commits', () => () => 'Commits')
 jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./subroute/IndirectChanges', () => () => 'IndirectChanges')
 jest.mock('pages/RepoPage/CommitsTab/CommitsTable', () => () => 'Commits Table')
