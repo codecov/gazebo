@@ -24,6 +24,12 @@ const repo1 = {
   author: {
     username: 'codecov',
   },
+  repositoryConfig: {
+    indicationRange: {
+      upperRange: 80,
+      lowerRange: 60,
+    },
+  },
 }
 
 const repo2 = {
@@ -34,6 +40,12 @@ const repo2 = {
   updatedAt: '2021-04-22T14:09:39.826948+00:00',
   author: {
     username: 'codecov',
+  },
+  repositoryConfig: {
+    indicationRange: {
+      upperRange: 80,
+      lowerRange: 60,
+    },
   },
 }
 
@@ -46,6 +58,12 @@ const repo3 = {
   author: {
     username: 'facebook',
   },
+  repositoryConfig: {
+    indicationRange: {
+      upperRange: 80,
+      lowerRange: 60,
+    },
+  },
 }
 
 const repo4 = {
@@ -56,6 +74,12 @@ const repo4 = {
   updatedAt: '2021-04-22T14:09:39.826948+00:00',
   author: {
     username: 'felipe',
+  },
+  repositoryConfig: {
+    indicationRange: {
+      upperRange: 80,
+      lowerRange: 60,
+    },
   },
 }
 
