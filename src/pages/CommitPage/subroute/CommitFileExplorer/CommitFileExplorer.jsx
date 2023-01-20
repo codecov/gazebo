@@ -63,7 +63,6 @@ function FileExplorer() {
         data={data}
         columns={headers}
         onSort={handleSort}
-        defaultSort={[{ id: 'name', desc: false }]}
         enableHover={true}
       />
       {isLoading && <Loader />}
