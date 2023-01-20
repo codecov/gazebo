@@ -2,18 +2,18 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useOwner } from 'services/user'
+import { usePlanPageData } from 'pages/PlanPage/hooks'
 
 import Header from './Header'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-jest.mock('services/user')
+jest.mock('pages/PlanPage/hooks')
 
 const queryClient = new QueryClient()
 
 describe('Header', () => {
   function setup() {
-    useOwner.mockReturnValue({
+    usePlanPageData.mockReturnValue({
       owner: {
         username: 'dwight',
       },

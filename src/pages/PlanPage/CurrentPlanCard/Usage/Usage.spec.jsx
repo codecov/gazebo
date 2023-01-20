@@ -2,11 +2,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useUploadsNumber } from 'services/uploadsNumber'
+import { usePlanPageData } from 'pages/PlanPage/hooks'
 
 import Usage from '.'
 
-jest.mock('services/uploadsNumber/useUploadsNumber')
+jest.mock('pages/PlanPage/hooks')
 
 const defaultAccountDetails = {
   activatedStudentCount: 0,
@@ -33,9 +33,15 @@ const defaultAccountDetails = {
 
 const queryClient = new QueryClient()
 
+const mockOwner = {
+  username: 'TerrySmithDC',
+  isCurrentUserPartOfOrg: true,
+  numberOfUploads: 250,
+}
+
 describe('Usage', () => {
   function setup(overrideAccDetails = {}, isBasicPlan = true) {
-    useUploadsNumber.mockReturnValue({ data: 250 })
+    usePlanPageData.mockReturnValue({ data: mockOwner })
 
     const props = {
       accountDetails: {
