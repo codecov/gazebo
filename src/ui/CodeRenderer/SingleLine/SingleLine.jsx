@@ -34,8 +34,7 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
     setTimeout(() => {
       window.scrollTo({
         top: lineRef.current.offsetTop,
-        left: 0,
-        behavior: 'smooth',
+        behavior: 'auto',
       })
     }, 0)
   }
@@ -45,6 +44,7 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
       {...getLineProps({ line, key: number })}
       data-testid="fv-single-line"
       ref={lineRef}
+      id={`L${number}`}
     >
       <td
         aria-label={lineStateToLabel[lineState]}
@@ -52,11 +52,14 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
           targeted
             ? 'bg-ds-gray-octonary text-white'
             : 'text-ds-gray-quaternary',
-          'line-number font-mono text-right border-solid px-2 select-none',
+          'line-number font-mono text-right border-solid px-2 select-none relative border-ds-gray-tertiary border-r',
           !targeted && classNamePerLineState[lineState]
         )}
       >
-        <a href={`#L${number}`}>{number}</a>
+        <a href={`#L${number}`}>
+          <span className={cs({ invisible: !targeted })}>#</span>
+          {number}
+        </a>
       </td>
       <td className={cs('pl-2 break-all', classNamePerLineContent[lineState])}>
         <div className="flex items-center justify-between">
