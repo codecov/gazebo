@@ -12,17 +12,17 @@ import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
-import Commits from './Commits'
 import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
 import { usePullPageData } from './hooks'
+import Commits from './subroute/Commits'
 import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 
 const CompareSummary = lazy(() => import('./Summary'))
 const Root = lazy(() => import('./subroute/Root'))
-const Flags = lazy(() => import('./Flags'))
-const IndirectChangesTab = lazy(() => import('./IndirectChangesTab'))
+const Flags = lazy(() => import('./subroute/Flags'))
+const IndirectChanges = lazy(() => import('./subroute/IndirectChanges'))
 const CommitsTable = lazy(() =>
   import('pages/RepoPage/CommitsTab/CommitsTable')
 )
@@ -146,7 +146,7 @@ function PullRequestPage() {
                       path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
                       exact={true}
                     >
-                      <IndirectChangesTab />
+                      <IndirectChanges />
                     </SentryRoute>
                     <SentryRoute
                       path="/:provider/:owner/:repo/pull/:pullId/commits"

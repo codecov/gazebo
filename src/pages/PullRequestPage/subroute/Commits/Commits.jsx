@@ -4,7 +4,7 @@ import Icon from 'ui/Icon'
 
 import { useCompareCommits } from './useCompareCommits'
 
-import Card from '../Card'
+import Card from '../../Card'
 
 function Commits() {
   const { data: commits } = useCompareCommits()

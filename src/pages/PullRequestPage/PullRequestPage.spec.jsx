@@ -13,11 +13,11 @@ import PullRequestPage from './PullRequestPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./Summary', () => () => 'CompareSummary')
-jest.mock('./Flags', () => () => 'Flags')
-jest.mock('./Commits', () => () => 'Commits')
-jest.mock('./subroute/Root', () => () => 'Root')
 jest.mock('./ErrorBanner', () => () => 'Error Banner')
-jest.mock('./IndirectChangesTab', () => () => 'IndirectChangesTab')
+jest.mock('./subroute/Flags', () => () => 'Flags')
+jest.mock('./subroute/Commits', () => () => 'Commits')
+jest.mock('./subroute/Root', () => () => 'Root')
+jest.mock('./subroute/IndirectChanges', () => () => 'IndirectChanges')
 jest.mock('pages/RepoPage/CommitsTab/CommitsTable', () => () => 'Commits Table')
 
 jest.mock('./hooks/usePullPageData')
@@ -473,7 +473,7 @@ describe('PullRequestPage', () => {
       })
 
       it('renders the indirect changes tab', () => {
-        expect(screen.getByText(/IndirectChangesTab/)).toBeInTheDocument()
+        expect(screen.getByText(/IndirectChanges/)).toBeInTheDocument()
       })
     })
   })

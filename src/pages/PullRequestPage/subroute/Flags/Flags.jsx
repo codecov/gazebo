@@ -8,7 +8,7 @@ import { useFlags } from 'shared/featureFlags'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import Card from '../Card'
+import Card from '../../Card'
 
 const tableColumns = [
   {
