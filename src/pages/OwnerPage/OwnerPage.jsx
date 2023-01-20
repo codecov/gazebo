@@ -21,7 +21,8 @@ function OwnerPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    // mt-2 temporary till we stick this header
+    <div className="flex flex-col gap-4 mt-2">
       <Header />
       <div>
         {ownerData?.isCurrentUserPartOfOrg && (

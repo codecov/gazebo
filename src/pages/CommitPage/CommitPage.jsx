@@ -95,7 +95,7 @@ function CommitPage() {
             <UploadsCard />
           </Suspense>
         </aside>
-        <article className="flex flex-1 flex-col gap-4">
+        <article className="flex flex-1 flex-col">
           {!isEmpty(erroredUploads) ? (
             <ErroredUploads erroredUploads={erroredUploads} />
           ) : (

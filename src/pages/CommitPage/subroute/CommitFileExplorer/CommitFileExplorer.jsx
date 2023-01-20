@@ -46,7 +46,7 @@ function FileExplorer() {
   const { treePaths } = useCommitTreePaths()
 
   return (
-    <>
+    <div className="flex flex-col gap-2 mt-2">
       <ContentsTableHeader>
         <div className="flex gap-4">
           <DisplayTypeButton />
@@ -63,14 +63,13 @@ function FileExplorer() {
         data={data}
         columns={headers}
         onSort={handleSort}
-        defaultSort={[{ id: 'name', desc: false }]}
         enableHover={true}
       />
       {isLoading && <Loader />}
       {data?.length === 0 && !isLoading && (
         <MissingFileData isSearching={isSearching} />
       )}
-    </>
+    </div>
   )
 }
 

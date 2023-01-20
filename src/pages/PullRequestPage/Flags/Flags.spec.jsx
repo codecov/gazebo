@@ -76,7 +76,7 @@ describe('Flags Card', () => {
       expect(headTableField).toBeInTheDocument()
       const patchTableField = screen.getByText(`Patch %`)
       expect(patchTableField).toBeInTheDocument()
-      const changeTableField = screen.getByText(`+/-`)
+      const changeTableField = screen.getByText(`Change`)
       expect(changeTableField).toBeInTheDocument()
 
       const flagName = screen.getByText('secondTest')
@@ -215,7 +215,7 @@ describe('Flags Card', () => {
       expect(headTableField).toBeInTheDocument()
       const patchTableField = screen.getByText(`Patch %`)
       expect(patchTableField).toBeInTheDocument()
-      const changeTableField = screen.getByText(`+/-`)
+      const changeTableField = screen.getByText(`Change`)
       expect(changeTableField).toBeInTheDocument()
 
       const flagName = screen.getByText('secondTest')

@@ -20,6 +20,10 @@ jest.mock('services/navigation', () => ({
 
 const repoContentsMock = {
   data: {
+    indicationRange: {
+      upperRange: 80,
+      lowerRange: 60,
+    },
     results: [
       {
         name: 'flag2',

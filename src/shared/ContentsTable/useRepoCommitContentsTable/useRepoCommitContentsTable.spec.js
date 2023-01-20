@@ -17,6 +17,12 @@ jest.mock('services/navigation', () => ({
 const mockCommitContentData = {
   owner: {
     repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
       commit: {
         pathContents: {
           results: [
@@ -44,6 +50,12 @@ const mockCommitContentData = {
 const mockCommitNoContentData = {
   owner: {
     repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
       commit: {
         pathContents: { results: [] },
       },
@@ -257,18 +269,18 @@ describe('useRepoCommitContentsTable', () => {
       await waitFor(() => !result.current.isLoading)
 
       act(() => {
-        result.current.handleSort([{ desc: false, id: 'name' }])
+        result.current.handleSort([{ desc: true, id: 'name' }])
       })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(calledCommitContents).toHaveBeenCalledTimes(2)
-      expect(calledCommitContents).toHaveBeenNthCalledWith(2, {
+      expect(calledCommitContents).toHaveBeenCalledTimes(3)
+      expect(calledCommitContents).toHaveBeenNthCalledWith(3, {
         commit: 'sha256',
         filters: {
           ordering: {
-            direction: 'ASC',
+            direction: 'DESC',
             parameter: 'NAME',
           },
         },

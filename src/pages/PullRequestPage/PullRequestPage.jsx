@@ -17,6 +17,7 @@ import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
 import { usePullPageData } from './hooks'
+import IndirectChangesInfo from './IndirectChangesTab/IndirectChangesInfo'
 import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 
 const CompareSummary = lazy(() => import('./Summary'))
@@ -130,10 +131,8 @@ function PullRequestPage() {
                     ]
                   : []),
               ]}
+              component={<ToggleHeader coverageIsLoading={false} />}
             />
-            <div className="md:mt-[-25px] md:pb-2 w-fit self-end">
-              <ToggleHeader title="" coverageIsLoading={false} />
-            </div>
             <Switch>
               <Suspense fallback={Loader}>
                 <SentryRoute
@@ -148,6 +147,7 @@ function PullRequestPage() {
                       path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
                       exact={true}
                     >
+                      <IndirectChangesInfo />
                       <IndirectChangesTab />
                     </SentryRoute>
                     <SentryRoute

@@ -252,7 +252,7 @@ describe('CommitFileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toBeCalledWith({
               displayType: 'LIST',
-              ordering: { direction: 'ASC', parameter: 'NAME' },
+              ordering: { direction: 'DESC', parameter: 'MISSES' },
             })
           )
         })

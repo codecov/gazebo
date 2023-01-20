@@ -18,6 +18,12 @@ const repositoryFragment = `
     author {
       username
     }
+    repositoryConfig {
+      indicationRange {
+        upperRange
+        lowerRange
+      }
+    }
   }
 `
 

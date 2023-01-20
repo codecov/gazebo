@@ -52,7 +52,7 @@ describe('IndirectChangesTab', () => {
     })
     it('renders the impacted files component', () => {
       expect(
-        screen.getByText('IndirectChangedFiles Component')
+        screen.getByText(/IndirectChangedFiles Component/)
       ).toBeInTheDocument()
     })
   })

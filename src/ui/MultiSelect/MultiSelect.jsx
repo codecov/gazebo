@@ -274,10 +274,8 @@ const MultiSelect = forwardRef(
               variant="solid"
             />
           </button>
-          <div
-            className={cs(!onSearch && 'invisible', 'absolute', 'inset-x-0')}
-          >
-            <div className={cs(!isOpen && 'invisible')}>
+          <div className={cs(!onSearch && 'hidden', 'absolute', 'inset-x-0')}>
+            <div className={cs(!isOpen && 'hidden')}>
               <SearchField
                 dataMarketing="multiselect-search"
                 variant="topRounded"

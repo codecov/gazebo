@@ -38,7 +38,7 @@ function PlanPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-2">
       <Header />
       {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
       <Elements stripe={stripePromise}>

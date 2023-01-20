@@ -11,21 +11,19 @@ function Header() {
   return (
     <>
       <MyContextSwitcher pageName="accountAdmin" activeContext={owner} />
-      <div className="mt-4 mb-8">
-        <TabNavigation
-          tabs={[
-            { pageName: 'owner', children: 'Repos' },
-            { pageName: 'analytics', children: 'Analytics' },
-            ...(config.IS_SELF_HOSTED
-              ? []
-              : [{ pageName: 'membersTab' }, { pageName: 'planTab' }]),
-            {
-              pageName: 'accountAdmin',
-              children: 'Settings',
-            },
-          ]}
-        />
-      </div>
+      <TabNavigation
+        tabs={[
+          { pageName: 'owner', children: 'Repos' },
+          { pageName: 'analytics', children: 'Analytics' },
+          ...(config.IS_SELF_HOSTED
+            ? []
+            : [{ pageName: 'membersTab' }, { pageName: 'planTab' }]),
+          {
+            pageName: 'accountAdmin',
+            children: 'Settings',
+          },
+        ]}
+      />
     </>
   )
 }
