@@ -169,7 +169,7 @@ export function useRepoBranchContentsTable() {
     owner,
   })
 
-  const { data: pathContentData, isLoading } = useRepoBranchContents({
+  const { data: branchData, isLoading } = useRepoBranchContents({
     provider,
     owner,
     repo,
@@ -182,7 +182,7 @@ export function useRepoBranchContentsTable() {
   const data = useMemo(
     () =>
       createTableData({
-        tableData: pathContentData?.results,
+        tableData: branchData?.results,
         branch: branch || repoOverview?.defaultBranch,
         path: path || '',
         isSearching: !!params?.search,
@@ -190,7 +190,7 @@ export function useRepoBranchContentsTable() {
         treePaths,
       }),
     [
-      pathContentData?.results,
+      branchData,
       branch,
       repoOverview?.defaultBranch,
       path,
@@ -216,6 +216,6 @@ export function useRepoBranchContentsTable() {
     isLoading: isLoadingRepo || isLoading,
     isSearching: !!params?.search,
     isMissingHeadReport:
-      pathContentData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
+      branchData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
   }
 }

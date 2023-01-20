@@ -19,30 +19,32 @@ const Loader = (
 
 function CoverageTab() {
   return (
-    <div className="flex flex-col gap-4 mx-4 md:mx-0">
+    <div className="flex flex-col gap-4 mx-4 sm:mx-0 divide-y border-solid border-ds-gray-secondary">
       <Summary />
-      <div className="flex flex-1 flex-col gap-4 border-t border-solid border-ds-gray-secondary">
-        <Switch>
-          <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
-            <Suspense fallback={Loader}>
+      <Switch>
+        <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
+          <Suspense fallback={Loader}>
+            <div className="flex flex-1 flex-col gap-2">
               <FileViewer />
-            </Suspense>
-          </SentryRoute>
-          <SentryRoute
-            path={[
-              '/:provider/:owner/:repo/tree/:branch/:path+',
-              '/:provider/:owner/:repo/tree/:branch',
-              '/:provider/:owner/:repo',
-            ]}
-            exact
-          >
+            </div>
+          </Suspense>
+        </SentryRoute>
+        <SentryRoute
+          path={[
+            '/:provider/:owner/:repo/tree/:branch/:path+',
+            '/:provider/:owner/:repo/tree/:branch',
+            '/:provider/:owner/:repo',
+          ]}
+          exact
+        >
+          <div>
             <ToggleChart />
             <Suspense fallback={Loader}>
               <RepoContentsTable />
             </Suspense>
-          </SentryRoute>
-        </Switch>
-      </div>
+          </div>
+        </SentryRoute>
+      </Switch>
     </div>
   )
 }

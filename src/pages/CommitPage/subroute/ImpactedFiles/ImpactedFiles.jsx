@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
 
-import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
 const CommitsTable = lazy(() => import('./CommitsTable'))
@@ -14,16 +13,13 @@ const Loader = () => (
 
 function ImpactedFiles({ commit, commitSHA }) {
   return (
-    <>
-      <ToggleHeader title="" coverageIsLoading={false} />
-      <Suspense fallback={<Loader />}>
-        <CommitsTable
-          commit={commitSHA}
-          state={commit?.state}
-          data={commit?.compareWithParent?.impactedFiles}
-        />
-      </Suspense>
-    </>
+    <Suspense fallback={<Loader />}>
+      <CommitsTable
+        commit={commitSHA}
+        state={commit?.state}
+        data={commit?.compareWithParent?.impactedFiles}
+      />
+    </Suspense>
   )
 }
 

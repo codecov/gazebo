@@ -5,6 +5,7 @@ import {
   commitFileviewString,
   commitTreeviewString,
 } from 'pages/RepoPage/utils'
+import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
 function CommitPageTabs({ commitSHA }) {
@@ -42,6 +43,7 @@ function CommitPageTabs({ commitSHA }) {
           location: customLocation,
         },
       ]}
+      component={<ToggleHeader coverageIsLoading={false} />}
     />
   )
 }

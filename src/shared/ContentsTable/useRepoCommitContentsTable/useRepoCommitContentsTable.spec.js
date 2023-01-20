@@ -17,6 +17,12 @@ jest.mock('services/navigation', () => ({
 const mockCommitContentData = {
   owner: {
     repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
       commit: {
         pathContents: {
           results: [
@@ -44,6 +50,12 @@ const mockCommitContentData = {
 const mockCommitNoContentData = {
   owner: {
     repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
       commit: {
         pathContents: { results: [] },
       },

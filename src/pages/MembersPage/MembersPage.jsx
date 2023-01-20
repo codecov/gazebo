@@ -19,7 +19,7 @@ function MembersPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-2">
       <Header />
       {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
       <h2 className="font-semibold text-lg mx-4 sm:mx-0">Manage members</h2>

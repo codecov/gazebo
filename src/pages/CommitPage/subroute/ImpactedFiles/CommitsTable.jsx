@@ -161,7 +161,7 @@ function CommitsTable({ data = [], commit, state }) {
   return (
     <>
       {data?.length === 0 ? (
-        <p className="mx-4">No Files covered by tests were changed</p>
+        <p className="m-4">No Files covered by tests were changed</p>
       ) : (
         <Table
           data={tableContent}
