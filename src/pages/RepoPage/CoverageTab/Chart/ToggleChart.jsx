@@ -47,7 +47,7 @@ function ToggleChart() {
   return (
     <SilentNetworkErrorWrapper>
       <button
-        className="flex items-center text-ds-blue cursor-pointer hover:underline focus:ring-2 mt-2"
+        className="flex items-center text-ds-blue cursor-pointer hover:underline mt-2"
         onClick={() => {
           setIsHidden(!isHidden)
           localStorage.setItem(chartKey, !isHidden)
