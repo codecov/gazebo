@@ -26,7 +26,6 @@ const headers = [
     accessorKey: 'ciStatus',
     width: 'w-2/12 lg:w-1/12',
     cell: (info) => info.getValue(),
-    justifyStart: true,
   },
   {
     id: 'coverage',
