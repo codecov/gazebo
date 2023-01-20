@@ -45,7 +45,7 @@ function AccountSettings() {
     orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
 
   return (
-    <>
+    <div className="flex flex-col gap-4 mt-2">
       <Header />
       <SidebarLayout sidebar={<AccountSettingsSideMenu />}>
         <Suspense fallback={Loader}>
@@ -81,7 +81,7 @@ function AccountSettings() {
           </Switch>
         </Suspense>
       </SidebarLayout>
-    </>
+    </div>
   )
 }
 
