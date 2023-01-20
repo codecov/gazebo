@@ -1,5 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-use'
 
 import {
   classNamePerLineContent,
@@ -11,18 +13,50 @@ import {
 import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
 function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
+  const lineRef = useRef(null)
+  const [targeted, setTargeted] = useState(false)
+  const { hash } = useLocation()
   const lineState = getLineState({ coverage })
 
+  useLayoutEffect(() => {
+    if (hash === `#L${number}`) {
+      if (!targeted) {
+        setTargeted(true)
+      }
+    } else {
+      if (targeted) {
+        setTargeted(false)
+      }
+    }
+  }, [hash, number, targeted])
+
+  if (hash === `#L${number}`) {
+    setTimeout(() => {
+      window.scrollTo({
+        top: lineRef.current.offsetTop,
+        left: 0,
+        behavior: 'smooth',
+      })
+    }, 0)
+  }
+
   return (
-    <tr {...getLineProps({ line, key: number })} data-testid="fv-single-line">
+    <tr
+      {...getLineProps({ line, key: number })}
+      data-testid="fv-single-line"
+      ref={lineRef}
+    >
       <td
         aria-label={lineStateToLabel[lineState]}
         className={cs(
-          'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
-          classNamePerLineState[lineState]
+          targeted
+            ? 'bg-ds-gray-octonary text-white'
+            : 'text-ds-gray-quaternary',
+          'line-number font-mono text-right border-solid px-2 select-none',
+          !targeted && classNamePerLineState[lineState]
         )}
       >
-        {number}
+        <a href={`#L${number}`}>{number}</a>
       </td>
       <td className={cs('pl-2 break-all', classNamePerLineContent[lineState])}>
         <div className="flex items-center justify-between">
