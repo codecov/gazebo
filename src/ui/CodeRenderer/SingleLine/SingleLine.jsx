@@ -1,6 +1,8 @@
 import cs from 'classnames'
+import sum from 'hash-sum'
 import PropTypes from 'prop-types'
 import { useLayoutEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { useLocation } from 'react-use'
 
 import {
@@ -17,9 +19,11 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
   const [targeted, setTargeted] = useState(false)
   const { hash } = useLocation()
   const lineState = getLineState({ coverage })
+  const { path } = useParams()
+  const idString = `#${sum(encodeURIComponent(path))}L${number}`
 
   useLayoutEffect(() => {
-    if (hash === `#L${number}`) {
+    if (hash === idString) {
       if (!targeted) {
         setTargeted(true)
       }
@@ -28,11 +32,11 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
         setTargeted(false)
       }
     }
-  }, [hash, number, targeted])
+  }, [hash, idString, targeted])
 
   useLayoutEffect(() => {
     let timeout
-    if (hash === `#L${number}`) {
+    if (hash === idString) {
       timeout = setTimeout(() => {
         window.scrollTo({
           top: lineRef.current.offsetTop,
@@ -47,7 +51,7 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
         clearTimeout(timeout)
       }
     }
-  }, [hash, number])
+  }, [hash, idString])
 
   return (
     <tr
@@ -65,7 +69,7 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
           !targeted && classNamePerLineState[lineState]
         )}
       >
-        <a href={`#L${number}`}>
+        <a href={idString}>
           <span className={cs({ invisible: !targeted })}>#</span>
           {number}
         </a>
