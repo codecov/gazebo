@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useAccountDetails } from 'services/account'
-import { useOwner, useUser } from 'services/user'
+import { useUser } from 'services/user'
 
 import OwnerPage from './OwnerPage'
 
@@ -10,10 +11,11 @@ jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
 jest.mock('services/account')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
+jest.mock('pages/OwnerPage/hooks')
 
 describe('OwnerPage', () => {
   function setup(owner, accountDetails) {
-    useOwner.mockReturnValue({
+    useOwnerPageData.mockReturnValue({
       data: owner,
     })
     useAccountDetails.mockReturnValue({

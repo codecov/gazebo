@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
+import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useLocationParams } from 'services/navigation'
-import { useOwner } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
@@ -11,7 +11,7 @@ import Tabs from './Tabs'
 
 function OwnerPage() {
   const { owner, provider } = useParams()
-  const { data: ownerData } = useOwner({ username: owner })
+  const { data: ownerData } = useOwnerPageData({ username: owner })
   const { params } = useLocationParams({
     repoDisplay: 'All',
   })
@@ -22,15 +22,15 @@ function OwnerPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Header owner={ownerData} provider={provider} />
+      <Header />
       <div>
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />
         )}
-        <ActiveContext.Provider value={params.repoDisplay}>
+        <ActiveContext.Provider value={params?.repoDisplay}>
           <ListRepo
-            canRefetch={ownerData.isCurrentUserPartOfOrg}
-            owner={ownerData.username}
+            canRefetch={ownerData?.isCurrentUserPartOfOrg}
+            owner={ownerData?.username}
           />
         </ActiveContext.Provider>
       </div>

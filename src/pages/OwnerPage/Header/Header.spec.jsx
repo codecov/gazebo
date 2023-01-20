@@ -4,11 +4,14 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useOwnerPageData } from 'pages/OwnerPage/hooks'
+
 import Header from './Header'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('./HeaderBanners/HeaderBanners', () => () => 'HeaderBanners')
 jest.mock('config')
+jest.mock('pages/OwnerPage/hooks')
 
 const queryClient = new QueryClient()
 
@@ -17,12 +20,15 @@ describe('Header', () => {
 
   function setup(props = {}, isUploadsExceeded = false, isSelfHosted = false) {
     config.IS_SELF_HOSTED = isSelfHosted
+    useOwnerPageData.mockReturnValue({
+      data: props,
+    })
 
     render(
       <MemoryRouter initialEntries={['/gh/codecov']}>
         <QueryClientProvider client={queryClient}>
           <Route path="/:provider/:owner">
-            <Header {...props} />
+            <Header />
           </Route>
         </QueryClientProvider>
       </MemoryRouter>
@@ -32,11 +38,8 @@ describe('Header', () => {
   describe('when user is part of the org', () => {
     beforeEach(() => {
       setup({
-        provider: 'gh',
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-        },
+        username: 'codecov',
+        isCurrentUserPartOfOrg: true,
       })
     })
 
@@ -49,11 +52,8 @@ describe('Header', () => {
     describe('when user is part of the org', () => {
       beforeEach(() => {
         setup({
-          provider: 'gh',
-          owner: {
-            username: 'codecov',
-            isCurrentUserPartOfOrg: true,
-          },
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
         })
       })
 
@@ -65,11 +65,8 @@ describe('Header', () => {
     describe('when user is not part of the org', () => {
       beforeEach(() => {
         setup({
-          provider: 'gh',
-          owner: {
-            username: 'codecov',
-            isCurrentUserPartOfOrg: false,
-          },
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
         })
       })
 
@@ -92,11 +89,8 @@ describe('Header', () => {
       beforeEach(() => {
         setup(
           {
-            provider: 'gh',
-            owner: {
-              username: 'codecov',
-              isCurrentUserPartOfOrg: true,
-            },
+            username: 'codecov',
+            isCurrentUserPartOfOrg: true,
           },
           false,
           true
@@ -112,11 +106,8 @@ describe('Header', () => {
       beforeEach(() => {
         setup(
           {
-            provider: 'gh',
-            owner: {
-              username: 'codecov',
-              isCurrentUserPartOfOrg: false,
-            },
+            username: 'codecov',
+            isCurrentUserPartOfOrg: false,
           },
           false,
           true

@@ -41,7 +41,7 @@ describe('HeaderBanners', () => {
   }) {
     config.IS_SELF_HOSTED = isSelfHosted
     server.use(
-      graphql.query('GetUploadsNumber', (req, res, ctx) => {
+      graphql.query('OwnerPageData', (req, res, ctx) => {
         if (hasReachedLimit) {
           return res(
             ctx.status(200),
