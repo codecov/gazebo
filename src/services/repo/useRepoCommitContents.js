@@ -13,6 +13,12 @@ const query = `
     owner(username: $name) {
       username
       repository(name: $repo) {
+        repositoryConfig {
+          indicationRange {
+            upperRange
+            lowerRange
+          }
+        }
         commit(id: $commit) {
           pathContents(path: $path, filters: $filters) {
             ... on PathContents {
@@ -61,7 +67,11 @@ export const useRepoCommitContents = ({
           path,
           filters,
         },
-      }).then((res) => res?.data?.owner?.repository?.commit?.pathContents),
+      }).then((res) => ({
+        results: res?.data?.owner?.repository?.commit?.pathContents?.results,
+        indicationRange:
+          res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
+      })),
     opts
   )
 }

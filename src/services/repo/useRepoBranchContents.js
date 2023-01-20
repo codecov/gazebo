@@ -13,36 +13,47 @@ function fetchRepoContents({
   signal,
 }) {
   const query = `
-    query BranchContents($name: String!, $repo: String!, $branch: String!, $path: String!, $filters: PathContentsFilters!) {
-        owner(username:$name){
+    query BranchContents(
+      $name: String!
+      $repo: String!
+      $branch: String!
+      $path: String!
+      $filters: PathContentsFilters!
+    ) {
+      owner(username: $name) {
         username
-        repository(name:$repo){
-          branch(name:$branch){
-          head {
-           pathContents(path: $path, filters: $filters) {
-            ... on PathContents {
-              results {
-                  __typename
-                  hits
-                  misses
-                  partials
-                  lines
-                  name
-                  path
-                  percentCovered
-              ... on PathContentFile {
-                isCriticalFile
-              }
+        repository(name: $repo) {
+          repositoryConfig {
+            indicationRange {
+              upperRange
+              lowerRange
+            }
+          }
+          branch(name: $branch) {
+            head {
+              pathContents(path: $path, filters: $filters) {
+                ... on PathContents {
+                  results {
+                    __typename
+                    hits
+                    misses
+                    partials
+                    lines
+                    name
+                    path
+                    percentCovered
+                    ... on PathContentFile {
+                      isCriticalFile
+                    }
+                  }
+                }
+                __typename
               }
             }
-            __typename
-           }
           }
         }
       }
-     }
-    }
-   `
+    }`
 
   return Api.graphql({
     provider,
@@ -55,9 +66,11 @@ function fetchRepoContents({
       path,
       filters,
     },
-  }).then((res) => {
-    return res?.data?.owner?.repository?.branch?.head?.pathContents
-  })
+  }).then((res) => ({
+    results: res?.data?.owner?.repository?.branch?.head?.pathContents?.results,
+    indicationRange:
+      res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
+  }))
 }
 
 export function useRepoBranchContents({
