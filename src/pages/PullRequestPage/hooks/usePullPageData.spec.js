@@ -11,9 +11,6 @@ const mockPullData = {
     repository: {
       private: true,
       pull: {
-        commits: {
-          totalCount: 1,
-        },
         pullId: 1,
         compareWithBase: {
           impactedFilesCount: 4,
@@ -80,9 +77,6 @@ describe('usePullPageData', () => {
       expect(result.current.data).toStrictEqual({
         hasAccess: true,
         pull: {
-          commits: {
-            totalCount: 1,
-          },
           pullId: 1,
           compareWithBase: {
             impactedFilesCount: 4,

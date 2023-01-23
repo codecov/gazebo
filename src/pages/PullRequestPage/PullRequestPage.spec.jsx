@@ -1,10 +1,9 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useCommits } from 'services/commits'
 import { useFlags } from 'shared/featureFlags'
 
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
@@ -23,59 +22,40 @@ jest.mock(
   './IndirectChangesTab/IndirectChangesInfo',
   () => () => 'IndirectChangesInfo'
 )
-
 jest.mock('./hooks/usePullPageData')
 jest.mock('shared/featureFlags')
+jest.mock('services/commits')
 
 const commits = {
-  owner: {
-    repository: {
-      commits: {
-        edges: [
-          {
-            node: {
-              message: 'test2',
-              commitid: '2',
-              createdAt: '2021',
-              author: {
-                username: 'rula2',
-                avatarUrl: 'random',
-              },
-              pullId: 12,
-              totals: {
-                coverage: 19,
-              },
-              parent: {
-                totals: {
-                  coverage: 22,
-                },
-              },
-              compareWithParent: {
-                patchTotals: {
-                  coverage: 99,
-                },
-              },
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+  commitsCount: 11,
+  commits: [
+    {
+      message: 'test2',
+      commitid: '2',
+      createdAt: '2021',
+      author: {
+        username: 'rula2',
+        avatarUrl: 'random',
+      },
+      pullId: 12,
+      totals: {
+        coverage: 19,
+      },
+      parent: {
+        totals: {
+          coverage: 22,
+        },
+      },
+      compareWithParent: {
+        patchTotals: {
+          coverage: 99,
         },
       },
     },
-  },
+  ],
 }
 
 const queryClient = new QueryClient()
-
-const server = setupServer()
-beforeAll(() => server.listen())
-beforeEach(() => {
-  server.resetHandlers()
-  queryClient.clear()
-})
-afterAll(() => server.close())
 
 describe('PullRequestPage', () => {
   function setup({
@@ -84,12 +64,7 @@ describe('PullRequestPage', () => {
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
     pullPageTabsFlag = false,
   }) {
-    server.use(
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(commits))
-      )
-    )
-
+    useCommits.mockReturnValue({ data: commits })
     usePullPageData.mockReturnValue({
       data: { hasAccess, pull: pullData },
     })
@@ -295,7 +270,7 @@ describe('PullRequestPage', () => {
         hasAccess: true,
         pullData: {
           compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
@@ -352,7 +327,7 @@ describe('PullRequestPage', () => {
         hasAccess: true,
         pullData: {
           compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
@@ -373,7 +348,7 @@ describe('PullRequestPage', () => {
         hasAccess: true,
         pullData: {
           compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
@@ -393,14 +368,11 @@ describe('PullRequestPage', () => {
       setup({
         hasAccess: true,
         pullData: {
-          commits: {
-            totalCount: 11,
-          },
           compareWithBase: {
             impactedFilesCount: 9,
             indirectChangedFilesCount: 19,
             flagComparisonsCount: 91,
-            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
