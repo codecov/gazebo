@@ -2,7 +2,7 @@ import cs from 'classnames'
 import sum from 'hash-sum'
 import PropTypes from 'prop-types'
 import { useLayoutEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { useLocation } from 'react-use'
 
 import {
@@ -14,16 +14,18 @@ import {
 } from 'shared/utils/fileviewer'
 import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
+// eslint-disable-next-line max-statements
 const useScrollToLine = ({ number }) => {
   const { path } = useParams()
-  const { hash } = useLocation()
+  const location = useLocation()
+  const history = useHistory()
   const lineRef = useRef(null)
   const [targeted, setTargeted] = useState(false)
 
   const idString = `#${sum(encodeURIComponent(path))}L${number}`
 
   useLayoutEffect(() => {
-    if (hash === idString) {
+    if (location.hash === idString) {
       if (!targeted) {
         setTargeted(true)
       }
@@ -32,7 +34,7 @@ const useScrollToLine = ({ number }) => {
         setTargeted(false)
       }
     }
-  }, [hash, idString, targeted])
+  }, [location, idString, targeted])
 
   // useLayoutEffect(() => {
   //   let timeout
@@ -53,24 +55,36 @@ const useScrollToLine = ({ number }) => {
   //   }
   // }, [hash, idString])
 
-  setTimeout(() => {
-    window.scrollTo({
-      top: lineRef.current.offsetTop,
-      left: 0,
-      behavior: 'smooth',
-    })
-  }, 0)
+  if (location.hash === idString) {
+    setTimeout(() => {
+      window.scrollTo({
+        top: lineRef.current.offsetTop,
+        left: 0,
+        behavior: 'smooth',
+      })
+    }, 0)
+  }
+
+  const handleClick = () => {
+    if (location.hash === idString) {
+      location.hash = ''
+      history.push(location)
+    } else {
+      location.hash = idString
+      history.push(location)
+    }
+  }
 
   return {
     targeted,
     lineRef,
-    idString,
+    handleClick,
   }
 }
 
 function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
   const lineState = getLineState({ coverage })
-  const { lineRef, idString, targeted } = useScrollToLine({ number })
+  const { lineRef, handleClick, targeted } = useScrollToLine({ number })
 
   return (
     <tr
@@ -88,10 +102,10 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
           !targeted && classNamePerLineState[lineState]
         )}
       >
-        <a href={idString}>
+        <button onClick={handleClick}>
           <span className={cs({ invisible: !targeted })}>#</span>
           {number}
-        </a>
+        </button>
       </td>
       <td className={cs('pl-2 break-all', classNamePerLineContent[lineState])}>
         <div className="flex items-center justify-between">
