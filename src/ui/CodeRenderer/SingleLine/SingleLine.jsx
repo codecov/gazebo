@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import sum from 'hash-sum'
 import PropTypes from 'prop-types'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { useLocation } from 'react-use'
 
@@ -14,7 +14,6 @@ import {
 } from 'shared/utils/fileviewer'
 import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
-// eslint-disable-next-line max-statements
 const useScrollToLine = ({ number }) => {
   const { path } = useParams()
   const location = useLocation()
@@ -36,34 +35,20 @@ const useScrollToLine = ({ number }) => {
     }
   }, [location, idString, targeted])
 
-  // useLayoutEffect(() => {
-  //   let timeout
-  //   if (hash === idString) {
-  //     timeout = setTimeout(() => {
-  //       window.scrollTo({
-  //         top: lineRef.current.offsetTop,
-  //         left: 0,
-  //         behavior: 'smooth',
-  //       })
-  //     }, 0)
-  //   }
+  const setRef = useCallback(
+    (node) => {
+      if (node && location.hash === idString) {
+        window.scrollTo({
+          top: node.getBoundingClientRect().top,
+          left: 0,
+          behavior: 'smooth',
+        })
+      }
 
-  //   return () => {
-  //     if (timeout) {
-  //       clearTimeout(timeout)
-  //     }
-  //   }
-  // }, [hash, idString])
-
-  if (location.hash === idString) {
-    setTimeout(() => {
-      window.scrollTo({
-        top: lineRef.current.offsetTop,
-        left: 0,
-        behavior: 'smooth',
-      })
-    }, 0)
-  }
+      lineRef.current = node
+    },
+    [idString, location.hash]
+  )
 
   const handleClick = () => {
     if (location.hash === idString) {
@@ -79,18 +64,19 @@ const useScrollToLine = ({ number }) => {
     targeted,
     lineRef,
     handleClick,
+    setRef,
   }
 }
 
 function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
   const lineState = getLineState({ coverage })
-  const { lineRef, handleClick, targeted } = useScrollToLine({ number })
+  const { setRef, handleClick, targeted } = useScrollToLine({ number })
 
   return (
     <tr
       {...getLineProps({ line, key: number })}
       data-testid="fv-single-line"
-      ref={lineRef}
+      ref={setRef}
     >
       <td
         aria-label={lineStateToLabel[lineState]}
