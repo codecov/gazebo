@@ -38,11 +38,7 @@ const useScrollToLine = ({ number }) => {
   const setRef = useCallback(
     (node) => {
       if (node && location.hash === idString) {
-        window.scrollTo({
-          top: node.getBoundingClientRect().top,
-          left: 0,
-          behavior: 'smooth',
-        })
+        node.scrollIntoView({ behavior: 'smooth' })
       }
 
       lineRef.current = node
