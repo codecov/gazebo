@@ -14,12 +14,12 @@ import {
 } from 'shared/utils/fileviewer'
 import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
-function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
+const useScrollToLine = ({ number }) => {
+  const { path } = useParams()
+  const { hash } = useLocation()
   const lineRef = useRef(null)
   const [targeted, setTargeted] = useState(false)
-  const { hash } = useLocation()
-  const lineState = getLineState({ coverage })
-  const { path } = useParams()
+
   const idString = `#${sum(encodeURIComponent(path))}L${number}`
 
   useLayoutEffect(() => {
@@ -34,24 +34,43 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
     }
   }, [hash, idString, targeted])
 
-  useLayoutEffect(() => {
-    let timeout
-    if (hash === idString) {
-      timeout = setTimeout(() => {
-        window.scrollTo({
-          top: lineRef.current.offsetTop,
-          left: 0,
-          behavior: 'smooth',
-        })
-      }, 0)
-    }
+  // useLayoutEffect(() => {
+  //   let timeout
+  //   if (hash === idString) {
+  //     timeout = setTimeout(() => {
+  //       window.scrollTo({
+  //         top: lineRef.current.offsetTop,
+  //         left: 0,
+  //         behavior: 'smooth',
+  //       })
+  //     }, 0)
+  //   }
 
-    return () => {
-      if (timeout) {
-        clearTimeout(timeout)
-      }
-    }
-  }, [hash, idString])
+  //   return () => {
+  //     if (timeout) {
+  //       clearTimeout(timeout)
+  //     }
+  //   }
+  // }, [hash, idString])
+
+  setTimeout(() => {
+    window.scrollTo({
+      top: lineRef.current.offsetTop,
+      left: 0,
+      behavior: 'smooth',
+    })
+  }, 0)
+
+  return {
+    targeted,
+    lineRef,
+    idString,
+  }
+}
+
+function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
+  const lineState = getLineState({ coverage })
+  const { lineRef, idString, targeted } = useScrollToLine({ number })
 
   return (
     <tr
