@@ -1,9 +1,10 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCommits } from 'services/commits'
 import { useFlags } from 'shared/featureFlags'
 
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
@@ -24,38 +25,26 @@ jest.mock(
 )
 jest.mock('./hooks/usePullPageData')
 jest.mock('shared/featureFlags')
-jest.mock('services/commits')
 
 const commits = {
-  commitsCount: 11,
-  commits: [
-    {
-      message: 'test2',
-      commitid: '2',
-      createdAt: '2021',
-      author: {
-        username: 'rula2',
-        avatarUrl: 'random',
-      },
-      pullId: 12,
-      totals: {
-        coverage: 19,
-      },
-      parent: {
-        totals: {
-          coverage: 22,
-        },
-      },
-      compareWithParent: {
-        patchTotals: {
-          coverage: 99,
-        },
+  owner: {
+    repository: {
+      commits: {
+        totalCount: 11,
       },
     },
-  ],
+  },
 }
 
 const queryClient = new QueryClient()
+
+const server = setupServer()
+beforeAll(() => server.listen())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+afterAll(() => server.close())
 
 describe('PullRequestPage', () => {
   function setup({
@@ -64,7 +53,11 @@ describe('PullRequestPage', () => {
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
     pullPageTabsFlag = false,
   }) {
-    useCommits.mockReturnValue({ data: commits })
+    server.use(
+      graphql.query('GetCommits', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(commits))
+      )
+    )
     usePullPageData.mockReturnValue({
       data: { hasAccess, pull: pullData },
     })
@@ -407,8 +400,8 @@ describe('PullRequestPage', () => {
       expect(screen.getByText(/Commits/i)).toBeInTheDocument()
     })
 
-    it('renders commits tab count', () => {
-      expect(screen.getByText('11')).toBeInTheDocument()
+    it('renders commits tab count', async () => {
+      expect(await screen.findByText('11')).toBeInTheDocument()
     })
 
     it('renders flags tab', () => {
