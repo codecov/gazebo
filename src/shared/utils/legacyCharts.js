@@ -109,7 +109,7 @@ export function legacyRepoCoverageQuery({ trend, branch, repo, today }) {
     branch,
     coverageTimestampOrdering: 'increasing',
     aggValue: 'timestamp',
-    aggFunction: 'min',
+    aggFunction: 'max',
     groupingUnit,
     ..._startDate,
   }

@@ -22,6 +22,7 @@ export function useLegacyRepoCoverage({
   body,
   opts = {},
 }) {
+  console.log(body)
   return useQuery(
     ['legacyRepo', 'coverage', provider, owner, branch, trend],
     ({ signal }) => fetchRepoCoverage({ provider, owner, body, signal }),
