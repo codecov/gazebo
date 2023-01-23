@@ -21,7 +21,7 @@ const useScrollToLine = ({ number }) => {
   const lineRef = useRef(null)
   const [targeted, setTargeted] = useState(false)
 
-  const idString = `#${sum(encodeURIComponent(path))}L${number}`
+  const idString = `#${sum(encodeURIComponent(path))}-L${number}`
 
   useLayoutEffect(() => {
     if (location.hash === idString) {
@@ -38,9 +38,7 @@ const useScrollToLine = ({ number }) => {
   const setRef = useCallback(
     (node) => {
       if (node && location.hash === idString) {
-        setTimeout(() => {
-          node.scrollIntoView({ behavior: 'smooth' })
-        }, 500)
+        node.scrollIntoView({ behavior: 'smooth' })
       }
 
       lineRef.current = node
