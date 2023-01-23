@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
 
 import { usePlanPageData } from 'pages/PlanPage/hooks'
 import { accountDetailsPropType } from 'services/account'
@@ -20,8 +19,7 @@ ActiveUsers.propTypes = {
 }
 
 function Usage({ accountDetails, isBasicPlan }) {
-  const { owner } = useParams()
-  const { data: ownerData } = usePlanPageData({ username: owner })
+  const { data: ownerData } = usePlanPageData()
   const uploadsNumber = ownerData?.numberOfUploads
   const maxUploadNumber = 250 //Could possibly move this to a more "global" constant, that way if it ever changes we don't have to scour the frontend to change all occurances.
 

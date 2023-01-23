@@ -1,5 +1,4 @@
 import { lazy, Suspense } from 'react'
-import { useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
@@ -8,8 +7,7 @@ import Avatar from 'ui/Avatar'
 const HeaderBanners = lazy(() => import('./HeaderBanners/HeaderBanners'))
 
 function Header() {
-  const { owner } = useParams()
-  const { data: ownerData } = useOwnerPageData({ username: owner })
+  const { data: ownerData } = useOwnerPageData()
   if (ownerData?.isCurrentUserPartOfOrg) {
     return (
       <>

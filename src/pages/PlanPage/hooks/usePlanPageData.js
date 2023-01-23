@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
-export function usePlanPageData({ username, opts = {} }) {
-  const { provider } = useParams()
+export function usePlanPageData(opts) {
+  const { owner, provider } = useParams()
   const query = `
       query PlanPageData($username: String!) {
         owner(username: $username) {
@@ -16,15 +16,15 @@ export function usePlanPageData({ username, opts = {} }) {
     `
 
   const variables = {
-    username,
+    username: owner,
   }
 
   return useQuery(
     ['PlanPageData', variables, provider],
     ({ signal }) =>
-      Api.graphql({ provider, query, variables, signal }).then((res) => {
-        return res?.data?.owner
-      }),
+      Api.graphql({ provider, query, variables, signal }).then(
+        (res) => res?.data?.owner
+      ),
     opts
   )
 }

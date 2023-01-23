@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
-export function useOwnerPageData({ username, opts = {} }) {
-  const { provider } = useParams()
+export function useOwnerPageData(opts = {}) {
+  const { owner, provider } = useParams()
   const query = `
       query OwnerPageData($username: String!) {
         owner(username: $username) {
@@ -14,9 +14,8 @@ export function useOwnerPageData({ username, opts = {} }) {
         }
       }
     `
-
   const variables = {
-    username,
+    username: owner,
   }
 
   return useQuery(

@@ -10,8 +10,8 @@ import Header from './Header'
 import Tabs from './Tabs'
 
 function OwnerPage() {
-  const { owner, provider } = useParams()
-  const { data: ownerData } = useOwnerPageData({ username: owner })
+  const { provider } = useParams()
+  const { data: ownerData } = useOwnerPageData()
   const { params } = useLocationParams({
     repoDisplay: 'All',
   })

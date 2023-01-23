@@ -31,7 +31,7 @@ const Loader = (
 
 function PlanPage() {
   const { owner, provider } = useParams()
-  const { data: ownerData } = usePlanPageData({ username: owner })
+  const { data: ownerData } = usePlanPageData()
 
   if (config.IS_SELF_HOSTED) {
     return <Redirect to={`/${provider}/${owner}`} />
