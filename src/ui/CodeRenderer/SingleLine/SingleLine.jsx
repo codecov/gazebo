@@ -1,9 +1,5 @@
 import cs from 'classnames'
-import sum from 'hash-sum'
 import PropTypes from 'prop-types'
-import { useCallback, useLayoutEffect, useRef, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-import { useLocation } from 'react-use'
 
 import {
   classNamePerLineContent,
@@ -14,65 +10,17 @@ import {
 } from 'shared/utils/fileviewer'
 import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
-const useScrollToLine = ({ number }) => {
-  const { path } = useParams()
-  const location = useLocation()
-  const history = useHistory()
-  const lineRef = useRef(null)
-  const [targeted, setTargeted] = useState(false)
-
-  const idString = `#${sum(encodeURIComponent(path))}-L${number}`
-
-  useLayoutEffect(() => {
-    if (location.hash === idString) {
-      if (!targeted) {
-        setTargeted(true)
-      }
-    } else {
-      if (targeted) {
-        setTargeted(false)
-      }
-    }
-  }, [location, idString, targeted])
-
-  const setRef = useCallback(
-    (node) => {
-      if (node && location.hash === idString) {
-        node.scrollIntoView({ behavior: 'smooth' })
-      }
-
-      lineRef.current = node
-    },
-    [idString, location.hash]
-  )
-
-  const handleClick = () => {
-    if (location.hash === idString) {
-      location.hash = ''
-      history.push(location)
-    } else {
-      location.hash = idString
-      history.push(location)
-    }
-  }
-
-  return {
-    targeted,
-    lineRef,
-    handleClick,
-    setRef,
-  }
-}
+import { useScrollToLine } from './useScrollToLine'
 
 function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
   const lineState = getLineState({ coverage })
-  const { setRef, handleClick, targeted } = useScrollToLine({ number })
+  const { lineRef, handleClick, targeted } = useScrollToLine({ number })
 
   return (
     <tr
       {...getLineProps({ line, key: number })}
       data-testid="fv-single-line"
-      ref={setRef}
+      ref={lineRef}
     >
       <td
         aria-label={lineStateToLabel[lineState]}
