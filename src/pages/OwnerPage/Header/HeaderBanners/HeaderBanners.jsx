@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
+import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useAccountDetails } from 'services/account'
-import { useUploadsNumber } from 'services/uploadsNumber'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 import GithubConfigBanner from './GithubConfigBanner'
@@ -12,11 +13,10 @@ import ReachingUploadLimit from './ReachingUploadLimit'
 const MAX_UPLOADS_NUMBER = 250
 const REACHING_UPLOAD_LIMIT = 225
 
-const useUploadsInfo = ({ provider, owner }) => {
-  const { data: numberOfUploads } = useUploadsNumber({
-    provider,
-    owner: owner?.username,
-  })
+const useUploadsInfo = () => {
+  const { owner } = useParams()
+  const { data: ownerData } = useOwnerPageData({ username: owner })
+  const numberOfUploads = ownerData?.numberOfUploads
 
   const isUploadsExceeded = numberOfUploads >= MAX_UPLOADS_NUMBER
   const isUploadsReachingLimit =
@@ -49,16 +49,14 @@ AlertBanners.propTypes = {
   hasGhApp: PropTypes.bool.isRequired,
 }
 
-export default function HeaderBanners({ provider, owner }) {
+export default function HeaderBanners() {
+  const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({
     provider,
-    owner: owner?.username,
+    owner,
   })
 
-  const { isUploadsExceeded, isUploadsReachingLimit } = useUploadsInfo({
-    provider,
-    owner: owner?.username,
-  })
+  const { isUploadsExceeded, isUploadsReachingLimit } = useUploadsInfo()
 
   const hasGhApp = !!accountDetails?.integrationId
 
@@ -73,12 +71,4 @@ export default function HeaderBanners({ provider, owner }) {
       hasGhApp={hasGhApp}
     />
   )
-}
-
-HeaderBanners.propTypes = {
-  owner: PropTypes.shape({
-    username: PropTypes.string.isRequired,
-    isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
-  }).isRequired,
-  provider: PropTypes.string.isRequired,
 }
