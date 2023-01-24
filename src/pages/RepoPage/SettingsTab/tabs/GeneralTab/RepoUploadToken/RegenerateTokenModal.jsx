@@ -7,10 +7,10 @@ const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
   <Modal
     isOpen={true}
     onClose={closeModal}
-    title="New upload token"
+    title="New repository upload token"
     body={
       <div className="flex  flex-col gap-4">
-        <h2 className="font-semibold"> Personal API token</h2>
+        <h2 className="font-semibold">Repository API token</h2>
         <span>If you save the new token, make sure to update your CI yml</span>
       </div>
     }
