@@ -66,6 +66,7 @@ function CommitFileView({ path }) {
               getLineProps={getLineProps}
               getTokenProps={getTokenProps}
               coverage={coverageData && coverageData[i + 1]}
+              path={path}
             />
           )}
         />
