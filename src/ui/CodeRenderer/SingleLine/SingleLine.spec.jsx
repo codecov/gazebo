@@ -129,7 +129,7 @@ describe('SingleLine', () => {
   })
 
   describe('user clicks on a number', () => {
-    it('changes the background color', () => {
+    it('changes font to bold', () => {
       render(
         <SingleLine
           line={line}
