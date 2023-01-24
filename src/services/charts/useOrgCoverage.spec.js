@@ -2,9 +2,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { setupServer } from 'msw/node'
 
-import { orgCoverageHandler, repoCoverageHandler } from './mocks'
+import { orgCoverageHandler } from './mocks'
 
-import { useLegacyRepoCoverage, useOrgCoverage } from './index'
+import { useOrgCoverage } from './index'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -101,85 +101,47 @@ const exampleYearlyHookData = {
 }
 
 describe('useOrgCoverage', () => {
-  const provider = 'gl'
-  const owner = 'doggo'
-
-  let hookData
-
   beforeEach(() => {
     server.use(orgCoverageHandler)
   })
 
-  function setup({
-    provider = 'github',
-    owner = 'Doggo',
-    query = { groupingUnit: 'quarterly' },
-  }) {
-    hookData = renderHook(() => useOrgCoverage({ provider, owner, query }), {
-      wrapper,
-    })
-  }
-
   describe('returns quarterly coverage data', () => {
-    beforeEach(async () => {
-      setup({ provider, owner, query: { groupingUnit: 'quarterly' } })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
-    })
+    it('returns chart data', async () => {
+      const { waitFor, result } = renderHook(
+        () =>
+          useOrgCoverage({
+            provider: 'bitbucket',
+            owner: 'critical role',
+            query: { groupingUnit: 'quarterly' },
+          }),
+        {
+          wrapper,
+        }
+      )
 
-    it('returns chart data', () => {
-      expect(hookData.result.current.data).toStrictEqual(exampleQuarterHookData)
+      await waitFor(() => !result.current.isFetching)
+
+      expect(result.current.data).toStrictEqual(exampleQuarterHookData)
     })
   })
 
   describe('returns year coverage data', () => {
-    beforeEach(async () => {
-      setup({ provider, owner, query: { groupingUnit: 'yearly' } })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
-    })
+    it('returns chart data', async () => {
+      const { waitFor, result } = renderHook(
+        () =>
+          useOrgCoverage({
+            provider: 'bitbucket',
+            owner: 'critical role',
+            query: { groupingUnit: 'yearly' },
+          }),
+        {
+          wrapper,
+        }
+      )
 
-    it('returns chart data', () => {
-      expect(hookData.result.current.data).toStrictEqual(exampleYearlyHookData)
-    })
-  })
-})
+      await waitFor(() => !result.current.isFetching)
 
-describe('useLegacyRepoCoverage', () => {
-  const provider = 'gl'
-  const owner = 'doggo'
-
-  let hookData
-
-  beforeEach(() => {
-    server.use(repoCoverageHandler)
-  })
-
-  function setup({
-    provider = 'github',
-    owner = 'Doggo',
-    query = { groupingUnit: 'quarterly' },
-  }) {
-    hookData = renderHook(
-      () => useLegacyRepoCoverage({ provider, owner, query }),
-      {
-        wrapper,
-      }
-    )
-  }
-
-  describe('returns year coverage data', () => {
-    beforeEach(async () => {
-      setup({
-        provider,
-        owner,
-        branch: 'main',
-        trend: 'all_time',
-        body: { groupingUnit: 'yearly' },
-      })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
-    })
-
-    it('returns chart data', () => {
-      expect(hookData.result.current.data).toStrictEqual(exampleYearlyHookData)
+      expect(result.current.data).toStrictEqual(exampleYearlyHookData)
     })
   })
 })
