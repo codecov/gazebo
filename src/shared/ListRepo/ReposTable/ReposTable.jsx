@@ -3,15 +3,18 @@ import { useContext } from 'react'
 
 import { useRepos } from 'services/repos'
 import { useOwner, useUser } from 'services/user'
-import AppLink from 'shared/AppLink'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Progress from 'ui/Progress'
 import Table from 'ui/Table'
 
+import NoRepoCoverage from './NoRepoCoverage'
 import NoReposBlock from './NoReposBlock'
+import RepoNotSetup from './RepoNotSetup'
 import RepoTitleLink from './RepoTitleLink'
+
+import { repoDisplayOptions } from '../ListRepo'
 
 const tableActive = [
   {
@@ -20,17 +23,19 @@ const tableActive = [
     accessorKey: 'title',
     width: 'w-7/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'lastUpdated',
-    header: <span className="w-full text-right">Last Updated</span>,
+    header: 'Last Updated',
     accessorKey: 'lastUpdated',
     width: 'w-2/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'coverage',
-    header: <span className="w-full text-sm text-right">Test Coverage</span>,
+    header: 'Test Coverage',
     accessorKey: 'coverage',
     width: 'w-3/12',
     cell: (info) => info.getValue(),
@@ -44,6 +49,7 @@ const tableInactive = [
     accessorKey: 'title',
     width: 'w-9/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'notEnabled',
@@ -59,7 +65,6 @@ function transformRepoToTable({
   repos,
   owner,
   searchValue,
-  isSetup,
   isCurrentUserPartOfOrg,
 }) {
   // if there are no repos show empty message
@@ -76,54 +81,48 @@ function transformRepoToTable({
     ]
   }
 
-  const repoPageName = !isSetup ? 'new' : 'repo'
-  const disableLink = !isCurrentUserPartOfOrg && !isSetup
-
   return repos?.map((repo) => ({
     title: (
       <RepoTitleLink
         repo={repo}
         showRepoOwner={!owner}
-        pageName={repoPageName}
-        disabledLink={disableLink}
+        pageName={repo.active ? 'repo' : 'new'}
+        disabledLink={!isCurrentUserPartOfOrg && !repo.active}
       />
     ),
     lastUpdated: (
-      <span className="w-full text-right text-ds-gray-quinary">
+      <span className="flex-1 text-ds-gray-quinary">
         {repo?.latestCommitAt ? formatTimeToNow(repo?.latestCommitAt) : ''}
       </span>
     ),
     coverage:
       typeof repo?.coverage === 'number' ? (
-        <div className="w-full flex gap-2 justify-end items-center">
-          <Progress amount={repo?.coverage} label={true} />
-        </div>
+        <Progress amount={repo?.coverage} label={true} />
       ) : (
-        <span className="text-ds-gray-quinary text-sm">No data available</span>
+        <NoRepoCoverage
+          active={repo.active}
+          isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
+          repoName={repo.name}
+          owner={repo?.author.username}
+        />
       ),
     notEnabled: (
-      <span className="flex w-full justify-end gap-1">
-        Not yet enabled{' '}
-        {isCurrentUserPartOfOrg && (
-          <AppLink
-            className="text-ds-blue font-semibold"
-            pageName="new"
-            options={{
-              owner: repo?.author.username,
-              repo: repo?.name,
-            }}
-          >
-            setup repo
-          </AppLink>
-        )}
-      </span>
+      <RepoNotSetup
+        owner={repo?.author.username}
+        repoName={repo?.name}
+        isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
+      />
     ),
   }))
 }
 
 // eslint-disable-next-line complexity
 function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
-  const active = useContext(ActiveContext)
+  const repoDisplay = useContext(ActiveContext)
+  const option = Object.keys(repoDisplayOptions).find((key) => {
+    return repoDisplayOptions[key].text === repoDisplay
+  })
+  const active = repoDisplayOptions[option].status
   const { data: userData } = useUser()
   const { data: ownerData } = useOwner({
     username: owner || userData?.user?.username,
@@ -141,13 +140,19 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
     repos: data.repos,
     owner,
     searchValue,
-    isSetup: active,
     isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
   })
 
   return (
     <>
-      <Table data={dataTable} columns={active ? tableActive : tableInactive} />
+      <Table
+        data={dataTable}
+        columns={
+          repoDisplay === repoDisplayOptions.INACTIVE.text
+            ? tableInactive
+            : tableActive
+        }
+      />
       {data?.repos?.length
         ? hasNextPage && (
             <div className="w-full mt-4 flex justify-center">

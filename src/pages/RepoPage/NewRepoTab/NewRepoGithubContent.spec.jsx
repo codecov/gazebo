@@ -1,3 +1,5 @@
+import config from 'config'
+
 import { useRepo } from 'services/repo'
 
 import NewRepoGithubContent from './NewRepoGithubContent'
@@ -5,9 +7,13 @@ import NewRepoGithubContent from './NewRepoGithubContent'
 import { repoPageRender, screen } from '../repo-jest-setup'
 
 jest.mock('services/repo')
+jest.mock('config')
 
 describe('New Repo Tab Github Content', () => {
-  function setup(uploadToken = '') {
+  function setup({ uploadToken = '', isSelfHosted = false } = {}) {
+    config.IS_SELF_HOSTED = isSelfHosted
+    config.BASE_URL = 'https://app.codecov.io/'
+
     useRepo.mockReturnValue({
       data: { repository: { uploadToken, private: true } },
     })
@@ -79,7 +85,7 @@ describe('New Repo Tab Github Content', () => {
 
   describe('renders step 1', () => {
     beforeEach(() => {
-      setup('64543f83-c5d9-40bd-95aa-af71d7301d')
+      setup({ uploadToken: '64543f83-c5d9-40bd-95aa-af71d7301d' })
     })
 
     it('renders header', () => {
@@ -147,6 +153,39 @@ describe('New Repo Tab Github Content', () => {
         name: /integrity check the uploader/i,
       })
       expect(link).toBeInTheDocument()
+    })
+  })
+
+  describe('when render for self hosted users', () => {
+    beforeEach(() => {
+      setup({ isSelfHosted: true })
+    })
+
+    it('renders header', () => {
+      const title = screen.getByText(/Step 3/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders body', () => {
+      const body = screen.getByText(
+        /commit your changes in step 2 and ran your CI\/CD pipeline/
+      )
+      expect(body).toBeInTheDocument()
+    })
+
+    it('renders uploader integrity check banner with different copy', () => {
+      const copy = screen.getByText(/You can use the SHASUMs located/)
+      expect(copy).toBeInTheDocument()
+    })
+
+    it('renders base url', () => {
+      const copy = screen.getByText(/-u https:\/\/app.codecov.io/i)
+      expect(copy).toBeInTheDocument()
+    })
+
+    it('does not render bot banner', () => {
+      const link = screen.queryByRole('link', { name: /team Bot/i })
+      expect(link).not.toBeInTheDocument()
     })
   })
 })

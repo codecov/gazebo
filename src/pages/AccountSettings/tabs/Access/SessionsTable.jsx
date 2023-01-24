@@ -13,6 +13,7 @@ const tableColumns = [
     accessorKey: 'ip',
     width: 'w-3/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'lastSeen',
@@ -20,6 +21,7 @@ const tableColumns = [
     accessorKey: 'lastSeen',
     width: 'w-2/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'userAgent',
@@ -27,6 +29,7 @@ const tableColumns = [
     accessorKey: 'userAgent',
     width: 'w-6/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'revokeBtn',

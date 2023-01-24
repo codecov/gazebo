@@ -1,16 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { lazy } from 'react'
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Switch } from 'react-router-dom'
 
 import config from 'config'
+
+import { SentryRoute } from 'sentry'
 
 import BaseLayout from 'layouts/BaseLayout'
 // not lazy loading because is first page user sees
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
-
-// Not lazy loading because the page is very small and is accessed often
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
@@ -36,7 +36,6 @@ const queryClient = new QueryClient({
   },
 })
 
-// eslint-disable-next-line complexity
 function App() {
   useUTM()
 
@@ -44,113 +43,114 @@ function App() {
     <ToastNotificationProvider>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
-        <BrowserRouter>
-          <Switch>
-            <Route path="/login/:provider">
+        <Switch>
+          <SentryRoute path="/login/:provider">
+            <BaseLayout>
+              {config.IS_SELF_HOSTED ? <Redirect to="/" /> : <LoginPage />}
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/login">
+            <BaseLayout>
+              {config.IS_SELF_HOSTED ? <Redirect to="/" /> : <LoginPage />}
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/account/:provider/:owner/">
+            <BaseLayout>
+              <AccountSettings />
+            </BaseLayout>
+          </SentryRoute>
+          {config.IS_SELF_HOSTED && (
+            <SentryRoute path="/admin/:provider">
               <BaseLayout>
-                {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
+                <AdminSettings />
               </BaseLayout>
-            </Route>
-            <Route path="/login">
+            </SentryRoute>
+          )}
+          <SentryRoute path="/analytics/:provider/:owner/" exact>
+            <BaseLayout>
+              <AnalyticsPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/:provider/feedback">
+            <BaseLayout>
+              <FeedbackPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/members/:provider/:owner/">
+            <BaseLayout>
+              <MembersPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/plan/:provider/:owner/">
+            <BaseLayout>
+              <PlanPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/:provider/" exact>
+            <BaseLayout>
+              <HomePage />
+            </BaseLayout>
+          </SentryRoute>
+          <Redirect
+            from="/:provider/+"
+            exact
+            to="/:provider\?repoDisplay=Inactive"
+          />
+          <SentryRoute path="/:provider/:owner/" exact>
+            <BaseLayout>
+              <OwnerPage />
+            </BaseLayout>
+          </SentryRoute>
+          <Redirect
+            from="/:provider/:owner/+"
+            exact
+            to="/:provider/:owner\?repoDisplay=Inactive"
+          />
+          <Redirect
+            from="/:provider/:owner/:repo/compare/*"
+            to="/:provider/:owner/:repo/pull/*"
+          />
+          <SentryRoute
+            path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
+            exact
+          >
+            <BaseLayout>
+              <PullRequestPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/pull/:pullId">
+            <BaseLayout>
+              <PullRequestPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute
+            path="/:provider/:owner/:repo/commit/:commit/:path+"
+            exact
+          >
+            <BaseLayout>
+              <CommitPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
+            <BaseLayout>
+              <CommitPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo">
+            <BaseLayout>
+              <RepoPage />
+            </BaseLayout>
+          </SentryRoute>
+          <SentryRoute path="/">
+            {config.IS_SELF_HOSTED ? (
               <BaseLayout>
-                {config.IS_ENTERPRISE ? <Redirect to="/" /> : <LoginPage />}
+                <EnterpriseLandingPage />
               </BaseLayout>
-            </Route>
-            <Route path="/account/:provider/:owner/">
-              <BaseLayout>
-                <AccountSettings />
-              </BaseLayout>
-            </Route>
-            {config.IS_ENTERPRISE && (
-              <Route path="/admin/:provider">
-                <BaseLayout>
-                  <AdminSettings />
-                </BaseLayout>
-              </Route>
+            ) : (
+              <Redirect to="/gh" />
             )}
-            <Route path="/analytics/:provider/:owner/" exact>
-              <BaseLayout>
-                <AnalyticsPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/feedback">
-              <BaseLayout>
-                <FeedbackPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/members/:provider/:owner/">
-              <BaseLayout>
-                <MembersPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/plan/:provider/:owner/">
-              <BaseLayout>
-                <PlanPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/+" exact>
-              <BaseLayout>
-                <HomePage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/" exact>
-              <BaseLayout>
-                <HomePage active={true} />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/" exact>
-              <BaseLayout>
-                <OwnerPage active={true} />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/+" exact>
-              <BaseLayout>
-                <OwnerPage />
-              </BaseLayout>
-            </Route>
-            <Redirect
-              from="/:provider/:owner/:repo/compare/*"
-              to="/:provider/:owner/:repo/pull/*"
-            />
-            <Route
-              path="/:provider/:owner/:repo/pull/:pullId/tree/:path+"
-              exact
-            >
-              <BaseLayout>
-                <PullRequestPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo/pull/:pullId">
-              <BaseLayout>
-                <PullRequestPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
-              <BaseLayout>
-                <CommitPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo/commit/:commit" exact>
-              <BaseLayout>
-                <CommitPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/:provider/:owner/:repo">
-              <BaseLayout>
-                <RepoPage />
-              </BaseLayout>
-            </Route>
-            <Route path="/">
-              {config.IS_ENTERPRISE ? (
-                <BaseLayout>
-                  <EnterpriseLandingPage />
-                </BaseLayout>
-              ) : (
-                <Redirect to="/gh" />
-              )}
-            </Route>
-          </Switch>
-        </BrowserRouter>
+          </SentryRoute>
+        </Switch>
       </QueryClientProvider>
     </ToastNotificationProvider>
   )

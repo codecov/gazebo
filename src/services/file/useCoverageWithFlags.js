@@ -36,7 +36,7 @@ export function useCoverageWithFlags(
 
   fragment CoverageForFile on Commit {
     commitid
-    coverageFile(path: $path) {
+    coverageFile(path: $path, flags: $flags) {
       isCriticalFile
       coverage {
         line
@@ -51,10 +51,11 @@ export function useCoverageWithFlags(
 
   return useQuery(
     ['coverage', provider, owner, repo, ref, path, flags],
-    () => {
+    ({ signal }) => {
       return Api.graphql({
         provider,
         query,
+        signal,
         variables: {
           provider,
           owner,

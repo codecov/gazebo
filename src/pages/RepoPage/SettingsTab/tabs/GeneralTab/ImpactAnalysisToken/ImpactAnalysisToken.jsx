@@ -39,7 +39,7 @@ function ImpactAnalysisToken({ profilingToken }) {
         </span>
       }
       content={
-        <div className="flex">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 flex flex-col gap-4">
             <p>
               If you are not using this feature, you do not need the token. If

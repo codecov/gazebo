@@ -47,10 +47,11 @@ export function useCompareTotals({
 
   return useQuery(
     ['impactedFiles', provider, owner, repo, commitid],
-    () => {
+    ({ signal }) => {
       return Api.graphql({
         provider,
         query,
+        signal,
         variables: {
           owner,
           repo,

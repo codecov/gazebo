@@ -26,7 +26,7 @@ const defaultQueryParams = {
 
 function AnalyticsPage() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const { owner, provider } = useParams()
+  const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
   const orderOptions = orderingOptions
@@ -43,7 +43,7 @@ function AnalyticsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 analytics-page">
+    <div className="flex flex-col gap-4 mt-2">
       <Header owner={ownerData} />
       <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
       <ChartSelectors
@@ -54,7 +54,7 @@ function AnalyticsPage() {
         sortItem={sortItem}
       />
       <Suspense fallback={<LogoSpinner />}>
-        <Chart provider={provider} owner={owner} params={params} />
+        <Chart params={params} />
         <ReposTable
           owner={owner}
           sortItem={sortItem}

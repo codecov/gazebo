@@ -4,10 +4,19 @@ import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
 
 const query = `
-  query GetBranches($owner: String!, $repo: String!, $after: String) {
+  query GetBranches(
+    $owner: String!
+    $repo: String!
+    $after: String
+    $filters: BranchesSetFilters
+  ) {
     owner(username: $owner) {
       repository(name: $repo) {
-        branches(first: 20, after: $after) {
+        branches(
+          first: 20
+          after: $after
+          filters: $filters
+        ) {
           edges {
             node {
               name
@@ -26,17 +35,18 @@ const query = `
   }
 `
 
-export function useBranches({ provider, owner, repo, filters }) {
+export function useBranches({ provider, owner, repo, filters, opts = {} }) {
   const variables = {
     filters,
   }
 
   const { data, ...rest } = useInfiniteQuery(
     ['GetBranches', provider, owner, repo, variables],
-    ({ pageParam }) =>
+    ({ pageParam, signal }) =>
       Api.graphql({
         provider,
         query,
+        signal,
         variables: {
           owner,
           repo,
@@ -54,6 +64,7 @@ export function useBranches({ provider, owner, repo, filters }) {
           : undefined
         return pageParam
       },
+      ...opts,
     }
   )
 

@@ -14,17 +14,17 @@ function MembersPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
-  if (config.IS_ENTERPRISE) {
+  if (config.IS_SELF_HOSTED) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-2">
       <Header />
       {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
-      <h2 className="font-semibold text-lg">Manage members</h2>
-      <hr className="w-10/12" />
-      <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial w-2/3 lg:w-3/5">
+      <h2 className="font-semibold text-lg mx-4 sm:mx-0">Manage members</h2>
+      <hr className="lg:w-10/12" />
+      <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial lg:w-3/5">
         <MemberActivation />
         <MissingMemberBanner />
         <MembersList />

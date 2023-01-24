@@ -52,7 +52,7 @@ describe('FeedbackLink', () => {
 
   describe('does not render for enterprise', () => {
     beforeEach(() => {
-      config.IS_ENTERPRISE = true
+      config.IS_SELF_HOSTED = true
       setup({
         entry: '/gh/feedback',
         path: '/:provider/feedback',

@@ -112,6 +112,11 @@
             "pattern": "config",
             "group": "internal",
             "position": "before"
+          },
+          {
+            "pattern": "sentry",
+            "group": "internal",
+            "position": "before"
           }
         ],
         "alphabetize": {
@@ -125,7 +130,12 @@
   "overrides": [
     // UI Rules
     {
-      "files": ["src/ui/**/*.js", "src/ui/*.js", "src/ui/**/*.jsx", "src/ui/*.jsx"],
+      "files": [
+        "src/ui/**/*.js",
+        "src/ui/*.js",
+        "src/ui/**/*.jsx",
+        "src/ui/*.jsx"
+      ],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -151,7 +161,12 @@
     },
     // Services Rules
     {
-      "files": ["src/services/**/*.js", "src/services/*.js", "src/services/**/*.jsx", "src/services/*.jsx"],
+      "files": [
+        "src/services/**/*.js",
+        "src/services/*.js",
+        "src/services/**/*.jsx",
+        "src/services/*.jsx"
+      ],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -195,7 +210,14 @@
     },
     // Testing Rules
     {
-      "files": ["*-test.js", "*.spec.js", "*.test.js", "*-test.jsx", "*.spec.jsx", "*.test.jsx"],
+      "files": [
+        "*-test.js",
+        "*.spec.js",
+        "*.test.js",
+        "*-test.jsx",
+        "*.spec.jsx",
+        "*.test.jsx"
+      ],
       "rules": {
         "max-nested-callbacks": "off",
         "max-statements": "off",
@@ -213,10 +235,7 @@
     }
   ],
   "settings": {
-    "import/extensions": [
-      ".js",
-      ".jsx"
-    ],
+    "import/extensions": [".js", ".jsx"],
     "import/resolver": {
       "alias": {
         "map": [
@@ -229,7 +248,8 @@
           ["mocks", "./src/mocks"],
           ["assets", "./src/assets"],
           ["custom-testing-library", "./src/custom-testing-library"],
-          ["config", "./src/config"]
+          ["config", "./src/config"],
+          ["sentry", "./src/sentry"]
         ],
         "extensions": [".js", ".jsx", ".json"]
       }

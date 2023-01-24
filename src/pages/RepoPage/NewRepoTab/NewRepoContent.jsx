@@ -1,10 +1,11 @@
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 
-import GithubConfig from './GithubConfig'
 import TerminalInstructions from './TerminalInstructions'
 import Token from './Token'
 
@@ -26,8 +27,6 @@ function NewRepoContent() {
         </A>{' '}
         to learn more.
       </p>
-
-      <GithubConfig privateRepo={data?.repository?.private} />
 
       <>
         <h2 className="font-semibold mt-8 text-base">Step 1</h2>
@@ -69,6 +68,14 @@ function NewRepoContent() {
             integrity check the uploader
           </A>
           .
+          {config.IS_SELF_HOSTED && (
+            <p>
+              This will verify the uploader integrity before uploading to
+              Codecov. You can use the SHASUMs located at {config.BASE_URL}
+              /uploader to integrity check against the version of the uploader
+              bundled with your Codecov installation.
+            </p>
+          )}
         </p>
         <h2 className="font-semibold mt-8 text-base">
           &#127881; &nbsp;Confirming completion

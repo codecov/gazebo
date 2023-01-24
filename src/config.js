@@ -3,8 +3,10 @@ import mapKeys from 'lodash/mapKeys'
 const defaultConfig = {
   API_URL: '',
   STRIPE_KEY: '',
-  IS_ENTERPRISE: false,
   SENTRY_ENVIRONMENT: 'staging',
+  SENTRY_TRACING_SAMPLE_RATE: 0.2,
+  SENTRY_SESSION_SAMPLE_RATE: 0.1,
+  SENTRY_ERROR_SAMPLE_RATE: 0.9,
 }
 
 export function removeReactAppPrefix(obj) {
@@ -13,8 +15,26 @@ export function removeReactAppPrefix(obj) {
   // prefix to be more convenient for us
   const keys = mapKeys(obj, (_, key) => key.replace('REACT_APP_', ''))
 
-  if ('IS_ENTERPRISE' in keys) {
-    keys['IS_ENTERPRISE'] = keys['IS_ENTERPRISE'].toLowerCase() === 'true'
+  if ('ENV' in keys) {
+    keys['IS_SELF_HOSTED'] = keys['ENV'].toLowerCase() === 'enterprise'
+  }
+
+  if ('SENTRY_TRACING_SAMPLE_RATE' in keys) {
+    keys['SENTRY_TRACING_SAMPLE_RATE'] = parseFloat(
+      keys['SENTRY_TRACING_SAMPLE_RATE']
+    )
+  }
+
+  if ('SENTRY_SESSION_SAMPLE_RATE' in keys) {
+    keys['SENTRY_SESSION_SAMPLE_RATE'] = parseFloat(
+      keys['SENTRY_SESSION_SAMPLE_RATE']
+    )
+  }
+
+  if ('SENTRY_ERROR_SAMPLE_RATE' in keys) {
+    keys['SENTRY_ERROR_SAMPLE_RATE'] = parseFloat(
+      keys['SENTRY_ERROR_SAMPLE_RATE']
+    )
   }
 
   return keys

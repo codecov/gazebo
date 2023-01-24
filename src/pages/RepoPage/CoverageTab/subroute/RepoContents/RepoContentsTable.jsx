@@ -1,10 +1,12 @@
 import PropType from 'prop-types'
 
-import Button from 'ui/Button'
+import { useLocationParams } from 'services/navigation'
+import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
+import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
+import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
+import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
-
-import useRepoContentsTable from './hooks'
 
 const Loader = ({ isLoading }) => {
   return (
@@ -43,35 +45,55 @@ RepoContentsResult.propTypes = {
   isMissingHeadReport: PropType.bool,
 }
 
+const defaultQueryParams = {
+  search: '',
+}
+
 function RepoContentsTable() {
   const {
-    paginatedData,
+    data,
     headers,
     handleSort,
-    isLoading,
     isSearching,
-    handlePaginationClick,
-    hasNextPage,
     isMissingHeadReport,
-  } = useRepoContentsTable()
+    isLoading,
+  } = useRepoBranchContentsTable()
+
+  const { params, updateParams } = useLocationParams(defaultQueryParams)
 
   return (
     <>
-      <Table data={paginatedData} columns={headers} onSort={handleSort} />
-      <Loader isLoading={isLoading} />
-      {paginatedData?.length === 0 && !isLoading && (
-        <RepoContentsResult
-          isSearching={isSearching}
-          isMissingHeadReport={isMissingHeadReport}
-        />
-      )}
-      {hasNextPage && (
-        <div className="w-full mt-4 flex justify-center">
-          <Button hook="load-more" onClick={handlePaginationClick}>
-            Load More
-          </Button>
+      <div className="flex justify-between gap-2 py-2 sticky top-[4.5rem] bg-white">
+        <div className="flex-1 flex gap-4">
+          <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
+          <FileBreadcrumb />
         </div>
-      )}
+        <SearchField
+          dataMarketing="files-search"
+          placeholder="Search for files"
+          searchValue={params?.search}
+          setSearchValue={(search) => updateParams({ search })}
+        />
+      </div>
+      <div className=" flex-1 grid grid-cols-12 gap-8">
+        <div className="flex flex-col col-span-12 md:col-span-12">
+          <Table
+            data={data}
+            columns={headers}
+            onSort={handleSort}
+            enableHover
+          />
+          <div className="mt-4">
+            <Loader isLoading={isLoading} />
+            {data?.length === 0 && !isLoading && (
+              <RepoContentsResult
+                isSearching={isSearching}
+                isMissingHeadReport={isMissingHeadReport}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </>
   )
 }

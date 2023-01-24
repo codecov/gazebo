@@ -1,24 +1,26 @@
-import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
 import { lazy, Suspense } from 'react'
-import { Redirect, Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import config from 'config'
 
+import { SentryRoute } from 'sentry'
+
 import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
+import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
+import { isEnterprisePlan } from 'shared/utils/billing'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 import Header from './shared/Header'
+import OrgUploadToken from './tabs/OrgUploadToken'
 
 const AccessTab = lazy(() => import('./tabs/Access'))
 const AdminTab = lazy(() => import('./tabs/Admin'))
 const NotFound = lazy(() => import('../NotFound'))
 const Profile = lazy(() => import('./tabs/Profile'))
 const YAMLTab = lazy(() => import('./tabs/YAML'))
-
-const stripePromise = loadStripe(config.STRIPE_KEY)
 
 const Loader = (
   <div className="h-full w-full flex items-center justify-center">
@@ -36,37 +38,50 @@ function AccountSettings() {
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   const yamlTab = `/account/${provider}/${owner}/yaml/`
+  const { orgUploadToken } = useFlags({ orgUploadToken: false })
+
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const showOrgUploadToken =
+    orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
 
   return (
-    <Elements stripe={stripePromise}>
+    <div className="flex flex-col gap-4 mt-2">
       <Header />
       <SidebarLayout sidebar={<AccountSettingsSideMenu />}>
         <Suspense fallback={Loader}>
           <Switch>
-            <Route path="/account/:provider/:owner/" exact>
-              {config.IS_ENTERPRISE && isViewingPersonalSettings ? (
+            <SentryRoute path="/account/:provider/:owner/" exact>
+              {config.IS_SELF_HOSTED && isViewingPersonalSettings ? (
                 <Profile provider={provider} owner={owner} />
-              ) : !config.IS_ENTERPRISE && isAdmin ? (
+              ) : !config.IS_SELF_HOSTED && isAdmin ? (
                 <AdminTab provider={provider} owner={owner} />
               ) : (
                 <Redirect to={yamlTab} />
               )}
-            </Route>
-            <Route path="/account/:provider/:owner/yaml/" exact>
+            </SentryRoute>
+            <SentryRoute path="/account/:provider/:owner/yaml/" exact>
               <YAMLTab provider={provider} owner={owner} />
-            </Route>
-            {!config.IS_ENTERPRISE && (
-              <Route path="/account/:provider/:owner/access/" exact>
+            </SentryRoute>
+            {!config.IS_SELF_HOSTED && (
+              <SentryRoute path="/account/:provider/:owner/access/" exact>
                 <AccessTab provider={provider} />
-              </Route>
+              </SentryRoute>
             )}
-            <Route path="/account/:provider/:owner/*">
+            {showOrgUploadToken && (
+              <SentryRoute
+                path="/account/:provider/:owner/orgUploadToken"
+                exact
+              >
+                <OrgUploadToken />
+              </SentryRoute>
+            )}
+            <SentryRoute path="/account/:provider/:owner/*">
               <NotFound />
-            </Route>
+            </SentryRoute>
           </Switch>
         </Suspense>
       </SidebarLayout>
-    </Elements>
+    </div>
   )
 }
 

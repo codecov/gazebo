@@ -4,8 +4,8 @@ import { Redirect } from 'react-router-dom'
 import { useSetCrumbs } from 'pages/RepoPage/context'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
-import Select from 'ui/NewSelect'
 import Progress from 'ui/Progress'
+import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
 import CoverageTrend from './CoverageTrend'
@@ -19,9 +19,13 @@ const Summary = () => {
     currentBranchSelected,
     branchSelectorProps,
     branchesFetchNextPage,
-    branchesHasNextPage,
-    branchesIsFetching,
+    branchList,
+    branchListIsFetching,
+    branchListHasNextPage,
+    branchListFetchNextPage,
+    setBranchSearchTerm,
   } = useSummary()
+
   useLayoutEffect(() => {
     setCrumbs([
       {
@@ -43,7 +47,6 @@ const Summary = () => {
 
   return (
     <>
-      {redirectState?.newPath}
       {redirectState?.isRedirectionEnabled && (
         <Redirect to={redirectState?.newPath} />
       )}
@@ -63,8 +66,15 @@ const Summary = () => {
               onChange={onChangeHandler}
               variant="gray"
               renderItem={(item) => <span>{item?.name}</span>}
-              isLoading={branchesIsFetching}
-              onLoadMore={() => branchesHasNextPage && branchesFetchNextPage()}
+              isLoading={branchListIsFetching}
+              onLoadMore={() => {
+                if (branchListHasNextPage) {
+                  branchesFetchNextPage()
+                  branchListFetchNextPage()
+                }
+              }}
+              onSearch={(term) => setBranchSearchTerm(term)}
+              items={branchList}
             />
           </span>
 

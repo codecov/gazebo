@@ -1,9 +1,11 @@
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Suspense } from 'react'
-import { Redirect, Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import config from 'config'
+
+import { SentryRoute } from 'sentry'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
@@ -28,35 +30,38 @@ const Loader = (
 )
 
 function PlanPage() {
-  const { owner } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
+  if (config.IS_SELF_HOSTED) {
+    return <Redirect to={`/${provider}/${owner}`} />
+  }
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-2">
       <Header />
       {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
       <Elements stripe={stripePromise}>
         <PlanBreadcrumbProvider>
           <PlanBreadcrumb />
-          <hr className="md:w-10/12" />
+          <hr className="md:w-11/12 lg:w-10/12" />
           <Suspense fallback={Loader}>
             <Switch>
-              {config.IS_ENTERPRISE && <Redirect to="/:provider/:owner" />}
-              <Route path={path} exact>
+              <SentryRoute path={path} exact>
                 <CurrentOrgPlan />
-              </Route>
-              <Route path={`${path}/upgrade`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/upgrade`} exact>
                 <UpgradePlan />
-              </Route>
-              <Route path={`${path}/cancel`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/cancel`} exact>
                 <CancelPlanPage />
-              </Route>
-              <Route path={`${path}/invoices`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/invoices`} exact>
                 <Invoices />
-              </Route>
-              <Route path={`${path}/invoices/:id`} exact>
+              </SentryRoute>
+              <SentryRoute path={`${path}/invoices/:id`} exact>
                 <InvoiceDetail />
-              </Route>
+              </SentryRoute>
               <Redirect
                 from="/billing/:provider/:owner/*"
                 to="/billing/:provider/:owner"

@@ -5,7 +5,7 @@ import usePrevious from 'react-use/lib/usePrevious'
 
 import Api from 'shared/api'
 
-function fetchIsSyncing(provider) {
+function fetchIsSyncing({ provider, signal }) {
   const query = `
       query IsSyncing {
         me {
@@ -13,7 +13,7 @@ function fetchIsSyncing(provider) {
         }
       }
     `
-  return Api.graphql({ provider, query }).then((res) => {
+  return Api.graphql({ provider, query, signal }).then((res) => {
     return Boolean(res?.data?.me?.isSyncing)
   })
 }
@@ -63,12 +63,16 @@ export function useResyncUser() {
   const isSyncing = mutationData.isLoading || isSyncingInCache
 
   // useQuery will automatically feed the so we don't need to care about return
-  useQuery(['isSyncing', provider], () => fetchIsSyncing(provider), {
-    suspense: false,
-    useErrorBoundary: false,
-    // refetch every 2 seconds if we are syncing
-    refetchInterval: isSyncing ? 2000 : null,
-  })
+  useQuery(
+    ['isSyncing', provider],
+    ({ signal }) => fetchIsSyncing({ provider, signal }),
+    {
+      suspense: false,
+      useErrorBoundary: false,
+      // refetch every 2 seconds if we are syncing
+      refetchInterval: isSyncing ? 2000 : null,
+    }
+  )
 
   // when isSyncing goes from true to false, we call onSyncFinish
   const prevIsSyncing = usePrevious(isSyncing)

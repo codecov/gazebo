@@ -70,13 +70,7 @@ const expectedNextPageData = [
   },
 ]
 
-const provider = 'gh'
-const owner = 'codecov'
-const repo = 'gazebo'
-
 describe('FlagsSelect', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.query('FlagsSelect', (req, res, ctx) => {
@@ -98,10 +92,6 @@ describe('FlagsSelect', () => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-
-    hookData = renderHook(() => useRepoFlagsSelect({ provider, owner, repo }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -110,32 +100,42 @@ describe('FlagsSelect', () => {
     })
 
     it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
+      const { result } = renderHook(() => useRepoFlagsSelect(), {
+        wrapper,
+      })
+
+      expect(result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(() => useRepoFlagsSelect(), {
+          wrapper,
+        })
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(expectedInitialData)
+        await waitFor(() => result.current.isSuccess)
+        expect(result.current.data).toEqual(expectedInitialData)
       })
     })
   })
 
   describe('when fetchNextPage is called', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-      hookData.result.current.fetchNextPage()
-
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('returns prev and next page flags data', () => {
-      expect(hookData.result.current.data).toEqual([
+    it('returns prev and next page flags data', async () => {
+      const { result, waitFor } = renderHook(() => useRepoFlagsSelect(), {
+        wrapper,
+      })
+
+      await waitFor(() => result.current.isSuccess)
+      result.current.fetchNextPage()
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
+
+      expect(result.current.data).toEqual([
         ...expectedInitialData,
         ...expectedNextPageData,
       ])

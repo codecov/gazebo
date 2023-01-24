@@ -3,7 +3,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
 
-function fetchRepoCommits({ provider, owner, repo, variables, after }) {
+function fetchRepoCommits({ provider, owner, repo, variables, after, signal }) {
   const CommitFragment = `
    fragment CommitFragment on Commit {
         ciPassed
@@ -54,6 +54,7 @@ function fetchRepoCommits({ provider, owner, repo, variables, after }) {
     provider,
     repo,
     query,
+    signal,
     variables: {
       owner,
       repo,
@@ -70,23 +71,25 @@ function fetchRepoCommits({ provider, owner, repo, variables, after }) {
   })
 }
 
-export function useCommits({ provider, owner, repo, filters }) {
+export function useCommits({ provider, owner, repo, filters, opts = {} }) {
   const variables = {
     filters,
   }
   const { data, ...rest } = useInfiniteQuery(
     ['commits', provider, owner, repo, variables],
-    ({ pageParam }) =>
+    ({ pageParam, signal }) =>
       fetchRepoCommits({
         provider,
         owner,
         repo,
         variables,
         after: pageParam,
+        signal,
       }),
     {
       getNextPageParam: (data) =>
         data?.pageInfo?.hasNextPage ? data?.pageInfo.endCursor : undefined,
+      ...opts,
     }
   )
   return {

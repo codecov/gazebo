@@ -5,6 +5,7 @@ import {
 } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { BrowserRouter } from 'react-router-dom'
 
 import config from 'config'
 
@@ -24,6 +25,8 @@ jest.mock('./pages/PlanPage/PlanPage', () => () => 'PlanPage')
 jest.mock('./pages/PullRequestPage', () => () => 'PullRequestPage')
 jest.mock('./pages/RepoPage/RepoPage', () => () => 'RepoPage')
 
+jest.mock('./shared/GlobalBanners', () => () => '')
+
 jest.mock('@tanstack/react-query-devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
 }))
@@ -42,6 +45,8 @@ const server = new setupServer()
 beforeAll(() => server.listen())
 beforeEach(() => server.resetHandlers())
 afterAll(() => server.close())
+
+const wrapper = ({ children }) => <BrowserRouter>{children}</BrowserRouter>
 
 describe('App', () => {
   function setup() {
@@ -70,7 +75,7 @@ describe('App', () => {
       )
     )
 
-    render(<App />)
+    render(<App />, { wrapper })
   }
 
   describe('rendering account settings page', () => {
@@ -95,9 +100,9 @@ describe('App', () => {
   })
 
   describe('rendering admin settings page', () => {
-    describe('IS_ENTERPRISE is true', () => {
+    describe('IS_SELF_HOSTED is true', () => {
       beforeEach(() => {
-        config.IS_ENTERPRISE = true
+        config.IS_SELF_HOSTED = true
       })
 
       describe('/admin/gh/access', () => {
@@ -166,9 +171,9 @@ describe('App', () => {
   })
 
   describe('rendering enterprise landing page', () => {
-    describe('IS_ENTERPRISE is true', () => {
+    describe('IS_SELF_HOSTED is true', () => {
       beforeEach(() => {
-        config.IS_ENTERPRISE = true
+        config.IS_SELF_HOSTED = true
       })
 
       describe('/', () => {
@@ -208,9 +213,9 @@ describe('App', () => {
   })
 
   describe('rendering home page', () => {
-    describe('IS_ENTERPRISE is false', () => {
+    describe('IS_SELF_HOSTED is false', () => {
       beforeAll(() => {
-        config.IS_ENTERPRISE = false
+        config.IS_SELF_HOSTED = false
       })
 
       describe('/', () => {
@@ -230,9 +235,9 @@ describe('App', () => {
   })
 
   describe('rendering login page', () => {
-    describe('IS_ENTERPRISE is true', () => {
+    describe('IS_SELF_HOSTED is true', () => {
       beforeEach(() => {
-        config.IS_ENTERPRISE = true
+        config.IS_SELF_HOSTED = true
       })
 
       describe('/login/:provider', () => {
@@ -264,9 +269,9 @@ describe('App', () => {
       })
     })
 
-    describe('IS_ENTERPRISE is false', () => {
+    describe('IS_SELF_HOSTED is false', () => {
       beforeAll(() => {
-        config.IS_ENTERPRISE = false
+        config.IS_SELF_HOSTED = false
       })
 
       describe('/login/:provider', () => {

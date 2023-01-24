@@ -7,19 +7,17 @@ import { useOwner } from 'services/user'
 
 import { repoPageRender, screen, waitFor } from './repo-jest-setup'
 
-import { useFlags } from '../../shared/featureFlags'
-
 import RepoPage from '.'
 
 jest.mock('services/repo/useRepo')
 jest.mock('services/commits')
 jest.mock('services/branches')
 jest.mock('services/user')
-jest.mock('shared/featureFlags')
 
 // This component is too complex for an integration test imo
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
 jest.mock('./NewRepoTab', () => () => 'NewRepoTab')
+jest.mock('./SettingsTab', () => () => 'SettingsTab')
 
 const commits = [
   {
@@ -74,15 +72,11 @@ describe('RepoPage', () => {
     commits,
     initialEntries,
     isCurrentUserPartOfOrg = true,
-    flagValue = false,
   }) {
     useRepo.mockReturnValue({ data: { repository } })
     useCommits.mockReturnValue({ data: commits })
     useBranches.mockReturnValue({ data: { branches } })
     useOwner.mockReturnValue({ data: { isCurrentUserPartOfOrg } })
-    useFlags.mockReturnValue({
-      gazeboFlagsTab: flagValue,
-    })
 
     // repoPageRender is mostly for making individual tabs easier, so this is a bit jank for integration tests.
     if (initialEntries) {
@@ -100,21 +94,77 @@ describe('RepoPage', () => {
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup({
-        repository: { private: false, defaultBranch: 'main', activated: true },
-        commits: { commits },
+    describe('user is under root path', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: false,
+            defaultBranch: 'main',
+            activated: true,
+          },
+          commits: { commits },
+        })
+      })
+
+      it('renders the title with the owner name', () => {
+        const owner = screen.getByText(/codecov/)
+        expect(owner).toBeInTheDocument()
+      })
+
+      it('renders the title with the repo name', () => {
+        const repo = screen.getByText(/test-repo/)
+        expect(repo).toBeInTheDocument()
       })
     })
 
-    it('renders the title with the owner name', () => {
-      const owner = screen.getByText(/codecov/)
-      expect(owner).toBeInTheDocument()
+    describe('user is under /tree path', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: false,
+            defaultBranch: 'main',
+            activated: true,
+          },
+          commits: { commits },
+        })
+      })
+
+      it('has the coverage tab as active', async () => {
+        repoPageRender({
+          renderTree: () => <RepoPage />,
+          initialEntries: ['/gh/codecov/test-repo/tree'],
+        })
+
+        const coverageTab = screen.getByRole('link', { name: 'Coverage' })
+
+        expect(coverageTab).toBeInTheDocument()
+        expect(coverageTab).toHaveClass('text-ds-gray-octonary')
+      })
     })
 
-    it('renders the title with the repo name', () => {
-      const repo = screen.getByText(/test-repo/)
-      expect(repo).toBeInTheDocument()
+    describe('user is under /blob path', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: false,
+            defaultBranch: 'main',
+            activated: true,
+          },
+          commits: { commits },
+        })
+      })
+
+      it('has the coverage tab as active', () => {
+        repoPageRender({
+          renderBlob: () => <RepoPage />,
+          initialEntries: ['/gh/codecov/test-repo/blob'],
+        })
+
+        const coverageTab = screen.getByRole('link', { name: 'Coverage' })
+
+        expect(coverageTab).toBeInTheDocument()
+        expect(coverageTab).toHaveClass('text-ds-gray-octonary')
+      })
     })
   })
 
@@ -177,6 +227,7 @@ describe('RepoPage', () => {
       const tab = screen.getByText('Coverage')
       expect(tab).toBeInTheDocument()
     })
+
     it('renders the commits tab', () => {
       const tab = screen.getByText(/Commits/)
       expect(tab).toBeInTheDocument()
@@ -405,7 +456,7 @@ describe('RepoPage', () => {
     })
   })
 
-  describe('when the repo is activated and the flags feature flag is true', () => {
+  describe('when the repo is activated', () => {
     beforeEach(() => {
       setup({
         repository: {
@@ -413,11 +464,10 @@ describe('RepoPage', () => {
           activated: true,
         },
         commits: { commits },
-        flagValue: true,
       })
     })
 
-    it('renders coverage tab', () => {
+    it('renders displays the flags tab link', () => {
       const flags = screen.getByText('Flags')
       expect(flags).toBeInTheDocument()
     })

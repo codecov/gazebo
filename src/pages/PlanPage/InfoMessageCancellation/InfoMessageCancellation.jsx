@@ -5,7 +5,7 @@ import { subscriptionDetailType } from 'services/account'
 
 function getPeriodEnd(subscriptionDetail) {
   const periodEnd = fromUnixTime(subscriptionDetail.currentPeriodEnd)
-  return format(periodEnd, 'MMMM do yyyy, h:m aaaa')
+  return format(periodEnd, 'MMMM do yyyy, h:mm aaaa')
 }
 
 function InfoMessageCancellation({ subscriptionDetail }) {

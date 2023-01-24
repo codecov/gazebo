@@ -104,7 +104,7 @@ describe('DesktopMenu', () => {
   })
 
   it('renders the seat count when user is logged in', async () => {
-    config.IS_ENTERPRISE = true
+    config.IS_SELF_HOSTED = true
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
     useParams.mockReturnValue({ owner: 'fjord', provider })
@@ -116,7 +116,7 @@ describe('DesktopMenu', () => {
   })
 
   it('renders the admin link when user is logged in', async () => {
-    config.IS_ENTERPRISE = true
+    config.IS_SELF_HOSTED = true
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
     useParams.mockReturnValue({ owner: 'fjord', provider })
@@ -177,7 +177,7 @@ describe('DesktopMenu', () => {
   })
 
   it('renders the feedback link when user is logged in', () => {
-    config.IS_ENTERPRISE = false
+    config.IS_SELF_HOSTED = false
     const provider = 'gh'
     useUser.mockReturnValue({ data: loggedInUser })
     useParams.mockReturnValue({ owner: undefined, provider })

@@ -2,42 +2,55 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
+import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
+import { isEnterprisePlan } from 'shared/utils/billing'
 import Sidemenu from 'ui/Sidemenu'
 
-const generateLinks = ({ isAdmin, isPersonalSettings }) => {
-  const internalAccessTab = isPersonalSettings ? 'internalAccessTab' : ''
+function defaultLinks({ internalAccessTab, orgUploadTokenTab }) {
+  return [
+    ...(internalAccessTab ? [{ pageName: internalAccessTab }] : []),
+    { pageName: 'yamlTab' },
+    ...(orgUploadTokenTab ? [{ pageName: orgUploadTokenTab }] : []),
+  ]
+}
 
-  let links = [
-    {
-      pageName: internalAccessTab,
-    },
+function selfHostedOverrideLinks({ isPersonalSettings }) {
+  return [
+    { pageName: isPersonalSettings ? 'profile' : '', exact: true },
     { pageName: 'yamlTab' },
   ]
+}
 
-  if (config?.IS_ENTERPRISE) {
-    links = [
-      { pageName: isPersonalSettings ? 'profile' : '', exact: true },
-      { pageName: 'yamlTab' },
-    ]
-  } else if (isAdmin) {
-    links = [
-      {
-        pageName: 'accountAdmin',
-        exact: true,
-      },
-      {
-        pageName: internalAccessTab,
-      },
-      { pageName: 'yamlTab' },
-    ]
+function adminOverrideLinks({ internalAccessTab, orgUploadTokenTab }) {
+  return [
+    {
+      pageName: 'accountAdmin',
+      exact: true,
+    },
+    ...(internalAccessTab ? [{ pageName: internalAccessTab }] : []),
+    { pageName: 'yamlTab' },
+    ...(orgUploadTokenTab ? [{ pageName: orgUploadTokenTab }] : []),
+  ]
+}
+
+const generateLinks = ({ isAdmin, isPersonalSettings, showOrgUploadToken }) => {
+  const internalAccessTab = isPersonalSettings ? 'internalAccessTab' : ''
+  const orgUploadTokenTab = showOrgUploadToken ? 'orgUploadToken' : ''
+
+  if (config.IS_SELF_HOSTED) {
+    return selfHostedOverrideLinks({ isPersonalSettings })
+  }
+  if (isAdmin) {
+    return adminOverrideLinks({ internalAccessTab, orgUploadTokenTab })
   }
 
-  return links
+  return defaultLinks({ internalAccessTab, orgUploadTokenTab })
 }
 
 function AccountSettingsSideMenu() {
-  const { owner } = useParams()
+  const { provider, owner } = useParams()
 
   const { data: currentUser } = useUser()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
@@ -45,7 +58,16 @@ function AccountSettingsSideMenu() {
   const isPersonalSettings =
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
-  const links = generateLinks({ isAdmin, isPersonalSettings })
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const { orgUploadToken } = useFlags({ orgUploadToken: false })
+  const showOrgUploadToken =
+    orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
+
+  const links = generateLinks({
+    isAdmin,
+    isPersonalSettings,
+    showOrgUploadToken,
+  })
 
   return <Sidemenu links={links} />
 }

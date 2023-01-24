@@ -18,6 +18,7 @@ const columns = [
     accessorKey: 'userName',
     cell: (info) => info.getValue(),
     width: 'w-3/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'type',
@@ -25,6 +26,7 @@ const columns = [
     accessorKey: 'type',
     cell: (info) => info.getValue(),
     width: 'w-2/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'email',
@@ -32,6 +34,7 @@ const columns = [
     accessorKey: 'email',
     cell: (info) => info.getValue(),
     width: 'w-4/12 min-win-min',
+    justifyStart: true,
   },
   {
     id: 'activationStatus',
@@ -50,17 +53,15 @@ const createTable = ({ tableData, mutate, disableToggle }) =>
           type: <p>{isAdmin ? 'Admin' : 'Developer'}</p>,
           email: <p>{email}</p>,
           activationStatus: (
-            <div className="flex flex-row-reverse grow">
-              <Toggle
-                dataMarketing="handle-members-activation"
-                label={activated ? 'Activated' : 'Non-Active'}
-                value={activated}
-                onClick={() => {
-                  mutate({ ownerid, activated: !activated })
-                }}
-                disabled={!activated && disableToggle}
-              />
-            </div>
+            <Toggle
+              dataMarketing="handle-members-activation"
+              label={activated ? 'Activated' : 'Non-Active'}
+              value={activated}
+              onClick={() => {
+                mutate({ ownerid, activated: !activated })
+              }}
+              disabled={!activated && disableToggle}
+            />
           ),
         })
       )

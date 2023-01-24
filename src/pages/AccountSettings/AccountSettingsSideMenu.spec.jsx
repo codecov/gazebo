@@ -3,12 +3,16 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 
 jest.mock('config')
 jest.mock('services/user')
+jest.mock('services/account')
+jest.mock('shared/featureFlags')
 
 describe('AccountSettingsSideMenu', () => {
   function setup({
@@ -16,10 +20,14 @@ describe('AccountSettingsSideMenu', () => {
     isAdmin = false,
     user = {},
     isSelfHosted = false,
+    planValue = 'users-free',
+    orgUploadTokenFlag = false,
   }) {
-    config.IS_ENTERPRISE = isSelfHosted
+    config.IS_SELF_HOSTED = isSelfHosted
     useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
     useUser.mockReturnValue({ data: user })
+    useAccountDetails.mockReturnValue({ data: { plan: { value: planValue } } })
+    useFlags.mockReturnValue({ orgUploadToken: orgUploadTokenFlag })
 
     render(
       <MemoryRouter initialEntries={entries}>
@@ -226,6 +234,23 @@ describe('AccountSettingsSideMenu', () => {
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov-org/yaml')
       })
+    })
+  })
+
+  describe('when rendering for enterprise cloud users', () => {
+    beforeEach(() => {
+      setup({
+        entries: ['/account/gh/rula'],
+        isAdmin: false,
+        planValue: 'users-enterprisem',
+        orgUploadTokenFlag: true,
+      })
+    })
+
+    it('renders Global Upload Token link', () => {
+      expect(
+        screen.getByRole('link', { name: /Global Upload Token/i })
+      ).toBeInTheDocument()
     })
   })
 })

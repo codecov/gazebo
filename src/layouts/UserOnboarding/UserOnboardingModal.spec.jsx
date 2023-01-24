@@ -11,14 +11,11 @@ import { useMyContexts } from 'services/user'
 import { useOnboardingTracking } from './useOnboardingTracking'
 import UserOnboardingModal from './UserOnboardingModal'
 
-import { useFlags } from '../../shared/featureFlags'
-
 jest.mock('./useOnboardingTracking.js')
 jest.mock('services/user', () => ({
   ...jest.requireActual('services/user'), // import and retain the original functionalities
   useMyContexts: jest.fn(),
 }))
-jest.mock('shared/featureFlags')
 
 const orgsData = {
   currentUser: {
@@ -84,7 +81,7 @@ describe('UserOnboardingModal', () => {
     skipOnboarding = jest.fn()
   })
 
-  function setup(currentUserPassedIn = defaultCurrentUser, flagValue = true) {
+  function setup(currentUserPassedIn = defaultCurrentUser) {
     currentUser = currentUserPassedIn
 
     server.use(
@@ -116,10 +113,6 @@ describe('UserOnboardingModal', () => {
     useMyContexts.mockReturnValue({
       data: orgsData,
       refetch: jest.fn(),
-    })
-
-    useFlags.mockReturnValue({
-      onboardingOrganizationSelector: flagValue,
     })
   }
 
@@ -339,44 +332,6 @@ describe('UserOnboardingModal', () => {
         await waitFor(() =>
           expect(mockHistoryReplace).toHaveBeenCalledWith('/gh/codecov')
         )
-      })
-    })
-  })
-
-  describe('when the feature flag is false', () => {
-    beforeEach(() => {
-      setup(defaultCurrentUser, false)
-    })
-
-    describe('after submitting the form', () => {
-      it('has the next button enabled', async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/gh']}>
-              <Route path="/:provider">
-                <UserOnboardingModal currentUser={currentUser} />
-              </Route>
-            </MemoryRouter>
-          </QueryClientProvider>
-        )
-
-        const educationalCheckbox = await screen.findByRole('checkbox', {
-          name: /educational/i,
-        })
-        userEvent.click(educationalCheckbox)
-
-        const justStartingCheckbox = await screen.findByRole('checkbox', {
-          name: /just starting to write tests/i,
-        })
-        userEvent.click(justStartingCheckbox)
-
-        const nextBtn = await screen.findByRole('button', {
-          name: /next/i,
-        })
-        userEvent.click(nextBtn)
-
-        await waitFor(() => expect(completedUserOnboarding).toHaveBeenCalled())
-        await waitFor(() => expect(mockHistoryReplace).not.toHaveBeenCalled())
       })
     })
   })

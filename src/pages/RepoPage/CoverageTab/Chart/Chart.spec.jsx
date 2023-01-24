@@ -24,9 +24,6 @@ describe('Coverage Tab chart', () => {
     useRepoOverview.mockReturnValue({})
     useBranches.mockReturnValue({})
     useBranchSelector.mockReturnValue({ selection: { name: 'bells-hells' } })
-    render(<Chart />, {
-      wrapper,
-    })
   }
 
   describe('No coverage data exists', () => {
@@ -42,6 +39,10 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders no chart', () => {
+      render(<Chart />, {
+        wrapper,
+      })
+
       expect(screen.queryAllByRole('presentation').length).toBe(0)
     })
   })
@@ -68,10 +69,18 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders victory', () => {
+      render(<Chart />, {
+        wrapper,
+      })
+
       expect(screen.getByRole('img')).toBeInTheDocument()
     })
 
     it('renders a screen reader description', () => {
+      render(<Chart />, {
+        wrapper,
+      })
+
       expect(
         screen.getByText(
           'bells-hells coverage chart from Jan 15, 2020 to Jan 17, 2020, coverage change is +20%'
@@ -99,10 +108,18 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders victory', () => {
+      render(<Chart />, {
+        wrapper,
+      })
+
       expect(screen.getByRole('img')).toBeInTheDocument()
     })
 
-    it('renders a screen reader description', () => {
+    it('renders not enough data', () => {
+      render(<Chart />, {
+        wrapper,
+      })
+
       expect(screen.getByText('Not enough data to render')).toBeInTheDocument()
     })
   })

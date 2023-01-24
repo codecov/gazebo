@@ -1,101 +1,184 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Switch, useParams } from 'react-router-dom'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route, Switch } from 'react-router-dom'
+
+import { useImage } from 'services/image'
 
 import Dropdown from './Dropdown'
 
 const currentUser = {
   user: {
-    username: 'p',
+    username: 'chetney',
     avatarUrl: 'f',
   },
 }
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
+jest.mock('services/image')
 
-describe('Dropdown', () => {
-  let links
-  const userAppManagePage = 'Manage GitHub org access'
-  function setup({ provider }) {
-    links = [
-      {
-        label: 'Settings',
-        to: `/account/${provider}/${currentUser.user.username}`,
-      },
-      { label: 'Organizations', to: `/${provider}` },
-      {
-        label: 'Sign Out',
-        to: `https://stage-web.codecov.dev/logout/${provider}`,
-      },
-    ]
-
-    useParams.mockReturnValue({ provider })
-    render(
+const Wrapper =
+  ({ provider }) =>
+  ({ children }) =>
+    (
       <MemoryRouter initialEntries={[`/${provider}`]}>
         <Switch>
           <Route path="/:provider" exact>
-            <Dropdown currentUser={currentUser} />
+            {children}
           </Route>
         </Switch>
       </MemoryRouter>
     )
+
+describe('Dropdown', () => {
+  function setup() {
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
   }
 
   describe('when rendered', () => {
+    beforeEach(() => setup())
+
     it('renders the users avatar', () => {
-      setup({ provider: 'gh' })
+      render(<Dropdown currentUser={currentUser} />, {
+        wrapper: Wrapper({ provider: 'gh' }),
+      })
 
       const img = screen.getByRole('img')
       expect(img).toHaveAttribute('alt', 'avatar')
     })
-
-    it('the links arent visible', () => {
-      setup({ provider: 'gh' })
-
-      links.forEach((link) => {
-        const a = screen.getByText(link.label)
-        expect(a).not.toBeVisible()
-      })
-      const a = screen.getByText(userAppManagePage).closest('a')
-      expect(a).not.toBeVisible()
-    })
   })
 
-  describe('when the avatar is clicked', () => {
-    it('the links become visible', () => {
-      setup({ provider: 'gh' })
+  describe('when on GitHub', () => {
+    describe('when the avatar is clicked', () => {
+      beforeEach(() => setup())
 
-      fireEvent.mouseDown(screen.getByRole('button'))
-      links.forEach((link) => {
-        const a = screen.getByText(link.label).closest('a')
-        expect(a).toBeVisible()
-        expect(a).toHaveAttribute('href', link.to)
+      it('shows settings link', () => {
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gh' }),
+        })
+
+        expect(screen.queryByText('Settings')).not.toBeInTheDocument()
+
+        userEvent.click(screen.getByRole('button'))
+
+        const link = screen.getByText('Settings')
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute('href', '/account/gh/chetney')
       })
-      const a = screen.getByText(userAppManagePage).closest('a')
-      expect(a).toBeVisible()
+
+      it('shows organizations link', () => {
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gh' }),
+        })
+
+        expect(screen.queryByText('Organizations')).not.toBeInTheDocument()
+
+        userEvent.click(screen.getByRole('button'))
+
+        const link = screen.getByText('Organizations')
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute('href', '/gh')
+      })
+
+      it('shows sign out link', () => {
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gh' }),
+        })
+
+        expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
+
+        userEvent.click(screen.getByRole('button'))
+
+        const link = screen.getByText('Sign Out')
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute(
+          'href',
+          'https://stage-web.codecov.dev/logout/gh'
+        )
+      })
+
+      it('shows manage app access link', () => {
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gh' }),
+        })
+
+        expect(
+          screen.queryByText('Manage GitHub org access')
+        ).not.toBeInTheDocument()
+
+        userEvent.click(screen.getByRole('button'))
+
+        const link = screen.getByText('Manage GitHub org access')
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute(
+          'href',
+          'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'
+        )
+      })
     })
   })
+  describe('when not on GitHub', () => {
+    describe('when the avatar is clicked', () => {
+      beforeEach(() => setup())
 
-  describe('when rendered with a provider that is not github', () => {
-    it('renders the users avatar', () => {
-      setup({ provider: 'gl' })
+      it('shows settings link', () => {
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gl' }),
+        })
 
-      const img = screen.getByRole('img')
-      expect(img).toHaveAttribute('alt', 'avatar')
-    })
+        expect(screen.queryByText('Settings')).not.toBeInTheDocument()
 
-    it('does not render manage giithub org access', () => {
-      setup({ provider: 'gl' })
+        userEvent.click(screen.getByRole('button'))
 
-      fireEvent.mouseDown(screen.getByRole('button'))
-      links.forEach((link) => {
-        const a = screen.getByText(link.label).closest('a')
-        expect(a).toBeVisible()
+        const link = screen.getByText('Settings')
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute('href', '/account/gl/chetney')
       })
-      const a = screen.queryByText(userAppManagePage)
-      expect(a).not.toBeInTheDocument()
+
+      it('shows organizations link', () => {
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gl' }),
+        })
+
+        expect(screen.queryByText('Organizations')).not.toBeInTheDocument()
+
+        userEvent.click(screen.getByRole('button'))
+
+        const link = screen.getByText('Organizations')
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute('href', '/gl')
+      })
+
+      it('shows sign out link', () => {
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gl' }),
+        })
+
+        expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
+
+        userEvent.click(screen.getByRole('button'))
+
+        const link = screen.getByText('Sign Out')
+        expect(link).toBeVisible()
+        expect(link).toHaveAttribute(
+          'href',
+          'https://stage-web.codecov.dev/logout/gl'
+        )
+      })
+
+      it('does not show manage app access link', () => {
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gl' }),
+        })
+
+        expect(
+          screen.queryByText('Manage GitHub org access')
+        ).not.toBeInTheDocument()
+
+        userEvent.click(screen.getByRole('button'))
+
+        expect(
+          screen.queryByText('Manage GitHub org access')
+        ).not.toBeInTheDocument()
+      })
     })
   })
 })

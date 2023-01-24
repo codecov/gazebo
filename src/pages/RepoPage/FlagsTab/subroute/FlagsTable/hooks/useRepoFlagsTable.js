@@ -30,7 +30,11 @@ const useMeasurementVariables = (historicalTrend, oldestCommitAt) => {
 }
 
 function useRepoFlagsTable() {
-  const { params } = useLocationParams({ search: '', historicalTrend: '' })
+  const { params } = useLocationParams({
+    search: '',
+    historicalTrend: '',
+    flags: [],
+  })
   const { provider, owner, repo } = useParams()
   const { data: repoData } = useRepo({
     provider,
@@ -46,7 +50,7 @@ function useRepoFlagsTable() {
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRepoFlags({
-      filters: { term: params?.search },
+      filters: { term: params?.search, flagsNames: params?.flags },
       orderingDirection: sortBy,
       beforeDate: format(new Date(), 'yyyy-MM-dd'),
       interval,

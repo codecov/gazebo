@@ -1,7 +1,6 @@
+import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
 import RawFileviewer from 'shared/RawFileviewer'
-
-import FileBreadcrumb from '../../FileBreadcrumb'
-import { useTreePaths } from '../../FileBreadcrumb/hooks'
+import { useTreePaths } from 'shared/treePaths'
 
 function FileView() {
   const { treePaths } = useTreePaths()
@@ -13,6 +12,7 @@ function FileView() {
           <FileBreadcrumb paths={[...treePaths]} />
         </div>
       }
+      sticky
     />
   )
 }

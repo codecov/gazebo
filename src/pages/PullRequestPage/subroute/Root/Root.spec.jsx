@@ -50,12 +50,6 @@ describe('Root', () => {
     beforeEach(() => {
       setup({})
     })
-    it('renders the name of the header and coverage labels', () => {
-      expect(screen.getByText('Impacted Files')).toBeInTheDocument()
-      expect(screen.getByText('covered')).toBeInTheDocument()
-      expect(screen.getByText('partial')).toBeInTheDocument()
-      expect(screen.getByText('uncovered')).toBeInTheDocument()
-    })
     it('renders the impacted files component', () => {
       expect(screen.getByText('ImpactedFiles Component')).toBeInTheDocument()
     })
@@ -140,6 +134,23 @@ describe('Root', () => {
           'Cannot display Impacted Files because most recent commit is in an error state.'
         )
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('when loading data', () => {
+    beforeEach(() => {
+      const impactedFiles = {
+        data: {
+          headState: CommitStateEnum.ERROR,
+        },
+        isLoading: true,
+      }
+      setup({ impactedFiles })
+    })
+
+    it('shows loading spinner', () => {
+      const spinner = screen.getByTestId('spinner')
+      expect(spinner).toBeInTheDocument()
     })
   })
 })

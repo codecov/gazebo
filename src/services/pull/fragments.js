@@ -110,6 +110,7 @@ fragment ImpactedFilesOnPull on Pull {
         fileName
         headName
         isCriticalFile
+        missesInComparison
         baseCoverage {
           percentCovered
         }
@@ -120,6 +121,44 @@ fragment ImpactedFilesOnPull on Pull {
           percentCovered
         }
         changeCoverage
+      }
+    }
+  }
+}
+`
+
+export const FileComparisonWithBase = `
+fragment FileComparisonWithBase on Pull {
+  compareWithBase {
+    __typename
+    ... on Comparison {
+      impactedFile(path: $path) {
+        headName
+        isNewFile
+        isRenamedFile
+        isDeletedFile
+        isCriticalFile
+        baseCoverage {
+          percentCovered
+        }
+        headCoverage {
+          percentCovered
+        }
+        patchCoverage {
+          percentCovered
+        }
+        changeCoverage
+        segments (filters: $filters) {
+          header
+          hasUnintendedChanges
+          lines {
+            baseNumber
+            headNumber
+            baseCoverage
+            headCoverage
+            content
+          }
+        }
       }
     }
   }

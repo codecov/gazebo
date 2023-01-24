@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
 import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
-import Select from 'ui/NewSelect'
+import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 
 function useUpdateDefaultBranch() {
@@ -29,6 +30,7 @@ function useUpdateDefaultBranch() {
 }
 
 function DefaultBranch({ defaultBranch }) {
+  const [branchesSearchTerm, setBranchesSearchTerm] = useState()
   const { provider, owner, repo } = useParams()
 
   const {
@@ -36,7 +38,14 @@ function DefaultBranch({ defaultBranch }) {
     isFetching,
     hasNextPage,
     fetchNextPage,
-  } = useBranches({ provider, owner, repo })
+  } = useBranches({
+    provider,
+    owner,
+    repo,
+    filters: { searchValue: branchesSearchTerm },
+    opts: { suspense: false },
+  })
+
   const branchesNames =
     branchesData?.branches?.map((branch) => branch.name) || []
   const { updateDefaultBranch, data } = useUpdateDefaultBranch()
@@ -65,6 +74,7 @@ function DefaultBranch({ defaultBranch }) {
               }}
               onLoadMore={() => hasNextPage && fetchNextPage()}
               value={branch}
+              onSearch={(term) => setBranchesSearchTerm(term)}
             />
           </div>
         </>

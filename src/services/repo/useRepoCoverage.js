@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-function fetchRepoBranchCoverage({ provider, owner, repo, branch }) {
+function fetchRepoBranchCoverage({ provider, owner, repo, branch, signal }) {
   const query = `
     query GetRepoCoverage($name: String!, $repo: String!, $branch: String!) {
       owner(username:$name){
@@ -25,6 +25,7 @@ function fetchRepoBranchCoverage({ provider, owner, repo, branch }) {
     provider,
     repo,
     query,
+    signal,
     variables: {
       name: owner,
       repo,
@@ -42,9 +43,8 @@ export function useRepoCoverage({
 }) {
   return useQuery(
     ['coverage', provider, owner, repo, branch],
-    () => {
-      return fetchRepoBranchCoverage({ provider, owner, repo, branch })
-    },
+    ({ signal }) =>
+      fetchRepoBranchCoverage({ provider, owner, repo, branch, signal }),
     options
   )
 }

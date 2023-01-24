@@ -192,7 +192,7 @@ function UpgradePlanForm({
 
   return (
     <form
-      className="text-ds-gray-nonary flex flex-col gap-6"
+      className="text-ds-gray-nonary flex flex-col gap-4"
       onSubmit={handleSubmit(upgradePlan)}
     >
       <div className="flex flex-col gap-2">
@@ -200,10 +200,8 @@ function UpgradePlanForm({
         <span>{owner}</span>
       </div>
 
-      <h3 className="text-2xl text-ds-pink-quinary bold">
-        {proPlanMonth.marketingName}
-      </h3>
       <div className="flex flex-col gap-4">
+        <h3 className="font-semibold">Billing</h3>
         <RadioInput
           key={proPlanYear.billingRate}
           data-cy={`select-${proPlanYear.billingRate}`}

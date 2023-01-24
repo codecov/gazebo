@@ -1,16 +1,24 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import MultiSelect from 'ui/NewMultiSelect'
+import MultiSelect from 'ui/MultiSelect'
 import Spinner from 'ui/Spinner'
 
 import CoverageSelect from './CoverageSelect'
 
-export default function Title({ title, children }) {
+export default function Title({ title, children, sticky = false }) {
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap px-3 md:p-0">
-      <span className="text-ds-gray-senary font-semibold text-base">
-        {title}
-      </span>
+    <div
+      className={cs(
+        { 'z-10 sticky top-[4.5rem]': sticky },
+        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap bg-white px-3 sm:px-0 py-3'
+      )}
+    >
+      {title && (
+        <span className="text-ds-gray-senary font-semibold text-base">
+          {title}
+        </span>
+      )}
       <div className="flex flex-row items-center justify-between gap-2">
         {children}
       </div>
@@ -19,8 +27,9 @@ export default function Title({ title, children }) {
 }
 
 Title.propTypes = {
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   Flags: PropTypes.func,
+  sticky: PropTypes.bool,
 }
 
 export const TitleCoverage = CoverageSelect
@@ -31,7 +40,7 @@ export const TitleFlags = ({
   flagsIsLoading = false,
 }) => {
   return (
-    <>
+    <div className="flex items-center gap-2">
       {flagsIsLoading && <Spinner />}
       <MultiSelect
         dataMarketing="fileviwer-filter-by-flags"
@@ -40,7 +49,7 @@ export const TitleFlags = ({
         onChange={onFlagsChange}
         resourceName="Flag"
       />
-    </>
+    </div>
   )
 }
 

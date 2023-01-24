@@ -59,7 +59,6 @@ describe('useSelfActivationMutation', () => {
 
         server.use(
           rest.get('/internal/users/current', (req, res, ctx) => {
-            console.log(mockUser)
             return res(ctx.status(200), ctx.json(mockUser))
           }),
           rest.patch('/internal/users/current', (req, res, ctx) => {
@@ -114,7 +113,6 @@ describe('useSelfActivationMutation', () => {
 
         server.use(
           rest.get('/internal/users/current', (req, res, ctx) => {
-            console.log(mockUser)
             return res(ctx.status(200), ctx.json(mockUser))
           }),
           rest.patch('/internal/users/current', (req, res, ctx) => {
@@ -169,7 +167,6 @@ describe('useSelfActivationMutation', () => {
 
         server.use(
           rest.get('/internal/users/current', (req, res, ctx) => {
-            console.log(mockUser)
             return res(ctx.status(200), ctx.json(mockUser))
           }),
           rest.patch('/internal/users/current', (req, res, ctx) => {
@@ -224,7 +221,6 @@ describe('useSelfActivationMutation', () => {
 
       server.use(
         rest.get('/internal/users/current', (req, res, ctx) => {
-          console.log(mockUser)
           return res(ctx.status(200), ctx.json(mockUser))
         }),
         rest.patch('/internal/users/current', (req, res, ctx) => {

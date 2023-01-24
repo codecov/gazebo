@@ -83,4 +83,24 @@ describe('Progress', () => {
       expect(bar).toHaveClass('h-full bg-ds-primary-red')
     })
   })
+
+  describe('using the warning color', () => {
+    beforeEach(() => {
+      setup({
+        amount: 250,
+        label: false,
+        color: 'warning',
+      })
+    })
+
+    it('renders bar', () => {
+      expect(screen.getByTestId('org-progress-bar')).toBeInTheDocument()
+      expect(screen.queryByText(/80/)).not.toBeInTheDocument()
+    })
+
+    it('renders the expected color', () => {
+      const bar = screen.getByTestId('org-progress-bar')
+      expect(bar).toHaveClass('h-full bg-ds-primary-yellow')
+    })
+  })
 })

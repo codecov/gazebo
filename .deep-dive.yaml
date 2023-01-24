@@ -1,0 +1,6 @@
+search:
+  exclude_files:
+    gazebomanifest: '/var/www/app/gazebo/.*manifest.json'
+  files:
+    python: '.*\.pyc?'
+    json:  '.*\.json'

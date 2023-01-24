@@ -3,9 +3,12 @@ import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
-function fetchRepoBackfilledContents({ provider, owner, repo }) {
+function fetchRepoBackfilledContents({ provider, owner, repo, signal }) {
   const query = `
       query BackfillFlagMemberships($name: String!, $repo: String!) {
+        config {
+          isTimescaleEnabled
+        }
         owner(username:$name){
           repository(name:$repo){
             flagsMeasurementsActive
@@ -20,18 +23,24 @@ function fetchRepoBackfilledContents({ provider, owner, repo }) {
     provider,
     repo,
     query,
+    signal,
     variables: {
       name: owner,
       repo,
     },
   }).then((res) => {
-    return res?.data?.owner?.repository
+    return {
+      ...res?.data?.config,
+      ...res?.data?.owner?.repository,
+    }
   })
 }
 
 export function useRepoBackfilled() {
   const { provider, owner, repo } = useParams()
-  return useQuery(['BackfillFlagMemberships', provider, owner, repo], () => {
-    return fetchRepoBackfilledContents({ provider, owner, repo })
-  })
+  return useQuery(
+    ['BackfillFlagMemberships', provider, owner, repo],
+    ({ signal }) =>
+      fetchRepoBackfilledContents({ provider, owner, repo, signal })
+  )
 }

@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
-import { commitRequestType } from 'shared/propTypes'
+import { useCommits } from 'services/commits'
+import Button from 'ui/Button'
+import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -13,39 +16,40 @@ const headers = [
     id: 'title',
     header: 'Name',
     accessorKey: 'title',
-    width: 'w-6/12',
+    width: 'w-3/12 md:w-5/12 xl:w-7/12',
     cell: (info) => info.getValue(),
+    justifyStart: true,
   },
   {
     id: 'ciStatus',
-    header: <span className="w-full text-right">CI status</span>,
+    header: 'CI status',
     accessorKey: 'ciStatus',
-    width: 'w-2/12 lg:w-3/12',
+    width: 'w-2/12 lg:w-1/12',
     cell: (info) => info.getValue(),
   },
   {
     id: 'coverage',
     header: (
-      <span className="w-full text-right">
+      <>
         Coverage <span className="hidden lg:inline-block">%</span>
-      </span>
+      </>
     ),
     accessorKey: 'coverage',
-    width: 'w-2/12 lg:w-3/12',
+    width: 'w-2/12 lg:w-3/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'patch',
-    header: <span className="w-full text-right">Patch %</span>,
+    header: 'Patch %',
     accessorKey: 'patch',
-    width: 'w-1/12',
+    width: 'w-2/12 xl:w-1/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
-    header: <span className="w-full text-right">Change</span>,
+    header: 'Change',
     accessorKey: 'change',
-    width: 'w-1/12',
+    width: 'w-2/12 xl:w-1/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -61,82 +65,104 @@ const handleOnNull = () => {
 }
 
 function transformPullToTable(commits) {
-  // if there are no repos show empty message
-  if (commits.length <= 0) {
-    return [
-      {
-        title: <span className="text-sm">no results found</span>,
-        ciStatus: null,
-        coverage: null,
-        patch: null,
-        change: null,
-      },
-    ]
+  if (commits?.length > 0) {
+    return commits.map((commit) => {
+      if (!commit) return handleOnNull()
+      const {
+        message,
+        author,
+        commitid,
+        createdAt,
+        totals,
+        compareWithParent,
+        parent,
+        ciPassed,
+      } = commit
+      const change = totals?.coverage - parent?.totals?.coverage
+      const patchValue = compareWithParent?.patchTotals?.coverage
+        ? compareWithParent?.patchTotals?.coverage
+        : Number.NaN
+
+      return {
+        title: (
+          <Title
+            message={message}
+            author={author}
+            commitid={commitid}
+            createdAt={createdAt}
+          />
+        ),
+        ciStatus: (
+          <CIStatus
+            commitid={commitid}
+            coverage={totals?.coverage}
+            ciPassed={ciPassed}
+          />
+        ),
+        coverage: <Coverage totals={totals} />,
+        /*
+            The container div fot TotalsNumber is added due to the current state of table cells styling,
+            shouldn't be necessary in the future if fixed/updated
+        */
+        patch: <TotalsNumber value={patchValue} data-testid="patch-value" />,
+        change: <TotalsNumber value={change} showChange />,
+      }
+    })
   }
 
-  return commits.map((commit) => {
-    if (!commit) return handleOnNull()
-    const {
-      message,
-      author,
-      commitid,
-      createdAt,
-      totals,
-      compareWithParent,
-      parent,
-      ciPassed,
-    } = commit
-    const change = totals?.coverage - parent?.totals?.coverage
-    const patchValue = compareWithParent?.patchTotals?.coverage
-      ? compareWithParent?.patchTotals?.coverage * 100
-      : Number.NaN
-
-    return {
-      title: (
-        <Title
-          message={message}
-          author={author}
-          commitid={commitid}
-          createdAt={createdAt}
-        />
-      ),
-      ciStatus: (
-        <CIStatus
-          commitid={commitid}
-          coverage={totals?.coverage}
-          ciPassed={ciPassed}
-        />
-      ),
-      coverage: (
-        <span className="font-lato w-full">
-          <Coverage totals={totals} />
-        </span>
-      ),
-      /*
-          The container div fot TotalsNumber is added due to the current state of table cells styling,
-          shouldn't be necessary in the future if fixed/updated
-      */
-      patch: (
-        <div className="w-full flex justify-end">
-          <TotalsNumber value={patchValue} data-testid="patch-value" />
-        </div>
-      ),
-      change: (
-        <div className="w-full flex justify-end">
-          <TotalsNumber value={change} showChange />
-        </div>
-      ),
-    }
-  })
+  return []
 }
 
-function CommitsTable({ commits = [] }) {
+const Loader = () => {
+  return (
+    <div className="flex-1 flex justify-center py-16">
+      <Spinner size={60} />
+    </div>
+  )
+}
+
+function CommitsTable({ branch, paramCIStatus }) {
+  const { provider, owner, repo, pullId } = useParams()
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useCommits({
+      provider,
+      owner,
+      repo,
+      filters: {
+        hideFailedCI: paramCIStatus,
+        branchName: branch,
+        pullId: +pullId,
+      },
+      opts: { suspense: false },
+    })
+
+  const commits = data?.commits
+
   const dataTable = transformPullToTable(commits)
-  return <Table data={dataTable} columns={headers} />
+
+  return (
+    <>
+      <Table data={dataTable} columns={headers} />
+      {isLoading && <Loader />}
+      {hasNextPage && (
+        <div className="flex-1 mt-4 flex justify-center">
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
+    </>
+  )
 }
 
 CommitsTable.propTypes = {
-  commits: PropTypes.arrayOf(commitRequestType),
+  branch: PropTypes.string,
+  paramCIStatus: PropTypes.bool,
 }
 
 export default CommitsTable

@@ -5,7 +5,7 @@ import Icon from 'ui/Icon'
 
 const Status = ({ ciPassed }) => {
   return (
-    <div className="flex items-center gap-1 justify-end">
+    <div className="flex items-center gap-1">
       {ciPassed ? (
         <>
           <span className="text-green-600">
@@ -31,7 +31,7 @@ Status.propTypes = {
 
 function CIStatus({ commitid, coverage, ciPassed }) {
   return (
-    <div className="w-full lg:flex flex-col items-end text-right">
+    <div className="flex-1 lg:flex flex-col gap-.5 items-end">
       <A to={{ pageName: 'commit', options: { commit: commitid } }}>
         <span className="text-ds-gray-quinary font-mono">
           {commitid?.slice(0, 8)}

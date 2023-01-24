@@ -1,61 +1,81 @@
-import isEmpty from 'lodash/isEmpty'
+import { isEmpty } from 'lodash'
 import { lazy, Suspense } from 'react'
-import { Route, Switch, useParams } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
 
+import { SentryRoute } from 'sentry'
+
+import NotFound from 'pages/NotFound'
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
+import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
+import CommitPageTabs from './CommitPageTabs'
 import ErroredUploads from './ErroredUploads'
 import Header from './Header'
 import CommitDetailsSummary from './Summary'
-import UploadsCard from './UploadsCard'
 import { useExtractUploads } from './UploadsCard/useExtractUploads'
 import YamlErrorBanner from './YamlErrorBanner'
 
-const CommitFileView = lazy(() => import('./subroute/CommitFileView'))
-const CommitsTable = lazy(() => import('./subroute/CommitsTable'))
-const NotFound = lazy(() => import('pages/NotFound'))
+const CommitFileExplorer = lazy(() => import('./subroute/CommitFileExplorer'))
+const CommitFileViewer = lazy(() => import('./subroute/CommitFileViewer'))
+const ImpactedFiles = lazy(() => import('./subroute/ImpactedFiles'))
+const UploadsCard = lazy(() => import('./UploadsCard'))
 
-// eslint-disable-next-line complexity
+const Loader = () => {
+  return (
+    <div className="flex-1 flex justify-center">
+      <Spinner size={60} />
+    </div>
+  )
+}
+
+function CommitErrorBanners() {
+  const { owner } = useParams()
+  const { data: ownerData } = useOwner({ username: owner })
+  const { data: commitErrorData } = useCommitErrors()
+
+  const invalidYaml = commitErrorData?.yamlErrors?.find(
+    (err) => err?.errorCode === 'invalid_yaml'
+  )
+
+  return (
+    <>
+      {ownerData?.isCurrentUserPartOfOrg && (
+        <BotErrorBanner botErrorsCount={commitErrorData?.botErrors?.length} />
+      )}
+      {invalidYaml && <YamlErrorBanner />}
+    </>
+  )
+}
+
 function CommitPage() {
-  const { provider, owner, repo, commit: commitSHA, path } = useParams()
+  const { provider, owner, repo, commit: commitSHA } = useParams()
+  const shortSHA = commitSHA?.slice(0, 7)
+
   const { data, isLoading } = useCommit({
     provider,
     owner,
     repo,
     commitid: commitSHA,
   })
+
   const commit = data?.commit
+
   const { erroredUploads } = useExtractUploads({ uploads: commit?.uploads })
 
-  const {
-    data: { yamlErrors, botErrors },
-  } = useCommitErrors()
-  const invalidYaml = yamlErrors?.find(
-    (err) => err?.errorCode === 'invalid_yaml'
-  )
+  if (!commit && !isLoading) {
+    return <NotFound />
+  }
 
-  const loadingState = (
-    <div className="flex-1 flex justify-center m-4">
-      <Spinner size={60} />
-    </div>
-  )
-
-  const shortSHA = commitSHA?.slice(0, 7)
-  const diff = commit?.compareWithParent?.impactedFiles?.find(
-    (file) => file.headName === path
-  )
-
-  return !isLoading && commit ? (
+  return (
     <div className="flex gap-4 flex-col px-3 sm:px-0">
       <Breadcrumb
         paths={[
           { pageName: 'owner', text: owner },
           { pageName: 'repo', text: repo },
-
           { pageName: 'commits', text: 'commits' },
           {
             pageName: 'commit',
@@ -68,41 +88,49 @@ function CommitPage() {
       <Header />
       <CommitDetailsSummary />
       {/**we are currently capturing a single error*/}
-      {botErrors?.length > 0 && <BotErrorBanner />}
-      {invalidYaml && <YamlErrorBanner />}
-      <div className="flex pt-6 flex-col gap-8 md:flex-row-reverse">
+      <CommitErrorBanners />
+      <div className="flex flex-col gap-8 md:flex-row-reverse">
         <aside className="flex flex-1 gap-6 md:max-w-sm flex-col self-start sticky top-1.5">
-          <UploadsCard />
+          <Suspense fallback={<Loader />}>
+            <UploadsCard />
+          </Suspense>
         </aside>
-        <article className="flex flex-1 flex-col gap-4">
-          <Switch>
-            <Route path="/:provider/:owner/:repo/commit/:commit/:path+" exact>
-              <Suspense fallback={loadingState}>
-                <CommitFileView diff={diff} />
-              </Suspense>
-            </Route>
-            <Route path="/:provider/:owner/:repo/commit/:commit">
-              <h2 className="text-base font-semibold">Impacted files</h2>
-              {!isEmpty(erroredUploads) ? (
-                <ErroredUploads erroredUploads={erroredUploads} />
-              ) : (
-                <Suspense fallback={loadingState}>
-                  <CommitsTable
-                    commit={commitSHA}
-                    state={commit?.state}
-                    data={commit?.compareWithParent?.impactedFiles}
+        <article className="flex flex-1 flex-col">
+          {!isEmpty(erroredUploads) ? (
+            <ErroredUploads erroredUploads={erroredUploads} />
+          ) : (
+            <>
+              <CommitPageTabs commitSHA={commitSHA} />
+              <Suspense fallback={<Loader />}>
+                <Switch>
+                  <SentryRoute
+                    path={[
+                      '/:provider/:owner/:repo/commit/:commit/tree/:path+',
+                      '/:provider/:owner/:repo/commit/:commit/tree/',
+                    ]}
+                  >
+                    <CommitFileExplorer />
+                  </SentryRoute>
+                  <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
+                    <CommitFileViewer />
+                  </SentryRoute>
+                  <SentryRoute
+                    path="/:provider/:owner/:repo/commit/:commit"
+                    exact
+                  >
+                    <ImpactedFiles commit={commit} commitSHA={commitSHA} />
+                  </SentryRoute>
+                  <Redirect
+                    from="/:provider/:owner/:repo/commit/:commit/*"
+                    to="/:provider/:owner/:repo/commit/:commit"
                   />
-                </Suspense>
-              )}
-            </Route>
-          </Switch>
+                </Switch>
+              </Suspense>
+            </>
+          )}
         </article>
       </div>
     </div>
-  ) : (
-    <Suspense fallback={loadingState}>
-      <NotFound />
-    </Suspense>
   )
 }
 
