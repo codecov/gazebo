@@ -1,18 +1,29 @@
-import sum from 'hash-sum'
 import { useEffect, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
-// eslint-disable-next-line max-statements
-export const useScrollToLine = ({ number, passedPath = '' }) => {
-  const { path: urlPath } = useParams()
+const generateIdString = ({ number, path, base, head }) => {
+  if (base) {
+    return `#${path}-L${number}`
+  } else if (head) {
+    return `#${path}-R${number}`
+  } else if (path) {
+    return `#${path}-L${number}`
+  }
+
+  return `#L${number}`
+}
+
+export const useScrollToLine = ({
+  number,
+  path = '',
+  base = false,
+  head = false,
+}) => {
   const location = useLocation()
   const history = useHistory()
   const lineRef = useRef(null)
   const [targeted, setTargeted] = useState(false)
-
-  const idString = `#${sum(
-    encodeURIComponent(urlPath ?? passedPath)
-  )}-L${number}`
+  const idString = generateIdString({ number, path, base, head })
 
   useEffect(() => {
     if (location?.hash === idString) {
@@ -46,5 +57,6 @@ export const useScrollToLine = ({ number, passedPath = '' }) => {
     targeted,
     lineRef,
     handleClick,
+    idString,
   }
 }
