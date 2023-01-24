@@ -102,8 +102,8 @@ function createTable({ tableData }) {
         <div className="flex flex-col break-all">
           <A
             to={{
-              pageName: 'commitFile',
-              options: { commit, path: headName },
+              pageName: 'commitFileView',
+              options: { commit, tree: headName },
             }}
           >
             {headName}
