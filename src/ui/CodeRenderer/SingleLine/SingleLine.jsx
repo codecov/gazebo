@@ -12,9 +12,19 @@ import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
 import { useScrollToLine } from './useScrollToLine'
 
-function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
+function SingleLine({
+  line,
+  number,
+  coverage,
+  getLineProps,
+  getTokenProps,
+  path,
+}) {
   const lineState = getLineState({ coverage })
-  const { lineRef, handleClick, targeted } = useScrollToLine({ number })
+  const { lineRef, handleClick, targeted } = useScrollToLine({
+    number,
+    passedPath: path,
+  })
 
   return (
     <tr
@@ -57,6 +67,7 @@ SingleLine.propTypes = {
   number: PropTypes.number.isRequired,
   getLineProps: PropTypes.func,
   getTokenProps: PropTypes.func,
+  path: PropTypes.string,
 }
 
 export default SingleLine
