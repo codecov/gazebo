@@ -28,11 +28,11 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
           targeted
             ? 'bg-ds-gray-octonary text-white'
             : 'text-ds-gray-quaternary',
-          'line-number font-mono text-right border-solid px-2 select-none relative border-ds-gray-tertiary border-r',
+          'flex line-number font-mono text-right border-solid select-none relative border-ds-gray-tertiary border-r',
           !targeted && classNamePerLineState[lineState]
         )}
       >
-        <button onClick={handleClick}>
+        <button onClick={handleClick} className="flex-1 text-right px-2">
           <span className={cs({ invisible: !targeted })}>#</span>
           {number}
         </button>
