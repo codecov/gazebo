@@ -46,7 +46,13 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
-function ContextSwitcher({ activeContext, contexts, onLoadMore, isLoading }) {
+function ContextSwitcher({
+  activeContext,
+  contexts,
+  currentUser,
+  isLoading,
+  onLoadMore,
+}) {
   const intersectionRef = useRef(null)
   const currentContext = getCurrentContext({ activeContext, contexts })
   const { provider } = useParams()
@@ -71,13 +77,16 @@ function ContextSwitcher({ activeContext, contexts, onLoadMore, isLoading }) {
       <MenuLink
         as={AppLink}
         pageName={pageName}
-        options={{ owner: owner.username }}
+        options={{ owner: owner?.username }}
         key={owner.username}
       >
         <Avatar user={owner} bordered />
         <div className={cs('mx-2', { 'font-semibold': isActiveContext })}>
-          {owner.username}
+          {owner?.username}
         </div>
+        {owner?.username === currentUser?.defaultOrgUsername && (
+          <span className="text-ds-gray-quaternary font-medium">Default</span>
+        )}
       </MenuLink>
     )
   }
@@ -146,6 +155,9 @@ ContextSwitcher.propTypes = {
       pageName: PropTypes.string.isRequired,
     })
   ).isRequired,
+  currentUser: PropTypes.shape({
+    defaultOrgUsername: PropTypes.string,
+  }),
   onLoadMore: PropTypes.func,
   isLoading: PropTypes.bool,
 }
