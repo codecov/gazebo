@@ -72,6 +72,7 @@ function transformPullToTable(pulls, isLoading) {
 
   return pulls?.map((pullNode) => {
     if (!pullNode) return handleOnNull()
+
     const pull = pullNode.node
     const { author, compareWithBase, head, pullId, state, title, updatestamp } =
       pull
