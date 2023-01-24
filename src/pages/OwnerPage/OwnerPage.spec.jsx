@@ -13,15 +13,13 @@ jest.mock('shared/ListRepo', () => () => 'ListRepo')
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/gh/codecov']}>
-        <Route path="/:provider/:owner">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
-}
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov']}>
+      <Route path="/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => {
   server.listen()

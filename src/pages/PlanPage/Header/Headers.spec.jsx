@@ -17,15 +17,13 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => {
-  return (
-    <QueryClientProvider ovider client={queryClient}>
-      <MemoryRouter initialEntries={['plan/gh/codecov']}>
-        <Route path="plan/:provider/:owner">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
-}
+const wrapper = ({ children }) => (
+  <QueryClientProvider ovider client={queryClient}>
+    <MemoryRouter initialEntries={['plan/gh/codecov']}>
+      <Route path="plan/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => {
   server.listen()
