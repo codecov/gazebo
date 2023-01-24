@@ -7,6 +7,7 @@ import { LINE_TYPE } from 'shared/utils/fileviewer'
 
 import SingleLine from './SingleLine'
 
+// mocking out useRef cause of it's call to an html element function
 jest.mock('react', () => {
   return {
     ...jest.requireActual('react'),
