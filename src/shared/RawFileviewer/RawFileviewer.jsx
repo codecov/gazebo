@@ -109,7 +109,6 @@ function RawFileviewer({ title, sticky = false, withKey = true }) {
                 getLineProps={getLineProps}
                 getTokenProps={getTokenProps}
                 coverage={coverageData && coverageData[i + 1]}
-                path={path}
               />
             )}
           />
