@@ -13,17 +13,15 @@ jest.mock('shared/ListRepo', () => () => 'ListRepo')
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper =
-  (initialEntries = ['/gh/codecov']) =>
-  ({ children }) => {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-  }
+const wrapper = ({ children }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov']}>
+        <Route path="/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+}
 
 beforeAll(() => {
   server.listen()
@@ -54,18 +52,21 @@ describe('OwnerPage', () => {
     })
 
     it('renders the header', async () => {
-      render(<OwnerPage />, { wrapper: wrapper() })
-      expect(await screen.findByText(/Header/)).toBeInTheDocument()
+      render(<OwnerPage />, { wrapper })
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
     })
 
     it('renders the tabs', async () => {
-      render(<OwnerPage />, { wrapper: wrapper() })
-      expect(await screen.findByText(/Tabs/)).toBeInTheDocument()
+      render(<OwnerPage />, { wrapper })
+      const tabs = await screen.findByText(/Tabs/)
+      expect(tabs).toBeInTheDocument()
     })
 
     it('renders the ListRepo', async () => {
-      render(<OwnerPage />, { wrapper: wrapper() })
-      expect(await screen.findByText(/ListRepo/)).toBeInTheDocument()
+      render(<OwnerPage />, { wrapper })
+      const listRepo = await screen.findByText(/ListRepo/)
+      expect(listRepo).toBeInTheDocument()
     })
   })
 
@@ -75,17 +76,17 @@ describe('OwnerPage', () => {
     })
 
     it('doesnt render the header', () => {
-      render(<OwnerPage />, { wrapper: wrapper() })
+      render(<OwnerPage />, { wrapper })
       expect(screen.queryByText(/Header/)).not.toBeInTheDocument()
     })
 
     it('doesnt renders the tabs', () => {
-      render(<OwnerPage />, { wrapper: wrapper() })
+      render(<OwnerPage />, { wrapper })
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
     })
 
     it('doesnt render the ListRepo', () => {
-      render(<OwnerPage />, { wrapper: wrapper() })
+      render(<OwnerPage />, { wrapper })
       expect(screen.queryByText(/ListRepo/)).not.toBeInTheDocument()
     })
   })
@@ -99,7 +100,7 @@ describe('OwnerPage', () => {
     })
 
     it('doesnt render links to the settings', () => {
-      render(<OwnerPage />, { wrapper: wrapper() })
+      render(<OwnerPage />, { wrapper })
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
     })
   })

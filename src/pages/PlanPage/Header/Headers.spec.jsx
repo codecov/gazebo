@@ -17,17 +17,15 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper =
-  (initialEntries = ['plan/gh/codecov']) =>
-  ({ children }) => {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="plan/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-  }
+const wrapper = ({ children }) => {
+  return (
+    <QueryClientProvider ovider client={queryClient}>
+      <MemoryRouter initialEntries={['plan/gh/codecov']}>
+        <Route path="plan/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+}
 
 beforeAll(() => {
   server.listen()
@@ -59,7 +57,7 @@ describe('Header', () => {
     })
 
     it('renders the context switcher', async () => {
-      render(<Header />, { wrapper: wrapper() })
+      render(<Header />, { wrapper })
       expect(await screen.findByText(/MyContextSwitcher/)).toBeInTheDocument()
     })
   })

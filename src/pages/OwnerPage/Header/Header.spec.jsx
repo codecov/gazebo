@@ -16,17 +16,15 @@ jest.mock('config')
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper =
-  (initialEntries = ['/gh/codecov']) =>
-  ({ children }) => {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-  }
+const wrapper = ({ children }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov']}>
+        <Route path="/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+}
 
 beforeAll(() => {
   server.listen()
@@ -54,7 +52,7 @@ describe('Header', () => {
     config.IS_SELF_HOSTED = isSelfHosted
     server.use(
       graphql.query('OwnerPageData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner }))
+        res(ctx.status(200), ctx.data({ ...mockOwner, owner }))
       )
     )
   }
@@ -68,8 +66,9 @@ describe('Header', () => {
     })
 
     it('renders the context switcher', async () => {
-      render(<Header />, { wrapper: wrapper() })
-      expect(await screen.findByText(/MyContextSwitcher/)).toBeInTheDocument()
+      render(<Header />, { wrapper })
+      const contextSwitcher = await screen.findByText(/MyContextSwitcher/)
+      expect(contextSwitcher).toBeInTheDocument()
     })
   })
 
@@ -83,8 +82,9 @@ describe('Header', () => {
       })
 
       it('renders the context switcher', async () => {
-        render(<Header />, { wrapper: wrapper() })
-        expect(await screen.findByText(/MyContextSwitcher/)).toBeInTheDocument()
+        render(<Header />, { wrapper })
+        const contextSwitcher = await screen.findByText(/MyContextSwitcher/)
+        expect(contextSwitcher).toBeInTheDocument()
       })
     })
 
@@ -97,7 +97,7 @@ describe('Header', () => {
       })
 
       it('renders the title of the owner', async () => {
-        render(<Header />, { wrapper: wrapper() })
+        render(<Header />, { wrapper })
         expect(
           await screen.findByRole('heading', {
             name: /Scanlan/i,
@@ -107,7 +107,7 @@ describe('Header', () => {
       })
 
       it('does not render the context switcher', async () => {
-        render(<Header />, { wrapper: wrapper() })
+        render(<Header />, { wrapper })
         expect(screen.queryByText(/MyContextSwitcher/)).not.toBeInTheDocument()
       })
     })
@@ -123,8 +123,9 @@ describe('Header', () => {
       })
 
       it('renders the context switcher', async () => {
-        render(<Header />, { wrapper: wrapper() })
-        expect(await screen.findByText(/MyContextSwitcher/)).toBeInTheDocument()
+        render(<Header />, { wrapper })
+        const contextSwitcher = await screen.findByText(/MyContextSwitcher/)
+        expect(contextSwitcher).toBeInTheDocument()
       })
     })
 
@@ -137,7 +138,7 @@ describe('Header', () => {
       })
 
       it('renders the title of the owner', async () => {
-        render(<Header />, { wrapper: wrapper() })
+        render(<Header />, { wrapper })
         expect(
           await screen.findByRole('heading', {
             name: /Scanlan/i,
@@ -147,7 +148,7 @@ describe('Header', () => {
       })
 
       it('does not render the context switcher', () => {
-        render(<Header />, { wrapper: wrapper() })
+        render(<Header />, { wrapper })
         expect(screen.queryByText(/MyContextSwitcher/)).not.toBeInTheDocument()
       })
     })
