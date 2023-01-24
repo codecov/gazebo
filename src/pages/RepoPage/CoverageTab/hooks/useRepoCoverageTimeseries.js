@@ -68,6 +68,8 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
           return newData
         }
       },
+      staleTime: 30000,
+      keepPreviousData: false,
       ...newOptions,
     },
   })
