@@ -38,6 +38,7 @@ const node1 = {
     },
   },
   compareWithBase: {
+    __typename: 'Comparison',
     patchTotals: {
       coverage: '87',
     },
@@ -59,6 +60,7 @@ const node2 = {
     },
   },
   compareWithBase: {
+    __typename: 'Comparison',
     patchTotals: {
       coverage: '87',
     },
@@ -80,6 +82,7 @@ const node3 = {
     },
   },
   compareWithBase: {
+    __typename: 'Comparison',
     patchTotals: {
       coverage: '87',
     },
