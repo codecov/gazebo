@@ -1,13 +1,12 @@
 import { accountDetailsPropType } from 'services/account'
-import { isEnterprisePlan, isFreePlan } from 'shared/utils/billing'
+import {
+  CollectionMethods,
+  isEnterprisePlan,
+  isFreePlan,
+} from 'shared/utils/billing'
 import A from 'ui/A'
 
 import ActionsBilling from '../ActionsBilling'
-
-const CollectionMethods = Object.freeze({
-  INVOICED_CUSTOMER_METHOD: 'send_invoice',
-  AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
-})
 
 function PlanControls({ accountDetails }) {
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
