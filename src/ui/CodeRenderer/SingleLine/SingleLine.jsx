@@ -10,7 +10,7 @@ import {
 } from 'shared/utils/fileviewer'
 import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
-import { useScrollToLine } from './useScrollToLine'
+import { useScrollToLine } from '../hooks'
 
 function SingleLine({
   line,
@@ -23,7 +23,7 @@ function SingleLine({
   const lineState = getLineState({ coverage })
   const { lineRef, handleClick, targeted } = useScrollToLine({
     number,
-    passedPath: path,
+    path,
   })
 
   return (

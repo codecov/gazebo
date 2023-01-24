@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import sum from 'hash-sum'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -15,8 +14,7 @@ jest.mock('react', () => {
   }
 })
 
-const createIdString = ({ path, number }) =>
-  `#${sum(encodeURIComponent(path))}-L${number}`
+const createIdString = ({ path, number }) => `#${path}-L${number}`
 
 const wrapper = ({ children }) => (
   <MemoryRouter
