@@ -25,14 +25,14 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
       <td
         aria-label={lineStateToLabel[lineState]}
         className={cs(
-          targeted
-            ? 'bg-ds-gray-octonary text-white'
-            : 'text-ds-gray-quaternary',
-          'flex line-number font-mono text-right border-solid select-none relative border-ds-gray-tertiary border-r',
-          !targeted && classNamePerLineState[lineState]
+          'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
+          classNamePerLineState[lineState]
         )}
       >
-        <button onClick={handleClick} className="flex-1 text-right px-2">
+        <button
+          onClick={handleClick}
+          className={cs('flex-1 text-right px-2', targeted && 'font-bold')}
+        >
           <span className={cs({ invisible: !targeted })}>#</span>
           {number}
         </button>

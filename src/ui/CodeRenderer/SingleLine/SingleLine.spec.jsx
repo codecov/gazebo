@@ -146,8 +146,8 @@ describe('SingleLine', () => {
       const button = screen.getByRole('button')
       userEvent.click(button)
 
-      const linesCovered = screen.getByLabelText('covered line of code')
-      expect(linesCovered).toHaveClass('bg-ds-gray-octonary')
+      const linesCovered = screen.getByRole('button', { name: /# 1/ })
+      expect(linesCovered).toHaveClass('font-bold')
     })
   })
 })
