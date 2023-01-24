@@ -36,7 +36,7 @@ function IndirectChangesTab() {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <>
       {data?.headState === CommitStateEnum.ERROR ? (
         <p>
           Cannot display Impacted Files because most recent commit is in an
@@ -68,9 +68,9 @@ function IndirectChangesTab() {
         </div>
       ) : (
         // No impacted files nor head, patch or change coverage
-        <p>No Files covered by tests were changed</p>
+        <p className="mt-4">No Files covered by tests were changed</p>
       )}
-    </div>
+    </>
   )
 }
 
