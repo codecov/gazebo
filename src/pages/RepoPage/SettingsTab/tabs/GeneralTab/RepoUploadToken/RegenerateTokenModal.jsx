@@ -26,8 +26,8 @@ const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
             isLoading={isLoading}
             hook="generate-token"
             variant="primary"
-            onClick={async () => {
-              await regenerateToken()
+            onClick={() => {
+              regenerateToken()
               closeModal()
             }}
           >

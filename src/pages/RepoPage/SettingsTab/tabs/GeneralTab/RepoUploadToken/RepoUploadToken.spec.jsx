@@ -1,4 +1,4 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
@@ -12,7 +12,11 @@ import RepoUploadToken from './RepoUploadToken'
 
 jest.mock('services/toastNotification')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  logger: {
+    error: () => {},
+  },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -29,6 +33,7 @@ beforeAll(() => {
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
+  jest.resetAllMocks()
 })
 afterAll(() => {
   server.close()
@@ -38,21 +43,24 @@ describe('RepoUploadToken', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
 
-  function setup(uploadToken = undefined) {
+  function setup(uploadToken = undefined, triggererror = false) {
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      rest.get(
-        `/internal/gh/codecov/repos/codecov-client/regenerate-upload-token`,
+      rest.patch(
+        `/internal/github/codecov/repos/codecov-client/regenerate-upload-token/`,
         (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              isLoading: false,
-              mutate,
-              data: { uploadToken },
-            })
-          )
+          mutate(req)
+          if (triggererror) {
+            return res(ctx.status(500))
+          } else {
+            return res(
+              ctx.status(200),
+              ctx.json({
+                data: { uploadToken },
+              })
+            )
+          }
         }
       )
     )
@@ -151,7 +159,7 @@ describe('RepoUploadToken', () => {
         name: 'Generate New Token',
       })
       userEvent.click(generateNewTokenButton)
-      expect(mutate).toHaveBeenCalled()
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
     it('renders the new token', () => {
@@ -167,30 +175,22 @@ describe('RepoUploadToken', () => {
   describe('when mutation is not successful', () => {
     const tokenName = 'new token'
     beforeEach(() => {
-      setup(tokenName)
+      const triggerError = true
+      setup(tokenName, triggerError)
     })
 
-    it('calls the mutation', () => {
+    it('adds an error notification', async () => {
       render(<RepoUploadToken uploadToken={tokenName} />, { wrapper })
       userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
       userEvent.click(
         screen.getByRole('button', { name: 'Generate New Token' })
       )
-      mutate.mock.calls[0][1].onError()
-      expect(mutate).toHaveBeenCalled()
-    })
-
-    it('adds an error notification', () => {
-      render(<RepoUploadToken uploadToken={tokenName} />, { wrapper })
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      userEvent.click(
-        screen.getByRole('button', { name: 'Generate New Token' })
+      await waitFor(() =>
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong',
+        })
       )
-      mutate.mock.calls[0][1].onError()
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'error',
-        text: 'Something went wrong',
-      })
     })
   })
 })
