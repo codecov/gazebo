@@ -25,7 +25,7 @@ const mockImpactedFile = {
   isCriticalFile: false,
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
-  segments: [
+  segmentsDeprecated: [
     {
       header: '-0,0 +1,45',
       hasUnintendedChanges: false,
@@ -114,7 +114,7 @@ describe('FileDiff', () => {
       const impactedFile = {
         isCriticalFile: false,
         headName: 'flag1/file.js',
-        segments: [],
+        segmentsDeprecated: [],
       }
 
       setup({ impactedFile })
@@ -139,7 +139,9 @@ describe('FileDiff', () => {
         isCriticalFile: false,
         isNewFile: true,
         headName: 'flag1/file.js',
-        segments: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        segmentsDeprecated: [
+          { lines: [{ content: 'abc' }, { content: 'def' }] },
+        ],
       }
       setup({ impactedFile })
     })
@@ -158,7 +160,9 @@ describe('FileDiff', () => {
         isCriticalFile: false,
         isRenamedFile: true,
         headName: 'flag1/file.js',
-        segments: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        segmentsDeprecated: [
+          { lines: [{ content: 'abc' }, { content: 'def' }] },
+        ],
       }
       setup({ impactedFile })
     })
@@ -176,7 +180,9 @@ describe('FileDiff', () => {
         isCriticalFile: false,
         isDeletedFile: true,
         headName: 'flag1/file.js',
-        segments: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        segmentsDeprecated: [
+          { lines: [{ content: 'abc' }, { content: 'def' }] },
+        ],
       }
       setup({ impactedFile })
     })
@@ -194,7 +200,9 @@ describe('FileDiff', () => {
         isCriticalFile: true,
         fileLabel: null,
         headName: 'flag1/file.js',
-        segments: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        segmentsDeprecated: [
+          { lines: [{ content: 'abc' }, { content: 'def' }] },
+        ],
       }
       setup({ impactedFile })
     })
