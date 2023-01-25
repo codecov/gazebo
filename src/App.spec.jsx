@@ -327,36 +327,88 @@ describe('App', () => {
   })
 
   describe('rendering plan page', () => {
-    beforeEach(() => {
-      window.history.pushState({}, 'Test Plan Page', '/plan/gh/codecov/')
-      setup()
-    })
+    describe('cloud', () => {
+      beforeEach(() => {
+        window.history.pushState({}, 'Test Plan Page', '/plan/gh/codecov/')
+        config.IS_SELF_HOSTED = false
+        setup()
+      })
+      afterEach(() => (config.IS_SELF_HOSTED = false))
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
+      it('renders the loading state', () => {
+        const loading = screen.getByTestId('logo-spinner')
+        expect(loading).toBeInTheDocument()
+      })
 
-    it('renders plan page', async () => {
-      const page = screen.getByText(/PlanPage/i)
-      expect(page).toBeInTheDocument()
+      it('renders plan page', async () => {
+        const page = screen.getByText(/PlanPage/i)
+        expect(page).toBeInTheDocument()
+      })
+    })
+    describe('self hosted', () => {
+      beforeEach(() => {
+        window.history.pushState({}, 'Test Plan Page', '/plan/gh/codecov/')
+        config.IS_SELF_HOSTED = true
+        setup()
+      })
+      afterEach(() => (config.IS_SELF_HOSTED = false))
+
+      it('renders the loading state', () => {
+        const loading = screen.queryByTestId('logo-spinner')
+        expect(loading).not.toBeInTheDocument()
+      })
+
+      it('renders plan page', async () => {
+        const page = screen.queryByText(/PlanPage/i)
+        expect(page).not.toBeInTheDocument()
+      })
     })
   })
 
   describe('rendering members page', () => {
-    beforeEach(() => {
-      window.history.pushState({}, 'Test Members Page', '/members/gh/codecov/')
-      setup()
-    })
+    describe('cloud', () => {
+      beforeEach(() => {
+        config.IS_SELF_HOSTED = false
+        window.history.pushState(
+          {},
+          'Test Members Page',
+          '/members/gh/codecov/'
+        )
+        setup()
+      })
+      afterEach(() => jest.resetAllMocks())
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
+      it('renders the loading state', () => {
+        const loading = screen.getByTestId('logo-spinner')
+        expect(loading).toBeInTheDocument()
+      })
 
-    it('renders members page', () => {
-      const page = screen.getByText(/MembersPage/i)
-      expect(page).toBeInTheDocument()
+      it('renders members page', () => {
+        const page = screen.getByText(/MembersPage/i)
+        expect(page).toBeInTheDocument()
+      })
+    })
+    describe('self hosted', () => {
+      beforeEach(() => {
+        config.IS_SELF_HOSTED = true
+        window.history.pushState(
+          {},
+          'Test Members Page',
+          '/members/gh/codecov/'
+        )
+        setup()
+      })
+      afterEach(() => jest.resetAllMocks())
+
+      it('renders the loading state', () => {
+        const loading = screen.queryByTestId('logo-spinner')
+        expect(loading).not.toBeInTheDocument()
+      })
+
+      it('renders members page', () => {
+        const page = screen.queryByText(/MembersPage/i)
+        expect(page).not.toBeInTheDocument()
+      })
     })
   })
 
