@@ -5,7 +5,11 @@ import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import Activation from './Activation'
+
+jest.mock('config')
 
 const queryClient = new QueryClient()
 
@@ -83,12 +87,10 @@ describe('Members Activation', () => {
   })
 
   describe('When user is enterprise user', () => {
-    const mockedRes = {
-      plan: {
-        value: 'users-enterprisey',
-      },
-    }
-    beforeEach(() => setup(mockedRes))
+    beforeEach(() => {
+      setup()
+      config.IS_SELF_HOSTED = true
+    })
 
     it('Does not render change plan link', async () => {
       render(<Activation />, { wrapper })

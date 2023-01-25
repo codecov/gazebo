@@ -1,17 +1,10 @@
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { useAccountDetails } from 'services/account'
-import { CollectionMethods, isEnterprisePlan } from 'shared/utils/billing'
+import { CollectionMethods } from 'shared/utils/billing'
 import A from 'ui/A'
-
-function getShouldShowUpgradePlan(accountDetails) {
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
-  const isInvoicedCustomer =
-    accountDetails?.subscriptionDetail?.collectionMethod ===
-    CollectionMethods.INVOICED_CUSTOMER_METHOD
-
-  return !(isEnterprisePlan(plan?.value) || isInvoicedCustomer)
-}
 
 function Activation() {
   const { owner, provider } = useParams()
@@ -20,7 +13,11 @@ function Activation() {
   const activatedUserCount = accountDetails?.activatedUserCount || 0
   const planQuantity = accountDetails?.plan?.quantity || 0
 
-  const showUpgradePlan = getShouldShowUpgradePlan(accountDetails)
+  const isInvoicedCustomer =
+    accountDetails?.subscriptionDetail?.collectionMethod ===
+    CollectionMethods.INVOICED_CUSTOMER_METHOD
+
+  const showChangePlanLink = !(config.IS_SELF_HOSTED || isInvoicedCustomer)
 
   return (
     <div className="flex flex-col p-4 gap-2">
@@ -30,7 +27,7 @@ function Activation() {
         active members of{' '}
         <span className="font-semibold text-lg">{planQuantity}</span> available
         seats{' '}
-        {showUpgradePlan && (
+        {showChangePlanLink && (
           <span className="text-xs">
             <A to={{ pageName: 'upgradeOrgPlan' }} variant="semibold">
               change plan
