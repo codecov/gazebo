@@ -33,7 +33,6 @@ function Footer() {
     ...buildModeRightMenu,
     { to: { pageName: 'support' } },
     { to: { pageName: 'docs' } },
-    { to: { pageName: 'enterprise' } },
   ]
 
   if (!!currentUser) {
