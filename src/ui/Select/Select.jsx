@@ -16,7 +16,7 @@ const SelectClasses = {
   item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
   button:
     'flex justify-between items-center w-full rounded bg-white text-left whitespace-nowrap disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
-  ul: 'overflow-hidden rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute w-full z-10 max-h-80 min-w-fit',
+  ul: 'overflow-hidden rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute w-full z-10 max-h-80 min-w-fit z-40',
   loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
 
@@ -168,7 +168,7 @@ const Select = forwardRef(
               name={isOpen ? 'chevron-up' : 'chevron-down'}
             />
           </button>
-          <div className={cs(!onSearch && 'hidden', 'absolute', 'inset-x-0')}>
+          <div className={cs(!onSearch && 'hidden', 'absolute inset-x-0 z-40')}>
             <div className={cs(!isOpen && 'hidden')}>
               <SearchField
                 dataMarketing="select-search"
