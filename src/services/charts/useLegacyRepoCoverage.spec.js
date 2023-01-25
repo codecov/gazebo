@@ -6,15 +6,7 @@ import { repoCoverageHandler } from './mocks'
 
 import { useLegacyRepoCoverage } from './index'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-      refetchOnWindowFocus: false,
-    },
-  },
-})
+const queryClient = new QueryClient({})
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -23,7 +15,10 @@ const wrapper = ({ children }) => (
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
 afterAll(() => server.close())
 
 const exampleYearlyHookData = {
