@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types'
-
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
+import MissingFileData from 'shared/ContentsTable/MissingFileData'
 import { useRepoCommitContentsTable } from 'shared/ContentsTable/useRepoCommitContentsTable'
 import { useCommitTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -20,22 +19,6 @@ const Loader = () => {
 
 const defaultQueryParams = {
   search: '',
-}
-
-function MissingFileData({ isSearching }) {
-  if (isSearching) {
-    return <p className="flex justify-center flex-1">No results found</p>
-  }
-
-  return (
-    <p className="flex justify-center flex-1">
-      There was a problem getting repo contents from your provider
-    </p>
-  )
-}
-
-MissingFileData.propTypes = {
-  isSearching: PropTypes.bool,
 }
 
 function FileExplorer() {
