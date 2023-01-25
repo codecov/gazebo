@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types'
 
-import config from 'config'
-
 import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import CopyClipboard from 'ui/CopyClipboard'
 
@@ -24,8 +22,6 @@ export default function Token({
           </span>
           <CopyClipboard string={token} onClick={() => copiedCIToken(token)} />
         </p>
-      )}
-      {!config.IS_SELF_HOSTED && (
       )}
     </div>
   )
