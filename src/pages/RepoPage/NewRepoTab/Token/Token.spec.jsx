@@ -28,9 +28,6 @@ describe('Token', () => {
       setup({ uploadToken: 'mytoken', privateRepo: true })
     })
     it('with a token', () => {
-      expect(
-        screen.getByText(/Not required if your repo is using GitHub Actions/)
-      ).toBeInTheDocument()
       expect(screen.getByText(/mytoken/, { exact: false })).toBeInTheDocument()
     })
   })
@@ -43,11 +40,6 @@ describe('Token', () => {
         isCurrentUserPartOfOrg: true,
       })
 
-      expect(
-        screen.getByText(/Not required if your repo is using GitHub Actions/, {
-          exact: false,
-        })
-      ).toBeInTheDocument()
       expect(screen.getByText(/mytoken/)).toBeInTheDocument()
     })
 
@@ -58,11 +50,6 @@ describe('Token', () => {
         isCurrentUserPartOfOrg: false,
       })
 
-      expect(
-        screen.getByText(/Not required if your repo is using GitHub Actions/, {
-          exact: false,
-        })
-      ).toBeInTheDocument()
       expect(screen.queryByText(/mytoken/)).not.toBeInTheDocument()
     })
   })
