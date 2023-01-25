@@ -19,9 +19,9 @@ import CommitDetailsSummary from './Summary'
 import { useExtractUploads } from './UploadsCard/useExtractUploads'
 import YamlErrorBanner from './YamlErrorBanner'
 
-const CommitFileExplorer = lazy(() => import('./sub-route/CommitFileExplorer'))
-const CommitFileViewer = lazy(() => import('./sub-route/CommitFileViewer'))
-const ImpactedFiles = lazy(() => import('./sub-route/ImpactedFiles'))
+const CommitFileExplorer = lazy(() => import('./subRoute/CommitFileExplorer'))
+const CommitFileViewer = lazy(() => import('./subRoute/CommitFileViewer'))
+const ImpactedFiles = lazy(() => import('./subRoute/ImpactedFiles'))
 const UploadsCard = lazy(() => import('./UploadsCard'))
 
 const Loader = () => {
