@@ -36,6 +36,7 @@ const queryClient = new QueryClient({
   },
 })
 
+// eslint-disable-next-line complexity
 function App() {
   useUTM()
 
@@ -59,25 +60,26 @@ function App() {
               <AccountSettings />
             </BaseLayout>
           </SentryRoute>
-          {config.IS_SELF_HOSTED ? (
+          {config.IS_SELF_HOSTED && (
             <SentryRoute path="/admin/:provider">
               <BaseLayout>
                 <AdminSettings />
               </BaseLayout>
             </SentryRoute>
-          ) : (
-            <>
-              <SentryRoute path="/plan/:provider/:owner/">
-                <BaseLayout>
-                  <PlanPage />
-                </BaseLayout>
-              </SentryRoute>
-              <SentryRoute path="/members/:provider/:owner/">
-                <BaseLayout>
-                  <MembersPage />
-                </BaseLayout>
-              </SentryRoute>
-            </>
+          )}
+          {!config.IS_SELF_HOSTED && (
+            <SentryRoute path="/plan/:provider/:owner/">
+              <BaseLayout>
+                <PlanPage />
+              </BaseLayout>
+            </SentryRoute>
+          )}
+          {!config.IS_SELF_HOSTED && (
+            <SentryRoute path="/members/:provider/:owner/">
+              <BaseLayout>
+                <MembersPage />
+              </BaseLayout>
+            </SentryRoute>
           )}
           <SentryRoute path="/analytics/:provider/:owner/" exact>
             <BaseLayout>
