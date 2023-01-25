@@ -43,7 +43,10 @@ const user = {
 
 const server = new setupServer()
 beforeAll(() => server.listen())
-beforeEach(() => server.resetHandlers())
+afterEach(() => {
+  config.IS_SELF_HOSTED = false
+  server.resetHandlers()
+})
 afterAll(() => server.close())
 
 const wrapper = ({ children }) => <BrowserRouter>{children}</BrowserRouter>
@@ -74,8 +77,6 @@ describe('App', () => {
         res(ctx.status(200))
       )
     )
-
-    render(<App />, { wrapper })
   }
 
   describe('rendering account settings page', () => {
@@ -88,13 +89,10 @@ describe('App', () => {
       setup()
     })
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
-
     it('renders the AccountSettings page', async () => {
-      const page = screen.getByText(/AccountSettings/i)
+      render(<App />, { wrapper })
+
+      const page = await screen.findByText(/AccountSettings/i)
       expect(page).toBeInTheDocument()
     })
   })
@@ -115,13 +113,10 @@ describe('App', () => {
           setup()
         })
 
-        it('renders the loading state', () => {
-          const loading = screen.getByTestId('logo-spinner')
-          expect(loading).toBeInTheDocument()
-        })
+        it('renders admin settings page', async () => {
+          render(<App />, { wrapper })
 
-        it('renders admin settings page', () => {
-          const page = screen.getByText('AdminSettingsPage')
+          const page = await screen.findByText('AdminSettingsPage')
           expect(page).toBeInTheDocument()
         })
       })
@@ -138,13 +133,10 @@ describe('App', () => {
       setup()
     })
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
+    it('renders the Analytics page', async () => {
+      render(<App />, { wrapper })
 
-    it('renders the Analytics page', () => {
-      const page = screen.getByText(/AnalyticsPage/i)
+      const page = await screen.findByText(/AnalyticsPage/i)
       expect(page).toBeInTheDocument()
     })
   })
@@ -159,13 +151,10 @@ describe('App', () => {
       setup()
     })
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
+    it('renders the commit page', async () => {
+      render(<App />, { wrapper })
 
-    it('renders the commit page', () => {
-      const page = screen.getByText(/CommitPage/i)
+      const page = await screen.findByText(/CommitPage/i)
       expect(page).toBeInTheDocument()
     })
   })
@@ -182,13 +171,10 @@ describe('App', () => {
           setup()
         })
 
-        it('renders the loading state', () => {
-          const loading = screen.getByTestId('logo-spinner')
-          expect(loading).toBeInTheDocument()
-        })
+        it('renders landing page', async () => {
+          render(<App />, { wrapper })
 
-        it('renders landing page', () => {
-          const page = screen.getByText('EnterpriseLandingPage')
+          const page = await screen.findByText('EnterpriseLandingPage')
           expect(page).toBeInTheDocument()
         })
       })
@@ -201,27 +187,25 @@ describe('App', () => {
       setup()
     })
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
+    it('renders the feedback page', async () => {
+      render(<App />, { wrapper })
 
-    it('renders the feedback page', () => {
-      const page = screen.getByText(/FeedbackPage/i)
+      const page = await screen.findByText(/FeedbackPage/i)
       expect(page).toBeInTheDocument()
     })
   })
 
   describe('rendering home page', () => {
     describe('IS_SELF_HOSTED is false', () => {
-      beforeAll(() => {
+      beforeEach(() => {
         config.IS_SELF_HOSTED = false
+        window.history.pushState({}, 'Test Landing Page Redirect', '/')
+        setup()
       })
 
       describe('/', () => {
         it('redirects to /gh', async () => {
-          window.history.pushState({}, 'Test Landing Page Redirect', '/')
-          setup()
+          render(<App />, { wrapper })
 
           await waitForElementToBeRemoved(() =>
             screen.queryByTestId('logo-spinner')
@@ -251,6 +235,8 @@ describe('App', () => {
         })
 
         it('redirects to landing page', () => {
+          render(<App />, { wrapper })
+
           const page = screen.getByText('EnterpriseLandingPage')
           expect(page).toBeInTheDocument()
         })
@@ -263,6 +249,8 @@ describe('App', () => {
         })
 
         it('redirects to landing page', () => {
+          render(<App />, { wrapper })
+
           const page = screen.getByText('EnterpriseLandingPage')
           expect(page).toBeInTheDocument()
         })
@@ -284,13 +272,10 @@ describe('App', () => {
           setup()
         })
 
-        it('renders the loading state', () => {
-          const loading = screen.getByTestId('logo-spinner')
-          expect(loading).toBeInTheDocument()
-        })
-
         it('renders login page', async () => {
-          const page = screen.getByText('LoginPage')
+          render(<App />, { wrapper })
+
+          const page = await screen.findByText('LoginPage')
           expect(page).toBeInTheDocument()
         })
       })
@@ -302,6 +287,8 @@ describe('App', () => {
         })
 
         it('renders login page', () => {
+          render(<App />, { wrapper })
+
           const page = screen.getByText('LoginPage')
           expect(page).toBeInTheDocument()
         })
@@ -315,13 +302,10 @@ describe('App', () => {
       setup()
     })
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
+    it('renders the owner page', async () => {
+      render(<App />, { wrapper })
 
-    it('renders the owner page', () => {
-      const page = screen.getByText(/OwnerPage/i)
+      const page = await screen.findByText(/OwnerPage/i)
       expect(page).toBeInTheDocument()
     })
   })
@@ -335,13 +319,10 @@ describe('App', () => {
       })
       afterEach(() => (config.IS_SELF_HOSTED = false))
 
-      it('renders the loading state', () => {
-        const loading = screen.getByTestId('logo-spinner')
-        expect(loading).toBeInTheDocument()
-      })
-
       it('renders plan page', async () => {
-        const page = screen.getByText(/PlanPage/i)
+        render(<App />, { wrapper })
+
+        const page = await screen.findByText(/PlanPage/i)
         expect(page).toBeInTheDocument()
       })
     })
@@ -353,12 +334,9 @@ describe('App', () => {
       })
       afterEach(() => (config.IS_SELF_HOSTED = false))
 
-      it('renders the loading state', () => {
-        const loading = screen.queryByTestId('logo-spinner')
-        expect(loading).not.toBeInTheDocument()
-      })
-
       it('renders plan page', async () => {
+        render(<App />, { wrapper })
+
         const page = screen.queryByText(/PlanPage/i)
         expect(page).not.toBeInTheDocument()
       })
@@ -378,13 +356,10 @@ describe('App', () => {
       })
       afterEach(() => jest.resetAllMocks())
 
-      it('renders the loading state', () => {
-        const loading = screen.getByTestId('logo-spinner')
-        expect(loading).toBeInTheDocument()
-      })
+      it('renders members page', async () => {
+        render(<App />, { wrapper })
 
-      it('renders members page', () => {
-        const page = screen.getByText(/MembersPage/i)
+        const page = await screen.findByText(/MembersPage/i)
         expect(page).toBeInTheDocument()
       })
     })
@@ -400,12 +375,9 @@ describe('App', () => {
       })
       afterEach(() => jest.resetAllMocks())
 
-      it('renders the loading state', () => {
-        const loading = screen.queryByTestId('logo-spinner')
-        expect(loading).not.toBeInTheDocument()
-      })
-
       it('renders members page', () => {
+        render(<App />, { wrapper })
+
         const page = screen.queryByText(/MembersPage/i)
         expect(page).not.toBeInTheDocument()
       })
@@ -422,13 +394,10 @@ describe('App', () => {
       setup()
     })
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
+    it('renders the pull request page', async () => {
+      render(<App />, { wrapper })
 
-    it('renders the pull request page', () => {
-      const page = screen.getByText(/PullRequestPage/i)
+      const page = await screen.findByText(/PullRequestPage/i)
       expect(page).toBeInTheDocument()
     })
   })
@@ -439,12 +408,9 @@ describe('App', () => {
       setup()
     })
 
-    it('renders the loading state', () => {
-      const loading = screen.getByTestId('logo-spinner')
-      expect(loading).toBeInTheDocument()
-    })
-
     it('renders the repo page', async () => {
+      render(<App />, { wrapper })
+
       const page = screen.getByText(/RepoPage/i)
       expect(page).toBeInTheDocument()
     })
