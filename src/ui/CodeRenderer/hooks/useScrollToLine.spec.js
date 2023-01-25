@@ -6,8 +6,7 @@ import { useScrollToLine } from './useScrollToLine'
 
 const scrollIntoViewMock = jest.fn()
 
-const createIdString = ({ path, number }) =>
-  `#${encodeURIComponent(path)}-L${number}`
+const createIdString = ({ path, number }) => `#${path}-L${number}`
 
 let testLocation
 const wrapper = ({ children }) => (
