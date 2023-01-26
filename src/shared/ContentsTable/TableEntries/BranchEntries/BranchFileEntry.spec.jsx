@@ -38,9 +38,9 @@ describe('BranchFileEntry', () => {
         <Route path="/:provider/:owner/:repo/">
           <BranchFileEntry
             branch="main"
-            filePath="dir/file.js"
+            path="dir/file.js"
             name="file.js"
-            path="dir"
+            urlPath="dir"
             isCriticalFile={isCriticalFile}
             displayType={displayType}
           />

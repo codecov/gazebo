@@ -31,7 +31,11 @@ describe('BranchDirEntry', () => {
     render(
       <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
         <Route path="/:provider/:owner/:repo/">
-          <BranchDirEntry branch="branch" name="dir" path="path/to/directory" />
+          <BranchDirEntry
+            branch="branch"
+            name="dir"
+            urlPath="path/to/directory"
+          />
         </Route>
       </MemoryRouter>
     )

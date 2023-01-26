@@ -6,7 +6,7 @@ import Icon from 'ui/Icon'
 function DirEntry({
   linkRef,
   name,
-  path,
+  urlPath,
   runPrefetch,
   pageName = 'treeView',
   commitSha,
@@ -19,7 +19,7 @@ function DirEntry({
           options: {
             ref: linkRef,
             commit: commitSha,
-            tree: !!path ? `${path}/${name}` : name,
+            tree: !!urlPath ? `${urlPath}/${name}` : name,
           },
         }}
       >
@@ -33,7 +33,7 @@ function DirEntry({
 DirEntry.propTypes = {
   linkRef: PropTypes.string,
   name: PropTypes.string.isRequired,
-  path: PropTypes.string,
+  urlPath: PropTypes.string,
   runPrefetch: PropTypes.func,
   pageName: PropTypes.string,
   commitSha: PropTypes.string,
