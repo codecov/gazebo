@@ -8,11 +8,11 @@ import { useRepo } from 'services/repo'
 
 import CoverageTab from './CoverageTab'
 
+jest.mock('./Summary', () => () => 'Summary Component')
 jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
 jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
-jest.mock('./Summary', () => () => 'Summary Component')
-jest.mock('./Chart/ToggleChart', () => () => 'ToggleChart Component')
-jest.mock('./DeactivatedRepo', () => () => 'Disabled Repo Component')
+jest.mock('./subroute/Chart', () => () => 'Chart Component')
+jest.mock('./subroute/Sunburst', () => () => 'Sunburst Component')
 jest.mock('services/repo')
 jest.mock('services/user')
 jest.mock('services/commits')

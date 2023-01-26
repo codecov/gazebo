@@ -11,7 +11,7 @@ import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
-import DeactivatedRepo from './CoverageTab/DeactivatedRepo'
+import DeactivatedRepo from './DeactivatedRepo'
 import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 

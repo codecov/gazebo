@@ -30,7 +30,15 @@ const defaultStyles = {
 
 const VictoryVoronoiContainer = createContainer('voronoi')
 
-function Chart({ data, axisLabelFunc, desc, title, renderAreaChart }) {
+function Chart({
+  data,
+  axisLabelFunc,
+  desc,
+  title,
+  renderAreaChart = false,
+  aproxWidth = 930,
+  aproxHeight = 300,
+}) {
   return (
     <>
       <svg style={{ height: 0 }}>
@@ -78,8 +86,8 @@ function Chart({ data, axisLabelFunc, desc, title, renderAreaChart }) {
       </svg>
       {renderAreaChart && (
         <VictoryChart
-          width={400}
-          height={69}
+          width={aproxWidth}
+          height={aproxHeight}
           yDomain={[0, 100]}
           scale={{ x: 'time', y: 'linear' }}
           singleQuadrantDomainPadding={{ x: false }}
@@ -187,7 +195,9 @@ Chart.propTypes = {
   axisLabelFunc: PropTypes.func,
   desc: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  renderAreaChart: PropTypes.bool.isRequired,
+  renderAreaChart: PropTypes.bool,
+  aproxWidth: PropTypes.number,
+  aproxHeight: PropTypes.number,
 }
 
 export default Chart
