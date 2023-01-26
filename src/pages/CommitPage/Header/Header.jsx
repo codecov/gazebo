@@ -1,33 +1,38 @@
 import { useParams } from 'react-router-dom'
 
-import { useCommit } from 'services/commit'
 import { getProviderCommitURL, getProviderPullURL } from 'shared/utils'
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import CIStatusLabel from 'ui/CIStatus'
 import Icon from 'ui/Icon'
 
+import { useCommitHeaderData } from './hooks'
 import PullLabel from './PullLabel'
 import TruncatedMessage from './TruncatedMessage'
 
 function Header() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
-  const { data } = useCommit({
+  const shortSHA = commitSHA?.slice(0, 7)
+
+  const { data: commit } = useCommitHeaderData({
     provider,
     owner,
     repo,
-    commitid: commitSHA,
+    commitId: commitSHA,
   })
 
-  const commit = data?.commit
-  const username = data?.commit?.author?.username
-
-  const shortSHA = commitSHA?.slice(0, 7)
   const providerPullUrl = getProviderPullURL({
     provider,
     owner,
     repo,
     pullId: commit?.pullId,
+  })
+
+  const providerCommitUrl = getProviderCommitURL({
+    provider,
+    owner,
+    repo,
+    commit: commitSHA,
   })
 
   return (
@@ -41,25 +46,20 @@ function Header() {
                 {formatTimeToNow(commit?.createdAt)}
               </span>
             )}{' '}
-            {username && (
+            {commit?.author?.username && (
               <A
                 to={{
                   pageName: 'owner',
-                  options: { owner: username },
+                  options: { owner: commit?.author?.username },
                 }}
               >
-                {username}
+                {commit?.author?.username}
               </A>
             )}{' '}
             <span className="font-light">authored commit</span>{' '}
             <A
               variant="code"
-              href={getProviderCommitURL({
-                provider,
-                owner,
-                repo,
-                commit: commitSHA,
-              })}
+              href={providerCommitUrl}
               hook="provider commit url"
               isExternal={true}
             >
