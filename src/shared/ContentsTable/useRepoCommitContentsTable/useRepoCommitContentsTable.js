@@ -23,7 +23,7 @@ function determineDisplayType({ filters, isSearching }) {
 function createTableData({
   tableData,
   commitSha,
-  path,
+  urlPath,
   isSearching,
   filters,
   treePaths,
@@ -36,7 +36,7 @@ function createTableData({
         name,
         percentCovered,
         __typename,
-        path: filePath,
+        path,
         isCriticalFile,
         misses,
         partials,
@@ -48,15 +48,15 @@ function createTableData({
             <CommitDirEntry
               name={name}
               commitSha={commitSha}
-              path={path}
+              urlPath={urlPath}
               filters={filters}
             />
           ) : (
             <CommitFileEntry
               name={name}
-              path={path}
+              urlPath={urlPath}
               commitSha={commitSha}
-              filePath={filePath}
+              path={path}
               displayType={displayType}
               isCriticalFile={isCriticalFile}
             />
@@ -157,7 +157,7 @@ const getQueryFilters = ({ params, sortBy }) => {
 }
 
 export function useRepoCommitContentsTable() {
-  const { provider, owner, repo, path, commit } = useParams()
+  const { provider, owner, repo, path: urlPath, commit } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
@@ -168,7 +168,7 @@ export function useRepoCommitContentsTable() {
       owner,
       repo,
       commit,
-      path: path || '',
+      path: urlPath || '',
       filters: getQueryFilters({ params, sortBy: sortBy[0] }),
       opts: {
         suspense: false,
@@ -180,12 +180,12 @@ export function useRepoCommitContentsTable() {
       createTableData({
         tableData: commitData?.results,
         commitSha: commit,
-        path: path || '',
+        urlPath: urlPath || '',
         isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
         treePaths,
       }),
-    [commitData, commit, path, params, sortBy, treePaths]
+    [commitData, commit, urlPath, params, sortBy, treePaths]
   )
 
   const handleSort = useCallback(

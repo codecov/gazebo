@@ -18,7 +18,7 @@ describe('DirEntry', () => {
       <DirEntry
         linkRef="branch"
         name="dir"
-        path="path/to/directory"
+        urlPath="path/to/directory"
         runPrefetch={runPrefetchMock}
       />,
       { wrapper }
@@ -34,7 +34,7 @@ describe('DirEntry', () => {
         <DirEntry
           linkRef="branch"
           name="dir"
-          path="path/to/directory"
+          urlPath="path/to/directory"
           runPrefetch={runPrefetchMock}
         />,
         { wrapper }
@@ -65,7 +65,7 @@ describe('DirEntry', () => {
       <DirEntry
         linkRef="branch"
         name="dir"
-        path="path/to/directory"
+        urlPath="path/to/directory"
         runPrefetch={runPrefetchMock}
       />,
       { wrapper }
@@ -82,7 +82,7 @@ describe('DirEntry', () => {
         <DirEntry
           commitSha="coolCommitSha"
           name="dir"
-          path="path/to/directory"
+          urlPath="path/to/directory"
           runPrefetch={runPrefetchMock}
           pageName="commitTreeView"
         />,

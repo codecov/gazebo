@@ -61,9 +61,9 @@ afterAll(() => {
 describe('CommitFileEntry', () => {
   let commonProps = {
     commitSha: '1234',
-    filePath: 'dir/file.js',
+    path: 'dir/file.js',
     name: 'file.js',
-    path: 'dir',
+    urlPath: 'dir',
     isCriticalFile: false,
   }
 
