@@ -7,21 +7,21 @@ import FileEntry from '../BaseEntries/FileEntry'
 
 function CommitFileEntry({
   commitSha,
-  filePath,
+  path,
   isCriticalFile,
   name,
-  path,
+  urlPath,
   displayType,
 }) {
   const { runPrefetch } = usePrefetchCommitFileEntry({
-    path: filePath,
+    path,
     commitSha: commitSha,
   })
 
   return (
     <FileEntry
       commitSha={commitSha}
-      filePath={filePath}
+      urlPath={urlPath}
       isCriticalFile={isCriticalFile}
       name={name}
       displayType={displayType}
@@ -34,7 +34,7 @@ function CommitFileEntry({
 
 CommitFileEntry.propTypes = {
   commitSha: PropTypes.string.isRequired,
-  filePath: PropTypes.string,
+  urlPath: PropTypes.string,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),

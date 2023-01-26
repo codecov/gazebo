@@ -4,14 +4,18 @@ import { usePrefetchBranchDirEntry } from './hooks/usePrefetchBranchDirEntry'
 
 import DirEntry from '../BaseEntries/DirEntry'
 
-function BranchDirEntry({ branch, path, name, filters }) {
-  const { runPrefetch } = usePrefetchBranchDirEntry({ branch, path, filters })
+function BranchDirEntry({ branch, urlPath, name, filters }) {
+  const { runPrefetch } = usePrefetchBranchDirEntry({
+    branch,
+    path: urlPath,
+    filters,
+  })
 
   return (
     <DirEntry
       linkRef={branch}
       name={name}
-      path={path}
+      urlPath={urlPath}
       runPrefetch={runPrefetch}
     />
   )
@@ -20,7 +24,7 @@ function BranchDirEntry({ branch, path, name, filters }) {
 BranchDirEntry.propTypes = {
   branch: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  path: PropTypes.string,
+  urlPath: PropTypes.string,
   filters: PropTypes.shape({
     ordering: PropTypes.shape({
       direction: PropTypes.string,

@@ -24,7 +24,7 @@ function determineDisplayType({ filters, isSearching }) {
 function createTableData({
   tableData,
   branch,
-  path,
+  urlPath,
   isSearching,
   filters,
   treePaths,
@@ -37,7 +37,7 @@ function createTableData({
         name,
         percentCovered,
         __typename,
-        path: filePath,
+        path,
         isCriticalFile,
         misses,
         partials,
@@ -49,15 +49,15 @@ function createTableData({
             <BranchDirEntry
               name={name}
               branch={branch}
-              path={path}
+              urlPath={urlPath}
               filters={filters}
             />
           ) : (
             <BranchFileEntry
               name={name}
-              path={path}
+              urlPath={urlPath}
               branch={branch}
-              filePath={filePath}
+              path={path}
               displayType={displayType}
               isCriticalFile={isCriticalFile}
             />
@@ -158,7 +158,7 @@ const getQueryFilters = ({ params, sortBy }) => {
 }
 
 export function useRepoBranchContentsTable() {
-  const { provider, owner, repo, path, branch } = useParams()
+  const { provider, owner, repo, path: urlPath, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
@@ -174,7 +174,7 @@ export function useRepoBranchContentsTable() {
     owner,
     repo,
     branch: branch || repoOverview?.defaultBranch,
-    path: path || '',
+    path: urlPath || '',
     filters: getQueryFilters({ params, sortBy: sortBy[0] }),
     suspense: false,
   })
@@ -184,7 +184,7 @@ export function useRepoBranchContentsTable() {
       createTableData({
         tableData: branchData?.results,
         branch: branch || repoOverview?.defaultBranch,
-        path: path || '',
+        urlPath: urlPath || '',
         isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
         treePaths,
@@ -193,7 +193,7 @@ export function useRepoBranchContentsTable() {
       branchData,
       branch,
       repoOverview?.defaultBranch,
-      path,
+      urlPath,
       params,
       sortBy,
       treePaths,
