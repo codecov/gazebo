@@ -15,7 +15,6 @@ export function useUpdateDefaultOrganization() {
           updateDefaultOrganization(input: $input) {
             error {
               __typename
-
             }
           }
         }

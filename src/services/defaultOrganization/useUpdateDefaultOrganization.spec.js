@@ -1,78 +1,106 @@
-// import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-// import { renderHook } from '@testing-library/react-hooks'
-// import { graphql } from 'msw'
-// import { setupServer } from 'msw/node'
-// import { MemoryRouter, Route } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook } from '@testing-library/react-hooks'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-// import { useUpdateDefaultOrganization } from './useUpdateDefaultOrganization'
+import { useUpdateDefaultOrganization } from './useUpdateDefaultOrganization'
 
-// const data = {
-//   data: {
-//     regenerateOrgUploadToken: {
-//       orgUploadToken: 'new token',
-//     },
-//   },
-// }
+const server = setupServer()
 
-// const server = setupServer()
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
 
-// beforeAll(() => server.listen())
-// afterEach(() => server.resetHandlers())
-// afterAll(() => server.close())
+const queryClient = new QueryClient()
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov']}>
+    <Route path="/:provider/:owner/">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
 
-// const queryClient = new QueryClient()
-// const wrapper = ({ children }) => (
-//   <MemoryRouter initialEntries={['/gh/codecov']}>
-//     <Route path="/:provider/:owner/">
-//       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-//     </Route>
-//   </MemoryRouter>
-// )
+describe('useUpdateDefaultOrganization', () => {
+  let hookData
 
-// describe('useUpdateDefaultOrganization', () => {
-//   let hookData
+  function setup(data = {}, triggerError = false) {
+    server.use(
+      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
+        if (triggerError) {
+          return res(ctx.status(200), ctx.data({ data }))
+        } else {
+          return res(ctx.status(200), ctx.data({}))
+        }
+      })
+    )
+    hookData = renderHook(() => useUpdateDefaultOrganization(), {
+      wrapper,
+    })
+  }
 
-//   function setup() {
-//     server.use(
-//       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
-//         return res(ctx.status(200))
-//       })
-//     )
-//     hookData = renderHook(() => useUpdateDefaultOrganization(), {
-//       wrapper,
-//     })
-//   }
+  describe('when called without an error', () => {
+    beforeEach(() => {
+      setup()
+    })
 
-//   describe('when called', () => {
-//     beforeEach(() => {
-//       setup()
-//     })
+    it('returns isLoading false', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
 
-//     it('returns isLoading false', () => {
-//       expect(hookData.result.current.isLoading).toBeFalsy()
-//     })
+    describe('when calling the mutation', () => {
+      beforeEach(() => {
+        hookData.result.current.mutate({ username: 'codecov' })
+        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
+      })
 
-//     describe('when calling the mutation', () => {
-//       beforeEach(() => {
-//         hookData.result.current.mutate({ username: 'codecov' })
-//         return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-//       })
+      it('returns isLoading true', () => {
+        expect(hookData.result.current.isLoading).toBeTruthy()
+      })
+    })
 
-//       it('returns isLoading true', () => {
-//         expect(hookData.result.current.isLoading).toBeTruthy()
-//       })
-//     })
+    describe('When mutation is a success', () => {
+      beforeEach(async () => {
+        hookData.result.current.mutate({ username: 'codecov' })
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
+      })
 
-//     describe('When mutation is a success', () => {
-//       beforeEach(async () => {
-//         hookData.result.current.mutate()
-//         await hookData.waitFor(() => hookData.result.current.isLoading)
-//         await hookData.waitFor(() => !hookData.result.current.isLoading)
-//       })
+      it('returns isSuccess true', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
+      })
+    })
+  })
 
-//       it('returns isSuccess true', () => {
-//         expect(hookData.result.current.isSuccess).toBeTruthy()
-//       })
-//     })
-//   })
-// })
+  describe('when called with a validation error', () => {
+    const mockData = {
+      updateDefaultOrganization: {
+        error: {
+          __typename: 'ValidationError',
+        },
+      },
+    }
+    beforeEach(() => {
+      const triggerError = true
+      setup(mockData, triggerError)
+    })
+
+    it('returns isLoading false', () => {
+      expect(hookData.result.current.isLoading).toBeFalsy()
+    })
+
+    describe('When mutation is a success w/ a validation error', () => {
+      beforeEach(async () => {
+        hookData.result.current.mutate({ username: 'random org!' })
+        await hookData.waitFor(() => hookData.result.current.isLoading)
+        await hookData.waitFor(() => !hookData.result.current.isLoading)
+      })
+
+      it('returns isSuccess true', () => {
+        expect(hookData.result.current.isSuccess).toBeTruthy()
+        const { data } = hookData.result.current.data.data
+        expect(data).toEqual(mockData)
+      })
+    })
+  })
+})
