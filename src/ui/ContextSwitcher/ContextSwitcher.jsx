@@ -5,13 +5,10 @@ import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 
-import { useUpdateDefaultOrgToken } from 'services/defaultOrgToken'
-import { useAddNotification } from 'services/toastNotification'
 import AppLink from 'shared/AppLink'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
-import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
@@ -50,27 +47,6 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
-function useUpdateDefaultOrg() {
-  const addToast = useAddNotification()
-  const { mutate, ...rest } = useUpdateDefaultOrgToken()
-
-  async function updateDefaultOrg({ username }) {
-    console.log('I am in updateDefaultOrg!', username)
-    mutate(
-      { username },
-      {
-        onError: () =>
-          addToast({
-            type: 'error',
-            text: 'Something went wrong',
-          }),
-      }
-    )
-  }
-
-  return { updateDefaultOrg, ...rest }
-}
-
 function ContextSwitcher({
   activeContext,
   contexts,
@@ -81,7 +57,6 @@ function ContextSwitcher({
   const intersectionRef = useRef(null)
   const currentContext = getCurrentContext({ activeContext, contexts })
   const { provider } = useParams()
-  const { updateDefaultOrg } = useUpdateDefaultOrg()
 
   const isGh = providerToName(provider) === 'Github'
 
@@ -137,17 +112,7 @@ function ContextSwitcher({
         </span>
       </MenuButton>
       <MenuList>
-        <div className={styles.switchContext}>
-          <span>Switch context</span>
-          <Button
-            hook="show-modal"
-            onClick={async () => {
-              await updateDefaultOrg({ username: 'adrian-codecov-org' })
-            }}
-          >
-            Edit default
-          </Button>
-        </div>
+        <div className={styles.switchContext}>Switch context</div>
         <div className="max-h-64 overflow-y-auto">
           <MenuLink as={AppLink} pageName="provider">
             <Icon name="home" />

@@ -3,19 +3,19 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
 
-export function useUpdateDefaultOrgToken() {
+export function useUpdateDefaultOrganization() {
   const { provider } = useParams()
   const queryClient = useQueryClient()
   return useMutation(
     ({ username = null }) => {
-      console.log('inside the use mutation', username)
       const query = `
-        mutation updateDefaultOrgToken(
+        mutation updateDefaultOrganization(
           $input: UpdateDefaultOrganizationInput!
         ) {
           updateDefaultOrganization(input: $input) {
             error {
               __typename
+
             }
           }
         }
@@ -29,9 +29,15 @@ export function useUpdateDefaultOrgToken() {
       })
     },
     {
-      useErrorBoundary: true,
-      onSuccess: () => {
-        queryClient.invalidateQueries('DetailOwner')
+      onSuccess: ({ data }) => {
+        const error = data?.updateDefaultOrganization?.error?.__typename
+        if (error === 'ValidationError') {
+          throw Error(
+            'Organization does not belong in the current users organization list'
+          )
+        } else {
+          queryClient.invalidateQueries('DetailOwner')
+        }
       },
     }
   )
