@@ -10,9 +10,6 @@ const query = `
       repository(name: $repo) {
         private
         pull(id: $pullId) {
-        commits {
-          totalCount
-        }
           pullId
           compareWithBase {
             ... on Comparison {

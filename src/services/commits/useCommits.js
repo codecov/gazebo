@@ -34,6 +34,7 @@ function fetchRepoCommits({ provider, owner, repo, variables, after, signal }) {
         owner(username:$owner){
             repository(name: $repo){
                 commits(filters: $filters, first: 20, after: $after){
+                  totalCount
                   edges{
                     node{
                        ...CommitFragment
@@ -66,6 +67,7 @@ function fetchRepoCommits({ provider, owner, repo, variables, after, signal }) {
 
     return {
       commits: mapEdges(commits),
+      commitsCount: commits?.totalCount,
       pageInfo: commits?.pageInfo,
     }
   })
@@ -93,7 +95,10 @@ export function useCommits({ provider, owner, repo, filters, opts = {} }) {
     }
   )
   return {
-    data: { commits: data?.pages.map((page) => page?.commits).flat() },
+    data: {
+      commits: data?.pages.map((page) => page?.commits).flat(),
+      commitsCount: data?.pages[0]?.commitsCount,
+    },
     ...rest,
   }
 }
