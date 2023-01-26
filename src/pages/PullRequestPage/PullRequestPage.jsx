@@ -17,6 +17,7 @@ import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
 import { usePullPageData } from './hooks'
+import { useTabsCounts } from './hooks/useTabsCounts'
 import IndirectChangesInfo from './IndirectChangesTab/IndirectChangesInfo'
 import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 
@@ -34,22 +35,13 @@ const Loader = (
   </div>
 )
 
-const getTabsCounts = (commits, compareWithBase) => {
-  const flagsCount = compareWithBase?.flagComparisonsCount || 0
-  const indirectChangesCount = compareWithBase?.indirectChangedFilesCount || 0
-  const impactedFilesCount = compareWithBase?.impactedFilesCount || 0
-
-  const commitsCount = commits?.totalCount || 0
-  return { flagsCount, commitsCount, impactedFilesCount, indirectChangesCount }
-}
-
 // eslint-disable-next-line complexity
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
   const { pullPageTabs } = useFlags({ pullPageTabs: true })
   const { flagsCount, indirectChangesCount, impactedFilesCount, commitsCount } =
-    getTabsCounts(data?.pull?.commits, data?.pull?.compareWithBase)
+    useTabsCounts()
 
   if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
     return <NotFound />
@@ -76,7 +68,7 @@ function PullRequestPage() {
       <Suspense fallback={<CompareSummarySkeleton />}>
         <CompareSummary />
       </Suspense>
-      {resultType !== ComparisonReturnType.SUCCESFUL_COMPARISON ? (
+      {resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON ? (
         <ErrorBanner errorType={resultType} />
       ) : (
         <div

@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types'
 
-import config from 'config'
-
 import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import CopyClipboard from 'ui/CopyClipboard'
 
@@ -24,12 +22,6 @@ export default function Token({
           </span>
           <CopyClipboard string={token} onClick={() => copiedCIToken(token)} />
         </p>
-      )}
-      {!config.IS_SELF_HOSTED && (
-        <i className="font-light">
-          *Not required if your repo is using GitHub Actions, Travic CI,
-          CircleCI, AppVeyor, or Azure Pipelines.
-        </i>
       )}
     </div>
   )

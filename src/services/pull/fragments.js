@@ -148,7 +148,7 @@ fragment FileComparisonWithBase on Pull {
           percentCovered
         }
         changeCoverage
-        segments (filters: $filters) {
+        segmentsDeprecated (filters: $filters) {
           header
           hasUnintendedChanges
           lines {

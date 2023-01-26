@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -8,40 +10,65 @@ import Header from './Header'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('./HeaderBanners/HeaderBanners', () => () => 'HeaderBanners')
+jest.mock('ui/Avatar', () => () => 'Avatar')
 jest.mock('config')
 
 const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov']}>
+        <Route path="/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+}
+
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
+const mockOwner = {
+  username: 'Scanlan',
+  isCurrentUserPartOfOrg: true,
+  numberOfUploads: 3,
+}
+
+const isSelfHosted = false
 
 describe('Header', () => {
   afterAll(() => jest.clearAllMocks())
 
-  function setup(props = {}, isUploadsExceeded = false, isSelfHosted = false) {
+  function setup(owner = mockOwner) {
     config.IS_SELF_HOSTED = isSelfHosted
-
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov']}>
-        <QueryClientProvider client={queryClient}>
-          <Route path="/:provider/:owner">
-            <Header {...props} />
-          </Route>
-        </QueryClientProvider>
-      </MemoryRouter>
+    server.use(
+      graphql.query('OwnerPageData', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ ...mockOwner, owner }))
+      )
     )
   }
 
   describe('when user is part of the org', () => {
     beforeEach(() => {
       setup({
-        provider: 'gh',
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-        },
+        username: 'Scanlan',
+        isCurrentUserPartOfOrg: true,
       })
     })
 
-    it('renders the context switcher', () => {
-      expect(screen.getByText(/MyContextSwitcher/)).toBeInTheDocument()
+    it('renders the context switcher', async () => {
+      render(<Header />, { wrapper })
+      const contextSwitcher = await screen.findByText(/MyContextSwitcher/)
+      expect(contextSwitcher).toBeInTheDocument()
     })
   })
 
@@ -49,39 +76,38 @@ describe('Header', () => {
     describe('when user is part of the org', () => {
       beforeEach(() => {
         setup({
-          provider: 'gh',
-          owner: {
-            username: 'codecov',
-            isCurrentUserPartOfOrg: true,
-          },
+          username: 'Scanlan',
+          isCurrentUserPartOfOrg: true,
         })
       })
 
-      it('renders the context switcher', () => {
-        expect(screen.getByText(/MyContextSwitcher/)).toBeInTheDocument()
+      it('renders the context switcher', async () => {
+        render(<Header />, { wrapper })
+        const contextSwitcher = await screen.findByText(/MyContextSwitcher/)
+        expect(contextSwitcher).toBeInTheDocument()
       })
     })
 
     describe('when user is not part of the org', () => {
       beforeEach(() => {
         setup({
-          provider: 'gh',
-          owner: {
-            username: 'codecov',
-            isCurrentUserPartOfOrg: false,
-          },
+          username: 'Scanlan',
+          isCurrentUserPartOfOrg: false,
         })
       })
 
-      it('renders the title of the owner', () => {
+      it('renders the title of the owner', async () => {
+        render(<Header />, { wrapper })
         expect(
-          screen.getByRole('heading', {
-            name: /codecov/i,
+          await screen.findByRole('heading', {
+            name: /Scanlan/i,
           })
         ).toBeInTheDocument()
+        expect(await screen.findByText(/Avatar/)).toBeInTheDocument()
       })
 
-      it('does not render the context switcher', () => {
+      it('does not render the context switcher', async () => {
+        render(<Header />, { wrapper })
         expect(screen.queryByText(/MyContextSwitcher/)).not.toBeInTheDocument()
       })
     })
@@ -90,48 +116,39 @@ describe('Header', () => {
   describe('in enterprise', () => {
     describe('when user is part of the org', () => {
       beforeEach(() => {
-        setup(
-          {
-            provider: 'gh',
-            owner: {
-              username: 'codecov',
-              isCurrentUserPartOfOrg: true,
-            },
-          },
-          false,
-          true
-        )
+        setup({
+          username: 'Scanlan',
+          isCurrentUserPartOfOrg: true,
+        })
       })
 
-      it('renders the context switcher', () => {
-        expect(screen.getByText(/MyContextSwitcher/)).toBeInTheDocument()
+      it('renders the context switcher', async () => {
+        render(<Header />, { wrapper })
+        const contextSwitcher = await screen.findByText(/MyContextSwitcher/)
+        expect(contextSwitcher).toBeInTheDocument()
       })
     })
 
     describe('when user is not part of the org', () => {
       beforeEach(() => {
-        setup(
-          {
-            provider: 'gh',
-            owner: {
-              username: 'codecov',
-              isCurrentUserPartOfOrg: false,
-            },
-          },
-          false,
-          true
-        )
+        setup({
+          username: 'Scanlan',
+          isCurrentUserPartOfOrg: false,
+        })
       })
 
-      it('renders the title of the owner', () => {
+      it('renders the title of the owner', async () => {
+        render(<Header />, { wrapper })
         expect(
-          screen.getByRole('heading', {
-            name: /codecov/i,
+          await screen.findByRole('heading', {
+            name: /Scanlan/i,
           })
         ).toBeInTheDocument()
+        expect(await screen.findByText(/Avatar/)).toBeInTheDocument()
       })
 
       it('does not render the context switcher', () => {
+        render(<Header />, { wrapper })
         expect(screen.queryByText(/MyContextSwitcher/)).not.toBeInTheDocument()
       })
     })
