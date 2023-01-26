@@ -159,7 +159,7 @@ ContextSwitcher.propTypes = {
   ).isRequired,
   currentUser: PropTypes.shape({
     defaultOrgUsername: PropTypes.string,
-  }),
+  }).isRequired,
   onLoadMore: PropTypes.func,
   isLoading: PropTypes.bool,
 }

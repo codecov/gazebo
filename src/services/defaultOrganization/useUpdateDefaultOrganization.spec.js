@@ -28,7 +28,7 @@ describe('useUpdateDefaultOrganization', () => {
     server.use(
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
         if (triggerError) {
-          return res(ctx.status(200), ctx.data({ data }))
+          return res(ctx.status(200), ctx.data(data))
         } else {
           return res(ctx.status(200), ctx.data({}))
         }
@@ -97,9 +97,11 @@ describe('useUpdateDefaultOrganization', () => {
       })
 
       it('returns isSuccess true', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
-        const { data } = hookData.result.current.data.data
-        expect(data).toEqual(mockData)
+        expect(hookData.result.current.error).toEqual(
+          new Error(
+            'Organization does not belong in the current users organization list'
+          )
+        )
       })
     })
   })

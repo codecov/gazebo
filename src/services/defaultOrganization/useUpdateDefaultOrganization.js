@@ -31,7 +31,7 @@ export function useUpdateDefaultOrganization() {
       onSuccess: ({ data }) => {
         const error = data?.updateDefaultOrganization?.error?.__typename
         if (error === 'ValidationError') {
-          throw Error(
+          throw new Error(
             'Organization does not belong in the current users organization list'
           )
         } else {
