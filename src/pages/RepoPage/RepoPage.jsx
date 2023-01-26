@@ -95,7 +95,7 @@ function RepoPage() {
       <div>
         <RepoBreadcrumb />
         {repoHasCommits && isRepoActivated && (
-          <div className="sticky top-8 z-30 bg-white mb-2">
+          <div className="sticky top-8 z-10 bg-white mb-2">
             <TabNavigation
               tabs={getRepoTabs({
                 matchTree,
