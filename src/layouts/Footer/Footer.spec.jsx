@@ -1,13 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useUser } from 'services/user'
-
 import Footer from './Footer'
 
-jest.mock('services/user')
 jest.mock('config')
 
 const loggedInUser = {
@@ -17,6 +17,29 @@ const loggedInUser = {
   },
 }
 
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+
+  // this console mock here is to block out un-auth user
+  console.error = () => {}
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
+
 describe('Footer', () => {
   function setup(
     { userData = undefined, selfHosted = false, versionNumber } = {
@@ -25,16 +48,13 @@ describe('Footer', () => {
       versionNumber: undefined,
     }
   ) {
-    useUser.mockReturnValue({ data: userData })
     config.IS_SELF_HOSTED = selfHosted
     config.CODECOV_VERSION = versionNumber
 
-    render(
-      <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
-        <Route path="/:provider/:owner/:repo">
-          <Footer />
-        </Route>
-      </MemoryRouter>
+    server.use(
+      graphql.query('CurrentUser', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ me: userData }))
+      )
     )
   }
 
@@ -44,18 +64,30 @@ describe('Footer', () => {
         setup({ userData: loggedInUser })
       })
       afterEach(() => jest.resetAllMocks())
-      it('renders the link', () => {
-        const feedback = screen.getByText('Feedback')
+
+      it('renders the link', async () => {
+        render(<Footer />, { wrapper })
+
+        const feedback = await screen.findByText('Feedback')
         expect(feedback).toBeInTheDocument()
       })
     })
+
     describe('user is not signed in', () => {
       beforeEach(() => {
         setup()
       })
+
       afterEach(() => jest.resetAllMocks())
-      it('does not render link with no signed in user', () => {
-        expect(screen.queryByText('Feedback')).toBeNull()
+
+      it('does not render link with no signed in user', async () => {
+        render(<Footer />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const feedBack = screen.queryByText('Feedback')
+        expect(feedBack).toBeNull()
       })
     })
   })
@@ -65,13 +97,17 @@ describe('Footer', () => {
       jest.useFakeTimers().setSystemTime(new Date('3301-01-01'))
       setup()
     })
+
     afterEach(() => jest.resetAllMocks())
+
     afterAll(() => {
       jest.useRealTimers()
     })
 
-    it('renders a link', () => {
-      const copyright = screen.getByText(`© 3301 Codecov`)
+    it('renders a link', async () => {
+      render(<Footer />, { wrapper })
+
+      const copyright = await screen.findByText(`© 3301 Codecov`)
       expect(copyright).toBeInTheDocument()
     })
   })
@@ -81,25 +117,47 @@ describe('Footer', () => {
       beforeEach(() => {
         setup()
       })
+
       afterEach(() => jest.resetAllMocks())
-      it('renders the link', () => {
-        const pricing = screen.getByText('Pricing')
+
+      it('renders the link', async () => {
+        render(<Footer />, { wrapper })
+
+        const pricing = await screen.findByText('Pricing')
         expect(pricing).toBeInTheDocument()
       })
-      it('renders licensing link', () => {
-        expect(screen.queryByText('Licensing')).not.toBeInTheDocument()
+
+      it('renders licensing link', async () => {
+        render(<Footer />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const licensing = screen.queryByText('Licensing')
+        expect(licensing).not.toBeInTheDocument()
       })
     })
     describe('self hosted build', () => {
       beforeEach(() => {
         setup({ selfHosted: true })
       })
+
       afterEach(() => jest.resetAllMocks())
-      it('does not render pricing link', () => {
-        expect(screen.queryByText('Pricing')).not.toBeInTheDocument()
+
+      it('does not render pricing link', async () => {
+        render(<Footer />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const pricing = screen.queryByText('Pricing')
+        expect(pricing).not.toBeInTheDocument()
       })
-      it('renders licensing link', () => {
-        expect(screen.getByText('Licensing')).toBeInTheDocument()
+      it('renders licensing link', async () => {
+        render(<Footer />, { wrapper })
+
+        const licensing = await screen.findByText('Licensing')
+        expect(licensing).toBeInTheDocument()
       })
     })
   })
@@ -110,8 +168,10 @@ describe('Footer', () => {
         setup({ selfHosted: true, versionNumber: 'v5.0.0' })
       })
 
-      it('displays the version number', () => {
-        const versionNumber = screen.getByText('v5.0.0')
+      it('displays the version number', async () => {
+        render(<Footer />, { wrapper })
+
+        const versionNumber = await screen.findByText('v5.0.0')
         expect(versionNumber).toBeInTheDocument()
       })
     })
@@ -120,7 +180,12 @@ describe('Footer', () => {
       beforeEach(() => {
         setup({ selfHosted: false })
       })
-      it('does not display the version number', () => {
+      it('does not display the version number', async () => {
+        render(<Footer />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
         const versionNumber = screen.queryByText('v5.0.0')
         expect(versionNumber).not.toBeInTheDocument()
       })

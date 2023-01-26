@@ -68,7 +68,11 @@ describe('CommitDirEntry', () => {
 
   it('displays the directory name', () => {
     render(
-      <CommitDirEntry commitSha="1234" name="dir" path="path/to/directory" />,
+      <CommitDirEntry
+        commitSha="1234"
+        name="dir"
+        urlPath="path/to/directory"
+      />,
       { wrapper }
     )
 
@@ -78,7 +82,11 @@ describe('CommitDirEntry', () => {
   describe('path is provided', () => {
     it('sets the correct href', () => {
       render(
-        <CommitDirEntry commitSha="1234" name="dir" path="path/to/directory" />,
+        <CommitDirEntry
+          commitSha="1234"
+          name="dir"
+          urlPath="path/to/directory"
+        />,
         { wrapper }
       )
 
@@ -104,7 +112,11 @@ describe('CommitDirEntry', () => {
 
   it('fires the prefetch function on hover', async () => {
     render(
-      <CommitDirEntry commitSha="1234" name="dir" path="path/to/directory" />,
+      <CommitDirEntry
+        commitSha="1234"
+        name="dir"
+        urlPath="path/to/directory"
+      />,
       { wrapper }
     )
 

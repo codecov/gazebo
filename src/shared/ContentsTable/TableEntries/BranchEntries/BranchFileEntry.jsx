@@ -7,25 +7,25 @@ import FileEntry from '../BaseEntries/FileEntry'
 
 function BranchFileEntry({
   branch,
-  filePath,
+  path,
   isCriticalFile,
   name,
-  path,
+  urlPath,
   displayType,
 }) {
   const { runPrefetch } = usePrefetchBranchFileEntry({
     branch,
-    path: filePath,
+    path,
   })
 
   return (
     <FileEntry
       linkRef={branch}
-      filePath={filePath}
+      path={path}
       isCriticalFile={isCriticalFile}
       name={name}
       displayType={displayType}
-      path={path}
+      urlPath={urlPath}
       runPrefetch={runPrefetch}
     />
   )
@@ -33,11 +33,11 @@ function BranchFileEntry({
 
 BranchFileEntry.propTypes = {
   branch: PropTypes.string.isRequired,
-  filePath: PropTypes.string.isRequired,
+  path: PropTypes.string,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
-  path: PropTypes.string,
+  urlPath: PropTypes.string.isRequired,
 }
 
 export default BranchFileEntry

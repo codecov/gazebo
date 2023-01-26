@@ -3,6 +3,8 @@ import { useSelect } from 'downshift'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
@@ -12,11 +14,17 @@ function Dropdown({ currentUser }) {
   const { provider } = useParams()
   const isGh = providerToName(provider) === 'Github'
 
-  const items = [
-    isGh && {
-      props: { to: { pageName: 'userAppManagePage' } },
-      children: 'Manage GitHub org access',
-    },
+  const items =
+    !config.IS_SELF_HOSTED && isGh
+      ? [
+          {
+            props: { to: { pageName: 'userAppManagePage' } },
+            children: 'Manage GitHub org access',
+          },
+        ]
+      : []
+
+  items.push(
     {
       props: {
         to: {
@@ -27,8 +35,8 @@ function Dropdown({ currentUser }) {
       children: 'Settings',
     },
     { props: { to: { pageName: 'provider' } }, children: 'Organizations' },
-    { props: { to: { pageName: 'signOut' } }, children: 'Sign Out' },
-  ]
+    { props: { to: { pageName: 'signOut' } }, children: 'Sign Out' }
+  )
 
   const {
     isOpen,

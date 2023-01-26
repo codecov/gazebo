@@ -4,12 +4,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useOwner } from 'services/user'
+import { usePlanPageData } from 'pages/PlanPage/hooks'
 
 import PlanPage from './PlanPage'
 
 jest.mock('./Header', () => () => 'Header')
-jest.mock('services/user')
+jest.mock('pages/PlanPage/hooks')
 jest.mock('config')
 
 jest.mock('./Tabs', () => () => 'Tabs')
@@ -27,7 +27,7 @@ describe('PlanPage', () => {
   function setup({ owner = null, isSelfHosted = false }) {
     config.IS_SELF_HOSTED = isSelfHosted
 
-    useOwner.mockReturnValue({
+    usePlanPageData.mockReturnValue({
       data: owner,
     })
     render(

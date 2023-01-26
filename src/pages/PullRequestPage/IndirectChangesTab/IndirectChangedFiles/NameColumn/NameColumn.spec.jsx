@@ -31,7 +31,7 @@ const mockSingularImpactedFilesData = {
               percentCovered: 27.43,
             },
             changeCoverage: 58.333333333333336,
-            segments: [
+            segmentsDeprecated: [
               {
                 header: '@@ -0,0 1,45 @@',
                 lines: [
