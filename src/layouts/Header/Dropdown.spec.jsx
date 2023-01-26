@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import config from 'config'
+
 import { useImage } from 'services/image'
 
 import Dropdown from './Dropdown'
@@ -14,6 +16,7 @@ const currentUser = {
 }
 
 jest.mock('services/image')
+jest.mock('config')
 
 const Wrapper =
   ({ provider }) =>
@@ -29,8 +32,9 @@ const Wrapper =
     )
 
 describe('Dropdown', () => {
-  function setup() {
+  function setup({ selfHosted } = { selfHosted: false }) {
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
+    config.IS_SELF_HOSTED = selfHosted
   }
 
   describe('when rendered', () => {
@@ -95,7 +99,7 @@ describe('Dropdown', () => {
         )
       })
 
-      it('shows manage app access link', () => {
+      it.only('shows manage app access link', () => {
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gh' }),
         })

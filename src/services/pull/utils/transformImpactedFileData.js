@@ -11,6 +11,6 @@ export function transformImpactedFileData(impactedFile) {
     fileLabel,
     headName: impactedFile?.headName,
     isCriticalFile: impactedFile?.isCriticalFile,
-    segments: impactedFile?.segments,
+    segments: impactedFile?.segmentsDeprecated,
   }
 }
