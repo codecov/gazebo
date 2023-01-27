@@ -9,7 +9,11 @@ import { useUpdateDefaultOrganization } from './useUpdateDefaultOrganization'
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+
 afterAll(() => server.close())
 
 const queryClient = new QueryClient()
