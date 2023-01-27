@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types'
 
-import Progress from 'ui/Progress'
+import TotalsNumber from 'ui/TotalsNumber'
 
 const Coverage = ({ totals }) => {
   return (
     <div className="w-full justify-end flex">
       {typeof totals?.coverage === 'number' ? (
-        <span className="w-64">
-          <Progress amount={totals?.coverage} label />
-        </span>
+        <TotalsNumber value={totals?.coverage} plain />
       ) : (
         <span className="text-ds-gray-quinary text-sm">
           No report uploaded yet
