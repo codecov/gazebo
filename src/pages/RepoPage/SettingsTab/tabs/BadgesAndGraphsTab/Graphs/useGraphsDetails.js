@@ -1,11 +1,13 @@
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { icicle, sunburst, tree } from 'assets/svg/graphs'
 
 const useChartsDetails = ({ defaultBranch, graphToken }) => {
   const { provider, owner, repo } = useParams()
 
-  const repoPath = `https://codecov.io/${provider}/${owner}/${repo}`
+  const repoPath = `${config.BASE_URL}/${provider}/${owner}/${repo}`
   const fullPath = `${repoPath}/branch/${defaultBranch}/graphs`
 
   const ChartDetailsEnum = Object.freeze({
