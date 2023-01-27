@@ -1,4 +1,3 @@
-import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -60,11 +59,7 @@ function createTable({ tableData }) {
               )}
             </div>
           ),
-          head: (
-            <div className="flex flex-1 gap-2 items-center">
-              <Progress amount={headCoverage} label />
-            </div>
-          ),
+          head: <TotalsNumber value={headCoverage} plain />,
           patch: <TotalsNumber value={patchCoverage} />,
           change: hasHeadOrPatchCoverage ? (
             <TotalsNumber
