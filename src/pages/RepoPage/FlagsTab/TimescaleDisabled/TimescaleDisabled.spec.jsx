@@ -34,7 +34,7 @@ describe('TimescaleDisabled', () => {
       )
       expect(flagsAnchor).toHaveAttribute(
         'href',
-        'https://docs.codecov.com/docs/deploying-with-helm#deploying-flags-support'
+        'https://docs.codecov.com/docs/implementing-flags-with-timescaledb'
       )
     })
 
