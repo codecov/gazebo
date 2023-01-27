@@ -113,7 +113,7 @@ describe('legacyRepoCoverageQuery', () => {
           branch: 'main',
           today: new Date(),
         }).aggFunction
-      ).toBe('min')
+      ).toBe('max')
     })
     it('aggValue', () => {
       expect(
