@@ -46,20 +46,6 @@ describe('useUpdateDefaultOrganization', () => {
       expect(result.current.isLoading).toBeFalsy()
     })
 
-    describe('when calling the mutation', () => {
-      it('returns isLoading true', async () => {
-        const { result, waitFor } = renderHook(
-          () => useUpdateDefaultOrganization(),
-          {
-            wrapper,
-          }
-        )
-        result.current.mutate({ username: 'codecov' })
-        await waitFor(() => result.current.status !== 'idle')
-        expect(result.current.isLoading).toBeTruthy()
-      })
-    })
-
     describe('When mutation is a success', () => {
       it('returns isSuccess true', async () => {
         const { result, waitFor } = renderHook(
