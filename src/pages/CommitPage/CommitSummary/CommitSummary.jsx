@@ -1,3 +1,5 @@
+import { useParams } from 'react-router-dom'
+
 import { UploadStateEnum } from 'shared/utils/commit'
 import A from 'ui/A'
 import Summary from 'ui/Summary'
@@ -38,20 +40,28 @@ const getSourceSummaryCards = ({ headCommitId, parentCommitId, state }) =>
         {
           name: 'source',
           title: 'Source',
-          value: headCommitId && parentCommitId && (
-            <p className="text-ds-gray-octonary text-sm mt-2">
-              This commit{' '}
-              <span className="font-mono font-semibold">
-                {headCommitId?.slice(0, 7)}
-              </span>{' '}
-              compared to{' '}
-              <A
-                to={{ pageName: 'commit', options: { commit: parentCommitId } }}
-              >
-                {parentCommitId?.slice(0, 7)}
-              </A>{' '}
-            </p>
-          ),
+          value:
+            headCommitId && parentCommitId ? (
+              <p className="text-ds-gray-octonary text-sm">
+                This commit{' '}
+                <span className="font-mono font-semibold">
+                  {headCommitId?.slice(0, 7)}
+                </span>{' '}
+                compared to{' '}
+                <A
+                  to={{
+                    pageName: 'commit',
+                    options: { commit: parentCommitId },
+                  }}
+                >
+                  {parentCommitId?.slice(0, 7)}
+                </A>{' '}
+              </p>
+            ) : (
+              // not really sure what to do here as value
+              // is a required field on the Summary type
+              <div />
+            ),
         },
       ]
 
@@ -94,7 +104,9 @@ const getTotalsSummaryCards = ({
   },
 ]
 
-function CommitDetailsSummary() {
+function CommitSummary() {
+  const { provider, owner, repo, commit: commitSHA } = useParams()
+
   const {
     headCoverage,
     headCommitId,
@@ -102,7 +114,7 @@ function CommitDetailsSummary() {
     changeCoverage,
     patchCoverage,
     state,
-  } = useCommitForSummary()
+  } = useCommitForSummary({ provider, owner, repo, commitSHA })
 
   const fields = [
     ...getTotalsSummaryCards({
@@ -121,4 +133,4 @@ function CommitDetailsSummary() {
   )
 }
 
-export default CommitDetailsSummary
+export default CommitSummary
