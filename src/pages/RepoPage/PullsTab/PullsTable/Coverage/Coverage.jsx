@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 import A from 'ui/A'
 import Icon from 'ui/Icon'
-import Progress from 'ui/Progress'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import { IconEnum } from './enums'
 
@@ -20,14 +20,14 @@ PullState.propTypes = {
   state: PropTypes.string,
 }
 
-const Coverage = ({ head, state, pullId }) =>
+const Coverage = ({ head, state, pullId, plain = false }) =>
   typeof head?.totals?.coverage === 'number' ? (
     <div className="flex-1 justify-end flex flex-wrap md:flex-row md:flex-nowrap">
       <PullState state={state} />
       <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
       </A>
-      <Progress amount={head?.totals?.coverage} label />
+      <TotalsNumber value={head?.totals?.coverage} plain />
     </div>
   ) : (
     <div className="flex-1 justify-end flex flex-wrap md:flex-row md:flex-nowrap">
@@ -49,6 +49,7 @@ Coverage.propTypes = {
   }),
   pullId: PropTypes.number,
   state: PropTypes.string,
+  plain: PropTypes.bool,
 }
 
 export default Coverage
