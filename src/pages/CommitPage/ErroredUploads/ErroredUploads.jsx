@@ -28,8 +28,8 @@ function ErroredUploads({ erroredUploads }) {
           )
         })}
         <p>
-          We recommend checking the Codecov step of this commit’s CI Run to make
-          sure it uploaded properly and, if needed, run your CI again.
+          We recommend checking the Codecov step of this commit&apos;s CI Run to
+          make sure it uploaded properly and, if needed, run your CI again.
         </p>
       </>
     )
