@@ -2,7 +2,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 
 function AdminSettingsHeader() {
   return (
-    <div className="mb-8">
+    <div className="my-4">
       <Breadcrumb
         paths={[
           { pageName: 'provider', text: 'All orgs and repos' },

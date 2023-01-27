@@ -44,6 +44,8 @@ export const useCoverage = ({ params }, options = {}) => {
           return newData
         }
       },
+      staleTime: 30000,
+      keepPreviousData: false,
       ...newOptions,
     },
   })
