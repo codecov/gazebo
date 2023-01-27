@@ -22,8 +22,6 @@ const wrapper = ({ children }) => (
 )
 
 describe('useUpdateDefaultOrganization', () => {
-  let hookData
-
   function setup(data = {}, triggerError = false) {
     server.use(
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
@@ -34,9 +32,6 @@ describe('useUpdateDefaultOrganization', () => {
         }
       })
     )
-    hookData = renderHook(() => useUpdateDefaultOrganization(), {
-      wrapper,
-    })
   }
 
   describe('when called without an error', () => {
@@ -45,29 +40,38 @@ describe('useUpdateDefaultOrganization', () => {
     })
 
     it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
+      const { result } = renderHook(() => useUpdateDefaultOrganization(), {
+        wrapper,
+      })
+      expect(result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation', () => {
-      beforeEach(() => {
-        hookData.result.current.mutate({ username: 'codecov' })
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
-
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
+      it('returns isLoading true', async () => {
+        const { result, waitFor } = renderHook(
+          () => useUpdateDefaultOrganization(),
+          {
+            wrapper,
+          }
+        )
+        result.current.mutate({ username: 'codecov' })
+        await waitFor(() => result.current.status !== 'idle')
+        expect(result.current.isLoading).toBeTruthy()
       })
     })
 
     describe('When mutation is a success', () => {
-      beforeEach(async () => {
-        hookData.result.current.mutate({ username: 'codecov' })
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
-
-      it('returns isSuccess true', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+      it('returns isSuccess true', async () => {
+        const { result, waitFor } = renderHook(
+          () => useUpdateDefaultOrganization(),
+          {
+            wrapper,
+          }
+        )
+        result.current.mutate({ username: 'codecov' })
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        expect(result.current.isSuccess).toBeTruthy()
       })
     })
   })
@@ -86,18 +90,24 @@ describe('useUpdateDefaultOrganization', () => {
     })
 
     it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
+      const { result } = renderHook(() => useUpdateDefaultOrganization(), {
+        wrapper,
+      })
+      expect(result.current.isLoading).toBeFalsy()
     })
 
     describe('When mutation is a success w/ a validation error', () => {
-      beforeEach(async () => {
-        hookData.result.current.mutate({ username: 'random org!' })
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
-
-      it('returns isSuccess true', () => {
-        expect(hookData.result.current.error).toEqual(
+      it('returns isSuccess true', async () => {
+        const { result, waitFor } = renderHook(
+          () => useUpdateDefaultOrganization(),
+          {
+            wrapper,
+          }
+        )
+        result.current.mutate({ username: 'random org!' })
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        expect(result.current.error).toEqual(
           new Error(
             'Organization does not belong in the current users organization list'
           )

@@ -99,10 +99,15 @@ describe('ContextSwitcher', () => {
       const button = await screen.findByRole('button')
       userEvent.click(button)
 
-      expect(screen.getAllByText('dorianamouroux').length).toBe(2)
-      expect(screen.getByText('codecov')).toBeInTheDocument()
-      expect(screen.getByText('spotify')).toBeInTheDocument()
-      expect(screen.getByText('Default')).toBeInTheDocument()
+      const dorianUsers = screen.getAllByText('dorianamouroux')
+      const codecovOwner = screen.getByText('codecov')
+      const spotifyOwner = screen.getByText('spotify')
+      const defaultText = screen.getByText('Default')
+
+      expect(dorianUsers.length).toBe(2)
+      expect(codecovOwner).toBeInTheDocument()
+      expect(spotifyOwner).toBeInTheDocument()
+      expect(defaultText).toBeInTheDocument()
     })
   })
 
