@@ -24,7 +24,7 @@ describe('Badges', () => {
       </MemoryRouter>
     )
 
-    config.BASE_URL = 'stage-codecov.io'
+    config.BASE_URL = 'https://stage-codecov.io'
   }
 
   describe('renders Badges componenet', () => {
