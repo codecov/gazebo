@@ -69,7 +69,7 @@ function createTableData({
         partials,
         coverage: (
           <CoverageProgress
-            coverage={percentCovered}
+            amount={percentCovered}
             color={determineProgressColor({
               coverage: percentCovered,
               ...indicationRange,
