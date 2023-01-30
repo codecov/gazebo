@@ -3,17 +3,18 @@ import PropTypes from 'prop-types'
 
 import TotalsNumber from '../TotalsNumber'
 
-const progressClasses = {
+const progressClasses = Object.freeze({
   default: `bg-ds-primary-green`,
   neutral: `bg-ds-gray-senary`,
+  primary: `bg-ds-primary-green`,
   danger: `bg-ds-primary-red`,
   warning: `bg-ds-primary-yellow`,
-}
+})
 
-const variantClasses = {
+const variantClasses = Object.freeze({
   default: `h-1`,
   tall: `h-5`,
-}
+})
 
 function Progress({ amount, label, color = 'default', variant = 'default' }) {
   const amountInNumber = isNaN(amount) ? 0 : Number(amount)
@@ -49,7 +50,13 @@ Progress.propTypes = {
   amount: PropTypes.number,
   label: PropTypes.bool,
   variant: PropTypes.oneOf(['default', 'tall']),
-  color: PropTypes.oneOf(['default', 'neutral', 'danger', 'warning']),
+  color: PropTypes.oneOf([
+    'default',
+    'neutral',
+    'primary',
+    'danger',
+    'warning',
+  ]),
 }
 
 export default Progress
