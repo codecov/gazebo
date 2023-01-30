@@ -1,27 +1,20 @@
-import { isEmpty } from 'lodash'
 import { lazy, Suspense } from 'react'
-import { Redirect, Switch, useParams } from 'react-router-dom'
-
-import { SentryRoute } from 'sentry'
+import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
 import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
-import CommitPageTabs from './CommitPageTabs'
-import ErroredUploads from './ErroredUploads'
+import CommitSummarySkeleton from './CommitSummary/CommitSummarySkeleton'
 import Header from './Header'
-import CommitDetailsSummary from './Summary'
-import { useExtractUploads } from './UploadsCard/useExtractUploads'
+import { useCommitPageData } from './hooks'
 import YamlErrorBanner from './YamlErrorBanner'
 
-const CommitFileExplorer = lazy(() => import('./subRoute/CommitFileExplorer'))
-const CommitFileViewer = lazy(() => import('./subRoute/CommitFileViewer'))
-const ImpactedFiles = lazy(() => import('./subRoute/ImpactedFiles'))
+const CommitPageContent = lazy(() => import('./CommitPageContent'))
+const CommitSummary = lazy(() => import('./CommitSummary'))
 const UploadsCard = lazy(() => import('./UploadsCard'))
 
 const Loader = () => {
@@ -55,18 +48,18 @@ function CommitPage() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
   const shortSHA = commitSHA?.slice(0, 7)
 
-  const { data, isLoading } = useCommit({
+  const { data: commitPageData, isLoading } = useCommitPageData({
     provider,
     owner,
     repo,
-    commitid: commitSHA,
+    commitId: commitSHA,
   })
 
-  const commit = data?.commit
-
-  const { erroredUploads } = useExtractUploads({ uploads: commit?.uploads })
-
-  if (!commit && !isLoading) {
+  if (
+    !isLoading &&
+    !commitPageData?.commit &&
+    !commitPageData?.isCurrentUserPartOfOrg
+  ) {
     return <NotFound />
   }
 
@@ -86,7 +79,9 @@ function CommitPage() {
         ]}
       />
       <Header />
-      <CommitDetailsSummary />
+      <Suspense fallback={<CommitSummarySkeleton />}>
+        <CommitSummary />
+      </Suspense>
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
@@ -96,38 +91,9 @@ function CommitPage() {
           </Suspense>
         </aside>
         <article className="flex flex-1 flex-col">
-          {!isEmpty(erroredUploads) ? (
-            <ErroredUploads erroredUploads={erroredUploads} />
-          ) : (
-            <>
-              <CommitPageTabs commitSHA={commitSHA} />
-              <Suspense fallback={<Loader />}>
-                <Switch>
-                  <SentryRoute
-                    path={[
-                      '/:provider/:owner/:repo/commit/:commit/tree/:path+',
-                      '/:provider/:owner/:repo/commit/:commit/tree/',
-                    ]}
-                  >
-                    <CommitFileExplorer />
-                  </SentryRoute>
-                  <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-                    <CommitFileViewer />
-                  </SentryRoute>
-                  <SentryRoute
-                    path="/:provider/:owner/:repo/commit/:commit"
-                    exact
-                  >
-                    <ImpactedFiles commit={commit} commitSHA={commitSHA} />
-                  </SentryRoute>
-                  <Redirect
-                    from="/:provider/:owner/:repo/commit/:commit/*"
-                    to="/:provider/:owner/:repo/commit/:commit"
-                  />
-                </Switch>
-              </Suspense>
-            </>
-          )}
+          <Suspense fallback={<Loader />}>
+            <CommitPageContent />
+          </Suspense>
         </article>
       </div>
     </div>
