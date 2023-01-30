@@ -186,9 +186,6 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
       const buttons = await screen.findAllByText(/Repo name/)
       expect(buttons.length).toBe(3)
     })
@@ -197,9 +194,6 @@ describe('ReposTable', () => {
       render(<ReposTable {...props} />, {
         wrapper: wrapper(repoDisplay),
       })
-
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
 
       const repo1 = await screen.findByRole('link', {
         name: 'globe-alt.svg owner1 / Repo name 1',
@@ -221,9 +215,6 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
       const lastSeen1 = await screen.findByText(/3 days ago/)
       expect(lastSeen1).toBeInTheDocument()
 
@@ -236,9 +227,6 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
       const bars = await screen.findAllByTestId('org-progress-bar')
       expect(bars.length).toBe(2)
     })
@@ -247,9 +235,6 @@ describe('ReposTable', () => {
       render(<ReposTable {...props} />, {
         wrapper: wrapper(repoDisplay),
       })
-
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
 
       const noData = await screen.findByText(/No data available/)
       expect(noData).toBeInTheDocument()
@@ -310,9 +295,6 @@ describe('ReposTable', () => {
         render(<ReposTable {...linkProps} />, {
           wrapper: wrapper(repoDisplay),
         })
-
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
 
         const repo1 = await screen.findByRole('link', {
           name: 'globe-alt.svg Repo name 1',
@@ -385,9 +367,6 @@ describe('ReposTable', () => {
           wrapper: wrapper(repoDisplay),
         })
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
         const repo1 = await screen.findByText('Repo name 1')
         expect(repo1).not.toHaveAttribute('href')
 
@@ -402,9 +381,6 @@ describe('ReposTable', () => {
         render(<ReposTable {...props} />, {
           wrapper: wrapper(repoDisplay),
         })
-
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
 
         const notEnabled = await screen.findAllByText('Not yet enabled')
         expect(notEnabled.length).toBe(3)
@@ -425,9 +401,6 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
       const buttons = await screen.findAllByText(/No repos setup yet/)
       expect(buttons.length).toBe(1)
     })
@@ -436,9 +409,6 @@ describe('ReposTable', () => {
       render(<ReposTable {...props} />, {
         wrapper: wrapper(repoDisplay),
       })
-
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
 
       const p = await screen.findByText('Select the repo')
       expect(p).toBeInTheDocument()
@@ -461,9 +431,6 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
       const link = await screen.findByRole('link', {
         name: 'quick start guide. external-link.svg',
       })
@@ -474,9 +441,6 @@ describe('ReposTable', () => {
       render(<ReposTable {...props} />, {
         wrapper: wrapper(repoDisplay),
       })
-
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
 
       const btn = await screen.findByRole('button', {
         name: 'View repos for setup',
@@ -497,9 +461,6 @@ describe('ReposTable', () => {
       render(<ReposTable {...props} />, {
         wrapper: wrapper(repoDisplay),
       })
-
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
 
       const buttons = await screen.findAllByText(/no results found/)
       expect(buttons.length).toBe(1)
@@ -533,9 +494,6 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
       const button = await screen.findByText(/Load More/)
       expect(button).toBeInTheDocument()
     })
@@ -545,19 +503,14 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
       const loadMore = await screen.findByText(/Load More/)
       userEvent.click(loadMore)
-
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
 
       const newlyLoadedRepo = await screen.findByText('Repo name extra')
       expect(newlyLoadedRepo).toBeInTheDocument()
     })
   })
+
   describe('when rendered with all repos', () => {
     beforeEach(() => {
       setup({
