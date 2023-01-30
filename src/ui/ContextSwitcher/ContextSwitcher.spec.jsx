@@ -35,6 +35,9 @@ const defaultProps = {
       pageName: 'owner',
     },
   ],
+  currentUser: {
+    defaultOrgUsername: 'spotify',
+  },
 }
 
 const wrapper = ({ children }) => (
@@ -86,6 +89,27 @@ describe('ContextSwitcher', () => {
 
       const popover = await screen.findByRole('menu')
       expect(popover).toBeVisible()
+    })
+
+    it('renders the orgs', async () => {
+      render(<ContextSwitcher {...props} />, {
+        wrapper,
+      })
+
+      const button = await screen.findByRole('button')
+      userEvent.click(button)
+
+      const dorianUsers = await screen.findAllByText('dorianamouroux')
+      expect(dorianUsers.length).toBe(2)
+
+      const codecovOwner = await screen.findByText('codecov')
+      expect(codecovOwner).toBeInTheDocument()
+
+      const spotifyOwner = await screen.findByText('spotify')
+      expect(spotifyOwner).toBeInTheDocument()
+
+      const defaultText = await screen.findByText('Default')
+      expect(defaultText).toBeInTheDocument()
     })
   })
 
