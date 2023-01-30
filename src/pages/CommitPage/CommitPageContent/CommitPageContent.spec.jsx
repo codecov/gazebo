@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -196,6 +197,44 @@ describe('CommitPageContent', () => {
 
       const impactedFiles = await screen.findByText('ImpactedFiles')
       expect(impactedFiles).toBeInTheDocument()
+    })
+  })
+
+  describe('test tab navigation', () => {
+    beforeEach(() => setup())
+
+    describe('user clicks files tab', () => {
+      it('navigates to files url', async () => {
+        render(<CommitPageContent />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
+        })
+
+        const link = await screen.findByRole('link', { name: 'Files' })
+        userEvent.click(link)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/commit/sha256/tree'
+          )
+        )
+      })
+    })
+
+    describe('user clicks impacted files tab', () => {
+      it('navigates to base url', async () => {
+        render(<CommitPageContent />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
+        })
+
+        const link = await screen.findByRole('link', { name: 'Impacted Files' })
+        userEvent.click(link)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/commit/sha256'
+          )
+        )
+      })
     })
   })
 })
