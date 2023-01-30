@@ -17,54 +17,7 @@ SimpleCoverageAreaChart.args = {
   desc: 'Hello',
   title: 'Chart example',
   renderAreaChart: true,
-}
-
-export const SimpleCoverageAreaChartPrimary = Template.bind({})
-SimpleCoverageAreaChartPrimary.args = {
-  data: [
-    { date: new Date('December 10, 2022'), coverage: 17 },
-    { date: new Date('December 12, 2022'), coverage: 10 },
-    { date: new Date('December 17, 2022'), coverage: 6 },
-    { date: new Date('December 22, 2022'), coverage: 45 },
-    { date: new Date('December 25, 2022'), coverage: 74 },
-  ],
-  axisLabelFunc: (time) => format(time, 'MMM d'),
-  desc: 'Hello',
-  title: 'Chart example',
-  renderAreaChart: true,
-  colorVariant: 'primary',
-}
-
-export const SimpleCoverageAreaChartWarning = Template.bind({})
-SimpleCoverageAreaChartWarning.args = {
-  data: [
-    { date: new Date('December 10, 2022'), coverage: 17 },
-    { date: new Date('December 12, 2022'), coverage: 10 },
-    { date: new Date('December 17, 2022'), coverage: 6 },
-    { date: new Date('December 22, 2022'), coverage: 45 },
-    { date: new Date('December 25, 2022'), coverage: 74 },
-  ],
-  axisLabelFunc: (time) => format(time, 'MMM d'),
-  desc: 'Hello',
-  title: 'Chart example',
-  renderAreaChart: true,
-  colorVariant: 'warning',
-}
-
-export const SimpleCoverageAreaChartDanger = Template.bind({})
-SimpleCoverageAreaChartDanger.args = {
-  data: [
-    { date: new Date('December 10, 2022'), coverage: 17 },
-    { date: new Date('December 12, 2022'), coverage: 10 },
-    { date: new Date('December 17, 2022'), coverage: 6 },
-    { date: new Date('December 22, 2022'), coverage: 45 },
-    { date: new Date('December 25, 2022'), coverage: 74 },
-  ],
-  axisLabelFunc: (time) => format(time, 'MMM d'),
-  desc: 'Hello',
-  title: 'Chart example',
-  renderAreaChart: true,
-  colorVariant: 'danger',
+  color: 'default',
 }
 
 export const NoDataCoverageAreaChart = Template.bind({})
@@ -79,4 +32,10 @@ NoDataCoverageAreaChart.args = {
 export default {
   title: 'Components/CoverageAreaChart',
   component: CoverageAreaChart,
+  argTypes: {
+    color: {
+      type: 'select',
+      options: ['default', 'primary', 'warning', 'danger'],
+    },
+  },
 }

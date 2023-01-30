@@ -43,7 +43,7 @@ function Chart({
   desc,
   title,
   renderAreaChart,
-  colorVariant = 'default',
+  color = 'default',
 }) {
   return (
     <>
@@ -85,11 +85,7 @@ function Chart({
             </feComponentTransfer>
           </filter>
           <linearGradient id="myGradient" x1="0" x2="0" y1="0" y2="1">
-            <stop
-              offset="0%"
-              stopColor={ColorMap[colorVariant]}
-              stopOpacity="20%"
-            />
+            <stop offset="0%" stopColor={ColorMap[color]} stopOpacity="20%" />
             <stop offset="100%" stopColor="white" />
           </linearGradient>
         </defs>
@@ -184,7 +180,7 @@ function Chart({
               data: {
                 fill: 'url(#myGradient)',
                 cursor: 'pointer',
-                stroke: ColorMap[colorVariant],
+                stroke: ColorMap[color],
                 strokeWidth: '0.5px',
               },
             }}
@@ -206,7 +202,7 @@ Chart.propTypes = {
   desc: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   renderAreaChart: PropTypes.bool.isRequired,
-  colorVariant: PropTypes.oneOf(['black', 'primary', 'warning', 'danger']),
+  color: PropTypes.oneOf(['default', 'primary', 'warning', 'danger']),
 }
 
 export default Chart
