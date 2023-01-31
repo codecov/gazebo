@@ -32,49 +32,52 @@ const mockErroredUploads = {
 }
 
 describe('ErroredUploads', () => {
-  function setup({ erroredUploads = mockErroredUploads }) {
-    render(<ErroredUploads erroredUploads={erroredUploads} />)
-  }
-
   describe('renders', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('failed uploads text', () => {
-      expect(
-        screen.getByText(/The following uploads failed to process:/)
-      ).toBeInTheDocument()
+      render(<ErroredUploads erroredUploads={mockErroredUploads} />)
+
+      const message = screen.getByText(
+        /The following uploads failed to process:/
+      )
+      expect(message).toBeInTheDocument()
     })
 
     it('all providers involved', () => {
-      expect(screen.getByText(/circleCI/)).toBeInTheDocument()
-      expect(screen.getByText(/github actions/)).toBeInTheDocument()
+      render(<ErroredUploads erroredUploads={mockErroredUploads} />)
+
+      const circle = screen.getByText(/circleCI/)
+      expect(circle).toBeInTheDocument()
+
+      const ghActions = screen.getByText(/github actions/)
+      expect(ghActions).toBeInTheDocument()
     })
 
     it('build code', () => {
-      expect(screen.getByText(82364)).toBeInTheDocument()
-      expect(screen.getByText(20374)).toBeInTheDocument()
+      render(<ErroredUploads erroredUploads={mockErroredUploads} />)
+
+      const buildCode1 = screen.getByText(82364)
+      expect(buildCode1).toBeInTheDocument()
+
+      const buildCode2 = screen.getByText(20374)
+      expect(buildCode2).toBeInTheDocument()
     })
 
     it('recommendation text', () => {
-      expect(
-        screen.getByText(
-          /We recommend checking the Codecov step of this commit’s CI Run to make sure it uploaded properly and, if needed, run your CI again./
-        )
-      ).toBeInTheDocument()
+      render(<ErroredUploads erroredUploads={mockErroredUploads} />)
+
+      const recommendationText = screen.getByText(/We recommend checking/)
+      expect(recommendationText).toBeInTheDocument()
     })
   })
 
   describe('when empty', () => {
-    beforeEach(() => {
-      setup({ erroredUploads: {} })
-    })
-
     it('renders nothing', () => {
-      expect(
-        screen.queryByText(/The following uploads failed to process:/)
-      ).not.toBeInTheDocument()
+      render(<ErroredUploads erroredUploads={{}} />)
+
+      const message = screen.queryByText(
+        /The following uploads failed to process:/
+      )
+      expect(message).not.toBeInTheDocument()
     })
   })
 })
