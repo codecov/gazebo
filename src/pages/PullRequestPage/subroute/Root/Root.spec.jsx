@@ -4,14 +4,11 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 
-import { useImpactedFilesTable } from './ImpactedFiles/hooks'
+import { useImpactedFilesTable } from './FilesChanged/hooks'
 import Root from './Root'
 
-jest.mock('./ImpactedFiles/hooks')
-jest.mock(
-  './ImpactedFiles/ImpactedFiles',
-  () => () => 'ImpactedFiles Component'
-)
+jest.mock('./FilesChanged/hooks')
+jest.mock('./FilesChanged/FilesChanged', () => () => 'Files Changed Component')
 
 const mockImpactedFiles = {
   data: {
@@ -46,12 +43,12 @@ describe('Root', () => {
     )
   }
 
-  describe('when rendered with impacted files', () => {
+  describe('when rendered with changed files', () => {
     beforeEach(() => {
       setup({})
     })
-    it('renders the impacted files component', () => {
-      expect(screen.getByText('ImpactedFiles Component')).toBeInTheDocument()
+    it('renders the changed files component', () => {
+      expect(screen.getByText('Files Changed Component')).toBeInTheDocument()
     })
   })
 
@@ -95,7 +92,7 @@ describe('Root', () => {
     })
   })
 
-  describe('when rendered without impacted files or changes', () => {
+  describe('when rendered without changed files or changes', () => {
     beforeEach(() => {
       const impactedFiles = {
         data: {
@@ -108,7 +105,7 @@ describe('Root', () => {
       }
       setup({ impactedFiles })
     })
-    it('renders no impacted files text', () => {
+    it('renders no changed files text', () => {
       expect(
         screen.getByText('No Files covered by tests were changed')
       ).toBeInTheDocument()
@@ -131,7 +128,7 @@ describe('Root', () => {
     it('renders no head commit error text', () => {
       expect(
         screen.getByText(
-          'Cannot display Impacted Files because most recent commit is in an error state.'
+          'Cannot display Changed files because most recent commit is in an error state.'
         )
       ).toBeInTheDocument()
     })

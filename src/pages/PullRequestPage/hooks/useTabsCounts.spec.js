@@ -34,7 +34,7 @@ const mockPullData = {
       pull: {
         pullId: 1,
         compareWithBase: {
-          impactedFilesCount: 4,
+          directChangedFilesCount: 4,
           indirectChangedFilesCount: 0,
           flagComparisonsCount: 1,
           __typename: 'Comparison',
@@ -85,7 +85,7 @@ describe('useTabsCount', () => {
 
       expect(result.current).toStrictEqual({
         flagsCount: 1,
-        impactedFilesCount: 4,
+        directChangedFilesCount: 4,
         indirectChangesCount: 0,
         commitsCount: 11,
       })
