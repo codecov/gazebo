@@ -6,9 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitPage from './CommitPage'
 
-jest.mock('./subroute/CommitFileExplorer', () => () => 'CommitFileExplorer')
-jest.mock('./subroute/CommitFileViewer', () => () => 'CommitFileViewer')
-jest.mock('./subroute/ImpactedFiles', () => () => 'ImpactedFiles')
+jest.mock('./subRoute/CommitFileExplorer', () => () => 'CommitFileExplorer')
+jest.mock('./subRoute/CommitFileViewer', () => () => 'CommitFileViewer')
+jest.mock('./subRoute/ImpactedFiles', () => () => 'ImpactedFiles')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
 
 const mockCommit = {
