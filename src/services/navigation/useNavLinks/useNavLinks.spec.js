@@ -781,6 +781,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('repo new other link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/new/other'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.newOther.path()).toBe(
+        '/gh/RulaKhaled/test/new/other'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.newOther.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/new/other'
+      )
+      expect(hookData.result.current.newOther.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/new/other'
+      )
+    })
+  })
+
   describe('general repo settings link', () => {
     beforeAll(() => {
       setup(['/gh/RulaKhaled/test/settings'])
@@ -1079,6 +1099,46 @@ describe('useNavLinks', () => {
       expect(
         hookData.result.current.orgUploadToken.path({ owner: 'cat' })
       ).toBe('/account/gh/cat/orgUploadToken')
+    })
+  })
+
+  describe('github repo secrets', () => {
+    beforeAll(() => {
+      setup(['/gh/codecov/cool-repo'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.githubRepoSecrets.path()).toBe(
+        'https://github.com/codecov/cool-repo/settings/secrets/actions'
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.githubRepoSecrets.path({ repo: 'test-repo' })
+      ).toBe('https://github.com/codecov/test-repo/settings/secrets/actions')
+      expect(
+        hookData.result.current.githubRepoSecrets.path({ owner: 'cat' })
+      ).toBe('https://github.com/cat/cool-repo/settings/secrets/actions')
+    })
+  })
+
+  describe('github repo actions', () => {
+    beforeAll(() => {
+      setup(['/gh/codecov/cool-repo'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.githubRepoActions.path()).toBe(
+        'https://github.com/codecov/cool-repo/settings/actions'
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.githubRepoActions.path({ repo: 'test-repo' })
+      ).toBe('https://github.com/codecov/test-repo/settings/actions')
+      expect(
+        hookData.result.current.githubRepoActions.path({ owner: 'cat' })
+      ).toBe('https://github.com/cat/cool-repo/settings/actions')
     })
   })
 })
