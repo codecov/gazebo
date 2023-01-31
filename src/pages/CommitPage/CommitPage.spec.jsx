@@ -2,13 +2,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitPage from './CommitPage'
 
-jest.mock('./subRoute/CommitFileExplorer', () => () => 'CommitFileExplorer')
-jest.mock('./subRoute/CommitFileViewer', () => () => 'CommitFileViewer')
-jest.mock('./subRoute/ImpactedFiles', () => () => 'ImpactedFiles')
+jest.mock('./CommitPageContent', () => () => 'CommitPageContent')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
 
 const mockCommit = {
@@ -78,6 +77,7 @@ const mockOwner = {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      suspense: true,
       retry: false,
     },
   },
@@ -103,7 +103,7 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit',
             ]}
           >
-            {children}
+            <Suspense fallback={null}>{children}</Suspense>
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
