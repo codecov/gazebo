@@ -1,13 +1,15 @@
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
+import config from 'config'
+
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
 const useBadges = ({ graphToken, defaultBranch }) => {
   const { provider, owner, repo } = useParams()
 
-  const repoPath = `https://codecov.io/${provider}/${owner}/${repo}`
+  const repoPath = `${config.BASE_URL}/${provider}/${owner}/${repo}`
   const fullPath = `${repoPath}/branch/${defaultBranch}/graph/badge.svg?token=${graphToken}`
 
   const BadgesEnum = Object.freeze({

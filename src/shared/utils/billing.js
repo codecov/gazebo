@@ -24,3 +24,8 @@ export function isFreePlan(plan) {
   if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
   return false
 }
+
+export const CollectionMethods = Object.freeze({
+  INVOICED_CUSTOMER_METHOD: 'send_invoice',
+  AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
+})

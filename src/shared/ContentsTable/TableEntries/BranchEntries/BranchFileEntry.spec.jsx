@@ -1,107 +1,247 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import BranchFileEntry from './BranchFileEntry'
-import { usePrefetchBranchFileEntry } from './hooks/usePrefetchBranchFileEntry'
 
 import { displayTypeParameter } from '../../constants'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(() => {}),
-}))
+const mockData = {
+  owner: {
+    repository: {
+      commit: {
+        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+        flagNames: ['a', 'b'],
+        coverageFile: {
+          isCriticalFile: true,
+          content:
+            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
+          coverage: [
+            {
+              line: 1,
+              coverage: 1,
+            },
+            {
+              line: 2,
+              coverage: 1,
+            },
+            {
+              line: 4,
+              coverage: 1,
+            },
+            {
+              line: 5,
+              coverage: 1,
+            },
+            {
+              line: 7,
+              coverage: 1,
+            },
+            {
+              line: 8,
+              coverage: 1,
+            },
+          ],
+        },
+      },
+      branch: null,
+    },
+  },
+}
 
-jest.mock('./hooks/usePrefetchBranchFileEntry')
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
+      <Route path="/:provider/:owner/:repo/">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 
 describe('BranchFileEntry', () => {
-  const runPrefetchMock = jest.fn()
-
-  function setup({
-    isCriticalFile = false,
-    displayType = displayTypeParameter.tree,
-  }) {
-    useParams.mockReturnValue({
-      owner: 'codecov',
-      provider: 'gh',
-      repo: 'test-repo',
-      branch: 'main',
-      path: '',
-    })
-
-    usePrefetchBranchFileEntry.mockReturnValue({
-      runPrefetch: runPrefetchMock,
-    })
-
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
-        <Route path="/:provider/:owner/:repo/">
-          <BranchFileEntry
-            branch="main"
-            filePath="dir/file.js"
-            name="file.js"
-            path="dir"
-            isCriticalFile={isCriticalFile}
-            displayType={displayType}
-          />
-        </Route>
-      </MemoryRouter>
+  function setup() {
+    server.use(
+      graphql.query('CoverageForFile', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockData))
+      )
     )
   }
 
   describe('checking properties on list display', () => {
     beforeEach(() => {
-      setup({ isCriticalFile: false, displayType: displayTypeParameter.list })
+      setup()
     })
 
-    it('displays the file path', () => {
-      expect(screen.getByText('dir/file.js')).toBeInTheDocument()
+    it('displays the file path', async () => {
+      render(
+        <BranchFileEntry
+          branch="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          displayType={displayTypeParameter.list}
+        />,
+        { wrapper }
+      )
+
+      const file = await screen.findByText('dir/file.js')
+      expect(file).toBeInTheDocument()
     })
   })
 
   describe('checking properties on tree display', () => {
     beforeEach(() => {
-      setup({ isCriticalFile: false, displayType: displayTypeParameter.tree })
+      setup()
     })
 
-    it('displays the file name', () => {
-      expect(screen.getByText('file.js')).toBeInTheDocument()
+    it('displays the file name', async () => {
+      render(
+        <BranchFileEntry
+          branch="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          displayType={displayTypeParameter.tree}
+        />,
+        { wrapper }
+      )
+
+      const file = await screen.findByText('file.js')
+      expect(file).toBeInTheDocument()
     })
 
-    it('does not display the file name', () => {
-      expect(screen.queryByText('dir/file.js')).not.toBeInTheDocument()
+    it('does not display the file name', async () => {
+      render(
+        <BranchFileEntry
+          branch="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          displayType={displayTypeParameter.tree}
+        />,
+        { wrapper }
+      )
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const file = screen.queryByText('dir/file.js')
+      expect(file).not.toBeInTheDocument()
     })
   })
 
   describe('file is a critical file', () => {
     beforeEach(() => {
-      setup({ isCriticalFile: true })
+      setup()
     })
 
-    it('displays critical file label', () => {
-      expect(screen.getByText('Critical File')).toBeInTheDocument()
+    it('displays critical file label', async () => {
+      render(
+        <BranchFileEntry
+          branch="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={true}
+          displayType={displayTypeParameter.list}
+        />,
+        { wrapper }
+      )
+
+      const file = await screen.findByText('Critical File')
+      expect(file).toBeInTheDocument()
     })
   })
 
   describe('is displaying a list', () => {
     beforeEach(() => {
-      setup({ displayType: 'LIST' })
+      setup()
     })
 
-    it('displays the file path label', () => {
-      expect(screen.getByText('dir/file.js')).toBeInTheDocument()
+    it('displays the file path label', async () => {
+      render(
+        <BranchFileEntry
+          branch="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          displayType={displayTypeParameter.list}
+        />,
+        { wrapper }
+      )
+
+      const file = await screen.findByText('dir/file.js')
+      expect(file).toBeInTheDocument()
     })
   })
 
   describe('prefetches data', () => {
     beforeEach(() => {
-      setup({ isCriticalFile: false, displayType: displayTypeParameter.tree })
+      setup()
     })
 
     it('fires the prefetch function on hover', async () => {
-      userEvent.hover(screen.getByText('file.js'))
+      render(
+        <BranchFileEntry
+          branch="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          displayType={displayTypeParameter.tree}
+        />,
+        { wrapper }
+      )
 
-      await waitFor(() => expect(runPrefetchMock).toHaveBeenCalled())
+      const file = await screen.findByText('file.js')
+      userEvent.hover(file)
+
+      await waitFor(() => queryClient.getQueryState().isFetching)
+      await waitFor(() => !queryClient.getQueryState().isFetching)
+
+      await waitFor(() =>
+        expect(queryClient.getQueryState().data.content).toBe(
+          mockData.owner.repository.commit.coverageFile.content
+        )
+      )
+      await waitFor(() =>
+        expect(queryClient.getQueryState().data.coverage).toStrictEqual({
+          1: 1,
+          2: 1,
+          4: 1,
+          5: 1,
+          7: 1,
+          8: 1,
+        })
+      )
+      await waitFor(() =>
+        expect(queryClient.getQueryState().data.flagNames).toStrictEqual([
+          'a',
+          'b',
+        ])
+      )
+      await waitFor(() =>
+        expect(queryClient.getQueryState().data.isCriticalFile).toBe(true)
+      )
+      await waitFor(() =>
+        expect(queryClient.getQueryState().data.totals).toBe(0)
+      )
     })
   })
 })

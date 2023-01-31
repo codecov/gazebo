@@ -5,27 +5,27 @@ import Icon from 'ui/Icon'
 
 import { displayTypeParameter } from '../../constants'
 
-const FileHeader = ({ displayAsList, filePath, name }) => {
+const FileHeader = ({ displayAsList, path, name }) => {
   return (
     <div className="break-all flex gap-1 items-center">
       {!displayAsList && <Icon name="document" size="md" />}
-      {displayAsList ? filePath : name}
+      {displayAsList ? path : name}
     </div>
   )
 }
 
 FileHeader.propTypes = {
-  filePath: PropTypes.string.isRequired,
+  path: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   displayAsList: PropTypes.bool.isRequired,
 }
 
 function FileEntry({
   linkRef,
-  filePath,
+  path,
   isCriticalFile,
   name,
-  path,
+  urlPath,
   displayType,
   runPrefetch,
   pageName = 'fileViewer',
@@ -40,15 +40,15 @@ function FileEntry({
           options: {
             ref: linkRef,
             commit: commitSha,
-            tree: displayAsList ? filePath : !!path ? `${path}/${name}` : name,
+            tree: displayAsList
+              ? path
+              : !!urlPath
+              ? `${urlPath}/${name}`
+              : name,
           },
         }}
       >
-        <FileHeader
-          displayAsList={displayAsList}
-          filePath={filePath}
-          name={name}
-        />
+        <FileHeader displayAsList={displayAsList} path={path} name={name} />
       </A>
       {isCriticalFile && (
         <span className="ml-2 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
@@ -61,11 +61,11 @@ function FileEntry({
 
 FileEntry.propTypes = {
   linkRef: PropTypes.string,
-  filePath: PropTypes.string.isRequired,
+  path: PropTypes.string,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
-  path: PropTypes.string,
+  urlPath: PropTypes.string.isRequired,
   runPrefetch: PropTypes.func,
   pageName: PropTypes.string,
   commitSha: PropTypes.string,
