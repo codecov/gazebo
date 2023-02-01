@@ -2,15 +2,15 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useOwner } from 'services/user'
+import { useRepo } from 'services/repo'
 
 import DeactivatedRepo from './DeactivatedRepo'
 
-jest.mock('services/user')
+jest.mock('services/repo')
 
 describe('DeactivatedRepo', () => {
   function setup(isPartOfRepo = true) {
-    useOwner.mockReturnValue({
+    useRepo.mockReturnValue({
       data: {
         isCurrentUserPartOfOrg: isPartOfRepo,
       },
