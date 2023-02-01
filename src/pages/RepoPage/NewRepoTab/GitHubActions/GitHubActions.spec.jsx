@@ -42,7 +42,7 @@ const wrapper = ({ children }) => (
       <Route
         path={[
           '/:provider/:owner/:repo/new',
-          '/:provider/:owner/:repo/new/owner',
+          '/:provider/:owner/:repo/new/other-ci',
         ]}
       >
         {children}
