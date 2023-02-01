@@ -787,16 +787,16 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.newOther.path()).toBe(
-        '/gh/RulaKhaled/test/new/other'
+      expect(hookData.result.current.newOtherCI.path()).toBe(
+        '/gh/RulaKhaled/test/new/other-ci'
       )
     })
     it('can override the params', () => {
-      expect(hookData.result.current.newOther.path({ provider: 'bb' })).toBe(
-        '/bb/RulaKhaled/test/new/other'
+      expect(hookData.result.current.newOtherCI.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/new/other-ci'
       )
-      expect(hookData.result.current.newOther.path({ repo: 'cat' })).toBe(
-        '/gh/RulaKhaled/cat/new/other'
+      expect(hookData.result.current.newOtherCI.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/new/other-ci'
       )
     })
   })

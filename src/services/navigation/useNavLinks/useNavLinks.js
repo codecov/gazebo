@@ -241,14 +241,14 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/new`,
       text: 'New',
     },
-    newOther: {
+    newOtherCI: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/new/other`,
+      ) => `/${provider}/${owner}/${repo}/new/other-ci`,
       text: 'New',
     },
     overview: {
