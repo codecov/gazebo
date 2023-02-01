@@ -74,6 +74,8 @@ function RepoPage() {
   const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
   const isRepoPrivate = !!repoData?.repository?.private
 
+  console.log(isRepoActivated, isRepoActive)
+
   // if there is no repo data
   if (!repoData?.repository) {
     return <NotFound />
