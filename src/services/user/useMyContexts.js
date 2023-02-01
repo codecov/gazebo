@@ -30,8 +30,8 @@ export function useMyContexts({ provider, opts = {} }) {
 
   const { data, ...rest } = useInfiniteQuery({
     queryKey: ['MyContexts', provider],
-    queryFn: ({ pageParam, signal }) => {
-      return Api.graphql({
+    queryFn: ({ pageParam, signal }) =>
+      Api.graphql({
         provider,
         query,
         signal,
@@ -42,8 +42,7 @@ export function useMyContexts({ provider, opts = {} }) {
           myOrganizations: mapEdges(res?.data?.me.myOrganizations),
           pageInfo: res?.data?.me.myOrganizations.pageInfo,
         }
-      })
-    },
+      }),
     getNextPageParam: (data) =>
       data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : undefined,
     ...opts,
