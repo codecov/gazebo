@@ -26,7 +26,7 @@ function BaseModal({
       </header>
       {subtitle && <p className="px-4 text-lg">{subtitle}</p>}
       {body && (
-        <div className="w-full p-6 mt-4 text-ds-gray-octonary border-t text-sm max-h-96 overflow-y-auto">
+        <div className="w-full p-4 mt-4 text-ds-gray-octonary border-t text-sm max-h-96 overflow-y-auto">
           {body}
         </div>
       )}
