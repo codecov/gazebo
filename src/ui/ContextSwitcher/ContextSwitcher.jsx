@@ -5,8 +5,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 
-import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
-import { useAddNotification } from 'services/toastNotification'
 import AppLink from 'shared/AppLink'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -51,27 +49,6 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
-function useUpdateDefaultOrg() {
-  const addToast = useAddNotification()
-  const { mutate, ...rest } = useUpdateDefaultOrganization()
-
-  async function updateDefaultOrg({ username }) {
-    mutate(
-      { username },
-      {
-        onError: (e) => {
-          return addToast({
-            type: 'error',
-            text: e.message,
-          })
-        },
-      }
-    )
-  }
-
-  return { updateDefaultOrg, ...rest }
-}
-
 function ContextSwitcher({
   activeContext,
   contexts,
@@ -83,8 +60,6 @@ function ContextSwitcher({
   const currentContext = getCurrentContext({ activeContext, contexts })
   const { provider } = useParams()
   const [showModal, setShowModal] = useState(false)
-  const { updateDefaultOrg, isLoading: isMutationHookLoading } =
-    useUpdateDefaultOrg()
 
   const isGh = providerToName(provider) === 'Github'
 
@@ -145,15 +120,14 @@ function ContextSwitcher({
           <button
             className="text-ds-blue flex-none"
             onClick={() => setShowModal(true)}
-            disabled={isMutationHookLoading}
+            disabled={isLoading}
           >
             Edit default
           </button>
           {showModal && (
             <UpdateDefaultOrgModal
               closeModal={() => setShowModal(false)}
-              updateDefaultOrg={updateDefaultOrg}
-              isLoading={isMutationHookLoading}
+              isLoading={isLoading}
             />
           )}
         </div>
