@@ -252,8 +252,199 @@ describe('RepoPage', () => {
     describe('user not part of an org', () => {
       beforeEach(() =>
         setup({
-          hasCommits: true,
-          hasRepoData: true,
+          repository: {
+            private: true,
+            activated: false,
+            active: false,
+          },
+        })
+      })
+
+      it('renders the coverage tab', () => {
+        repoPageRender({
+          renderRoot: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+          renderNew: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+        })
+
+        const tab = screen.queryByText('Coverage')
+        expect(tab).not.toBeInTheDocument()
+      })
+
+      it('renders the commits tab', () => {
+        repoPageRender({
+          renderNew: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+        })
+
+        const tab = screen.queryByText(/Commits/)
+        expect(tab).not.toBeInTheDocument()
+      })
+
+      it('redirects to the setup repo page', async () => {
+        repoPageRender({
+          renderRoot: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+          renderNew: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+        })
+
+        expect(await screen.findByText('NewRepoTab')).toBeInTheDocument()
+      })
+    })
+
+    describe('when renders the commits page', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: true,
+            defaultBranch: 'main',
+            activated: true,
+            active: true,
+          },
+        })
+      })
+
+      it('renders the branch in the breadcrumb', async () => {
+        repoPageRender({
+          renderCommits: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+          initialEntries: ['/gh/codecov/test-repo/commits'],
+        })
+
+        const branches = await screen.findAllByText(/main/i)
+        expect(branches.length).toBe(2)
+      })
+
+      it('renders the branch context selector label', async () => {
+        repoPageRender({
+          renderCommits: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+          initialEntries: ['/gh/codecov/test-repo/commits'],
+        })
+
+        const label = await screen.findByText('Branch Context')
+        expect(label).toBeInTheDocument()
+      })
+
+      it('renders the branch context selector', async () => {
+        repoPageRender({
+          renderCommits: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+          initialEntries: ['/gh/codecov/test-repo/commits'],
+        })
+
+        const select = await screen.findByRole('button', {
+          name: 'Select branch',
+        })
+        expect(select).toBeInTheDocument()
+      })
+    })
+
+    describe('when click on the selector in the commits page', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: true,
+            defaultBranch: 'main',
+            activated: true,
+            active: true,
+          },
+        })
+      })
+
+      it('renders the options of select branch', async () => {
+        repoPageRender({
+          renderCommits: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+          initialEntries: ['/gh/codecov/test-repo/commits'],
+        })
+
+        const select = await screen.findByRole('button', {
+          name: 'Select branch',
+        })
+
+        userEvent.click(select)
+
+        const branch = await screen.findByText(/test1/)
+        expect(branch).toBeInTheDocument()
+
+        const branch2 = await screen.findByText(/test2/)
+        expect(branch2).toBeInTheDocument()
+      })
+    })
+
+    describe('when a branch is selected in the commits page', () => {
+      beforeEach(async () => {
+        setup({
+          repository: {
+            private: true,
+            defaultBranch: 'main',
+            activated: true,
+            active: true,
+          },
+        })
+      })
+
+      it('renders the name of the branch in the breadcrumb', async () => {
+        repoPageRender({
+          renderCommits: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+          initialEntries: ['/gh/codecov/test-repo/commits'],
+        })
+
+        const select = await screen.findByRole('button', {
+          name: 'Select branch',
+        })
+        userEvent.click(select)
+
+        const branch = await screen.findByText(/test1/)
+        userEvent.click(branch)
+
+        const branches = await screen.findAllByText(/test1/)
+        expect(branches.length).toEqual(2)
+      })
+    })
+
+    describe('when rendered with user not part of org', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: false,
+            activated: true,
+            active: true,
+          },
           isCurrentUserPartOfOrg: false,
           isRepoPrivate: false,
         })
@@ -267,6 +458,30 @@ describe('RepoPage', () => {
 
         const tab = screen.queryByRole('link', { name: 'Settings' })
         expect(tab).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when repo is private and user is not a part of org', () => {
+      beforeEach(() => {
+        setup({
+          repository: {
+            private: true,
+          },
+          isCurrentUserPartOfOrg: false,
+        })
+      })
+
+      it('shows not found', () => {
+        repoPageRender({
+          renderRoot: () => (
+            <Wrapper>
+              <RepoPage />
+            </Wrapper>
+          ),
+        })
+
+        const notFound = screen.getByText(/not found/i)
+        expect(notFound).toBeInTheDocument()
       })
     })
   })
