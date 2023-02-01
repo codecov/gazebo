@@ -25,7 +25,7 @@ function GitHubActions() {
           </A>
         </h2>
         <pre className="py-2 px-4 flex items-center gap-2 font-mono rounded-md bg-ds-gray-primary border-ds-gray-secondary border-2 overflow-auto">
-          CODECOV_TOKEN {data?.repository?.uploadToken}
+          CODECOV_TOKEN={data?.repository?.uploadToken}
           <CopyClipboard
             string={data?.repository?.uploadToken}
             onClick={() => copiedCIToken(data?.repository?.uploadToken)}

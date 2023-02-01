@@ -14,7 +14,7 @@ jest.mock('services/tracking/segment')
 const mockCurrentUser = {
   me: {
     trackingMetadata: {
-      ownerId: 'user-owner-id',
+      ownerid: 'user-owner-id',
     },
   },
 }
@@ -126,7 +126,7 @@ describe('GitHubActions', () => {
           data: {
             category: 'Onboarding',
             tokenHash: 'a2629295',
-            userId: undefined,
+            userId: 'user-owner-id',
           },
           event: 'User Onboarding Copied CI Token',
         })
