@@ -1,20 +1,30 @@
-import { Redirect, useParams } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { Redirect, Switch, useParams } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
 import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import { useRedirect } from 'shared/useRedirect'
+import Spinner from 'ui/Spinner'
+import TabNavigation from 'ui/TabNavigation'
 
-import NewRepoContent from './NewRepoContent'
-import NewRepoGithubContent from './NewRepoGithubContent'
+import GitHubActions from './GitHubActions'
+
+const OtherCI = lazy(() => import('./OtherCI'))
+
+const Loader = () => (
+  <div className="flex-1 flex items-center justify-center mt-16">
+    <Spinner />
+  </div>
+)
 
 function NewRepoTab() {
   const { provider, owner, repo } = useParams()
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
   const { data } = useRepo({ provider, owner, repo })
   const { data: commitsData } = useCommits({ provider, owner, repo })
-  const { newRepoGhContent } = useFlags({ newRepoGhContent: false })
 
   // if the repo has commits redirect to coverage tab
   if (Array.isArray(commitsData?.commits) && commitsData?.commits.length > 0) {
@@ -33,7 +43,24 @@ function NewRepoTab() {
         <h1 className="font-semibold text-3xl mb-4">
           Let&apos;s get your repo covered
         </h1>
-        {newRepoGhContent ? <NewRepoGithubContent /> : <NewRepoContent />}
+        <TabNavigation
+          tabs={[
+            { pageName: 'new', children: 'GitHub Actions', exact: true },
+            { pageName: 'newOtherCI', children: 'Other CI' },
+          ]}
+        />
+        <div className="mt-6">
+          <Switch>
+            <SentryRoute path="/:provider/:owner/:repo/new" exact>
+              <GitHubActions />
+            </SentryRoute>
+            <SentryRoute path="/:provider/:owner/:repo/new/other-ci">
+              <Suspense fallback={<Loader />}>
+                <OtherCI />
+              </Suspense>
+            </SentryRoute>
+          </Switch>
+        </div>
       </div>
     </div>
   )

@@ -1,229 +1,222 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import config from 'config'
-
-import { useCommits } from 'services/commits'
-import { useRepo } from 'services/repo'
-import * as Segment from 'services/tracking/segment'
-import { useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
+import { useRedirect } from 'shared/useRedirect'
 
 import NewRepoTab from './NewRepoTab'
 
-import { repoPageRender, screen } from '../repo-jest-setup'
+jest.mock('shared/useRedirect')
 
-const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
-
-jest.mock('shared/utils/exceptions')
-jest.mock('services/repo/useRepo')
-jest.mock('services/commits')
-jest.mock('services/user')
-jest.mock('shared/featureFlags')
-jest.mock('config')
-
-describe('New Repo Tab', () => {
-  let mockError
-  let originalLocation
-  let location
-
-  const loggedInUser = {
-    username: 'Nydas Okiro',
+const mockCurrentUser = {
+  me: {
     trackingMetadata: {
-      ownerid: 98765,
+      ownerid: 'user-owner-id',
     },
-  }
+  },
+}
 
-  beforeAll(() => {
-    originalLocation = global.window.location
-    delete global.window.location
-    global.window.location = {
-      replace: jest.fn(),
-    }
-  })
+const mockGetRepo = (noUploadToken) => ({
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    repository: {
+      private: false,
+      uploadToken: noUploadToken
+        ? null
+        : '9e6a6189-20f1-482d-ab62-ecfaa2629295',
+      defaultBranch: 'main',
+      yaml: '',
+      activated: false,
+      oldestCommitAt: '',
+    },
+  },
+})
 
-  afterAll(() => {
-    jest.resetAllMocks()
-    window.location = originalLocation
-  })
+const mockGetCommits = (hasCommits) => ({
+  owner: {
+    repository: {
+      commits: {
+        totalCount: 0,
+        edges: hasCommits ? [{ node: { commitid: 1 } }] : [],
+      },
+    },
+  },
+})
 
-  function setup({ repoData, commitsData = [], provider = 'gh' }) {
-    useRepo.mockReturnValue({ data: repoData })
-    useCommits.mockReturnValue({ data: { commits: commitsData } })
-    useUser.mockReturnValue({ data: loggedInUser })
-    useFlags.mockReturnValue({ newRepoGhContent: false })
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
+const server = setupServer()
+let testLocation
 
-    mockError = jest.fn()
-    const spy = jest.spyOn(console, 'error')
-    spy.mockImplementation(mockError)
+const wrapper =
+  (initialEntries = '/gh/codecov/cool-repo/new') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/new',
+              '/:provider/:owner/:repo/new/other-ci',
+            ]}
+          >
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
-    const { testLocation } = repoPageRender({
-      initialEntries: [`/${provider}/codecov/Test/new`],
-      renderNew: () => <NewRepoTab />,
-    })
-    location = testLocation
-  }
+beforeAll(() => {
+  console.error = () => {}
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 
-  describe('repo is private and user is part of org', () => {
-    beforeEach(() => {
-      setup({
-        repoData: {
-          repository: { uploadToken: 'randomToken', private: true },
-          isCurrentUserPartOfOrg: true,
-        },
-      })
-    })
+describe('NewRepoTab', () => {
+  const hardRedirect = jest.fn()
 
-    it('renders the passed token', () => {
-      const token = screen.getByText(/randomToken/)
-      expect(token).toBeInTheDocument()
-    })
+  function setup(
+    { hasCommits, noUploadToken } = { hasCommits: false, noUploadToken: false }
+  ) {
+    useRedirect.mockImplementation((data) => ({
+      hardRedirect: () => hardRedirect(data),
+    }))
 
-    it('renders Codecov tutorial', () => {
-      const codecovTutorialLink = screen.getByRole('link', {
-        name: /Codecov tutorial/i,
-      })
-      expect(codecovTutorialLink).toBeInTheDocument()
-      expect(codecovTutorialLink).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/codecov-tutorial'
+    server.use(
+      graphql.query('GetRepo', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockGetRepo(noUploadToken)))
+      ),
+      graphql.query('CurrentUser', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockCurrentUser))
+      ),
+      graphql.query('GetCommits', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockGetCommits(hasCommits)))
       )
+    )
+  }
+
+  describe('rendering component', () => {
+    beforeEach(() => setup())
+
+    it('renders header', async () => {
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      const header = await screen.findByRole('heading', {
+        name: /Let's get your repo covered/,
+      })
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders github actions tab', async () => {
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      const tab = await screen.findByRole('link', { name: 'GitHub Actions' })
+      expect(tab).toBeInTheDocument()
+      expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
+    })
+
+    it('renders other ci tab', async () => {
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      const tab = await screen.findByRole('link', { name: 'Other CI' })
+      expect(tab).toBeInTheDocument()
+      expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new/other-ci')
     })
   })
 
-  describe('repo is public and user is part of org', () => {
-    beforeEach(() => {
-      setup({
-        repoData: {
-          repository: { uploadToken: 'randomToken', private: false },
-          isCurrentUserPartOfOrg: true,
-        },
+  describe('testing redirects', () => {
+    describe('repo has commits', () => {
+      beforeEach(() => setup({ hasCommits: true }))
+
+      it('redirects to repo page', async () => {
+        render(<NewRepoTab />, { wrapper: wrapper() })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+        )
       })
     })
 
-    it('renders the passed token', () => {
-      const token = screen.getByText(/randomToken/)
-      expect(token).toBeInTheDocument()
-    })
-  })
+    describe('repo does not have an upload token', () => {
+      beforeEach(() => setup({ noUploadToken: true }))
 
-  describe('when repo is private and user is not a part of the org', () => {
-    beforeEach(() => {
-      setup({
-        repoData: {
-          repository: { private: true },
-          isCurrentUserPartOfOrg: false,
-        },
+      it('redirects to provider', async () => {
+        render(<NewRepoTab />, { wrapper: wrapper() })
+
+        await waitFor(() => expect(hardRedirect).toBeCalled())
       })
-    })
-    it('throws 404', async () => {
-      const notFound = await screen.findByText('Not found')
-      expect(notFound).toBeInTheDocument()
-    })
-  })
 
-  describe('repo has commits', () => {
-    beforeEach(() => {
-      setup({
-        repoData: {
-          repository: { uploadToken: 'randomToken', private: false },
-          isCurrentUserPartOfOrg: true,
-        },
-        commitsData: [{}, {}, {}],
-      })
-    })
+      it('displays 404', async () => {
+        render(<NewRepoTab />, { wrapper: wrapper() })
 
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
-
-    it('redirects to repo setup page', () => {
-      expect(location.pathname).toBe('/gh/codecov/Test')
-    })
-  })
-
-  describe('there is no repo data', () => {
-    beforeEach(() => {
-      setup({
-        repoData: {
-          repository: null,
-          isCurrentUserPartOfOrg: true,
-        },
-      })
-    })
-
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
-
-    it('renders 404', () => {
-      const notFound = screen.getByText('Not found')
-      expect(notFound).toBeInTheDocument()
-    })
-  })
-
-  describe('repo is missing a token', () => {
-    beforeEach(() => {
-      setup({
-        repoData: {
-          isCurrentUserPartOfOrg: true,
-          repository: { private: false },
-        },
-      })
-    })
-
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
-
-    it('location replace was called (redirected)', () => {
-      expect(window.location.replace).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('when the user clicks on the uploader link', () => {
-    beforeEach(async () => {
-      setup({
-        repoData: {
-          isCurrentUserPartOfOrg: true,
-          repository: { private: false, uploadToken: 'token' },
-        },
-      })
-      const uploader = await screen.findByTestId('uploader')
-      userEvent.click(uploader)
-    })
-
-    it('calls the trackSegmentEvent', () => {
-      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
-      expect(trackSegmentSpy).toHaveBeenCalledWith({
-        event: 'User Onboarding Download Uploader Clicked',
-        data: {
-          category: 'Onboarding',
-          userId: 98765,
-        },
+        const fourOhFour = await screen.findByText('Not found')
+        expect(fourOhFour).toBeInTheDocument()
       })
     })
   })
 
-  describe('when render for self hosted users with a provider that is not gh', () => {
-    beforeEach(() => {
-      config.IS_SELF_HOSTED = true
+  describe('testing tab navigation', () => {
+    describe('clicking on other ci', () => {
+      beforeEach(() => setup())
 
-      setup({
-        repoData: {
-          isCurrentUserPartOfOrg: true,
-          repository: { private: false, uploadToken: 'random-token' },
-        },
-        provider: 'bb',
+      it('navigates to /other-ci', async () => {
+        render(<NewRepoTab />, { wrapper: wrapper() })
+
+        const tab = await screen.findByRole('link', { name: 'Other CI' })
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/new/other-ci'
+        )
+
+        userEvent.click(tab)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/new/other-ci'
+          )
+        )
       })
     })
 
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
+    describe('clicking on github actions', () => {
+      beforeEach(() => setup())
 
-    it('renders uploader integrity check banner with different copy', () => {
-      const copy = screen.getByText(/You can use the SHASUMs located/)
-      expect(copy).toBeInTheDocument()
+      it('navigates to /new', async () => {
+        render(<NewRepoTab />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
+        })
+
+        const tab = await screen.findByRole('link', { name: 'GitHub Actions' })
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
+
+        userEvent.click(tab)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
+        )
+      })
     })
   })
 })
