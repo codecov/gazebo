@@ -11,6 +11,29 @@ const mockRepoOverview = {
   defaultBranch: 'main',
 }
 
+const mockAllBranches = {
+  branches: {
+    edges: [
+      {
+        node: {
+          name: 'branch-1',
+          head: {
+            commitid: 'asdf123',
+          },
+        },
+      },
+      {
+        node: {
+          name: 'main',
+          head: {
+            commitid: '321fdsa',
+          },
+        },
+      },
+    ],
+  },
+}
+
 const mockBranches = {
   branches: {
     edges: [
@@ -94,6 +117,12 @@ describe('useSummary', () => {
         res(
           ctx.status(200),
           ctx.data({ owner: { repository: mockRepoCoverage } })
+        )
+      ),
+      graphql.query('GetAllBranches', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: mockAllBranches } })
         )
       )
     )
