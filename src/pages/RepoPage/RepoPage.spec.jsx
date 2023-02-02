@@ -16,19 +16,15 @@ jest.mock('./PullsTab', () => () => 'PullsTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 
-const mockOwner = (isCurrentUserPartOfOrg = true) => ({
-  owner: {
-    isCurrentUserPartOfOrg,
-  },
-})
-
 const mockGetRepo = (
   noUploadToken,
   isRepoPrivate = false,
-  isRepoActivated = true
+  isRepoActivated = true,
+  isCurrentUserPartOfOrg = true,
+  isRepoActive = true
 ) => ({
   owner: {
-    isCurrentUserPartOfOrg: true,
+    isCurrentUserPartOfOrg,
     repository: {
       private: isRepoPrivate,
       uploadToken: noUploadToken
@@ -38,17 +34,7 @@ const mockGetRepo = (
       yaml: '',
       activated: isRepoActivated,
       oldestCommitAt: '',
-    },
-  },
-})
-
-const mockGetCommits = (hasCommits) => ({
-  owner: {
-    repository: {
-      commits: {
-        totalCount: 0,
-        edges: hasCommits ? [{ node: { commitid: 1 } }] : [],
-      },
+      active: isRepoActive,
     },
   },
 })
@@ -117,6 +103,7 @@ describe('RepoPage', () => {
       hasRepoData,
       isRepoPrivate,
       isRepoActivated,
+      isRepoActive,
     } = {
       hasCommits: true,
       noUploadToken: false,
@@ -124,6 +111,7 @@ describe('RepoPage', () => {
       hasRepoData: true,
       isRepoPrivate: false,
       isRepoActivated: true,
+      isRepoActive: true,
     }
   ) {
     server.use(
@@ -131,18 +119,20 @@ describe('RepoPage', () => {
         if (hasRepoData) {
           return res(
             ctx.status(200),
-            ctx.data(mockGetRepo(noUploadToken, isRepoPrivate, isRepoActivated))
+            ctx.data(
+              mockGetRepo(
+                noUploadToken,
+                isRepoPrivate,
+                isRepoActivated,
+                isCurrentUserPartOfOrg,
+                isRepoActive
+              )
+            )
           )
         }
 
         return res(ctx.status(200), ctx.data({ owner: {} }))
-      }),
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetCommits(hasCommits)))
-      ),
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockOwner(isCurrentUserPartOfOrg)))
-      )
+      })
     )
   }
 
@@ -252,201 +242,11 @@ describe('RepoPage', () => {
     describe('user not part of an org', () => {
       beforeEach(() =>
         setup({
-          repository: {
-            private: true,
-            activated: false,
-            active: false,
-          },
-        })
-      })
-
-      it('renders the coverage tab', () => {
-        repoPageRender({
-          renderRoot: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-          renderNew: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-        })
-
-        const tab = screen.queryByText('Coverage')
-        expect(tab).not.toBeInTheDocument()
-      })
-
-      it('renders the commits tab', () => {
-        repoPageRender({
-          renderNew: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-        })
-
-        const tab = screen.queryByText(/Commits/)
-        expect(tab).not.toBeInTheDocument()
-      })
-
-      it('redirects to the setup repo page', async () => {
-        repoPageRender({
-          renderRoot: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-          renderNew: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-        })
-
-        expect(await screen.findByText('NewRepoTab')).toBeInTheDocument()
-      })
-    })
-
-    describe('when renders the commits page', () => {
-      beforeEach(() => {
-        setup({
-          repository: {
-            private: true,
-            defaultBranch: 'main',
-            activated: true,
-            active: true,
-          },
-        })
-      })
-
-      it('renders the branch in the breadcrumb', async () => {
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/test-repo/commits'],
-        })
-
-        const branches = await screen.findAllByText(/main/i)
-        expect(branches.length).toBe(2)
-      })
-
-      it('renders the branch context selector label', async () => {
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/test-repo/commits'],
-        })
-
-        const label = await screen.findByText('Branch Context')
-        expect(label).toBeInTheDocument()
-      })
-
-      it('renders the branch context selector', async () => {
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/test-repo/commits'],
-        })
-
-        const select = await screen.findByRole('button', {
-          name: 'Select branch',
-        })
-        expect(select).toBeInTheDocument()
-      })
-    })
-
-    describe('when click on the selector in the commits page', () => {
-      beforeEach(() => {
-        setup({
-          repository: {
-            private: true,
-            defaultBranch: 'main',
-            activated: true,
-            active: true,
-          },
-        })
-      })
-
-      it('renders the options of select branch', async () => {
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/test-repo/commits'],
-        })
-
-        const select = await screen.findByRole('button', {
-          name: 'Select branch',
-        })
-
-        userEvent.click(select)
-
-        const branch = await screen.findByText(/test1/)
-        expect(branch).toBeInTheDocument()
-
-        const branch2 = await screen.findByText(/test2/)
-        expect(branch2).toBeInTheDocument()
-      })
-    })
-
-    describe('when a branch is selected in the commits page', () => {
-      beforeEach(async () => {
-        setup({
-          repository: {
-            private: true,
-            defaultBranch: 'main',
-            activated: true,
-            active: true,
-          },
-        })
-      })
-
-      it('renders the name of the branch in the breadcrumb', async () => {
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/test-repo/commits'],
-        })
-
-        const select = await screen.findByRole('button', {
-          name: 'Select branch',
-        })
-        userEvent.click(select)
-
-        const branch = await screen.findByText(/test1/)
-        userEvent.click(branch)
-
-        const branches = await screen.findAllByText(/test1/)
-        expect(branches.length).toEqual(2)
-      })
-    })
-
-    describe('when rendered with user not part of org', () => {
-      beforeEach(() => {
-        setup({
-          repository: {
-            private: false,
-            activated: true,
-            active: true,
-          },
+          hasCommits: true,
+          hasRepoData: true,
           isCurrentUserPartOfOrg: false,
           isRepoPrivate: false,
+          isRepoActive: true,
         })
       )
 
@@ -458,30 +258,6 @@ describe('RepoPage', () => {
 
         const tab = screen.queryByRole('link', { name: 'Settings' })
         expect(tab).not.toBeInTheDocument()
-      })
-    })
-
-    describe('when repo is private and user is not a part of org', () => {
-      beforeEach(() => {
-        setup({
-          repository: {
-            private: true,
-          },
-          isCurrentUserPartOfOrg: false,
-        })
-      })
-
-      it('shows not found', () => {
-        repoPageRender({
-          renderRoot: () => (
-            <Wrapper>
-              <RepoPage />
-            </Wrapper>
-          ),
-        })
-
-        const notFound = screen.getByText(/not found/i)
-        expect(notFound).toBeInTheDocument()
       })
     })
   })
@@ -609,7 +385,11 @@ describe('RepoPage', () => {
 
     describe('repo has no commits', () => {
       beforeEach(() =>
-        setup({ hasCommits: false, hasRepoData: true, isRepoActivated: false })
+        setup({
+          isRepoActive: false,
+          hasRepoData: true,
+          isRepoActivated: false,
+        })
       )
 
       it('renders new repo tab', async () => {
@@ -622,7 +402,7 @@ describe('RepoPage', () => {
 
     describe('repo is deactivated', () => {
       beforeEach(() =>
-        setup({ hasRepoData: true, isRepoActivated: false, hasCommits: true })
+        setup({ hasRepoData: true, isRepoActivated: false, isRepoActive: true })
       )
 
       it('renders deactivated repo page', async () => {
@@ -635,7 +415,7 @@ describe('RepoPage', () => {
   })
 
   describe('testing breadcrumb', () => {
-    beforeEach(() => setup({ hasRepoData: true, hasCommits: true }))
+    beforeEach(() => setup({ hasRepoData: true, isRepoActive: true }))
 
     it('renders org breadcrumb', async () => {
       render(<RepoPage />, { wrapper: wrapper() })
