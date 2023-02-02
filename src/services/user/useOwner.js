@@ -3,7 +3,10 @@ import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
-export function useOwner({ username, opts = {} }) {
+export function useOwner({
+  username,
+  opts = { enabled: username !== undefined },
+}) {
   const { provider } = useParams()
   const query = `
       query DetailOwner($username: String!) {
