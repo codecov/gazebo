@@ -47,20 +47,17 @@ const mockCoverage = (content) => ({
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper =
-  (
-    initialEntries = '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js'
-  ) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter
+      initialEntries={[
+        '/gh/codecov/gazebo/commit/123sha/folder/subfolder/file.js',
+      ]}
+    >
+      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -89,7 +86,7 @@ describe('CommitFileView', () => {
 
     it('does not render the error message', async () => {
       render(<CommitFileView diff={diff} path="api/core/commit/123" />, {
-        wrapper: wrapper(),
+        wrapper,
       })
 
       const allTestIds = await screen.findAllByTestId('fv-single-line')
@@ -106,7 +103,7 @@ describe('CommitFileView', () => {
 
     it('renders error message', async () => {
       render(<CommitFileView diff={diff} path="api/core/commit/123" />, {
-        wrapper: wrapper(),
+        wrapper,
       })
 
       const errorMessage = await screen.findByText(/problem/)
