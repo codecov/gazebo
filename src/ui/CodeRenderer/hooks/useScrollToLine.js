@@ -2,11 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 const generateIdString = ({ number, path, base, head }) => {
-  if (base) {
-    return `#${path}-L${number}`
-  } else if (head) {
+  if (head) {
     return `#${path}-R${number}`
-  } else if (path) {
+  } else if (base || path) {
     return `#${path}-L${number}`
   }
 
