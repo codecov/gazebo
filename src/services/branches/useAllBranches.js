@@ -22,6 +22,10 @@ const query = `
   }
 `
 
+// WARNING: Use this hook if only necessary, it loads all of the branches and could
+// possibly increase load times substantially, please reach for the paginated
+// version first, and then reach for this hook.
+
 export const useAllBranches = ({ provider, owner, repo, opts = {} }) =>
   useQuery({
     queryKey: ['GetAllBranches', provider, owner, repo],
