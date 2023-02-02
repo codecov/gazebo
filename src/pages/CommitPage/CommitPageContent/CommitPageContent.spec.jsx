@@ -126,9 +126,7 @@ describe('CommitPageContent', () => {
   })
 
   describe('testing tree route', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     describe('not path provided', () => {
       it('renders CommitFileExplorer', async () => {
