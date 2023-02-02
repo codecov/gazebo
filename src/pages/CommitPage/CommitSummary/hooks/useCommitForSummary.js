@@ -1,7 +1,7 @@
 import isNumber from 'lodash/isNumber'
 import { useMemo } from 'react'
 
-import { useCommit } from '../../../../services/commit'
+import { useCommit } from 'services/commit'
 
 export function getCommitDataForSummary({
   compareWithParent,
