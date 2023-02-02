@@ -46,7 +46,7 @@ function NewRepoTab() {
         <TabNavigation
           tabs={[
             { pageName: 'new', children: 'GitHub Actions', exact: true },
-            { pageName: 'newOtherCI', children: 'Other CI' },
+            { pageName: 'newOtherCI' },
           ]}
         />
         <div className="mt-6">

@@ -249,7 +249,7 @@ export function useNavLinks() {
           repo: r,
         }
       ) => `/${provider}/${owner}/${repo}/new/other-ci`,
-      text: 'New',
+      text: 'Other CI',
     },
     overview: {
       path: (
