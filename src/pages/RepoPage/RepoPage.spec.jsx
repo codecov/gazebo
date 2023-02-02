@@ -97,7 +97,6 @@ afterAll(() => server.close())
 describe('RepoPage', () => {
   function setup(
     {
-      hasCommits,
       noUploadToken,
       isCurrentUserPartOfOrg,
       hasRepoData,
@@ -105,7 +104,6 @@ describe('RepoPage', () => {
       isRepoActivated,
       isRepoActive,
     } = {
-      hasCommits: true,
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
       hasRepoData: true,
@@ -242,7 +240,6 @@ describe('RepoPage', () => {
     describe('user not part of an org', () => {
       beforeEach(() =>
         setup({
-          hasCommits: true,
           hasRepoData: true,
           isCurrentUserPartOfOrg: false,
           isRepoPrivate: false,
