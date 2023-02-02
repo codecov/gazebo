@@ -18,7 +18,6 @@ const Summary = () => {
     data,
     currentBranchSelected,
     branchSelectorProps,
-    branchesFetchNextPage,
     branchList,
     branchListIsFetching,
     branchListHasNextPage,
@@ -67,12 +66,9 @@ const Summary = () => {
               variant="gray"
               renderItem={(item) => <span>{item?.name}</span>}
               isLoading={branchListIsFetching}
-              onLoadMore={() => {
-                if (branchListHasNextPage) {
-                  branchesFetchNextPage()
-                  branchListFetchNextPage()
-                }
-              }}
+              onLoadMore={() =>
+                branchListHasNextPage && branchListFetchNextPage()
+              }
               onSearch={(term) => setBranchSearchTerm(term)}
               items={branchList}
             />
