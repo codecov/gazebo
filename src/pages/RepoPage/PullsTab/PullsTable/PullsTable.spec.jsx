@@ -42,6 +42,9 @@ describe('Pulls Table', () => {
             author: { username: 'cool-user', avatarUrl: 'random' },
             compareWithBase: {
               changeWithParent: 14,
+              patchCoverage: {
+                change: 32,
+              },
             },
             head: {
               totals: {

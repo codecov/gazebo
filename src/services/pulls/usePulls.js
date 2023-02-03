@@ -23,7 +23,7 @@ function fetchRepoPulls({ provider, owner, repo, variables, after, signal }) {
             coverage
           }
           changeWithParent
-        }         
+        }
     }
   `
   const query = `

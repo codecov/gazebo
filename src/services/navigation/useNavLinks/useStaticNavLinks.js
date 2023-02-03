@@ -76,7 +76,7 @@ export function useStaticNavLinks() {
     deployingFlagsSupport: {
       text: 'Enabling Flags on Self Hosted',
       path: () =>
-        'https://docs.codecov.com/docs/deploying-with-helm#deploying-flags-support',
+        'https://docs.codecov.com/docs/implementing-flags-with-timescaledb',
       isExternalLink: true,
       openNewTab: true,
     },

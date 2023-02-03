@@ -8,7 +8,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useFlags } from 'shared/featureFlags'
 
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
-import { usePullPageData } from './hooks/usePullPageData'
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('./Header', () => () => 'Header')
@@ -23,45 +22,13 @@ jest.mock(
   './IndirectChangesTab/IndirectChangesInfo',
   () => () => 'IndirectChangesInfo'
 )
-
-jest.mock('./hooks/usePullPageData')
 jest.mock('shared/featureFlags')
 
 const commits = {
   owner: {
     repository: {
       commits: {
-        edges: [
-          {
-            node: {
-              message: 'test2',
-              commitid: '2',
-              createdAt: '2021',
-              author: {
-                username: 'rula2',
-                avatarUrl: 'random',
-              },
-              pullId: 12,
-              totals: {
-                coverage: 19,
-              },
-              parent: {
-                totals: {
-                  coverage: 22,
-                },
-              },
-              compareWithParent: {
-                patchTotals: {
-                  coverage: 99,
-                },
-              },
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-        },
+        totalCount: 11,
       },
     },
   },
@@ -87,12 +54,22 @@ describe('PullRequestPage', () => {
     server.use(
       graphql.query('GetCommits', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(commits))
+      ),
+      graphql.query('PullPageData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              isCurrentUserPartOfOrg: hasAccess,
+              repository: {
+                private: true,
+                pull: pullData,
+              },
+            },
+          })
+        )
       )
     )
-
-    usePullPageData.mockReturnValue({
-      data: { hasAccess, pull: pullData },
-    })
 
     useFlags.mockReturnValue({
       pullPageTabs: pullPageTabsFlag,
@@ -130,22 +107,28 @@ describe('PullRequestPage', () => {
         })
       })
 
-      it('does not render the breadcrumbs', () => {
-        expect(
-          screen.queryByRole('link', {
-            name: /test-org/i,
-          })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByRole('link', {
-            name: /test-repo/i,
-          })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByRole('link', {
-            name: /pulls/i,
-          })
-        ).not.toBeInTheDocument()
+      it('does not render the breadcrumbs', async () => {
+        await waitFor(() =>
+          expect(
+            screen.queryByRole('link', {
+              name: /test-org/i,
+            })
+          ).not.toBeInTheDocument()
+        )
+        await waitFor(() =>
+          expect(
+            screen.queryByRole('link', {
+              name: /test-repo/i,
+            })
+          ).not.toBeInTheDocument()
+        )
+        await waitFor(() =>
+          expect(
+            screen.queryByRole('link', {
+              name: /pulls/i,
+            })
+          ).not.toBeInTheDocument()
+        )
       })
     })
 
@@ -160,8 +143,8 @@ describe('PullRequestPage', () => {
         )
       })
 
-      it('renders a 404', () => {
-        expect(screen.getByText(/Error 404/i)).toBeInTheDocument()
+      it('renders a 404', async () => {
+        expect(await screen.findByText(/Error 404/i)).toBeInTheDocument()
       })
     })
   })
@@ -176,22 +159,28 @@ describe('PullRequestPage', () => {
         })
       })
 
-      it('does not render the breadcrumbs', () => {
-        expect(
-          screen.queryByRole('link', {
-            name: /test-org/i,
-          })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByRole('link', {
-            name: /test-repo/i,
-          })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByRole('link', {
-            name: /pulls/i,
-          })
-        ).not.toBeInTheDocument()
+      it('does not render the breadcrumbs', async () => {
+        await waitFor(() =>
+          expect(
+            screen.queryByRole('link', {
+              name: /test-org/i,
+            })
+          ).not.toBeInTheDocument()
+        )
+        await waitFor(() =>
+          expect(
+            screen.queryByRole('link', {
+              name: /test-repo/i,
+            })
+          ).not.toBeInTheDocument()
+        )
+        await waitFor(() =>
+          expect(
+            screen.queryByRole('link', {
+              name: /pulls/i,
+            })
+          ).not.toBeInTheDocument()
+        )
       })
     })
 
@@ -207,8 +196,8 @@ describe('PullRequestPage', () => {
         )
       })
 
-      it('renders a 404', () => {
-        expect(screen.getByText(/Error 404/i)).toBeInTheDocument()
+      it('renders a 404', async () => {
+        expect(await screen.findByText(/Error 404/i)).toBeInTheDocument()
       })
     })
   })
@@ -251,13 +240,14 @@ describe('PullRequestPage', () => {
           pullData: null,
           initialEntries: ['/gh/test-org/test-repo/pull/12'],
         })
+
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
       })
 
-      it('renders a 404', () => {
-        expect(screen.getByText(/Error 404/i)).toBeInTheDocument()
+      it('renders a 404', async () => {
+        expect(await screen.findByText(/Error 404/i)).toBeInTheDocument()
       })
     })
   })
@@ -270,19 +260,19 @@ describe('PullRequestPage', () => {
       })
     })
 
-    it('renders', () => {
+    it('renders', async () => {
       expect(
-        screen.getByRole('link', {
+        await screen.findByRole('link', {
           name: /test-org/i,
         })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', {
+        await screen.findByRole('link', {
           name: /test-repo/i,
         })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', {
+        await screen.findByRole('link', {
           name: /pulls/i,
         })
       ).toBeInTheDocument()
@@ -295,7 +285,7 @@ describe('PullRequestPage', () => {
         hasAccess: true,
         pullData: {
           compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
@@ -305,8 +295,8 @@ describe('PullRequestPage', () => {
       )
     })
 
-    it('rendered', () => {
-      expect(screen.getByText(/Root/i)).toBeInTheDocument()
+    it('rendered', async () => {
+      expect(await screen.findByText(/Root/i)).toBeInTheDocument()
     })
 
     it(`Isn't 404ing`, () => {
@@ -352,7 +342,7 @@ describe('PullRequestPage', () => {
         hasAccess: true,
         pullData: {
           compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
@@ -362,8 +352,8 @@ describe('PullRequestPage', () => {
       )
     })
 
-    it('renders', () => {
-      expect(screen.getByText(/Flags/i)).toBeInTheDocument()
+    it('renders', async () => {
+      expect(await screen.findByText(/Flags/i)).toBeInTheDocument()
     })
   })
 
@@ -373,7 +363,7 @@ describe('PullRequestPage', () => {
         hasAccess: true,
         pullData: {
           compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
@@ -383,8 +373,8 @@ describe('PullRequestPage', () => {
       )
     })
 
-    it('renders', () => {
-      expect(screen.getByText(/Commits/i)).toBeInTheDocument()
+    it('renders', async () => {
+      expect(await screen.findByText(/Commits/i)).toBeInTheDocument()
     })
   })
 
@@ -393,14 +383,11 @@ describe('PullRequestPage', () => {
       setup({
         hasAccess: true,
         pullData: {
-          commits: {
-            totalCount: 11,
-          },
           compareWithBase: {
             impactedFilesCount: 9,
             indirectChangedFilesCount: 19,
             flagComparisonsCount: 91,
-            __typename: ComparisonReturnType.SUCCESFUL_COMPARISON,
+            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
@@ -411,51 +398,52 @@ describe('PullRequestPage', () => {
       )
     })
 
-    it('renders impacted files tab', () => {
-      const impactedFilesTab = screen.getByText(/Impacted files/i)
+    it('renders impacted files tab', async () => {
+      const impactedFilesTab = await screen.findByText(/Impacted files/i)
       expect(impactedFilesTab).toBeInTheDocument()
 
       impactedFilesTab.click()
       expect(screen.getByText('Root')).toBeInTheDocument()
     })
 
-    it('renders impacted files tab count', () => {
-      expect(screen.getByText('9')).toBeInTheDocument()
+    it('renders impacted files tab count', async () => {
+      expect(await screen.findByText('9')).toBeInTheDocument()
     })
 
-    it('renders indirect changes tab', () => {
-      expect(screen.getByText(/Indirect changes/i)).toBeInTheDocument()
+    it('renders indirect changes tab', async () => {
+      expect(await screen.findByText(/Indirect changes/i)).toBeInTheDocument()
     })
 
-    it('renders indirect changes tab count', () => {
-      expect(screen.getByText('19')).toBeInTheDocument()
+    it('renders indirect changes tab count', async () => {
+      expect(await screen.findByText('19')).toBeInTheDocument()
     })
 
-    it('renders commits tab', () => {
-      expect(screen.getByText(/Commits/i)).toBeInTheDocument()
+    it('renders commits tab', async () => {
+      expect(await screen.findByText(/Commits/i)).toBeInTheDocument()
     })
 
-    it('renders commits tab count', () => {
-      expect(screen.getByText('11')).toBeInTheDocument()
+    it('renders commits tab count', async () => {
+      expect(await screen.findByText('11')).toBeInTheDocument()
     })
 
-    it('renders flags tab', () => {
-      expect(screen.getByText(/Flags/i)).toBeInTheDocument()
+    it('renders flags tab', async () => {
+      expect(await screen.findByText(/Flags/i)).toBeInTheDocument()
     })
 
-    it('renders flags tab count', () => {
-      expect(screen.getByText('91')).toBeInTheDocument()
+    it('renders flags tab count', async () => {
+      expect(await screen.findByText('91')).toBeInTheDocument()
     })
 
-    it('renders the name of the header and coverage labels', () => {
-      expect(screen.getByText('covered')).toBeInTheDocument()
-      expect(screen.getByText('partial')).toBeInTheDocument()
-      expect(screen.getByText('uncovered')).toBeInTheDocument()
+    it('renders the name of the header and coverage labels', async () => {
+      expect(await screen.findByText('covered')).toBeInTheDocument()
+      expect(await screen.findByText('partial')).toBeInTheDocument()
+      expect(await screen.findByText('uncovered')).toBeInTheDocument()
     })
 
     describe('Pull commits', () => {
       beforeEach(async () => {
-        screen.getByText(/Commits/i).click()
+        const tab = await screen.findByText(/Commits/i)
+        tab.click()
 
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -469,19 +457,24 @@ describe('PullRequestPage', () => {
 
     describe('when clicking on indirect changes tab', () => {
       beforeEach(async () => {
-        screen.getByText(/Indirect changes/i).click()
+        const tab = await screen.findByText(/Indirect changes/i)
+        tab.click()
 
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
       })
 
-      it('renders the indirect changes tab', () => {
-        expect(screen.getByText(/IndirectChangesTab/)).toBeInTheDocument()
+      it('renders the indirect changes tab', async () => {
+        expect(
+          await screen.findByText(/IndirectChangesTab/)
+        ).toBeInTheDocument()
       })
 
-      it('renders the information text of indirect changes', () => {
-        expect(screen.getByText(/IndirectChangesInfo/)).toBeInTheDocument()
+      it('renders the information text of indirect changes', async () => {
+        expect(
+          await screen.findByText(/IndirectChangesInfo/)
+        ).toBeInTheDocument()
       })
     })
   })

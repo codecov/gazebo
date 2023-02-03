@@ -4,17 +4,17 @@ import { usePrefetchCommitDirEntry } from './hooks'
 
 import DirEntry from '../BaseEntries/DirEntry'
 
-function CommitDirEntry({ commitSha, path, name, filters }) {
+function CommitDirEntry({ commitSha, urlPath, name, filters }) {
   const { runPrefetch } = usePrefetchCommitDirEntry({
     commitSha,
-    path,
+    path: urlPath,
     filters,
   })
 
   return (
     <DirEntry
       name={name}
-      path={path}
+      urlPath={urlPath}
       runPrefetch={runPrefetch}
       pageName="commitTreeView"
       commitSha={commitSha}
@@ -25,7 +25,7 @@ function CommitDirEntry({ commitSha, path, name, filters }) {
 CommitDirEntry.propTypes = {
   commitSha: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  path: PropTypes.string,
+  urlPath: PropTypes.string,
   filters: PropTypes.shape({
     ordering: PropTypes.shape({
       direction: PropTypes.string,
