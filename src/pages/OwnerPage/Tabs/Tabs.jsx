@@ -4,8 +4,6 @@ import config from 'config'
 
 import TabNavigation from 'ui/TabNavigation'
 
-import CallToAction from '../CallToAction'
-
 function Tabs({ provider, owner }) {
   return (
     <TabNavigation
@@ -26,7 +24,6 @@ function Tabs({ provider, owner }) {
           children: 'Settings',
         },
       ]}
-      component={<CallToAction provider={provider} owner={owner.username} />}
     />
   )
 }
