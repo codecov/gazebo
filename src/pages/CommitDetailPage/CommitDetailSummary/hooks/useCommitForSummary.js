@@ -1,5 +1,6 @@
 import isNumber from 'lodash/isNumber'
 import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
 
@@ -25,12 +26,9 @@ export function getCommitDataForSummary({
   }
 }
 
-export function useCommitForSummary({
-  provider,
-  owner,
-  repo,
-  commit: commitSHA,
-}) {
+export function useCommitForSummary() {
+  const { provider, owner, repo, commit: commitSHA } = useParams()
+
   const { data } = useCommit({
     provider,
     owner,

@@ -1,5 +1,3 @@
-import { useParams } from 'react-router-dom'
-
 import { UploadStateEnum } from 'shared/utils/commit'
 import A from 'ui/A'
 import Summary from 'ui/Summary'
@@ -105,8 +103,6 @@ const getTotalsSummaryCards = ({
 ]
 
 function CommitDetailSummary() {
-  const { provider, owner, repo, commit: commitSHA } = useParams()
-
   const {
     headCoverage,
     headCommitId,
@@ -114,7 +110,7 @@ function CommitDetailSummary() {
     changeCoverage,
     patchCoverage,
     state,
-  } = useCommitForSummary({ provider, owner, repo, commitSHA })
+  } = useCommitForSummary()
 
   const fields = [
     ...getTotalsSummaryCards({

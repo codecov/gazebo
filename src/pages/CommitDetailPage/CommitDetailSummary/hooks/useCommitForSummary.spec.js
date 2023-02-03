@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import isNumber from 'lodash/isNumber'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
   getCommitDataForSummary,
@@ -101,7 +102,11 @@ const queryClient = new QueryClient()
 const server = setupServer()
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/commit/sha256']}>
+      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 beforeAll(() => server.listen())
