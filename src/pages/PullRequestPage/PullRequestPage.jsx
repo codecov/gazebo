@@ -1,4 +1,3 @@
-import cs from 'classnames'
 import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
@@ -6,13 +5,11 @@ import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import NotFound from 'pages/NotFound'
-import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
-import Commits from './Commits'
 import ErrorBanner from './ErrorBanner'
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import Header from './Header'
@@ -39,7 +36,6 @@ const Loader = (
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
-  const { pullPageTabs } = useFlags({ pullPageTabs: true })
   const { flagsCount, indirectChangesCount, impactedFilesCount, commitsCount } =
     useTabsCounts()
 
@@ -71,11 +67,7 @@ function PullRequestPage() {
       {resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON ? (
         <ErrorBanner errorType={resultType} />
       ) : (
-        <div
-          className={cs('grid gap-4 grid-cols-1 lg:grid-cols-3 space-y-2', {
-            'lg:grid-cols-2': pullPageTabs,
-          })}
-        >
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 space-y-2">
           <article className="col-span-2 flex flex-col gap-3 md:gap-0">
             <TabNavigation
               tabs={[
@@ -89,39 +81,33 @@ function PullRequestPage() {
                   ),
                   exact: true,
                 },
-                ...(pullPageTabs
-                  ? [
-                      {
-                        pageName: 'pullIndirectChanges',
-                        children: (
-                          <>
-                            Indirect Changes
-                            <sup className="text-xs">
-                              {indirectChangesCount}
-                            </sup>
-                          </>
-                        ),
-                      },
-                      {
-                        pageName: 'pullCommits',
-                        children: (
-                          <>
-                            Commits
-                            <sup className="text-xs">{commitsCount}</sup>
-                          </>
-                        ),
-                      },
-                      {
-                        pageName: 'pullFlags',
-                        children: (
-                          <>
-                            Flags
-                            <sup className="text-xs">{flagsCount}</sup>
-                          </>
-                        ),
-                      },
-                    ]
-                  : []),
+                {
+                  pageName: 'pullIndirectChanges',
+                  children: (
+                    <>
+                      Indirect Changes
+                      <sup className="text-xs">{indirectChangesCount}</sup>
+                    </>
+                  ),
+                },
+                {
+                  pageName: 'pullCommits',
+                  children: (
+                    <>
+                      Commits
+                      <sup className="text-xs">{commitsCount}</sup>
+                    </>
+                  ),
+                },
+                {
+                  pageName: 'pullFlags',
+                  children: (
+                    <>
+                      Flags
+                      <sup className="text-xs">{flagsCount}</sup>
+                    </>
+                  ),
+                },
               ]}
               component={<ToggleHeader coverageIsLoading={false} />}
             />
@@ -133,31 +119,27 @@ function PullRequestPage() {
                 >
                   <Root />
                 </SentryRoute>
-                {pullPageTabs && (
-                  <>
-                    <SentryRoute
-                      path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
-                      exact={true}
-                    >
-                      <IndirectChangesInfo />
-                      <IndirectChangesTab />
-                    </SentryRoute>
-                    <SentryRoute
-                      path="/:provider/:owner/:repo/pull/:pullId/commits"
-                      exact={true}
-                    >
-                      <CommitsTable />
-                    </SentryRoute>
-                    <SentryRoute
-                      path="/:provider/:owner/:repo/pull/:pullId/flags"
-                      exact={true}
-                    >
-                      <SilentNetworkErrorWrapper>
-                        <Flags />
-                      </SilentNetworkErrorWrapper>
-                    </SentryRoute>
-                  </>
-                )}
+                <SentryRoute
+                  path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
+                  exact={true}
+                >
+                  <IndirectChangesInfo />
+                  <IndirectChangesTab />
+                </SentryRoute>
+                <SentryRoute
+                  path="/:provider/:owner/:repo/pull/:pullId/commits"
+                  exact={true}
+                >
+                  <CommitsTable />
+                </SentryRoute>
+                <SentryRoute
+                  path="/:provider/:owner/:repo/pull/:pullId/flags"
+                  exact={true}
+                >
+                  <SilentNetworkErrorWrapper>
+                    <Flags />
+                  </SilentNetworkErrorWrapper>
+                </SentryRoute>
               </Suspense>
               <Redirect
                 from="/:provider/:owner/:repo/pull/:pullId/*"
@@ -165,14 +147,6 @@ function PullRequestPage() {
               />
             </Switch>
           </article>
-          {!pullPageTabs && (
-            <aside className="flex flex-col gap-4 self-start sticky top-1.5">
-              <Commits />
-              <SilentNetworkErrorWrapper>
-                <Flags />
-              </SilentNetworkErrorWrapper>
-            </aside>
-          )}
         </div>
       )}
     </div>
