@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CommitFileViewer from './CommitFileViewer'
+import CommitDetailFileViewer from './CommitDetailFileViewer'
 
 const mockOwner = {
   username: 'cool-user',
@@ -76,7 +76,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('CommitFileViewer', () => {
+describe('CommitDetailFileViewer', () => {
   function setup() {
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) =>
@@ -93,7 +93,7 @@ describe('CommitFileViewer', () => {
 
     describe('displaying the tree path', () => {
       it('displays repo link', async () => {
-        render(<CommitFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper })
 
         const repoName = await screen.findByRole('link', { name: 'cool-repo' })
         expect(repoName).toBeInTheDocument()
@@ -104,7 +104,7 @@ describe('CommitFileViewer', () => {
       })
 
       it('displays directory link', async () => {
-        render(<CommitFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper })
 
         const repoName = await screen.findByRole('link', { name: 'directory' })
         expect(repoName).toBeInTheDocument()
@@ -115,7 +115,7 @@ describe('CommitFileViewer', () => {
       })
 
       it('displays file name', async () => {
-        render(<CommitFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper })
 
         const fileName = await screen.findByText('file.js')
         expect(fileName).toBeInTheDocument()
@@ -124,7 +124,7 @@ describe('CommitFileViewer', () => {
 
     describe('displaying the file viewer', () => {
       it('sets the correct url link', async () => {
-        render(<CommitFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper })
 
         const copyLink = await screen.findByRole('link', {
           name: 'directory/file.js',

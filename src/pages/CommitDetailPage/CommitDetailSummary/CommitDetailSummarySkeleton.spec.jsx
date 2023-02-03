@@ -1,31 +1,31 @@
 import { render, screen } from '@testing-library/react'
 
-import CommitSummarySkeleton from './CommitSummarySkeleton'
+import CommitDetailSummarySkeleton from './CommitDetailSummarySkeleton'
 
-describe('CommitSummarySkeleton', () => {
+describe('CommitDetailSummarySkeleton', () => {
   it('has a head field', () => {
-    render(<CommitSummarySkeleton />)
+    render(<CommitDetailSummarySkeleton />)
 
     const head = screen.getByText('HEAD')
     expect(head).toBeInTheDocument()
   })
 
   it('has a patch field', () => {
-    render(<CommitSummarySkeleton />)
+    render(<CommitDetailSummarySkeleton />)
 
     const patch = screen.getByText('Patch')
     expect(patch).toBeInTheDocument()
   })
 
   it('has a change field', () => {
-    render(<CommitSummarySkeleton />)
+    render(<CommitDetailSummarySkeleton />)
 
     const change = screen.getByText('Change')
     expect(change).toBeInTheDocument()
   })
 
   it('has a source field', () => {
-    render(<CommitSummarySkeleton />)
+    render(<CommitDetailSummarySkeleton />)
 
     const head = screen.getByText('HEAD')
     expect(head).toBeInTheDocument()

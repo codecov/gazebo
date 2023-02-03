@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CommitPageTabs from './CommitPageTabs'
+import CommitDetailPageTabs from './CommitDetailPageTabs'
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/commit/sha256']) =>
@@ -21,10 +21,12 @@ const wrapper =
       </MemoryRouter>
     )
 
-describe('CommitPageTabs', () => {
+describe('CommitDetailPageTabs', () => {
   describe('on base route', () => {
     it('highlights impacted files tab', () => {
-      render(<CommitPageTabs commitSHA="sha256" />, { wrapper: wrapper() })
+      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        wrapper: wrapper(),
+      })
 
       const impactedFiles = screen.getByText('Impacted Files')
       expect(impactedFiles).toBeInTheDocument()
@@ -32,7 +34,9 @@ describe('CommitPageTabs', () => {
     })
 
     it('does not highlight files tab', () => {
-      render(<CommitPageTabs commitSHA="sha256" />, { wrapper: wrapper() })
+      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        wrapper: wrapper(),
+      })
 
       const files = screen.getByText('Files')
       expect(files).toBeInTheDocument()
@@ -43,7 +47,7 @@ describe('CommitPageTabs', () => {
   describe('on files route', () => {
     describe('on tree route', () => {
       it('highlights files tab', () => {
-        render(<CommitPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSHA="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
@@ -53,7 +57,7 @@ describe('CommitPageTabs', () => {
       })
 
       it('does not highlight impacted files tab', () => {
-        render(<CommitPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSHA="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
@@ -64,7 +68,7 @@ describe('CommitPageTabs', () => {
     })
     describe('on a blob route', () => {
       it('highlights files tab', () => {
-        render(<CommitPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSHA="sha256" />, {
           wrapper: wrapper([
             '/gh/codecov/cool-repo/commit/sha256/blob/index.js',
           ]),
@@ -76,7 +80,7 @@ describe('CommitPageTabs', () => {
       })
 
       it('does not highlight impacted files tab', () => {
-        render(<CommitPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSHA="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 

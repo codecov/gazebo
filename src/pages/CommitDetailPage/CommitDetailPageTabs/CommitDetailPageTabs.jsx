@@ -8,7 +8,7 @@ import {
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
-function CommitPageTabs({ commitSHA }) {
+function CommitDetailPageTabs({ commitSHA }) {
   const { pathname } = useLocation()
   const { provider, owner, repo } = useParams()
 
@@ -48,8 +48,8 @@ function CommitPageTabs({ commitSHA }) {
   )
 }
 
-CommitPageTabs.propTypes = {
+CommitDetailPageTabs.propTypes = {
   commitSHA: PropTypes.string,
 }
 
-export default CommitPageTabs
+export default CommitDetailPageTabs

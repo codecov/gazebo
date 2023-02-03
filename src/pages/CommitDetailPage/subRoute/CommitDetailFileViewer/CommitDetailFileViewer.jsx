@@ -2,7 +2,7 @@ import RawFileviewer from 'shared/RawFileviewer'
 import { useCommitTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 
-function FileViewer() {
+function CommitDetailFileViewer() {
   const { treePaths } = useCommitTreePaths()
 
   return (
@@ -17,4 +17,4 @@ function FileViewer() {
   )
 }
 
-export default FileViewer
+export default CommitDetailFileViewer

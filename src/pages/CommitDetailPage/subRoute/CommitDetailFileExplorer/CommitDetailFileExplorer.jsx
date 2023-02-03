@@ -21,7 +21,7 @@ const defaultQueryParams = {
   search: '',
 }
 
-function FileExplorer() {
+function CommitDetailFileExplorer() {
   const { data, headers, handleSort, isSearching, isLoading } =
     useRepoCommitContentsTable()
 
@@ -56,4 +56,4 @@ function FileExplorer() {
   )
 }
 
-export default FileExplorer
+export default CommitDetailFileExplorer

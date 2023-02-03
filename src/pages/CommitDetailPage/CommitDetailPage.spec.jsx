@@ -5,9 +5,9 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CommitPage from './CommitPage'
+import CommitPage from './CommitDetailPage'
 
-jest.mock('./CommitPageContent', () => () => 'CommitPageContent')
+jest.mock('./CommitDetailPageContent', () => () => 'CommitDetailPageContent')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
 
 const mockCommit = {

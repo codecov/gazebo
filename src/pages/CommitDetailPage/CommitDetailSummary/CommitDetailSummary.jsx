@@ -104,7 +104,7 @@ const getTotalsSummaryCards = ({
   },
 ]
 
-function CommitSummary() {
+function CommitDetailSummary() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
 
   const {
@@ -133,4 +133,4 @@ function CommitSummary() {
   )
 }
 
-export default CommitSummary
+export default CommitDetailSummary

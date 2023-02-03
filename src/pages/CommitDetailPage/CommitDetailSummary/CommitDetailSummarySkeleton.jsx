@@ -44,7 +44,7 @@ const fields = [
   },
 ]
 
-function CommitSummarySkeleton() {
+function CommitDetailSummarySkeleton() {
   return (
     <div className="border-b border-ds-gray-secondary pb-4">
       <Summary fields={fields} />
@@ -52,4 +52,4 @@ function CommitSummarySkeleton() {
   )
 }
 
-export default CommitSummarySkeleton
+export default CommitDetailSummarySkeleton

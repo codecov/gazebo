@@ -8,13 +8,13 @@ import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
-import CommitSummarySkeleton from './CommitSummary/CommitSummarySkeleton'
+import CommitDetailSummarySkeleton from './CommitDetailSummary/CommitDetailSummarySkeleton'
 import Header from './Header'
 import { useCommitPageData } from './hooks'
 import YamlErrorBanner from './YamlErrorBanner'
 
-const CommitPageContent = lazy(() => import('./CommitPageContent'))
-const CommitSummary = lazy(() => import('./CommitSummary'))
+const CommitDetailPageContent = lazy(() => import('./CommitDetailPageContent'))
+const CommitDetailSummary = lazy(() => import('./CommitDetailSummary'))
 const UploadsCard = lazy(() => import('./UploadsCard'))
 
 const Loader = () => {
@@ -79,8 +79,8 @@ function CommitPage() {
         ]}
       />
       <Header />
-      <Suspense fallback={<CommitSummarySkeleton />}>
-        <CommitSummary />
+      <Suspense fallback={<CommitDetailSummarySkeleton />}>
+        <CommitDetailSummary />
       </Suspense>
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
@@ -92,7 +92,7 @@ function CommitPage() {
         </aside>
         <article className="flex flex-1 flex-col">
           <Suspense fallback={<Loader />}>
-            <CommitPageContent />
+            <CommitDetailPageContent />
           </Suspense>
         </article>
       </div>

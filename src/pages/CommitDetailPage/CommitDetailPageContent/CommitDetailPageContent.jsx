@@ -7,12 +7,16 @@ import { SentryRoute } from 'sentry'
 import { useCommit } from 'services/commit'
 import Spinner from 'ui/Spinner'
 
-import CommitPageTabs from '../CommitPageTabs'
+import CommitPageTabs from '../CommitDetailPageTabs'
 import ErroredUploads from '../ErroredUploads'
 import { useExtractUploads } from '../UploadsCard/useExtractUploads'
 
-const CommitFileExplorer = lazy(() => import('../subRoute/CommitFileExplorer'))
-const CommitFileViewer = lazy(() => import('../subRoute/CommitFileViewer'))
+const CommitDetailFileExplorer = lazy(() =>
+  import('../subRoute/CommitDetailFileExplorer')
+)
+const CommitDetailFileViewer = lazy(() =>
+  import('../subRoute/CommitDetailFileViewer')
+)
 const ImpactedFiles = lazy(() => import('../subRoute/ImpactedFiles'))
 
 const Loader = () => {
@@ -23,7 +27,7 @@ const Loader = () => {
   )
 }
 
-function CommitPageContent() {
+function CommitDetailPageContent() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
 
   const { data: commitData } = useCommit({
@@ -51,10 +55,10 @@ function CommitPageContent() {
               '/:provider/:owner/:repo/commit/:commit/tree/',
             ]}
           >
-            <CommitFileExplorer />
+            <CommitDetailFileExplorer />
           </SentryRoute>
           <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-            <CommitFileViewer />
+            <CommitDetailFileViewer />
           </SentryRoute>
           <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
             <ImpactedFiles commit={commitData?.commit} commitSHA={commitSHA} />
@@ -69,4 +73,4 @@ function CommitPageContent() {
   )
 }
 
-export default CommitPageContent
+export default CommitDetailPageContent

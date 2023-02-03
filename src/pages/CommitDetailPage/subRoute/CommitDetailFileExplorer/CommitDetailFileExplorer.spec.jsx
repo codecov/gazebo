@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CommitFileExplorer from './CommitFileExplorer'
+import CommitDetailFileExplorer from './CommitDetailFileExplorer'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,7 +109,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('CommitFileExplorer', () => {
+describe('CommitDetailFileExplorer', () => {
   const requestFilters = jest.fn()
 
   function setup(noFiles = false) {
@@ -142,42 +142,42 @@ describe('CommitFileExplorer', () => {
       })
 
       it('has a files column', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const files = await screen.findByText('Files')
         expect(files).toBeInTheDocument()
       })
 
       it('has a tracked lines column', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const trackedLines = await screen.findByText('Tracked lines')
         expect(trackedLines).toBeInTheDocument()
       })
 
       it('has a covered column', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const covered = await screen.findByText('Covered')
         expect(covered).toBeInTheDocument()
       })
 
       it('has a partial column', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const partial = await screen.findByText('Partial')
         expect(partial).toBeInTheDocument()
       })
 
       it('has a missed column', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const missed = await screen.findByText('Missed')
         expect(missed).toBeInTheDocument()
       })
 
       it('has a coverage column', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const coverage = await screen.findByText('Coverage %')
         expect(coverage).toBeInTheDocument()
@@ -191,7 +191,7 @@ describe('CommitFileExplorer', () => {
 
       describe('default sort is set', () => {
         it('sets default sort to name asc', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           await waitFor(() =>
             expect(requestFilters).toBeCalledWith({
@@ -203,7 +203,7 @@ describe('CommitFileExplorer', () => {
 
       describe('displaying a directory', () => {
         it('has the correct url', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const dir = await screen.findByText('src')
           expect(dir).toBeInTheDocument()
@@ -220,7 +220,7 @@ describe('CommitFileExplorer', () => {
 
       describe('displaying a file', () => {
         it('has the correct url', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const file = await screen.findByText('file.js')
           expect(file).toBeInTheDocument()
@@ -243,7 +243,7 @@ describe('CommitFileExplorer', () => {
 
       describe('display type is set', () => {
         it('set to list', async () => {
-          render(<CommitFileExplorer />, {
+          render(<CommitDetailFileExplorer />, {
             wrapper: wrapper([
               '/gh/codecov/cool-repo/commit/sha256/tree/a/b/c?displayType=list',
             ]),
@@ -260,7 +260,7 @@ describe('CommitFileExplorer', () => {
 
       describe('displaying a file', () => {
         it('has the correct url', async () => {
-          render(<CommitFileExplorer />, {
+          render(<CommitDetailFileExplorer />, {
             wrapper: wrapper([
               '/gh/codecov/cool-repo/commit/sha256/tree/a/b/c?displayType=list',
             ]),
@@ -286,7 +286,7 @@ describe('CommitFileExplorer', () => {
       })
 
       it('displays error fetching data message', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const message = await screen.findByText(
           'There was a problem getting repo contents from your provider'
@@ -304,7 +304,7 @@ describe('CommitFileExplorer', () => {
     describe('sorting on head column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const files = await screen.findByText('Files')
 
@@ -322,7 +322,7 @@ describe('CommitFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const files = await screen.findByText('Files')
 
@@ -341,7 +341,7 @@ describe('CommitFileExplorer', () => {
     describe('sorting on tracked lines column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const trackedLines = await screen.findByText('Tracked lines')
 
@@ -358,7 +358,7 @@ describe('CommitFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
           const trackedLines = await screen.findByText('Tracked lines')
 
           userEvent.click(trackedLines)
@@ -375,7 +375,7 @@ describe('CommitFileExplorer', () => {
     describe('sorting on the covered column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const covered = await screen.findByText('Covered')
 
@@ -392,7 +392,7 @@ describe('CommitFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const covered = await screen.findByText('Covered')
 
@@ -410,7 +410,7 @@ describe('CommitFileExplorer', () => {
     describe('sorting on the partial column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const partial = await screen.findByText('Partial')
 
@@ -427,7 +427,7 @@ describe('CommitFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const partial = await screen.findByText('Partial')
 
@@ -445,7 +445,7 @@ describe('CommitFileExplorer', () => {
     describe('sorting on the coverage line', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const missed = await screen.findByText('Missed')
 
@@ -462,7 +462,7 @@ describe('CommitFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          render(<CommitFileExplorer />, { wrapper: wrapper() })
+          render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const missed = await screen.findByText('Missed')
 
@@ -485,7 +485,7 @@ describe('CommitFileExplorer', () => {
       })
 
       it('sets the correct api variables', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const search = await screen.findByRole('textbox', {
           name: 'Search for files',
@@ -507,7 +507,7 @@ describe('CommitFileExplorer', () => {
       })
 
       it('displays no items found message', async () => {
-        render(<CommitFileExplorer />, { wrapper: wrapper() })
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const dir = await screen.findByText('src')
         expect(dir).toBeInTheDocument()

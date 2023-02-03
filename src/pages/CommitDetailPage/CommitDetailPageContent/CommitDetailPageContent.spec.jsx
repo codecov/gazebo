@@ -5,10 +5,16 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CommitPageContent from './CommitPageContent'
+import CommitDetailPageContent from './CommitDetailPageContent'
 
-jest.mock('../subRoute/CommitFileExplorer', () => () => 'CommitFileExplorer')
-jest.mock('../subRoute/CommitFileViewer', () => () => 'CommitFileViewer')
+jest.mock(
+  '../subRoute/CommitDetailFileExplorer',
+  () => () => 'CommitDetailFileExplorer'
+)
+jest.mock(
+  '../subRoute/CommitDetailFileViewer',
+  () => () => 'CommitDetailFileViewer'
+)
 jest.mock('../subRoute/ImpactedFiles', () => () => 'ImpactedFiles')
 
 const mockCommitData = {
@@ -86,7 +92,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('CommitPageContent', () => {
+describe('CommitDetailPageContent', () => {
   function setup(erroredUploads = false) {
     server.use(
       graphql.query('Commit', (req, res, ctx) => {
@@ -103,7 +109,7 @@ describe('CommitPageContent', () => {
     beforeEach(() => setup())
 
     it('renders tabs component', async () => {
-      render(<CommitPageContent />, {
+      render(<CommitDetailPageContent />, {
         wrapper: wrapper(),
       })
 
@@ -116,7 +122,7 @@ describe('CommitPageContent', () => {
     beforeEach(() => setup(true))
 
     it('displays errored uploads component', async () => {
-      render(<CommitPageContent />, {
+      render(<CommitDetailPageContent />, {
         wrapper: wrapper(),
       })
 
@@ -129,23 +135,23 @@ describe('CommitPageContent', () => {
     beforeEach(() => setup())
 
     describe('not path provided', () => {
-      it('renders CommitFileExplorer', async () => {
-        render(<CommitPageContent />, {
+      it('renders CommitDetailFileExplorer', async () => {
+        render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
         })
 
-        const fileExplorer = await screen.findByText('CommitFileExplorer')
+        const fileExplorer = await screen.findByText('CommitDetailFileExplorer')
         expect(fileExplorer).toBeInTheDocument()
       })
     })
 
     describe('path provided', () => {
-      it('renders CommitFileExplorer', async () => {
-        render(<CommitPageContent />, {
+      it('renders CommitDetailFileExplorer', async () => {
+        render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree/src/dir'),
         })
 
-        const fileExplorer = await screen.findByText('CommitFileExplorer')
+        const fileExplorer = await screen.findByText('CommitDetailFileExplorer')
         expect(fileExplorer).toBeInTheDocument()
       })
     })
@@ -154,14 +160,14 @@ describe('CommitPageContent', () => {
   describe('testing blob path', () => {
     beforeEach(() => setup())
 
-    it('renders CommitFileViewer', async () => {
-      render(<CommitPageContent />, {
+    it('renders CommitDetailFileViewer', async () => {
+      render(<CommitDetailPageContent />, {
         wrapper: wrapper(
           '/gh/codecov/cool-repo/commit/sha256/blob/src/file.js'
         ),
       })
 
-      const fileViewer = await screen.findByText('CommitFileViewer')
+      const fileViewer = await screen.findByText('CommitDetailFileViewer')
       expect(fileViewer).toBeInTheDocument()
     })
   })
@@ -170,7 +176,7 @@ describe('CommitPageContent', () => {
     beforeEach(() => setup())
 
     it('renders ImpactedFiles', async () => {
-      render(<CommitPageContent />, {
+      render(<CommitDetailPageContent />, {
         wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
       })
 
@@ -183,7 +189,7 @@ describe('CommitPageContent', () => {
     beforeEach(() => setup())
 
     it('redirects user to base commit route', async () => {
-      render(<CommitPageContent />, {
+      render(<CommitDetailPageContent />, {
         wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/blah'),
       })
 
@@ -203,7 +209,7 @@ describe('CommitPageContent', () => {
 
     describe('user clicks files tab', () => {
       it('navigates to files url', async () => {
-        render(<CommitPageContent />, {
+        render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
         })
 
@@ -220,7 +226,7 @@ describe('CommitPageContent', () => {
 
     describe('user clicks impacted files tab', () => {
       it('navigates to base url', async () => {
-        render(<CommitPageContent />, {
+        render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
         })
 
