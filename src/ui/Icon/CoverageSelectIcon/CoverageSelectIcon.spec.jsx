@@ -6,21 +6,34 @@ describe('CoverageSelectIcon', () => {
   it('renders uncovered alert icon', () => {
     render(<CoverageSelectIcon coverage="UNCOVERED" />)
 
-    expect(screen.getByText('exclamation-triangle.svg')).toBeInTheDocument()
+    const icon = screen.getByText('exclamation-triangle.svg')
+    expect(icon).toBeInTheDocument()
   })
 
   it('renders partial alert icon', () => {
     render(<CoverageSelectIcon coverage="PARTIAL" />)
 
-    expect(screen.getByTestId('partial-icon')).toBeInTheDocument()
+    const icon = screen.getByTestId('partial-icon')
+    expect(icon).toBeInTheDocument()
   })
 
   it('does not render icons on covered', () => {
     render(<CoverageSelectIcon coverage="COVERED" />)
 
-    expect(screen.queryByTestId('partial-icon')).not.toBeInTheDocument()
-    expect(
-      screen.queryByText('exclamation-triangle.svg')
-    ).not.toBeInTheDocument()
+    const partialIcon = screen.queryByTestId('partial-icon')
+    expect(partialIcon).not.toBeInTheDocument()
+
+    const exclamationTriangle = screen.queryByText('exclamation-triangle.svg')
+    expect(exclamationTriangle).not.toBeInTheDocument()
+  })
+
+  it('does not render icons on blank', () => {
+    render(<CoverageSelectIcon coverage="BLANK" />)
+
+    const partialIcon = screen.queryByTestId('partial-icon')
+    expect(partialIcon).not.toBeInTheDocument()
+
+    const exclamationTriangle = screen.queryByText('exclamation-triangle.svg')
+    expect(exclamationTriangle).not.toBeInTheDocument()
   })
 })
