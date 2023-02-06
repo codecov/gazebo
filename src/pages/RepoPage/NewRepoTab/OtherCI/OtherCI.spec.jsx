@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -112,15 +112,17 @@ describe('OtherCI', () => {
 
         userEvent.click(button)
 
-        expect(trackSegmentEvent).toBeCalled()
-        expect(trackSegmentEvent).toBeCalledWith({
-          data: {
-            category: 'Onboarding',
-            tokenHash: 'a2629295',
-            userId: 'user-owner-id',
-          },
-          event: 'User Onboarding Copied CI Token',
-        })
+        await waitFor(() => expect(trackSegmentEvent).toBeCalled())
+        await waitFor(() =>
+          expect(trackSegmentEvent).toBeCalledWith({
+            data: {
+              category: 'Onboarding',
+              tokenHash: 'a2629295',
+              userId: 'user-owner-id',
+            },
+            event: 'User Onboarding Copied CI Token',
+          })
+        )
       })
     })
   })
@@ -160,11 +162,13 @@ describe('OtherCI', () => {
 
         userEvent.click(headerLink)
 
-        expect(trackSegmentEvent).toBeCalled()
-        expect(trackSegmentEvent).toHaveBeenCalledWith({
-          data: { category: 'Onboarding', userId: 'user-owner-id' },
-          event: 'User Onboarding Download Uploader Clicked',
-        })
+        await waitFor(() => expect(trackSegmentEvent).toBeCalled())
+        await waitFor(() =>
+          expect(trackSegmentEvent).toHaveBeenCalledWith({
+            data: { category: 'Onboarding', userId: 'user-owner-id' },
+            event: 'User Onboarding Download Uploader Clicked',
+          })
+        )
       })
     })
 
