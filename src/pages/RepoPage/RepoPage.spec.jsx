@@ -25,7 +25,7 @@ const mockOwner = (isCurrentUserPartOfOrg = true) => ({
 const mockGetRepo = (
   noUploadToken,
   isRepoPrivate = false,
-  repoIsActive = true
+  isRepoActivated = true
 ) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
@@ -36,7 +36,7 @@ const mockGetRepo = (
         : '9e6a6189-20f1-482d-ab62-ecfaa2629295',
       defaultBranch: 'main',
       yaml: '',
-      activated: repoIsActive,
+      activated: isRepoActivated,
       oldestCommitAt: '',
     },
   },
@@ -116,14 +116,14 @@ describe('RepoPage', () => {
       isCurrentUserPartOfOrg,
       hasRepoData,
       isRepoPrivate,
-      repoIsActive,
+      isRepoActivated,
     } = {
       hasCommits: true,
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
       hasRepoData: true,
       isRepoPrivate: false,
-      repoIsActive: true,
+      isRepoActivated: true,
     }
   ) {
     server.use(
@@ -131,7 +131,7 @@ describe('RepoPage', () => {
         if (hasRepoData) {
           return res(
             ctx.status(200),
-            ctx.data(mockGetRepo(noUploadToken, isRepoPrivate, repoIsActive))
+            ctx.data(mockGetRepo(noUploadToken, isRepoPrivate, isRepoActivated))
           )
         }
 
@@ -394,7 +394,7 @@ describe('RepoPage', () => {
 
     describe('repo has no commits', () => {
       beforeEach(() =>
-        setup({ hasCommits: false, hasRepoData: true, repoIsActive: false })
+        setup({ hasCommits: false, hasRepoData: true, isRepoActivated: false })
       )
 
       it('renders new repo tab', async () => {
@@ -407,7 +407,7 @@ describe('RepoPage', () => {
 
     describe('repo is deactivated', () => {
       beforeEach(() =>
-        setup({ hasRepoData: true, repoIsActive: false, hasCommits: true })
+        setup({ hasRepoData: true, isRepoActivated: false, hasCommits: true })
       )
 
       it('renders deactivated repo page', async () => {
