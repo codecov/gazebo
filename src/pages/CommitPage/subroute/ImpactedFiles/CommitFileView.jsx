@@ -31,6 +31,7 @@ function CommitFileView({ path }) {
     coverage: coverageData,
     flagNames,
     content,
+    hashedPath,
   } = useCommitBasedCoverageForFileViewer({
     owner,
     repo,
@@ -66,6 +67,7 @@ function CommitFileView({ path }) {
               getLineProps={getLineProps}
               getTokenProps={getTokenProps}
               coverage={coverageData && coverageData[i + 1]}
+              path={hashedPath}
             />
           )}
         />
