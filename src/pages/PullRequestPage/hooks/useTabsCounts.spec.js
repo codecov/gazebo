@@ -77,18 +77,23 @@ describe('useTabsCount', () => {
     })
 
     it('returns the correct data', async () => {
-      const { result, waitForNextUpdate } = renderHook(() => useTabsCounts(), {
-        wrapper,
-      })
+      const { result, waitForNextUpdate, waitFor } = renderHook(
+        () => useTabsCounts(),
+        {
+          wrapper,
+        }
+      )
 
       await waitForNextUpdate()
 
-      expect(result.current).toStrictEqual({
-        flagsCount: 1,
-        impactedFilesCount: 4,
-        indirectChangesCount: 0,
-        commitsCount: 11,
-      })
+      await waitFor(() =>
+        expect(result.current).toStrictEqual({
+          flagsCount: 1,
+          impactedFilesCount: 4,
+          indirectChangesCount: 0,
+          commitsCount: 11,
+        })
+      )
     })
   })
 })
