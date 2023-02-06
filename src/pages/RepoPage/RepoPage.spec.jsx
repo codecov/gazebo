@@ -16,19 +16,15 @@ jest.mock('./PullsTab', () => () => 'PullsTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 
-const mockOwner = (isCurrentUserPartOfOrg = true) => ({
-  owner: {
-    isCurrentUserPartOfOrg,
-  },
-})
-
 const mockGetRepo = (
   noUploadToken,
   isRepoPrivate = false,
-  isRepoActivated = true
+  isRepoActivated = true,
+  isCurrentUserPartOfOrg = true,
+  isRepoActive = true
 ) => ({
   owner: {
-    isCurrentUserPartOfOrg: true,
+    isCurrentUserPartOfOrg,
     repository: {
       private: isRepoPrivate,
       uploadToken: noUploadToken
@@ -38,17 +34,7 @@ const mockGetRepo = (
       yaml: '',
       activated: isRepoActivated,
       oldestCommitAt: '',
-    },
-  },
-})
-
-const mockGetCommits = (hasCommits) => ({
-  owner: {
-    repository: {
-      commits: {
-        totalCount: 0,
-        edges: hasCommits ? [{ node: { commitid: 1 } }] : [],
-      },
+      active: isRepoActive,
     },
   },
 })
@@ -111,19 +97,19 @@ afterAll(() => server.close())
 describe('RepoPage', () => {
   function setup(
     {
-      hasCommits,
       noUploadToken,
       isCurrentUserPartOfOrg,
       hasRepoData,
       isRepoPrivate,
       isRepoActivated,
+      isRepoActive,
     } = {
-      hasCommits: true,
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
       hasRepoData: true,
       isRepoPrivate: false,
       isRepoActivated: true,
+      isRepoActive: true,
     }
   ) {
     server.use(
@@ -131,18 +117,20 @@ describe('RepoPage', () => {
         if (hasRepoData) {
           return res(
             ctx.status(200),
-            ctx.data(mockGetRepo(noUploadToken, isRepoPrivate, isRepoActivated))
+            ctx.data(
+              mockGetRepo(
+                noUploadToken,
+                isRepoPrivate,
+                isRepoActivated,
+                isCurrentUserPartOfOrg,
+                isRepoActive
+              )
+            )
           )
         }
 
         return res(ctx.status(200), ctx.data({ owner: {} }))
-      }),
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetCommits(hasCommits)))
-      ),
-      graphql.query('DetailOwner', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockOwner(isCurrentUserPartOfOrg)))
-      )
+      })
     )
   }
 
@@ -252,10 +240,10 @@ describe('RepoPage', () => {
     describe('user not part of an org', () => {
       beforeEach(() =>
         setup({
-          hasCommits: true,
           hasRepoData: true,
           isCurrentUserPartOfOrg: false,
           isRepoPrivate: false,
+          isRepoActive: true,
         })
       )
 
@@ -394,7 +382,11 @@ describe('RepoPage', () => {
 
     describe('repo has no commits', () => {
       beforeEach(() =>
-        setup({ hasCommits: false, hasRepoData: true, isRepoActivated: false })
+        setup({
+          isRepoActive: false,
+          hasRepoData: true,
+          isRepoActivated: false,
+        })
       )
 
       it('renders new repo tab', async () => {
@@ -407,7 +399,7 @@ describe('RepoPage', () => {
 
     describe('repo is deactivated', () => {
       beforeEach(() =>
-        setup({ hasRepoData: true, isRepoActivated: false, hasCommits: true })
+        setup({ hasRepoData: true, isRepoActivated: false, isRepoActive: true })
       )
 
       it('renders deactivated repo page', async () => {
@@ -420,7 +412,7 @@ describe('RepoPage', () => {
   })
 
   describe('testing breadcrumb', () => {
-    beforeEach(() => setup({ hasRepoData: true, hasCommits: true }))
+    beforeEach(() => setup({ hasRepoData: true, isRepoActive: true }))
 
     it('renders org breadcrumb', async () => {
       render(<RepoPage />, { wrapper: wrapper() })
