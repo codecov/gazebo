@@ -6,11 +6,13 @@ export function transformImpactedFileData(impactedFile) {
     isRenamedFile: impactedFile?.isRenamedFile,
     isDeletedFile: impactedFile?.isDeletedFile,
   })
+  const hashedPath = impactedFile?.hashedPath
 
   return {
     fileLabel,
     headName: impactedFile?.headName,
     isCriticalFile: impactedFile?.isCriticalFile,
     segments: impactedFile?.segmentsDeprecated,
+    ...(hashedPath && { hashedPath }),
   }
 }
