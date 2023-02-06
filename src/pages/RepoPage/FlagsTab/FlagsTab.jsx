@@ -1,11 +1,11 @@
 import { SentryRoute } from 'sentry'
 
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
+import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 
 import blurredTable from './assets/blurredTable.png'
 import BackfillBanners from './BackfillBanners/BackfillBanners'
 import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
-import FlagsNotConfigured from './FlagsNotConfigured'
 import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
 import TimescaleDisabled from './TimescaleDisabled'

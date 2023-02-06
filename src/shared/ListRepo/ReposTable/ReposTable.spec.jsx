@@ -23,6 +23,21 @@ afterEach(() => {
 })
 afterAll(() => server.close)
 
+const wrapper =
+  (repoDisplay) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <ActiveContext.Provider value={repoDisplay}>
+              {children}
+            </ActiveContext.Provider>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
 describe('ReposTable', () => {
   let props, repoDisplay
 
@@ -167,17 +182,9 @@ describe('ReposTable', () => {
     })
 
     it('renders table repo name', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -187,17 +194,9 @@ describe('ReposTable', () => {
     })
 
     it('links to /:organization/:owner/:repo', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -218,17 +217,9 @@ describe('ReposTable', () => {
     })
 
     it('renders second column', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -241,17 +232,9 @@ describe('ReposTable', () => {
     })
 
     it('renders third column', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -261,17 +244,9 @@ describe('ReposTable', () => {
     })
 
     it('renders handles null coverage', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -331,33 +306,26 @@ describe('ReposTable', () => {
       })
 
       it('links to /:organization/:owner/:repo/new', async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/gh']}>
-              <Route path="/:provider">
-                <ActiveContext.Provider value={repoDisplay}>
-                  <ReposTable {...props} />
-                </ActiveContext.Provider>
-              </Route>
-            </MemoryRouter>
-          </QueryClientProvider>
-        )
+        const linkProps = { ...props, owner: 'owner1' }
+        render(<ReposTable {...linkProps} />, {
+          wrapper: wrapper(repoDisplay),
+        })
 
         await waitFor(() => queryClient.isFetching())
         await waitFor(() => !queryClient.isFetching())
 
         const repo1 = await screen.findByRole('link', {
-          name: 'globe-alt.svg owner1 / Repo name 1',
+          name: 'globe-alt.svg Repo name 1',
         })
         expect(repo1).toHaveAttribute('href', '/gh/owner1/Repo name 1/new')
 
         const repo2 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 2',
+          name: 'lock-closed.svg Repo name 2',
         })
         expect(repo2).toHaveAttribute('href', '/gh/owner1/Repo name 2/new')
 
         const repo3 = await screen.findByRole('link', {
-          name: 'lock-closed.svg owner1 / Repo name 3',
+          name: 'lock-closed.svg Repo name 3',
         })
         expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3/new')
       })
@@ -413,17 +381,9 @@ describe('ReposTable', () => {
       })
 
       it('does not link to setup repo from repo name', async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/gh']}>
-              <Route path="/:provider">
-                <ActiveContext.Provider value={repoDisplay}>
-                  <ReposTable {...props} />
-                </ActiveContext.Provider>
-              </Route>
-            </MemoryRouter>
-          </QueryClientProvider>
-        )
+        render(<ReposTable {...props} />, {
+          wrapper: wrapper(repoDisplay),
+        })
 
         await waitFor(() => queryClient.isFetching())
         await waitFor(() => !queryClient.isFetching())
@@ -439,17 +399,9 @@ describe('ReposTable', () => {
       })
 
       it('does not show setup repo link', async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/gh']}>
-              <Route path="/:provider">
-                <ActiveContext.Provider value={repoDisplay}>
-                  <ReposTable {...props} />
-                </ActiveContext.Provider>
-              </Route>
-            </MemoryRouter>
-          </QueryClientProvider>
-        )
+        render(<ReposTable {...props} />, {
+          wrapper: wrapper(repoDisplay),
+        })
 
         await waitFor(() => queryClient.isFetching())
         await waitFor(() => !queryClient.isFetching())
@@ -469,17 +421,9 @@ describe('ReposTable', () => {
     })
 
     it('renders no repos detected', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -489,17 +433,9 @@ describe('ReposTable', () => {
     })
 
     it('renders select the repo text', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -509,17 +445,9 @@ describe('ReposTable', () => {
     })
 
     it('renders the select the repo to have the right link', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -529,17 +457,9 @@ describe('ReposTable', () => {
     })
 
     it('renders the quick start guide link', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -551,17 +471,9 @@ describe('ReposTable', () => {
     })
 
     it('renders the view repos for setup button', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -582,17 +494,9 @@ describe('ReposTable', () => {
       })
     })
     it('renders no results found', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -625,17 +529,9 @@ describe('ReposTable', () => {
     })
 
     it('renders button', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -645,17 +541,9 @@ describe('ReposTable', () => {
     })
 
     it('loads next page of data', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -719,17 +607,9 @@ describe('ReposTable', () => {
     })
 
     it('renders all repos', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())
@@ -739,17 +619,9 @@ describe('ReposTable', () => {
     })
 
     it('renders not yet set up for inactive repos', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActiveContext.Provider value={repoDisplay}>
-                <ReposTable {...props} />
-              </ActiveContext.Provider>
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
 
       await waitFor(() => queryClient.isFetching())
       await waitFor(() => !queryClient.isFetching())

@@ -1,14 +1,18 @@
 import { useParams } from 'react-router-dom'
 
-import { useOwner } from 'services/user'
+import { useRepo } from 'services/repo'
 import A from 'ui/A'
 
 import deactivatedRepo from './assets/deactivatedRepo.svg'
 
 function DeactivatedRepo() {
-  const { owner } = useParams()
-  const { data: currentOwner } = useOwner({ username: owner })
-  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
+  const { provider, owner, repo } = useParams()
+  const { data: repoData } = useRepo({
+    provider,
+    owner,
+    repo,
+  })
+  const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
 
   // TODO: Add a link to 'our docs' page in the non-org user case once it's available.
   return (

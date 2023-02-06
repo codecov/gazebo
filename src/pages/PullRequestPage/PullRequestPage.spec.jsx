@@ -5,8 +5,6 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import PullRequestPage from './PullRequestPage'
 
@@ -22,8 +20,6 @@ jest.mock(
   './IndirectChangesTab/IndirectChangesInfo',
   () => () => 'IndirectChangesInfo'
 )
-jest.mock('shared/featureFlags')
-
 const commits = {
   owner: {
     repository: {
@@ -49,7 +45,6 @@ describe('PullRequestPage', () => {
     hasAccess = false,
     pullData = {},
     initialEntries = ['/gh/test-org/test-repo/pull/12'],
-    pullPageTabsFlag = false,
   }) {
     server.use(
       graphql.query('GetCommits', (req, res, ctx) =>
@@ -70,10 +65,6 @@ describe('PullRequestPage', () => {
         )
       )
     )
-
-    useFlags.mockReturnValue({
-      pullPageTabs: pullPageTabsFlag,
-    })
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -391,7 +382,6 @@ describe('PullRequestPage', () => {
           },
         },
         initialEntries: ['/gh/test-org/test-repo/pull/12'],
-        pullPageTabsFlag: true,
       })
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
