@@ -53,9 +53,8 @@ describe('DeactivatedRepo', () => {
     it('renders corresponding message', async () => {
       render(<DeactivatedRepo />, { wrapper })
 
-      expect(
-        await screen.findByText(/To reactivate the repo go to/)
-      ).toBeInTheDocument()
+      const message = await screen.findByText(/To reactivate the repo go to/)
+      expect(message).toBeInTheDocument()
     })
   })
 
@@ -67,11 +66,10 @@ describe('DeactivatedRepo', () => {
     it('renders corresponding message', async () => {
       render(<DeactivatedRepo />, { wrapper })
 
-      expect(
-        await screen.findByText(
-          /Contact an administrator of your git organization/
-        )
-      ).toBeInTheDocument()
+      const message = await screen.findByText(
+        /Contact an administrator of your git organization/
+      )
+      expect(message).toBeInTheDocument()
     })
   })
 })
