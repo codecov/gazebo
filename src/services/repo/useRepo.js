@@ -14,6 +14,7 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
           yaml
           activated
           oldestCommitAt
+          active
         }
       }
     }

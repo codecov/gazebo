@@ -5,9 +5,7 @@ import { SentryRoute } from 'sentry'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import NotFound from 'pages/NotFound'
-import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
-import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
@@ -67,16 +65,13 @@ function RepoPage() {
     owner,
     repo,
   })
-  const { data: currentOwner } = useOwner({ username: owner })
-  const { data: commitsData } = useCommits({ provider, owner, repo })
 
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
 
-  const repoHasCommits =
-    commitsData?.commits && commitsData?.commits?.length > 0
+  const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
-  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
+  const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
   const isRepoPrivate = !!repoData?.repository?.private
 
   // if there is no repo data
@@ -94,7 +89,7 @@ function RepoPage() {
     <RepoBreadcrumbProvider>
       <div>
         <RepoBreadcrumb />
-        {repoHasCommits && isRepoActivated && (
+        {isRepoActive && isRepoActivated && (
           <div className="sticky top-8 z-10 bg-white mb-2">
             <TabNavigation
               tabs={getRepoTabs({
@@ -142,7 +137,7 @@ function RepoPage() {
             </Switch>
           ) : (
             <>
-              {repoHasCommits ? (
+              {isRepoActive ? (
                 <Switch>
                   <SentryRoute path={`${path}/settings`}>
                     <SettingsTab />
