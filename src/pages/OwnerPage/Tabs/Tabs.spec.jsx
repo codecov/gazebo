@@ -6,7 +6,6 @@ import config from 'config'
 import Tabs from './Tabs'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-jest.mock('../CallToAction', () => () => 'CallToAction')
 jest.mock('config')
 
 describe('Tabs', () => {

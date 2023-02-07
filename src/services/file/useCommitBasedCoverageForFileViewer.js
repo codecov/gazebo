@@ -43,6 +43,7 @@ export function useCommitBasedCoverageForFileViewer({
       content: data?.content,
       isCriticalFile: !!data?.isCriticalFile,
       isLoading: false,
+      hashedPath: data?.hashedPath,
     }
   }
 
@@ -53,5 +54,6 @@ export function useCommitBasedCoverageForFileViewer({
     flagNames: data?.flagNames,
     content: data?.content,
     isCriticalFile: !!data?.isCriticalFile,
+    hashedPath: data?.hashedPath,
   }
 }

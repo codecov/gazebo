@@ -55,7 +55,7 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
       expect(config).toStrictEqual({
-        aggFunction: 'min',
+        aggFunction: 'max',
         aggValue: 'timestamp',
         branch: {
           name: 'c3',
@@ -87,7 +87,7 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
       expect(config).toStrictEqual({
-        aggFunction: 'min',
+        aggFunction: 'max',
         aggValue: 'timestamp',
         branch: {
           name: 'c3',

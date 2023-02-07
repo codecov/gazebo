@@ -4,7 +4,6 @@ import { Suspense, useMemo } from 'react'
 
 import A from 'ui/A'
 import Icon from 'ui/Icon'
-import Progress from 'ui/Progress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -102,15 +101,15 @@ function createTable({ tableData }) {
         <div className="flex flex-col break-all">
           <A
             to={{
-              pageName: 'commitFile',
-              options: { commit, path: headName },
+              pageName: 'commitFileView',
+              options: { commit, tree: headName },
             }}
           >
             {headName}
           </A>
         </div>
       ),
-      coverage: <Progress amount={headCoverage} label />,
+      coverage: <TotalsNumber value={headCoverage} plain />,
       /*
           The container div fot TotalsNumber is added due to the current state of table cells styling,
           shouldn't be necessary in the future if fixed/updated

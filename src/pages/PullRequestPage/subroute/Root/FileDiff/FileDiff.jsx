@@ -66,6 +66,7 @@ function FileDiff({ path }) {
                   key={i + 1}
                   lineContent={line}
                   edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
+                  path={data?.hashedPath}
                   {...props}
                   {...segment.lines[i]}
                 />

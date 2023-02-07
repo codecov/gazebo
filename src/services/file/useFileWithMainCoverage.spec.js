@@ -28,17 +28,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useFileWithMainCoverage', () => {
-  let hookData
-
   function setup(dataReturned) {
     server.use(
       graphql.query('CoverageForFile', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-    hookData = renderHook(() => useFileWithMainCoverage({ provider }), {
-      wrapper,
-    })
   }
 
   describe('when called for commit', () => {
@@ -49,6 +44,7 @@ describe('useFileWithMainCoverage', () => {
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             flagNames: ['a', 'b'],
             coverageFile: {
+              hashedPath: 'hashedPath',
               isCriticalFile: true,
               content:
                 'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
@@ -86,11 +82,20 @@ describe('useFileWithMainCoverage', () => {
     }
     beforeEach(() => {
       setup(data)
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns commit file coverage', () => {
-      expect(hookData.result.current.data).toEqual({
+    it('returns commit file coverage', async () => {
+      const { result, waitFor } = renderHook(
+        () => useFileWithMainCoverage({ provider }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(result.current.data).toEqual({
         ...data.owner.repository.commit.coverageFile,
         totals: 0,
         flagNames: ['a', 'b'],
@@ -112,6 +117,7 @@ describe('useFileWithMainCoverage', () => {
             head: {
               commitid: '98a8b5f3ed2553d1b08ea02b2a0c3a1c1e001cf2',
               coverageFile: {
+                hashedPath: 'hashedPath',
                 isCriticalFile: true,
                 content:
                   'def uncovered_if(var=True):\n    if var:\n      return False\n    else:\n      return True\n\n\ndef fully_covered():\n    # Added a change here\n    return True\n\ndef uncovered():\n    return True\n\n',
@@ -157,11 +163,20 @@ describe('useFileWithMainCoverage', () => {
     }
     beforeEach(() => {
       setup(data)
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns branch file coverage', () => {
-      expect(hookData.result.current.data).toEqual({
+    it('returns branch file coverage', async () => {
+      const { result, waitFor } = renderHook(
+        () => useFileWithMainCoverage({ provider }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(result.current.data).toEqual({
         ...data.owner.repository.branch.head.coverageFile,
         totals: 0,
         flagNames: [],

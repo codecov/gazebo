@@ -10,6 +10,7 @@ export function useMyContexts({ provider, opts = {} }) {
         owner {
           username
           avatarUrl
+          defaultOrgUsername
         }
         myOrganizations(first: 20, after: $after) {
           edges {
@@ -24,7 +25,7 @@ export function useMyContexts({ provider, opts = {} }) {
           }
         }
       }
-    }  
+    }
   `
 
   const { data, ...rest } = useInfiniteQuery({

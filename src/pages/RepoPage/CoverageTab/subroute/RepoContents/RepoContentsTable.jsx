@@ -3,6 +3,7 @@ import PropType from 'prop-types'
 import { useLocationParams } from 'services/navigation'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
+import MissingFileData from 'shared/ContentsTable/MissingFileData'
 import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
@@ -29,15 +30,9 @@ function RepoContentsResult({ isSearching, isMissingHeadReport }) {
         No coverage report uploaded for this branch head commit
       </p>
     )
-  } else if (isSearching) {
-    return <p className="flex justify-center flex-1">No results found</p>
-  } else {
-    return (
-      <p className="flex justify-center flex-1">
-        There was a problem getting repo contents from your provider
-      </p>
-    )
   }
+
+  return <MissingFileData isSearching={isSearching} />
 }
 
 RepoContentsResult.propTypes = {

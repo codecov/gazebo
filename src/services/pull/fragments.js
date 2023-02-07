@@ -134,6 +134,7 @@ fragment FileComparisonWithBase on Pull {
     ... on Comparison {
       impactedFile(path: $path) {
         headName
+        hashedPath
         isNewFile
         isRenamedFile
         isDeletedFile

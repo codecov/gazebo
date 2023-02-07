@@ -1,6 +1,7 @@
 import keyBy from 'lodash/keyBy'
 import mapValues from 'lodash/mapValues'
 
+// eslint-disable-next-line complexity
 export function extractCoverageFromResponse(res) {
   const commit = res?.data?.owner?.repository?.commit
   const branch = res?.data?.owner?.repository?.branch?.head
@@ -10,6 +11,7 @@ export function extractCoverageFromResponse(res) {
   const lineWithCoverage = keyBy(coverageFile?.coverage, 'line')
   const fileCoverage = mapValues(lineWithCoverage, 'coverage')
   const coverageTotal = coverageFile?.totals?.coverage
+  const hashedPath = coverageFile?.hashedPath
 
   return {
     content: coverageFile?.content,
@@ -17,5 +19,6 @@ export function extractCoverageFromResponse(res) {
     totals: isNaN(coverageTotal) ? 0 : coverageTotal,
     flagNames: coverageSource?.flagNames ?? [],
     isCriticalFile: !!coverageFile?.isCriticalFile,
+    ...(hashedPath && { hashedPath }),
   }
 }

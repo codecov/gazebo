@@ -30,6 +30,7 @@ CoverageSelectIcon.propTypes = {
     LINE_STATE.COVERED,
     LINE_STATE.UNCOVERED,
     LINE_STATE.PARTIAL,
+    LINE_STATE.BLANK,
   ]).isRequired,
 }
 

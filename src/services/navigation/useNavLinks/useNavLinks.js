@@ -241,6 +241,16 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/new`,
       text: 'New',
     },
+    newOtherCI: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/new/other-ci`,
+      text: 'Other CI',
+    },
     overview: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -415,6 +425,28 @@ export function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}/flags`,
       isExternalLink: false,
+    },
+    githubRepoSecrets: {
+      text: 'GitHub Repo',
+      path: (
+        { owner = o, repo = r } = {
+          owner: o,
+          repo: r,
+        }
+      ) => `https://github.com/${owner}/${repo}/settings/secrets/actions`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    githubRepoActions: {
+      text: 'GitHub Repo',
+      path: (
+        { owner = o, repo = r } = {
+          owner: o,
+          repo: r,
+        }
+      ) => `https://github.com/${owner}/${repo}/settings/actions`,
+      isExternalLink: true,
+      openNewTab: true,
     },
   }
 }
