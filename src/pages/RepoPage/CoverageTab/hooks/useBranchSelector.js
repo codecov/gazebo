@@ -1,27 +1,30 @@
-import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-export function useBranchSelector({
-  branches,
-  defaultBranch,
-  defaultBranchEntry,
-}) {
-  const { branch, ref } = useParams()
-  // Decoding the value when it is undefined returns "undefined" as a string, which breaks the selector
-  const decodedBranch = !!branch ? decodeURIComponent(branch) : branch
-  const decodedRef = !!ref ? decodeURIComponent(ref) : ref
-  // eslint-disable-next-line complexity
-  const selection = useMemo(() => {
-    const selectedBranch = decodedBranch || decodedRef || defaultBranch
+import { useBranches } from 'services/branches'
 
-    if (selectedBranch === defaultBranch && defaultBranchEntry) {
-      return defaultBranchEntry
-    } else {
-      const [currentBranch] =
-        branches?.filter((b) => b?.name === selectedBranch) ?? []
-      return currentBranch
-    }
-  }, [branches, decodedBranch, decodedRef, defaultBranch, defaultBranchEntry])
+const getDecodedBranch = (branch) =>
+  !!branch ? decodeURIComponent(branch) : branch
+
+const getDecodedRef = (ref) => (!!ref ? decodeURIComponent(ref) : ref)
+
+export function useBranchSelector({ branches, defaultBranch }) {
+  const { provider, owner, repo, branch, ref } = useParams()
+  // Decoding the value when it is undefined returns "undefined" as a string, which breaks the selector
+  const decodedBranch = getDecodedBranch(branch)
+  const decodedRef = getDecodedRef(ref)
+  const selectedBranch = decodedBranch || decodedRef || defaultBranch
+
+  const { data: searchBranchValue } = useBranches({
+    provider,
+    owner,
+    repo,
+    filters: { searchValue: selectedBranch },
+    opts: {
+      queryKey: ['GetSelectedBranch', provider, owner, repo],
+    },
+  })
+
+  const [selection] = searchBranchValue?.branches
 
   return {
     selection,
