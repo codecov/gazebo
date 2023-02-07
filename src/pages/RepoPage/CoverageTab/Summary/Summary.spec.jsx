@@ -38,6 +38,15 @@ const mockMainBranchSearch = {
   },
 }
 
+const mockBranch = {
+  branch: {
+    name: 'main',
+    head: {
+      commitid: '321fdsa',
+    },
+  },
+}
+
 const mockBranches = (hasNextPage = false) => ({
   branches: {
     edges: [
@@ -134,6 +143,9 @@ describe('Summary', () => {
           ctx.status(200),
           ctx.data({ owner: { repository: mockRepoOverview } })
         )
+      ),
+      graphql.query('GetBranch', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { repository: mockBranch } }))
       ),
       graphql.query('GetBranches', (req, res, ctx) => {
         if (req.variables?.after) {

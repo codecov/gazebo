@@ -58,6 +58,15 @@ const mockBranches = {
   },
 }
 
+const mockBranch = (branchName) => ({
+  branch: {
+    name: branchName,
+    head: {
+      commitid: branchName === 'branch-1' ? 'asdf123' : '321fdsa',
+    },
+  },
+})
+
 const mockRepoCoverage = {
   branch: {
     name: 'main',
@@ -108,6 +117,12 @@ describe('useSummary', () => {
         res(
           ctx.status(200),
           ctx.data({ owner: { repository: mockRepoOverview } })
+        )
+      ),
+      graphql.query('GetBranch', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: mockBranch(req.variables?.branch) } })
         )
       ),
       graphql.query('GetBranches', (req, res, ctx) => {
