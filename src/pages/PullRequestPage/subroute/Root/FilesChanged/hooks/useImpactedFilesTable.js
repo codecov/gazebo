@@ -24,6 +24,7 @@ function getFilters({ sortBy }) {
       direction: sortBy?.desc ? orderingDirection.desc : orderingDirection.asc,
       parameter: orderingParameter[sortBy?.id],
     },
+    hasUnintendedChanges: false,
   }
 }
 

@@ -7,7 +7,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import ImpactedFiles from './ImpactedFiles'
+import ImpactedFiles from './FilesChanged'
 
 jest.mock('../FileDiff', () => () => 'FileDiff Component')
 
@@ -205,7 +205,7 @@ describe('ImpactedFiles', () => {
     )
   }
 
-  describe('when rendered with impacted files', () => {
+  describe('when rendered with changed files', () => {
     beforeEach(() => setup())
     it('renders spinner', () => {
       render(<ImpactedFiles />, { wrapper: wrapper() })
@@ -354,7 +354,7 @@ describe('ImpactedFiles', () => {
     })
   })
 
-  describe('when rendered with an empty list of impacted files', () => {
+  describe('when rendered with an empty list of changed files', () => {
     beforeEach(() => {
       setup(mockNoImpactedFiles)
     })
