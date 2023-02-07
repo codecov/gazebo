@@ -58,6 +58,7 @@ describe('useRepo', () => {
         private: true,
         uploadToken: 'token',
         yaml: 'yaml',
+        active: true,
       },
     }
     const dataReturned = {
@@ -68,6 +69,7 @@ describe('useRepo', () => {
           private: true,
           uploadToken: 'token',
           yaml: 'yaml',
+          active: true,
         },
       },
     }

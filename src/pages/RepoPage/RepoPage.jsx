@@ -5,9 +5,7 @@ import { SentryRoute } from 'sentry'
 
 import LogoSpinner from 'old_ui/LogoSpinner'
 import NotFound from 'pages/NotFound'
-import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
-import { useOwner } from 'services/user'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
@@ -53,7 +51,7 @@ const getRepoTabs = ({
   ]
 }
 
-const Loader = (
+const Loader = () => (
   <div className="flex-1 flex items-center justify-center mt-16">
     <LogoSpinner />
   </div>
@@ -67,16 +65,13 @@ function RepoPage() {
     owner,
     repo,
   })
-  const { data: currentOwner } = useOwner({ username: owner })
-  const { data: commitsData } = useCommits({ provider, owner, repo })
 
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
 
-  const repoHasCommits =
-    commitsData?.commits && commitsData?.commits?.length > 0
+  const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
-  const isCurrentUserPartOfOrg = currentOwner?.isCurrentUserPartOfOrg
+  const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
   const isRepoPrivate = !!repoData?.repository?.private
 
   // if there is no repo data
@@ -94,7 +89,7 @@ function RepoPage() {
     <RepoBreadcrumbProvider>
       <div>
         <RepoBreadcrumb />
-        {repoHasCommits && isRepoActivated && (
+        {isRepoActive && isRepoActivated && (
           <div className="sticky top-8 z-10 bg-white mb-2">
             <TabNavigation
               tabs={getRepoTabs({
@@ -108,10 +103,18 @@ function RepoPage() {
             />
           </div>
         )}
-        <Suspense fallback={Loader}>
+        <Suspense fallback={<Loader />}>
           {isRepoActivated ? (
             <Switch>
-              <SentryRoute path={path} exact>
+              <SentryRoute
+                path={[
+                  path,
+                  `${path}/blob/:ref/:path+`,
+                  `${path}/tree/:branch`,
+                  `${path}/tree/:branch/:path+`,
+                ]}
+                exact
+              >
                 <CoverageTab />
               </SentryRoute>
               <SentryRoute path={`${path}/flags`} exact>
@@ -127,15 +130,6 @@ function RepoPage() {
               <SentryRoute path={`${path}/settings`}>
                 <SettingsTab />
               </SentryRoute>
-              <SentryRoute path={`${path}/tree/:branch/:path+`} exact>
-                <CoverageTab />
-              </SentryRoute>
-              <SentryRoute path={`${path}/tree/:branch`} exact>
-                <CoverageTab />
-              </SentryRoute>
-              <SentryRoute path={`${path}/blob/:ref/:path+`} exact>
-                <CoverageTab />
-              </SentryRoute>
               <Redirect
                 from="/:provider/:owner/:repo/*"
                 to="/:provider/:owner/:repo"
@@ -143,7 +137,7 @@ function RepoPage() {
             </Switch>
           ) : (
             <>
-              {repoHasCommits ? (
+              {isRepoActive ? (
                 <Switch>
                   <SentryRoute path={`${path}/settings`}>
                     <SettingsTab />
@@ -154,7 +148,10 @@ function RepoPage() {
                 </Switch>
               ) : (
                 <Switch>
-                  <SentryRoute path={`${path}/new`} exact>
+                  <SentryRoute
+                    path={[`${path}/new`, `${path}/new/other-ci`]}
+                    exact
+                  >
                     <NewRepoTab />
                   </SentryRoute>
                   <Redirect from={path} to={`${path}/new`} />

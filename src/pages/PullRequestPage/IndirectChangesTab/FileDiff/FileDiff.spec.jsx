@@ -1,173 +1,216 @@
-import { render, screen } from 'custom-testing-library'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useSingularImpactedFileComparison } from 'services/pull'
 
 import FileDiff from './FileDiff'
 
-jest.mock('services/pull')
+const baseMock = (impactedFile) => ({
+  owner: {
+    repository: {
+      pull: {
+        compareWithBase: {
+          impactedFile: {
+            ...mockImpactedFile,
+            ...impactedFile,
+          },
+        },
+      },
+    },
+  },
+})
 
 const mockImpactedFile = {
-  data: {
-    isCriticalFile: false,
-    headName: 'flag1/mafs.js',
-    segments: [
-      {
-        header: '-0,0 +1,45',
-        hasUnintendedChanges: false,
-        lines: [
-          {
-            baseNumber: null,
-            headNumber: '1',
-            baseCoverage: null,
-            headCoverage: 'H',
-            content: '+export default class Calculator {',
-          },
-          {
-            baseNumber: null,
-            headNumber: '2',
-            baseCoverage: null,
-            headCoverage: 'H',
-            content: '+  private value = 0;',
-          },
-          {
-            baseNumber: null,
-            headNumber: '3',
-            baseCoverage: null,
-            headCoverage: 'H',
-            content: '+  private calcMode = ""',
-          },
-        ],
-      },
-    ],
-  },
-  isLoading: false,
+  isCriticalFile: false,
+  headName: 'flag1/file.js',
+  hashedPath: 'hashedFilePath',
+  segmentsDeprecated: [
+    {
+      header: '-0,0 +1,45',
+      hasUnintendedChanges: false,
+      lines: [
+        {
+          baseNumber: null,
+          headNumber: '1',
+          baseCoverage: null,
+          headCoverage: 'H',
+          content: '+export default class Calculator {',
+        },
+        {
+          baseNumber: null,
+          headNumber: '2',
+          baseCoverage: null,
+          headCoverage: 'H',
+          content: '+  private value = 0;',
+        },
+        {
+          baseNumber: null,
+          headNumber: '3',
+          baseCoverage: null,
+          headCoverage: 'H',
+          content: '+  private calcMode = ""',
+        },
+      ],
+    },
+  ],
 }
 
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/pull/1']}>
+      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
+
 describe('FileDiff', () => {
-  function setup({ path, impactedFile = mockImpactedFile }) {
-    useSingularImpactedFileComparison.mockReturnValue(impactedFile)
-    render(
-      <MemoryRouter initialEntries={['/gh/matt/exandria/pull/32']}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">
-          <FileDiff path={path} />
-        </Route>
-      </MemoryRouter>
+  function setup({ impactedFile } = { impactedFile: mockImpactedFile }) {
+    server.use(
+      graphql.query('ImpactedFileComparison', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(baseMock(impactedFile)))
+      )
     )
   }
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ path: 'flag1/mafs.js' })
+      setup()
     })
-    it('renders the line changes header', () => {
-      expect(screen.getByText('-0,0 +1,45')).toBeInTheDocument()
+
+    it('renders the line changes header', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+      const changeHeader = await screen.findByText('-0,0 +1,45')
+      expect(changeHeader).toBeInTheDocument()
     })
-    it('renders the lines of a segment', () => {
-      expect(screen.getByText(/Calculator/)).toBeInTheDocument()
-      expect(screen.getByText(/value/)).toBeInTheDocument()
-      expect(screen.getByText(/calcMode/)).toBeInTheDocument()
+
+    it('renders the lines of a segment', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+      const calculator = await screen.findByText(/Calculator/)
+      expect(calculator).toBeInTheDocument()
+
+      const value = await screen.findByText(/value/)
+      expect(value).toBeInTheDocument()
+
+      const calcMode = await screen.findByText(/calcMode/)
+      expect(calcMode).toBeInTheDocument()
     })
   })
 
   describe('when segment is an empty array', () => {
     beforeEach(() => {
       const impactedFile = {
-        data: {
-          isCriticalFile: false,
-          headName: 'flag1/mafs.js',
-          segments: [],
-        },
+        isCriticalFile: false,
+        headName: 'flag1/file.js',
+        segmentsDeprecated: [],
       }
-      setup({ path: 'flag1/mafs.js', impactedFile })
+
+      setup({ impactedFile })
     })
-    it('doesnt render information on the code renderer', () => {
-      expect(screen.queryByText(/Unexpected Changes/i)).not.toBeInTheDocument()
-      expect(screen.queryByText('fv-diff-line')).not.toBeInTheDocument()
+    it('does not render information on the code renderer', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const unexpectedChange = screen.queryByText(/Unexpected Changes/i)
+      expect(unexpectedChange).not.toBeInTheDocument()
+
+      const diffLine = screen.queryByText('fv-diff-line')
+      expect(diffLine).not.toBeInTheDocument()
     })
   })
 
   describe('a new file', () => {
     beforeEach(() => {
       const impactedFile = {
-        data: {
-          isCriticalFile: false,
-          fileLabel: 'New',
-          headName: 'flag1/mafs.js',
-          segments: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
+        isCriticalFile: false,
+        isNewFile: true,
+        headName: 'flag1/file.js',
+        segmentsDeprecated: [
+          { lines: [{ content: 'abc' }, { content: 'def' }] },
+        ],
       }
-      setup({ path: 'flag1/mafs.js', impactedFile })
+      setup({ impactedFile })
     })
-    it('renders a new file label', () => {
-      expect(screen.getByText(/New/i)).toBeInTheDocument()
+
+    it('renders a new file label', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+      const newText = await screen.findByText(/New/i)
+      expect(newText).toBeInTheDocument()
     })
   })
 
   describe('a renamed file', () => {
     beforeEach(() => {
       const impactedFile = {
-        data: {
-          isCriticalFile: false,
-          fileLabel: 'Renamed',
-          headName: 'flag1/mafs.js',
-          segments: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
+        isCriticalFile: false,
+        isRenamedFile: true,
+        headName: 'flag1/file.js',
+        segmentsDeprecated: [
+          { lines: [{ content: 'abc' }, { content: 'def' }] },
+        ],
       }
-      setup({ path: 'flag1/mafs.js', impactedFile })
+      setup({ impactedFile })
     })
-    it('renders a renamed file label', () => {
-      expect(screen.getByText(/Renamed/i)).toBeInTheDocument()
+    it('renders a renamed file label', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+      const renamed = await screen.findByText(/Renamed/i)
+      expect(renamed).toBeInTheDocument()
     })
   })
 
   describe('a deleted file', () => {
     beforeEach(() => {
       const impactedFile = {
-        data: {
-          isCriticalFile: false,
-          fileLabel: 'Deleted',
-          headName: 'flag1/mafs.js',
-          segments: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
+        isCriticalFile: false,
+        isDeletedFile: true,
+        headName: 'flag1/file.js',
+        segmentsDeprecated: [
+          { lines: [{ content: 'abc' }, { content: 'def' }] },
+        ],
       }
-      setup({ path: 'flag1/mafs.js', impactedFile })
+      setup({ impactedFile })
     })
-    it('renders a deleted file label', () => {
-      expect(screen.getByText(/Deleted/i)).toBeInTheDocument()
+    it('renders a deleted file label', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+      const deleted = await screen.findByText(/Deleted/i)
+      expect(deleted).toBeInTheDocument()
     })
   })
 
   describe('a critical file', () => {
     beforeEach(() => {
       const impactedFile = {
-        data: {
-          isCriticalFile: true,
-          fileLabel: null,
-          headName: 'flag1/mafs.js',
-          segments: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
+        isCriticalFile: true,
+        fileLabel: null,
+        headName: 'flag1/file.js',
+        segmentsDeprecated: [
+          { lines: [{ content: 'abc' }, { content: 'def' }] },
+        ],
       }
-      setup({ path: 'flag1/mafs.js', impactedFile })
+      setup({ impactedFile })
     })
-    it('renders a critical file label', () => {
-      expect(screen.getByText(/Critical File/i)).toBeInTheDocument()
-    })
-  })
+    it('renders a critical file label', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
 
-  describe('when isLoading is true', () => {
-    beforeEach(() => {
-      const impactedFile = {
-        data: {},
-        isLoading: true,
-      }
-      setup({ path: 'flag1/mafs.js', impactedFile })
-    })
-
-    it('shows loading spinner', () => {
-      const spinner = screen.getByTestId('spinner')
-      expect(spinner).toBeInTheDocument()
+      const criticalFile = await screen.findByText(/Critical File/i)
+      expect(criticalFile).toBeInTheDocument()
     })
   })
 })
