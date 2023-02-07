@@ -42,7 +42,11 @@ const user = {
 }
 
 const server = new setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  // silence Error at useUser: Aborted
+  console.error = () => {}
+  server.listen()
+})
 afterEach(() => {
   config.IS_SELF_HOSTED = false
   server.resetHandlers()
