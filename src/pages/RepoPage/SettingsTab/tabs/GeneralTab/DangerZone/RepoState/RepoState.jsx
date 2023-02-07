@@ -3,8 +3,8 @@ import { useState } from 'react'
 import { useRepoSettings } from 'services/repo'
 import Button from 'ui/Button'
 
-import DeactivateRepoModal from './DeactiveRepoModal'
-import useRepoActivation from './useRepoActivation'
+import DeactivateRepoModal from './DeactivateRepoModal'
+import { useRepoActivation } from './hooks'
 
 const ActivationStatus = Object.freeze({
   DEACTIVATED: { TITLE: 'Repo has been deactivated', LABEL: 'Activate' },
@@ -19,40 +19,41 @@ function RepoState() {
 
   const activated = repository?.activated
 
-  return activated ? (
-    <div className="flex">
-      <div className="flex flex-col flex-1 gap-1">
-        <h2 className="font-semibold">{ActivationStatus.ACTIVATED.TITLE}</h2>
-        <p>This will prevent any further uploads</p>
+  if (activated) {
+    return (
+      <div className="flex justify-between">
+        <div className="flex flex-col gap-1">
+          <h2 className="font-semibold">{ActivationStatus.ACTIVATED.TITLE}</h2>
+          <p>This will prevent any further uploads</p>
+        </div>
+        <div>
+          <Button
+            variant="danger"
+            hook="deactivate-repo"
+            onClick={() => setShowModal(true)}
+            disabled={isLoading}
+          >
+            {ActivationStatus.ACTIVATED.LABEL}
+          </Button>
+          {showModal && (
+            <DeactivateRepoModal
+              closeModal={() => setShowModal(false)}
+              deactivateRepo={toggleRepoState}
+              isLoading={isLoading}
+              activated={activated}
+            />
+          )}
+        </div>
       </div>
-      <div>
-        <Button
-          variant="danger"
-          hook="show-modal"
-          onClick={() => setShowModal(true)}
-          disabled={isLoading}
-        >
-          {ActivationStatus.ACTIVATED.LABEL}
-        </Button>
-        {showModal && (
-          <DeactivateRepoModal
-            closeModal={() => setShowModal(false)}
-            deactivateRepo={toggleRepoState}
-            isLoading={isLoading}
-            activated={activated}
-          />
-        )}
-      </div>
-    </div>
-  ) : (
-    <div className="flex">
-      <div className="flex flex-col flex-1 gap-1">
-        <h2 className="font-semibold">{ActivationStatus.DEACTIVATED.TITLE}</h2>
-      </div>
+    )
+  }
+  return (
+    <div className="flex justify-between">
+      <h2 className="font-semibold">{ActivationStatus.DEACTIVATED.TITLE}</h2>
       <div>
         <Button
           variant="primary"
-          hook="update-repo"
+          hook="activate-repo"
           onClick={() => toggleRepoState(activated)}
           disabled={isLoading}
         >

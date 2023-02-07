@@ -1,7 +1,7 @@
 import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
-export default function useRepoActivation() {
+export function useRepoActivation() {
   const addToast = useAddNotification()
   const { mutate, ...rest } = useUpdateRepo()
 

@@ -1,167 +1,262 @@
-import { render, screen } from 'custom-testing-library'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql, rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoSettings, useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
 import RepoState from './RepoState'
 
-jest.mock('services/repo')
 jest.mock('services/toastNotification')
+
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
+      <Route path="/:provider/:owner/:repo/settings">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+  console.error = () => {}
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 
 describe('RepoState', () => {
   const mutate = jest.fn()
   const addNotification = jest.fn()
 
-  function setup(activated = false, newDataActivated = false) {
-    useRepoSettings.mockReturnValue({
-      data: {
-        repository: {
-          activated: activated,
-        },
-      },
-    })
-    useAddNotification.mockReturnValue(addNotification)
+  function setup({ activated = false, failMutation = false } = {}) {
+    server.use(
+      graphql.query('GetRepoSettings', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                activated,
+              },
+            },
+          })
+        )
+      }),
+      rest.patch(
+        '/internal/github/codecov/repos/codecov-client/',
+        (req, res, ctx) => {
+          mutate()
 
-    useUpdateRepo.mockReturnValue({
-      isLoading: false,
-      mutate,
-    })
+          if (failMutation) {
+            return res(ctx.status(500))
+          }
 
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
-        <Route path="/:provider/:owner/:repo/settings">
-          <RepoState />
-        </Route>
-      </MemoryRouter>
+          return res(ctx.status(200), ctx.json({}))
+        }
+      )
     )
+
+    useAddNotification.mockReturnValue(addNotification)
   }
 
   describe('renders DeactivateRepo component', () => {
     beforeEach(() => {
       setup()
     })
-    it('renders title', () => {
-      const title = screen.getByText(/Repo has been deactivated/)
+    it('renders title', async () => {
+      render(<RepoState />, { wrapper })
+
+      const title = await screen.findByText(/Repo has been deactivated/)
       expect(title).toBeInTheDocument()
     })
 
-    it('renders Activate Repo button', () => {
-      expect(
-        screen.getByRole('button', { name: 'Activate' })
-      ).toBeInTheDocument()
+    it('renders Activate Repo button', async () => {
+      render(<RepoState />, { wrapper })
+
+      const activationButton = await screen.findByRole('button', {
+        name: 'Activate',
+      })
+      expect(activationButton).toBeInTheDocument()
     })
   })
 
   describe('when the user clicks on Activate button', () => {
     beforeEach(() => {
       setup()
-      userEvent.click(screen.getByRole('button', { name: 'Activate' }))
     })
 
-    it('calls the mutation', () => {
-      expect(mutate).toHaveBeenCalled()
+    it('calls the mutation', async () => {
+      render(<RepoState />, { wrapper })
+
+      const activationButton = await screen.findByRole('button', {
+        name: 'Activate',
+      })
+      userEvent.click(activationButton)
+
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
   })
 
   describe('when mutation data has active set to true', () => {
     beforeEach(() => {
-      setup(true)
+      setup({ activated: true })
     })
 
-    it('displays deactivate button', () => {
-      expect(
-        screen.getByRole('button', { name: 'Deactivate' })
-      ).toBeInTheDocument()
+    it('displays deactivate button', async () => {
+      render(<RepoState />, { wrapper })
+
+      const deactivateButton = await screen.findByTestId('deactivate-repo')
+      expect(deactivateButton).toBeInTheDocument()
     })
 
-    it('displays the warning', () => {
-      const warning = screen.getByText('This will prevent any further uploads')
+    it('displays the warning', async () => {
+      render(<RepoState />, { wrapper })
+
+      const warning = await screen.findByText(
+        'This will prevent any further uploads'
+      )
       expect(warning).toBeInTheDocument()
     })
 
     describe('when the user clicks on Deactivate button', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Deactivate' }))
-      })
+      it('displays Deactivate Repo Modal', async () => {
+        render(<RepoState />, {
+          wrapper,
+        })
 
-      it('displays Deactivate Repo Modal', () => {
-        expect(
-          screen.getByText('Are you sure you want to deactivate the repo?')
-        ).toBeInTheDocument()
-        expect(
-          screen.getByText(
-            'Deactivate repo will deactivate a repo and prevent the upload of coverage information to that repo going forward. You will be able to reactivate the repo at any time.'
-          )
-        ).toBeInTheDocument()
-        expect(
-          screen.getByRole('button', { name: 'Deactivate repo' })
-        ).toBeInTheDocument()
-        expect(
-          screen.getByRole('button', { name: 'Cancel' })
-        ).toBeInTheDocument()
+        const deactivateButton = await screen.findByTestId('deactivate-repo')
+        userEvent.click(deactivateButton)
+
+        const warning = await screen.findByText(
+          'Are you sure you want to deactivate the repo?'
+        )
+        expect(warning).toBeInTheDocument()
+
+        const modalDeactivateButton = await screen.findByTestId(
+          'deactivate-repo-modal'
+        )
+        expect(modalDeactivateButton).toBeInTheDocument()
+
+        const cancelButton = await screen.findByTestId('close-modal')
+        expect(cancelButton).toBeInTheDocument()
       })
 
       describe('when user clicks on Cancel button', () => {
-        beforeEach(() => {
-          userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-        })
-        it('does not call the mutation', () => {
+        it('does not call the mutation', async () => {
+          render(<RepoState />, {
+            wrapper,
+          })
+
+          const deactivateButton = await screen.findByTestId('deactivate-repo')
+          userEvent.click(deactivateButton)
+
+          const cancelButton = await screen.findByTestId('close-modal')
+          userEvent.click(cancelButton)
+
           expect(mutate).not.toHaveBeenCalled()
         })
       })
 
       describe('when user clicks on Deactivate button', () => {
-        beforeEach(() => {
-          userEvent.click(
-            screen.getByRole('button', { name: 'Deactivate repo' })
+        it('calls the mutation', async () => {
+          render(<RepoState />, {
+            wrapper,
+          })
+
+          const deactivateButton = await screen.findByTestId('deactivate-repo')
+          userEvent.click(deactivateButton)
+
+          const modalDeactivateButton = await screen.findByTestId(
+            'deactivate-repo-modal'
           )
-        })
-        it('calls the mutation', () => {
-          expect(mutate).toHaveBeenCalled()
+          userEvent.click(modalDeactivateButton)
+          await waitFor(() => expect(mutate).toHaveBeenCalled())
         })
       })
     })
   })
 
   describe('when activate mutation is not successful', () => {
-    beforeEach(async () => {
-      setup()
-      await userEvent.click(screen.getByRole('button', { name: 'Activate' }))
-      mutate.mock.calls[0][1].onError()
-    })
-    it('calls the mutation', () => {
-      expect(mutate).toHaveBeenCalled()
+    beforeEach(() => {
+      setup({ failMutation: true })
     })
 
-    it('adds an error notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'error',
-        text: 'We were not able to activate this repo',
+    it('calls the mutation', async () => {
+      render(<RepoState />, { wrapper })
+
+      const activationButton = await screen.findByRole('button', {
+        name: 'Activate',
       })
+      expect(activationButton).toBeInTheDocument()
+
+      userEvent.click(activationButton)
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
+    })
+
+    it('adds an error notification', async () => {
+      render(<RepoState />, { wrapper })
+
+      const activationButton = await screen.findByRole('button', {
+        name: 'Activate',
+      })
+      userEvent.click(activationButton)
+
+      await waitFor(() =>
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'We were not able to activate this repo',
+        })
+      )
     })
   })
 
   describe('when deactivate mutation is not successful', () => {
-    beforeEach(async () => {
-      setup(true)
-      await userEvent.click(screen.getByRole('button', { name: 'Deactivate' }))
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Deactivate repo' })
-      )
-      mutate.mock.calls[0][1].onError()
+    beforeEach(() => {
+      setup({ activated: true, failMutation: true })
     })
-    it('calls the mutation', () => {
-      expect(mutate).toHaveBeenCalled()
+    it('calls the mutation', async () => {
+      render(<RepoState />, {
+        wrapper,
+      })
+
+      const deactivateButton = await screen.findByTestId('deactivate-repo')
+      userEvent.click(deactivateButton)
+
+      const modalDeactivateButton = await screen.findByTestId(
+        'deactivate-repo-modal'
+      )
+      userEvent.click(modalDeactivateButton)
+
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
-    it('adds an error notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'error',
-        text: 'We were not able to deactivate this repo',
+    it('adds an error notification', async () => {
+      render(<RepoState />, {
+        wrapper,
       })
+
+      const deactivateButton = await screen.findByTestId('deactivate-repo')
+      userEvent.click(deactivateButton)
+
+      const modalDeactivateButton = await screen.findByTestId(
+        'deactivate-repo-modal'
+      )
+      userEvent.click(modalDeactivateButton)
+
+      await waitFor(() =>
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'We were not able to deactivate this repo',
+        })
+      )
     })
   })
 })

@@ -30,7 +30,7 @@ const DeactivateRepoModal = ({
         <div>
           <Button
             isLoading={isLoading}
-            hook="deactivate-repo"
+            hook="deactivate-repo-modal"
             variant="danger"
             onClick={async () => {
               await deactivateRepo(activated)
