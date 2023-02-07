@@ -19,20 +19,10 @@ const server = setupServer()
 const mockBranches = (branchName) => ({
   owner: {
     repository: {
-      branches: {
-        edges: [
-          {
-            node: {
-              name: branchName,
-              head: {
-                commitid: branchName === 'imogen' ? 'commit-123' : 'commit-321',
-              },
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: 'end-cursor',
+      branch: {
+        name: branchName,
+        head: {
+          commitid: branchName === 'imogen' ? 'commit-123' : 'commit-321',
         },
       },
     },
@@ -77,7 +67,7 @@ afterAll(() => {
 describe('useBranchSelector', () => {
   function setup(branchName, returnBranches = true) {
     server.use(
-      graphql.query('GetBranches', (req, res, ctx) => {
+      graphql.query('GetBranch', (req, res, ctx) => {
         if (returnBranches) {
           return res(ctx.status(200), ctx.data(mockBranches(branchName)))
         }

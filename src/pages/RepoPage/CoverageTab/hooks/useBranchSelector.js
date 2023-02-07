@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
+import { useBranch } from 'services/branches'
 
 const getDecodedBranch = (branch) =>
   !!branch ? decodeURIComponent(branch) : branch
@@ -14,17 +14,17 @@ export function useBranchSelector({ branches, defaultBranch }) {
   const decodedRef = getDecodedRef(ref)
   const selectedBranch = decodedBranch || decodedRef || defaultBranch
 
-  const { data: searchBranchValue } = useBranches({
+  const { data: searchBranchValue } = useBranch({
     provider,
     owner,
     repo,
-    filters: { searchValue: selectedBranch },
+    branch: selectedBranch,
     opts: {
-      queryKey: ['GetSelectedBranch', provider, owner, repo],
+      queryKey: ['GetSelectedBranch', provider, owner, repo, selectedBranch],
     },
   })
 
-  const [selection] = searchBranchValue?.branches
+  const selection = searchBranchValue?.branch
 
   return {
     selection,
