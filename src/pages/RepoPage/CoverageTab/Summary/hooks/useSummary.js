@@ -15,22 +15,6 @@ export function useSummary() {
     owner,
   })
 
-  const { data: defaultBranchEntryData } = useBranches({
-    provider,
-    owner,
-    repo,
-    filters: { searchValue: overview?.defaultBranch },
-    opts: {
-      queryKey: [
-        'GetDefaultBranchSelectorEntry',
-        provider,
-        owner,
-        repo,
-        overview?.defaultBranch,
-      ],
-    },
-  })
-
   const {
     data: branchList,
     isFetching: branchListIsFetching,
@@ -52,7 +36,6 @@ export function useSummary() {
   const { selection, branchSelectorProps } = useBranchSelector({
     branches: branchesData?.branches,
     defaultBranch: overview?.defaultBranch,
-    defaultBranchEntry: defaultBranchEntryData?.branches[0],
   })
 
   const { data, isLoading: isLoadingRepoCoverage } = useRepoCoverage({
