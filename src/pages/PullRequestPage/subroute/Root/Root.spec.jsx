@@ -128,7 +128,7 @@ describe('Root', () => {
     it('renders no head commit error text', () => {
       expect(
         screen.getByText(
-          'Cannot display Changed files because most recent commit is in an error state.'
+          'Cannot display changed files because most recent commit is in an error state.'
         )
       ).toBeInTheDocument()
     })

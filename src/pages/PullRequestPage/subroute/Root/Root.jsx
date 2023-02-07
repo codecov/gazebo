@@ -39,7 +39,7 @@ const Root = () => {
     <div className="flex flex-col gap-2">
       {data?.headState === CommitStateEnum.ERROR ? (
         <p>
-          Cannot display Changed files because most recent commit is in an error
+          Cannot display changed files because most recent commit is in an error
           state.
         </p>
       ) : hasImpactedFiles(data?.impactedFiles) ? (
