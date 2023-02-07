@@ -301,7 +301,7 @@ export function useNavLinks() {
           pullId: pi,
         }
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}`,
-      text: 'Files Changed',
+      text: 'Files changed',
     },
     settings: {
       path: (

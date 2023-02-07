@@ -79,7 +79,7 @@ function PullRequestPage() {
                   pageName: 'pullDetail',
                   children: (
                     <>
-                      Files Changed
+                      Files changed
                       <sup className="text-xs">{directChangedFilesCount}</sup>
                     </>
                   ),
