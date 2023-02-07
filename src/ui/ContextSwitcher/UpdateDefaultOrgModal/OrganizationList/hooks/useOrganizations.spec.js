@@ -7,27 +7,22 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useOrganizations } from './useOrganizations'
 
 const queryClient = new QueryClient()
-const server = setupServer()
-
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/person/repo12']}>
-    <Route path="/:provider/:owner/:repo">
+  <MemoryRouter initialEntries={['/gh']}>
+    <Route path="/:provider">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </Route>
   </MemoryRouter>
 )
-beforeAll(() => {
-  server.listen()
-})
 
-afterEach(() => {
-  queryClient.clear()
+const server = setupServer()
+
+beforeAll(() => server.listen())
+beforeEach(() => {
   server.resetHandlers()
+  queryClient.clear()
 })
-
-afterAll(() => {
-  server.close()
-})
+afterAll(() => server.close())
 
 const orgList = [
   {
@@ -42,20 +37,22 @@ const orgList = [
   },
 ]
 
+const currentUser = {
+  username: 'morrigan',
+  avatarUrl: 'https://github.com/morri.png?size=40',
+  defaultOrgUsername: 'fearne-calloway',
+}
+
 const contextData = {
   me: {
-    owner: {
-      username: 'morrigan',
-      avatarUrl: 'https://github.com/morri.png?size=40',
-      defaultOrgUsername: 'fearne-calloway',
-    },
+    owner: currentUser,
     myOrganizations: {
       edges: [{ node: orgList }],
     },
   },
 }
 
-xdescribe('useOrganizations', () => {
+describe('useOrganizations', () => {
   function setup() {
     server.use(
       graphql.query('MyContexts', (req, res, ctx) => {
@@ -64,27 +61,30 @@ xdescribe('useOrganizations', () => {
     )
   }
 
-  describe('when calling hook', () => {
-    beforeEach(() => setup())
+  describe('when called', () => {
+    beforeEach(() => {
+      setup()
+    })
 
-    it('loads initial dataset', async () => {
-      renderHook(() => useOrganizations(), {
+    it('returns data for the organization list component', async () => {
+      const { result, waitFor } = renderHook(() => useOrganizations(), {
         wrapper,
       })
-      // const expectedData = {
-      //   currentUser: {
-      //     avatarUrl: '',
-      //     username: 'cool-user',
-      //   },
-      //   myOrganizations: [
-      //     {
-      //       avatarUrl: '',
-      //       username: 'org1',
-      //     },
-      //   ],
-      // }
 
-      // expect(result.current.data).toStrictEqual(expectedData)
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(result.current).toStrictEqual({
+        organizations: [
+          {
+            ...currentUser,
+          },
+          {
+            ...orgList,
+          },
+        ],
+        currentUser,
+      })
     })
   })
 })

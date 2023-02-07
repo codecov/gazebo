@@ -5,6 +5,9 @@ import Api from 'shared/api'
 
 const currentUserFragment = `
 fragment CurrentUserFragment on Me {
+  owner {
+    defaultOrgUsername
+  }
   email
   privateAccess
   onboardingCompleted

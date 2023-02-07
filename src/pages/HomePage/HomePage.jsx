@@ -1,4 +1,5 @@
-import { useHistory, useParams } from 'react-router-dom'
+import isNull from 'lodash/isNull'
+import { Redirect, useHistory, useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import LogoSpinner from 'old_ui/LogoSpinner'
@@ -30,6 +31,12 @@ function HomePage() {
       <div className="flex items-center justify-center mt-16">
         <LogoSpinner />
       </div>
+    )
+  }
+
+  if (!isNull(currentUser?.owner?.defaultOrgUsername)) {
+    return (
+      <Redirect to={`/${provider}/${currentUser.owner.defaultOrgUsername}`} />
     )
   }
 

@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
 export function useUpdateDefaultOrganization() {
   const { provider } = useParams()
+  const history = useHistory()
   const queryClient = useQueryClient()
   return useMutation(
     ({ username = null }) => {
@@ -16,6 +17,7 @@ export function useUpdateDefaultOrganization() {
             error {
               __typename
             }
+            username
           }
         }
       `
@@ -36,6 +38,9 @@ export function useUpdateDefaultOrganization() {
           )
         } else {
           queryClient.invalidateQueries('DetailOwner')
+          history.push(
+            `/${provider}/${data?.updateDefaultOrganization?.username}`
+          )
         }
       },
     }

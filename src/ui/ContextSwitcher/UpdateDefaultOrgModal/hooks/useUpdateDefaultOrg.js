@@ -5,7 +5,7 @@ export function useUpdateDefaultOrg() {
   const addToast = useAddNotification()
   const { mutate, ...rest } = useUpdateDefaultOrganization()
 
-  async function updateDefaultOrg({ username }) {
+  function updateDefaultOrg({ username }) {
     mutate(
       { username },
       {

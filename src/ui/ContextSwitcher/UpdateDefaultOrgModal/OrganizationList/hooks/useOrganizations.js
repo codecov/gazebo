@@ -7,15 +7,18 @@ export function useOrganizations() {
   const { data: myContexts } = useMyContexts({ provider })
   const { currentUser, myOrganizations } = myContexts
 
-  return {
-    organizations: [
-      {
-        ...currentUser,
-      },
-      ...myOrganizations.map((organization) => ({
-        ...organization,
-      })),
-    ],
-    currentUser,
-  }
+  return (
+    currentUser &&
+    myOrganizations && {
+      organizations: [
+        {
+          ...currentUser,
+        },
+        ...myOrganizations?.map((organization) => ({
+          ...organization,
+        })),
+      ],
+      currentUser,
+    }
+  )
 }
