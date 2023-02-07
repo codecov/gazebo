@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSummary } from './useSummary'
@@ -9,6 +10,25 @@ import { useSummary } from './useSummary'
 const mockRepoOverview = {
   private: false,
   defaultBranch: 'main',
+}
+
+const mockMainBranchSearch = {
+  branches: {
+    edges: [
+      {
+        node: {
+          name: 'main',
+          head: {
+            commitid: '321fdsa',
+          },
+        },
+      },
+    ],
+    pageInfo: {
+      hasNextPage: false,
+      endCursor: 'end-cursor',
+    },
+  },
 }
 
 const mockBranches = {
@@ -51,14 +71,23 @@ const mockRepoCoverage = {
   },
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
 const server = setupServer()
+
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/caleb/mighty-nein']}>
-    <Route path="/:provider/:owner/:repo">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/caleb/mighty-nein']}>
+      <Route path="/:provider/:owner/:repo">
+        <Suspense fallback={null}>{children}</Suspense>
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 beforeAll(() => {
@@ -85,6 +114,14 @@ describe('useSummary', () => {
         if (hasNoBranches) {
           return res(ctx.status(200), ctx.data({}))
         }
+
+        if (req.variables?.filters?.searchValue === 'main') {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { repository: mockMainBranchSearch } })
+          )
+        }
+
         return res(
           ctx.status(200),
           ctx.data({ owner: { repository: mockBranches } })
@@ -107,9 +144,6 @@ describe('useSummary', () => {
     it('passes down useRepoCoverage', async () => {
       const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
       await waitFor(() =>
         expect(result.current.data).toEqual({
           name: 'main',
@@ -126,9 +160,6 @@ describe('useSummary', () => {
 
     it('passed down branch selector props', async () => {
       const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
-
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
 
       await waitFor(() =>
         expect(result.current.branchSelectorProps).toStrictEqual({
@@ -159,9 +190,6 @@ describe('useSummary', () => {
     it('passed down the currentBranchSelected', async () => {
       const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
       await waitFor(() =>
         expect(result.current.currentBranchSelected).toEqual({
           name: 'main',
@@ -173,26 +201,17 @@ describe('useSummary', () => {
     it('passed down the defaultBranch', async () => {
       const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
       await waitFor(() => expect(result.current.defaultBranch).toEqual('main'))
     })
 
     it('passed down the privateRepo', async () => {
       const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
       await waitFor(() => expect(result.current.privateRepo).toEqual(false))
     })
 
     it('sets branchList to list of branches', async () => {
       const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
-
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
 
       await waitFor(() =>
         expect(result.current.branchList).toStrictEqual([
@@ -221,10 +240,7 @@ describe('useSummary', () => {
     it('sets branchList to empty list', async () => {
       const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      expect(result.current.branchList).toStrictEqual([])
+      await waitFor(() => expect(result.current.branchList).toStrictEqual([]))
     })
   })
 })
