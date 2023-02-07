@@ -22,13 +22,6 @@ const Loader = () => (
   </div>
 )
 
-const Placeholder = () => (
-  <div
-    data-testid="placeholder"
-    className=" w-full h-full animate-pulse bg-ds-gray-tertiary rounded-full"
-  />
-)
-
 function CoverageTab() {
   const { coverageSunburstChart } = useFlags({ coverageSunburstChart: false })
   return (
@@ -59,12 +52,8 @@ function CoverageTab() {
               </SilentNetworkErrorWrapper>
             </div>
             {coverageSunburstChart && (
-              <div className="col-span-3 aspect-square sticky top-[8rem] flex-col gap-4 p-8">
-                <SilentNetworkErrorWrapper>
-                  <Suspense fallback={<Placeholder />}>
-                    <Sunburst />
-                  </Suspense>
-                </SilentNetworkErrorWrapper>
+              <div className="col-span-3 aspect-square sticky top-[8rem] flex flex-col justify-center gap-4 px-8 py-4">
+                <Sunburst />
               </div>
             )}
           </ToggleElement>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
@@ -10,11 +11,13 @@ import { useBranchSelector } from '../../hooks'
 const Placeholder = () => (
   <div
     data-testid="placeholder"
-    className=" w-full h-full animate-pulse bg-ds-gray-tertiary rounded-full"
+    className="animate-pulse bg-ds-gray-tertiary rounded-full aspect-square"
   />
 )
 
+// eslint-disable-next-line max-statements
 function Sunburst() {
+  const [currentPath, setCurrentPath] = useState('/.')
   const { provider, owner, repo } = useParams()
   const { data: overview } = useRepoOverview({
     provider,
@@ -26,29 +29,37 @@ function Sunburst() {
     branchesData?.branches,
     overview?.defaultBranch
   )
-  const { data, isSuccess } = useSunburstCoverage(
+
+  const { data, isFetching, isError } = useSunburstCoverage(
     { provider, owner, repo, query: { branch: selection?.name } },
     {
       enabled: !!selection?.name,
-      select: (data) => {
-        return data[0]
-      },
+      suspense: false,
+      select: (data) => data[0],
     }
   )
 
-  console.log(branchesData)
-  console.log(isSuccess)
-  if (!isSuccess) {
+  if (isFetching) {
     return <Placeholder />
   }
 
+  if (isError) {
+    return <p>The sunburst chart failed to load.</p>
+  }
+
   return (
-    <SunburstChart
-      data={data}
-      svgFontSize="24px"
-      svgRenderSize={930}
-      selector={(data) => data?.coverage}
-    />
+    <>
+      <SunburstChart
+        data={data}
+        svgFontSize="24px"
+        svgRenderSize={930}
+        selector={(data) => data?.coverage}
+        onHover={(path) => setCurrentPath(`${path}`)}
+      />
+      <span dir="rtl" className="truncate text-left">
+        {currentPath}
+      </span>
+    </>
   )
 }
 
