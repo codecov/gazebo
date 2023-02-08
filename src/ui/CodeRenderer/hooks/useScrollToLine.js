@@ -73,7 +73,7 @@ export const useScrollToLine = ({
 
   const [resizeObs] = useState(() => new ResizeObserver(handleResize))
 
-  // eslint-disable-next-line complexity
+  // eslint-disable-next-line complexity, max-statements
   useEffect(() => {
     if (!resizeObs) return
 
@@ -84,6 +84,8 @@ export const useScrollToLine = ({
         if (!hasDoneInitialDrawRef.current) {
           resizeObs.observe(ref)
         } else {
+          resizeObs.disconnect()
+
           window.scrollTo({
             behavior: 'smooth',
             left: 0,
