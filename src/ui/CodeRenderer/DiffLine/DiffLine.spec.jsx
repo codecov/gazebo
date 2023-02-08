@@ -4,13 +4,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import DiffLine from './DiffLine'
 
-// mocking out useRef cause of it's call to an html element function
-jest.mock('react', () => {
-  return {
-    ...jest.requireActual('react'),
-    useRef: jest.fn(),
-  }
-})
+import { useScrollToLine } from '../hooks/useScrollToLine'
+
+jest.mock('../hooks/useScrollToLine')
 
 const content = [
   { types: ['plain'], content: '      ' },
@@ -40,7 +36,21 @@ const wrapper = ({ children }) => (
 )
 
 describe('DiffLine', () => {
+  const mockHandleClick = jest.fn()
+
+  function setup(targeted = false) {
+    useScrollToLine.mockImplementation(() => ({
+      lineRef: () => {},
+      handleClick: mockHandleClick,
+      targeted,
+    }))
+  }
+
   describe('renders base lines', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('when coverage is null', () => {
       const props = {
         edgeOfFile: false,
@@ -66,6 +76,10 @@ describe('DiffLine', () => {
   })
 
   describe('renders highlighted covered lines', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render covered lines if there is coverage and showCoverage is true', () => {
       const props = {
         edgeOfFile: false,
@@ -93,6 +107,10 @@ describe('DiffLine', () => {
   })
 
   describe('renders highlighted covered line for head', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render covered lines if there is coverage and showCoverage is true', () => {
       const props = {
         edgeOfFile: false,
@@ -120,6 +138,10 @@ describe('DiffLine', () => {
   })
 
   describe('renders highlighted uncovered lines', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render uncovered line', () => {
       const props = {
         edgeOfFile: false,
@@ -168,6 +190,10 @@ describe('DiffLine', () => {
   })
 
   describe('renders highlighted uncovered base', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render uncovered line', () => {
       const props = {
         edgeOfFile: false,
@@ -192,6 +218,10 @@ describe('DiffLine', () => {
   })
 
   describe('renders highlighted partial lines', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render partial lines', () => {
       const props = {
         edgeOfFile: false,
@@ -238,6 +268,10 @@ describe('DiffLine', () => {
   })
 
   describe('detects edge of file', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render partial line', () => {
       const props = {
         headNumber: '1',
@@ -271,58 +305,62 @@ describe('DiffLine', () => {
   })
 
   describe('user clicks on a number', () => {
-    describe('user clicks on base', () => {
-      it('changes the font to bold', () => {
-        const props = {
-          edgeOfFile: false,
-          headNumber: '1',
-          baseNumber: '2',
-          headCoverage: null,
-          baseCoverage: null,
-        }
-
-        render(
-          <DiffLine
-            {...props}
-            lineContent={content}
-            getTokenProps={() => {}}
-            getLineProps={() => {}}
-          />,
-          { wrapper }
-        )
-
-        const button = screen.getByRole('button', { name: /# 2/ })
-        userEvent.click(button)
-
-        expect(button).toHaveClass('font-bold')
-      })
+    beforeEach(() => {
+      setup(true)
     })
 
-    describe('user clicks on head', () => {
-      it('changes the font to bold', () => {
-        const props = {
-          edgeOfFile: false,
-          headNumber: '1',
-          baseNumber: '2',
-          headCoverage: null,
-          baseCoverage: null,
-        }
+    it('calls handle click function', () => {
+      const props = {
+        edgeOfFile: false,
+        headNumber: '1',
+        baseNumber: '2',
+        headCoverage: null,
+        baseCoverage: null,
+      }
 
-        render(
-          <DiffLine
-            {...props}
-            lineContent={content}
-            getTokenProps={() => {}}
-            getLineProps={() => {}}
-          />,
-          { wrapper }
-        )
+      render(
+        <DiffLine
+          {...props}
+          lineContent={content}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
 
-        const button = screen.getByRole('button', { name: /# 1/ })
-        userEvent.click(button)
+      const button = screen.getByRole('button', { name: /# 1/ })
+      userEvent.click(button)
 
-        expect(button).toHaveClass('font-bold')
-      })
+      expect(mockHandleClick).toBeCalled()
+    })
+  })
+
+  describe('line is targeted', () => {
+    beforeEach(() => {
+      setup(true)
+    })
+
+    it('changes the font to bold', () => {
+      const props = {
+        edgeOfFile: false,
+        headNumber: '1',
+        baseNumber: '2',
+        headCoverage: null,
+        baseCoverage: null,
+      }
+
+      render(
+        <DiffLine
+          {...props}
+          lineContent={content}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const button = screen.getByRole('button', { name: /# 1/ })
+      expect(button).toHaveClass('font-bold')
     })
   })
 })
