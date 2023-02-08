@@ -3,19 +3,12 @@ import CoverageProgressComponent from './CoverageProgress'
 const Template = (args) => <CoverageProgressComponent {...args} />
 
 export const CoverageProgress = Template.bind({})
-
-CoverageProgress.args = {
-  totals: {
-    coverage: 50,
-  },
-  color: 'default',
-}
+CoverageProgress.args = { amount: 50, color: 'primary' }
 
 export const CoverageProgressNoReport = Template.bind({})
-
 CoverageProgressNoReport.args = {
-  totals: {},
-  color: 'default',
+  amount: null,
+  color: 'primary',
 }
 
 export default {
@@ -24,7 +17,7 @@ export default {
   argTypes: {
     color: {
       type: 'select',
-      options: ['default', 'neutral', 'danger', 'warning'],
+      options: ['primary', 'neutral', 'danger', 'warning'],
     },
   },
 }

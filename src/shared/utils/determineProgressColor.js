@@ -11,8 +11,8 @@ export const determineProgressColor = ({
     } else if (coverage >= lowerRange && coverage < upperRange) {
       return 'warning'
     }
-    return 'default'
+    return 'primary'
   }
 
-  return 'default'
+  return 'primary'
 }
