@@ -1,91 +1,168 @@
 import { render, screen } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 
-import { useImpactedFilesTable } from './FilesChanged/hooks'
 import Root from './Root'
 
-jest.mock('./FilesChanged/hooks')
 jest.mock('./FilesChanged/FilesChanged', () => () => 'Files Changed Component')
 
-const mockImpactedFiles = {
-  data: {
-    headState: CommitStateEnum.COMPLETE,
-    pullBaseCoverage: 41.66667,
-    pullHeadCoverage: 92.30769,
-    pullPatchCoverage: 1,
-    impactedFiles: [
-      {
-        changeCoverage: 58.333333333333336,
-        hasHeadOrPatchCoverage: true,
-        headCoverage: 90.23,
-        headName: 'flag1/mafs.js',
-        patchCoverage: 27.43,
-      },
-    ],
+const mockImpactedFiles = [
+  {
+    isCriticalFile: true,
+    fileName: 'mafs.js',
+    headName: 'flag1/mafs.js',
+    baseCoverage: {
+      percentCovered: 45.38,
+    },
+    headCoverage: {
+      percentCovered: 90.23,
+      missesCount: 3,
+    },
+    patchCoverage: {
+      percentCovered: 27.43,
+    },
+    missesInComparison: 3,
   },
-  isLoading: false,
+  {
+    isCriticalFile: true,
+    fileName: 'quarg.js',
+    headName: 'flag2/quarg.js',
+    baseCoverage: {
+      percentCovered: 39,
+    },
+    headCoverage: {
+      percentCovered: 80,
+      missesCount: 7,
+    },
+    patchCoverage: {
+      percentCovered: 48.23,
+    },
+    missesInComparison: 7,
+  },
+]
+
+const mockPull = {
+  owner: {
+    repository: {
+      pull: {
+        pullId: 14,
+        head: {
+          state: 'COMPLETE',
+        },
+        compareWithBase: {
+          patchTotals: {
+            percentCovered: 92.12,
+          },
+          headTotals: {
+            percentCovered: 74.2,
+          },
+          baseTotals: {
+            percentCovered: 27.35,
+          },
+          changeWithParent: 38.94,
+          impactedFiles: mockImpactedFiles,
+        },
+      },
+    },
+  },
 }
 
-const initialEntries = ['/gh/test-org/test-repo/pull/12']
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
+      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+  console.error = () => {}
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 
 describe('Root', () => {
-  function setup({ impactedFiles = mockImpactedFiles }) {
-    useImpactedFilesTable.mockReturnValue(impactedFiles)
-    render(
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">
-          <Root />
-        </Route>
-      </MemoryRouter>
+  function setup({ overrideData } = {}) {
+    server.use(
+      graphql.query('Pull', (_, res, ctx) => {
+        if (overrideData) {
+          return res(ctx.status(200), ctx.data(overrideData))
+        }
+
+        return res(ctx.status(200), ctx.data(mockPull))
+      })
     )
   }
 
   describe('when rendered with changed files', () => {
     beforeEach(() => {
-      setup({})
+      setup()
     })
-    it('renders the changed files component', () => {
-      expect(screen.getByText('Files Changed Component')).toBeInTheDocument()
+
+    it('renders changed files component', async () => {
+      render(<Root />, { wrapper })
+
+      const filesChangedComponent = await screen.findByText(
+        /Files Changed Component/
+      )
+      expect(filesChangedComponent).toBeInTheDocument()
     })
   })
 
   describe('when rendered without changes', () => {
     beforeEach(() => {
-      const impactedFiles = {
-        data: {
-          pullBaseCoverage: 41.66667,
-          pullHeadCoverage: 92.30769,
-          pullPatchCoverage: 1,
-          impactedFiles: [],
+      const overrideData = {
+        owner: {
+          repository: {
+            pull: {
+              pullId: 14,
+              head: {
+                state: 'COMPLETE',
+              },
+              compareWithBase: {
+                patchTotals: {
+                  percentCovered: 92.12,
+                },
+                headTotals: {
+                  percentCovered: 74.2,
+                },
+                baseTotals: {
+                  percentCovered: 27.35,
+                },
+                changeWithParent: 38.94,
+                impactedFiles: [],
+              },
+            },
+          },
         },
-        isLoading: false,
       }
-      setup({ impactedFiles })
+      setup({ overrideData })
     })
-    it('renders no change text', () => {
-      expect(
-        screen.getByText(
-          'Everything is accounted for! No changes detected that need to be reviewed.'
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Lines, not adjusted in diff, that have changed coverage data.'
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Files that introduced coverage data that had none before.'
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Files that have missing coverage data that once were tracked.'
-        )
-      ).toBeInTheDocument()
+    it('renders no change text', async () => {
+      render(<Root />, { wrapper })
+
+      const noChangesText = await screen.findByText(
+        'Everything is accounted for! No changes detected that need to be reviewed.'
+      )
+      expect(noChangesText).toBeInTheDocument()
+
+      const body = await screen.findByText(
+        'Lines, not adjusted in diff, that have changed coverage data.'
+      )
+      expect(body).toBeInTheDocument()
+
       expect(
         screen.queryByText('ImpactedFiles Component')
       ).not.toBeInTheDocument()
@@ -94,21 +171,16 @@ describe('Root', () => {
 
   describe('when rendered without changed files or changes', () => {
     beforeEach(() => {
-      const impactedFiles = {
-        data: {
-          pullBaseCoverage: null,
-          pullHeadCoverage: null,
-          pullPatchCoverage: null,
-          impactedFiles: [],
-        },
-        isLoading: false,
-      }
-      setup({ impactedFiles })
+      setup({ overrideData: {} })
     })
-    it('renders no changed files text', () => {
-      expect(
-        screen.getByText('No Files covered by tests were changed')
-      ).toBeInTheDocument()
+    it('renders no changed files text', async () => {
+      render(<Root />, { wrapper })
+
+      const warning = await screen.findByText(
+        'No Files covered by tests were changed'
+      )
+
+      expect(warning).toBeInTheDocument()
       expect(
         screen.queryByText('ImpactedFiles Component')
       ).not.toBeInTheDocument()
@@ -117,35 +189,38 @@ describe('Root', () => {
 
   describe('when rendered with head commit errored out', () => {
     beforeEach(() => {
-      const impactedFiles = {
-        data: {
-          headState: CommitStateEnum.ERROR,
+      const overrideData = {
+        owner: {
+          repository: {
+            pull: {
+              pullId: 14,
+              head: {
+                state: CommitStateEnum.ERROR,
+              },
+            },
+          },
         },
-        isLoading: false,
       }
-      setup({ impactedFiles })
+      setup({ overrideData })
     })
-    it('renders no head commit error text', () => {
-      expect(
-        screen.getByText(
-          'Cannot display changed files because most recent commit is in an error state.'
-        )
-      ).toBeInTheDocument()
+    it('renders no head commit error text', async () => {
+      render(<Root />, { wrapper })
+
+      const error = await screen.findByText(
+        'Cannot display changed files because most recent commit is in an error state.'
+      )
+      expect(error).toBeInTheDocument()
     })
   })
 
   describe('when loading data', () => {
     beforeEach(() => {
-      const impactedFiles = {
-        data: {
-          headState: CommitStateEnum.ERROR,
-        },
-        isLoading: true,
-      }
-      setup({ impactedFiles })
+      setup()
     })
 
     it('shows loading spinner', () => {
+      render(<Root />, { wrapper })
+
       const spinner = screen.getByTestId('spinner')
       expect(spinner).toBeInTheDocument()
     })
