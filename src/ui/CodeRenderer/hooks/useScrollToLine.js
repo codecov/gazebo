@@ -81,9 +81,12 @@ export const useScrollToLine = ({
 
     if (ref && location?.hash === idString) {
       if (stickyPadding) {
+        // do the first scroll on load
         if (!hasDoneInitialDrawRef.current) {
           resizeObs.observe(ref)
-        } else {
+        }
+        // all subsequent scrolls can just be done via window directly
+        else {
           resizeObs.disconnect()
 
           window.scrollTo({
@@ -92,13 +95,18 @@ export const useScrollToLine = ({
             top: ref?.offsetTop + stickyPadding,
           })
         }
-      } else {
+      }
+      // if it does not require padding just easily scroll into view
+      else {
         ref?.scrollIntoView({ behavior: 'smooth' })
       }
     }
 
     hasDoneInitialDrawRef.current = true
-    return () => resizeObs.disconnect()
+
+    return () => {
+      resizeObs.disconnect()
+    }
   }, [idString, lineRef, location?.hash, resizeObs, stickyPadding])
 
   return {
