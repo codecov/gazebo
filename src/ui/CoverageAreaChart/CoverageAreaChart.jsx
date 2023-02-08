@@ -28,9 +28,23 @@ const defaultStyles = {
   dateAxisLabels: { fontSize: 4, padding: 0 },
 }
 
+const ColorMap = Object.freeze({
+  default: '#222F3D',
+  primary: '#21B577',
+  warning: '#F4B01B',
+  danger: '#F52020',
+})
+
 const VictoryVoronoiContainer = createContainer('voronoi')
 
-function Chart({ data, axisLabelFunc, desc, title, renderAreaChart }) {
+function Chart({
+  data,
+  axisLabelFunc,
+  desc,
+  title,
+  renderAreaChart,
+  color = 'default',
+}) {
   return (
     <>
       <svg style={{ height: 0 }}>
@@ -71,7 +85,7 @@ function Chart({ data, axisLabelFunc, desc, title, renderAreaChart }) {
             </feComponentTransfer>
           </filter>
           <linearGradient id="myGradient" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#F01F7A7F" />
+            <stop offset="0%" stopColor={ColorMap[color]} stopOpacity="20%" />
             <stop offset="100%" stopColor="white" />
           </linearGradient>
         </defs>
@@ -165,9 +179,9 @@ function Chart({ data, axisLabelFunc, desc, title, renderAreaChart }) {
             style={{
               data: {
                 fill: 'url(#myGradient)',
-                filter: 'url(#toLinearRGB)',
                 cursor: 'pointer',
-                stroke: '#F01F7A',
+                stroke: ColorMap[color],
+                strokeWidth: '0.5px',
               },
             }}
           />
@@ -188,6 +202,7 @@ Chart.propTypes = {
   desc: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   renderAreaChart: PropTypes.bool.isRequired,
+  color: PropTypes.oneOf(['default', 'primary', 'warning', 'danger']),
 }
 
 export default Chart

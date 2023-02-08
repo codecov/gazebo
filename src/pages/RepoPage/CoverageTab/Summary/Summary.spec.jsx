@@ -59,6 +59,15 @@ const mockRepoCoverage = {
   },
 }
 
+const mockRepoConfig = {
+  repositoryConfig: {
+    indicationRange: {
+      upperRange: 80,
+      lowerRange: 60,
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -134,6 +143,12 @@ describe('Summary', () => {
         res(
           ctx.status(200),
           ctx.data({ owner: { repository: mockRepoCoverage } })
+        )
+      ),
+      graphql.query('RepoConfig', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: mockRepoConfig } })
         )
       )
     )

@@ -17,6 +17,7 @@ SimpleCoverageAreaChart.args = {
   desc: 'Hello',
   title: 'Chart example',
   renderAreaChart: true,
+  color: 'default',
 }
 
 export const NoDataCoverageAreaChart = Template.bind({})
@@ -31,4 +32,10 @@ NoDataCoverageAreaChart.args = {
 export default {
   title: 'Components/CoverageAreaChart',
   component: CoverageAreaChart,
+  argTypes: {
+    color: {
+      type: 'select',
+      options: ['default', 'primary', 'warning', 'danger'],
+    },
+  },
 }

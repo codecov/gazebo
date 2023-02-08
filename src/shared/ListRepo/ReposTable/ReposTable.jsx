@@ -5,8 +5,9 @@ import { useRepos } from 'services/repos'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
+import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import Button from 'ui/Button'
-import Progress from 'ui/Progress'
+import CoverageProgress from 'ui/CoverageProgress'
 import Table from 'ui/Table'
 
 import NoRepoCoverage from './NoRepoCoverage'
@@ -81,39 +82,50 @@ function transformRepoToTable({
     ]
   }
 
-  return repos?.map((repo) => ({
-    title: (
-      <RepoTitleLink
-        repo={repo}
-        showRepoOwner={!owner}
-        pageName={repo.active ? 'repo' : 'new'}
-        disabledLink={!isCurrentUserPartOfOrg && !repo.active}
-      />
-    ),
-    lastUpdated: (
-      <span className="flex-1 text-ds-gray-quinary">
-        {repo?.latestCommitAt ? formatTimeToNow(repo?.latestCommitAt) : ''}
-      </span>
-    ),
-    coverage:
-      typeof repo?.coverage === 'number' ? (
-        <Progress amount={repo?.coverage} label={true} />
-      ) : (
-        <NoRepoCoverage
-          active={repo.active}
-          isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
-          repoName={repo.name}
-          owner={repo?.author.username}
+  return repos?.map((repo) => {
+    const color = determineProgressColor({
+      coverage: repo?.coverage,
+      ...repo?.repositoryConfig?.indicationRange,
+    })
+
+    return {
+      title: (
+        <RepoTitleLink
+          repo={repo}
+          showRepoOwner={!owner}
+          pageName={repo.active ? 'repo' : 'new'}
+          disabledLink={!isCurrentUserPartOfOrg && !repo.active}
         />
       ),
-    notEnabled: (
-      <RepoNotSetup
-        owner={repo?.author.username}
-        repoName={repo?.name}
-        isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
-      />
-    ),
-  }))
+      lastUpdated: (
+        <span className="flex-1 text-ds-gray-quinary">
+          {repo?.latestCommitAt ? formatTimeToNow(repo?.latestCommitAt) : ''}
+        </span>
+      ),
+      coverage:
+        typeof repo?.coverage === 'number' ? (
+          <CoverageProgress
+            amount={repo?.coverage}
+            color={color}
+            label={true}
+          />
+        ) : (
+          <NoRepoCoverage
+            active={repo.active}
+            isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
+            repoName={repo.name}
+            owner={repo?.author.username}
+          />
+        ),
+      notEnabled: (
+        <RepoNotSetup
+          owner={repo?.author.username}
+          repoName={repo?.name}
+          isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
+        />
+      ),
+    }
+  })
 }
 
 // eslint-disable-next-line complexity
