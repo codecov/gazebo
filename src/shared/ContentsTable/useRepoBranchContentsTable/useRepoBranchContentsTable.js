@@ -7,10 +7,11 @@ import { useRepoBranchContents, useRepoOverview } from 'services/repo'
 import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
 import { useTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
+import { determineProgressColor } from 'shared/utils/determineProgressColor'
+import CoverageProgress from 'ui/CoverageProgress'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../constants'
-import CoverageEntry from '../TableEntries/BaseEntries/CoverageEntry'
 import BranchDirEntry from '../TableEntries/BranchEntries/BranchDirEntry'
 import BranchFileEntry from '../TableEntries/BranchEntries/BranchFileEntry'
 import { adjustListIfUpDir } from '../utils'
@@ -28,6 +29,7 @@ function createTableData({
   isSearching,
   filters,
   treePaths,
+  indicationRange,
 }) {
   if (tableData?.length > 0) {
     const displayType = determineDisplayType({ filters, isSearching })
@@ -66,7 +68,15 @@ function createTableData({
         misses,
         hits,
         partials,
-        coverage: <CoverageEntry percentCovered={percentCovered} />,
+        coverage: (
+          <CoverageProgress
+            amount={percentCovered}
+            color={determineProgressColor({
+              coverage: percentCovered,
+              ...indicationRange,
+            })}
+          />
+        ),
       })
     )
 
@@ -188,6 +198,7 @@ export function useRepoBranchContentsTable() {
         isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
         treePaths,
+        indicationRange: branchData?.indicationRange,
       }),
     [
       branchData,
