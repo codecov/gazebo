@@ -519,7 +519,7 @@ describe('ReposTable', () => {
           {
             node: {
               private: false,
-              activated: true,
+              activated: false,
               author: {
                 username: 'owner1',
               },
@@ -545,7 +545,7 @@ describe('ReposTable', () => {
           {
             node: {
               private: true,
-              activated: true,
+              activated: false,
               author: {
                 username: 'owner1',
               },
@@ -580,6 +580,18 @@ describe('ReposTable', () => {
       await waitFor(() => !queryClient.isFetching())
 
       const label = await screen.findByText(/Not yet enabled/)
+      expect(label).toBeInTheDocument()
+    })
+
+    it('renders deactivated for inactive repos', async () => {
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
+
+      await waitFor(() => queryClient.isFetching())
+      await waitFor(() => !queryClient.isFetching())
+
+      const label = await screen.findByText(/Deactivated/)
       expect(label).toBeInTheDocument()
     })
   })
