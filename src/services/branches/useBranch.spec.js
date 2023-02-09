@@ -54,12 +54,11 @@ describe('useBranch', () => {
         { wrapper }
       )
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      expect(result.current.data).toStrictEqual({
-        branch: { name: 'main', head: { commitid: 'commit-123' } },
-      })
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual({
+          branch: { name: 'main', head: { commitid: 'commit-123' } },
+        })
+      )
     })
   })
 })
