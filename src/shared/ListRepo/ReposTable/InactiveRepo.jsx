@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
 
-function RepoInactive({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
+function InactiveRepo({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
   if (isActive) return <>Deactivated</>
 
   return (
@@ -24,11 +24,11 @@ function RepoInactive({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
   )
 }
 
-RepoInactive.propTypes = {
+InactiveRepo.propTypes = {
   owner: PropTypes.string.isRequired,
   repoName: PropTypes.string,
   isCurrentUserPartOfOrg: PropTypes.bool,
   isActive: PropTypes.bool.isRequired,
 }
 
-export default RepoInactive
+export default InactiveRepo

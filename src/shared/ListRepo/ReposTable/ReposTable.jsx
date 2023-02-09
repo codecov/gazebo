@@ -10,9 +10,9 @@ import Button from 'ui/Button'
 import CoverageProgress from 'ui/CoverageProgress'
 import Table from 'ui/Table'
 
+import InactiveRepo from './InactiveRepo'
 import NoRepoCoverage from './NoRepoCoverage'
 import NoReposBlock from './NoReposBlock'
-import RepoInactive from './RepoInactive'
 import RepoTitleLink from './RepoTitleLink'
 
 import { repoDisplayOptions } from '../ListRepo'
@@ -119,7 +119,7 @@ function transformRepoToTable({
           />
         ),
       notEnabled: (
-        <RepoInactive
+        <InactiveRepo
           owner={repo?.author.username}
           repoName={repo?.name}
           isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}

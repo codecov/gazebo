@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import RepoInactive from './RepoInactive'
+import InactiveRepo from './InactiveRepo'
 
 function NoRepoCoverage({
   activated,
@@ -14,7 +14,7 @@ function NoRepoCoverage({
       {activated ? (
         'No data available'
       ) : (
-        <RepoInactive
+        <InactiveRepo
           owner={owner}
           repoName={repoName}
           isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
