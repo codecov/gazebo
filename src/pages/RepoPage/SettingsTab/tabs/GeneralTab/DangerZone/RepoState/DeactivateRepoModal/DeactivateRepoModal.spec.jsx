@@ -32,7 +32,9 @@ describe('DeactivateRepoModal component', () => {
     const cancelButton = screen.getByRole('button', { name: /Cancel/ })
     expect(cancelButton).toBeInTheDocument()
 
-    const deactivateButton = screen.getByTestId(/deactivate-repo/)
+    const deactivateButton = screen.getByRole('button', {
+      name: 'Deactivate repo',
+    })
     expect(deactivateButton).toBeInTheDocument()
 
     userEvent.click(cancelButton)
@@ -53,7 +55,9 @@ describe('DeactivateRepoModal component', () => {
       />
     )
 
-    const deactivateButton = screen.getByTestId(/deactivate-repo/)
+    const deactivateButton = screen.getByRole('button', {
+      name: 'Deactivate repo',
+    })
     expect(deactivateButton).toBeInTheDocument()
 
     userEvent.click(deactivateButton)
