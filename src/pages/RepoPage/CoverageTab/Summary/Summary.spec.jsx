@@ -19,6 +19,34 @@ const mockRepoOverview = {
   defaultBranch: 'main',
 }
 
+const mockMainBranchSearch = {
+  branches: {
+    edges: [
+      {
+        node: {
+          name: 'main',
+          head: {
+            commitid: '321fdsa',
+          },
+        },
+      },
+    ],
+    pageInfo: {
+      hasNextPage: false,
+      endCursor: 'end-cursor',
+    },
+  },
+}
+
+const mockBranch = {
+  branch: {
+    name: 'main',
+    head: {
+      commitid: '321fdsa',
+    },
+  },
+}
+
 const mockBranches = (hasNextPage = false) => ({
   branches: {
     edges: [
@@ -125,9 +153,19 @@ describe('Summary', () => {
           ctx.data({ owner: { repository: mockRepoOverview } })
         )
       ),
+      graphql.query('GetBranch', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { repository: mockBranch } }))
+      ),
       graphql.query('GetBranches', (req, res, ctx) => {
         if (req.variables?.after) {
           fetchNextPage(req.variables?.after)
+        }
+
+        if (req.variables?.filters?.searchValue === 'main') {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { repository: mockMainBranchSearch } })
+          )
         }
 
         if (req.variables?.filters?.searchValue) {

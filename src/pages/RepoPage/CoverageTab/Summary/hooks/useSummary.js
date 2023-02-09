@@ -33,10 +33,10 @@ export function useSummary() {
   const { data: branchesData, fetchNextPage: branchesFetchNextPage } =
     useBranches({ repo, owner, provider })
 
-  const { selection, branchSelectorProps } = useBranchSelector(
-    branchesData?.branches,
-    overview?.defaultBranch
-  )
+  const { selection, branchSelectorProps } = useBranchSelector({
+    branches: branchesData?.branches,
+    defaultBranch: overview?.defaultBranch,
+  })
 
   const { data, isLoading: isLoadingRepoCoverage } = useRepoCoverage({
     provider,
