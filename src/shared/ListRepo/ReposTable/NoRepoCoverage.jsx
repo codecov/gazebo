@@ -1,17 +1,24 @@
 import PropTypes from 'prop-types'
 
-import RepoNotSetup from './RepoNotSetup'
+import RepoInactive from './RepoInactive'
 
-function NoRepoCoverage({ active, owner, repoName, isCurrentUserPartOfOrg }) {
+function NoRepoCoverage({
+  activated,
+  active,
+  owner,
+  repoName,
+  isCurrentUserPartOfOrg,
+}) {
   return (
     <span className="text-ds-gray-quinary text-sm">
-      {active ? (
+      {activated ? (
         'No data available'
       ) : (
-        <RepoNotSetup
+        <RepoInactive
           owner={owner}
           repoName={repoName}
           isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
+          isActive={active}
         />
       )}
     </span>
@@ -22,6 +29,7 @@ NoRepoCoverage.propTypes = {
   owner: PropTypes.string.isRequired,
   repoName: PropTypes.string.isRequired,
   isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
+  activated: PropTypes.bool.isRequired,
   active: PropTypes.bool.isRequired,
 }
 

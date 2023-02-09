@@ -12,7 +12,7 @@ import Table from 'ui/Table'
 
 import NoRepoCoverage from './NoRepoCoverage'
 import NoReposBlock from './NoReposBlock'
-import RepoNotSetup from './RepoNotSetup'
+import RepoInactive from './RepoInactive'
 import RepoTitleLink from './RepoTitleLink'
 
 import { repoDisplayOptions } from '../ListRepo'
@@ -111,6 +111,7 @@ function transformRepoToTable({
           />
         ) : (
           <NoRepoCoverage
+            activated={repo.activated}
             active={repo.active}
             isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
             repoName={repo.name}
@@ -118,10 +119,11 @@ function transformRepoToTable({
           />
         ),
       notEnabled: (
-        <RepoNotSetup
+        <RepoInactive
           owner={repo?.author.username}
           repoName={repo?.name}
           isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
+          isActive={repo?.active}
         />
       ),
     }
@@ -134,14 +136,14 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const option = Object.keys(repoDisplayOptions).find((key) => {
     return repoDisplayOptions[key].text === repoDisplay
   })
-  const active = repoDisplayOptions[option].status
+  const activated = repoDisplayOptions[option].status
   const { data: userData } = useUser()
   const { data: ownerData } = useOwner({
     username: owner || userData?.user?.username,
   })
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
-    active,
+    activated,
     sortItem,
     term: searchValue,
     repoNames: filterValues,
