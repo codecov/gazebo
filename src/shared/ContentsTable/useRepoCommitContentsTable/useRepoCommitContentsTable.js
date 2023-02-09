@@ -5,10 +5,11 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { useRepoCommitContents } from 'services/repo'
 import { useCommitTreePaths } from 'shared/treePaths'
+import { determineProgressColor } from 'shared/utils/determineProgressColor'
+import CoverageProgress from 'ui/CoverageProgress'
 import { SortingDirection } from 'ui/Table/constants'
 
 import { displayTypeParameter } from '../constants'
-import CoverageEntry from '../TableEntries/BaseEntries/CoverageEntry'
 import CommitDirEntry from '../TableEntries/CommitEntries/CommitDirEntry'
 import CommitFileEntry from '../TableEntries/CommitEntries/CommitFileEntry'
 import { useTableDefaultSort } from '../useTableDefaultSort'
@@ -27,6 +28,7 @@ function createTableData({
   isSearching,
   filters,
   treePaths,
+  indicationRange,
 }) {
   if (tableData?.length > 0) {
     const displayType = determineDisplayType({ filters, isSearching })
@@ -65,7 +67,15 @@ function createTableData({
         misses,
         hits,
         partials,
-        coverage: <CoverageEntry percentCovered={percentCovered} />,
+        coverage: (
+          <CoverageProgress
+            amount={percentCovered}
+            color={determineProgressColor({
+              coverage: percentCovered,
+              ...indicationRange,
+            })}
+          />
+        ),
       })
     )
 
@@ -184,6 +194,7 @@ export function useRepoCommitContentsTable() {
         isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
         treePaths,
+        indicationRange: commitData?.indicationRange,
       }),
     [commitData, commit, urlPath, params, sortBy, treePaths]
   )
