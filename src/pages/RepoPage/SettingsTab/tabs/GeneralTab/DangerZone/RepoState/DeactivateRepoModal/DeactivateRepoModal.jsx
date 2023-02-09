@@ -5,12 +5,13 @@ import Modal from 'ui/Modal'
 
 const DeactivateRepoModal = ({
   closeModal,
+  showModal,
   deactivateRepo,
   isLoading,
   activated,
 }) => (
   <Modal
-    isOpen={true}
+    isOpen={showModal}
     onClose={closeModal}
     title="Are you sure you want to deactivate the repo?"
     body={
@@ -50,6 +51,7 @@ DeactivateRepoModal.propTypes = {
   deactivateRepo: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   activated: PropTypes.bool.isRequired,
+  showModal: PropTypes.bool.isRequired,
 }
 
 export default DeactivateRepoModal

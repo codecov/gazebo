@@ -145,7 +145,9 @@ describe('RepoState', () => {
         )
         expect(modalDeactivateButton).toBeInTheDocument()
 
-        const cancelButton = await screen.findByTestId('close-modal')
+        const cancelButton = await screen.findByRole('button', {
+          name: 'Cancel',
+        })
         expect(cancelButton).toBeInTheDocument()
       })
 
@@ -158,7 +160,9 @@ describe('RepoState', () => {
           const deactivateButton = await screen.findByTestId('deactivate-repo')
           userEvent.click(deactivateButton)
 
-          const cancelButton = await screen.findByTestId('close-modal')
+          const cancelButton = await screen.findByRole('button', {
+            name: 'Cancel',
+          })
           userEvent.click(cancelButton)
 
           expect(mutate).not.toHaveBeenCalled()

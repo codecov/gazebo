@@ -62,9 +62,7 @@ describe('useRepoActivation', () => {
     it('toggles the repo state', async () => {
       const { result } = renderHook(() => useRepoActivation(), { wrapper })
 
-      await act(async () => {
-        result.current.toggleRepoState(true)
-      })
+      result.current.toggleRepoState(true)
 
       await waitFor(() => expect(mutate).toBeCalled())
       expect(result.current.variables).toStrictEqual({ activated: false })

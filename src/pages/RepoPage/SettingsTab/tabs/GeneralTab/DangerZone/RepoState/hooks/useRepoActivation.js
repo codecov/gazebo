@@ -6,6 +6,8 @@ export function useRepoActivation() {
   const { mutate, ...rest } = useUpdateRepo()
 
   async function toggleRepoState(activated) {
+    const status = activated ? 'deactivate' : 'activate'
+
     mutate(
       {
         activated: !activated,
@@ -14,9 +16,7 @@ export function useRepoActivation() {
         onError: () =>
           addToast({
             type: 'error',
-            text: `We were not able to ${
-              activated ? 'deactivate' : 'activate'
-            } this repo`,
+            text: `We were not able to ${status} this repo`,
           }),
       }
     )

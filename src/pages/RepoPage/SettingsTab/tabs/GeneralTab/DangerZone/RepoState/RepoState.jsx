@@ -13,11 +13,10 @@ const ActivationStatus = Object.freeze({
 
 function RepoState() {
   const { data } = useRepoSettings()
-  const repository = data?.repository
   const [showModal, setShowModal] = useState(false)
   const { toggleRepoState, isLoading } = useRepoActivation()
 
-  const activated = repository?.activated
+  const activated = data?.repository?.activated
 
   if (activated) {
     return (
@@ -35,18 +34,18 @@ function RepoState() {
           >
             {ActivationStatus.ACTIVATED.LABEL}
           </Button>
-          {showModal && (
-            <DeactivateRepoModal
-              closeModal={() => setShowModal(false)}
-              deactivateRepo={toggleRepoState}
-              isLoading={isLoading}
-              activated={activated}
-            />
-          )}
+          <DeactivateRepoModal
+            showModal={showModal}
+            closeModal={() => setShowModal(false)}
+            deactivateRepo={toggleRepoState}
+            isLoading={isLoading}
+            activated={activated}
+          />
         </div>
       </div>
     )
   }
+
   return (
     <div className="flex justify-between">
       <h2 className="font-semibold">{ActivationStatus.DEACTIVATED.TITLE}</h2>

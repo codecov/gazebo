@@ -14,6 +14,7 @@ describe('DeactivateRepoModal component', () => {
         closeModal={closeModalMock}
         deactivateRepo={deactivateRepoMock}
         isLoading={false}
+        showModal={true}
         activated
       />
     )
@@ -28,7 +29,7 @@ describe('DeactivateRepoModal component', () => {
     )
     expect(modalBody).toBeInTheDocument()
 
-    const cancelButton = screen.getByText(/Cancel/)
+    const cancelButton = screen.getByRole('button', { name: /Cancel/ })
     expect(cancelButton).toBeInTheDocument()
 
     const deactivateButton = screen.getByTestId(/deactivate-repo/)
@@ -48,6 +49,7 @@ describe('DeactivateRepoModal component', () => {
         deactivateRepo={deactivateRepoMock}
         isLoading={false}
         activated={false}
+        showModal={true}
       />
     )
 
