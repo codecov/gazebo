@@ -20,7 +20,7 @@ const mockCurrentUser = {
   },
 }
 
-const mockGetRepo = (noUploadToken) => ({
+const mockGetRepo = (noUploadToken, hasCommits) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
     repository: {
@@ -32,17 +32,7 @@ const mockGetRepo = (noUploadToken) => ({
       yaml: '',
       activated: false,
       oldestCommitAt: '',
-    },
-  },
-})
-
-const mockGetCommits = (hasCommits) => ({
-  owner: {
-    repository: {
-      commits: {
-        totalCount: 0,
-        edges: hasCommits ? [{ node: { commitid: 1 } }] : [],
-      },
+      active: hasCommits,
     },
   },
 })
@@ -104,13 +94,10 @@ describe('NewRepoTab', () => {
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo(noUploadToken)))
+        res(ctx.status(200), ctx.data(mockGetRepo(noUploadToken, hasCommits)))
       ),
       graphql.query('CurrentUser', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockCurrentUser))
-      ),
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetCommits(hasCommits)))
       )
     )
   }

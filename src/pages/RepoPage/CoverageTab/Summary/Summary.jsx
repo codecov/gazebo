@@ -1,10 +1,12 @@
 import { useLayoutEffect } from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 
 import { useSetCrumbs } from 'pages/RepoPage/context'
+import { useRepoConfig } from 'services/repo/useRepoConfig'
+import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import A from 'ui/A'
+import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
-import Progress from 'ui/Progress'
 import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
@@ -12,8 +14,11 @@ import CoverageTrend from './CoverageTrend'
 import { useCoverageRedirect, useSummary } from './hooks'
 
 const Summary = () => {
+  const { provider, owner, repo } = useParams()
   const setCrumbs = useSetCrumbs()
   const { setNewPath, redirectState } = useCoverageRedirect()
+  const { data: repoConfigData } = useRepoConfig({ provider, owner, repo })
+
   const {
     data,
     currentBranchSelected,
@@ -97,10 +102,14 @@ const Summary = () => {
             <h3 className="text-ds-gray-octonary text-sm font-semibold  min-w-[16rem]">
               Coverage on branch
             </h3>
-            <Progress
+            <CoverageProgress
               label
               amount={data?.head?.totals?.percentCovered}
               variant="tall"
+              color={determineProgressColor({
+                coverage: data?.head?.totals?.percentCovered,
+                ...repoConfigData?.indicationRange,
+              })}
             />
             <p className="text-xs">
               {data?.head?.totals?.hitsCount} of {data?.head?.totals?.lineCount}{' '}

@@ -5,7 +5,7 @@ import { useBranches } from 'services/branches'
 import { useRepoOverview } from 'services/repo'
 import CoverageAreaChart from 'ui/CoverageAreaChart'
 
-import { useBranchSelector, useRepoCoverageTimeseries } from '../hooks'
+import { useBranchSelector, useRepoCoverageTimeseries } from '../../hooks'
 
 function makeDesc({ first, last, repo, data }) {
   if (!data) return ''
@@ -16,6 +16,10 @@ function makeDesc({ first, last, repo, data }) {
 
   return `${repo} coverage chart from ${firstDateFormatted} to ${lastDateFormatted}, coverage change is ${change}${coverageDiff}%`
 }
+
+const Placeholder = () => (
+  <div className=" w-full h-[22rem] animate-pulse bg-ds-gray-tertiary rounded" />
+)
 
 function Chart() {
   const { provider, owner, repo } = useParams()
@@ -47,6 +51,12 @@ function Chart() {
     repo,
   })
 
+  // return <Placeholder />
+
+  if (!isPreviousData && !isSuccess) {
+    return <Placeholder />
+  }
+
   return (
     <CoverageAreaChart
       axisLabelFunc={data?.coverageAxisLabel}
@@ -54,6 +64,8 @@ function Chart() {
       title={`${repo} coverage chart`}
       desc={desc}
       renderAreaChart={isPreviousData || isSuccess}
+      aproxHeight={70}
+      aproxWidth={217}
     />
   )
 }

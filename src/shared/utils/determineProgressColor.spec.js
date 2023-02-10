@@ -2,14 +2,14 @@ import { determineProgressColor } from './determineProgressColor'
 
 describe('determineProgressColor', () => {
   describe('coverage value is above upper range', () => {
-    it('returns default', () => {
+    it('returns primary', () => {
       const result = determineProgressColor({
         coverage: 100,
         upperRange: 80,
         lowerRange: 60,
       })
 
-      expect(result).toBe('default')
+      expect(result).toBe('primary')
     })
   })
 
@@ -45,7 +45,7 @@ describe('determineProgressColor', () => {
         lowerRange: 60,
       })
 
-      expect(result).toBe('default')
+      expect(result).toBe('primary')
     })
   })
 })
