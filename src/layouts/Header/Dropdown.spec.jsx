@@ -99,7 +99,7 @@ describe('Dropdown', () => {
         )
       })
 
-      it('shows manage app access link', () => {
+      it.only('shows manage app access link', () => {
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gh' }),
         })

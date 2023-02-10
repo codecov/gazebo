@@ -13,16 +13,11 @@ import { colorRange, formatData, partitionFn } from './utils'
 function SunburstChart({
   data,
   onClick = () => {},
-  onHover = () => {},
-  selector = ({ value }) => value,
   svgRenderSize = 932,
   svgFontSize = '16px',
 }) {
   // DOM node D3 controls
   const ref = useRef()
-  const selectorHandler = useRef(selector)
-  const clickHandler = useRef(onClick)
-  const hoverHandler = useRef(onHover)
 
   // In this case D3 is handling rendering not React, so useEffect is used to handle rendering
   // and changes outside of the React lifecycle.
@@ -43,21 +38,8 @@ function SunburstChart({
     // Ex color(10.4)
     const color = scaleSequential().domain([0, 100]).interpolator(colorRange)
 
-    const selectorMutate = (node) => {
-      if (Array.isArray(node.children)) {
-        return {
-          ...node,
-          value: selectorHandler.current(node),
-          children: node.children.map((child) => selectorMutate(child)),
-        }
-      }
-      return { ...node, value: selectorHandler.current(node) }
-    }
-
     // Process data for use in D3
-    const formatted = selectorMutate(data)
-    const root = partitionFn(formatted)
-
+    const root = partitionFn(data)
     root.each((d) => (d.current = d))
 
     // Bind D3 to a DOM element
@@ -74,7 +56,7 @@ function SunburstChart({
       .selectAll('path')
       .data(root.descendants().slice(1))
       .join('path')
-      .attr('fill', (d) => color(d?.data?.value || 0))
+      .attr('fill', (d) => color(d.data.value || 0))
       // If data point is a file fade the background color a bit.
       .attr('fill-opacity', (d) =>
         arcVisible(d.current) ? (d.children ? 1 : 0.6) : 0
@@ -82,19 +64,17 @@ function SunburstChart({
       .attr('pointer-events', (d) => (arcVisible(d.current) ? 'auto' : 'none'))
       .attr('d', (d) => drawArc(d.current))
 
-    // Events for folders
+    // Click events for folders
     path
       .filter((d) => d.children)
       .style('cursor', 'pointer')
       .on('click', clickedFolder)
-      .on('mouseover', hovered)
 
-    // Events for file
+    // Click events for folders
     path
       .filter((d) => !d.children)
-      .style('cursor', 'auto')
+      .style('cursor', 'pointer')
       .on('click', clickedFile)
-      .on('mouseover', hovered)
 
     // Create a11y label / mouse hover tooltip
     const formatTitle = (d) =>
@@ -105,6 +85,23 @@ function SunburstChart({
         .join('/')}\n${formatData(d.data.value)}`
 
     path.append('title').text((d) => formatTitle(d))
+
+    // Render the file/folder name in it's
+    const label = g
+      .append('g')
+      .attr('font-size', svgFontSize)
+      .attr('pointer-events', 'none')
+      .attr('text-anchor', 'middle')
+      .style('user-select', 'none')
+      .selectAll('text')
+      .data(root.descendants().slice(1))
+      .join('text')
+      .attr('dy', '0.35em')
+      // Hide labels if arc not in view
+      .attr('fill-opacity', (d) => +labelVisible(d.current))
+      // Apply animation when transitioning in and out.
+      .attr('transform', (d) => labelTransform(d.current))
+      .text((d) => d.data.name)
 
     // White circle in the middle. Act's as a "back"
     const parent = g
@@ -117,19 +114,15 @@ function SunburstChart({
       .on('click', clickedFolder)
 
     function clickedFolder(_event, p) {
-      reactClickCallback(p)
+      reactCallback(p)
       changeLocation(p)
     }
 
     function clickedFile(_event, p) {
-      reactClickCallback(p)
+      reactCallback(p)
     }
 
-    function hovered(_event, p) {
-      reactHoverCallback(p)
-    }
-
-    function reactClickCallback(p) {
+    function reactCallback(p) {
       // Create a string from the root data down to the current item
       const filePath = `${p
         .ancestors()
@@ -139,20 +132,7 @@ function SunburstChart({
 
       // callback to parent component with a path, the data node, and raw d3 data
       // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
-      clickHandler.current(filePath, p.data, p)
-    }
-
-    function reactHoverCallback(p) {
-      // Create a string from the root data down to the current item
-      const filePath = `${p
-        .ancestors()
-        .map((d) => d.data.name)
-        .reverse()
-        .join('/')}`
-
-      // callback to parent component with a path, the data node, and raw d3 data
-      // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
-      hoverHandler.current(filePath, p.data, p)
+      onClick(filePath, p.data, p)
     }
 
     function changeLocation(p) {
@@ -195,6 +175,14 @@ function SunburstChart({
         .attr('pointer-events', (d) => (arcVisible(d.target) ? 'auto' : 'none'))
 
         .attrTween('d', (d) => () => drawArc(d.current))
+
+      label
+        .filter(function (d) {
+          return +this.getAttribute('fill-opacity') || labelVisible(d.target)
+        })
+        .transition(t)
+        .attr('fill-opacity', (d) => +labelVisible(d.target))
+        .attrTween('transform', (d) => () => labelTransform(d.current))
     }
 
     // Calculate if a arc is visible
@@ -202,9 +190,20 @@ function SunburstChart({
       return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0
     }
 
+    // Calculate if a label is visible
+    function labelVisible(d) {
+      return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03
+    }
+
+    // Do the math for a css animation.
+    function labelTransform(d) {
+      const x = (((d.x0 + d.x1) / 2) * 180) / Math.PI
+      const y = ((d.y0 + d.y1) / 2) * radius
+      return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`
+    }
     // On cleanup remove the root DOM generated by D3
     return () => g.remove()
-  }, [data, svgFontSize, svgRenderSize])
+  }, [data, onClick, svgFontSize, svgRenderSize])
 
   return <svg viewBox={[0, 0, svgRenderSize, svgRenderSize]} ref={ref} />
 }
@@ -228,9 +227,7 @@ SunburstChart.propTypes = {
       })
     ),
   }),
-  selector: PropTypes.func,
   onClick: PropTypes.func,
-  onHover: PropTypes.func,
   svgRenderSize: PropTypes.number,
   svgFontSize: PropTypes.string,
 }
