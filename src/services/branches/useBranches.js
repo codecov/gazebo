@@ -40,9 +40,9 @@ export function useBranches({ provider, owner, repo, filters, opts = {} }) {
     filters,
   }
 
-  const { data, ...rest } = useInfiniteQuery(
-    ['GetBranches', provider, owner, repo, variables],
-    ({ pageParam, signal }) =>
+  const { data, ...rest } = useInfiniteQuery({
+    queryKey: ['GetBranches', provider, owner, repo, variables],
+    queryFn: ({ pageParam, signal }) =>
       Api.graphql({
         provider,
         query,
@@ -57,16 +57,14 @@ export function useBranches({ provider, owner, repo, filters, opts = {} }) {
         branches: mapEdges(res?.data?.owner?.repository?.branches),
         pageInfo: res?.data?.owner?.repository?.branches?.pageInfo,
       })),
-    {
-      getNextPageParam: (data) => {
-        const pageParam = data?.pageInfo?.hasNextPage
-          ? data?.pageInfo?.endCursor
-          : undefined
-        return pageParam
-      },
-      ...opts,
-    }
-  )
+    getNextPageParam: (data) => {
+      const pageParam = data?.pageInfo?.hasNextPage
+        ? data?.pageInfo?.endCursor
+        : undefined
+      return pageParam
+    },
+    ...opts,
+  })
 
   return {
     data: { branches: data?.pages?.map((page) => page?.branches).flat() },
