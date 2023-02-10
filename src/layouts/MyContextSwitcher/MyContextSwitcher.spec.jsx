@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -109,6 +110,29 @@ describe('MyContextSwitcher', () => {
         name: /codecov/i,
       })
       expect(button).toBeInTheDocument()
+    })
+
+    it('renders the default org modal', async () => {
+      render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
+        wrapper,
+      })
+
+      const editDefaultButton = await screen.findByText(/Edit default/i)
+      expect(editDefaultButton).toBeInTheDocument()
+      userEvent.click(editDefaultButton)
+
+      const title = await screen.findByText(/Select default organization/)
+      expect(title).toBeInTheDocument()
+      const subTitle = await screen.findByText(
+        /Org will appear as default for landing page context/
+      )
+      expect(subTitle).toBeInTheDocument()
+
+      const cancelButton = await screen.findByRole('button', { name: 'Cancel' })
+      expect(cancelButton).toBeInTheDocument()
+
+      const updateButton = await screen.findByRole('button', { name: 'Update' })
+      expect(updateButton).toBeInTheDocument()
     })
   })
 

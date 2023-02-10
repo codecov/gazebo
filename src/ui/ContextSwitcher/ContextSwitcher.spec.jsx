@@ -200,8 +200,9 @@ describe('ContextSwitcher', () => {
     afterEach(() => jest.restoreAllMocks())
 
     it('renders the custom component', async () => {
-      const Component = () => <div>component</div>
       // disabling as it's a test, happy to make validation for it though
+      // eslint-disable-next-line react/prop-types
+      const Component = ({ closeFn }) => <div onClick={closeFn}>component</div>
       // eslint-disable-next-line react/prop-types
       const DisplayComponent = ({ onClick }) => (
         <button onClick={onClick}>display</button>
@@ -218,8 +219,12 @@ describe('ContextSwitcher', () => {
       const displayComponentButton = await screen.findByText('display')
       expect(displayComponentButton).toBeInTheDocument()
       userEvent.click(displayComponentButton)
+
       const componentText = await screen.findByText('component')
       expect(componentText).toBeInTheDocument()
+      userEvent.click(componentText)
+
+      await waitFor(() => expect(componentText).not.toBeInTheDocument())
     })
   })
 })
