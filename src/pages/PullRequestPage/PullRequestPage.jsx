@@ -36,8 +36,12 @@ const Loader = (
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
-  const { flagsCount, indirectChangesCount, impactedFilesCount, commitsCount } =
-    useTabsCounts()
+  const {
+    flagsCount,
+    indirectChangesCount,
+    directChangedFilesCount,
+    commitsCount,
+  } = useTabsCounts()
 
   if ((!isLoading && !data?.hasAccess) || (!isLoading && !data?.pull)) {
     return <NotFound />
@@ -75,8 +79,8 @@ function PullRequestPage() {
                   pageName: 'pullDetail',
                   children: (
                     <>
-                      Impacted Files
-                      <sup className="text-xs">{impactedFilesCount}</sup>
+                      Files changed
+                      <sup className="text-xs">{directChangedFilesCount}</sup>
                     </>
                   ),
                   exact: true,

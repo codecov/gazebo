@@ -15,6 +15,7 @@ const query = `
             ... on Comparison {
               impactedFilesCount
               indirectChangedFilesCount
+              directChangedFilesCount
               flagComparisonsCount
             }
             __typename
