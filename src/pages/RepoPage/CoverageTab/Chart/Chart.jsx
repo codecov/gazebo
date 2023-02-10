@@ -25,10 +25,10 @@ function Chart() {
     owner,
   })
   const { data: branchesData } = useBranches({ repo, provider, owner })
-  const { selection } = useBranchSelector(
-    branchesData?.branches,
-    overview?.defaultBranch
-  )
+  const { selection } = useBranchSelector({
+    branches: branchesData?.branches,
+    defaultBranch: overview?.defaultBranch,
+  })
   const { data, isPreviousData, isSuccess } = useRepoCoverageTimeseries(
     {
       branch: selection?.name,

@@ -4,16 +4,21 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
+
 import RawFileviewer from './RawFileviewer'
 
 jest.mock(
   'ui/FileViewer/ToggleHeader/ToggleHeader',
   () => () => 'The FileViewer Toggle Header'
 )
+
 jest.mock(
   'ui/CodeRenderer/CodeRendererProgressHeader',
   () => () => 'The Progress Header for CodeRenderer'
 )
+
+jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -46,6 +51,12 @@ afterAll(() => {
 
 describe('RawFileviewer', () => {
   function setup({ content, owner, coverage, isCriticalFile }) {
+    useScrollToLine.mockImplementation(() => ({
+      lineRef: () => {},
+      handleClick: jest.fn(),
+      targeted: false,
+    }))
+
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner }))

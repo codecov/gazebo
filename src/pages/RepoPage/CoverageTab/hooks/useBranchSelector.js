@@ -21,6 +21,7 @@ export function useBranchSelector({ branches, defaultBranch }) {
     branch: selectedBranch,
     opts: {
       queryKey: ['GetSelectedBranch', provider, owner, repo, selectedBranch],
+      enabled: !!selectedBranch,
     },
   })
 
