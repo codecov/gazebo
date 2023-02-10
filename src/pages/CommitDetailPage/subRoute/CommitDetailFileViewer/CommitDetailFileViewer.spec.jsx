@@ -4,7 +4,11 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
+
 import CommitDetailFileViewer from './CommitDetailFileViewer'
+
+jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const mockOwner = {
   username: 'cool-user',
@@ -78,6 +82,12 @@ afterAll(() => {
 
 describe('CommitDetailFileViewer', () => {
   function setup() {
+    useScrollToLine.mockImplementation(() => ({
+      lineRef: () => {},
+      handleClick: jest.fn(),
+      targeted: false,
+    }))
+
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: mockOwner }))

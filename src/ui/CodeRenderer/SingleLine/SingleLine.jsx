@@ -19,11 +19,13 @@ function SingleLine({
   getLineProps,
   getTokenProps,
   path,
+  stickyPadding = 0,
 }) {
   const lineState = getLineState({ coverage })
   const { lineRef, handleClick, targeted } = useScrollToLine({
     number,
     path,
+    stickyPadding,
   })
 
   return (
@@ -68,6 +70,7 @@ SingleLine.propTypes = {
   getLineProps: PropTypes.func,
   getTokenProps: PropTypes.func,
   path: PropTypes.string,
+  stickyPadding: PropTypes.number,
 }
 
 export default SingleLine
