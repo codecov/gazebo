@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -20,15 +20,15 @@ const server = setupServer()
 const wrapper = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
-        <Route path="/:provider/:owner/:repo">{children}</Route>
+      <MemoryRouter initialEntries={['/gh/codecov/cool-repo/tree/main']}>
+        <Route path="/:provider/:owner/:repo/tree/:branch">{children}</Route>
       </MemoryRouter>
     </QueryClientProvider>
   )
 }
 
 beforeAll(() => {
-  server.listen()
+  server.listen({ onUnhandledRequest: 'warn' })
 })
 afterEach(() => {
   queryClient.clear()
@@ -38,45 +38,67 @@ afterAll(() => {
   server.close()
 })
 
+const treeMock = { name: 'repoName', children: [] }
+const overviewMock = {
+  owner: { repository: { private: false, defaultBranch: 'main' } },
+}
+
 describe('Sunburst chart', () => {
-  function setup() {
+  function setup({
+    repoOverviewData,
+    coverageTreeRes,
+    coverageTreeStatus = 200,
+  }) {
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: { repository: { private: false, defaultBranch: 'main' } },
-          })
-        )
+        return res(ctx.status(200), ctx.data(repoOverviewData))
       }),
-      graphql.query('GetBranches', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              repository: {
-                branches: {
-                  edges: [{ node: { name: 'main', head: { commitid: 1234 } } }],
-                  pageInfo: {
-                    hasNextPage: false,
-                    endCursor: 'fwefesfesa',
-                  },
-                },
-              },
-            },
-          })
-        )
-      })
+      rest.get(
+        '/internal/:provider/:owner/:repo/coverage/tree',
+        (req, res, ctx) => {
+          return res(
+            ctx.status(coverageTreeStatus),
+            ctx.json({ data: coverageTreeRes })
+          )
+        }
+      )
     )
   }
 
-  beforeEach(() => {
-    setup()
+  describe('successful call', () => {
+    beforeEach(() => {
+      setup({
+        repoOverviewData: overviewMock,
+        coverageTreeRes: treeMock,
+        coverageTreeStatus: 200,
+      })
+    })
+
+    it('renders something', async () => {
+      render(<Sunburst />, { wrapper })
+
+      const chart = await screen.findByText('Chart Mocked')
+
+      expect(chart).toBeInTheDocument()
+    })
   })
 
-  it('renders something', () => {
-    render(<Sunburst />, { wrapper })
+  describe('tree 500', () => {
+    beforeEach(() => {
+      setup({
+        repoOverviewData: overviewMock,
+        coverageTreeStatus: 500,
+      })
+    })
 
-    expect(screen.getByText('Chart Mocked')).toBeInTheDocument()
+    it('renders something', async () => {
+      render(<Sunburst />, { wrapper })
+
+      const chart = await screen.findByText(
+        'The sunburst chart failed to load.'
+      )
+
+      expect(chart).toBeInTheDocument()
+    })
   })
 })

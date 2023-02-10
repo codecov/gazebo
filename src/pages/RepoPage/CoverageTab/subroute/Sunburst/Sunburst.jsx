@@ -1,12 +1,8 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
-import { useSunburstCoverage } from 'services/charts'
-import { useRepoOverview } from 'services/repo'
 import SunburstChart from 'ui/SunburstChart'
 
-import { useBranchSelector } from '../../hooks'
+import useSunburstChart from './useSunburstChart'
 
 const Placeholder = () => (
   <div
@@ -15,31 +11,11 @@ const Placeholder = () => (
   />
 )
 
-// eslint-disable-next-line max-statements
 function Sunburst() {
-  const [currentPath, setCurrentPath] = useState('/.')
-  const { provider, owner, repo } = useParams()
-  const { data: overview } = useRepoOverview({
-    provider,
-    repo,
-    owner,
-  })
-  const { data: branchesData } = useBranches({ repo, provider, owner })
-  const { selection } = useBranchSelector(
-    branchesData?.branches,
-    overview?.defaultBranch
-  )
+  const [currentPath, setCurrentPath] = useState('')
+  const { data, isFetching, isError, isLoading } = useSunburstChart()
 
-  const { data, isFetching, isError } = useSunburstCoverage(
-    { provider, owner, repo, query: { branch: selection?.name } },
-    {
-      enabled: !!selection?.name,
-      suspense: false,
-      select: (data) => data[0],
-    }
-  )
-
-  if (isFetching) {
+  if (isFetching || isLoading) {
     return <Placeholder />
   }
 
