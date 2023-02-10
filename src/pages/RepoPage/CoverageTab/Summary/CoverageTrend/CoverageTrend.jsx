@@ -17,10 +17,10 @@ function CoverageTrend() {
     owner,
   })
   const { data: branchesData } = useBranches({ provider, repo, owner })
-  const { selection } = useBranchSelector(
-    branchesData?.branches,
-    overview?.defaultBranch
-  )
+  const { selection } = useBranchSelector({
+    branches: branchesData?.branches,
+    defaultBranch: overview?.defaultBranch,
+  })
 
   const { data, isFetching } = useRepoCoverageTimeseries(
     {
