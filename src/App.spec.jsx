@@ -15,7 +15,7 @@ jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
 jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
-jest.mock('./pages/CommitPage', () => () => 'CommitPage')
+jest.mock('./pages/CommitDetailPage', () => () => 'CommitDetailPage')
 jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
 jest.mock('./pages/HomePage', () => () => 'HomePage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
@@ -42,7 +42,11 @@ const user = {
 }
 
 const server = new setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  // silence Error at useUser: Aborted
+  console.error = () => {}
+  server.listen()
+})
 afterEach(() => {
   config.IS_SELF_HOSTED = false
   server.resetHandlers()
@@ -154,7 +158,7 @@ describe('App', () => {
     it('renders the commit page', async () => {
       render(<App />, { wrapper })
 
-      const page = await screen.findByText(/CommitPage/i)
+      const page = await screen.findByText(/CommitDetailPage/i)
       expect(page).toBeInTheDocument()
     })
   })

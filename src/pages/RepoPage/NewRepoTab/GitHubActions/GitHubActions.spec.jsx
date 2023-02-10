@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { trackSegmentEvent } from 'services/tracking/segment'
@@ -33,7 +34,13 @@ const mockGetRepo = {
   },
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -45,7 +52,7 @@ const wrapper = ({ children }) => (
           '/:provider/:owner/:repo/new/other-ci',
         ]}
       >
-        {children}
+        <Suspense fallback={null}>{children}</Suspense>
       </Route>
     </MemoryRouter>
   </QueryClientProvider>

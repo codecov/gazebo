@@ -5,13 +5,14 @@ import { useRepos } from 'services/repos'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
+import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import Button from 'ui/Button'
-import Progress from 'ui/Progress'
+import CoverageProgress from 'ui/CoverageProgress'
 import Table from 'ui/Table'
 
+import InactiveRepo from './InactiveRepo'
 import NoRepoCoverage from './NoRepoCoverage'
 import NoReposBlock from './NoReposBlock'
-import RepoNotSetup from './RepoNotSetup'
 import RepoTitleLink from './RepoTitleLink'
 
 import { repoDisplayOptions } from '../ListRepo'
@@ -81,39 +82,52 @@ function transformRepoToTable({
     ]
   }
 
-  return repos?.map((repo) => ({
-    title: (
-      <RepoTitleLink
-        repo={repo}
-        showRepoOwner={!owner}
-        pageName={repo.active ? 'repo' : 'new'}
-        disabledLink={!isCurrentUserPartOfOrg && !repo.active}
-      />
-    ),
-    lastUpdated: (
-      <span className="flex-1 text-ds-gray-quinary">
-        {repo?.latestCommitAt ? formatTimeToNow(repo?.latestCommitAt) : ''}
-      </span>
-    ),
-    coverage:
-      typeof repo?.coverage === 'number' ? (
-        <Progress amount={repo?.coverage} label={true} />
-      ) : (
-        <NoRepoCoverage
-          active={repo.active}
-          isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
-          repoName={repo.name}
-          owner={repo?.author.username}
+  return repos?.map((repo) => {
+    const color = determineProgressColor({
+      coverage: repo?.coverage,
+      ...repo?.repositoryConfig?.indicationRange,
+    })
+
+    return {
+      title: (
+        <RepoTitleLink
+          repo={repo}
+          showRepoOwner={!owner}
+          pageName={repo.active ? 'repo' : 'new'}
+          disabledLink={!isCurrentUserPartOfOrg && !repo.active}
         />
       ),
-    notEnabled: (
-      <RepoNotSetup
-        owner={repo?.author.username}
-        repoName={repo?.name}
-        isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
-      />
-    ),
-  }))
+      lastUpdated: (
+        <span className="flex-1 text-ds-gray-quinary">
+          {repo?.latestCommitAt ? formatTimeToNow(repo?.latestCommitAt) : ''}
+        </span>
+      ),
+      coverage:
+        typeof repo?.coverage === 'number' ? (
+          <CoverageProgress
+            amount={repo?.coverage}
+            color={color}
+            label={true}
+          />
+        ) : (
+          <NoRepoCoverage
+            activated={repo.activated}
+            active={repo.active}
+            isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
+            repoName={repo.name}
+            owner={repo?.author.username}
+          />
+        ),
+      notEnabled: (
+        <InactiveRepo
+          owner={repo?.author.username}
+          repoName={repo?.name}
+          isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
+          isActive={repo?.active}
+        />
+      ),
+    }
+  })
 }
 
 // eslint-disable-next-line complexity
@@ -122,14 +136,14 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const option = Object.keys(repoDisplayOptions).find((key) => {
     return repoDisplayOptions[key].text === repoDisplay
   })
-  const active = repoDisplayOptions[option].status
+  const activated = repoDisplayOptions[option].status
   const { data: userData } = useUser()
   const { data: ownerData } = useOwner({
     username: owner || userData?.user?.username,
   })
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
-    active,
+    activated,
     sortItem,
     term: searchValue,
     repoNames: filterValues,
