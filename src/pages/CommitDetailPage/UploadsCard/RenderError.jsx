@@ -4,12 +4,12 @@ import { useMemo } from 'react'
 import { ErrorCodeEnum, UploadStateEnum } from 'shared/utils/commit'
 import Icon from 'ui/Icon'
 
-const UploadErrorMessage = {
+const UploadErrorMessage = Object.freeze({
   [ErrorCodeEnum.fileNotFoundInStorage]: 'processing failed',
   [ErrorCodeEnum.reportExpired]: 'upload expired',
-  [ErrorCodeEnum.reportEmpty]: 'upload is empty',
+  [ErrorCodeEnum.reportEmpty]: 'unusable report',
   noMatch: 'unknown error',
-}
+})
 
 function humanReadableError(errorCode) {
   if (typeof errorCode === 'string') {
@@ -33,11 +33,18 @@ const generateFinalErrors = ({
   const newErrors = []
 
   if (processingFailedErrors > 0) {
-    newErrors.push(generateText(processingFailedErrors, 'processing failed'))
+    newErrors.push(
+      generateText(
+        processingFailedErrors,
+        UploadErrorMessage.FILE_NOT_IN_STORAGE
+      )
+    )
   }
 
   if (uploadExpiredErrors > 0) {
-    newErrors.push(generateText(uploadExpiredErrors, 'upload expired'))
+    newErrors.push(
+      generateText(uploadExpiredErrors, UploadErrorMessage.REPORT_EXPIRED)
+    )
   }
 
   /*
@@ -53,11 +60,13 @@ const generateFinalErrors = ({
    */
 
   if (uploadIsEmptyErrors > 0) {
-    newErrors.push(generateText(uploadIsEmptyErrors, 'unusable report'))
+    newErrors.push(
+      generateText(uploadIsEmptyErrors, UploadErrorMessage.REPORT_EMPTY)
+    )
   }
 
   if (unknownErrors > 0) {
-    newErrors.push(generateText(unknownErrors, 'unknown error'))
+    newErrors.push(generateText(unknownErrors, UploadErrorMessage.noMatch))
   }
 
   return newErrors
@@ -73,10 +82,21 @@ const useDeDuplicatedErrors = ({ errors }) =>
     errors?.forEach(({ errorCode }) => {
       const readableError = humanReadableError(errorCode)
 
-      if (readableError === 'processing failed') processingFailedErrors++
-      if (readableError === 'upload expired') uploadExpiredErrors++
-      if (readableError === 'upload is empty') uploadIsEmptyErrors++
-      if (readableError === 'unknown error') unknownErrors++
+      if (readableError === UploadErrorMessage.FILE_NOT_IN_STORAGE) {
+        processingFailedErrors++
+      }
+
+      if (readableError === UploadErrorMessage.REPORT_EXPIRED) {
+        uploadExpiredErrors++
+      }
+
+      if (readableError === UploadErrorMessage.REPORT_EMPTY) {
+        uploadIsEmptyErrors++
+      }
+
+      if (readableError === UploadErrorMessage.noMatch) {
+        unknownErrors++
+      }
     })
 
     return generateFinalErrors({
