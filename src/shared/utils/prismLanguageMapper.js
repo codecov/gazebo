@@ -12,6 +12,7 @@ const prismSupportedLanguages = {
   py: 'python',
   ts: 'typescript',
   yaml: 'yaml',
+  jsx: 'jsx',
 }
 
 export function prismLanguageMapper(fileName) {

@@ -11,6 +11,7 @@ describe('prismLanguageMapper', () => {
       expect(prismLanguageMapper('file.go')).toBe('go')
       expect(prismLanguageMapper('file.ts')).toBe('typescript')
       expect(prismLanguageMapper('file.yaml')).toBe('yaml')
+      expect(prismLanguageMapper('file.jsx')).toBe('jsx')
     })
   })
 
