@@ -31,21 +31,21 @@ afterAll(() => {
 
 const orgList = [
   {
-    username: 'fearne-calloway',
+    username: 'fearne-calloway-org',
     avatarUrl: 'https://github.com/fearne.png?size=40',
     defaultOrgUsername: null,
   },
   {
-    username: 'ira-wendagoth',
+    username: 'ira-wendagoth-org',
     avatarUrl: 'https://github.com/fearne.png?size=40',
     defaultOrgUsername: null,
   },
 ]
 
 const currentUser = {
-  username: 'morrigan',
+  username: 'morrigan-org',
   avatarUrl: 'https://github.com/morri.png?size=40',
-  defaultOrgUsername: null,
+  defaultOrgUsername: 'fearne-calloway-org',
 }
 
 const contextData = {
@@ -57,7 +57,7 @@ const contextData = {
   },
 }
 
-const selectedOrgUsername = 'fearne-calloway'
+const selectedOrgUsername = 'fearne-calloway-org'
 const setSelectedOrgUsername = jest.fn()
 
 const defaultProps = {
@@ -66,10 +66,10 @@ const defaultProps = {
 }
 
 describe('OrganizationList', () => {
-  function setup() {
+  function setup(data = contextData) {
     server.use(
       graphql.query('MyContexts', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(contextData))
+        res(ctx.status(200), ctx.data(data))
       )
     )
   }
@@ -81,13 +81,15 @@ describe('OrganizationList', () => {
 
     it('displays the usernames and avatars', async () => {
       render(<OrganizationList {...defaultProps} />, { wrapper })
-      const fearneUsername = await screen.findByText(/fearne-calloway/)
+      const fearneUsername = await screen.findByText(/fearne-calloway-org/)
       expect(fearneUsername).toBeInTheDocument()
+      const defaultOrg = await screen.findByText(/Current default org/)
+      expect(defaultOrg).toBeInTheDocument()
 
       const morriUsername = await screen.findByText(/morri/)
       expect(morriUsername).toBeInTheDocument()
 
-      const iraWendagoth = await screen.findByText(/ira-wendagoth/)
+      const iraWendagoth = await screen.findByText(/ira-wendagoth-org/)
       expect(iraWendagoth).toBeInTheDocument()
 
       const allAvatars = await screen.findAllByText(/Avatar/)

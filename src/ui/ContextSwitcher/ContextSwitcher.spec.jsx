@@ -192,4 +192,34 @@ describe('ContextSwitcher', () => {
       await waitFor(() => expect(onLoadMoreFunc).toHaveBeenCalled())
     })
   })
+
+  describe('when custom component is passed', () => {
+    beforeEach(() => {
+      setup()
+    })
+    afterEach(() => jest.restoreAllMocks())
+
+    it('renders the custom component', async () => {
+      const Component = () => <div>component</div>
+      // disabling as it's a test, happy to make validation for it though
+      // eslint-disable-next-line react/prop-types
+      const DisplayComponent = ({ onClick }) => (
+        <button onClick={onClick}>display</button>
+      )
+      const customProps = {
+        ...props,
+        Component,
+        DisplayComponent,
+      }
+      render(<ContextSwitcher {...customProps} />, {
+        wrapper,
+      })
+
+      const displayComponentButton = await screen.findByText('display')
+      expect(displayComponentButton).toBeInTheDocument()
+      userEvent.click(displayComponentButton)
+      const componentText = await screen.findByText('component')
+      expect(componentText).toBeInTheDocument()
+    })
+  })
 })
