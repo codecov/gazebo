@@ -20,6 +20,7 @@ function DiffLine({
   headCoverage,
   baseCoverage,
   path,
+  stickyPadding = 0,
 }) {
   const baseLineState = getLineState({ coverage: baseCoverage })
   const headLineState = getLineState({ coverage: headCoverage })
@@ -108,6 +109,7 @@ DiffLine.propTypes = {
   headCoverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
   getTokenProps: PropTypes.func,
   path: PropTypes.string,
+  stickyPadding: PropTypes.number,
 }
 
 export default DiffLine

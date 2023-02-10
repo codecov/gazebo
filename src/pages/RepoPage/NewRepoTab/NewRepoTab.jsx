@@ -4,7 +4,6 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
-import { useCommits } from 'services/commits'
 import { useRepo } from 'services/repo'
 import { useRedirect } from 'shared/useRedirect'
 import Spinner from 'ui/Spinner'
@@ -24,10 +23,9 @@ function NewRepoTab() {
   const { provider, owner, repo } = useParams()
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
   const { data } = useRepo({ provider, owner, repo })
-  const { data: commitsData } = useCommits({ provider, owner, repo })
 
   // if the repo has commits redirect to coverage tab
-  if (Array.isArray(commitsData?.commits) && commitsData?.commits.length > 0) {
+  if (data?.repository?.active) {
     return <Redirect to={`/${provider}/${owner}/${repo}`} />
   }
   // if no upload token redirect

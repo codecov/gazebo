@@ -1,147 +1,282 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
-import { useParams } from 'react-router-dom'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useBranchSelector } from './useBranchSelector'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: jest.fn(),
-}))
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
+const server = setupServer()
+
+const mockBranches = (branchName) => ({
+  owner: {
+    repository: {
+      branch: {
+        name: branchName,
+        head: {
+          commitid: branchName === 'imogen' ? 'commit-123' : 'commit-321',
+        },
+      },
+    },
+  },
+})
+
+const branches = [
+  { name: 'fcg', head: { commitid: 'commit-321' } },
+  { name: 'imogen', head: { commitid: 'commit-123' } },
+]
+
+const wrapper =
+  (initialEntries = '/gh/codecov/cool-repo') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/blob/:ref/:path+',
+              '/:provider/:owner/:repo/tree/:branch',
+              '/:provider/:owner/:repo',
+            ]}
+          >
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
 
 describe('useBranchSelector', () => {
-  let hookData
+  function setup(branchName, returnBranches = true) {
+    server.use(
+      graphql.query('GetBranch', (req, res, ctx) => {
+        if (returnBranches) {
+          return res(ctx.status(200), ctx.data(mockBranches(branchName)))
+        }
 
-  function setup({ branches, defaultBranch, useParamsValue = {} }) {
-    useParams.mockReturnValue(useParamsValue)
-
-    hookData = renderHook(() => useBranchSelector(branches, defaultBranch))
+        return res(ctx.status(200), ctx.data({}))
+      })
+    )
   }
 
   describe('with default branch', () => {
-    beforeEach(() => {
-      setup({
-        branches: [{ name: 'fcg' }, { name: 'imogen' }],
-        defaultBranch: 'imogen',
-      })
+    const defaultBranch = 'imogen'
+    beforeEach(() => setup(defaultBranch, true))
 
-      return hookData.waitFor(() => hookData.result.current.items)
-    })
-    afterEach(() => {
-      jest.resetAllMocks()
+    it('sets the selected branch', async () => {
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper() }
+      )
+
+      await waitFor(() =>
+        expect(result.current.selection).toEqual({
+          name: 'imogen',
+          head: { commitid: 'commit-123' },
+        })
+      )
     })
 
-    it('sets the selected branch', () => {
-      expect(hookData.result.current.selection).toEqual({ name: 'imogen' })
-    })
+    it('sets the branchSelectorProps items correctly', async () => {
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper() }
+      )
 
-    it('sets the branchSelectorProps items correctly', () => {
-      expect(hookData.result.current.branchSelectorProps.items).toEqual([
-        { name: 'fcg' },
-        { name: 'imogen' },
-      ])
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.items).toEqual([
+          { name: 'fcg', head: { commitid: 'commit-321' } },
+          { name: 'imogen', head: { commitid: 'commit-123' } },
+        ])
+      )
     })
 
     it('sets the branchSelectorProps value correctly', async () => {
-      await hookData.waitFor(() =>
-        expect(hookData.result.current.branchSelectorProps.value).toEqual({
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper() }
+      )
+
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.value).toEqual({
           name: 'imogen',
+          head: { commitid: 'commit-123' },
         })
       )
     })
 
     it('formats the branchSelectorProps correctly', async () => {
-      await hookData.waitFor(() =>
-        expect(hookData.result.current.branchSelectorProps.items).toEqual([
-          { name: 'fcg' },
-          { name: 'imogen' },
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper() }
+      )
+
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.items).toEqual([
+          { name: 'fcg', head: { commitid: 'commit-321' } },
+          { name: 'imogen', head: { commitid: 'commit-123' } },
         ])
       )
     })
   })
 
   describe('with branch set', () => {
-    beforeEach(() => {
-      setup({
-        branches: [{ name: 'fcg' }, { name: 'imogen' }],
-        defaultBranch: 'imogen',
-        useParamsValue: { branch: 'fcg' },
-      })
+    beforeEach(() => setup('fcg', true))
 
-      return hookData.waitFor(() => hookData.result.current.items)
-    })
-    afterEach(() => {
-      jest.resetAllMocks()
+    it('sets the selected branch', async () => {
+      const defaultBranch = 'imogen'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/tree/fcg') }
+      )
+
+      await waitFor(() =>
+        expect(result.current.selection).toStrictEqual({
+          name: 'fcg',
+          head: { commitid: 'commit-321' },
+        })
+      )
     })
 
-    it('sets the selected branch', () => {
-      expect(hookData.result.current.selection).toEqual({ name: 'fcg' })
-    })
+    it('sets the branchSelectorProps items correctly', async () => {
+      const defaultBranch = 'imogen'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/tree/fcg') }
+      )
 
-    it('sets the branchSelectorProps items correctly', () => {
-      expect(hookData.result.current.branchSelectorProps.items).toEqual([
-        { name: 'fcg' },
-        { name: 'imogen' },
-      ])
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.items).toEqual([
+          { name: 'fcg', head: { commitid: 'commit-321' } },
+          { name: 'imogen', head: { commitid: 'commit-123' } },
+        ])
+      )
     })
 
     it('sets the branchSelectorProps value correctly', async () => {
-      await hookData.waitFor(() =>
-        expect(hookData.result.current.branchSelectorProps.value).toEqual({
+      const defaultBranch = 'imogen'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/tree/fcg') }
+      )
+
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.value).toEqual({
           name: 'fcg',
+          head: { commitid: 'commit-321' },
         })
       )
     })
 
     it('formats the branchSelectorProps correctly', async () => {
-      await hookData.waitFor(() =>
-        expect(hookData.result.current.branchSelectorProps.items).toEqual([
-          { name: 'fcg' },
-          { name: 'imogen' },
+      const defaultBranch = 'imogen'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/tree/fcg') }
+      )
+
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.items).toEqual([
+          { name: 'fcg', head: { commitid: 'commit-321' } },
+          { name: 'imogen', head: { commitid: 'commit-123' } },
         ])
       )
     })
   })
 
   describe('with ref set', () => {
-    beforeEach(() => {
-      setup({
-        branches: [{ name: 'fcg' }, { name: 'imogen' }],
-        defaultBranch: 'imogen',
-        useParamsValue: { ref: 'fcg' },
-      })
+    beforeEach(() => setup('fcg', true))
 
-      return hookData.waitFor(() => hookData.result.current.items)
-    })
-    afterEach(() => {
-      jest.resetAllMocks()
+    it('sets the selected branch', async () => {
+      const defaultBranch = 'imogen'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
+      )
+
+      await waitFor(() =>
+        expect(result.current.selection).toStrictEqual({
+          name: 'fcg',
+          head: { commitid: 'commit-321' },
+        })
+      )
     })
 
-    it('sets the selected branch', () => {
-      expect(hookData.result.current.selection).toEqual({ name: 'fcg' })
-    })
+    it('sets the branchSelectorProps items correctly', async () => {
+      const defaultBranch = 'imogen'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
+      )
 
-    it('sets the branchSelectorProps items correctly', () => {
-      expect(hookData.result.current.branchSelectorProps.items).toEqual([
-        { name: 'fcg' },
-        { name: 'imogen' },
-      ])
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.items).toStrictEqual([
+          { name: 'fcg', head: { commitid: 'commit-321' } },
+          { name: 'imogen', head: { commitid: 'commit-123' } },
+        ])
+      )
     })
 
     it('sets the branchSelectorProps value correctly', async () => {
-      await hookData.waitFor(() =>
-        expect(hookData.result.current.branchSelectorProps.value).toEqual({
+      const defaultBranch = 'imogen'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
+      )
+
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.value).toStrictEqual({
           name: 'fcg',
+          head: { commitid: 'commit-321' },
         })
       )
     })
 
     it('formats the branchSelectorProps correctly', async () => {
-      await hookData.waitFor(() =>
-        expect(hookData.result.current.branchSelectorProps.items).toEqual([
-          { name: 'fcg' },
-          { name: 'imogen' },
+      const defaultBranch = 'imogen'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ branches, defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
+      )
+
+      await waitFor(() =>
+        expect(result.current.branchSelectorProps.items).toStrictEqual([
+          { name: 'fcg', head: { commitid: 'commit-321' } },
+          { name: 'imogen', head: { commitid: 'commit-123' } },
         ])
       )
+    })
+  })
+
+  describe('branches is undefined', () => {
+    beforeEach(() => setup('branchName', false))
+
+    it('returns undefined selection', async () => {
+      const defaultBranch = 'fcg'
+      const { result, waitFor } = renderHook(
+        () => useBranchSelector({ defaultBranch }),
+        { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
+      )
+
+      await waitFor(() => expect(result.current.selection).toBeUndefined())
     })
   })
 })
