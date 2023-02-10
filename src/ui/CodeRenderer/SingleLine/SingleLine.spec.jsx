@@ -7,15 +7,11 @@ import { LINE_TYPE } from 'shared/utils/fileviewer'
 
 import SingleLine from './SingleLine'
 
-// mocking out useRef cause of it's call to an html element function
-jest.mock('react', () => {
-  return {
-    ...jest.requireActual('react'),
-    useRef: jest.fn(),
-  }
-})
+import { useScrollToLine } from '../hooks/useScrollToLine'
 
 const createIdString = ({ path, number }) => `#${path}-L${number}`
+
+jest.mock('../hooks/useScrollToLine')
 
 const wrapper = ({ children }) => (
   <MemoryRouter
@@ -35,6 +31,7 @@ const wrapper = ({ children }) => (
 )
 
 describe('SingleLine', () => {
+  const mockHandleClick = jest.fn()
   const line = [
     { types: ['plain'], content: '      ' },
     { types: ['punctuation'], content: '...' },
@@ -43,7 +40,19 @@ describe('SingleLine', () => {
     { types: ['plain'], content: '' },
   ]
 
+  function setup(targeted = false) {
+    useScrollToLine.mockImplementation(() => ({
+      lineRef: () => {},
+      handleClick: mockHandleClick,
+      targeted,
+    }))
+  }
+
   describe('renders highlighted covered line', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render covered line', () => {
       render(
         <SingleLine
@@ -62,6 +71,10 @@ describe('SingleLine', () => {
   })
 
   describe('renders highlighted uncovered line', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render uncovered line', () => {
       render(
         <SingleLine
@@ -96,6 +109,10 @@ describe('SingleLine', () => {
   })
 
   describe('renders highlighted partial line', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('render partial line', () => {
       render(
         <SingleLine
@@ -130,7 +147,11 @@ describe('SingleLine', () => {
   })
 
   describe('user clicks on a number', () => {
-    it('changes font to bold', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('calls handle click function', () => {
       render(
         <SingleLine
           line={line}
@@ -144,6 +165,27 @@ describe('SingleLine', () => {
 
       const button = screen.getByRole('button')
       userEvent.click(button)
+
+      expect(mockHandleClick).toBeCalled()
+    })
+  })
+
+  describe('line is currently targeted', () => {
+    beforeEach(() => {
+      setup(true)
+    })
+
+    it('sets font to bold', () => {
+      render(
+        <SingleLine
+          line={line}
+          number={1}
+          coverage={LINE_TYPE.HIT}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
 
       const linesCovered = screen.getByRole('button', { name: /# 1/ })
       expect(linesCovered).toHaveClass('font-bold')

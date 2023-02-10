@@ -4,7 +4,11 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
+
 import CommitFileView from './CommitFileView'
+
+jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const diff = {
   headCoverage: { coverage: 40.23 },
@@ -68,6 +72,12 @@ afterAll(() => server.close())
 
 describe('CommitFileView', () => {
   function setup({ content }) {
+    useScrollToLine.mockImplementation(() => ({
+      lineRef: () => {},
+      handleClick: jest.fn(),
+      targeted: false,
+    }))
+
     server.use(
       graphql.query('CoverageForFile', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: mockCoverage(content) }))
