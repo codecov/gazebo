@@ -17,15 +17,13 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/gh/codecov/cool-repo/tree/main']}>
-        <Route path="/:provider/:owner/:repo/tree/:branch">{children}</Route>
-      </MemoryRouter>
-    </QueryClientProvider>
-  )
-}
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/tree/main']}>
+      <Route path="/:provider/:owner/:repo/tree/:branch">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
@@ -43,7 +41,7 @@ const overviewMock = {
   owner: { repository: { private: false, defaultBranch: 'main' } },
 }
 
-describe('Sunburst chart', () => {
+describe('Sunburst', () => {
   function setup({
     repoOverviewData,
     coverageTreeRes,
@@ -85,6 +83,9 @@ describe('Sunburst chart', () => {
 
   describe('tree 500', () => {
     beforeEach(() => {
+      // disable intentional error in jest log
+      jest.spyOn(console, 'error').mockImplementation(() => {})
+
       setup({
         repoOverviewData: overviewMock,
         coverageTreeStatus: 500,

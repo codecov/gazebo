@@ -18,7 +18,7 @@ const useSunburstChart = () => {
     {
       enabled: !!currentBranch,
       suspense: false,
-      select: (data) => data ?? { name: repo, children: data },
+      select: (data) => data && { name: repo, children: data },
     }
   )
 }
