@@ -1,59 +1,25 @@
 import { fromUnixTime } from 'date-fns'
-import { format, utcToZonedTime } from 'date-fns-tz'
+import { format } from 'date-fns-tz'
 
 import { accountDetailsPropType, invoicePropType } from 'services/account'
+import { CollectionMethods } from 'shared/utils/billing'
 
 import { generateAddressInfo } from './generateAddressInfo'
+import InvoiceOverview from './InvoiceOverview'
 
 function InvoiceHeader({ invoice, accountDetails }) {
   const addressInfo = generateAddressInfo(accountDetails)
   const isPaid = invoice.status === 'paid'
 
+  const isInvoicedCustomer =
+    accountDetails?.subscriptionDetail?.collectionMethod ===
+    CollectionMethods.INVOICED_CUSTOMER_METHOD
+  const dueDate = isInvoicedCustomer ? invoice.dueDate : invoice.created
+
   return (
     <div className="flex flex-col gap-6 text-lg">
       <div className="flex justify-between">
-        <div className="flex flex-col gap-6">
-          <h1 className="text-xl text-gray-800 font-semibold">
-            {isPaid ? 'Receipt' : 'Invoice'}
-          </h1>
-          <table>
-            <tbody>
-              <tr>
-                <td className="pr-2">
-                  {' '}
-                  {isPaid ? 'Receipt' : 'Invoice'} number
-                </td>
-                <td>{invoice.number}</td>
-              </tr>
-              <tr>
-                <td className="pr-2">Date of issue</td>
-                <td>
-                  {format(
-                    utcToZonedTime(fromUnixTime(invoice.created), 'UTC'),
-                    'MMMM do, yyyy',
-                    { timeZone: 'UTC' }
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td className="pr-2">Date due</td>
-                <td>
-                  {format(
-                    utcToZonedTime(fromUnixTime(invoice.dueDate), 'UTC'),
-                    'MMMM do, yyyy',
-                    { timeZone: 'UTC' }
-                  )}
-                </td>
-              </tr>
-              {invoice.defaultPaymentMethod && (
-                <tr>
-                  <td className="pr-2">Payment method</td>
-                  <td>{invoice.defaultPaymentMethod}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <InvoiceOverview isPaid={isPaid} invoice={invoice} dueDate={dueDate} />
         <div>
           <img
             alt="Codecov Logo"
@@ -93,7 +59,7 @@ function InvoiceHeader({ invoice, accountDetails }) {
       </div>
       <p className="font-semibold">
         ${(invoice.total / 100).toFixed(2)} {isPaid ? 'paid on' : 'due'}{' '}
-        {format(fromUnixTime(invoice?.dueDate), 'MMMM do yyyy')}
+        {format(fromUnixTime(dueDate), 'MMMM do yyyy')}
       </p>
     </div>
   )

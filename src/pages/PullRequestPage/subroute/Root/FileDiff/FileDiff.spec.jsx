@@ -4,7 +4,11 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
+
 import FileDiff from './FileDiff'
+
+jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const baseMock = (impactedFile) => ({
   owner: {
@@ -76,6 +80,12 @@ afterAll(() => server.close())
 
 describe('FileDiff', () => {
   function setup({ impactedFile } = { impactedFile: mockImpactedFile }) {
+    useScrollToLine.mockImplementation(() => ({
+      lineRef: () => {},
+      handleClick: jest.fn(),
+      targeted: false,
+    }))
+
     server.use(
       graphql.query('ImpactedFileComparison', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(baseMock(impactedFile)))

@@ -24,6 +24,7 @@ function FileDiff({ path }) {
     repo,
     pullId,
     path,
+    filters: { hasUnintendedChanges: true },
   })
 
   if (isLoading) {
