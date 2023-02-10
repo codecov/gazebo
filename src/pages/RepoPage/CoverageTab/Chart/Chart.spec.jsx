@@ -6,11 +6,11 @@ import { useRepoOverview } from 'services/repo'
 
 import Chart from './Chart'
 
-import { useBranchSelector, useRepoCoverageTimeseries } from '../../hooks'
+import { useBranchSelector, useRepoCoverageTimeseries } from '../hooks'
 
 jest.mock('services/branches')
 jest.mock('services/repo')
-jest.mock('../../hooks')
+jest.mock('../hooks')
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/critical-role/c3/bells-hells']}>
