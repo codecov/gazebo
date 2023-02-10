@@ -6,7 +6,10 @@ import Avatar from 'ui/Avatar'
 import { useOrganizations } from './hooks'
 
 function OrganizationList({ selectedOrgUsername, setSelectedOrgUsername }) {
-  const { organizations, currentUser } = useOrganizations()
+  const data = useOrganizations()
+  const organizations = data?.organizations
+  const currentUser = data?.currentUser
+
   return (
     <ul className="text-ds-gray-octonary divide-y border border-ds-gray-secondary">
       {organizations?.map((organization) => {

@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom'
 import { useMyContexts } from 'services/user'
 import ContextSwitcher from 'ui/ContextSwitcher'
 
+import UpdateDefaultOrgModal from './UpdateDefaultOrgModal'
+
 function MyContextSwitcher({ activeContext, pageName }) {
   const { provider } = useParams()
   const {
@@ -35,6 +37,14 @@ function MyContextSwitcher({ activeContext, pageName }) {
       currentUser={currentUser}
       isLoading={isLoading}
       onLoadMore={() => hasNextPage && fetchNextPage()}
+      DisplayComponent={({ onClick }) => (
+        <button className="text-ds-blue flex-none" onClick={onClick}>
+          Edit default
+        </button>
+      )}
+      Component={({ closeFn }) => (
+        <UpdateDefaultOrgModal closeModal={() => closeFn()} />
+      )}
     />
   )
 }

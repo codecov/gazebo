@@ -7,7 +7,7 @@ import Modal from 'ui/Modal'
 import { useUpdateDefaultOrg } from './hooks'
 import OrganizationList from './OrganizationList'
 
-const UpdateDefaultOrgModal = ({ closeModal, isLoading }) => {
+const UpdateDefaultOrgModal = ({ closeModal }) => {
   const { updateDefaultOrg } = useUpdateDefaultOrg()
   const [selectedOrgUsername, setSelectedOrgUsername] = useState('')
 
@@ -35,7 +35,6 @@ const UpdateDefaultOrgModal = ({ closeModal, isLoading }) => {
           </button>
           <div>
             <Button
-              isLoading={isLoading}
               hook="update-default-org"
               variant="primary"
               onClick={() => {
@@ -55,7 +54,6 @@ const UpdateDefaultOrgModal = ({ closeModal, isLoading }) => {
 
 UpdateDefaultOrgModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired,
 }
 
 export default UpdateDefaultOrgModal

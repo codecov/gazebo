@@ -9,7 +9,6 @@ import ContextSwitcher from '.'
 
 jest.mock('react-use/lib/useIntersection')
 jest.mock('services/image')
-jest.mock('./UpdateDefaultOrgModal', () => () => 'UpdateDefaultOrgModal')
 
 const defaultProps = {
   activeContext: 'dorianamouroux',

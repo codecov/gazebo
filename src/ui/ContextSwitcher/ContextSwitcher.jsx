@@ -14,8 +14,6 @@ import Spinner from 'ui/Spinner'
 
 import './ContextSwitcher.css'
 
-import UpdateDefaultOrgModal from './UpdateDefaultOrgModal'
-
 const styles = {
   button: 'flex items-center text-xl font-semibold mx-4 sm:mx-0',
   image: 'w-6 h-6 rounded-full',
@@ -49,17 +47,20 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
+// eslint-disable-next-line complexity
 function ContextSwitcher({
   activeContext,
   contexts,
   currentUser,
   isLoading,
   onLoadMore,
+  DisplayComponent,
+  Component,
 }) {
   const intersectionRef = useRef(null)
   const currentContext = getCurrentContext({ activeContext, contexts })
   const { provider } = useParams()
-  const [showModal, setShowModal] = useState(false)
+  const [showComponent, setShowComponent] = useState(false)
 
   const isGh = providerToName(provider) === 'Github'
 
@@ -117,19 +118,12 @@ function ContextSwitcher({
       <MenuList>
         <div className={styles.switchContext}>
           <span>Switch context</span>
-          <button
-            className="text-ds-blue flex-none"
-            onClick={() => setShowModal(true)}
-            disabled={isLoading}
-          >
-            Edit default
-          </button>
-          {showModal && (
-            <UpdateDefaultOrgModal
-              closeModal={() => setShowModal(false)}
-              isLoading={isLoading}
-            />
-          )}
+          {DisplayComponent &&
+            DisplayComponent({ onClick: () => setShowComponent(true) })}
+          {showComponent &&
+            Component({
+              closeFn: () => setShowComponent(false),
+            })}
         </div>
         <div className="max-h-64 overflow-y-auto">
           <MenuLink as={AppLink} pageName="provider">
@@ -180,6 +174,8 @@ ContextSwitcher.propTypes = {
   }),
   onLoadMore: PropTypes.func,
   isLoading: PropTypes.bool,
+  Component: PropTypes.func,
+  DisplayComponent: PropTypes.func,
 }
 
 export default ContextSwitcher
