@@ -1,27 +1,12 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileView from './Fileviewer'
 
 jest.mock('shared/RawFileviewer', () => () => 'Coderenderer')
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
-
-const urlParams = {
-  provider: 'gh',
-  owner: 'criticalrole',
-  repo: 'bellshells',
-  ref: 'main',
-  path: 'file/to/notthebrave.js',
-}
-
 describe('FileView', () => {
   function setup() {
-    const { owner, provider, repo, ref, path } = urlParams
-    useParams.mockReturnValue({ owner, provider, repo, ref, path })
     render(
       <MemoryRouter
         initialEntries={[
