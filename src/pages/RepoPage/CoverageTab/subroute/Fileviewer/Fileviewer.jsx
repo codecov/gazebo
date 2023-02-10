@@ -13,6 +13,7 @@ function FileView() {
         </div>
       }
       sticky
+      stickyPadding={225}
     />
   )
 }

@@ -55,7 +55,12 @@ FileTitle.propTypes = {
 
 // Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
 // component will affect both places
-function RawFileviewer({ title, sticky = false, withKey = true }) {
+function RawFileViewer({
+  title,
+  sticky = false,
+  withKey = true,
+  stickyPadding,
+}) {
   const { owner, repo, provider, ref, path, commit } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const [selectedFlags, setSelectedFlags] = useState([])
@@ -109,6 +114,7 @@ function RawFileviewer({ title, sticky = false, withKey = true }) {
                 getLineProps={getLineProps}
                 getTokenProps={getTokenProps}
                 coverage={coverageData && coverageData[i + 1]}
+                stickyPadding={stickyPadding}
               />
             )}
           />
@@ -120,10 +126,11 @@ function RawFileviewer({ title, sticky = false, withKey = true }) {
   )
 }
 
-RawFileviewer.propTypes = {
+RawFileViewer.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   sticky: PropTypes.bool,
   withKey: PropTypes.bool,
+  stickyPadding: PropTypes.number,
 }
 
-export default RawFileviewer
+export default RawFileViewer
