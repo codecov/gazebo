@@ -17,17 +17,15 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper =
-  ({ initialEntries } = { initialEntries: ['/gh/codecov/cool-repo'] }) =>
-  ({ children }) => {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-  }
+const wrapper = ({ children }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
+        <Route path="/:provider/:owner/:repo">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+}
 
 beforeAll(() => {
   server.listen()
@@ -77,7 +75,7 @@ describe('Sunburst chart', () => {
   })
 
   it('renders something', () => {
-    render(<Sunburst />, { wrapper: wrapper() })
+    render(<Sunburst />, { wrapper })
 
     expect(screen.getByText('Chart Mocked')).toBeInTheDocument()
   })

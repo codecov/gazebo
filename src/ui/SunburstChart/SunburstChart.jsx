@@ -82,17 +82,17 @@ function SunburstChart({
       .attr('pointer-events', (d) => (arcVisible(d.current) ? 'auto' : 'none'))
       .attr('d', (d) => drawArc(d.current))
 
-    // Click events for folders
+    // Events for folders
     path
       .filter((d) => d.children)
       .style('cursor', 'pointer')
       .on('click', clickedFolder)
       .on('mouseover', hovered)
 
-    // Click events for folders
+    // Events for file
     path
       .filter((d) => !d.children)
-      .style('cursor', 'pointer')
+      .style('cursor', 'auto')
       .on('click', clickedFile)
       .on('mouseover', hovered)
 
