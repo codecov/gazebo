@@ -9,7 +9,7 @@ import CoverageTab from './CoverageTab'
 jest.mock('./Summary', () => () => 'Summary Component')
 jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
 jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
-jest.mock('./subroute/Chart', () => () => 'Chart Component')
+jest.mock('./subroute/CoverageChart', () => () => 'Chart Component')
 jest.mock('./subroute/Sunburst', () => () => 'Sunburst Component')
 
 const queryClient = new QueryClient({
