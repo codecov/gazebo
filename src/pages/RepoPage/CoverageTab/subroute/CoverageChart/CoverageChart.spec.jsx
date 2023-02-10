@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useBranches } from 'services/branches'
 import { useRepoOverview } from 'services/repo'
 
-import Chart from './Chart'
+import CoverageChart from './CoverageChart'
 
 import { useBranchSelector, useRepoCoverageTimeseries } from '../../hooks'
 
@@ -18,7 +18,7 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('Coverage Tab chart', () => {
+describe('CoverageChart', () => {
   function setup({ chartData }) {
     useRepoCoverageTimeseries.mockReturnValue(chartData)
     useRepoOverview.mockReturnValue({})
@@ -39,7 +39,7 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders no chart', () => {
-      render(<Chart />, {
+      render(<CoverageChart />, {
         wrapper,
       })
 
@@ -69,7 +69,7 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders victory', () => {
-      render(<Chart />, {
+      render(<CoverageChart />, {
         wrapper,
       })
 
@@ -77,7 +77,7 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders a screen reader description', () => {
-      render(<Chart />, {
+      render(<CoverageChart />, {
         wrapper,
       })
 
@@ -108,7 +108,7 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders victory', () => {
-      render(<Chart />, {
+      render(<CoverageChart />, {
         wrapper,
       })
 
@@ -116,7 +116,7 @@ describe('Coverage Tab chart', () => {
     })
 
     it('renders not enough data', () => {
-      render(<Chart />, {
+      render(<CoverageChart />, {
         wrapper,
       })
 

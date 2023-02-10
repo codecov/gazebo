@@ -13,7 +13,7 @@ import ToggleElement from './ToggleElement'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
 const RepoContentsTable = lazy(() => import('./subroute/RepoContents'))
-const Chart = lazy(() => import('./subroute/Chart'))
+const CoverageChart = lazy(() => import('./subroute/CoverageChart'))
 const Sunburst = lazy(() => import('./subroute/Sunburst'))
 
 const Loader = () => (
@@ -48,7 +48,7 @@ function CoverageTab() {
               })}
             >
               <SilentNetworkErrorWrapper>
-                <Chart />
+                <CoverageChart />
               </SilentNetworkErrorWrapper>
             </div>
             {coverageSunburstChart && (

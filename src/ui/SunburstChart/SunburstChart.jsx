@@ -6,7 +6,7 @@ import { arc } from 'd3-shape'
 // eslint-disable-next-line no-unused-vars
 import { transition } from 'd3-transition' // Kinda odd d3 behavior seems to need to imported but not directly referenced.
 import PropTypes from 'prop-types'
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 
 // Modification of https://observablehq.com/@d3/zoomable-sunburst
 import { colorRange, formatData, partitionFn } from './utils'
@@ -24,9 +24,9 @@ function SunburstChart({
   const clickHandler = useRef(onClick)
   const hoverHandler = useRef(onHover)
 
-  // In this case D3 is handling rendering not React, so useEffect is used to handle rendering
+  // In this case D3 is handling rendering not React, so useLayoutEffect is used to handle rendering
   // and changes outside of the React lifecycle.
-  useEffect(() => {
+  useLayoutEffect(() => {
     // The svg render size. This is *not* equivalent to normal rendering.
     const width = svgRenderSize
     // Overall graph size
