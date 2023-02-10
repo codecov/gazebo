@@ -1,12 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useHistory, useParams } from 'react-router-dom'
 
+import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 
 export function useUpdateDefaultOrganization() {
   const { provider } = useParams()
   const history = useHistory()
   const queryClient = useQueryClient()
+  const addToast = useAddNotification()
+
   return useMutation(
     ({ username = null }) => {
       const query = `
@@ -42,6 +45,12 @@ export function useUpdateDefaultOrganization() {
             `/${provider}/${data?.updateDefaultOrganization?.username}`
           )
         }
+      },
+      onError: (e) => {
+        return addToast({
+          type: 'error',
+          text: e.message,
+        })
       },
     }
   )
