@@ -77,7 +77,7 @@ describe('CancelButton', () => {
     it('renders button text', () => {
       const downgradeButton = screen.getByTestId('downgrade-button')
       expect(downgradeButton).toBeInTheDocument()
-      expect(downgradeButton).toHaveTextContent('Downgrade to Free')
+      expect(downgradeButton).toHaveTextContent('Downgrade to basic')
     })
   })
 
