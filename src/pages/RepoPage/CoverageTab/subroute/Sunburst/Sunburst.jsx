@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import SunburstChart from 'ui/SunburstChart'
 
-import useSunburstChart from './useSunburstChart'
+import useSunburstChart from './hooks/useSunburstChart'
 
 const Placeholder = () => (
   <div

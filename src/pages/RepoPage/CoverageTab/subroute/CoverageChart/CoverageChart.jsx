@@ -35,6 +35,7 @@ const useCoverageChart = () => {
     branches: branchesData?.branches,
     defaultBranch: overview?.defaultBranch,
   })
+
   return useRepoCoverageTimeseries(
     {
       branch: selection?.name,
@@ -59,12 +60,12 @@ function CoverageChart() {
     repo,
   })
 
-  if (!isPreviousData && !isSuccess) {
-    return <Placeholder />
-  }
-
   if (isError) {
     return <p>The coverage chart failed to load.</p>
+  }
+
+  if (!isPreviousData && !isSuccess) {
+    return <Placeholder />
   }
 
   return (
