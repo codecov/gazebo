@@ -34,14 +34,14 @@ function PlanPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = usePlanPageData()
 
-  if (config.IS_SELF_HOSTED) {
+  if (config.IS_SELF_HOSTED || !ownerData?.isCurrentUserPartOfOrg) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
 
   return (
     <div className="mt-2 flex flex-col gap-4">
       <Header />
-      {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
+      <Tabs />
       <Elements stripe={stripePromise}>
         <PlanBreadcrumbProvider>
           <PlanBreadcrumb />
@@ -54,18 +54,18 @@ function PlanPage() {
               <SentryRoute path={`${path}/upgrade`} exact>
                 <UpgradePlanPage />
               </SentryRoute>
-              <SentryRoute path={`${path}/cancel`} exact>
-                <CancelPlanPage />
-              </SentryRoute>
               <SentryRoute path={`${path}/invoices`} exact>
                 <InvoicesPage />
               </SentryRoute>
               <SentryRoute path={`${path}/invoices/:id`} exact>
                 <InvoiceDetailsPage />
               </SentryRoute>
+              <SentryRoute path={`${path}/cancel`}>
+                <CancelPlanPage />
+              </SentryRoute>
               <Redirect
-                from="/billing/:provider/:owner/*"
-                to="/billing/:provider/:owner"
+                from="/plan/:provider/:owner/*"
+                to="/plan/:provider/:owner"
               />
             </Switch>
           </Suspense>
