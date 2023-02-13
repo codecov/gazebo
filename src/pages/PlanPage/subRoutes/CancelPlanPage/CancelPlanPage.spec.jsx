@@ -3,7 +3,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import CancelPlanPage from './CancelPlanPage'
 
-jest.mock('./subRoutes/CancelPlan', () => () => 'CancelPlan')
+jest.mock('./subRoutes/SpecialOffer', () => () => 'SpecialOffer')
 jest.mock('./subRoutes/DowngradePlan', () => () => 'DowngradePlan')
 
 let testLocation
@@ -31,8 +31,8 @@ describe('CancelPlanPage', () => {
           wrapper: wrapper('/plan/gh/codecov/cancel'),
         })
 
-        const cancelPlan = await screen.findByText('CancelPlan')
-        expect(cancelPlan).toBeInTheDocument()
+        const specialOffer = await screen.findByText('SpecialOffer')
+        expect(specialOffer).toBeInTheDocument()
       })
     })
 
@@ -55,8 +55,8 @@ describe('CancelPlanPage', () => {
 
         expect(testLocation.pathname).toBe('/plan/gh/codecov/cancel')
 
-        const cancelPlan = await screen.findByText('CancelPlan')
-        expect(cancelPlan).toBeInTheDocument()
+        const specialOffer = await screen.findByText('SpecialOffer')
+        expect(specialOffer).toBeInTheDocument()
       })
     })
   })
