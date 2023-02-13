@@ -114,6 +114,12 @@ export function useNavLinks() {
       ) => `/plan/${provider}/${owner}/invoices/${id}`,
       isExternalLink: false,
     },
+    downgradePlanPage: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/cancel/downgrade`,
+      isExternalLink: false,
+      text: 'Downgrade to basic',
+    },
     accountAdmin: {
       text: 'Admin',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
