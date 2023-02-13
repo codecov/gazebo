@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import { useAccountDetails, usePlans } from 'services/account'
 
-import UpgradePlan from './UpgradePlan'
+import UpgradePlanPage from './UpgradePlanPage'
 
 jest.mock('services/account')
 jest.mock('./UpgradePlanForm', () => () => 'UpgradePlanForm')
@@ -20,7 +20,7 @@ describe('UpgradePlanPage', () => {
     usePlans.mockReturnValue({
       data: getPlans(),
     })
-    render(<UpgradePlan />, {
+    render(<UpgradePlanPage />, {
       wrapper: MemoryRouter,
     })
   }

@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import { useInvoices } from 'services/account'
 
-import Invoices from './Invoices'
+import InvoicesPage from './InvoicesPage'
 
 jest.mock('services/account')
 
@@ -66,10 +66,10 @@ const invoices = [
   },
 ]
 
-describe('Invoices', () => {
+describe('InvoicesPage', () => {
   function setup() {
     useInvoices.mockReturnValue({ data: invoices })
-    render(<Invoices owner="codecov" provider="codecov" />, {
+    render(<InvoicesPage owner="codecov" provider="codecov" />, {
       wrapper: MemoryRouter,
     })
   }

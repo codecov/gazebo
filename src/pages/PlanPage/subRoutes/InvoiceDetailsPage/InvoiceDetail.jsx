@@ -13,7 +13,7 @@ import InvoiceFooter from './sections/InvoiceFooter'
 import InvoiceHeader from './sections/InvoiceHeader'
 import InvoiceItems from './sections/InvoiceItems'
 
-import { useSetCrumbs } from '../context'
+import { useSetCrumbs } from '../../context'
 
 const classNameSection = 'py-8 px-16 print:px-0'
 // make the Invoice container full screen so only that part is printed

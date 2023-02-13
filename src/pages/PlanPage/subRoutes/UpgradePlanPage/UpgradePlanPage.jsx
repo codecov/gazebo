@@ -11,8 +11,8 @@ import Icon from 'ui/Icon'
 import UpgradeFreePlanBanner from './UpgradeFreePlanBanner'
 import UpgradePlanForm from './UpgradePlanForm'
 
-import { useSetCrumbs } from '../context'
-import BenefitList from '../shared/BenefitList'
+import { useSetCrumbs } from '../../context'
+import BenefitList from '../../shared/BenefitList'
 
 function shouldRenderCancelLink(accountDetails, plan) {
   // cant cancel a free plan
@@ -24,7 +24,7 @@ function shouldRenderCancelLink(accountDetails, plan) {
   return true
 }
 
-function UpgradePlan() {
+function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()
 
@@ -93,4 +93,4 @@ function UpgradePlan() {
   )
 }
 
-export default UpgradePlan
+export default UpgradePlanPage

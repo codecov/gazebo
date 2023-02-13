@@ -1,6 +1,6 @@
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import config from 'config'
@@ -10,20 +10,21 @@ import { SentryRoute } from 'sentry'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { usePlanPageData } from 'pages/PlanPage/hooks'
 
-import CancelPlanPage from './CancelPlan'
 import { PlanBreadcrumbProvider } from './context'
-import CurrentOrgPlan from './CurrentOrgPlan'
 import Header from './Header'
-import InvoiceDetail from './InvoiceDetail'
-import Invoices from './Invoices'
 import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
-import UpgradePlan from './UpgradePlan'
+
+const CancelPlanPage = lazy(() => import('./subRoutes/CancelPlanPage'))
+const CurrentOrgPlan = lazy(() => import('./subRoutes/CurrentOrgPlan'))
+const InvoicesPage = lazy(() => import('./subRoutes/InvoicesPage'))
+const InvoiceDetailsPage = lazy(() => import('./subRoutes/InvoiceDetailsPage'))
+const UpgradePlanPage = lazy(() => import('./subRoutes/UpgradePlanPage'))
 
 const stripePromise = loadStripe(config.STRIPE_KEY)
 const path = '/plan/:provider/:owner'
 
-const Loader = (
+const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
     <LogoSpinner />
   </div>
@@ -45,22 +46,22 @@ function PlanPage() {
         <PlanBreadcrumbProvider>
           <PlanBreadcrumb />
           <hr className="md:w-11/12 lg:w-10/12" />
-          <Suspense fallback={Loader}>
+          <Suspense fallback={<Loader />}>
             <Switch>
               <SentryRoute path={path} exact>
                 <CurrentOrgPlan />
               </SentryRoute>
               <SentryRoute path={`${path}/upgrade`} exact>
-                <UpgradePlan />
+                <UpgradePlanPage />
               </SentryRoute>
               <SentryRoute path={`${path}/cancel`} exact>
                 <CancelPlanPage />
               </SentryRoute>
               <SentryRoute path={`${path}/invoices`} exact>
-                <Invoices />
+                <InvoicesPage />
               </SentryRoute>
               <SentryRoute path={`${path}/invoices/:id`} exact>
-                <InvoiceDetail />
+                <InvoiceDetailsPage />
               </SentryRoute>
               <Redirect
                 from="/billing/:provider/:owner/*"

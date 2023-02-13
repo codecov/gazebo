@@ -10,8 +10,8 @@ import CancelCard from './CancelButton'
 import { useProPlanMonth } from './hooks'
 import umbrellaImg from './umbrella.svg'
 
-import { useSetCrumbs } from '../context'
-import BenefitList from '../shared/BenefitList'
+import { useSetCrumbs } from '../../context'
+import BenefitList from '../../shared/BenefitList'
 
 function CancelPlanPage() {
   const { provider, owner } = useParams()

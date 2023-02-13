@@ -13,7 +13,9 @@ jest.mock('services/account')
 
 describe('useBarecancel', () => {
   function setup(customerId, callbackSend) {
-    renderHook(() => useBarecancel({ customerId, callbackSend, isModalOpen:true }))
+    renderHook(() =>
+      useBarecancel({ customerId, callbackSend, isModalOpen: true })
+    )
   }
 
   describe('Initializes', () => {
@@ -48,8 +50,17 @@ describe('useBarecancel', () => {
     })
 
     it('Removes script and styles tag', () => {
-      expect(document.querySelector('[href="https://baremetrics-barecancel.baremetrics.com/css/barecancel.css"]')).not.toBeInTheDocument()
-      expect(document.querySelector('baremetrics-script')).not.toBeInTheDocument()
+      expect(
+        // eslint-disable-next-line
+        document.querySelector(
+          '[href="https://baremetrics-barecancel.baremetrics.com/css/barecancel.css"]'
+        )
+      ).not.toBeInTheDocument()
+
+      expect(
+        // eslint-disable-next-line
+        document.querySelector('baremetrics-script')
+      ).not.toBeInTheDocument()
     })
   })
 })
