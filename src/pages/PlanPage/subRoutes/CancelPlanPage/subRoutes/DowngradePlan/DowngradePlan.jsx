@@ -1,0 +1,75 @@
+import { useParams } from 'react-router-dom'
+
+import { useAccountDetails } from 'services/account'
+import Card from 'ui/Card'
+import Icon from 'ui/Icon'
+
+import CancelButton from './CancelButton'
+
+function DowngradePlan() {
+  const { provider, owner } = useParams()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+
+  return (
+    <div className="flex gap-8 w-8/12">
+      <Card variant="cancel">
+        <div className="flex flex-col gap-4 text-ds-gray-quinary">
+          <h2 className="text-2xl text-codecov-red bold">
+            Downgrading to basic
+          </h2>
+          <hr />
+          <p>
+            Note that, when downgrading to basic the following features will
+            become unavailable:
+          </p>
+          <ul>
+            <li className="flex gap-1 items-center">
+              <span className="stroke-codecov-red">
+                <Icon variant="solid" size="sm" name="no-symbol" />
+              </span>
+              Configurable # of users
+            </li>
+            <li className="flex gap-1 items-center">
+              <span className="stroke-codecov-red">
+                <Icon variant="solid" size="sm" name="no-symbol" />
+              </span>
+              Technical support
+            </li>
+            <li className="flex gap-1 items-center">
+              <span className="stroke-codecov-red">
+                <Icon variant="solid" size="sm" name="no-symbol" />
+              </span>
+              Carry-forward flags
+            </li>
+            <li className="flex gap-1 items-center">
+              <span className="stroke-codecov-red">
+                <Icon variant="solid" size="sm" name="no-symbol" />
+              </span>
+              Unlimited private uploads
+            </li>
+          </ul>
+          <hr />
+          <p>
+            You currently have {accountDetails?.activatedUserCount} active
+            users. On downgrade, all users will be automatically deactivated.
+            You will need to manually reactivate up to five users or ensure auto
+            activate is enabled in your plan settings.
+          </p>
+          {/* This is a weird component that is both a button and a modal, hence why it's imported this way. Defs not a good practice but I feel the overhaul of this component will be for another time */}
+          <CancelButton
+            customerId={accountDetails?.subscriptionDetail?.customer?.id}
+            planCost={accountDetails?.plan?.value}
+            upComingCancelation={
+              accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
+            }
+            currentPeriodEnd={
+              accountDetails?.subscriptionDetail?.currentPeriodEnd
+            }
+          />
+        </div>
+      </Card>
+    </div>
+  )
+}
+
+export default DowngradePlan
