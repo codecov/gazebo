@@ -3,8 +3,8 @@ import isNil from 'lodash/isNil'
 import { CommitStateEnum } from 'shared/utils/commit'
 import Spinner from 'ui/Spinner'
 
-import ImpactedFiles from './ImpactedFiles'
-import { useImpactedFilesTable } from './ImpactedFiles/hooks'
+import ImpactedFiles from './FilesChanged'
+import { useImpactedFilesTable } from './FilesChanged/hooks'
 
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0
@@ -39,12 +39,12 @@ const Root = () => {
     <div className="flex flex-col gap-2">
       {data?.headState === CommitStateEnum.ERROR ? (
         <p>
-          Cannot display Impacted Files because most recent commit is in an
-          error state.
+          Cannot display changed files because most recent commit is in an error
+          state.
         </p>
       ) : hasImpactedFiles(data?.impactedFiles) ? (
         <ImpactedFiles />
-      ) : // Coverage changes remain the same as before, but no impacted files = no change
+      ) : // Coverage changes remain the same as before, but no changed files = no change
       hasReportWithoutChanges({
           pullHeadCoverage: data?.pullHeadCoverage,
           pullBaseCoverage: data?.pullBaseCoverage,
@@ -67,7 +67,7 @@ const Root = () => {
           </ul>
         </div>
       ) : (
-        // No impacted files nor head, patch or change coverage
+        // No changed files nor head, patch or change coverage
         <p className="mt-4">No Files covered by tests were changed</p>
       )}
     </div>

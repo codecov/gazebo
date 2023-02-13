@@ -375,7 +375,7 @@ describe('PullRequestPage', () => {
         hasAccess: true,
         pullData: {
           compareWithBase: {
-            impactedFilesCount: 9,
+            directChangedFilesCount: 9,
             indirectChangedFilesCount: 19,
             flagComparisonsCount: 91,
             __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
@@ -388,15 +388,15 @@ describe('PullRequestPage', () => {
       )
     })
 
-    it('renders impacted files tab', async () => {
-      const impactedFilesTab = await screen.findByText(/Impacted files/i)
-      expect(impactedFilesTab).toBeInTheDocument()
+    it('renders changed files tab', async () => {
+      const changedFilesTab = await screen.findByText(/Files Changed/i)
+      expect(changedFilesTab).toBeInTheDocument()
 
-      impactedFilesTab.click()
+      changedFilesTab.click()
       expect(screen.getByText('Root')).toBeInTheDocument()
     })
 
-    it('renders impacted files tab count', async () => {
+    it('renders changed files tab count', async () => {
       expect(await screen.findByText('9')).toBeInTheDocument()
     })
 

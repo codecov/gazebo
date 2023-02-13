@@ -8,7 +8,10 @@ export default function NameColumn({ row, getValue }) {
   const [fileNames] = nameColumn?.props?.children
   const path = fileNames?.props?.children
 
-  const { runPrefetch } = usePrefetchSingleFileComp({ path })
+  const { runPrefetch } = usePrefetchSingleFileComp({
+    path,
+    filters: { hasUnintendedChanges: false },
+  })
 
   return (
     <div

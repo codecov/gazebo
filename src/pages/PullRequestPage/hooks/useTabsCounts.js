@@ -25,10 +25,15 @@ export const useTabsCounts = () => {
 
   const compareWithBase = data?.pull?.compareWithBase
 
-  const flagsCount = compareWithBase?.flagComparisonsCount || 0
-  const indirectChangesCount = compareWithBase?.indirectChangedFilesCount || 0
-  const impactedFilesCount = compareWithBase?.impactedFilesCount || 0
-  const commitsCount = commitsData?.commitsCount || 0
+  const flagsCount = compareWithBase?.flagComparisonsCount ?? 0
+  const indirectChangesCount = compareWithBase?.indirectChangedFilesCount ?? 0
+  const directChangedFilesCount = compareWithBase?.directChangedFilesCount ?? 0
+  const commitsCount = commitsData?.commitsCount ?? 0
 
-  return { flagsCount, impactedFilesCount, indirectChangesCount, commitsCount }
+  return {
+    flagsCount,
+    directChangedFilesCount,
+    indirectChangesCount,
+    commitsCount,
+  }
 }

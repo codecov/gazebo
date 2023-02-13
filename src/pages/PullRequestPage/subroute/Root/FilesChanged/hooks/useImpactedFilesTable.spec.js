@@ -161,7 +161,7 @@ describe('useImpactedFilesTable', () => {
     })
   })
 
-  describe('when when called with no head or base coverage on the impacted files', () => {
+  describe('when when called with no head or base coverage on the changed files', () => {
     beforeEach(() => {
       const mockImpactedFilesWithoutCoverage = [
         {
