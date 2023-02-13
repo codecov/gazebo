@@ -1,57 +1,18 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import { useCallback, useEffect, useRef } from 'react'
-import { useIntersection } from 'react-use'
 
 import Avatar from 'ui/Avatar'
+import Button from 'ui/Button'
 
 import { useOrganizations } from './hooks'
-
-function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
-  if (!onLoadMore) {
-    return null
-  }
-
-  return (
-    <span
-      ref={intersectionRef}
-      className="relative top-[-65px] invisible block leading-[0]"
-    >
-      Loading more organizations...
-    </span>
-  )
-}
-
-LoadMoreTrigger.propTypes = {
-  onLoadMore: PropTypes.func,
-  intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-}
 
 function OrganizationList({ selectedOrgUsername, setSelectedOrgUsername }) {
   const data = useOrganizations()
   const organizations = data?.organizations
   const currentUser = data?.currentUser
 
-  const intersectionRef = useRef(null)
-  const intersection = useIntersection(intersectionRef, {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-  })
-
-  const onLoadMore = useCallback(
-    () => data?.hasNextPage && data?.fetchNextPage(),
-    [data]
-  )
-
-  useEffect(() => {
-    if (intersection?.isIntersecting && onLoadMore) {
-      onLoadMore()
-    }
-  }, [intersection?.isIntersecting, onLoadMore])
-
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <ul className="text-ds-gray-octonary divide-y border border-ds-gray-secondary">
         {organizations?.map((organization) => {
           const currentOrgUsername = organization?.username
@@ -80,11 +41,18 @@ function OrganizationList({ selectedOrgUsername, setSelectedOrgUsername }) {
           )
         })}
       </ul>
-      <LoadMoreTrigger
-        intersectionRef={intersectionRef}
-        onLoadMore={onLoadMore}
-      />
-    </>
+      {data?.hasNextPage && (
+        <div className="w-full flex justify-center">
+          <Button
+            hook="load-more"
+            isLoading={data?.isFetching}
+            onClick={() => data?.fetchNextPage()}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
+    </div>
   )
 }
 

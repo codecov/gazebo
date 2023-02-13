@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -42,6 +43,12 @@ const orgList = [
   },
 ]
 
+const afterLoadedEntry = {
+  username: 'liliana-temult-org',
+  avatarUrl: 'https://github.com/liliana.png?size=40',
+  defaultOrgUsername: null,
+}
+
 const currentUser = {
   username: 'morrigan-org',
   avatarUrl: 'https://github.com/morri.png?size=40',
@@ -53,6 +60,10 @@ const contextData = {
     owner: currentUser,
     myOrganizations: {
       edges: [{ node: orgList[0] }, { node: orgList[1] }],
+      pageInfo: {
+        hasNextPage: true,
+        endCursor: '2',
+      },
     },
   },
 }
@@ -68,9 +79,25 @@ const defaultProps = {
 describe('OrganizationList', () => {
   function setup(data = contextData) {
     server.use(
-      graphql.query('MyContexts', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(data))
-      )
+      graphql.query('MyContexts', (req, res, ctx) => {
+        if (req?.variables?.after === '2') {
+          const mockResponse = {
+            me: {
+              owner: currentUser,
+              myOrganizations: {
+                edges: [{ node: afterLoadedEntry }],
+                pageInfo: {
+                  hasNextPage: false,
+                  endCursor: '2',
+                },
+              },
+            },
+          }
+          return res(ctx.status(200), ctx.data(mockResponse))
+        } else {
+          return res(ctx.status(200), ctx.data(data))
+        }
+      })
     )
   }
 
@@ -94,6 +121,21 @@ describe('OrganizationList', () => {
 
       const allAvatars = await screen.findAllByText(/Avatar/)
       expect(allAvatars).toHaveLength(3)
+    })
+
+    it('displays the load more button', async () => {
+      render(<OrganizationList {...defaultProps} />, { wrapper })
+      const loadMoreButton = await screen.findByText('Load More')
+      expect(loadMoreButton).toBeInTheDocument()
+    })
+
+    it('loads next page of data', async () => {
+      render(<OrganizationList {...defaultProps} />, { wrapper })
+      const loadMoreButton = await screen.findByText('Load More')
+      userEvent.click(loadMoreButton)
+
+      const lilianaOrg = await screen.findByText('liliana-temult-org')
+      expect(lilianaOrg).toBeInTheDocument()
     })
   })
 })
