@@ -20,8 +20,11 @@ describe('Toggle Element', () => {
           </ToggleElement>
         )
 
-        expect(screen.getByText('Hide Chart')).toBeInTheDocument()
-        expect(screen.getByText('chevron-down.svg')).toBeInTheDocument()
+        const hideChart = screen.getByText('Hide Chart')
+        const chevronDown = screen.getByText('chevron-down.svg')
+
+        expect(hideChart).toBeInTheDocument()
+        expect(chevronDown).toBeInTheDocument()
       })
 
       it('children', () => {
@@ -35,7 +38,9 @@ describe('Toggle Element', () => {
           </ToggleElement>
         )
 
-        expect(screen.getByText('Mighty Nein')).toBeInTheDocument()
+        const contents = screen.getByText('Mighty Nein')
+
+        expect(contents).toBeInTheDocument()
       })
     })
 
@@ -51,16 +56,23 @@ describe('Toggle Element', () => {
           </ToggleElement>
         )
 
-        expect(screen.getByText('Hide Chart')).toBeInTheDocument()
-        expect(screen.getByText('chevron-down.svg')).toBeInTheDocument()
+        const hideChart = screen.getByText('Hide Chart')
+        const chevronDown = screen.getByText('chevron-down.svg')
+
+        expect(hideChart).toBeInTheDocument()
+        expect(chevronDown).toBeInTheDocument()
 
         userEvent.click(screen.getByRole('button'))
 
-        expect(screen.queryByText('Hide Chart')).not.toBeInTheDocument()
-        expect(screen.queryByText('chevron-down.svg')).not.toBeInTheDocument()
+        const removedHideChart = screen.queryByText('Hide Chart')
+        const removedChevronDown = screen.queryByText('chevron-down.svg')
+        const ShowSChart = screen.getByText('Show Chart')
+        const chevronRight = screen.getByText('chevron-right.svg')
 
-        expect(screen.getByText('Show Chart')).toBeInTheDocument()
-        expect(screen.getByText('chevron-right.svg')).toBeInTheDocument()
+        expect(removedHideChart).not.toBeInTheDocument()
+        expect(removedChevronDown).not.toBeInTheDocument()
+        expect(ShowSChart).toBeInTheDocument()
+        expect(chevronRight).toBeInTheDocument()
       })
 
       it('children', async () => {
@@ -74,11 +86,16 @@ describe('Toggle Element', () => {
           </ToggleElement>
         )
 
-        expect(screen.getByText('Mighty Nein')).not.toHaveClass('hidden')
+        const button = screen.getByRole('button')
+        const contents = screen.getByText('Mighty Nein')
 
-        userEvent.click(screen.getByRole('button'))
+        expect(contents).not.toHaveClass('hidden')
 
-        expect(screen.queryByText('Mighty Nein')).toHaveClass('hidden')
+        userEvent.click(button)
+
+        const hiddenContents = screen.getByText('Mighty Nein')
+
+        expect(hiddenContents).toHaveClass('hidden')
       })
     })
   })

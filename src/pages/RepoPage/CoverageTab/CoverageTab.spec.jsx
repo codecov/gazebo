@@ -1,16 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
+import { render, screen } from '@testing-library/react'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import CoverageTab from './CoverageTab'
 
-jest.mock('./Summary', () => () => 'Summary Component')
-jest.mock('./subroute/Fileviewer', () => () => 'Fileviewer Component')
-jest.mock('./subroute/RepoContents', () => () => 'RepoContents Component')
-jest.mock('./subroute/CoverageChart', () => () => 'Chart Component')
-jest.mock('./subroute/Sunburst', () => () => 'Sunburst Component')
+jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,8 +19,17 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
+const wrapper =
+  (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+      </QueryClientProvider>
+    )
+
 beforeAll(() => {
-  server.listen()
+  server.listen({ onUnhandledRequest: 'warn' })
 })
 afterEach(() => {
   queryClient.clear()
@@ -39,195 +46,172 @@ const mockRepo = {
     },
   },
 }
-
-const wrapper =
-  ({ initialEntries }) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
-      </QueryClientProvider>
-    )
+const repoConfigMock = {
+  owner: {
+    repository: {
+      repositoryConfig: {
+        indicationRange: { upperRange: 80, lowerRange: 60 },
+      },
+    },
+  },
+}
+const treeMock = { name: 'repoName', children: [] }
+const overviewMock = {
+  owner: { repository: { private: false, defaultBranch: 'main' } },
+}
+const branchesMock = {
+  owner: {
+    repository: {
+      branches: {
+        edges: [
+          {
+            node: {
+              name: 'main',
+              head: {
+                commitid: '1',
+              },
+            },
+          },
+          {
+            node: {
+              name: 'dummy',
+              head: {
+                commitid: '2',
+              },
+            },
+          },
+          {
+            node: {
+              name: 'dummy2',
+              head: {
+                commitid: '3',
+              },
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: 'someEndCursor',
+        },
+      },
+    },
+  },
+}
+const branchMock = {
+  branch: {
+    name: 'main',
+    head: {
+      commitid: '321fdsa',
+    },
+  },
+}
+const branchesContentsMock = {
+  owner: {
+    username: 'Rabee-AbuBaker',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          pathContents: {
+            results: [
+              {
+                name: 'flag1',
+                filePath: null,
+                percentCovered: 100.0,
+                type: 'dir',
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+}
 
 describe('Coverage Tab', () => {
   function setup({ repoData = mockRepo } = { repoData: mockRepo }) {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(repoData))
+      ),
+      graphql.query('GetBranches', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(branchesMock))
+      ),
+      graphql.query('GetBranch', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { repository: branchMock } }))
+      ),
+      graphql.query('BranchContents', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(branchesContentsMock))
+      ),
+      graphql.query('RepoConfig', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(repoConfigMock))
+      ),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(overviewMock))
+      }),
+      rest.get(
+        '/internal/:provider/:owner/:repo/coverage/tree',
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({ data: treeMock }))
+        }
       )
     )
   }
 
-  describe('when rendered with default route', () => {
+  describe('sunburst flag enabled', () => {
     beforeEach(() => {
+      useFlags.mockReturnValue({ coverageSunburstChart: true })
+
       setup()
     })
+    afterEach(() => jest.resetAllMocks)
 
-    it('renders summary, and root tree component', () => {
+    it('renders the sunburst chart', async () => {
       render(
-        <>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
-            Un expected Render{' '}
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch" exact>
-            Un expected Render
-          </Route>
-          <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
-            Un expected Render
-          </Route>
-          <Route path="/:provider/:owner/:repo" exact={true}>
-            <CoverageTab />
-          </Route>
-        </>,
-        { wrapper: wrapper({ initialEntries: ['/gh/test-org/test-repo/'] }) }
+        <Route path="/:provider/:owner/:repo" exact={true}>
+          <CoverageTab />
+        </Route>,
+        { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
-      expect(screen.getByText(/Summary Component/)).toBeInTheDocument()
-      expect(screen.queryByText(/Fileviewer Component/)).not.toBeInTheDocument()
+      const hideChart = await screen.findByText(/Hide Chart/)
+
+      expect(hideChart).toBeInTheDocument()
+
+      const toggleContents = screen.getByTestId('toggle-element-contents')
+
+      expect(toggleContents.childElementCount).toBe(2)
     })
   })
 
-  describe('when rendered with tree+branch on default route returns the root of the project', () => {
+  describe('sunburst flag disabled', () => {
     beforeEach(() => {
+      useFlags.mockReturnValue({ coverageSunburstChart: false })
+
       setup()
     })
+    afterEach(() => jest.resetAllMocks)
 
-    it('renders summary and root tree component', () => {
+    it('renders the sunburst chart', async () => {
       render(
-        <>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
-            Un expected Render{' '}
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch" exact>
-            <CoverageTab />
-          </Route>
-          <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
-            Un expected Render
-          </Route>
-          <Route path="/:provider/:owner/:repo" exact={true}>
-            Un expected Render{' '}
-          </Route>
-        </>,
-        {
-          wrapper: wrapper({
-            initialEntries: ['/gh/test-org/test-repo/tree/some-branch'],
-          }),
-        }
+        <Route path="/:provider/:owner/:repo" exact={true}>
+          <CoverageTab />
+        </Route>,
+        { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
-      expect(screen.getByText(/Summary Component/)).toBeInTheDocument()
-      expect(screen.getByText(/RepoContents Component/)).toBeInTheDocument()
-      expect(screen.queryByText(/Fileviewer Component/)).not.toBeInTheDocument()
-    })
-  })
+      const hideChart = await screen.findByText(/Hide Chart/)
 
-  describe('when rendered with tree+branch route returns the root of that branch', () => {
-    beforeEach(() => {
-      setup()
-    })
+      expect(hideChart).toBeInTheDocument()
 
-    it('renders summary and root tree component', () => {
-      render(
-        <>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
-            Un expected Render{' '}
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch" exact>
-            <CoverageTab />
-          </Route>
-          <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
-            Un expected Render
-          </Route>
-          <Route path="/:provider/:owner/:repo" exact={true}>
-            Un expected Render{' '}
-          </Route>
-        </>,
-        {
-          wrapper: wrapper({
-            initialEntries: ['/gh/test-org/test-repo/tree/main'],
-          }),
-        }
-      )
+      const toggleContents = screen.getByTestId('toggle-element-contents')
 
-      expect(screen.getByText(/Summary Component/)).toBeInTheDocument()
-      expect(screen.getByText(/RepoContents Component/)).toBeInTheDocument()
-      expect(screen.queryByText(/Fileviewer Component/)).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when rendered with tree+branch route on a sub folder', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('renders summary and root tree component', () => {
-      render(
-        <>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
-            <CoverageTab />{' '}
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch" exact>
-            Un expected Render
-          </Route>
-          <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
-            Un expected Render
-          </Route>
-          <Route path="/:provider/:owner/:repo" exact={true}>
-            Un expected Render{' '}
-          </Route>
-        </>,
-        {
-          wrapper: wrapper({
-            initialEntries: ['/gh/test-org/test-repo/tree/master/src'],
-          }),
-        }
-      )
-
-      expect(screen.getByText(/Summary Component/)).toBeInTheDocument()
-      expect(screen.getByText(/RepoContents Component/)).toBeInTheDocument()
-      expect(screen.queryByText(/Fileviewer Component/)).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when rendered with blob route', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('renders summary and root tree component', async () => {
-      render(
-        <>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+" exact>
-            Un expected Render
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch" exact>
-            Un expected Render
-          </Route>
-          <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
-            <CoverageTab />
-          </Route>
-          <Route path="/:provider/:owner/:repo" exact={true}>
-            Un expected Render{' '}
-          </Route>
-        </>,
-        {
-          wrapper: wrapper({
-            initialEntries: [
-              '/gh/test-org/test-repo/blob/main/path/to/file.js',
-            ],
-          }),
-        }
-      )
-
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-
-      expect(screen.getByText(/Summary Component/)).toBeInTheDocument()
-      expect(screen.getByText(/Fileviewer Component/)).toBeInTheDocument()
-      expect(
-        screen.queryByText(/RepoContents Component/)
-      ).not.toBeInTheDocument()
+      expect(toggleContents.childElementCount).toBe(1)
     })
   })
 })
