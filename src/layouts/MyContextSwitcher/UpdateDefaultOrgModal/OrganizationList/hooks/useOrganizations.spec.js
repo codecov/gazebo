@@ -71,20 +71,17 @@ describe('useOrganizations', () => {
         wrapper,
       })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
+      await waitFor(() => result.current.isSuccess)
 
-      expect(result.current).toStrictEqual({
-        organizations: [
-          {
-            ...currentUser,
-          },
-          {
-            ...orgList,
-          },
-        ],
-        currentUser,
-      })
+      expect(result.current.organizations).toEqual([
+        {
+          ...currentUser,
+        },
+        {
+          ...orgList,
+        },
+      ])
+      expect(result.current.currentUser).toEqual(currentUser)
     })
   })
 })

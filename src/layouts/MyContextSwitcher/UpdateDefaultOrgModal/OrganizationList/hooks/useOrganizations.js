@@ -4,12 +4,11 @@ import { useMyContexts } from 'services/user'
 
 export function useOrganizations() {
   const { provider } = useParams()
-  const { data: myContexts } = useMyContexts({ provider })
-  const { currentUser, myOrganizations } = myContexts
+  const { data: myContexts, isSuccess, ...rest } = useMyContexts({ provider })
 
-  return (
-    currentUser &&
-    myOrganizations && {
+  if (isSuccess) {
+    const { currentUser, myOrganizations } = myContexts
+    return {
       organizations: [
         {
           ...currentUser,
@@ -19,6 +18,7 @@ export function useOrganizations() {
         })),
       ],
       currentUser,
+      ...rest,
     }
-  )
+  }
 }
