@@ -1,3 +1,4 @@
+import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
@@ -6,9 +7,21 @@ import Icon from 'ui/Icon'
 
 import CancelButton from './CancelButton'
 
+import { useSetCrumbs } from '../../../../context'
+
 function DowngradePlan() {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const setCrumbs = useSetCrumbs()
+
+  useLayoutEffect(() => {
+    setCrumbs([
+      {
+        pageName: 'cancelOrgPlan',
+        text: 'Cancel plan',
+      },
+    ])
+  }, [setCrumbs])
 
   return (
     <div className="flex gap-8 w-8/12">
@@ -29,19 +42,19 @@ function DowngradePlan() {
               </span>
               Configurable # of users
             </li>
-            <li className="flex gap-1 items-center">
+            <li className="flex gap-1 items-center pt-3">
               <span className="stroke-codecov-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
               Technical support
             </li>
-            <li className="flex gap-1 items-center">
+            <li className="flex gap-1 items-center pt-3">
               <span className="stroke-codecov-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
               Carry-forward flags
             </li>
-            <li className="flex gap-1 items-center">
+            <li className="flex gap-1 items-center pt-3">
               <span className="stroke-codecov-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
