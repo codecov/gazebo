@@ -40,7 +40,7 @@ function SpecialOffer() {
         type: 'success',
         text: 'Discount successfully applied.',
       })
-      history.push(ownerPath?.path())
+      history.replace(ownerPath?.path())
     },
     onError: () => {
       addToast({
