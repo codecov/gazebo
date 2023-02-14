@@ -42,6 +42,8 @@ function Chart({
   axisLabelFunc,
   desc,
   title,
+  aproxWidth = 930,
+  aproxHeight = 300,
   renderAreaChart,
   color = 'default',
 }) {
@@ -92,8 +94,8 @@ function Chart({
       </svg>
       {renderAreaChart && (
         <VictoryChart
-          width={400}
-          height={69}
+          width={aproxWidth}
+          height={aproxHeight}
           yDomain={[0, 100]}
           scale={{ x: 'time', y: 'linear' }}
           singleQuadrantDomainPadding={{ x: false }}
@@ -201,6 +203,8 @@ Chart.propTypes = {
   axisLabelFunc: PropTypes.func,
   desc: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
+  aproxWidth: PropTypes.number,
+  aproxHeight: PropTypes.number,
   renderAreaChart: PropTypes.bool.isRequired,
   color: PropTypes.oneOf(['default', 'primary', 'warning', 'danger']),
 }
