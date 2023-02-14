@@ -131,7 +131,7 @@ describe('useSunburstChart', () => {
     })
   })
 
-  describe('if no branch is in url', () => {
+  describe('if branch is in the url', () => {
     beforeEach(() => {
       setup({
         repoOverviewData: overviewMock,
@@ -141,7 +141,7 @@ describe('useSunburstChart', () => {
     })
     afterEach(() => jest.resetAllMocks())
 
-    it('query using default branch', async () => {
+    it('query uses current branch', async () => {
       const { waitFor } = renderHook(() => useSunburstChart(), {
         wrapper: wrapper(['/critical-role/c3/bells-hells/tree/something']),
       })
