@@ -12,9 +12,7 @@ describe('Coverage Area Chart', () => {
     })
 
     it('renders no chart', () => {
-      render(
-        <CoverageAreaChart data={[]} desc="Chart desc" title="Chart title" />
-      )
+      render(<CoverageAreaChart data={[]} />)
       expect(screen.queryAllByRole('presentation').length).toBe(0)
     })
   })
