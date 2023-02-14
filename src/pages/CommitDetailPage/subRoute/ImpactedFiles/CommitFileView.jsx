@@ -46,19 +46,15 @@ function CommitFileView({ path }) {
 
   return (
     <div className="flex flex-col">
-      {flagNames && flagNames?.length > 1 && (
-        <CodeRendererInfoRow>
-          <div className="flex justify-end w-full">
+      <CodeRendererInfoRow>
+        <div className="flex justify-end w-full gap-4">
+          {flagNames && flagNames?.length > 1 && (
             <TitleFlags
               flags={flagNames}
               onFlagsChange={setSelectedFlags}
               flagsIsLoading={coverageIsLoading}
             />
-          </div>
-        </CodeRendererInfoRow>
-      )}
-      <CodeRendererInfoRow>
-        <div className="flex justify-end w-full">
+          )}
           <A
             href={commitFileView.path({ commit, tree: path })}
             isExternal
