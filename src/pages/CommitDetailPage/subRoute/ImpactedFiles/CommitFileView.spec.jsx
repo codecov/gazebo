@@ -102,6 +102,19 @@ describe('CommitFileView', () => {
       const allTestIds = await screen.findAllByTestId('fv-single-line')
       expect(allTestIds.length).toEqual(21)
     })
+
+    it('renders the commit redirect url', async () => {
+      render(<CommitFileView diff={diff} path="api/core/commit/123" />, {
+        wrapper,
+      })
+
+      const viewFullFileText = await screen.findByText(/View full file/)
+      expect(viewFullFileText).toBeInTheDocument()
+      expect(viewFullFileText).toHaveAttribute(
+        'href',
+        '/gh/codecov/gazebo/commit/123sha/blob/api/core/commit/123'
+      )
+    })
   })
 
   describe('when there is no content to be shown', () => {
