@@ -3,7 +3,6 @@ import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
 import OptionButton from 'ui/OptionButton'
-import Spinner from 'ui/Spinner'
 
 import { displayTypeParameter } from '../constants'
 
@@ -42,12 +41,9 @@ function DisplayTypeButton({ dataLength, isLoading }) {
         options={options}
         onChange={(option) => handleOnChange(option)}
       />
-      {isLoading ? (
-        <Spinner />
-      ) : (
+      {!isLoading &&
         active?.displayType === displayTypeParameter.list &&
-        dataLength && <span>{dataLength} total files</span>
-      )}
+        dataLength && <span>{dataLength} total files</span>}
     </div>
   )
 }
