@@ -1,7 +1,10 @@
+import { useMutation } from '@tanstack/react-query'
 import { useLayoutEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
+import { useAddNotification } from 'services/toastNotification'
+import Api from 'shared/api'
 
 import { useSetCrumbs } from '../../../../context'
 
@@ -10,10 +13,11 @@ const { default: Button } = require('ui/Button')
 const { default: Icon } = require('ui/Icon')
 
 function SpecialOffer() {
+  const { provider, owner } = useParams()
   const history = useHistory()
-  const { owner } = useNavLinks()
-
+  const { owner: ownerPath } = useNavLinks()
   const setCrumbs = useSetCrumbs()
+  const addToast = useAddNotification()
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -24,15 +28,33 @@ function SpecialOffer() {
     ])
   }, [setCrumbs])
 
-  const handleDiscount = () => {
-    history.push(owner?.path())
-  }
+  const { mutate, isLoading } = useMutation({
+    mutationFn: (body) =>
+      Api.patch({
+        provider,
+        path: `/${provider}/${owner}/account-details`,
+        body,
+      }),
+    onSuccess: () => {
+      addToast({
+        type: 'success',
+        text: 'Discount successfully applied.',
+      })
+      history.push(ownerPath?.path())
+    },
+    onError: () => {
+      addToast({
+        type: 'error',
+        text: 'Something went wrong while applying discount.',
+      })
+    },
+  })
 
   return (
     <div className="flex flex-col gap-8 w-5/12">
       <div className="">
         <h2 className="text-lg font-semibold">
-          We&apos;d love to keep your under our umbrella.
+          We&apos;d love to keep you under our umbrella.
         </h2>
         <p>
           Keep enjoying the features that help you analyze your code coverage
@@ -46,7 +68,8 @@ function SpecialOffer() {
         <Button
           variant="primary"
           hook="apply-30-discount"
-          onClick={() => handleDiscount()}
+          onClick={() => mutate({ applyCancellationDiscount: true })}
+          isLoading={isLoading}
         >
           Yes, I&apos;d like 6 months with 30% discount
         </Button>
