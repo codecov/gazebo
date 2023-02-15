@@ -70,7 +70,7 @@ function getTableData(data) {
   )
 }
 
-function Flags() {
+function FlagsTab() {
   const { owner, repo, pullId, provider } = useParams()
   const { data } = usePull({ provider, owner, repo, pullId })
   const flagComparison = data?.pull?.compareWithBase?.flagComparisons || []
@@ -85,4 +85,4 @@ function Flags() {
   return <Table data={tableData} columns={tableColumns} />
 }
 
-export default Flags
+export default FlagsTab
