@@ -5,6 +5,7 @@ import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './IndirectChangedFiles'
 import { useIndirectChangedFilesTable } from './IndirectChangedFiles/hooks'
+import IndirectChangesInfo from './IndirectChangesInfo'
 
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0
@@ -35,21 +36,37 @@ function IndirectChangesTab() {
     return <Loader />
   }
 
-  return (
-    <>
-      {data?.headState === CommitStateEnum.ERROR ? (
+  if (data?.headState === CommitStateEnum.ERROR) {
+    return (
+      <>
+        <IndirectChangesInfo />
         <p>
           Cannot display Impacted Files because most recent commit is in an
           error state.
         </p>
-      ) : hasImpactedFiles(data?.impactedFiles) ? (
+      </>
+    )
+  }
+
+  if (hasImpactedFiles(data?.impactedFiles)) {
+    return (
+      <>
+        <IndirectChangesInfo />
         <ImpactedFiles />
-      ) : // Coverage changes remain the same as before, but no impacted files = no change
-      hasReportWithoutChanges({
-          pullHeadCoverage: data?.pullHeadCoverage,
-          pullBaseCoverage: data?.pullBaseCoverage,
-          pullPatchCoverage: data?.pullPatchCoverage,
-        }) ? (
+      </>
+    )
+  }
+
+  if (
+    hasReportWithoutChanges({
+      pullHeadCoverage: data?.pullHeadCoverage,
+      pullBaseCoverage: data?.pullBaseCoverage,
+      pullPatchCoverage: data?.pullPatchCoverage,
+    })
+  ) {
+    return (
+      <>
+        <IndirectChangesInfo />
         <div className="flex flex-col gap-3 mt-4">
           <p>
             Everything is accounted for! No changes detected that need to be
@@ -66,10 +83,14 @@ function IndirectChangesTab() {
             </li>
           </ul>
         </div>
-      ) : (
-        // No impacted files nor head, patch or change coverage
-        <p className="mt-4">No Files covered by tests were changed</p>
-      )}
+      </>
+    )
+  }
+
+  return (
+    <>
+      <IndirectChangesInfo />
+      <p className="mt-4">No Files covered by tests were changed</p>
     </>
   )
 }
