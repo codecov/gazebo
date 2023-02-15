@@ -65,7 +65,7 @@ function GitHubActions() {
         </h2>
         <p className="text-base">
           Once you&apos;ve committed your changes in step 2 and ran your CI/CD
-          pipeline. In tour pull request, you should see two status checks:
+          pipeline. In your pull request, you should see two status checks:
         </p>
         <img
           alt="codecov patch and project"

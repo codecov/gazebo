@@ -3,8 +3,10 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
+import { useNavLinks } from 'services/navigation'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { getFilenameFromFilePath } from 'shared/utils/url'
+import A from 'ui/A'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import SingleLine from 'ui/CodeRenderer/SingleLine'
@@ -23,6 +25,7 @@ function ErrorDisplayMessage() {
 
 function CommitFileView({ path }) {
   const { owner, repo, provider, commit } = useParams()
+  const { commitFileView } = useNavLinks()
   const fileName = getFilenameFromFilePath(path)
   const [selectedFlags, setSelectedFlags] = useState([])
 
@@ -43,17 +46,24 @@ function CommitFileView({ path }) {
 
   return (
     <div className="flex flex-col">
-      {flagNames && flagNames?.length > 1 && (
-        <CodeRendererInfoRow>
-          <div className="flex justify-end w-full">
+      <CodeRendererInfoRow>
+        <div className="flex justify-end w-full gap-4">
+          {flagNames && flagNames?.length > 1 && (
             <TitleFlags
               flags={flagNames}
               onFlagsChange={setSelectedFlags}
               flagsIsLoading={coverageIsLoading}
             />
-          </div>
-        </CodeRendererInfoRow>
-      )}
+          )}
+          <A
+            href={commitFileView.path({ commit, tree: path })}
+            isExternal
+            hook="commit full file"
+          >
+            View full file
+          </A>
+        </div>
+      </CodeRendererInfoRow>
       {content ? (
         <CodeRenderer
           code={content}
