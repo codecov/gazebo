@@ -6,8 +6,9 @@ import { SentryRoute } from 'sentry'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import Spinner from 'ui/Spinner'
 
-import ErrorBanner from '../ErrorBanner'
-import { ComparisonReturnType } from '../ErrorBanner/constants'
+import ErrorBanner from './ErrorBanner'
+import { ComparisonReturnType } from './ErrorBanner/constants'
+
 import { usePullPageData } from '../hooks'
 
 const FilesChangedTab = lazy(() => import('../subroute/FilesChangedTab'))

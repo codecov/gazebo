@@ -4,9 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ComparisonReturnType } from './ErrorBanner/constants'
 import PullRequestPageContent from './PullRequestPageContent'
-
-import { ComparisonReturnType } from '../ErrorBanner/constants'
 
 jest.mock('../subroute/FilesChangedTab', () => () => 'FilesChangedTab')
 jest.mock('../subroute/IndirectChangesTab', () => () => 'IndirectChangesTab')
