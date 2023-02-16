@@ -18,6 +18,7 @@ export function useOrganizations() {
         })),
       ],
       currentUser,
+      isSuccess,
       ...rest,
     }
   }
