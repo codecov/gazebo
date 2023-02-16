@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 
@@ -47,12 +47,34 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
+function ModalSection({ ModalControl, ModalComponent }) {
+  const [showComponent, setShowComponent] = useState(false)
+  return (
+    ModalControl &&
+    ModalComponent && (
+      <>
+        <ModalControl onClick={() => setShowComponent(true)} />
+        {showComponent && (
+          <ModalComponent closeFn={() => setShowComponent(false)} />
+        )}
+      </>
+    )
+  )
+}
+
+ModalSection.propTypes = {
+  ModalComponent: PropTypes.func,
+  ModalControl: PropTypes.func,
+}
+
 function ContextSwitcher({
   activeContext,
   contexts,
   currentUser,
   isLoading,
   onLoadMore,
+  ModalControl,
+  ModalComponent,
 }) {
   const intersectionRef = useRef(null)
   const currentContext = getCurrentContext({ activeContext, contexts })
@@ -112,7 +134,13 @@ function ContextSwitcher({
         </span>
       </MenuButton>
       <MenuList>
-        <div className={styles.switchContext}>Switch context</div>
+        <div className={styles.switchContext}>
+          <span>Switch context</span>
+          <ModalSection
+            ModalControl={ModalControl}
+            ModalComponent={ModalComponent}
+          />
+        </div>
         <div className="max-h-64 overflow-y-auto">
           <MenuLink as={AppLink} pageName="provider">
             <Icon name="home" />
@@ -159,9 +187,11 @@ ContextSwitcher.propTypes = {
   ).isRequired,
   currentUser: PropTypes.shape({
     defaultOrgUsername: PropTypes.string,
-  }).isRequired,
+  }),
   onLoadMore: PropTypes.func,
   isLoading: PropTypes.bool,
+  ModalComponent: PropTypes.func,
+  ModalControl: PropTypes.func,
 }
 
 export default ContextSwitcher

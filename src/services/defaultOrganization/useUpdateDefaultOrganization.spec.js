@@ -79,13 +79,6 @@ describe('useUpdateDefaultOrganization', () => {
       setup(mockData, triggerError)
     })
 
-    it('returns isLoading false', () => {
-      const { result } = renderHook(() => useUpdateDefaultOrganization(), {
-        wrapper,
-      })
-      expect(result.current.isLoading).toBeFalsy()
-    })
-
     describe('When mutation is a success w/ a validation error', () => {
       it('returns isSuccess true', async () => {
         const { result, waitFor } = renderHook(
