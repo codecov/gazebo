@@ -29,7 +29,14 @@ const defaultStyles = {
 }
 
 const ColorMap = Object.freeze({
-  default: '#222F3D',
+  default: '#68737E',
+  primary: '#21B577',
+  warning: '#F4B01B',
+  danger: '#F52020',
+})
+
+const GradientColorMap = Object.freeze({
+  default: '#EAEBEF',
   primary: '#21B577',
   warning: '#F4B01B',
   danger: '#F52020',
@@ -87,7 +94,7 @@ function Chart({
             </feComponentTransfer>
           </filter>
           <linearGradient id="myGradient" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={ColorMap[color]} stopOpacity="20%" />
+            <stop offset="0%" stopColor={GradientColorMap[color]} />
             <stop offset="100%" stopColor="white" />
           </linearGradient>
         </defs>
