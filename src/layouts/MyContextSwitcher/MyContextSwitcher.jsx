@@ -37,14 +37,16 @@ function MyContextSwitcher({ activeContext, pageName }) {
       currentUser={currentUser}
       isLoading={isLoading}
       onLoadMore={() => hasNextPage && fetchNextPage()}
-      DisplayComponent={({ onClick }) => (
+      ModalControl={({ onClick }) => (
         <button className="text-ds-blue flex-none" onClick={onClick}>
           Edit default
         </button>
       )}
-      Component={({ closeFn }) => (
-        <UpdateDefaultOrgModal closeModal={() => closeFn()} />
-      )}
+      ModalComponent={({ closeFn, showComponent }) => {
+        return (
+          <UpdateDefaultOrgModal closeModal={closeFn} isOpen={showComponent} />
+        )
+      }}
     />
   )
 }

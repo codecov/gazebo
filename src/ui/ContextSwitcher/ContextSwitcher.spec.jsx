@@ -10,6 +10,11 @@ import ContextSwitcher from '.'
 jest.mock('react-use/lib/useIntersection')
 jest.mock('services/image')
 
+// eslint-disable-next-line react/prop-types
+const ModalComponent = ({ closeFn }) => <div onClick={closeFn}>component</div>
+// eslint-disable-next-line react/prop-types
+const ModalControl = ({ onClick }) => <button onClick={onClick}>display</button>
+
 const defaultProps = {
   activeContext: 'dorianamouroux',
   contexts: [
@@ -38,6 +43,8 @@ const defaultProps = {
   currentUser: {
     defaultOrgUsername: 'spotify',
   },
+  ModalComponent,
+  ModalControl,
 }
 
 const wrapper = ({ children }) => (
@@ -200,31 +207,19 @@ describe('ContextSwitcher', () => {
     afterEach(() => jest.restoreAllMocks())
 
     it('renders the custom component', async () => {
-      // disabling as it's a test, happy to make validation for it though
-      // eslint-disable-next-line react/prop-types
-      const Component = ({ closeFn }) => <div onClick={closeFn}>component</div>
-      // eslint-disable-next-line react/prop-types
-      const DisplayComponent = ({ onClick }) => (
-        <button onClick={onClick}>display</button>
-      )
-      const customProps = {
-        ...props,
-        Component,
-        DisplayComponent,
-      }
-      render(<ContextSwitcher {...customProps} />, {
+      render(<ContextSwitcher {...props} />, {
         wrapper,
       })
 
-      const displayComponentButton = await screen.findByText('display')
-      expect(displayComponentButton).toBeInTheDocument()
-      userEvent.click(displayComponentButton)
+      const modalControlButton = await screen.findByText('display')
+      expect(modalControlButton).toBeInTheDocument()
+      userEvent.click(modalControlButton)
 
-      const componentText = await screen.findByText('component')
-      expect(componentText).toBeInTheDocument()
-      userEvent.click(componentText)
+      const modalComponentText = await screen.findByText('component')
+      expect(modalComponentText).toBeInTheDocument()
+      userEvent.click(modalComponentText)
 
-      await waitFor(() => expect(componentText).not.toBeInTheDocument())
+      await waitFor(() => expect(modalComponentText).not.toBeInTheDocument())
     })
   })
 })

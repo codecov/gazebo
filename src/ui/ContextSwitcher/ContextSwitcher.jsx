@@ -47,20 +47,38 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
-// eslint-disable-next-line complexity
+function ModalSection({ ModalControl, ModalComponent }) {
+  const [showComponent, setShowComponent] = useState(false)
+  return (
+    ModalControl &&
+    ModalComponent && (
+      <>
+        <ModalControl onClick={() => setShowComponent(true)} />
+        {showComponent && (
+          <ModalComponent closeFn={() => setShowComponent(false)} />
+        )}
+      </>
+    )
+  )
+}
+
+ModalSection.propTypes = {
+  ModalComponent: PropTypes.func,
+  ModalControl: PropTypes.func,
+}
+
 function ContextSwitcher({
   activeContext,
   contexts,
   currentUser,
   isLoading,
   onLoadMore,
-  DisplayComponent,
-  Component,
+  ModalControl,
+  ModalComponent,
 }) {
   const intersectionRef = useRef(null)
   const currentContext = getCurrentContext({ activeContext, contexts })
   const { provider } = useParams()
-  const [showComponent, setShowComponent] = useState(false)
 
   const isGh = providerToName(provider) === 'Github'
 
@@ -118,12 +136,10 @@ function ContextSwitcher({
       <MenuList>
         <div className={styles.switchContext}>
           <span>Switch context</span>
-          {DisplayComponent &&
-            DisplayComponent({ onClick: () => setShowComponent(true) })}
-          {showComponent &&
-            Component({
-              closeFn: () => setShowComponent(false),
-            })}
+          <ModalSection
+            ModalControl={ModalControl}
+            ModalComponent={ModalComponent}
+          />
         </div>
         <div className="max-h-64 overflow-y-auto">
           <MenuLink as={AppLink} pageName="provider">
@@ -174,8 +190,8 @@ ContextSwitcher.propTypes = {
   }),
   onLoadMore: PropTypes.func,
   isLoading: PropTypes.bool,
-  Component: PropTypes.func,
-  DisplayComponent: PropTypes.func,
+  ModalComponent: PropTypes.func,
+  ModalControl: PropTypes.func,
 }
 
 export default ContextSwitcher

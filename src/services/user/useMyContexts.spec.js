@@ -80,6 +80,10 @@ describe('useMyContexts', () => {
             username: 'org1',
           },
         ],
+        pageInfo: {
+          endCursor: 'first',
+          hasNextPage: true,
+        },
       }
 
       expect(result.current.data).toStrictEqual(expectedData)
@@ -99,9 +103,6 @@ describe('useMyContexts', () => {
 
       result.current.fetchNextPage()
 
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
-
       const expectedData = {
         currentUser: {
           avatarUrl: '',
@@ -117,9 +118,13 @@ describe('useMyContexts', () => {
             username: 'org2',
           },
         ],
+        pageInfo: {
+          endCursor: 'first',
+          hasNextPage: true,
+        },
       }
 
-      expect(result.current.data).toStrictEqual(expectedData)
+      await waitFor(() => expect(result.current.data).toEqual(expectedData))
     })
   })
 })
