@@ -2,6 +2,8 @@
   "extends": [
     "react-app",
     "react-app/jest",
+    "plugin:tailwindcss/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
     "plugin:react/recommended",
     "plugin:import/recommended",
     "prettier"
