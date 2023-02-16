@@ -22,7 +22,7 @@ const RadioInput = forwardRef(
           id={id}
           ref={ref}
           disabled={disabled}
-          className="cursor-pointer mr-2"
+          className="mr-2 cursor-pointer"
           type="radio"
           {...newProps}
         />

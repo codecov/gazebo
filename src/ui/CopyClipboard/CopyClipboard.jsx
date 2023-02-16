@@ -35,7 +35,7 @@ function CopyClipboard({
   return (
     <button
       onClick={handleCopy}
-      className="flex outline-none focus:outline-none items-center"
+      className="flex items-center outline-none focus:outline-none"
     >
       {showSuccess ? (
         <div className="text-ds-primary-green">

@@ -8,14 +8,14 @@ function Summary({ fields }) {
   return (
     fields &&
     fields.length > 0 && (
-      <div className="flex gap-8 justify-start align-start items-start flex-wrap md:flex-nowrap">
+      <div className="align-start flex flex-wrap items-start justify-start gap-8 md:flex-nowrap">
         {fields.map(({ name, title, value }) => {
           // Below changes is the original SummaryField markup
           return (
             value && (
-              <div key={name} className="flex flex-col gap-1 justify-center">
+              <div key={name} className="flex flex-col justify-center gap-1">
                 {title && (
-                  <h4 className="flex gap-2 text-ds-gray-quinary font-mono text-xs">
+                  <h4 className="flex gap-2 font-mono text-xs text-ds-gray-quinary">
                     {title}
                   </h4>
                 )}

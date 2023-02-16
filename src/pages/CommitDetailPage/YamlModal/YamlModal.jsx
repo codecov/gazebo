@@ -36,7 +36,7 @@ function YamlModal({ showYAMLModal, setShowYAMLModal }) {
         </Suspense>
       }
       footer={
-        <span className="text-sm w-full text-left">
+        <span className="w-full text-left text-sm">
           Includes default yaml, global yaml, and repo{' '}
           <A
             href="https://docs.codecov.com/docs/codecov-yaml"

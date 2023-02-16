@@ -1,7 +1,7 @@
 import OptionButton from './OptionButton'
 
 const Template = (args) => (
-  <div className="w-[50%] mx-auto">
+  <div className="mx-auto w-[50%]">
     <OptionButton {...args} />
   </div>
 )

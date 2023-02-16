@@ -18,7 +18,7 @@ function DateRangePicker({ startDate, endDate, onChange }) {
   }
 
   return (
-    <div className="flex flex-row items-center border rounded gap-2">
+    <div className="flex flex-row items-center gap-2 rounded border">
       <DatePicker
         name="DateRangePicker"
         selectsRange
@@ -30,7 +30,7 @@ function DateRangePicker({ startDate, endDate, onChange }) {
         monthsShown={2}
         openToDate={sub(new Date(), { months: 1 })}
         placeholderText="Start Date"
-        className="font-sans text-ds-gray-octonary text-sm px-2 py-1 w-full focus:outline-none focus:border-b-2 border-0 border-ds-gray-octonary"
+        className="w-full border-0 border-ds-gray-octonary px-2 py-1 font-sans text-sm text-ds-gray-octonary focus:border-b-2 focus:outline-none"
       />
     </div>
   )

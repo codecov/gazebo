@@ -10,7 +10,7 @@ function ToastNotifications() {
   const notifications = useNotifications()
 
   return (
-    <div className="fixed bottom-0 flex justify-center flex-col w-full pb-8">
+    <div className="fixed bottom-0 flex w-full flex-col justify-center pb-8">
       {notifications.map((notification) => (
         <NotificationItem
           key={notification.id}

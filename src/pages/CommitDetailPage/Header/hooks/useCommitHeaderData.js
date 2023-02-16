@@ -24,7 +24,7 @@ const query = `
 
 export const useCommitHeaderData = ({ provider, owner, repo, commitId }) =>
   useQuery({
-    queryKey: ['CommitPageHeaderData', provider, owner, repo, commitId],
+    queryKey: ['CommitPageHeaderData', provider, owner, repo, commitId, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

@@ -192,7 +192,7 @@ function UpgradePlanForm({
 
   return (
     <form
-      className="text-ds-gray-nonary flex flex-col gap-4"
+      className="flex flex-col gap-4 text-ds-gray-nonary"
       onSubmit={handleSubmit(upgradePlan)}
     >
       <div className="flex flex-col gap-2">
@@ -242,11 +242,11 @@ function UpgradePlanForm({
           {...register('seats')}
           id="nb-seats"
           size="20"
-          className="bg-ds-gray-secondary p-2 rounded border w-full"
+          className="w-full rounded border bg-ds-gray-secondary p-2"
           type="number"
           label="User Seats"
         />
-        <div className="pl-2 border-l-2">
+        <div className="border-l-2 pl-2">
           <p>
             Currently {accountDetails.activatedUserCount} users activated out of{' '}
             {accountDetails.activatedUserCount +
@@ -290,7 +290,7 @@ function UpgradePlanForm({
                 </span>{' '}
                 a year with the annual plan,{' '}
                 <span
-                  className="text-ds-blue-darker font-semibold hover:underline cursor-pointer"
+                  className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
                   onClick={() => setValue('newPlan', 'users-pr-inappy')}
                 >
                   switch to annual
@@ -301,13 +301,13 @@ function UpgradePlanForm({
         )}
       </div>
       {nextBillingDate && (
-        <p className="flex blod mt-1">
+        <p className="blod mt-1 flex">
           Next Billing Date
           <span className="ml-auto">{nextBillingDate}</span>
         </p>
       )}
       {errors?.seats && (
-        <p className="bg-ds-error-quinary text-ds-error-nonary p-3 rounded-md">
+        <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
           {errors.seats?.message}
         </p>
       )}

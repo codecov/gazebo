@@ -13,7 +13,7 @@ function Commits() {
       {commits?.map(({ message, commitid, author, state }) => (
         <div
           key={commitid}
-          className="py-4 first:pt-0 last:pb-0 text-ds-gray-octonary text-sm flex flex-col"
+          className="flex flex-col py-4 text-sm text-ds-gray-octonary first:pt-0 last:pb-0"
         >
           <A
             to={{ pageName: 'commit', options: { commit: commitid } }}
@@ -29,7 +29,7 @@ function Commits() {
             <span className="text-ds-gray-quaternary">Author Unknown</span>
           )}
           {state === CommitStateEnum.ERROR && (
-            <span className="text-ds-primary-red flex items-end pt-1">
+            <span className="flex items-end pt-1 text-ds-primary-red">
               <Icon name="exclamation" size="flex" variant="solid" /> processing
               failed
             </span>

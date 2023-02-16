@@ -35,7 +35,7 @@ export function LoginPrompt() {
   return (
     <div
       data-testid="login-prompt"
-      className="flex items-center justify-between mx-2 md:mx-0 gap-4"
+      className="mx-2 flex items-center justify-between gap-4 md:mx-0"
     >
       <A to={{ pageName: 'signIn', options: { to } }} variant="header">
         Log in
@@ -76,7 +76,7 @@ function DesktopMenu() {
         {!!currentUser && <FeedbackLink />}
       </div>
       {!!currentUser ? (
-        <div className="flex items-center space-between mx-2 md:mx-4 gap-4">
+        <div className="space-between mx-2 flex items-center gap-4 md:mx-4">
           {config.IS_SELF_HOSTED && (
             <>
               <SeatDetails />

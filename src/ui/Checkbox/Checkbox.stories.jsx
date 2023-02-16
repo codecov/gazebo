@@ -12,7 +12,7 @@ const Template = (args) => {
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(_handleSubmit)}>
       <Checkbox {...register('test')} {...args} value="test1" name="test" />
-      <button className="text-white mt-1 p-2 rounded bg-gray-500" type="submit">
+      <button className="mt-1 rounded bg-gray-500 p-2 text-white" type="submit">
         Submit!
       </button>
     </form>

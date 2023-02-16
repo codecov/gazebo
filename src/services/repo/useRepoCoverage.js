@@ -41,10 +41,10 @@ export function useRepoCoverage({
   branch,
   options = {},
 }) {
-  return useQuery(
-    ['coverage', provider, owner, repo, branch],
-    ({ signal }) =>
+  return useQuery({
+    queryKey: ['coverage', provider, owner, repo, branch],
+    queryFn: ({ signal }) =>
       fetchRepoBranchCoverage({ provider, owner, repo, branch, signal }),
-    options
-  )
+    ...options,
+  })
 }

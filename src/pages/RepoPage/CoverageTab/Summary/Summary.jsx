@@ -57,13 +57,13 @@ const Summary = () => {
       )}
       <SummaryRoot>
         <SummaryField>
-          <h3 className="text-ds-gray-octonary text-sm font-semibold flex gap-1 items-center">
+          <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
             <span className="text-ds-gray-quinary">
               <Icon name="branch" size="sm" variant="developer" />
             </span>
             Branch Context
           </h3>
-          <span className="text-sm min-w-[16rem]">
+          <span className="min-w-[16rem] text-sm">
             <Select
               dataMarketing="branch-selector-repo-page"
               {...branchSelectorProps}
@@ -99,7 +99,7 @@ const Summary = () => {
         </SummaryField>
         {data?.head?.totals?.percentCovered && (
           <SummaryField>
-            <h3 className="text-ds-gray-octonary text-sm font-semibold  min-w-[16rem]">
+            <h3 className="min-w-[16rem] text-sm font-semibold  text-ds-gray-octonary">
               Coverage on branch
             </h3>
             <CoverageProgress

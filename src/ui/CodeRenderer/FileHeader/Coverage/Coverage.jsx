@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import CoverageValue from '../CoverageValue'
 
 const Coverage = ({ coverageData = [] }) => (
-  <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
+  <div className="flex max-w-xs items-center justify-end gap-2 sm:flex-1">
     {coverageData.map(
       ({ value, label }) =>
         isFinite(value) && (

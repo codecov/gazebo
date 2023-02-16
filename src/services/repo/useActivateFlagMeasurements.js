@@ -4,8 +4,8 @@ import Api from 'shared/api'
 
 export function useActivateFlagMeasurements({ provider, owner, repo }) {
   const queryClient = useQueryClient()
-  return useMutation(
-    () => {
+  return useMutation({
+    mutationFn: () => {
       const query = `
           mutation ActivateFlagsMeasurements($input: ActivateFlagsMeasurementsInput!) {
             activateFlagsMeasurements(input: $input) {
@@ -23,15 +23,13 @@ export function useActivateFlagMeasurements({ provider, owner, repo }) {
         mutationPath: 'activateFlagsMeasurements',
       })
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries([
-          'BackfillFlagMemberships',
-          provider,
-          owner,
-          repo,
-        ])
-      },
-    }
-  )
+    onSuccess: () => {
+      queryClient.invalidateQueries([
+        'BackfillFlagMemberships',
+        provider,
+        owner,
+        repo,
+      ])
+    },
+  })
 }

@@ -29,7 +29,7 @@ export function useMyContexts({ provider, opts = {} }) {
   `
 
   const { data, ...rest } = useInfiniteQuery({
-    queryKey: ['MyContexts', provider],
+    queryKey: ['MyContexts', provider, query],
     queryFn: ({ pageParam, signal }) =>
       Api.graphql({
         provider,

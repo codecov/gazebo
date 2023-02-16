@@ -21,7 +21,8 @@ export function useCancelPlan({ provider, owner }) {
   const queryClient = useQueryClient()
   const planType = Plans.USERS_BASIC
 
-  return useMutation(() => cancelPlan({ provider, owner, planType }), {
+  return useMutation({
+    mutationFn: () => cancelPlan({ provider, owner, planType }),
     onSuccess: (data) => {
       // update the local cache of account details from what the server returns
       queryClient.setQueryData(['accountDetails', provider, owner], data)

@@ -10,8 +10,8 @@ const fields = [
       </>
     ),
     value: (
-      <div className="h-6 mt-1 pt-0.5">
-        <div className="animate-pulse bg-ds-gray-tertiary rounded-full h-4 w-20" />
+      <div className="mt-1 h-6 pt-0.5">
+        <div className="h-4 w-20 animate-pulse rounded-full bg-ds-gray-tertiary" />
       </div>
     ),
   },
@@ -19,8 +19,8 @@ const fields = [
     name: 'patch',
     title: 'Patch',
     value: (
-      <div className="h-6 mt-1 pt-0.5">
-        <div className="animate-pulse bg-ds-gray-tertiary rounded-full h-4 w-20" />
+      <div className="mt-1 h-6 pt-0.5">
+        <div className="h-4 w-20 animate-pulse rounded-full bg-ds-gray-tertiary" />
       </div>
     ),
   },
@@ -28,8 +28,8 @@ const fields = [
     name: 'change',
     title: 'Change',
     value: (
-      <div className="h-6 mt-1 pt-0.5">
-        <div className="animate-pulse bg-ds-gray-tertiary rounded-full h-4 w-20" />
+      <div className="mt-1 h-6 pt-0.5">
+        <div className="h-4 w-20 animate-pulse rounded-full bg-ds-gray-tertiary" />
       </div>
     ),
   },
@@ -37,8 +37,8 @@ const fields = [
     name: 'source',
     title: 'Source',
     value: (
-      <div className="h-6 mt-1 pt-0.5">
-        <div className="animate-pulse bg-ds-gray-tertiary rounded-full h-4 w-32" />
+      <div className="mt-1 h-6 pt-0.5">
+        <div className="h-4 w-32 animate-pulse rounded-full bg-ds-gray-tertiary" />
       </div>
     ),
   },

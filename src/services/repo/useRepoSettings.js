@@ -41,7 +41,9 @@ function fetchRepoSettingsDetails({ provider, owner, repo, signal }) {
 export function useRepoSettings() {
   const { provider, owner, repo } = useParams()
 
-  return useQuery(['GetRepoSettings', provider, owner, repo], ({ signal }) =>
-    fetchRepoSettingsDetails({ provider, owner, repo, signal })
-  )
+  return useQuery({
+    queryKey: ['GetRepoSettings', provider, owner, repo],
+    queryFn: ({ signal }) =>
+      fetchRepoSettingsDetails({ provider, owner, repo, signal }),
+  })
 }

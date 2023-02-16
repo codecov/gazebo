@@ -50,7 +50,7 @@ function PullRequestPage() {
   const resultType = data?.pull?.compareWithBase?.__typename
 
   return (
-    <div className="flex flex-col gap-4 mx-4 md:mx-0">
+    <div className="mx-4 flex flex-col gap-4 md:mx-0">
       <Breadcrumb
         paths={[
           { pageName: 'owner', text: owner },
@@ -71,7 +71,7 @@ function PullRequestPage() {
       {resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON ? (
         <ErrorBanner errorType={resultType} />
       ) : (
-        <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 space-y-2">
+        <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
           <article className="col-span-2 flex flex-col gap-3 md:gap-0">
             <TabNavigation
               tabs={[

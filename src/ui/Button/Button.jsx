@@ -94,7 +94,7 @@ function Button({
   const content = (
     <>
       {isLoading && (
-        <span className="text-white mr-0.5">
+        <span className="mr-0.5 text-white">
           <Spinner />
         </span>
       )}

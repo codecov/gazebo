@@ -18,7 +18,7 @@ function Modal({
     <ReactModal
       isOpen={isOpen}
       onRequestClose={onClose}
-      className="h-screen w-screen flex items-center justify-center"
+      className="flex h-screen w-screen items-center justify-center"
       overlayClassName="fixed inset-0 bg-gray-900 bg-opacity-75 z-10"
       {...rest}
     >

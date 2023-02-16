@@ -1,7 +1,7 @@
 import Sparkline from './Sparkline'
 
 const Template = (args) => (
-  <div className="w-[50%] h-[50px] flex">
+  <div className="flex h-[50px] w-[50%]">
     {/* Sparkline conforms to the width and height of it's parent.  */}
     <Sparkline {...args} />
   </div>
@@ -17,7 +17,7 @@ const ManyTemplate = (args) => {
         .fill()
         .map((_, i) => {
           return (
-            <div key={`short-${i}`} className="w-[100%] h-[20px] flex">
+            <div key={`short-${i}`} className="flex h-[20px] w-[100%]">
               <Sparkline {...args} datum={largeDataSetWithReusedData} />
             </div>
           )

@@ -21,7 +21,7 @@ const UploadToken = ({ token, format }) => {
   const encodedToken = hideClipboard && format + token.replace(/[^w-]|/g, 'x')
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       <TokenWrapper token={format + token} encodedToken={encodedToken} />
       <div
         className="flex gap-0.5 text-ds-blue-darker hover:cursor-pointer"
@@ -54,7 +54,7 @@ function RegenerateOrgUploadToken({ orgUploadToken }) {
 
   return (
     <div className="flex">
-      <div className="flex-1 flex flex-col gap-4">
+      <div className="flex flex-1 flex-col gap-4">
         <p>Add this token to your codecov.yml</p>
         <p className="text-xs">
           <span className="font-semibold">Note:</span> Token not required for

@@ -82,9 +82,9 @@ export function useRepoBranchContents({
   filters,
   ...options
 }) {
-  return useQuery(
-    ['BranchContents', provider, owner, repo, branch, path, filters],
-    ({ signal }) =>
+  return useQuery({
+    queryKey: ['BranchContents', provider, owner, repo, branch, path, filters],
+    queryFn: ({ signal }) =>
       fetchRepoContents({
         provider,
         owner,
@@ -94,8 +94,6 @@ export function useRepoBranchContents({
         filters,
         signal,
       }),
-    {
-      ...options,
-    }
-  )
+    ...options,
+  })
 }

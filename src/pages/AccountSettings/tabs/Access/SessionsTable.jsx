@@ -52,7 +52,7 @@ function SessionsTable({ sessions }) {
 
   const dataTable = sessions.map((s) => ({
     ip: (
-      <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">
+      <p className="bg-ds-gray-secondary text-center font-mono font-bold text-ds-gray-octonary">
         {s.ip}
       </p>
     ),

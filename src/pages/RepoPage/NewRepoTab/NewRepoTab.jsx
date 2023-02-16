@@ -14,7 +14,7 @@ import GitHubActions from './GitHubActions'
 const OtherCI = lazy(() => import('./OtherCI'))
 
 const Loader = () => (
-  <div className="flex-1 flex items-center justify-center mt-16">
+  <div className="mt-16 flex flex-1 items-center justify-center">
     <Spinner />
   </div>
 )
@@ -37,8 +37,8 @@ function NewRepoTab() {
   return (
     <div className="flex flex-col gap-6">
       <hr />
-      <div className="mx-auto w-4/5 md:w-3/5 lg:w-3/6 mt-6">
-        <h1 className="font-semibold text-3xl mb-4">
+      <div className="mx-auto mt-6 w-4/5 md:w-3/5 lg:w-3/6">
+        <h1 className="mb-4 text-3xl font-semibold">
           Let&apos;s get your repo covered
         </h1>
         <TabNavigation

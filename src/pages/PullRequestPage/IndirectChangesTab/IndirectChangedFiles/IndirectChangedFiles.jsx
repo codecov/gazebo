@@ -51,9 +51,9 @@ function createTable({ tableData }) {
         return {
           name: (
             <div className="flex gap-4">
-              <span className="text-ds-blue break-all">{headName}</span>
+              <span className="break-all text-ds-blue">{headName}</span>
               {isCriticalFile && (
-                <span className="p-1 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary self-center">
+                <span className="self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                   Critical File
                 </span>
               )}
@@ -68,7 +68,7 @@ function createTable({ tableData }) {
               data-testid="change-value"
             />
           ) : (
-            <span className="text-ds-gray-quinary text-sm ml-4">
+            <span className="ml-4 text-sm text-ds-gray-quinary">
               No data available
             </span>
           ),

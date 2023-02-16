@@ -115,7 +115,7 @@ function transformPullToTable(commits) {
 
 const Loader = () => {
   return (
-    <div className="flex-1 flex justify-center py-16">
+    <div className="flex flex-1 justify-center py-16">
       <Spinner size={60} />
     </div>
   )
@@ -146,7 +146,7 @@ function CommitsTable({ branch, paramCIStatus }) {
       <Table data={dataTable} columns={headers} />
       {isLoading && <Loader />}
       {hasNextPage && (
-        <div className="flex-1 mt-4 flex justify-center">
+        <div className="mt-4 flex flex-1 justify-center">
           <Button
             hook="load-more"
             isLoading={isFetchingNextPage}

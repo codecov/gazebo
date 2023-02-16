@@ -11,7 +11,7 @@ import Table from 'ui/Table'
 
 const Loader = () => {
   return (
-    <div className="flex-1 flex justify-center">
+    <div className="flex flex-1 justify-center">
       <Spinner size={60} />
     </div>
   )
@@ -29,7 +29,7 @@ function CommitDetailFileExplorer() {
   const { treePaths } = useCommitTreePaths()
 
   return (
-    <div className="flex flex-col gap-2 mt-2">
+    <div className="mt-2 flex flex-col gap-2">
       <ContentsTableHeader>
         <div className="flex gap-4">
           <DisplayTypeButton />

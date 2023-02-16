@@ -7,7 +7,7 @@ import A from 'ui/A'
 
 function Breadcrumb({ paths = [] }) {
   return (
-    <nav className="flex items-center text-ds-gray-octonary gap-1">
+    <nav className="flex items-center gap-1 text-ds-gray-octonary">
       {paths.map((to, i) => {
         return (
           <Fragment key={i}>
