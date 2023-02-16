@@ -38,7 +38,7 @@ export function useMyContexts({ provider, opts = {} }) {
         variables: { after: pageParam },
       }),
     select: ({ pages }) => {
-      const me = pages?.at(0)?.data?.me
+      const me = pages?.at(-1)?.data?.me
       const myOrganizations = pages?.map(
         (page) => page?.data?.me?.myOrganizations
       )

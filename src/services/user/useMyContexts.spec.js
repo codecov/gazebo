@@ -119,8 +119,8 @@ describe('useMyContexts', () => {
           },
         ],
         pageInfo: {
-          endCursor: 'first',
-          hasNextPage: true,
+          endCursor: 'second',
+          hasNextPage: false,
         },
       }
 
