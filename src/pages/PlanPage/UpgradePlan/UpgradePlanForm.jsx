@@ -301,7 +301,7 @@ function UpgradePlanForm({
         )}
       </div>
       {nextBillingDate && (
-        <p className="blod mt-1 flex">
+        <p className="mt-1 flex">
           Next Billing Date
           <span className="ml-auto">{nextBillingDate}</span>
         </p>

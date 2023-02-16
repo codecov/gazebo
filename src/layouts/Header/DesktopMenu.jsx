@@ -76,7 +76,7 @@ function DesktopMenu() {
         {!!currentUser && <FeedbackLink />}
       </div>
       {!!currentUser ? (
-        <div className="space-between mx-2 flex items-center gap-4 md:mx-4">
+        <div className="mx-2 flex items-center gap-4 md:mx-4">
           {config.IS_SELF_HOSTED && (
             <>
               <SeatDetails />

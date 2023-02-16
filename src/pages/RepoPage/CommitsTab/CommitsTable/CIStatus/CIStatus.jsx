@@ -5,7 +5,7 @@ import CIStatusLabel from 'ui/CIStatus'
 
 function CIStatus({ commitid, coverage, ciPassed }) {
   return (
-    <div className="gap-.5 flex-1 flex-col items-end lg:flex">
+    <div className="flex-1 flex-col items-end lg:flex">
       <A to={{ pageName: 'commit', options: { commit: commitid } }}>
         <span className="font-mono text-ds-gray-quinary">
           {commitid?.slice(0, 8)}

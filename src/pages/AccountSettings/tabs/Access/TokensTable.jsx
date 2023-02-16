@@ -69,9 +69,7 @@ function TokensTable({ tokens }) {
       {tokens <= 0 && (
         <>
           <hr className="my-4 border-ds-gray-secondary" />
-          <span className="text-gray-octonary text-sm">
-            No tokens created yet
-          </span>
+          <span className="text-sm">No tokens created yet</span>
         </>
       )}
     </>

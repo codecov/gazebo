@@ -20,7 +20,7 @@ function GithubIntegrationCard({ provider, owner }) {
   if (!shouldRender) return null
 
   return (
-    <Card className="text-color-900 p-10 md:mr-8 md:w-1/2">
+    <Card className="p-10 md:mr-8 md:w-1/2">
       <div className="flex items-center">
         <img alt="Github" src={githubLogo} height={32} width={32} />
         <h2 className="bold ml-4 text-2xl">Github - Integration</h2>

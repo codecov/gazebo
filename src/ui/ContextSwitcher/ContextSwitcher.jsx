@@ -132,7 +132,7 @@ function ContextSwitcher({
           />
         </div>
         {isGh && (
-          <div className="text-xsm max-h-64 overflow-y-auto border-t border-ds-gray-secondary px-4 py-2 text-ds-gray-quinary">
+          <div className="max-h-64 overflow-y-auto border-t border-ds-gray-secondary px-4 py-2 text-ds-gray-quinary">
             <span className="font-semibold">Don&apos;t see your org?</span>
             <br />
             <A to={{ pageName: 'userAppManagePage' }}>

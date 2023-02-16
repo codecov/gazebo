@@ -4,7 +4,7 @@ function InvoiceItems({ invoice }) {
   return (
     <table className="w-full text-left text-base font-normal">
       <thead>
-        <tr className="b-y-4 border-b-2 border-black">
+        <tr className="border-b-2 border-black">
           <th>Description</th>
           <th className="text-right">Amount</th>
         </tr>

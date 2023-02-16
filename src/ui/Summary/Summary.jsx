@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
 
 // Summary on Commit Detail and Compare using a config object instead of composition
-// The newer prefered way is to import the Summary root and field yourself per implementation.
+// The newer preferred way is to import the Summary root and field yourself per implementation.
 //
 // TODO: Update Commit Detail and Compare pages to use the composable summary components instead.
 function Summary({ fields }) {
   return (
     fields &&
     fields.length > 0 && (
-      <div className="align-start flex flex-wrap items-start justify-start gap-8 md:flex-nowrap">
+      <div className="flex flex-wrap items-start justify-start gap-8 md:flex-nowrap">
         {fields.map(({ name, title, value }) => {
           // Below changes is the original SummaryField markup
           return (
