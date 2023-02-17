@@ -102,7 +102,7 @@ function fetchReposForOwner({ provider, variables, owner, after, signal }) {
 }
 
 export function useRepos({
-  active,
+  activated,
   term,
   owner,
   sortItem = orderingOptions[0],
@@ -112,7 +112,7 @@ export function useRepos({
 }) {
   const { provider } = useParams()
   const variables = {
-    filters: { active, term, repoNames },
+    filters: { activated, term, repoNames },
     ordering: sortItem.ordering,
     direction: sortItem.direction,
     first,

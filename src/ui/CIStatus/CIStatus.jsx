@@ -1,11 +1,23 @@
 import cs from 'classnames'
+import isNil from 'lodash/isNil'
 import PropTypes from 'prop-types'
 
 import Icon from 'ui/Icon'
 
-export default function CIStatusLabel({ ciPassed = false }) {
+export default function CIStatusLabel({ ciPassed }) {
+  if (isNil(ciPassed)) {
+    return (
+      <span className="flex items-center text-xs flex-none gap-1">
+        <span>
+          <Icon size="sm" name="statusRunning" variant="developer" />
+        </span>
+        Processing
+      </span>
+    )
+  }
+
   return (
-    <span className="flex items-center text-xs flex-none">
+    <span className="flex items-center text-xs flex-none gap-1">
       <span
         className={cs({
           'text-ds-primary-green': ciPassed,

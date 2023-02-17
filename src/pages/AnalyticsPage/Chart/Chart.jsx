@@ -42,6 +42,8 @@ function Chart({ params }) {
       title={`${params?.repositories.join(', ')} coverage chart`}
       desc={desc}
       renderAreaChart={isPreviousData || isSuccess}
+      aproxWidth={260.5}
+      aproxHeight={47.5}
     />
   )
 }

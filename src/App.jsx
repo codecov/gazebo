@@ -15,7 +15,7 @@ import { useUTM } from 'services/tracking/utm'
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
-const CommitPage = lazy(() => import('./pages/CommitPage'))
+const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage'))
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -133,12 +133,12 @@ function App() {
             exact
           >
             <BaseLayout>
-              <CommitPage />
+              <CommitDetailPage />
             </BaseLayout>
           </SentryRoute>
           <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
             <BaseLayout>
-              <CommitPage />
+              <CommitDetailPage />
             </BaseLayout>
           </SentryRoute>
           <SentryRoute path="/:provider/:owner/:repo">

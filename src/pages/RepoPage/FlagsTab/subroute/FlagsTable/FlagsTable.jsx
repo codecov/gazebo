@@ -1,7 +1,10 @@
 import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { useRepoConfig } from 'services/repo/useRepoConfig'
+import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import Button from 'ui/Button'
-import Progress from 'ui/Progress'
+import CoverageProgress from 'ui/CoverageProgress'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
@@ -36,12 +39,21 @@ const headers = [
   },
 ]
 
-function createTableData({ tableData }) {
+function createTableData({ tableData, indicationRange }) {
   return tableData?.length > 0
     ? tableData.map(
         ({ name, percentCovered, percentChange, measurements }) => ({
           name: <span>{name}</span>,
-          coverage: <Progress amount={percentCovered} label />,
+          coverage: (
+            <CoverageProgress
+              amount={percentCovered}
+              color={determineProgressColor({
+                coverage: percentCovered,
+                ...indicationRange,
+              })}
+              label
+            />
+          ),
           trend: (
             <TableSparkline
               measurements={measurements}
@@ -64,6 +76,9 @@ const getEmptyStateText = ({ isSearching }) =>
   isSearching ? 'No results found' : 'There was a problem getting flags data'
 
 function FlagsTable() {
+  const { provider, owner, repo } = useParams()
+  const { data: repoConfigData } = useRepoConfig({ provider, owner, repo })
+
   const {
     data,
     isLoading,
@@ -78,8 +93,9 @@ function FlagsTable() {
     () =>
       createTableData({
         tableData: data,
+        indicationRange: repoConfigData?.indicationRange,
       }),
-    [data]
+    [data, repoConfigData]
   )
 
   return (

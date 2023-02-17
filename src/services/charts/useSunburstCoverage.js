@@ -6,7 +6,7 @@ import { providerToName } from 'shared/utils'
 function getSunburstCoverage({ provider, owner, repo }) {
   return `/${providerToName(
     provider
-  ).toLowerCase()}/${owner}/${repo}/coverage/tree`
+  )?.toLowerCase()}/${owner}/${repo}/coverage/tree`
 }
 
 function fetchSunburstCoverage({ provider, owner, query, repo, signal }) {

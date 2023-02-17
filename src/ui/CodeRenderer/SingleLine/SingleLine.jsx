@@ -10,11 +10,30 @@ import {
 } from 'shared/utils/fileviewer'
 import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
-function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
+import { useScrollToLine } from '../hooks'
+
+function SingleLine({
+  line,
+  number,
+  coverage,
+  getLineProps,
+  getTokenProps,
+  path,
+  stickyPadding = 0,
+}) {
   const lineState = getLineState({ coverage })
+  const { lineRef, handleClick, targeted } = useScrollToLine({
+    number,
+    path,
+    stickyPadding,
+  })
 
   return (
-    <tr {...getLineProps({ line, key: number })} data-testid="fv-single-line">
+    <tr
+      {...getLineProps({ line, key: number })}
+      data-testid="fv-single-line"
+      ref={lineRef}
+    >
       <td
         aria-label={lineStateToLabel[lineState]}
         className={cs(
@@ -22,7 +41,13 @@ function SingleLine({ line, number, coverage, getLineProps, getTokenProps }) {
           classNamePerLineState[lineState]
         )}
       >
-        {number}
+        <button
+          onClick={handleClick}
+          className={cs('flex-1 text-right px-2', targeted && 'font-bold')}
+        >
+          <span className={cs({ invisible: !targeted })}>#</span>
+          {number}
+        </button>
       </td>
       <td className={cs('pl-2 break-all', classNamePerLineContent[lineState])}>
         <div className="flex items-center justify-between">
@@ -44,6 +69,8 @@ SingleLine.propTypes = {
   number: PropTypes.number.isRequired,
   getLineProps: PropTypes.func,
   getTokenProps: PropTypes.func,
+  path: PropTypes.string,
+  stickyPadding: PropTypes.number,
 }
 
 export default SingleLine

@@ -10,6 +10,8 @@ import {
 } from 'shared/utils/fileviewer'
 import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
 
+import { useScrollToLine } from '../hooks'
+
 function DiffLine({
   getTokenProps,
   lineContent,
@@ -17,29 +19,69 @@ function DiffLine({
   baseNumber,
   headCoverage,
   baseCoverage,
+  path,
+  stickyPadding = 0,
 }) {
   const baseLineState = getLineState({ coverage: baseCoverage })
   const headLineState = getLineState({ coverage: headCoverage })
+
+  const {
+    lineRef: baseLineRef,
+    handleClick: baseHandleClick,
+    targeted: baseTargeted,
+  } = useScrollToLine({
+    number: baseNumber,
+    path,
+    base: true,
+  })
+
+  const {
+    lineRef: headLineRef,
+    handleClick: headHandleClick,
+    targeted: headTargeted,
+  } = useScrollToLine({
+    number: headNumber,
+    path,
+    head: true,
+  })
 
   return (
     <tr data-testid="fv-diff-line">
       <td
         aria-label={lineStateToLabel[baseLineState]}
         className={cs(
-          'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none font-bold',
+          'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
           classNamePerLineState[baseLineState]
         )}
+        ref={baseLineRef}
       >
-        <span className="text-black">{baseNumber}</span>
+        <button
+          onClick={baseHandleClick}
+          className={cs('flex-1 text-right px-2', baseTargeted && 'font-bold')}
+        >
+          <span className="text-black">
+            <span className={cs({ invisible: !baseTargeted })}>#</span>
+            {baseNumber}
+          </span>
+        </button>
       </td>
       <td
         aria-label={lineStateToLabel[headLineState]}
         className={cs(
-          'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
+          'line-number text-ds-gray-quaternary font-mono text-right border-solid select-none',
           classNamePerLineState[headLineState]
         )}
+        ref={headLineRef}
       >
-        <span className="text-black">{headNumber}</span>
+        <button
+          onClick={headHandleClick}
+          className={cs('flex-1 text-right px-2', headTargeted && 'font-bold')}
+        >
+          <span className="text-black">
+            <span className={cs({ invisible: !headTargeted })}>#</span>
+            {headNumber}
+          </span>
+        </button>
       </td>
       <td
         data-testid="affected-lines"
@@ -66,6 +108,8 @@ DiffLine.propTypes = {
   baseCoverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
   headCoverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
   getTokenProps: PropTypes.func,
+  path: PropTypes.string,
+  stickyPadding: PropTypes.number,
 }
 
 export default DiffLine

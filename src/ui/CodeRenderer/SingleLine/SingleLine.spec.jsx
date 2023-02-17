@@ -1,10 +1,37 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { LINE_TYPE } from 'shared/utils/fileviewer'
 
 import SingleLine from './SingleLine'
 
+import { useScrollToLine } from '../hooks/useScrollToLine'
+
+const createIdString = ({ path, number }) => `#${path}-L${number}`
+
+jest.mock('../hooks/useScrollToLine')
+
+const wrapper = ({ children }) => (
+  <MemoryRouter
+    initialEntries={[
+      `/gh/codecov/cool-repo/src/file.js${createIdString({
+        path: 'src/file.js',
+        number: 2,
+      })}`,
+    ]}
+  >
+    <Route path="/:provider/:owner/:repo/:path+">
+      <table>
+        <tbody>{children}</tbody>
+      </table>
+    </Route>
+  </MemoryRouter>
+)
+
 describe('SingleLine', () => {
+  const mockHandleClick = jest.fn()
   const line = [
     { types: ['plain'], content: '      ' },
     { types: ['punctuation'], content: '...' },
@@ -13,57 +40,155 @@ describe('SingleLine', () => {
     { types: ['plain'], content: '' },
   ]
 
-  function setup(number, coverage) {
-    render(
-      <table>
-        <tbody>
-          <SingleLine
-            line={line}
-            number={number}
-            coverage={coverage}
-            getTokenProps={() => {}}
-            getLineProps={() => {}}
-          />
-        </tbody>
-      </table>
-    )
+  function setup(targeted = false) {
+    useScrollToLine.mockImplementation(() => ({
+      lineRef: () => {},
+      handleClick: mockHandleClick,
+      targeted,
+    }))
   }
 
   describe('renders highlighted covered line', () => {
     beforeEach(() => {
-      setup(1, LINE_TYPE.HIT)
+      setup()
     })
 
     it('render covered line', () => {
-      expect(screen.getAllByLabelText('covered line of code').length).toBe(1)
+      render(
+        <SingleLine
+          line={line}
+          number={1}
+          coverage={LINE_TYPE.HIT}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const linesCovered = screen.getAllByLabelText('covered line of code')
+      expect(linesCovered.length).toBe(1)
     })
   })
 
   describe('renders highlighted uncovered line', () => {
     beforeEach(() => {
-      setup(1, LINE_TYPE.MISS)
+      setup()
     })
 
     it('render uncovered line', () => {
-      expect(screen.getAllByLabelText('uncovered line of code').length).toBe(1)
+      render(
+        <SingleLine
+          line={line}
+          number={1}
+          coverage={LINE_TYPE.MISS}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const linesMissed = screen.getAllByLabelText('uncovered line of code')
+      expect(linesMissed.length).toBe(1)
     })
 
     it('render uncovered icon', () => {
-      expect(screen.getAllByText('exclamation-triangle.svg').length).toBe(1)
+      render(
+        <SingleLine
+          line={line}
+          number={1}
+          coverage={LINE_TYPE.MISS}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const missedIcons = screen.getAllByText('exclamation-triangle.svg')
+      expect(missedIcons.length).toBe(1)
     })
   })
 
   describe('renders highlighted partial line', () => {
     beforeEach(() => {
-      setup(1, LINE_TYPE.PARTIAL)
+      setup()
     })
 
     it('render partial line', () => {
-      expect(screen.getAllByLabelText('partial line of code').length).toBe(1)
+      render(
+        <SingleLine
+          line={line}
+          number={1}
+          coverage={LINE_TYPE.PARTIAL}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const partialLines = screen.getAllByLabelText('partial line of code')
+      expect(partialLines.length).toBe(1)
     })
 
     it('render partial icon', () => {
-      expect(screen.getAllByTestId('partial-icon').length).toBe(1)
+      render(
+        <SingleLine
+          line={line}
+          number={1}
+          coverage={LINE_TYPE.PARTIAL}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const partialIcons = screen.getAllByTestId('partial-icon')
+      expect(partialIcons.length).toBe(1)
+    })
+  })
+
+  describe('user clicks on a number', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('calls handle click function', () => {
+      render(
+        <SingleLine
+          line={line}
+          number={1}
+          coverage={LINE_TYPE.HIT}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const button = screen.getByRole('button')
+      userEvent.click(button)
+
+      expect(mockHandleClick).toBeCalled()
+    })
+  })
+
+  describe('line is currently targeted', () => {
+    beforeEach(() => {
+      setup(true)
+    })
+
+    it('sets font to bold', () => {
+      render(
+        <SingleLine
+          line={line}
+          number={1}
+          coverage={LINE_TYPE.HIT}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const linesCovered = screen.getByRole('button', { name: /# 1/ })
+      expect(linesCovered).toHaveClass('font-bold')
     })
   })
 })
