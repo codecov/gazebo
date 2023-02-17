@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
+import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
 import SunburstChart from 'ui/SunburstChart'
