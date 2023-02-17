@@ -1,33 +1,7 @@
 import PropTypes from 'prop-types'
 
 import A from 'ui/A'
-import Icon from 'ui/Icon'
-
-const Status = ({ ciPassed }) => {
-  return (
-    <div className="flex items-center gap-1">
-      {ciPassed ? (
-        <>
-          <span className="text-green-600">
-            <Icon name="check" size="md" />
-          </span>
-          Passed
-        </>
-      ) : (
-        <>
-          <span className="text-red-600">
-            <Icon name="x" size="md" />
-          </span>
-          Failed
-        </>
-      )}
-    </div>
-  )
-}
-
-Status.propTypes = {
-  ciPassed: PropTypes.bool,
-}
+import CIStatusLabel from 'ui/CIStatus'
 
 function CIStatus({ commitid, coverage, ciPassed }) {
   return (
@@ -37,7 +11,7 @@ function CIStatus({ commitid, coverage, ciPassed }) {
           {commitid?.slice(0, 8)}
         </span>
       </A>
-      {coverage ? <Status ciPassed={ciPassed} /> : null}
+      {coverage ? <CIStatusLabel ciPassed={ciPassed} /> : null}
     </div>
   )
 }
