@@ -2,11 +2,11 @@ import { useParams } from 'react-router-dom'
 
 import { useCommits } from 'services/commits'
 
-import { usePullPageData } from './usePullPageData'
+import { usePullPageData } from '../../hooks/usePullPageData'
 
 export const useTabsCounts = () => {
   const { owner, repo, pullId, provider } = useParams()
-  const { data } = usePullPageData({
+  const { data: pullPageData } = usePullPageData({
     provider,
     owner,
     repo,
@@ -20,10 +20,9 @@ export const useTabsCounts = () => {
     filters: {
       pullId: +pullId,
     },
-    opts: { suspense: false },
   })
 
-  const compareWithBase = data?.pull?.compareWithBase
+  const compareWithBase = pullPageData?.pull?.compareWithBase
 
   const flagsCount = compareWithBase?.flagComparisonsCount ?? 0
   const indirectChangesCount = compareWithBase?.indirectChangedFilesCount ?? 0

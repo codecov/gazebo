@@ -1,54 +1,66 @@
-import { render, screen, waitFor } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { ComparisonReturnType } from './ErrorBanner/constants.js'
 import PullRequestPage from './PullRequestPage'
 
-jest.mock('./Header', () => () => 'Header')
 jest.mock('./Summary', () => () => 'CompareSummary')
-jest.mock('./Flags', () => () => 'Flags')
-jest.mock('./Commits', () => () => 'Commits')
-jest.mock('./subroute/Root', () => () => 'Root')
-jest.mock('./ErrorBanner', () => () => 'Error Banner')
-jest.mock('./IndirectChangesTab', () => () => 'IndirectChangesTab')
-jest.mock('pages/RepoPage/CommitsTab/CommitsTable', () => () => 'Commits Table')
-jest.mock(
-  './IndirectChangesTab/IndirectChangesInfo',
-  () => () => 'IndirectChangesInfo'
-)
-const commits = {
+jest.mock('./PullRequestPageContent', () => () => 'PullRequestPageContent')
+jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
+
+const mockPullHeadData = {
   owner: {
     repository: {
-      commits: {
-        totalCount: 11,
+      pull: {
+        pullId: 12,
+        title: 'Cool New Pull Request',
+        state: 'OPEN',
+        author: {
+          username: 'cool-user',
+        },
+        head: {
+          branchName: 'cool-new-branch',
+          ciPassed: true,
+        },
+        updatestamp: '2023-01-01T12:00:00.000000',
       },
     },
   },
 }
 
 const queryClient = new QueryClient()
-
 const server = setupServer()
-beforeAll(() => server.listen())
+
+const wrapper =
+  (initialEntries = '/gh/test-org/test-repo/pull/12') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => {
+  server.listen()
+})
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+afterAll(() => {
+  server.close()
+})
 
 describe('PullRequestPage', () => {
-  function setup({
-    hasAccess = false,
-    pullData = {},
-    initialEntries = ['/gh/test-org/test-repo/pull/12'],
-  }) {
+  function setup({ hasAccess = false, pullData = {} }) {
     server.use(
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(commits))
+      graphql.query('PullHeadData', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockPullHeadData))
       ),
       graphql.query('PullPageData', (req, res, ctx) =>
         res(
@@ -65,407 +77,82 @@ describe('PullRequestPage', () => {
         )
       )
     )
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId" exact={true}>
-            <PullRequestPage />
-          </Route>
-          <Route
-            path="/:provider/:owner/:repo/pull/:pullId/commits"
-            exact={true}
-          >
-            <PullRequestPage />
-          </Route>
-          <Route
-            path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
-            exact={true}
-          >
-            <PullRequestPage />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
   }
 
-  describe('show 404 if repo is private and user not part of the org', () => {
-    describe('the main breadcrumb', () => {
-      beforeEach(() => {
-        setup({
-          hasAccess: false,
-          initialEntries: ['/gh/test-org/test-repo/pull/12'],
-        })
-      })
+  describe('when user has access and pull data', () => {
+    beforeEach(() => setup({ hasAccess: true }))
 
-      it('does not render the breadcrumbs', async () => {
-        await waitFor(() =>
-          expect(
-            screen.queryByRole('link', {
-              name: /test-org/i,
-            })
-          ).not.toBeInTheDocument()
-        )
-        await waitFor(() =>
-          expect(
-            screen.queryByRole('link', {
-              name: /test-repo/i,
-            })
-          ).not.toBeInTheDocument()
-        )
-        await waitFor(() =>
-          expect(
-            screen.queryByRole('link', {
-              name: /pulls/i,
-            })
-          ).not.toBeInTheDocument()
-        )
-      })
+    it('renders breadcrumb', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const org = await screen.findByRole('link', { name: 'test-org' })
+      expect(org).toBeInTheDocument()
+      expect(org).toHaveAttribute('href', '/gh/test-org')
+
+      const repo = await screen.findByRole('link', { name: 'test-repo' })
+      expect(repo).toBeInTheDocument()
+      expect(repo).toHaveAttribute('href', '/gh/test-org/test-repo')
+
+      const pulls = await screen.findByRole('link', { name: 'Pulls' })
+      expect(pulls).toBeInTheDocument()
+      expect(pulls).toHaveAttribute('href', '/gh/test-org/test-repo/pulls')
+
+      const pullId = await screen.findByText('12')
+      expect(pullId).toBeInTheDocument()
     })
 
-    describe('root', () => {
-      beforeEach(async () => {
-        setup({
-          hasAccess: false,
-          initialEntries: ['/gh/test-org/test-repo/pull/12'],
-        })
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-      })
+    it('renders header', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
 
-      it('renders a 404', async () => {
-        expect(await screen.findByText(/Error 404/i)).toBeInTheDocument()
+      const title = await screen.findByRole('heading', {
+        name: /Cool New Pull Request/,
       })
-    })
-  })
-
-  describe('show 404 if no pull request data', () => {
-    describe('the main breadcrumb', () => {
-      beforeEach(() => {
-        setup({
-          hasAccess: true,
-          pullData: null,
-          initialEntries: ['/gh/test-org/test-repo/pull/12'],
-        })
-      })
-
-      it('does not render the breadcrumbs', async () => {
-        await waitFor(() =>
-          expect(
-            screen.queryByRole('link', {
-              name: /test-org/i,
-            })
-          ).not.toBeInTheDocument()
-        )
-        await waitFor(() =>
-          expect(
-            screen.queryByRole('link', {
-              name: /test-repo/i,
-            })
-          ).not.toBeInTheDocument()
-        )
-        await waitFor(() =>
-          expect(
-            screen.queryByRole('link', {
-              name: /pulls/i,
-            })
-          ).not.toBeInTheDocument()
-        )
-      })
+      expect(title).toBeInTheDocument()
     })
 
-    describe('root', () => {
-      beforeEach(async () => {
-        setup({
-          hasAccess: true,
-          pullData: null,
-          initialEntries: ['/gh/test-org/test-repo/pull/12'],
-        })
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-      })
+    it('renders compare summary', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
 
-      it('renders a 404', async () => {
-        expect(await screen.findByText(/Error 404/i)).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('shows error banner when comparison type throws an error', () => {
-    describe('the main page', () => {
-      beforeEach(() => {
-        setup({
-          hasAccess: true,
-          pullData: {
-            compareWithBase: {
-              __typename: ComparisonReturnType.MISSING_BASE_COMMIT,
-            },
-          },
-          initialEntries: ['/gh/test-org/test-repo/pull/12'],
-        })
-      })
-
-      it('renders the error banner', () => {
-        expect(screen.getByText(/Error Banner/i)).toBeInTheDocument()
-      })
-
-      it('does not render the root', () => {
-        expect(screen.queryByText(/Root/i)).not.toBeInTheDocument()
-      })
-
-      it('does not render the commits', () => {
-        expect(screen.queryByText(/Commits/i)).not.toBeInTheDocument()
-      })
-
-      it('does not render the flags', () => {
-        expect(screen.queryByText(/Flags/i)).not.toBeInTheDocument()
-      })
+      const compareSummary = await screen.findByText('CompareSummary')
+      expect(compareSummary).toBeInTheDocument()
     })
 
-    describe('root', () => {
-      beforeEach(async () => {
-        setup({
-          hasAccess: true,
-          pullData: null,
-          initialEntries: ['/gh/test-org/test-repo/pull/12'],
-        })
+    it('renders pull request page tabs', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
 
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-      })
-
-      it('renders a 404', async () => {
-        expect(await screen.findByText(/Error 404/i)).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('the main breadcrumb', () => {
-    beforeEach(() => {
-      setup({
-        hasAccess: true,
-        initialEntries: ['/gh/test-org/test-repo/pull/12'],
-      })
+      const pullRequestPageTabs = await screen.findByText(/PullRequestPageTabs/)
+      expect(pullRequestPageTabs).toBeInTheDocument()
     })
 
-    it('renders', async () => {
-      expect(
-        await screen.findByRole('link', {
-          name: /test-org/i,
-        })
-      ).toBeInTheDocument()
-      expect(
-        await screen.findByRole('link', {
-          name: /test-repo/i,
-        })
-      ).toBeInTheDocument()
-      expect(
-        await screen.findByRole('link', {
-          name: /pulls/i,
-        })
-      ).toBeInTheDocument()
-    })
-  })
+    it('renders pull request page content', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
 
-  describe('root', () => {
-    beforeEach(async () => {
-      setup({
-        hasAccess: true,
-        pullData: {
-          compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-          },
-        },
-        initialEntries: ['/gh/test-org/test-repo/pull/12'],
-      })
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      const pullRequestPageContent = await screen.findByText(
+        /PullRequestPageContent/
       )
-    })
-
-    it('rendered', async () => {
-      expect(await screen.findByText(/Root/i)).toBeInTheDocument()
-    })
-
-    it(`Isn't 404ing`, () => {
-      expect(screen.queryByText(/Error 404/i)).not.toBeInTheDocument()
+      expect(pullRequestPageContent).toBeInTheDocument()
     })
   })
 
-  describe('compare summary', () => {
-    beforeEach(async () => {
-      setup({
-        hasAccess: true,
-        initialEntries: ['/gh/test-org/test-repo/pull/12'],
-      })
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-    })
+  describe('when user does not have access', () => {
+    beforeEach(() => setup({ hasAccess: false }))
 
-    it('renders', () => {
-      expect(screen.getByText(/CompareSummary/i)).toBeInTheDocument()
+    it('renders not found', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const notFound = await screen.findByText(/Not found/)
+      expect(notFound).toBeInTheDocument()
     })
   })
 
-  describe('header', () => {
-    beforeEach(async () => {
-      setup({
-        hasAccess: true,
-        initialEntries: ['/gh/test-org/test-repo/pull/12'],
-      })
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-    })
+  describe('when there is no pull data', () => {
+    beforeEach(() => setup({ hasAccess: true, pullData: null }))
 
-    it('renders', () => {
-      expect(screen.getByText(/Header/i)).toBeInTheDocument()
-    })
-  })
+    it('renders not found', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
 
-  describe('flags', () => {
-    beforeEach(async () => {
-      setup({
-        hasAccess: true,
-        pullData: {
-          compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-          },
-        },
-        initialEntries: ['/gh/test-org/test-repo/pull/12'],
-      })
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-    })
-
-    it('renders', async () => {
-      expect(await screen.findByText(/Flags/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('commits', () => {
-    beforeEach(async () => {
-      setup({
-        hasAccess: true,
-        pullData: {
-          compareWithBase: {
-            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-          },
-        },
-        initialEntries: ['/gh/test-org/test-repo/pull/12'],
-      })
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-    })
-
-    it('renders', async () => {
-      expect(await screen.findByText(/Commits/i)).toBeInTheDocument()
-    })
-  })
-
-  describe('nav links', () => {
-    beforeEach(async () => {
-      setup({
-        hasAccess: true,
-        pullData: {
-          compareWithBase: {
-            directChangedFilesCount: 9,
-            indirectChangedFilesCount: 19,
-            flagComparisonsCount: 91,
-            __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-          },
-        },
-        initialEntries: ['/gh/test-org/test-repo/pull/12'],
-      })
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-    })
-
-    it('renders changed files tab', async () => {
-      const changedFilesTab = await screen.findByText(/Files Changed/i)
-      expect(changedFilesTab).toBeInTheDocument()
-
-      changedFilesTab.click()
-      expect(screen.getByText('Root')).toBeInTheDocument()
-    })
-
-    it('renders changed files tab count', async () => {
-      expect(await screen.findByText('9')).toBeInTheDocument()
-    })
-
-    it('renders indirect changes tab', async () => {
-      expect(await screen.findByText(/Indirect changes/i)).toBeInTheDocument()
-    })
-
-    it('renders indirect changes tab count', async () => {
-      expect(await screen.findByText('19')).toBeInTheDocument()
-    })
-
-    it('renders commits tab', async () => {
-      expect(await screen.findByText(/Commits/i)).toBeInTheDocument()
-    })
-
-    it('renders commits tab count', async () => {
-      expect(await screen.findByText('11')).toBeInTheDocument()
-    })
-
-    it('renders flags tab', async () => {
-      expect(await screen.findByText(/Flags/i)).toBeInTheDocument()
-    })
-
-    it('renders flags tab count', async () => {
-      expect(await screen.findByText('91')).toBeInTheDocument()
-    })
-
-    it('renders the name of the header and coverage labels', async () => {
-      expect(await screen.findByText('covered')).toBeInTheDocument()
-      expect(await screen.findByText('partial')).toBeInTheDocument()
-      expect(await screen.findByText('uncovered')).toBeInTheDocument()
-    })
-
-    describe('Pull commits', () => {
-      beforeEach(async () => {
-        const tab = await screen.findByText(/Commits/i)
-        tab.click()
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-      })
-
-      it('renders commits table', () => {
-        expect(screen.getByText(/Commits Table/i)).toBeInTheDocument()
-      })
-    })
-
-    describe('when clicking on indirect changes tab', () => {
-      beforeEach(async () => {
-        const tab = await screen.findByText(/Indirect changes/i)
-        tab.click()
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-      })
-
-      it('renders the indirect changes tab', async () => {
-        expect(
-          await screen.findByText(/IndirectChangesTab/)
-        ).toBeInTheDocument()
-      })
-
-      it('renders the information text of indirect changes', async () => {
-        expect(
-          await screen.findByText(/IndirectChangesInfo/)
-        ).toBeInTheDocument()
-      })
+      const notFound = await screen.findByText(/Not found/)
+      expect(notFound).toBeInTheDocument()
     })
   })
 })
