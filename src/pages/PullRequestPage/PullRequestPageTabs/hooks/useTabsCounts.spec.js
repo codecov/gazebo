@@ -8,13 +8,16 @@ import { useTabsCounts } from './useTabsCounts'
 
 const queryClient = new QueryClient()
 
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/bb/critical-role/bells-hells/pull/9']}>
-    <Route path="/:provider/:owner/:repo/pull/:pullId">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = '/bb/critical-role/bells-hells/pull/9') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 const mockCommits = {
   owner: {
@@ -80,7 +83,7 @@ describe('useTabsCount', () => {
       const { result, waitForNextUpdate, waitFor } = renderHook(
         () => useTabsCounts(),
         {
-          wrapper,
+          wrapper: wrapper(),
         }
       )
 

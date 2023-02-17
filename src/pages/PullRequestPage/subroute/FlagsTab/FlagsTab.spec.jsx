@@ -1,32 +1,11 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import Flags from './Flags'
-
-const queryClient = new QueryClient()
-const server = setupServer()
-
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={initialEntries}>
-      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
-
-beforeAll(() => {
-  server.listen()
-  console.error = () => {}
-})
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => server.close())
+import FlagsTab from './FlagsTab'
 
 const mockPull = {
   owner: {
@@ -53,9 +32,31 @@ const mockPull = {
   },
 }
 
-const initialEntries = ['/gh/test-org/test-repo/pull/5']
+const queryClient = new QueryClient()
+const server = setupServer()
 
-describe('Flags', () => {
+const wrapper =
+  (initialEntries = '/gh/test-org/test-repo/pull/5') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => {
+  server.listen()
+  console.error = () => {}
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
+
+describe('FlagsTab', () => {
   function setup(overrideData) {
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
@@ -74,14 +75,20 @@ describe('Flags', () => {
     })
 
     it('renders a card for every valid field', async () => {
-      render(<Flags />, { wrapper })
+      render(<FlagsTab />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       const nameTableField = screen.queryByText(`Name`)
       expect(nameTableField).not.toBeInTheDocument()
+
       const headTableField = screen.queryByText(`HEAD %`)
       expect(headTableField).not.toBeInTheDocument()
+
       const patchTableField = screen.queryByText(`Patch %`)
       expect(patchTableField).not.toBeInTheDocument()
+
       const changeTableField = screen.queryByText(`+/-`)
       expect(changeTableField).not.toBeInTheDocument()
 
@@ -89,6 +96,7 @@ describe('Flags', () => {
         /The Flags feature is not yet configured/i
       )
       expect(flagsDescription).toBeInTheDocument()
+
       const flagsAnchor = await screen.findByRole(
         'link',
         /help your team today/i
@@ -98,6 +106,7 @@ describe('Flags', () => {
         'https://docs.codecov.com/docs/flags'
       )
       expect(flagsDescription).toBeInTheDocument()
+
       const flagsMarketingImg = await screen.findByRole('img', {
         name: /Flags feature not configured/,
       })
@@ -115,24 +124,32 @@ describe('Flags', () => {
       setup({})
     })
 
-    it('will render card with no dismiss button', () => {
-      render(<Flags />, { wrapper })
+    it('will render card with no dismiss button', async () => {
+      render(<FlagsTab />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       const nameTableField = screen.queryByText(`Name`)
       expect(nameTableField).not.toBeInTheDocument()
+
       const headTableField = screen.queryByText(`HEAD %`)
       expect(headTableField).not.toBeInTheDocument()
+
       const patchTableField = screen.queryByText(`Patch %`)
       expect(patchTableField).not.toBeInTheDocument()
+
       const changeTableField = screen.queryByText(`+/-`)
       expect(changeTableField).not.toBeInTheDocument()
 
-      const flagsCardTitle = screen.queryByText('Flags')
+      const flagsCardTitle = screen.queryByText('FlagsTab')
       expect(flagsCardTitle).not.toBeInTheDocument()
+
       const dismissButton = screen.queryByText('Dismiss')
       expect(dismissButton).not.toBeInTheDocument()
+
       const flagsDescription = screen.queryByText(
-        /Flags feature is not yet configured. Learn how flags can/i
+        /FlagsTab feature is not yet configured. Learn how flags can/i
       )
       expect(flagsDescription).not.toBeInTheDocument()
     })
@@ -144,25 +161,32 @@ describe('Flags', () => {
     })
 
     it('renders columns with expected data', async () => {
-      render(<Flags />, { wrapper })
+      render(<FlagsTab />, { wrapper: wrapper() })
 
-      const flagsCardTitle = screen.queryByText('Flags')
+      const flagsCardTitle = screen.queryByText('FlagsTab')
       expect(flagsCardTitle).not.toBeInTheDocument()
+
       const nameTableField = await screen.findByText(`Name`)
       expect(nameTableField).toBeInTheDocument()
+
       const headTableField = await screen.findByText(`HEAD %`)
       expect(headTableField).toBeInTheDocument()
+
       const patchTableField = await screen.findByText(`Patch %`)
       expect(patchTableField).toBeInTheDocument()
+
       const changeTableField = await screen.findByText(`Change`)
       expect(changeTableField).toBeInTheDocument()
 
       const flagName = await screen.findByText('secondTest')
       expect(flagName).toBeInTheDocument()
+
       const flagHeadCoverage = await screen.findByText('82.71%')
       expect(flagHeadCoverage).toBeInTheDocument()
+
       const flagPatchCoverage = await screen.findByText('59.00%')
       expect(flagPatchCoverage).toBeInTheDocument()
+
       const flagChangeCoverage = await screen.findByText('2.71%')
       expect(flagChangeCoverage).toBeInTheDocument()
     })
