@@ -1,6 +1,5 @@
 import { format } from 'date-fns'
 import PropTypes from 'prop-types'
-import resolveConfig from 'tailwindcss/resolveConfig'
 import {
   createContainer,
   VictoryAccessibleGroup,
@@ -13,10 +12,6 @@ import {
 
 import './chart.css'
 import NoData from './NoData'
-
-import tailwindConfig from '../../../tailwind.config'
-
-const fullConfig = resolveConfig(tailwindConfig)
 
 const defaultStyles = {
   tooltip: {
@@ -36,17 +31,17 @@ const defaultStyles = {
 // These theme accessors shouldn't be functions but something in the
 // tailwind config is wrong and that requires a much larger theme lift.
 const ColorMap = Object.freeze({
-  default: fullConfig.theme.colors.ds.gray.senary(),
-  primary: fullConfig.theme.colors.ds.primary.green(),
-  warning: fullConfig.theme.colors.ds.primary.yellow(),
-  danger: fullConfig.theme.colors.ds.primary.red(),
+  default: 'rgb(var(--color-ds-gray-senary))',
+  primary: 'rgb(var(--color-ds-primary-green))',
+  warning: 'rgb(var(--color-ds-primary-yellow))',
+  danger: 'rgb(var(--color-ds-primary-red))',
 })
 
 const GradientColorMap = Object.freeze({
-  default: fullConfig.theme.colors.ds.gray.secondary(),
-  primary: fullConfig.theme.colors.ds.primary.green(),
-  warning: fullConfig.theme.colors.ds.primary.yellow(),
-  danger: fullConfig.theme.colors.ds.primary.red(),
+  default: 'rgb(var(--color-ds-gray-secondary))',
+  primary: 'rgb(var(--color-ds-primary-green))',
+  warning: 'rgb(var(--color-ds-primary-yellow))',
+  danger: 'rgb(var(--color-ds-primary-red))',
 })
 
 const VictoryVoronoiContainer = createContainer('voronoi')
