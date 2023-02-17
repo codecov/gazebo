@@ -7,9 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 
-import Root from './Root'
+import FilesChangedTab from './FilesChangedTab'
 
-jest.mock('./FilesChanged/FilesChanged', () => () => 'Files Changed Component')
+jest.mock('./FilesChanged', () => () => 'Files Changed Component')
 
 const mockImpactedFiles = [
   {
@@ -93,7 +93,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('Root', () => {
+describe('FilesChanged', () => {
   function setup({ overrideData } = {}) {
     server.use(
       graphql.query('Pull', (_, res, ctx) => {
@@ -112,7 +112,7 @@ describe('Root', () => {
     })
 
     it('renders changed files component', async () => {
-      render(<Root />, { wrapper })
+      render(<FilesChangedTab />, { wrapper })
 
       const filesChangedComponent = await screen.findByText(
         /Files Changed Component/
@@ -151,7 +151,7 @@ describe('Root', () => {
       setup({ overrideData })
     })
     it('renders no change text', async () => {
-      render(<Root />, { wrapper })
+      render(<FilesChangedTab />, { wrapper })
 
       const noChangesText = await screen.findByText(
         'Everything is accounted for! No changes detected that need to be reviewed.'
@@ -174,7 +174,7 @@ describe('Root', () => {
       setup({ overrideData: {} })
     })
     it('renders no changed files text', async () => {
-      render(<Root />, { wrapper })
+      render(<FilesChangedTab />, { wrapper })
 
       const warning = await screen.findByText(
         'No Files covered by tests were changed'
@@ -203,26 +203,14 @@ describe('Root', () => {
       }
       setup({ overrideData })
     })
+
     it('renders no head commit error text', async () => {
-      render(<Root />, { wrapper })
+      render(<FilesChangedTab />, { wrapper })
 
       const error = await screen.findByText(
         'Cannot display changed files because most recent commit is in an error state.'
       )
       expect(error).toBeInTheDocument()
-    })
-  })
-
-  describe('when loading data', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('shows loading spinner', () => {
-      render(<Root />, { wrapper })
-
-      const spinner = screen.getByTestId('spinner')
-      expect(spinner).toBeInTheDocument()
     })
   })
 })
