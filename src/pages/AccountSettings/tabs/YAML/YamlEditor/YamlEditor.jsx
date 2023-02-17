@@ -17,8 +17,9 @@ const YamlEditor = forwardRef(({ ...props }, ref) => {
       minLines={80}
       highlightActiveLine={false}
       editorProps={{ $blockScrolling: true }}
+      setOptions={{ useWorker: false }}
       {...props}
-    ></AceEditor>
+    />
   )
 })
 

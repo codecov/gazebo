@@ -1,44 +1,58 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import {
-  useEraseRepoContent,
-  useRepoSettings,
-  useUpdateRepo,
-} from 'services/repo'
 
 import GeneralTab from './GeneralTab'
 
-jest.mock('services/repo')
+jest.mock('./DangerZone/RepoState', () => () => 'Repo State')
 
 const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
+      <Route path="/:provider/:owner/:repo/settings">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+  console.error = () => {}
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 
 describe('GeneralTab', () => {
   function setup({ uploadToken, defaultBranch, profilingToken, graphToken }) {
-    const mutate = jest.fn()
-    useRepoSettings.mockReturnValue({
-      data: {
-        repository: { uploadToken, defaultBranch, profilingToken, graphToken },
-      },
-    })
-    useUpdateRepo.mockReturnValue({
-      mutate,
-      data: { branch: 'random' },
-    })
-
-    useEraseRepoContent.mockReturnValue({
-      mutate,
-    })
-
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
-        <QueryClientProvider client={queryClient}>
-          <Route path="/:provider/:owner/:repo/settings">
-            <GeneralTab />
-          </Route>
-        </QueryClientProvider>
-      </MemoryRouter>
+    server.use(
+      graphql.query('GetRepoSettings', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                uploadToken,
+                defaultBranch,
+                profilingToken,
+                graphToken,
+              },
+            },
+          })
+        )
+      }),
+      graphql.query('GetBranches', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      })
     )
   }
 
@@ -47,13 +61,17 @@ describe('GeneralTab', () => {
       setup({ uploadToken: 'random' })
     })
 
-    it('renders Repository upload token compoenent', () => {
-      const title = screen.getByText(/Repository upload token/)
+    it('renders Repository upload token component', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const title = await screen.findByText(/Repository upload token/)
       expect(title).toBeInTheDocument()
     })
 
-    it('renders the expected token', () => {
-      const token = screen.getByText(/CODECOV_TOKEN=random/)
+    it('renders the expected token', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const token = await screen.findByText(/CODECOV_TOKEN=random/)
       expect(token).toBeInTheDocument()
     })
   })
@@ -63,7 +81,9 @@ describe('GeneralTab', () => {
       setup({ uploadToken: null })
     })
 
-    it('does not render Repository upload token compoenent', () => {
+    it('does not render Repository upload token component', () => {
+      render(<GeneralTab />, { wrapper })
+
       const title = screen.queryByText(/Repository upload token/)
       expect(title).not.toBeInTheDocument()
     })
@@ -74,8 +94,10 @@ describe('GeneralTab', () => {
       setup({ defaultBranch: 'master' })
     })
 
-    it('renders Default Branch compoenent', () => {
-      const title = screen.getByText(/Default Branch/)
+    it('renders Default Branch component', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const title = await screen.findByText(/Default Branch/)
       expect(title).toBeInTheDocument()
     })
   })
@@ -85,7 +107,9 @@ describe('GeneralTab', () => {
       setup({ defaultBranch: null })
     })
 
-    it('does not render  Default Branch compoenent', () => {
+    it('does not render  Default Branch component', () => {
+      render(<GeneralTab />, { wrapper })
+
       const title = screen.queryByText(/Default Branch/)
       expect(title).not.toBeInTheDocument()
     })
@@ -96,13 +120,17 @@ describe('GeneralTab', () => {
       setup({ profilingToken: 'profiling' })
     })
 
-    it('renders imapact anaylsis compoenent', () => {
-      const title = screen.getByText(/Impact analysis token/)
+    it('renders impact analysis component', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const title = await screen.findByText(/Impact analysis token/)
       expect(title).toBeInTheDocument()
     })
 
-    it('renders the expected token', () => {
-      const token = screen.getByText(/profiling/)
+    it('renders the expected token', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const token = await screen.findByText(/profiling/)
       expect(token).toBeInTheDocument()
     })
   })
@@ -112,7 +140,9 @@ describe('GeneralTab', () => {
       setup({ profilingToken: null })
     })
 
-    it('does not render  Default Branch compoenent', () => {
+    it('does not render  Default Branch component', () => {
+      render(<GeneralTab />, { wrapper })
+
       const title = screen.queryByText(/Impact analysis token/)
       expect(title).not.toBeInTheDocument()
     })
@@ -123,13 +153,17 @@ describe('GeneralTab', () => {
       setup({ graphToken: 'random graph token' })
     })
 
-    it('renders graphing token compoenent', () => {
-      const title = screen.getByText(/Repository graphing token/)
+    it('renders graphing token component', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const title = await screen.findByText(/Repository graphing token/)
       expect(title).toBeInTheDocument()
     })
 
-    it('renders the expected token', () => {
-      const token = screen.getByText(/random graph token/)
+    it('renders the expected token', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const token = await screen.findByText(/random graph token/)
       expect(token).toBeInTheDocument()
     })
   })
@@ -139,13 +173,17 @@ describe('GeneralTab', () => {
       setup({ graphToken: null })
     })
 
-    it('does not render graphing token compoenent', () => {
+    it('does not render graphing token component', () => {
+      render(<GeneralTab />, { wrapper })
+
       const title = screen.queryByText(/Repository graphing token/)
       expect(title).not.toBeInTheDocument()
     })
 
-    it('renders deactivate repo', () => {
-      const title = screen.queryByText(/Deactivate repo/)
+    it('renders repo state component', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const title = await screen.findByText(/Repo State/)
       expect(title).toBeInTheDocument()
     })
   })
