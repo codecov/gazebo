@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import PropTypes from 'prop-types'
+import resolveConfig from 'tailwindcss/resolveConfig'
 import {
   createContainer,
   VictoryAccessibleGroup,
@@ -12,6 +13,10 @@ import {
 
 import './chart.css'
 import NoData from './NoData'
+
+import tailwindConfig from '../../../tailwind.config'
+
+const fullConfig = resolveConfig(tailwindConfig)
 
 const defaultStyles = {
   tooltip: {
@@ -28,18 +33,20 @@ const defaultStyles = {
   dateAxisLabels: { fontSize: 4, padding: 0 },
 }
 
+// These theme accessors shouldn't be functions but something in the
+// tailwind config is wrong and that requires a much larger theme lift.
 const ColorMap = Object.freeze({
-  default: '#68737E',
-  primary: '#21B577',
-  warning: '#F4B01B',
-  danger: '#F52020',
+  default: fullConfig.theme.colors.ds.gray.senary(),
+  primary: fullConfig.theme.colors.ds.primary.green(),
+  warning: fullConfig.theme.colors.ds.primary.yellow(),
+  danger: fullConfig.theme.colors.ds.primary.red(),
 })
 
 const GradientColorMap = Object.freeze({
-  default: '#EAEBEF',
-  primary: '#21B577',
-  warning: '#F4B01B',
-  danger: '#F52020',
+  default: fullConfig.theme.colors.ds.gray.secondary(),
+  primary: fullConfig.theme.colors.ds.primary.green(),
+  warning: fullConfig.theme.colors.ds.primary.yellow(),
+  danger: fullConfig.theme.colors.ds.primary.red(),
 })
 
 const VictoryVoronoiContainer = createContainer('voronoi')
