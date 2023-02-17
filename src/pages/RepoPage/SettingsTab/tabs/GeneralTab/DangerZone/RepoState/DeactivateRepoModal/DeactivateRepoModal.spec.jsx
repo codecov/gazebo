@@ -24,6 +24,7 @@ describe('DeactivateRepoModal component', () => {
       )
       expect(modalTitle).toBeInTheDocument()
     })
+
     it('renders modal body', () => {
       render(
         <DeactivateRepoModal
