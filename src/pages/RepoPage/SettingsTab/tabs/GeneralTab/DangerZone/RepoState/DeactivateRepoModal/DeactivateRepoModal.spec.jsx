@@ -54,6 +54,7 @@ describe('DeactivateRepoModal component', () => {
       const cancelButton = screen.getByRole('button', { name: /Cancel/ })
       expect(cancelButton).toBeInTheDocument()
     })
+
     it('renders deactivate button', () => {
       render(
         <DeactivateRepoModal
