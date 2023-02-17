@@ -29,7 +29,7 @@ function _adjustPathForGLSubgroups(path) {
   // this => "user:subgroup", but Gitlab URLs look like this => "user/subgroup". Hence, this function
   // is to detect if we have a gitlab user with a subgroup and adjust it accordingly. The regex identifies the
   // domain + owner (by selecting everything till the next forward slash) and selecting everything else
-  if (!path.includes('gitlab')) {
+  if (!path.includes('gitlab.com')) {
     return path
   }
 

@@ -4,29 +4,38 @@ import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
-const Title = ({ author, pullId, title, updatestamp }) => {
+const Title = ({ message, author, commitid, createdAt }) => {
   const user = {
     avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
     username: author?.username || DefaultAuthor.USERNAME,
   }
 
+  const commitMessage = () => {
+    if (!message) return 'commit message unavailable'
+    const msg =
+      message?.length < 50
+        ? message?.slice(0, 50)
+        : message?.slice(0, 50) + '...'
+    return msg
+  }
+
   return (
-    <div className="flex flex-row w-96 lg:w-auto">
-      <span className="flex items-center mr-5">
-        <Avatar user={user} bordered />
-      </span>
-      <div className="flex flex-col w-5/6 lg:w-auto">
-        <A to={{ pageName: 'pullDetail', options: { pullId } }}>
-          <h2 className="font-semibold text-sm text-black">{title}</h2>
+    <div className="flex-1 flex flex-row lg:w-auto items-center gap-4">
+      <Avatar user={user} bordered />
+      <div className="flex flex-col">
+        <A to={{ pageName: 'commit', options: { commit: commitid } }}>
+          <h2 className="font-semibold text-sm text-black">
+            {commitMessage()}
+          </h2>
         </A>
         <p className="text-xs">
           <A to={{ pageName: 'owner' }}>
             <span className="text-black">{author?.username}</span>
           </A>
-          {updatestamp && (
+          {createdAt && (
             <span className="text-ds-gray-quinary">
               {' '}
-              last updated {formatTimeToNow(updatestamp)}
+              opened {formatTimeToNow(createdAt)}
             </span>
           )}
         </p>
@@ -40,9 +49,9 @@ Title.propTypes = {
     username: PropTypes.string,
     avatarUrl: PropTypes.string,
   }),
-  pullId: PropTypes.number,
-  title: PropTypes.string,
-  updatestamp: PropTypes.string,
+  commitid: PropTypes.string,
+  message: PropTypes.string,
+  createdAt: PropTypes.string,
 }
 
 export default Title

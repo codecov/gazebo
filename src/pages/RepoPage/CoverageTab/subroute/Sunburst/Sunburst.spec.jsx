@@ -40,6 +40,12 @@ const treeMock = { name: 'repoName', children: [] }
 const overviewMock = {
   owner: { repository: { private: false, defaultBranch: 'main' } },
 }
+const repoConfigMock = {
+  indicationRange: {
+    lowerRange: 60,
+    upperRange: 80,
+  },
+}
 
 describe('Sunburst', () => {
   function setup({
@@ -50,6 +56,9 @@ describe('Sunburst', () => {
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(repoOverviewData))
+      }),
+      graphql.query('RepoConfig', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(repoConfigMock))
       }),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
