@@ -26,7 +26,7 @@ const Title = ({ author, pullId, title, updatestamp }) => {
           {updatestamp && (
             <span className="text-ds-gray-quinary">
               {' '}
-              opened {formatTimeToNow(updatestamp)}
+              last updated {formatTimeToNow(updatestamp)}
             </span>
           )}
         </p>

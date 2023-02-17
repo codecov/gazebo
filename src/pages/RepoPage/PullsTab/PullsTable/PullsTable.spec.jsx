@@ -8,8 +8,6 @@ import { formatTimeToNow } from 'shared/utils/dates'
 
 import PullsTable from './PullsTable'
 
-jest.mock('services/repo')
-
 const queryClient = new QueryClient()
 const server = setupServer()
 
@@ -115,7 +113,7 @@ describe('Pulls Table', () => {
       render(<PullsTable />, { wrapper })
 
       const dt = formatTimeToNow('2021-08-30T19:33:49.819672')
-      const dt1 = await screen.findByText('opened ' + dt)
+      const dt1 = await screen.findByText('last updated ' + dt)
       expect(dt1).toBeInTheDocument()
     })
 

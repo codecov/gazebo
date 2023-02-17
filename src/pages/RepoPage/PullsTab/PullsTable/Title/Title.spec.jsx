@@ -1,54 +1,61 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { formatTimeToNow } from 'shared/utils/dates'
 
-import Title from '.'
+import Title from './Title'
 
-jest.mock('services/repo')
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/owner/repo/pulls/9']}>
+    <Route path="/:provider/:owner/:repo/pulls/:pullid">{children}</Route>
+  </MemoryRouter>
+)
 
 describe('Title', () => {
-  const author = { username: 'RulaKhaled', avatarUrl: 'random' }
-  const pullId = 746
-  const title = 'Test1'
-  const updatestamp = '2021-08-30T19:33:49.819672'
-
-  function setup() {
-    const queryClient = new QueryClient()
-
-    render(
-      <MemoryRouter>
-        <QueryClientProvider client={queryClient}>
-          <Title
-            author={author}
-            pullId={pullId}
-            title={title}
-            updatestamp={updatestamp}
-          />
-        </QueryClientProvider>
-      </MemoryRouter>
-    )
-  }
-
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders pull title', () => {
+      render(
+        <Title
+          author={{ username: 'RulaKhaled', avatarUrl: 'random' }}
+          pullId={746}
+          title="Test1"
+          updatestamp="2021-08-30T19:33:49.819672"
+        />,
+        { wrapper }
+      )
+
       const text = screen.getByText(/Test1/)
       expect(text).toBeInTheDocument()
     })
 
     it('renders pull author', () => {
+      render(
+        <Title
+          author={{ username: 'RulaKhaled', avatarUrl: 'random' }}
+          pullId={746}
+          title="Test1"
+          updatestamp="2021-08-30T19:33:49.819672"
+        />,
+        { wrapper }
+      )
+
       const author1 = screen.getByText(/RulaKhaled/)
       expect(author1).toBeInTheDocument()
     })
 
     it('renders pull updatestamp', () => {
+      render(
+        <Title
+          author={{ username: 'RulaKhaled', avatarUrl: 'random' }}
+          pullId={746}
+          title="Test1"
+          updatestamp="2021-08-30T19:33:49.819672"
+        />,
+        { wrapper }
+      )
+
       const dt = formatTimeToNow('2021-08-30T19:33:49.819672')
-      const dt1 = screen.getByText('opened ' + dt)
+      const dt1 = screen.getByText('last updated ' + dt)
       expect(dt1).toBeInTheDocument()
     })
   })
