@@ -46,8 +46,6 @@ export function useUpdateDefaultOrganization() {
             history.push(
               `/${provider}/${data?.updateDefaultOrganization?.username}`
             )
-          } else {
-            history.push(`/${provider}`)
           }
         }
       },
