@@ -43,7 +43,6 @@ const UpdateDefaultOrgModal = ({ closeModal }) => {
                 mutate({ username: selectedOrgUsername })
                 closeModal()
               }}
-              disabled={!selectedOrgUsername}
             >
               Update
             </Button>
