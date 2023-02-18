@@ -28,11 +28,20 @@ const defaultStyles = {
   dateAxisLabels: { fontSize: 4, padding: 0 },
 }
 
+// These theme accessors shouldn't be functions but something in the
+// tailwind config is wrong and that requires a much larger theme lift.
 const ColorMap = Object.freeze({
-  default: '#222F3D',
-  primary: '#21B577',
-  warning: '#F4B01B',
-  danger: '#F52020',
+  default: 'rgb(var(--color-ds-gray-senary))',
+  primary: 'rgb(var(--color-ds-primary-green))',
+  warning: 'rgb(var(--color-ds-primary-yellow))',
+  danger: 'rgb(var(--color-ds-primary-red))',
+})
+
+const GradientColorMap = Object.freeze({
+  default: 'rgb(var(--color-ds-gray-secondary))',
+  primary: 'rgb(var(--color-ds-primary-green))',
+  warning: 'rgb(var(--color-ds-primary-yellow))',
+  danger: 'rgb(var(--color-ds-primary-red))',
 })
 
 const VictoryVoronoiContainer = createContainer('voronoi')
@@ -87,7 +96,7 @@ function Chart({
             </feComponentTransfer>
           </filter>
           <linearGradient id="myGradient" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={ColorMap[color]} stopOpacity="20%" />
+            <stop offset="0%" stopColor={GradientColorMap[color]} />
             <stop offset="100%" stopColor="white" />
           </linearGradient>
         </defs>
