@@ -17,13 +17,9 @@ export function useOrganizations() {
         ...org,
       })),
     ]
-    console.log('orgsAndCurrentUser', orgsAndCurrentUser)
     const defaultOrg = orgsAndCurrentUser?.find(
       (org) => org?.username === currentUser?.defaultOrgUsername
     )
-    console.log('myOrganizations', myOrganizations)
-    console.log('defaultOrg', defaultOrg)
-
     return {
       organizations: [
         ...(!isNil(defaultOrg) ? [{ ...defaultOrg }] : []),
