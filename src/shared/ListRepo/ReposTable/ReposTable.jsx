@@ -27,7 +27,9 @@ const tableActive = [
   },
   {
     id: 'lastUpdated',
-    header: 'Last updated',
+    header: (
+      <div className="whitespace-normal sm:whitespace-nowrap">Last updated</div>
+    ),
     accessorKey: 'lastUpdated',
     width: 'w-2/12',
     cell: (info) => info.getValue(),
@@ -35,16 +37,24 @@ const tableActive = [
   },
   {
     id: 'lines',
-    header: 'Tracked lines',
+    header: (
+      <div className="whitespace-normal sm:whitespace-nowrap">
+        Tracked lines
+      </div>
+    ),
     accessorKey: 'lines',
-    width: 'w-1/12',
+    width: 'w-2/12 lg:w-1/12',
     cell: (info) => info.getValue(),
   },
   {
     id: 'coverage',
-    header: 'Test coverage',
+    header: (
+      <div className="whitespace-normal sm:whitespace-nowrap">
+        Test coverage
+      </div>
+    ),
     accessorKey: 'coverage',
-    width: 'w-3/12',
+    width: 'w-2/12 lg:w-3/12',
     cell: (info) => info.getValue(),
   },
 ]
