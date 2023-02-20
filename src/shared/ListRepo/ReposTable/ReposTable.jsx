@@ -116,9 +116,7 @@ function transformRepoToTable({
       ),
       coverage:
         typeof repo?.coverage === 'number' ? (
-          <div className="w-full text-end">
-            <TotalsNumber value={repo.coverage} plain />
-          </div>
+          <TotalsNumber value={repo.coverage} plain />
         ) : (
           <NoRepoCoverage
             activated={repo.activated}
