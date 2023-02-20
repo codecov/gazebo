@@ -6,7 +6,7 @@ function InactiveRepo({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
   if (isActive) return <>Deactivated</>
 
   return (
-    <>
+    <div className="whitespace-nowrap">
       Not yet enabled{' '}
       {isCurrentUserPartOfOrg && (
         <AppLink
@@ -20,7 +20,7 @@ function InactiveRepo({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
           setup repo
         </AppLink>
       )}
-    </>
+    </div>
   )
 }
 
