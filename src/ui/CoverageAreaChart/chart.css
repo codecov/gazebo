@@ -11,13 +11,13 @@
 }
 
 .coverageAreaChart .chart-tooltip path {
-  @apply text-ds-gray-tertiary stroke-current !important;
+  @apply text-ds-gray-quinary stroke-current !important;
   fill: white !important;
 }
 
 .coverageAreaChart .chart-tooltip tspan {
   @apply font-sans !important;
-  @apply text-ds-gray-octonary font-extralight stroke-current;
+  @apply text-ds-gray-quinary font-extralight stroke-current;
 }
 
 .coverageAreaChart .date-axis tspan {
@@ -34,11 +34,11 @@
 
 .coverageAreaChart .date-axis line,
 .coverageAreaChart .coverage-axis line {
-  @apply text-ds-gray-tertiary stroke-current !important;
+  @apply text-ds-gray-quinary stroke-current !important;
 }
 
 .coverageAreaChart .date-axis tspan,
 .coverageAreaChart .coverage-axis tspan {
   @apply font-sans !important;
-  @apply font-light text-ds-gray-quinary stroke-current;
+  @apply text-ds-gray-quinary font-light stroke-current;
 }
