@@ -276,7 +276,12 @@ describe('useBranchSelector', () => {
         { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
       )
 
-      await waitFor(() => expect(result.current.selection).toBeUndefined())
+      await waitFor(() =>
+        expect(result.current.selection).toStrictEqual({
+          name: 'Select branch',
+          head: {},
+        })
+      )
     })
   })
 })
