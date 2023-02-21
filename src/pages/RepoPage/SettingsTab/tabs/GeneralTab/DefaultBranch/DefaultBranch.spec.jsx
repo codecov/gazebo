@@ -131,29 +131,29 @@ describe('DefaultBranch', () => {
       setup()
     })
 
-    it('renders title', () => {
+    it('renders title', async () => {
       render(<DefaultBranch defaultBranch="main" />, { wrapper })
 
-      const title = screen.getByText(/Default Branch/)
+      const title = await screen.findByText(/Default Branch/)
       expect(title).toBeInTheDocument()
     })
 
-    it('renders body', () => {
+    it('renders body', async () => {
       render(<DefaultBranch defaultBranch="main" />, { wrapper })
 
-      const p = screen.getByText(
+      const p = await screen.findByText(
         'Selection for branch context of data in coverage dashboard'
       )
       expect(p).toBeInTheDocument()
     })
 
-    it('renders branch context', () => {
+    it('renders branch context', async () => {
       render(<DefaultBranch defaultBranch="main" />, { wrapper })
 
       const label = screen.getByText(/Branch Context/)
       expect(label).toBeInTheDocument()
 
-      const select = screen.getByRole('button', {
+      const select = await screen.findByRole('button', {
         name: 'Branch selector',
       })
       expect(select).toBeInTheDocument()
@@ -255,7 +255,7 @@ describe('DefaultBranch', () => {
       await waitFor(() => queryClient.isMutating)
       await waitFor(() => !queryClient.isMutating)
 
-      expect(mutate).toHaveBeenCalled()
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
     it('adds an error notification', async () => {
