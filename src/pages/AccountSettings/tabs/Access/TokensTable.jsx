@@ -45,7 +45,7 @@ function TokensTable({ tokens }) {
   const dataTable = tokens.map((t) => ({
     name: t?.name,
     lastFour: (
-      <p className="text-center font-mono bg-ds-gray-secondary text-ds-gray-octonary font-bold">{`xxxx ${t?.lastFour}`}</p>
+      <p className="bg-ds-gray-secondary text-center font-mono font-bold text-ds-gray-octonary">{`xxxx ${t?.lastFour}`}</p>
     ),
     lastSeen: t?.lastseen ? formatTimeToNow(t?.lastseen) : '-',
     revokeBtn: (
@@ -68,10 +68,8 @@ function TokensTable({ tokens }) {
       )}
       {tokens <= 0 && (
         <>
-          <hr className="mt-4 mb-4 border-ds-gray-secondary" />
-          <span className="text-sm text-gray-octonary">
-            No tokens created yet
-          </span>
+          <hr className="my-4 border-ds-gray-secondary" />
+          <span className="text-sm">No tokens created yet</span>
         </>
       )}
     </>

@@ -21,13 +21,11 @@ function updateRepo({ provider, owner, repo, body }) {
 export function useUpdateRepo() {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
-  return useMutation(
-    ({ ...body }) => updateRepo({ provider, owner, repo, body }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['GetRepo'])
-        queryClient.invalidateQueries(['GetRepoSettings'])
-      },
-    }
-  )
+  return useMutation({
+    mutationFn: ({ ...body }) => updateRepo({ provider, owner, repo, body }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['GetRepo'])
+      queryClient.invalidateQueries(['GetRepoSettings'])
+    },
+  })
 }

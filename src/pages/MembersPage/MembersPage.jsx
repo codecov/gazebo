@@ -19,10 +19,10 @@ function MembersPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 mt-2">
+    <div className="mt-2 flex flex-col gap-4">
       <Header />
       {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
-      <h2 className="font-semibold text-lg mx-4 sm:mx-0">Manage members</h2>
+      <h2 className="mx-4 text-lg font-semibold sm:mx-0">Manage members</h2>
       <hr className="lg:w-10/12" />
       <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial lg:w-3/5">
         <MemberActivation />

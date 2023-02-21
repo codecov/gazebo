@@ -22,11 +22,12 @@ export function useUpdateUser({ provider, owner, opts = {} }) {
     }
   }
 
-  return useMutation(
-    ({ targetUserOwnerid, ...body }) => {
+  return useMutation({
+    mutationFn: ({ targetUserOwnerid, ...body }) => {
       const path = patchPathUsers({ provider, owner, targetUserOwnerid })
       return Api.patch({ path, provider, body })
     },
-    { onSuccess: successHandler, ...passedOpts }
-  )
+    onSuccess: successHandler,
+    ...passedOpts,
+  })
 }

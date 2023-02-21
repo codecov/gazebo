@@ -21,8 +21,8 @@ export function useAutoActivate({ provider, owner, opts = {} }) {
     }
   }
 
-  return useMutation(
-    (activate) => {
+  return useMutation({
+    mutationFn: (activate) => {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
         /* eslint-disable camelcase */
@@ -36,6 +36,7 @@ export function useAutoActivate({ provider, owner, opts = {} }) {
         body,
       })
     },
-    { onSuccess: successHandler, ...passedOpts }
-  )
+    onSuccess: successHandler,
+    ...passedOpts,
+  })
 }

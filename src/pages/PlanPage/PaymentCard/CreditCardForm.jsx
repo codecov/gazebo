@@ -48,7 +48,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
             />
           </div>
           {error && (
-            <p className="bg-ds-error-quinary text-ds-error-nonary p-3 mt-4 rounded-md">
+            <p className="mt-4 rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
               {error?.data?.detail}
             </p>
           )}

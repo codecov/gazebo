@@ -77,10 +77,10 @@ export default function InstructionBox() {
 
   return (
     <div
-      className="w-5/5 bg-ds-gray-primary my-4 rounded w-auto"
+      className="my-4 w-auto rounded bg-ds-gray-primary"
       data-testid="instruction-box"
     >
-      <div className="flex flex-row bg-ds-gray-secondary h-auto overflow-auto">
+      <div className="flex h-auto flex-row overflow-auto bg-ds-gray-secondary">
         {systems.map((system, idx) => (
           <button
             className={cs('self-center py-2 px-4 outline-none', {
@@ -95,7 +95,7 @@ export default function InstructionBox() {
           </button>
         ))}
       </div>
-      <div className="p-4 flex flex-row overflow-auto">
+      <div className="flex flex-row overflow-auto p-4">
         {curSystem === 'Windows' ? (
           <WindowsSystemInstructions />
         ) : (

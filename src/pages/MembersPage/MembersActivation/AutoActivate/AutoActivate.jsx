@@ -9,7 +9,7 @@ function AutoActivate({ planAutoActivate }) {
   const { mutate: autoActivate } = useAutoActivate({ owner, provider })
 
   return (
-    <div className="flex flex-col p-4 gap-2">
+    <div className="flex flex-col gap-2 p-4">
       <div className="font-semibold">
         <Toggle
           dataMarketing="auto-activate-members"

@@ -18,12 +18,12 @@ function OrgUploadToken() {
         <h1 className="text-lg font-semibold">
           Global repository upload token
         </h1>
-        <div className="text-xs mt-2">
+        <div className="mt-2 text-xs">
           <A to={{ pageName: 'orgUploadToken' }}>learn more</A>
         </div>
       </div>
       <hr />
-      <div className="flex flex-col xl:w-4/5 2xl:w-3/5 gap-6">
+      <div className="flex flex-col gap-6 xl:w-4/5 2xl:w-3/5">
         <Banner>
           <h2 className="font-semibold">Sensitive credential</h2>
           <p>

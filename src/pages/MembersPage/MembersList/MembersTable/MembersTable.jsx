@@ -50,7 +50,7 @@ const columns = [
 
 function _renderUsername({ name, username, user }) {
   return (
-    <div className="flex-1 flex flex-row gap-3 items-center truncate">
+    <div className="flex flex-1 flex-row items-center gap-3 truncate">
       <Avatar user={user} />
       {name || username}
     </div>
@@ -108,7 +108,7 @@ function LoadMoreTrigger({ intersectionRef }) {
   return (
     <span
       ref={intersectionRef}
-      className="relative top-[-65px] invisible block leading-[0]"
+      className="invisible relative top-[-65px] block leading-[0]"
     >
       Loading
     </span>

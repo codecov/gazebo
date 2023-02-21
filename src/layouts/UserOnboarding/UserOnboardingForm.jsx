@@ -80,7 +80,7 @@ function UserOnboardingForm({ currentUser, onFormSubmit, isSubmitting }) {
   })
 
   return (
-    <form className="sm:w-full md:w-2/3 lg:w-1/3 mt-8" onSubmit={onSubmit}>
+    <form className="mt-8 sm:w-full md:w-2/3 lg:w-1/3" onSubmit={onSubmit}>
       <BaseModal hasCloseButton={false} onClose={noop} {...stepProps} />
     </form>
   )

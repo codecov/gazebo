@@ -52,7 +52,8 @@ export function useResyncUser() {
   )
 
   // when mutation, we set the isSyncing of the cache the return of the
-  const mutationData = useMutation(() => triggerSync(provider), {
+  const mutationData = useMutation({
+    mutationFn: () => triggerSync(provider),
     useErrorBoundary: false,
     onSuccess: (data) =>
       queryClient.setQueryData(['isSyncing', provider], data),
@@ -63,16 +64,13 @@ export function useResyncUser() {
   const isSyncing = mutationData.isLoading || isSyncingInCache
 
   // useQuery will automatically feed the so we don't need to care about return
-  useQuery(
-    ['isSyncing', provider],
-    ({ signal }) => fetchIsSyncing({ provider, signal }),
-    {
-      suspense: false,
-      useErrorBoundary: false,
-      // refetch every 2 seconds if we are syncing
-      refetchInterval: isSyncing ? 2000 : null,
-    }
-  )
+  useQuery({
+    queryKey: ['isSyncing', provider],
+    queryFn: ({ signal }) => fetchIsSyncing({ provider, signal }),
+    suspense: false,
+    useErrorBoundary: false,
+    refetchInterval: isSyncing ? 2000 : null,
+  })
 
   // when isSyncing goes from true to false, we call onSyncFinish
   const prevIsSyncing = usePrevious(isSyncing)

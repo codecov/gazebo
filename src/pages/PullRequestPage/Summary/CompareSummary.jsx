@@ -58,9 +58,9 @@ function compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }) {
           <>
             {hasDifferentNumberOfHeadAndBaseReports ? (
               <>
-                <p className="text-ds-gray-octonary text-sm">
+                <p className="text-sm text-ds-gray-octonary">
                   Coverage data based on{' '}
-                  <span className="uppercase font-medium">head</span>{' '}
+                  <span className="font-medium uppercase">head</span>{' '}
                   <A
                     to={{ pageName: 'commit', options: { commit: headCommit } }}
                   >
@@ -68,7 +68,7 @@ function compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }) {
                     <span>({head?.uploads?.totalCount} uploads)</span>
                   </A>{' '}
                   compared to{' '}
-                  <span className="uppercase font-medium">base</span>{' '}
+                  <span className="font-medium uppercase">base</span>{' '}
                   <A
                     to={{ pageName: 'commit', options: { commit: baseCommit } }}
                   >
@@ -100,13 +100,13 @@ function compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }) {
                 </div>
               </>
             ) : (
-              <p className="text-ds-gray-octonary text-sm">
+              <p className="text-sm text-ds-gray-octonary">
                 Coverage data based on{' '}
-                <span className="uppercase font-medium">head</span>{' '}
+                <span className="font-medium uppercase">head</span>{' '}
                 <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
                   {headCommit?.slice(0, 7)}
                 </A>{' '}
-                compared to <span className="uppercase font-medium">base</span>{' '}
+                compared to <span className="font-medium uppercase">base</span>{' '}
                 <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
                   {baseCommit?.slice(0, 7)}
                 </A>{' '}
@@ -127,7 +127,7 @@ function pendingCard({ patchCoverage, headCoverage, changeCoverage }) {
     card.push({
       name: 'pending',
       value: (
-        <p className="text-ds-gray-octonary text-sm mt-2 max-w-xs border-l border-solid border-ds-gray-secondary pl-4">
+        <p className="mt-2 max-w-xs border-l border-solid border-ds-gray-secondary pl-4 text-sm text-ds-gray-octonary">
           <span className="font-medium">Why is there no coverage data?</span>{' '}
           the data is not yet available and still processing.
         </p>
@@ -144,11 +144,11 @@ function lastCommitErrorCard({ recentCommit }) {
     card.push({
       name: 'error',
       value: (
-        <span className="flex gap-2 max-w-xs border-l border-solid border-ds-gray-secondary pl-4">
+        <span className="flex max-w-xs gap-2 border-l border-solid border-ds-gray-secondary pl-4">
           <span className="text-ds-primary-red">
             <Icon name="exclamation" />
           </span>
-          <p className="text-ds-gray-octonary text-sm">
+          <p className="text-sm text-ds-gray-octonary">
             There is an error processing the coverage reports with{' '}
             <A
               to={{

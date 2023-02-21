@@ -18,10 +18,10 @@ export function useSunburstCoverage(
   { provider, owner, repo, query },
   opts = {}
 ) {
-  return useQuery(
-    ['organization', 'coverage', provider, owner, repo, query],
-    ({ signal }) =>
+  return useQuery({
+    queryKey: ['organization', 'coverage', provider, owner, repo, query],
+    queryFn: ({ signal }) =>
       fetchSunburstCoverage({ provider, owner, query, repo, signal }),
-    opts
-  )
+    ...opts,
+  })
 }

@@ -38,7 +38,7 @@ function MyContextSwitcher({ activeContext, pageName }) {
       isLoading={isLoading}
       onLoadMore={() => hasNextPage && fetchNextPage()}
       ModalControl={({ onClick }) => (
-        <button className="text-ds-blue flex-none" onClick={onClick}>
+        <button className="flex-none text-ds-blue" onClick={onClick}>
           Edit default
         </button>
       )}

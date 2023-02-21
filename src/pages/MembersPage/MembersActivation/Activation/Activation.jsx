@@ -20,12 +20,12 @@ function Activation() {
   const showChangePlanLink = !(config.IS_SELF_HOSTED || isInvoicedCustomer)
 
   return (
-    <div className="flex flex-col p-4 gap-2">
+    <div className="flex flex-col gap-2 p-4">
       <h3 className="font-semibold">Member activation</h3>
       <p>
-        <span className="font-semibold text-lg">{activatedUserCount}</span>{' '}
+        <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
         active members of{' '}
-        <span className="font-semibold text-lg">{planQuantity}</span> available
+        <span className="text-lg font-semibold">{planQuantity}</span> available
         seats{' '}
         {showChangePlanLink && (
           <span className="text-xs">

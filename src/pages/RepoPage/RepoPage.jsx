@@ -52,7 +52,7 @@ const getRepoTabs = ({
 }
 
 const Loader = () => (
-  <div className="flex-1 flex items-center justify-center mt-16">
+  <div className="mt-16 flex flex-1 items-center justify-center">
     <LogoSpinner />
   </div>
 )
@@ -90,7 +90,7 @@ function RepoPage() {
       <div>
         <RepoBreadcrumb />
         {isRepoActive && isRepoActivated && (
-          <div className="sticky top-8 z-10 bg-white mb-2">
+          <div className="sticky top-8 z-10 mb-2 bg-white">
             <TabNavigation
               tabs={getRepoTabs({
                 matchTree,

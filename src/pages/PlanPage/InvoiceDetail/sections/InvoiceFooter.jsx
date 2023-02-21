@@ -6,7 +6,7 @@ function InvoiceFooter({ invoice }) {
   return (
     <div className="flex flex-col gap-10 text-base">
       <div className="flex justify-end">
-        <table className="text-lg w-2/5">
+        <table className="w-2/5 text-lg">
           <tbody>
             <tr className="border-t-2">
               <td className="w-4/5 p-2">Subtotal</td>
@@ -25,7 +25,7 @@ function InvoiceFooter({ invoice }) {
               <td className="text-end">${(invoice.total / 100).toFixed(2)}</td>
             </tr>
             <tr className="border-t-2">
-              <td className="font-semibold p-2">Amount paid</td>
+              <td className="p-2 font-semibold">Amount paid</td>
               <td className="text-end">
                 ${(invoice.amountPaid / 100).toFixed(2)}
               </td>
@@ -33,7 +33,7 @@ function InvoiceFooter({ invoice }) {
           </tbody>
         </table>
       </div>
-      <pre className="font-sans whitespace-pre-wrap">{invoice.footer}</pre>
+      <pre className="whitespace-pre-wrap font-sans">{invoice.footer}</pre>
     </div>
   )
 }

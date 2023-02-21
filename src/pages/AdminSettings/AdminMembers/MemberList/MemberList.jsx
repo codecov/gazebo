@@ -34,7 +34,7 @@ function MemberList() {
 
   return (
     <>
-      <div className="flex flex-row grow justify-between items-center">
+      <div className="flex grow flex-row items-center justify-between">
         <div className="w-3/12">
           <Select
             dataMarketing="members-status-selector"

@@ -11,7 +11,7 @@ function ErroredUploads({ erroredUploads }) {
         {Object.entries(erroredUploads)?.map(([provider, uploads]) => {
           return (
             <div key={provider}>
-              <p className="capitalize font-semibold">{provider}</p>
+              <p className="font-semibold capitalize">{provider}</p>
               {uploads?.map(({ buildCode, ciUrl, createdAt }) => {
                 return (
                   <div key={`${buildCode}-${createdAt}`} className="flex gap-1">

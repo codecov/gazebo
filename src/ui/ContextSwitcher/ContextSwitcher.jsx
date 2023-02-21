@@ -35,7 +35,7 @@ function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
   return (
     <span
       ref={intersectionRef}
-      className="relative top-[-65px] invisible block leading-[0]"
+      className="invisible relative top-[-65px] block leading-[0]"
     >
       Loading more organizations...
     </span>
@@ -109,7 +109,7 @@ function ContextSwitcher({
           {owner?.username}
         </div>
         {owner?.username === currentUser?.defaultOrgUsername && (
-          <span className="text-ds-gray-quaternary font-medium">Default</span>
+          <span className="font-medium text-ds-gray-quaternary">Default</span>
         )}
       </MenuLink>
     )
@@ -150,7 +150,7 @@ function ContextSwitcher({
           </MenuLink>
           {contexts.map(renderContext)}
           {isLoading && (
-            <span className="flex pt-1 pb-2 justify-center">
+            <span className="flex justify-center pt-1 pb-2">
               <Spinner />
             </span>
           )}
@@ -160,7 +160,7 @@ function ContextSwitcher({
           />
         </div>
         {isGh && (
-          <div className="max-h-64 overflow-y-auto text-ds-gray-quinary text-xsm px-4 py-2 border-t border-ds-gray-secondary">
+          <div className="max-h-64 overflow-y-auto border-t border-ds-gray-secondary px-4 py-2 text-ds-gray-quinary">
             <span className="font-semibold">Don&apos;t see your org?</span>
             <br />
             <A to={{ pageName: 'userAppManagePage' }}>

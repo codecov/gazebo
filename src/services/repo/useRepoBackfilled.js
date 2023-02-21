@@ -38,9 +38,9 @@ function fetchRepoBackfilledContents({ provider, owner, repo, signal }) {
 
 export function useRepoBackfilled() {
   const { provider, owner, repo } = useParams()
-  return useQuery(
-    ['BackfillFlagMemberships', provider, owner, repo],
-    ({ signal }) =>
-      fetchRepoBackfilledContents({ provider, owner, repo, signal })
-  )
+  return useQuery({
+    queryKey: ['BackfillFlagMemberships', provider, owner, repo],
+    queryFn: ({ signal }) =>
+      fetchRepoBackfilledContents({ provider, owner, repo, signal }),
+  })
 }

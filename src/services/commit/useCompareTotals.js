@@ -45,9 +45,9 @@ export function useCompareTotals({
       ${comparisonFragment}
     `
 
-  return useQuery(
-    ['impactedFiles', provider, owner, repo, commitid],
-    ({ signal }) => {
+  return useQuery({
+    queryKey: ['impactedFiles', provider, owner, repo, commitid, query],
+    queryFn: ({ signal }) => {
       return Api.graphql({
         provider,
         query,
@@ -61,8 +61,6 @@ export function useCompareTotals({
         (res) => res?.data?.owner?.repository?.commit?.compareWithParent ?? {}
       )
     },
-    {
-      ...opts,
-    }
-  )
+    ...opts,
+  })
 }

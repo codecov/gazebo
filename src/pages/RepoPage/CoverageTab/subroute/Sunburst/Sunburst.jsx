@@ -9,7 +9,7 @@ import useSunburstChart from './hooks/useSunburstChart'
 const Placeholder = () => (
   <div
     data-testid="placeholder"
-    className="animate-pulse bg-ds-gray-tertiary rounded-full aspect-square"
+    className="aspect-square animate-pulse rounded-full bg-ds-gray-tertiary"
   />
 )
 
