@@ -59,7 +59,7 @@ function NameEmailCard({ currentUser, provider }) {
       {/* Define the field first and the submit/title after so the TAB order makes sense for accessibility but we reverse the two so it looks like the correct UI */}
       <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-8">
         <div className="flex items-center justify-between">
-          <h1 className="bold text-2xl">Your details</h1>
+          <h1 className="text-2xl">Your details</h1>
           <Button
             type="submit"
             disabled={isButtonDisabled}

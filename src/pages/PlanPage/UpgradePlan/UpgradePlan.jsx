@@ -53,10 +53,10 @@ function UpgradePlan() {
             <div className="-mt-16">
               <img src={parasolImg} alt="parasol" />
             </div>
-            <h3 className="bold text-2xl text-ds-pink-quinary">
+            <h3 className="text-2xl text-ds-pink-quinary">
               {proPlanYear?.marketingName}
             </h3>
-            <h2 className="bold text-5xl">${proPlanYear?.baseUnitPrice}*</h2>
+            <h2 className="text-5xl">${proPlanYear?.baseUnitPrice}*</h2>
             <BenefitList
               benefits={proPlanYear?.benefits}
               iconName="check"
