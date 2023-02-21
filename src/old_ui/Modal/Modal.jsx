@@ -17,7 +17,7 @@ function Modal({ isOpen, onClose, children, title, ...rest }) {
     >
       <Card className="w-1/2 p-8">
         <header className="mb-4 flex items-center justify-between">
-          <h2 className="bold text-2xl">{title}</h2>
+          <h2 className="text-2xl">{title}</h2>
           <Button variant="text" onClick={onClose} aria-label="Close">
             <Icon name="times" />
           </Button>

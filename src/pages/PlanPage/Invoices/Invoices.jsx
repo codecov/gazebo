@@ -44,7 +44,7 @@ function Invoices() {
     <>
       {years.map((year) => (
         <div className="mt-8 lg:w-3/4" key={year}>
-          <h2 className="bold text-center text-xl">{year}</h2>
+          <h2 className="text-center text-xl">{year}</h2>
           {groupedInvoices[year].map((invoice) => (
             <InvoiceCard
               key={invoice.number}

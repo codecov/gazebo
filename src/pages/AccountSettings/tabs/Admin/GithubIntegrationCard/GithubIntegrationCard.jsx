@@ -23,7 +23,7 @@ function GithubIntegrationCard({ provider, owner }) {
     <Card className="p-10 md:mr-8 md:w-1/2">
       <div className="flex items-center">
         <img alt="Github" src={githubLogo} height={32} width={32} />
-        <h2 className="bold ml-4 text-2xl">Github - Integration</h2>
+        <h2 className="ml-4 text-2xl">Github - Integration</h2>
       </div>
       {accountDetails.integrationId ? (
         <div>

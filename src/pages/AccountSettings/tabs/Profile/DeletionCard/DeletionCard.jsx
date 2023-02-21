@@ -7,7 +7,7 @@ import ErasePersonalAccountButton from './ErasePersonalAccountButton'
 function DeletionCard({ provider, owner }) {
   return (
     <Card className="p-10 text-codecov-red">
-      <h2 className="bold border-b border-ds-primary-red pb-4 text-2xl">
+      <h2 className="border-b border-ds-primary-red pb-4 text-2xl">
         Delete account
       </h2>
       <>
