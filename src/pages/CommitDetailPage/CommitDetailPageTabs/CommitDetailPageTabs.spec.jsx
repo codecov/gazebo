@@ -30,7 +30,7 @@ describe('CommitDetailPageTabs', () => {
 
       const impactedFiles = screen.getByText('Impacted Files')
       expect(impactedFiles).toBeInTheDocument()
-      expect(impactedFiles).toHaveClass('text-ds-gray-octonary')
+      expect(impactedFiles).toHaveAttribute('aria-current', 'page')
     })
 
     it('does not highlight files tab', () => {
@@ -40,7 +40,7 @@ describe('CommitDetailPageTabs', () => {
 
       const files = screen.getByText('Files')
       expect(files).toBeInTheDocument()
-      expect(files).not.toHaveClass('text-ds-gray-octonary')
+      expect(files).not.toHaveAttribute('aria-current', 'page')
     })
   })
 
@@ -53,7 +53,7 @@ describe('CommitDetailPageTabs', () => {
 
         const files = screen.getByText('Files')
         expect(files).toBeInTheDocument()
-        expect(files).toHaveClass('text-ds-gray-octonary')
+        expect(files).toHaveAttribute('aria-current', 'page')
       })
 
       it('does not highlight impacted files tab', () => {
@@ -63,7 +63,7 @@ describe('CommitDetailPageTabs', () => {
 
         const impactedFiles = screen.getByText('Impacted Files')
         expect(impactedFiles).toBeInTheDocument()
-        expect(impactedFiles).not.toHaveClass('text-ds-gray-octonary')
+        expect(impactedFiles).not.toHaveAttribute('aria-current', 'page')
       })
     })
     describe('on a blob route', () => {
@@ -76,7 +76,7 @@ describe('CommitDetailPageTabs', () => {
 
         const files = screen.getByText('Files')
         expect(files).toBeInTheDocument()
-        expect(files).toHaveClass('text-ds-gray-octonary')
+        expect(files).toHaveAttribute('aria-current', 'page')
       })
 
       it('does not highlight impacted files tab', () => {
@@ -86,7 +86,7 @@ describe('CommitDetailPageTabs', () => {
 
         const impactedFiles = screen.getByText('Impacted Files')
         expect(impactedFiles).toBeInTheDocument()
-        expect(impactedFiles).not.toHaveClass('text-ds-gray-octonary')
+        expect(impactedFiles).not.toHaveAttribute('aria-current', 'page')
       })
     })
   })
