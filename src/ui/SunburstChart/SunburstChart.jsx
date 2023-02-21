@@ -93,6 +93,7 @@ function SunburstChart({
       .style('cursor', 'pointer')
       .on('click', clickedFolder)
       .on('mouseover', hovered)
+      .on('mouseout', mouseout)
 
     // Events for file
     path
@@ -107,7 +108,7 @@ function SunburstChart({
         .ancestors()
         .map((d) => d.data.name)
         .reverse()
-        .join('/')}\n${formatData(d.data.value)}`
+        .join('/')}\n${formatData(d.data.value)}% coverage`
 
     path.append('title').text((d) => formatTitle(d))
 
@@ -131,7 +132,12 @@ function SunburstChart({
     }
 
     function hovered(_event, p) {
+      select(this).attr('fill-opacity', 0.6)
       reactHoverCallback(p)
+    }
+
+    function mouseout(_event, p) {
+      select(this).attr('fill-opacity', 1)
     }
 
     function reactClickCallback(p) {
@@ -139,6 +145,7 @@ function SunburstChart({
       const filePath = `${p
         .ancestors()
         .map((d) => d.data.name)
+        .slice(0, -1)
         .reverse()
         .join('/')}`
 
@@ -152,6 +159,7 @@ function SunburstChart({
       const filePath = `${p
         .ancestors()
         .map((d) => d.data.name)
+        .slice(0, -1)
         .reverse()
         .join('/')}`
 
