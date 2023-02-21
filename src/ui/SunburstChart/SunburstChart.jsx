@@ -98,7 +98,7 @@ function SunburstChart({
     // Events for file
     path
       .filter((d) => !d.children)
-      .style('cursor', 'auto')
+      .style('cursor', 'pointer')
       .on('click', clickedFile)
       .on('mouseover', hovered)
 
@@ -123,12 +123,12 @@ function SunburstChart({
       .on('click', clickedFolder)
 
     function clickedFolder(_event, p) {
-      reactClickCallback(p)
+      reactClickCallback({ target: p, type: 'folder' })
       changeLocation(p)
     }
 
     function clickedFile(_event, p) {
-      reactClickCallback(p)
+      reactClickCallback({ target: p, type: 'file' })
     }
 
     function hovered(_event, p) {
@@ -140,9 +140,9 @@ function SunburstChart({
       select(this).attr('fill-opacity', 1)
     }
 
-    function reactClickCallback(p) {
+    function reactClickCallback({ target, type }) {
       // Create a string from the root data down to the current item
-      const filePath = `${p
+      const filePath = `${target
         .ancestors()
         .map((d) => d.data.name)
         .slice(0, -1)
@@ -151,7 +151,7 @@ function SunburstChart({
 
       // callback to parent component with a path, the data node, and raw d3 data
       // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
-      clickHandler.current(filePath, p.data, p)
+      clickHandler.current({ path: filePath, data: target.data, target, type })
     }
 
     function reactHoverCallback(p) {

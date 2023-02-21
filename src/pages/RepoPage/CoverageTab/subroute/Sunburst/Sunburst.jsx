@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
-import { useTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 import SunburstChart from 'ui/SunburstChart'
 
+import useConvertD3ToBreadcrumbs from './hooks/useConvertD3ToBreadcrumbs'
 import useSunburstChart from './hooks/useSunburstChart'
 
 const Placeholder = () => (
@@ -15,21 +15,9 @@ const Placeholder = () => (
   />
 )
 
-function useConvertD3ToBreadcrumbs(path) {
-  const { repo } = useParams()
-  const { treePaths } = useTreePaths(path)
-
-  if (path.length === 0) {
-    return [{ pageName: 'repo', text: repo }]
-  }
-
-  // Reversed for the left truncating trick
-  return treePaths.reverse()
-}
-
 function Sunburst() {
   const { provider, owner, repo } = useParams()
-  const [currentPath, setCurrentPath] = useState('')
+  const [currentPath, setCurrentPath] = useState({ path: '', type: 'folder' })
   const { data, isFetching, isError, isLoading } = useSunburstChart()
   const { data: config } = useRepoConfig({ provider, owner, repo })
 
@@ -50,7 +38,7 @@ function Sunburst() {
         svgFontSize="24px"
         svgRenderSize={930}
         selector={(data) => data?.coverage}
-        onClick={(path) => setCurrentPath(`${path}`)}
+        onClick={({ path, type }) => setCurrentPath({ path, type })}
         colorDomainMin={config?.indicationRange?.lowerRange}
         colorDomainMax={config?.indicationRange?.upperRange}
       />
