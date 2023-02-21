@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 
 const styles = {
-  link: 'mr-5 py-2 border-b-4 border-transparent hover:border-ds-gray-quinary text-ds-gray-quinary',
+  link: 'mr-5 py-2 hover:border-b-4 hover:border-ds-gray-quinary text-ds-gray-quinary',
   activeLink:
     'text-ds-gray-octonary border-b-4 border-ds-gray-octonary font-semibold',
 }
