@@ -67,7 +67,7 @@ function IndirectChangesTab() {
     return (
       <>
         <IndirectChangesInfo />
-        <div className="flex flex-col gap-3 mt-4">
+        <div className="mt-4 flex flex-col gap-3">
           <p>
             Everything is accounted for! No changes detected that need to be
             reviewed.
