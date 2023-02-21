@@ -23,11 +23,11 @@ function ResyncButton() {
 
   return (
     <p className="flex-1 text-sm">
-      <span className="text-ds-gray-quinary font-semibold">
+      <span className="font-semibold text-ds-gray-quinary">
         Can&apos;t find your repo{isGh ? ' or org?' : '?'}
       </span>{' '}
       Try{' '}
-      <button className="text-ds-blue flex-none" onClick={triggerResync}>
+      <button className="flex-none text-ds-blue" onClick={triggerResync}>
         re-syncing
       </button>
       {isGh && (

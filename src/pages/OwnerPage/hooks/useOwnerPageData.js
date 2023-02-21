@@ -18,12 +18,12 @@ export function useOwnerPageData(opts = {}) {
     username: owner,
   }
 
-  return useQuery(
-    ['OwnerPageData', variables, provider],
-    ({ signal }) =>
+  return useQuery({
+    queryKey: ['OwnerPageData', variables, provider, query],
+    queryFn: ({ signal }) =>
       Api.graphql({ provider, query, variables, signal }).then((res) => {
         return res?.data?.owner
       }),
-    opts
-  )
+    ...opts,
+  })
 }

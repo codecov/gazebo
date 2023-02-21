@@ -16,7 +16,7 @@ function PlanControls({ accountDetails }) {
 
   if (isEnterprisePlan(plan?.value) || isInvoicedCustomer) {
     return (
-      <div className="items-center mt-1 text-ds-gray-quinary">
+      <div className="mt-1 items-center text-ds-gray-quinary">
         To change or cancel your plan please contact{' '}
         <A to={{ pageName: 'sales' }}>sales@codecov.io</A>
       </div>

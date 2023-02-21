@@ -2,6 +2,8 @@
   "extends": [
     "react-app",
     "react-app/jest",
+    "plugin:tailwindcss/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
     "plugin:react/recommended",
     "plugin:import/recommended",
     "prettier"
@@ -124,6 +126,24 @@
           "caseInsensitive": true
         },
         "newlines-between": "always"
+      }
+    ],
+    "tailwindcss/no-custom-classname": [
+      "warn",
+      {
+        "callees": ["classnames", "clsx", "ctl"],
+        "config": "tailwind.config.js",
+        "cssFiles": [
+          "**/*.css",
+          "!**/node_modules",
+          "!**/.*",
+          "!**/dist",
+          "!**/build"
+        ],
+        "cssFilesRefreshRate": 5000,
+        "skipClassAttribute": false,
+        "tags": [],
+        "whitelist": []
       }
     ]
   },

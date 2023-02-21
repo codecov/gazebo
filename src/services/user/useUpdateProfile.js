@@ -61,8 +61,8 @@ export function useUpdateProfile({ provider }) {
     ${currentUserFragment}
   `
 
-  return useMutation(
-    ({ name, email }) => {
+  return useMutation({
+    mutationFn: ({ name, email }) => {
       return Api.graphqlMutation({
         provider,
         query: mutation,
@@ -75,14 +75,12 @@ export function useUpdateProfile({ provider }) {
         },
       }).then((res) => res?.data?.updateProfile?.me)
     },
-    {
-      onSuccess: (user) => {
-        queryClient.setQueryData(['currentUser', provider], () => user)
+    onSuccess: (user) => {
+      queryClient.setQueryData(['currentUser', provider], () => user)
 
-        if (config.IS_SELF_HOSTED) {
-          queryClient.invalidateQueries(['SelfHostedCurrentUser'])
-        }
-      },
-    }
-  )
+      if (config.IS_SELF_HOSTED) {
+        queryClient.invalidateQueries(['SelfHostedCurrentUser'])
+      }
+    },
+  })
 }

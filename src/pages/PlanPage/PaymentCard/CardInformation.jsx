@@ -49,7 +49,7 @@ function CardInformation({ subscriptionDetail, openForm, card }) {
     <div className="flex flex-col gap-5">
       <div className="flex gap-4">
         <img
-          className="w-16 h-auto self-center"
+          className="h-auto w-16 self-center"
           alt="credit card logo"
           src={typeCard?.logo}
         />
@@ -63,7 +63,7 @@ function CardInformation({ subscriptionDetail, openForm, card }) {
         </div>
       </div>
       {nextBilling && (
-        <p className="text-ds-gray-quinary text-sm">
+        <p className="text-sm text-ds-gray-quinary">
           Next billing on{' '}
           <span className="text-ds-gray-octonary">{nextBilling}</span>.
         </p>

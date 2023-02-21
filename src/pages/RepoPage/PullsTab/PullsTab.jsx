@@ -19,7 +19,7 @@ import { useSetCrumbs } from '../context'
 const PullsTable = lazy(() => import('./PullsTable'))
 
 const Loader = (
-  <div className="flex-1 flex justify-center">
+  <div className="flex flex-1 justify-center">
     <Spinner size={60} />
   </div>
 )
@@ -82,10 +82,10 @@ function PullsTab() {
   }
 
   return (
-    <div className="flex-1 flex flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4">
       <div className="flex flex-row gap-3">
-        <div className="flex gap-3 justify-center items-center">
-          <label className="font-semibold text-sm">View:</label>
+        <div className="flex items-center justify-center gap-3">
+          <label className="text-sm font-semibold">View:</label>
           <div>
             <MultiSelect
               dataMarketing="pulls-filter-by-state"
@@ -97,8 +97,8 @@ function PullsTab() {
             />
           </div>
         </div>
-        <div className="flex gap-3 justify-center items-center">
-          <label className="font-semibold text-sm ">Sort by:</label>
+        <div className="flex items-center justify-center gap-3">
+          <label className="text-sm font-semibold ">Sort by:</label>
           <div>
             <Select
               dataMarketing="pulls-sort-by-selector"

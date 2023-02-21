@@ -8,7 +8,7 @@ import './CodeRenderer.css'
 
 function CodeRenderer({ code, fileName, LineComponent, rendererType }) {
   return (
-    <table className="w-full border-collapse table-auto box-border whitespace-pre-wrap border-solid border-ds-gray-tertiary border font-mono">
+    <table className="box-border w-full table-auto border-collapse whitespace-pre-wrap border border-solid border-ds-gray-tertiary font-mono">
       <colgroup>
         <col width="40" />
         {rendererType === CODE_RENDERER_TYPE.DIFF && <col width="40" />}

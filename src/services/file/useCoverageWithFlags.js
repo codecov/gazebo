@@ -49,9 +49,19 @@ export function useCoverageWithFlags(
   }
   `
 
-  return useQuery(
-    ['coverage', provider, owner, repo, ref, path, flags],
-    ({ signal }) => {
+  return useQuery({
+    queryKey: [
+      'coverage',
+      provider,
+      owner,
+      repo,
+      ref,
+      path,
+      flags,
+      query,
+      extractCoverageFromResponse,
+    ],
+    queryFn: ({ signal }) => {
       return Api.graphql({
         provider,
         query,
@@ -66,6 +76,6 @@ export function useCoverageWithFlags(
         },
       }).then(extractCoverageFromResponse)
     },
-    options
-  )
+    ...options,
+  })
 }

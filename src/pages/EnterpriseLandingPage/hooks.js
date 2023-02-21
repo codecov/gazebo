@@ -33,7 +33,8 @@ const fetchServiceProviders = ({ signal }) => {
 }
 
 export const useServiceProviders = () => {
-  return useQuery(['GetServiceProviders'], ({ signal }) =>
-    fetchServiceProviders({ signal })
-  )
+  return useQuery({
+    queryKey: ['GetServiceProviders'],
+    queryFn: ({ signal }) => fetchServiceProviders({ signal }),
+  })
 }

@@ -27,7 +27,7 @@ const headers = [
     id: 'coverage',
     header: (
       <>
-        Coverage on <span className="font-light ml-1">HEAD</span>
+        Coverage on <span className="ml-1 font-light">HEAD</span>
       </>
     ),
     accessorKey: 'coverage',
@@ -38,7 +38,7 @@ const headers = [
     id: 'change',
     header: (
       <>
-        Change from <span className="font-light ml-1">BASE</span>
+        Change from <span className="ml-1 font-light">BASE</span>
       </>
     ),
     accessorKey: 'change',
@@ -98,7 +98,7 @@ function transformPullToTable(pulls, isLoading) {
 const Loader = ({ isLoading }) => {
   return (
     isLoading && (
-      <div className="flex-1 flex justify-center">
+      <div className="flex flex-1 justify-center">
         <Spinner size={60} />
       </div>
     )
@@ -142,7 +142,7 @@ function PullsTab() {
       <Table data={dataTable} columns={headers} />
       <Loader isLoading={isLoading} />
       {hasNextPage && (
-        <div className="flex-1 mt-4 flex justify-center">
+        <div className="mt-4 flex flex-1 justify-center">
           <Button
             hook="load-more"
             isLoading={isFetchingNextPage}

@@ -53,13 +53,13 @@ const NotFound = () => {
   }
 
   return (
-    <article className="mx-auto h-full flex items-center justify-center flex-col">
+    <article className="mx-auto flex h-full flex-col items-center justify-center">
       <img
         alt="illustration error"
         className={cs(styles.illustrationError, 'mx-auto')}
         src={illustration}
       />
-      <h1 className="text-2xl mt-6">{title}</h1>
+      <h1 className="mt-6 text-2xl">{title}</h1>
       <NotFoundErrorMessage />
       <p>
         <strong>Error 404</strong>

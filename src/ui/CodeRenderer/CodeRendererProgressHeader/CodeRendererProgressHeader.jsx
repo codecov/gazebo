@@ -17,9 +17,9 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
   return (
     <div
       className={`
-      flex flex-row flex-wrap items-start justify-between gap-2 sm:items-center
-      bg-ds-gray-primary
-      border-t p-3 border-r border-l border-solid border-ds-gray-tertiary
+      flex flex-row flex-wrap items-start justify-between gap-2 border-x
+      border-t
+      border-solid border-ds-gray-tertiary bg-ds-gray-primary p-3 sm:items-center
     `}
     >
       <div className="flex flex-1 gap-1">
@@ -31,7 +31,7 @@ function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
           <CopyClipboard string={path} showLabel={false} variant="muted" />
         )}
       </div>
-      <div className="max-w-xs sm:flex-1 flex gap-2 justify-end items-center">
+      <div className="flex max-w-xs items-center justify-end gap-2 sm:flex-1">
         <Progress amount={fileCoverage} label />
         {isFinite(change) && <TotalsNumber value={change} showChange />}
       </div>

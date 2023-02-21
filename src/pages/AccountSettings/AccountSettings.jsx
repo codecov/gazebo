@@ -23,7 +23,7 @@ const Profile = lazy(() => import('./tabs/Profile'))
 const YAMLTab = lazy(() => import('./tabs/YAML'))
 
 const Loader = (
-  <div className="h-full w-full flex items-center justify-center">
+  <div className="flex h-full w-full items-center justify-center">
     <LogoSpinner />
   </div>
 )
@@ -45,7 +45,7 @@ function AccountSettings() {
     orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
 
   return (
-    <div className="flex flex-col gap-4 mt-2">
+    <div className="mt-2 flex flex-col gap-4">
       <Header />
       <SidebarLayout sidebar={<AccountSettingsSideMenu />}>
         <Suspense fallback={Loader}>

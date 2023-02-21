@@ -41,16 +41,16 @@ function Footer() {
 
   return (
     <footer className="flex-none">
-      <nav className="container flex flex-wrap flex-col lg:flex-row justify-center sm:justify-between text-white py-6 px-3 items-center border-t border-ds-gray-tertiary">
-        <ul className="flex-1 flex justify-center gap-4 lg:justify-start items-center">
+      <nav className="container flex flex-col flex-wrap items-center justify-center border-t border-ds-gray-tertiary py-6 px-3 text-white sm:justify-between lg:flex-row">
+        <ul className="flex flex-1 items-center justify-center gap-4 lg:justify-start">
           {leftMenu.map((props, i) => (
             <FooterItem key={`footer-left-${i}`} {...props} />
           ))}
         </ul>
         <A to={{ pageName: 'provider' }}>
-          <CodecovIcon className="text-ds-gray-quinary mr-2 cursor-pointer" />
+          <CodecovIcon className="mr-2 cursor-pointer text-ds-gray-quinary" />
         </A>
-        <ul className="flex-1 flex justify-center gap-4 lg:justify-end items-center">
+        <ul className="flex flex-1 items-center justify-center gap-4 lg:justify-end">
           {rightMenu.map((props, i) => (
             <FooterItem key={`footer-right-${i}`} {...props} />
           ))}

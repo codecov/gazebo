@@ -18,8 +18,8 @@ export function useUpgradePlan({ provider, owner }) {
     })
   }
 
-  return useMutation(
-    (formData) => {
+  return useMutation({
+    mutationFn: (formData) => {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
         plan: {
@@ -36,11 +36,9 @@ export function useUpgradePlan({ provider, owner }) {
         return data
       })
     },
-    {
-      onSuccess: (data) => {
-        // update the local cache of account details from what the server returns
-        queryClient.setQueryData(['accountDetails', provider, owner], data)
-      },
-    }
-  )
+    onSuccess: (data) => {
+      // update the local cache of account details from what the server returns
+      queryClient.setQueryData(['accountDetails', provider, owner], data)
+    },
+  })
 }

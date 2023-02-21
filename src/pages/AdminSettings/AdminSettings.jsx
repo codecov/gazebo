@@ -15,13 +15,13 @@ const AdminAccess = lazy(() => import('./AdminAccess'))
 const AdminMembers = lazy(() => import('./AdminMembers'))
 
 const Loader = (
-  <div className="flex-1 flex items-center justify-center mt-16">
+  <div className="mt-16 flex flex-1 items-center justify-center">
     <LogoSpinner />
   </div>
 )
 
 const SpinnerLoader = (
-  <div className="flex-1 flex items-center justify-center mt-16">
+  <div className="mt-16 flex flex-1 items-center justify-center">
     <Spinner />
   </div>
 )

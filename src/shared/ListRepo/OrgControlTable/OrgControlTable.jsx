@@ -42,7 +42,7 @@ function OrgControlTable({
   )
 
   return (
-    <div className="m-4 gap-2 sm:mx-0 grid grid-cols-2 lg:flex items-center justify-items-stretch">
+    <div className="m-4 grid grid-cols-2 items-center justify-items-stretch gap-2 sm:mx-0 lg:flex">
       <OptionButton
         active={repoDisplay}
         onChange={(option) => setRepoDisplay(option.text)}

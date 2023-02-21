@@ -35,7 +35,7 @@ function FlagsTab() {
   } = useRepoBackfillingStatus()
 
   return (
-    <div className="flex flex-col gap-4 mx-4 md:mx-0">
+    <div className="mx-4 flex flex-col gap-4 md:mx-0">
       {isTimescaleEnabled ? (
         showFlagsData({ flagsData }) ? (
           <>

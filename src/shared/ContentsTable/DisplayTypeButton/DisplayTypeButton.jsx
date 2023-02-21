@@ -35,7 +35,7 @@ function DisplayTypeButton({ dataLength, isLoading }) {
   }
 
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex items-center gap-4">
       <OptionButton
         active={active.text}
         options={options}

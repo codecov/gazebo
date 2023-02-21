@@ -61,8 +61,8 @@ export function useOnboardUser(opts) {
       ${currentUserFragment}
     `
 
-  return useMutation(
-    (input) => {
+  return useMutation({
+    mutationFn: (input) => {
       const formData = input?.formData
       const selectedOrg = input?.selectedOrg
 
@@ -78,15 +78,13 @@ export function useOnboardUser(opts) {
         selectedOrg: selectedOrg,
       }))
     },
-    {
-      onSuccess: (data) => {
-        const user = data?.user
-        queryClient.setQueryData(['currentUser', provider], () => user)
+    onSuccess: (data) => {
+      const user = data?.user
+      queryClient.setQueryData(['currentUser', provider], () => user)
 
-        if (user && typeof opts?.onSuccess === 'function') {
-          opts.onSuccess(data, opts?.data)
-        }
-      },
-    }
-  )
+      if (user && typeof opts?.onSuccess === 'function') {
+        opts.onSuccess(data, opts?.data)
+      }
+    },
+  })
 }

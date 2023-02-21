@@ -58,8 +58,8 @@ function NameEmailCard({ currentUser, provider }) {
     <Card className="p-10">
       {/* Define the field first and the submit/title after so the TAB order makes sense for accessibility but we reverse the two so it looks like the correct UI */}
       <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl bold">Your details</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="bold text-2xl">Your details</h1>
           <Button
             type="submit"
             disabled={isButtonDisabled}
@@ -68,7 +68,7 @@ function NameEmailCard({ currentUser, provider }) {
             Save changes
           </Button>
         </div>
-        <div className="flex justify-between flex-col md:flex-row gap-2 md:gap-4">
+        <div className="flex flex-col justify-between gap-2 md:flex-row md:gap-4">
           <div className="w-full md:w-1/2">
             <label htmlFor="name-edit" className="bold">
               Name
@@ -81,12 +81,12 @@ function NameEmailCard({ currentUser, provider }) {
               {...register('name', { required: true })}
             />
             {formState?.errors.name && (
-              <p className="text-error-900 mt-1">
+              <p className="mt-1 text-error-900">
                 {formState?.errors.name?.message}
               </p>
             )}
           </div>
-          <div className="w-full md:w-1/2 md:mt-0">
+          <div className="w-full md:mt-0 md:w-1/2">
             <label htmlFor="email-edit" className="bold">
               Email
             </label>
@@ -98,7 +98,7 @@ function NameEmailCard({ currentUser, provider }) {
               {...register('email', { required: true })}
             />
             {formState.errors.email && (
-              <p className="text-error-900 mt-1">
+              <p className="mt-1 text-error-900">
                 {formState.errors.email?.message}
               </p>
             )}

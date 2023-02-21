@@ -15,7 +15,7 @@ NormalTextInput.args = {
 export const ExtraTextInput = Template.bind({})
 ExtraTextInput.args = {
   ...NormalTextInput.args,
-  embedded: () => <Icon name="search" className="w-full h-full" />,
+  embedded: () => <Icon name="search" className="h-full w-full" />,
 }
 
 export default {
