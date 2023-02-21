@@ -992,6 +992,41 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('commit indirect changes', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(
+        hookData.result.current.commitIndirectChanges.path({ commit: 409 })
+      ).toBe(`/gl/doggo/squirrel-locator/commit/409/indirect-changes`)
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.commitIndirectChanges.path({
+          provider: 'bb',
+          commit: 409,
+        })
+      ).toBe(`/bb/doggo/squirrel-locator/commit/409/indirect-changes`)
+      expect(
+        hookData.result.current.commitIndirectChanges.path({
+          owner: 'cat',
+          commit: 409,
+        })
+      ).toBe(`/gl/cat/squirrel-locator/commit/409/indirect-changes`)
+      expect(
+        hookData.result.current.commitIndirectChanges.path({
+          repo: 'tennis-ball',
+          commit: 409,
+        })
+      ).toBe(`/gl/doggo/tennis-ball/commit/409/indirect-changes`)
+      expect(
+        hookData.result.current.commitIndirectChanges.path({ commit: 888 })
+      ).toBe(`/gl/doggo/squirrel-locator/commit/888/indirect-changes`)
+    })
+  })
+
   describe('feedback', () => {
     describe('ref provided', () => {
       beforeAll(() => {

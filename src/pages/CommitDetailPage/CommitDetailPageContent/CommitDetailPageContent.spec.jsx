@@ -15,7 +15,8 @@ jest.mock(
   '../subRoute/CommitDetailFileViewer',
   () => () => 'CommitDetailFileViewer'
 )
-jest.mock('../subRoute/FilesChanged', () => () => 'FilesChanged')
+jest.mock('../subRoute/FilesChangedTab', () => () => 'FilesChangedTab')
+jest.mock('../subRoute/IndirectChangedTab', () => () => 'IndirectChangedTab')
 
 const mockCommitData = {
   owner: {
@@ -175,13 +176,28 @@ describe('CommitDetailPageContent', () => {
   describe('testing base commit path', () => {
     beforeEach(() => setup())
 
-    it('renders files changed', async () => {
+    it('renders files changed tab', async () => {
       render(<CommitDetailPageContent />, {
         wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
       })
 
-      const filesChanged = await screen.findByText('FilesChanged')
-      expect(filesChanged).toBeInTheDocument()
+      const filesChangedTab = await screen.findByText('FilesChangedTab')
+      expect(filesChangedTab).toBeInTheDocument()
+    })
+  })
+
+  describe('testing indirect changes path', () => {
+    beforeEach(() => setup())
+
+    it('renders indirect changed files tab', async () => {
+      render(<CommitDetailPageContent />, {
+        wrapper: wrapper(
+          '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
+        ),
+      })
+
+      const IndirectChangedTab = await screen.findByText('IndirectChangedTab')
+      expect(IndirectChangedTab).toBeInTheDocument()
     })
   })
 
@@ -199,8 +215,8 @@ describe('CommitDetailPageContent', () => {
         )
       )
 
-      const filesChanged = await screen.findByText('FilesChanged')
-      expect(filesChanged).toBeInTheDocument()
+      const filesChangedTab = await screen.findByText('FilesChangedTab')
+      expect(filesChangedTab).toBeInTheDocument()
     })
   })
 

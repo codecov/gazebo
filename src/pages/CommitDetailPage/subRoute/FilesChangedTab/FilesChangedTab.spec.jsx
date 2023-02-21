@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react'
 
-import FilesChanged from './FilesChanged'
+import FilesChangedTab from './FilesChangedTab'
 
 jest.mock('./FilesChangedTable', () => () => 'FilesChangedTable')
 
-describe('FilesChanged', () => {
+describe('FilesChangedTab', () => {
   it('renders commits table', async () => {
-    render(<FilesChanged />)
+    render(<FilesChangedTab />)
 
     const table = await screen.findByText('FilesChangedTable')
     expect(table).toBeInTheDocument()

@@ -37,6 +37,10 @@ function CommitDetailPageTabs({ commitSHA }) {
           exact: true,
         },
         {
+          pageName: 'commitIndirectChanges',
+          options: { commit: commitSHA },
+        },
+        {
           pageName: 'commitTreeView',
           children: 'Files',
           options: { commit: commitSHA },
