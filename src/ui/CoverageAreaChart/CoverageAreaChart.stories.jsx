@@ -2,7 +2,9 @@ import { format } from 'date-fns'
 
 import CoverageAreaChart from './CoverageAreaChart'
 
-const Template = (args) => <CoverageAreaChart {...args} />
+const Template = (args) => (
+  <CoverageAreaChart aproxHeight={250 / 3} aproxWidth={1200 / 3} {...args} />
+)
 
 export const SimpleCoverageAreaChart = Template.bind({})
 SimpleCoverageAreaChart.args = {
