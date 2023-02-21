@@ -12,7 +12,7 @@ function StudentCard({ currentUser }) {
 
   return (
     <Card className="mt-8 p-10">
-      <h1 className="bold text-2xl">Student details</h1>
+      <h1 className="text-2xl">Student details</h1>
       <div className="mt-4 flex">
         <div>
           <h5 className="bold">Status</h5>
