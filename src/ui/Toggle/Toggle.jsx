@@ -29,7 +29,7 @@ function Toggle({
           onClick()
         }
       }}
-      className="flex gap-1.5 items-center"
+      className="flex items-center gap-1.5"
     >
       {label && (
         <label htmlFor={ID} className="cursor-pointer xl:whitespace-nowrap ">

@@ -7,7 +7,7 @@ const CoverageProgress = ({ color, amount, variant = 'default' }) => {
     return <Progress amount={amount} color={color} variant={variant} label />
   }
 
-  return <p className="text-ds-gray-quinary text-sm">No report uploaded yet</p>
+  return <p className="text-sm text-ds-gray-quinary">No report uploaded yet</p>
 }
 
 CoverageProgress.propTypes = {

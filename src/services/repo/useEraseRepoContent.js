@@ -12,8 +12,8 @@ export function useEraseRepoContent() {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
   const refactoredProvider = providerToName(provider).toLowerCase()
-  return useMutation(
-    () => {
+  return useMutation({
+    mutationFn: () => {
       const path = getPathEraseRepo({
         provider: refactoredProvider,
         owner,
@@ -25,10 +25,8 @@ export function useEraseRepoContent() {
         path,
       })
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['GetRepo'])
-      },
-    }
-  )
+    onSuccess: () => {
+      queryClient.invalidateQueries(['GetRepo'])
+    },
+  })
 }

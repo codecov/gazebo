@@ -27,9 +27,18 @@ export function useSingularImpactedFileComparison({
   path,
   filters = {},
 }) {
-  return useQuery(
-    ['ImpactedFileComparison', provider, owner, repo, pullId, path, filters],
-    ({ signal }) =>
+  return useQuery({
+    queryKey: [
+      'ImpactedFileComparison',
+      provider,
+      owner,
+      repo,
+      pullId,
+      path,
+      filters,
+      query,
+    ],
+    queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
@@ -47,8 +56,6 @@ export function useSingularImpactedFileComparison({
           res?.data?.owner?.repository?.pull?.compareWithBase?.impactedFile
         )
       ),
-    {
-      suspense: false,
-    }
-  )
+    suspense: false,
+  })
 }

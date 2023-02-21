@@ -39,7 +39,7 @@ function Header() {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col">
         {commit?.message && <TruncatedMessage message={commit?.message} />}
-        <div className="flex items-center text-ds-gray-quinary gap-2">
+        <div className="flex items-center gap-2 text-ds-gray-quinary">
           <div>
             {commit?.createdAt && (
               <span className="font-light">
@@ -67,7 +67,7 @@ function Header() {
             </A>
           </div>
           <CIStatusLabel ciPassed={commit?.ciPassed} />
-          <span className="flex items-center flex-none">
+          <span className="flex flex-none items-center">
             <Icon name="branch" variant="developer" size="sm" />
             {commit?.branchName}
           </span>

@@ -19,7 +19,7 @@ const query = `
 
 export const useRepoConfig = ({ provider, owner, repo }) =>
   useQuery({
-    queryKey: ['RepoConfig', provider, owner, repo],
+    queryKey: ['RepoConfig', provider, owner, repo, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

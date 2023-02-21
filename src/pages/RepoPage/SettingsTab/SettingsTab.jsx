@@ -15,7 +15,7 @@ const YamlTab = lazy(() => import('./tabs/YamlTab'))
 const BadgesAndGraphsTab = lazy(() => import('./tabs/BadgesAndGraphsTab'))
 
 const tabLoading = (
-  <div className="h-full w-full flex items-center justify-center">
+  <div className="flex h-full w-full items-center justify-center">
     <LogoSpinner />
   </div>
 )

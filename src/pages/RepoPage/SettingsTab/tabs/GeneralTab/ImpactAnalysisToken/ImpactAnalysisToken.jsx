@@ -25,7 +25,7 @@ function ImpactAnalysisToken({ profilingToken }) {
       title={
         <div className="flex gap-2">
           <span>Impact analysis token</span>
-          <p className="flex items-center font-semibold rounded px-4 text-white bg-ds-pink-tertiary mt-1 text-sm">
+          <p className="mt-1 flex items-center rounded bg-ds-pink-tertiary px-4 text-sm font-semibold text-white">
             BETA
           </p>
         </div>
@@ -39,8 +39,8 @@ function ImpactAnalysisToken({ profilingToken }) {
         </span>
       }
       content={
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="flex flex-1 flex-col gap-4">
             <p>
               If you are not using this feature, you do not need the token. If
               you are uploading coverage reports to Codecov, you should be using

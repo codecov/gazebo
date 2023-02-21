@@ -37,7 +37,7 @@ function YAMLViewer() {
               {...getLineProps({ line, key: i })}
               className="table-row"
             >
-              <div className="line-number table-cell px-2 text-right border-r border-solid border-ds-gray-tertiary select-none">
+              <div className="line-number table-cell select-none border-r border-solid border-ds-gray-tertiary px-2 text-right">
                 {i + 1}
               </div>
               <div className="table-cell pl-2">

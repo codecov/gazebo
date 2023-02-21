@@ -18,13 +18,13 @@ function GitHubActions() {
   return (
     <>
       <div className="flex flex-col gap-4">
-        <h2 className="pt-6 font-semibold text-base">
+        <h2 className="pt-6 text-base font-semibold">
           Step 1: add repository token as{' '}
           <A to={{ pageName: 'githubRepoSecrets' }} isExternal>
             repository secret
           </A>
         </h2>
-        <pre className="py-2 px-4 flex items-center gap-2 font-mono rounded-md bg-ds-gray-primary border-ds-gray-secondary border-2 overflow-auto">
+        <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary py-2 px-4 font-mono">
           CODECOV_TOKEN={data?.repository?.uploadToken}
           <CopyClipboard
             string={data?.repository?.uploadToken}
@@ -33,7 +33,7 @@ function GitHubActions() {
         </pre>
       </div>
       <div className="flex flex-col">
-        <h2 className="pt-6 font-semibold text-base">
+        <h2 className="pt-6 text-base font-semibold">
           Step 2: configure{' '}
           <A to={{ pageName: 'codecovGithubApp' }} isExternal>
             Codecov&apos;s GitHub app
@@ -44,13 +44,13 @@ function GitHubActions() {
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <h2 className="pt-6 font-semibold text-base">
+        <h2 className="pt-6 text-base font-semibold">
           Step 3: add Codecov to your{' '}
           <A to={{ pageName: 'githubRepoActions' }} isExternal>
             GitHub Actions workflow
           </A>
         </h2>
-        <div className="flex items-start justify-between py-2 px-4 font-mono rounded-md bg-ds-gray-primary border-ds-gray-secondary border-2 whitespace-pre-line overflow-auto">
+        <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary py-2 px-4 font-mono">
           <pre>
             - name: Upload coverage reports to Codecov
             <br />
@@ -60,7 +60,7 @@ function GitHubActions() {
         </div>
       </div>
       <div className="flex flex-col">
-        <h2 className="pt-6 font-semibold text-base">
+        <h2 className="pt-6 text-base font-semibold">
           Step 4: get coverage analysis from Codecov
         </h2>
         <p className="text-base">
@@ -70,7 +70,7 @@ function GitHubActions() {
         <img
           alt="codecov patch and project"
           src={patchAndProject}
-          className="xl:w-2/3 self-center mt-2"
+          className="mt-2 self-center xl:w-2/3"
         />
         <p className="text-base">
           and a comment with coverage report in the pull request:
@@ -82,7 +82,7 @@ function GitHubActions() {
         </p>
       </div>
       <div className="mt-6 border-l-2 border-ds-gray-secondary">
-        <p className="pl-3 text-base pb-2">
+        <p className="pl-3 pb-2 text-base">
           &#127881; Once steps are complete, you should see the coverage
           dashboard
         </p>

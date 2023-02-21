@@ -11,8 +11,8 @@ export function useUpdateCard({ provider, owner }) {
   const stripe = useStripe()
   const queryClient = useQueryClient()
 
-  return useMutation(
-    (card) => {
+  return useMutation({
+    mutationFn: (card) => {
       return stripe
         .createPaymentMethod({
           type: 'card',
@@ -35,11 +35,9 @@ export function useUpdateCard({ provider, owner }) {
           })
         })
     },
-    {
-      onSuccess: (data) => {
-        // update the local cache of account details from what the server returns
-        queryClient.setQueryData(['accountDetails', provider, owner], data)
-      },
-    }
-  )
+    onSuccess: (data) => {
+      // update the local cache of account details from what the server returns
+      queryClient.setQueryData(['accountDetails', provider, owner], data)
+    },
+  })
 }

@@ -19,7 +19,7 @@ const query = `
 
 export const useBranch = ({ provider, owner, repo, branch, opts = {} }) =>
   useQuery({
-    queryKey: ['GetBranch', provider, owner, repo, branch],
+    queryKey: ['GetBranch', provider, owner, repo, branch, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

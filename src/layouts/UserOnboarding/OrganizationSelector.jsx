@@ -59,7 +59,7 @@ const getOrgStepProps = ({
       <span>
         Don&apos;t see your org?
         <button
-          className="text-blue-400 pl-2"
+          className="pl-2 text-blue-400"
           onClick={() => {
             helpFindingOrganization()
             setIsHelpFindingOrg(true)

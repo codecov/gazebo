@@ -17,7 +17,7 @@ function UploadsCard() {
   return (
     <>
       <div className="flex flex-1 flex-col border border-ds-gray-secondary text-ds-gray-octonary">
-        <div className="flex p-4 border-b border-ds-gray-secondary flex-col">
+        <div className="flex flex-col border-b border-ds-gray-secondary p-4">
           <div className="flex justify-between text-base">
             <h2 className="font-semibold">Uploads</h2>
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
@@ -26,11 +26,11 @@ function UploadsCard() {
           </div>
           <span className="text-ds-gray-quinary">{uploadsOverview}</span>
         </div>
-        <div className="bg-ds-gray-primary max-h-64 min-w-[24rem] overflow-auto flex flex-col flex-1 divide-y divide-solid divide-ds-gray-secondary">
+        <div className="flex max-h-64 min-w-[24rem] flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary">
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
               {title !== NULL && (
-                <span className="sticky top-0 bg-ds-gray-primary text-sm font-semibold flex-1 py-1 px-4 border-r border-ds-gray-secondary">
+                <span className="sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary py-1 px-4 text-sm font-semibold">
                   {title}
                 </span>
               )}

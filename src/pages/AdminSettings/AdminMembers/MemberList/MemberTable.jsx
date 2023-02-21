@@ -22,7 +22,7 @@ const columns = [
   },
   {
     id: 'type',
-    header: () => <span className="flex flex-row grow text-center">Type</span>,
+    header: () => <span className="flex grow flex-row text-center">Type</span>,
     accessorKey: 'type',
     cell: (info) => info.getValue(),
     width: 'w-2/12 min-win-min',
@@ -80,23 +80,21 @@ function MemberTable() {
   const { data, isFetching, hasNextPage, fetchNextPage } =
     useSelfHostedUserList(params)
 
-  const { mutate } = useMutation(
-    ({ activated, ownerid }) =>
+  const { mutate } = useMutation({
+    mutationFn: ({ activated, ownerid }) =>
       Api.patch({ path: `/users/${ownerid}`, body: { activated } }),
-    {
-      useErrorBoundary: true,
-      onSuccess: () => {
-        queryClient.invalidateQueries(['SelfHostedSettings'])
-        queryClient.invalidateQueries(['Seats'])
-        queryClient.invalidateQueries([
-          'SelfHostedUserList',
-          params?.activated,
-          params?.search,
-          params?.isAdmin,
-        ])
-      },
-    }
-  )
+    useErrorBoundary: true,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['SelfHostedSettings'])
+      queryClient.invalidateQueries(['Seats'])
+      queryClient.invalidateQueries([
+        'SelfHostedUserList',
+        params?.activated,
+        params?.search,
+        params?.isAdmin,
+      ])
+    },
+  })
 
   const tableContent = createTable({ tableData: data, mutate, disableToggle })
 
@@ -104,7 +102,7 @@ function MemberTable() {
     <>
       <Table data={tableContent} columns={columns} />
       {hasNextPage && (
-        <div className="w-full mt-4 flex justify-center">
+        <div className="mt-4 flex w-full justify-center">
           <Button
             hook="load-more"
             isLoading={isFetching}

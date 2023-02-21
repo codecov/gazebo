@@ -11,7 +11,7 @@ const fields = [
     ),
     value: (
       <div className="h-6">
-        <div className="animate-pulse bg-ds-gray-tertiary rounded-full h-4 w-20" />
+        <div className="h-4 w-20 animate-pulse rounded-full bg-ds-gray-tertiary" />
       </div>
     ),
   },
@@ -20,7 +20,7 @@ const fields = [
     title: 'Patch',
     value: (
       <div className="h-6">
-        <div className="animate-pulse bg-ds-gray-tertiary rounded-full h-4 w-20" />
+        <div className="h-4 w-20 animate-pulse rounded-full bg-ds-gray-tertiary" />
       </div>
     ),
   },
@@ -29,7 +29,7 @@ const fields = [
     title: 'Change',
     value: (
       <div className="h-6">
-        <div className="animate-pulse bg-ds-gray-tertiary rounded-full h-4 w-20" />
+        <div className="h-4 w-20 animate-pulse rounded-full bg-ds-gray-tertiary" />
       </div>
     ),
   },

@@ -11,12 +11,11 @@ function withOpacity(variableName) {
 
 module.exports = {
   content: [
-    './src/**/*.js',
-    './src/*.js',
+    './src/**/*.{js,jsx,ts,tsx}',
+    './src/*.{js,jsx,ts,tsx}',
     './public/*.html',
-    './src/**/*.jsx',
-    './src/*.jsx',
   ],
+  mode: 'jit',
   plugins: [require('@tailwindcss/line-clamp')],
   theme: {
     container: {
@@ -136,21 +135,6 @@ module.exports = {
       backgroundImage: {
         'enterprise-banner-bg': "url('/src/assets/enterprise-banner-bg.png')",
       },
-    },
-  },
-  variants: {
-    extend: {
-      textColor: ['disabled'],
-      margin: ['responsive', 'first', 'last', 'first-letter'],
-      opacity: ['disabled', 'hover'],
-      cursor: ['disabled'],
-      transitionProperty: ['responsive', 'motion-safe', 'motion-reduce'],
-      borderRadius: ['focus', 'last'],
-      borderStyle: ['first'],
-      borderColor: ['first', 'disabled'],
-      borderWidth: ['first'],
-      padding: ['responsive', 'first', 'last'],
-      backgroundColor: ['disabled'],
     },
   },
 }

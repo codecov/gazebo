@@ -50,8 +50,8 @@ function YAML({ owner }) {
         closeModal={() => reset({}, { keepValues: true })}
         owner={owner}
       />
-      <div className="border-b border-ds-gray-secondary pb-4 mb-4">
-        <p className="font-semimbold text-lg">Global yml</p>
+      <div className="mb-4 border-b border-ds-gray-secondary pb-4">
+        <p className="text-lg">Global yml</p>
         <p>
           Changes made to the Global yaml are applied to all repositories in the
           org if they do not have a repo level yaml.{' '}
@@ -66,7 +66,7 @@ function YAML({ owner }) {
         </p>
       </div>
       {formState.errors.editor && (
-        <div className="p-2 my-4 text-ds-primary-red border-ds-primary-red border rounded bg-ds-coverage-uncovered">
+        <div className="my-4 rounded border border-ds-primary-red bg-ds-coverage-uncovered p-2 text-ds-primary-red">
           <p>{formState.errors.editor.message}</p>
         </div>
       )}
@@ -81,7 +81,7 @@ function YAML({ owner }) {
           />
         )}
       />
-      <div className="mt-4 float-right">
+      <div className="float-right mt-4">
         <Button
           hook="save-yaml"
           disabled={!formState.isDirty}

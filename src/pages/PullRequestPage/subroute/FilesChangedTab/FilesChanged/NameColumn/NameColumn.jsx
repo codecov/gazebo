@@ -15,7 +15,7 @@ export default function NameColumn({ row, getValue }) {
 
   return (
     <div
-      className="flex gap-2 cursor-pointer items-center"
+      className="flex cursor-pointer items-center gap-2"
       data-testid="name-expand"
       onClick={() => row.toggleExpanded()}
       onMouseEnter={async () => {

@@ -6,8 +6,8 @@ import { USER_TOKEN_TYPE } from './constants'
 
 export function useGenerateUserToken({ provider, opts = {} }) {
   const queryClient = useQueryClient()
-  return useMutation(
-    ({ name }) => {
+  return useMutation({
+    mutationFn: ({ name }) => {
       const query = `
         mutation CreateUserToken($input: CreateUserTokenInput!) {
           createUserToken(input: $input) {
@@ -26,11 +26,9 @@ export function useGenerateUserToken({ provider, opts = {} }) {
         mutationPath: 'createUserToken',
       })
     },
-    {
-      useErrorBoundary: true,
-      onSuccess: () => {
-        queryClient.invalidateQueries('sessions')
-      },
-    }
-  )
+    useErrorBoundary: true,
+    onSuccess: () => {
+      queryClient.invalidateQueries('sessions')
+    },
+  })
 }

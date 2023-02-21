@@ -17,7 +17,7 @@ const ExceededUploadsAlert = () => (
         <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade plan</A> and you&apos;ll
         have unlimited uploads.
       </p>
-      <div className="w-36 my-6">
+      <div className="my-6 w-36">
         <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
           Upgrade plan
         </Button>

@@ -7,7 +7,7 @@ import Icon from 'ui/Icon'
 export default function CIStatusLabel({ ciPassed }) {
   if (isNil(ciPassed)) {
     return (
-      <span className="flex items-center text-xs flex-none gap-1">
+      <span className="flex flex-none items-center gap-1 text-xs">
         <span>
           <Icon size="sm" name="statusRunning" variant="developer" />
         </span>
@@ -17,7 +17,7 @@ export default function CIStatusLabel({ ciPassed }) {
   }
 
   return (
-    <span className="flex items-center text-xs flex-none gap-1">
+    <span className="flex flex-none items-center gap-1 text-xs">
       <span
         className={cs({
           'text-ds-primary-green': ciPassed,

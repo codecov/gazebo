@@ -1,7 +1,7 @@
 import CopyClipboard from './CopyClipboard'
 
 const Template = (args) => (
-  <div className="flex gap-8 items-start">
+  <div className="flex items-start gap-8">
     <CopyClipboard {...args} />
     <textarea
       className="border border-solid border-ds-gray"

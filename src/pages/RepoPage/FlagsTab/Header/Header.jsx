@@ -43,17 +43,17 @@ const Header = ({ controlsDisabled, children }) => {
 
   return (
     <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
-      <div className="grid md:grid-cols-4 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x mb-4 divide-solid divide-ds-gray-secondary w-2/3 sm:w-full">
-        <div className="flex flex-col justify-between gap-2 mr-4 p-4 sm:py-0 sm:border-l md:border-l-0 sm:border-ds-gray-secondary">
-          <h3 className="text-sm text-ds-gray-octonary font-semibold">
+      <div className="mb-4 grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-y-0 sm:divide-x md:grid-cols-4">
+        <div className="mr-4 flex flex-col justify-between gap-2 p-4 sm:border-l sm:border-ds-gray-secondary sm:py-0 md:border-l-0">
+          <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Configured flags
           </h3>
-          <p className="flex flex-1 text-xl text-ds-gray-octonary font-light">
+          <p className="flex flex-1 text-xl font-light text-ds-gray-octonary">
             {data?.flagsCount}
           </p>
         </div>
-        <div className="flex flex-col p-4 justify-between gap-2 sm:py-0">
-          <h3 className="text-sm text-ds-gray-octonary font-semibold">
+        <div className="flex flex-col justify-between gap-2 p-4 sm:py-0">
+          <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Historical trend
           </h3>
           <Select
@@ -69,8 +69,8 @@ const Header = ({ controlsDisabled, children }) => {
             renderSelected={({ label }) => label}
           />
         </div>
-        <div className="flex flex-col border-ds-gray-secondary p-4 justify-between gap-2 sm:py-0">
-          <h3 className="text-sm text-ds-gray-octonary font-semibold">
+        <div className="flex flex-col justify-between gap-2 border-ds-gray-secondary p-4 sm:py-0">
+          <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Show by
           </h3>
           <MultiSelect
@@ -89,7 +89,7 @@ const Header = ({ controlsDisabled, children }) => {
             }}
             onSearch={(term) => setSearch(term)}
             renderSelected={(selectedItems) => (
-              <span className="flex gap-2 items-center">
+              <span className="flex items-center gap-2">
                 <Icon variant="solid" name="flag" />
                 {selectedItems.length === 0 ? (
                   'All flags'
@@ -100,7 +100,7 @@ const Header = ({ controlsDisabled, children }) => {
             )}
           />
         </div>
-        <p className="text-xs p-4 md:py-0">
+        <p className="p-4 text-xs md:py-0">
           Please drop us a comment{' '}
           <A to={{ pageName: 'flagsFeedback' }}>here</A> and let us know what
           you think of our new Flags page.
