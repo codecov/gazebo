@@ -22,28 +22,26 @@ function ResyncButton() {
   }
 
   return (
-    <div className="flex-1 text-sm">
-      <p className="text-ds-gray-quinary font-semibold">
+    <p className="flex-1 text-sm">
+      <span className="text-ds-gray-quinary font-semibold">
         Can&apos;t find your repo{isGh ? ' or org?' : '?'}
-      </p>
-      <p>
-        Try{' '}
-        <button className="text-ds-blue flex-none" onClick={triggerResync}>
-          re-syncing
-        </button>
-        {isGh && (
-          <>
-            {' '}
-            or <A to={{ pageName: 'userAppManagePage' }}>check org access</A>.
-            Learn more in{' '}
-            <A hook="oauth-troubleshoot" to={{ pageName: 'oauthTroubleshoot' }}>
-              our docs
-            </A>
-            .
-          </>
-        )}
-      </p>
-    </div>
+      </span>{' '}
+      Try{' '}
+      <button className="text-ds-blue flex-none" onClick={triggerResync}>
+        re-syncing
+      </button>
+      {isGh && (
+        <>
+          {' '}
+          or <A to={{ pageName: 'userAppManagePage' }}>check org access</A>.
+          Learn more in{' '}
+          <A hook="oauth-troubleshoot" to={{ pageName: 'oauthTroubleshoot' }}>
+            our docs
+          </A>
+          .
+        </>
+      )}
+    </p>
   )
 }
 
