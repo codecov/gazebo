@@ -10,7 +10,7 @@ const PullState = ({ state }) => {
   const icon = IconEnum.find((item) => state === item.state)
 
   return (
-    <span className="text-ds-gray-quinary flex items-center">
+    <span className="flex items-center text-ds-gray-quinary">
       <Icon name={icon?.name} variant="developer" size="sm" />
     </span>
   )
@@ -22,20 +22,20 @@ PullState.propTypes = {
 
 const Coverage = ({ head, state, pullId, plain = false }) =>
   typeof head?.totals?.coverage === 'number' ? (
-    <div className="flex-1 justify-end flex flex-wrap md:flex-row md:flex-nowrap">
+    <div className="flex flex-1 flex-wrap justify-end md:flex-row md:flex-nowrap">
       <PullState state={state} />
       <A to={{ pageName: 'pullDetail', options: { pullId } }}>
-        <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
+        <span className="mx-6 font-mono text-ds-gray-quinary">#{pullId}</span>
       </A>
       <TotalsNumber value={head?.totals?.coverage} plain />
     </div>
   ) : (
-    <div className="flex-1 justify-end flex flex-wrap md:flex-row md:flex-nowrap">
+    <div className="flex flex-1 flex-wrap justify-end md:flex-row md:flex-nowrap">
       <PullState state={state} />
       <A to={{ pageName: 'pullDetail', options: { pullId } }}>
-        <span className="mx-6 text-ds-gray-quinary font-mono">#{pullId}</span>
+        <span className="mx-6 font-mono text-ds-gray-quinary">#{pullId}</span>
       </A>
-      <span className="flex-1 text-right text-ds-gray-quinary text-sm">
+      <span className="flex-1 text-right text-sm text-ds-gray-quinary">
         No report uploaded yet
       </span>
     </div>

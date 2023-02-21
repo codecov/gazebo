@@ -24,12 +24,12 @@ export const useSelfHostedHasAdmins = ({ provider }, options = {}) => {
     ...options,
   }
 
-  return useQuery(
-    ['hasAdmins', provider],
-    () =>
+  return useQuery({
+    queryKey: ['hasAdmins', provider],
+    queryFn: () =>
       fetchHasAdmins({
         provider,
       }),
-    opts
-  )
+    ...opts,
+  })
 }

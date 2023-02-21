@@ -61,9 +61,9 @@ const Sparkline = ({
   }
 
   return (
-    <table style={tableCssProperties} className="flex-1 flex">
+    <table style={tableCssProperties} className="flex flex-1">
       <caption className="sr-only">{description}</caption>
-      <tbody className="flex flex-row flex-1">
+      <tbody className="flex flex-1 flex-row">
         {data.map(({ start, end, mode, value }) => {
           // Inline styles are not performant but because this is memoized it should be ok.
           const properties = {
@@ -72,11 +72,11 @@ const Sparkline = ({
           }
           return (
             <tr
-              className="relative flex-1 justify-start flex flex-row"
+              className="relative flex flex-1 flex-row justify-start"
               key={uniqueId(dataTemplate + description)}
             >
               <td
-                className="line p-0 absolute inset-0 flex flex-1 before:content-[''] before:absolute before:inset-0 before:bg-ds-pink after:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-ds-pink after:to-white"
+                className="line absolute inset-0 flex flex-1 p-0 before:absolute before:inset-0 before:bg-ds-pink before:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-ds-pink after:to-white after:content-['']"
                 style={properties}
                 data-mode={mode}
               >

@@ -14,25 +14,23 @@ const Loader = () => (
 function AutoActivateMembers() {
   const queryClient = useQueryClient()
   const { data, isLoading } = useSelfHostedSettings()
-  const mutation = useMutation(
-    (body) => {
+  const mutation = useMutation({
+    mutationFn: (body) => {
       return Api.patch({ path: '/settings', body })
     },
-    {
-      useErrorBoundary: true,
-      onSuccess: () => {
-        queryClient.invalidateQueries(['SelfHostedSettings'])
-      },
-    }
-  )
+    useErrorBoundary: true,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['SelfHostedSettings'])
+    },
+  })
 
   if (isLoading) {
     return <Loader />
   }
 
   return (
-    <div className="flex flex-col p-4 gap-2 border-2 border-ds-gray-primary mt-4">
-      <div className="flex flex-row gap-2 items-center">
+    <div className="mt-4 flex flex-col gap-2 border-2 border-ds-gray-primary p-4">
+      <div className="flex flex-row items-center gap-2">
         <h3 className="font-semibold">Auto-activate members: </h3>
         <Toggle
           dataMarketing="auto-acitvate-members"

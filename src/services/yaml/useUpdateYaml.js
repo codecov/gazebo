@@ -32,8 +32,8 @@ const query = `
 export function useUpdateYaml({ username }) {
   const { provider } = useParams()
 
-  return useMutation(
-    ({ yaml }) => {
+  return useMutation({
+    mutationFn: ({ yaml }) => {
       const variables = { input: { username: username, yaml } }
       return Api.graphqlMutation({
         provider,
@@ -42,8 +42,6 @@ export function useUpdateYaml({ username }) {
         mutationPath: 'setYamlOnOwner',
       })
     },
-    {
-      useErrorBoundary: true,
-    }
-  )
+    useErrorBoundary: true,
+  })
 }

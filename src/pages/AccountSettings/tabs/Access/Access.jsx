@@ -18,7 +18,7 @@ function Access({ provider }) {
   return (
     <div className="flex flex-col">
       <h2 className="text-lg font-semibold">API Tokens</h2>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <p data-testid="tokens-summary">
           Tokens created to access Codecov’s API as an authenticated user{' '}
           <a

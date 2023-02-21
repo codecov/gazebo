@@ -34,14 +34,17 @@ export function useSessions({ provider }) {
       }
   `
 
-  return useQuery(['sessions', provider], ({ signal }) => {
-    return Api.graphql({ provider, query, signal }).then((res) => {
-      const me = res?.data?.me
-      if (!me) return null
-      return {
-        sessions: mapEdges(me?.sessions) || [],
-        tokens: mapEdges(me?.tokens) || [],
-      }
-    })
+  return useQuery({
+    queryKey: ['sessions', provider, query],
+    queryFn: ({ signal }) => {
+      return Api.graphql({ provider, query, signal }).then((res) => {
+        const me = res?.data?.me
+        if (!me) return null
+        return {
+          sessions: mapEdges(me?.sessions) || [],
+          tokens: mapEdges(me?.tokens) || [],
+        }
+      })
+    },
   })
 }

@@ -8,7 +8,7 @@ function SyncingBanner() {
     <div className="py-4">
       <Banner variant="plain">
         <BannerHeading>
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <Spinner />
             <h2 className="font-semibold">Pulling historical data</h2>
           </div>

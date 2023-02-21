@@ -9,8 +9,8 @@ function getPathAccountDetails({ provider, owner }) {
 }
 
 export function useEraseAccount({ provider, owner }) {
-  return useMutation(
-    () => {
+  return useMutation({
+    mutationFn: () => {
       const path = getPathAccountDetails({ provider, owner })
 
       return Api.delete({
@@ -18,13 +18,11 @@ export function useEraseAccount({ provider, owner }) {
         path,
       })
     },
-    {
-      onSuccess: () => {
-        // clear cookie and redirect to homepage
-        const cookieTokenName = ProviderCookieKeyMapping[provider]
-        Cookie.remove(cookieTokenName)
-        window.location.href = '/'
-      },
-    }
-  )
+    onSuccess: () => {
+      // clear cookie and redirect to homepage
+      const cookieTokenName = ProviderCookieKeyMapping[provider]
+      Cookie.remove(cookieTokenName)
+      window.location.href = '/'
+    },
+  })
 }

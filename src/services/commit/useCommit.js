@@ -107,30 +107,32 @@ export function useCommit({
     }))
   }
 
-  const tempKey = ['commit', provider, owner, repo, commitid]
+  const tempKey = ['commit', provider, owner, repo, commitid, query]
 
-  const commitQuery = useQuery(tempKey, ({ signal }) =>
-    Api.graphql({
-      provider,
-      query,
-      signal,
-      variables: {
+  const commitQuery = useQuery({
+    queryKey: tempKey,
+    queryFn: ({ signal }) =>
+      Api.graphql({
         provider,
-        owner,
-        repo,
-        commitid,
-      },
-    }).then((res) => {
-      const commit = res?.data?.owner?.repository?.commit
-      if (!commit) return {}
-      return {
-        commit: {
-          ...commit,
-          uploads: processUploads(commit?.uploads),
+        query,
+        signal,
+        variables: {
+          provider,
+          owner,
+          repo,
+          commitid,
         },
-      }
-    })
-  )
+      }).then((res) => {
+        const commit = res?.data?.owner?.repository?.commit
+        if (!commit) return {}
+        return {
+          commit: {
+            ...commit,
+            uploads: processUploads(commit?.uploads),
+          },
+        }
+      }),
+  })
 
   const queryClient = useQueryClient()
 

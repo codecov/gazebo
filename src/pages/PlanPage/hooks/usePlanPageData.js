@@ -19,12 +19,12 @@ export function usePlanPageData(opts) {
     username: owner,
   }
 
-  return useQuery(
-    ['PlanPageData', variables, provider],
-    ({ signal }) =>
+  return useQuery({
+    queryKey: ['PlanPageData', variables, provider, query],
+    queryFn: ({ signal }) =>
       Api.graphql({ provider, query, variables, signal }).then(
         (res) => res?.data?.owner
       ),
-    opts
-  )
+    ...opts,
+  })
 }

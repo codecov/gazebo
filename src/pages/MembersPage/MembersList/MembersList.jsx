@@ -73,7 +73,7 @@ function MembersList() {
   return (
     <article className={UserManagementClasses.root}>
       <UpgradeModal isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className="grid grid-cols-2 sm:grid-cols-3 items-center gap-4 mx-4 sm:mx-0">
+      <div className="mx-4 grid grid-cols-2 items-center gap-4 sm:mx-0 sm:grid-cols-3">
         <Select
           ariaName="members status selector"
           dataMarketing="members-status-selector"

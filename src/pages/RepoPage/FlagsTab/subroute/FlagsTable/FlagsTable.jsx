@@ -67,7 +67,7 @@ function createTableData({ tableData, indicationRange }) {
 }
 
 const Loader = () => (
-  <div className="flex-1 flex justify-center">
+  <div className="flex flex-1 justify-center">
     <Spinner size={60} />
   </div>
 )
@@ -102,13 +102,13 @@ function FlagsTable() {
     <>
       <Table data={tableData} columns={headers} onSort={handleSort} />
       {tableData?.length === 0 && !isLoading && (
-        <p className="flex justify-center flex-1">
+        <p className="flex flex-1 justify-center">
           {getEmptyStateText({ isSearching })}
         </p>
       )}
       {isLoading && <Loader />}
       {hasNextPage && (
-        <div className="flex-1 mt-4 flex justify-center">
+        <div className="mt-4 flex flex-1 justify-center">
           <Button
             hook="load-more"
             isLoading={isFetchingNextPage}

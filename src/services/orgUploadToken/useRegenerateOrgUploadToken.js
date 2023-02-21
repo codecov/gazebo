@@ -6,8 +6,8 @@ import Api from 'shared/api'
 export function useRegenerateOrgUploadToken() {
   const { provider, owner } = useParams()
   const queryClient = useQueryClient()
-  return useMutation(
-    () => {
+  return useMutation({
+    mutationFn: () => {
       const query = `
         mutation regenerateOrgUploadToken(
           $input: RegenerateOrgUploadTokenInput!
@@ -28,11 +28,9 @@ export function useRegenerateOrgUploadToken() {
         mutationPath: 'regenerateOrgUploadToken',
       })
     },
-    {
-      useErrorBoundary: true,
-      onSuccess: () => {
-        queryClient.invalidateQueries('DetailOwner')
-      },
-    }
-  )
+    useErrorBoundary: true,
+    onSuccess: () => {
+      queryClient.invalidateQueries('DetailOwner')
+    },
+  })
 }

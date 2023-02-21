@@ -15,7 +15,7 @@ function BaseLayout({ children }) {
   useTracking()
 
   const fullPageLoader = (
-    <div className="flex-1 flex items-center justify-center mt-16">
+    <div className="mt-16 flex flex-1 items-center justify-center">
       <LogoSpinner />
     </div>
   )
@@ -26,7 +26,7 @@ function BaseLayout({ children }) {
       <Suspense fallback={fullPageLoader}>
         <ErrorBoundary sentryScopes={[['layout', 'base']]}>
           <NetworkErrorBoundary>
-            <main className="container grow flex flex-col gap-2 mt-2 mb-8 md:p-0">
+            <main className="container mt-2 mb-8 flex grow flex-col gap-2 md:p-0">
               <GlobalBanners />
               {children}
               <UserOnboarding />

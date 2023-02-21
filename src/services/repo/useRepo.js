@@ -37,7 +37,9 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
 }
 
 export function useRepo({ provider, owner, repo }) {
-  return useQuery(['GetRepo', provider, owner, repo], ({ signal }) =>
-    fetchRepoDetails({ provider, owner, repo, signal })
-  )
+  return useQuery({
+    queryKey: ['GetRepo', provider, owner, repo],
+    queryFn: ({ signal }) =>
+      fetchRepoDetails({ provider, owner, repo, signal }),
+  })
 }

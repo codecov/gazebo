@@ -27,7 +27,7 @@ function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center mt-16">
+      <div className="mt-16 flex items-center justify-center">
         <LogoSpinner />
       </div>
     )
@@ -35,7 +35,7 @@ function HomePage() {
 
   return (
     // mt-2 until we sticky this view
-    <div className="flex flex-col gap-4 mt-2">
+    <div className="mt-2 flex flex-col gap-4">
       <MyContextSwitcher pageName="owner" activeContext={null} />
       <div>
         <ActiveContext.Provider value={params.repoDisplay}>

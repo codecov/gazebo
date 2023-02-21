@@ -11,9 +11,9 @@ function BaseModal({
   hasCloseButton = true,
 }) {
   return (
-    <div className="bg-white rounded">
-      <header className="flex justify-between items-center px-4 pt-4">
-        <h2 className="font-semibold text-3xl">{title}</h2>
+    <div className="rounded bg-white">
+      <header className="flex items-center justify-between px-4 pt-4">
+        <h2 className="text-3xl font-semibold">{title}</h2>
         {hasCloseButton && (
           <span
             className="cursor-pointer fill-current text-ds-gray-octonary"
@@ -26,12 +26,12 @@ function BaseModal({
       </header>
       {subtitle && <p className="px-4 text-lg">{subtitle}</p>}
       {body && (
-        <div className="w-full p-4 mt-4 text-ds-gray-octonary border-t text-sm max-h-96 overflow-y-auto">
+        <div className="mt-4 max-h-96 w-full overflow-y-auto border-t p-4 text-sm text-ds-gray-octonary">
           {body}
         </div>
       )}
       {footer && (
-        <footer className="border-t flex justify-end rounded-b p-4 bg-ds-gray-primary mt-4">
+        <footer className="mt-4 flex justify-end rounded-b border-t bg-ds-gray-primary p-4">
           {footer}
         </footer>
       )}

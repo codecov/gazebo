@@ -191,7 +191,7 @@ const Table = memo(function ({
   )
 
   return (
-    <table className="flex-1 flex flex-col">
+    <table className="flex flex-1 flex-col">
       {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
       {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
     </table>
