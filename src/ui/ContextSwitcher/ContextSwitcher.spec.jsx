@@ -10,6 +10,11 @@ import ContextSwitcher from '.'
 jest.mock('react-use/lib/useIntersection')
 jest.mock('services/image')
 
+// eslint-disable-next-line react/prop-types
+const ModalComponent = ({ closeFn }) => <div onClick={closeFn}>component</div>
+// eslint-disable-next-line react/prop-types
+const ModalControl = ({ onClick }) => <button onClick={onClick}>display</button>
+
 const defaultProps = {
   activeContext: 'dorianamouroux',
   contexts: [
@@ -38,6 +43,8 @@ const defaultProps = {
   currentUser: {
     defaultOrgUsername: 'spotify',
   },
+  ModalComponent,
+  ModalControl,
 }
 
 const wrapper = ({ children }) => (
@@ -190,6 +197,29 @@ describe('ContextSwitcher', () => {
       userEvent.click(button)
 
       await waitFor(() => expect(onLoadMoreFunc).toHaveBeenCalled())
+    })
+  })
+
+  describe('when custom component is passed', () => {
+    beforeEach(() => {
+      setup()
+    })
+    afterEach(() => jest.restoreAllMocks())
+
+    it('renders the custom component', async () => {
+      render(<ContextSwitcher {...props} />, {
+        wrapper,
+      })
+
+      const modalControlButton = await screen.findByText('display')
+      expect(modalControlButton).toBeInTheDocument()
+      userEvent.click(modalControlButton)
+
+      const modalComponentText = await screen.findByText('component')
+      expect(modalComponentText).toBeInTheDocument()
+      userEvent.click(modalComponentText)
+
+      await waitFor(() => expect(modalComponentText).not.toBeInTheDocument())
     })
   })
 })

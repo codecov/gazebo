@@ -13,6 +13,6 @@ export const partitionFn = (data) => {
 export const formatData = format(',d')
 // Interpolate in between --color-ds-primary-red, --color-ds-primary-green
 export const colorRange = interpolateHslLong(
-  'rgb(206, 32, 25)',
-  'rgb(39, 179, 64)'
+  'rgb(254, 0, 0)',
+  'rgb(33, 155, 82)'
 )

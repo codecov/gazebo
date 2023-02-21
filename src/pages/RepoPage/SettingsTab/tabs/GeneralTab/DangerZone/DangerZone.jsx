@@ -1,7 +1,7 @@
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 
-import DeactivateRepo from './DeactivateRepo'
 import EraseRepoContent from './EraseRepoContent'
+import RepoState from './RepoState'
 
 function DangerZone() {
   return (
@@ -11,7 +11,7 @@ function DangerZone() {
       content={
         <>
           <EraseRepoContent />
-          <DeactivateRepo />
+          <RepoState />
         </>
       }
     />

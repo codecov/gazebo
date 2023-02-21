@@ -28,31 +28,35 @@ export function useMyContexts({ provider, opts = {} }) {
     }
   `
 
-  const { data, ...rest } = useInfiniteQuery({
-    queryKey: ['MyContexts', provider, query],
+  return useInfiniteQuery({
+    queryKey: ['MyContexts', provider],
     queryFn: ({ pageParam, signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
         variables: { after: pageParam },
-      }).then((res) => {
-        return {
-          currentUser: res?.data?.me.owner,
-          myOrganizations: mapEdges(res?.data?.me.myOrganizations),
-          pageInfo: res?.data?.me.myOrganizations.pageInfo,
-        }
       }),
-    getNextPageParam: (data) =>
-      data?.pageInfo?.hasNextPage ? data?.pageInfo?.endCursor : undefined,
+    select: ({ pages }) => {
+      const me = pages?.at(-1)?.data?.me
+      const myOrganizations = pages?.map(
+        (page) => page?.data?.me?.myOrganizations
+      )
+      const flatOrganizations = myOrganizations.flatMap((page) =>
+        mapEdges(page)
+      )
+      return {
+        currentUser: me?.owner,
+        myOrganizations: flatOrganizations,
+        pageInfo: me?.myOrganizations?.pageInfo,
+      }
+    },
+    getNextPageParam: ({ data }) => {
+      const myOrganizations = data?.me?.myOrganizations
+      return myOrganizations?.pageInfo?.hasNextPage
+        ? myOrganizations?.pageInfo?.endCursor
+        : undefined
+    },
     ...opts,
   })
-
-  return {
-    data: {
-      currentUser: data?.pages?.find(() => true)?.currentUser,
-      myOrganizations: data?.pages?.map((page) => page?.myOrganizations).flat(),
-    },
-    ...rest,
-  }
 }

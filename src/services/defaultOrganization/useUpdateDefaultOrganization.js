@@ -1,13 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
+import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 
 export function useUpdateDefaultOrganization() {
   const { provider } = useParams()
+  const history = useHistory()
   const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: ({ username = null }) => {
+  const addToast = useAddNotification()
+
+  return useMutation(
+    ({ username = null }) => {
       const query = `
         mutation updateDefaultOrganization(
           $input: UpdateDefaultOrganizationInput!
@@ -16,6 +20,7 @@ export function useUpdateDefaultOrganization() {
             error {
               __typename
             }
+            username
           }
         }
       `
@@ -27,15 +32,26 @@ export function useUpdateDefaultOrganization() {
         mutationPath: 'updateDefaultOrganization',
       })
     },
-    onSuccess: ({ data }) => {
-      const error = data?.updateDefaultOrganization?.error?.__typename
-      if (error === 'ValidationError') {
-        throw new Error(
-          'Organization does not belong in the current users organization list'
-        )
-      } else {
-        queryClient.invalidateQueries('DetailOwner')
-      }
-    },
-  })
+    {
+      onSuccess: ({ data }) => {
+        const error = data?.updateDefaultOrganization?.error?.__typename
+        if (error === 'ValidationError') {
+          throw new Error(
+            'Organization does not belong in the current users organization list'
+          )
+        } else {
+          queryClient.invalidateQueries('DetailOwner')
+          history.push(
+            `/${provider}/${data?.updateDefaultOrganization?.username}`
+          )
+        }
+      },
+      onError: (e) => {
+        return addToast({
+          type: 'error',
+          text: e.message,
+        })
+      },
+    }
+  )
 }
