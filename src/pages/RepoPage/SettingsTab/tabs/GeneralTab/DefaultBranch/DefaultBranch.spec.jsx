@@ -106,14 +106,15 @@ describe('DefaultBranch', () => {
 
       rest.patch(
         '/internal/github/codecov/repos/codecov-client/',
-        (req, res, ctx) => {
+        async (req, res, ctx) => {
+          const data = await req?.json()
           mutate()
 
           if (failMutation) {
             return res(ctx.status(500))
           }
 
-          return res(ctx.status(200), ctx.json({}))
+          return res(ctx.status(200), ctx.json(data))
         }
       )
     )
@@ -227,7 +228,8 @@ describe('DefaultBranch', () => {
       const updatedSelector = await screen.findByRole('button', {
         name: 'Branch selector',
       })
-      expect(updatedSelector).toHaveTextContent('dummy')
+
+      await waitFor(() => expect(updatedSelector).toHaveTextContent('dummy'))
     })
   })
 
