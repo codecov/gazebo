@@ -155,8 +155,8 @@ describe('UpdateDefaultOrgModal', () => {
         name: /All orgs and repos/,
       })
       expect(allOrgsAndReposButton).toBeInTheDocument()
-
       userEvent.click(allOrgsAndReposButton)
+
       const defaultOrgText = await screen.findByText(/Current default org/)
       expect(defaultOrgText).toBeInTheDocument()
     })

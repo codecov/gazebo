@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route, useHistory } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUpdateDefaultOrganization } from './useUpdateDefaultOrganization'
 
@@ -16,25 +16,26 @@ afterEach(() => {
 
 afterAll(() => server.close())
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: jest.fn(),
-}))
-
 const queryClient = new QueryClient()
+
+let testLocation
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
     <Route path="/:provider/:owner/">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </Route>
+    <Route
+      path="*"
+      render={({ location }) => {
+        testLocation = location
+        return null
+      }}
+    />
   </MemoryRouter>
 )
 
-const mockHistoryPush = jest.fn()
-
 describe('useUpdateDefaultOrganization', () => {
   function setup(data = {}, triggerError = false) {
-    useHistory.mockReturnValue({ push: mockHistoryPush })
     server.use(
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
         if (triggerError) {
@@ -74,7 +75,7 @@ describe('useUpdateDefaultOrganization', () => {
         const username =
           result.current.data.data.updateDefaultOrganization.username
         expect(username).toBe('Gilmore')
-        expect(mockHistoryPush).toBeCalledWith('/gh/Gilmore')
+        expect(testLocation.pathname).toBe('/gh/Gilmore')
       })
     })
   })
