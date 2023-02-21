@@ -75,8 +75,6 @@ describe('useOrganizations', () => {
 
       await waitFor(() => result.current.isSuccess)
 
-      console.log(result.current.organizations)
-
       expect(result.current.organizations).toEqual([
         {
           username: 'fearne-calloway',

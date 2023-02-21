@@ -27,7 +27,7 @@ function OrganizationList({ selectedOrgUsername, setSelectedOrgUsername }) {
         onClick={() => setSelectedOrgUsername(null)}
       >
         <Icon name="home" />
-        <span>All orgs and repos</span>
+        All orgs and repos
         {!defaultOrg && (
           <span className="text-ds-gray-quaternary font-medium">
             Current default org

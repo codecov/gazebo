@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useHistory } from 'react-router-dom'
 
 import { useUpdateDefaultOrganization } from './useUpdateDefaultOrganization'
 
@@ -16,6 +16,11 @@ afterEach(() => {
 
 afterAll(() => server.close())
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: jest.fn(),
+}))
+
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -25,14 +30,17 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
+const mockHistoryPush = jest.fn()
+
 describe('useUpdateDefaultOrganization', () => {
   function setup(data = {}, triggerError = false) {
+    useHistory.mockReturnValue({ push: mockHistoryPush })
     server.use(
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
         if (triggerError) {
           return res(ctx.status(200), ctx.data(data))
         } else {
-          return res(ctx.status(200), ctx.data({}))
+          return res(ctx.status(200), ctx.data(data))
         }
       })
     )
@@ -40,7 +48,7 @@ describe('useUpdateDefaultOrganization', () => {
 
   describe('when called without an error', () => {
     beforeEach(() => {
-      setup()
+      setup({ updateDefaultOrganization: { username: 'Gilmore' } })
     })
 
     it('returns isLoading false', () => {
@@ -51,7 +59,7 @@ describe('useUpdateDefaultOrganization', () => {
     })
 
     describe('When mutation is a success', () => {
-      it('returns isSuccess true', async () => {
+      it('returns successful response', async () => {
         const { result, waitFor } = renderHook(
           () => useUpdateDefaultOrganization(),
           {
@@ -62,6 +70,11 @@ describe('useUpdateDefaultOrganization', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
         expect(result.current.isSuccess).toBeTruthy()
+
+        const username =
+          result.current.data.data.updateDefaultOrganization.username
+        expect(username).toBe('Gilmore')
+        expect(mockHistoryPush).toBeCalledWith('/gh/Gilmore')
       })
     })
   })
