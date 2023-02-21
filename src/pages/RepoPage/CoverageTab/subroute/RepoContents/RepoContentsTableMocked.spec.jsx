@@ -69,11 +69,11 @@ function createTable({ tableData, branch, path, isSearching }) {
                 {name}
               </A>
             </div>
-            {isSearching && <span className="text-xs pl-1"> {filePath} </span>}
+            {isSearching && <span className="pl-1 text-xs"> {filePath} </span>}
           </div>
         ),
         coverage: (
-          <div className="flex flex-1 gap-2 items-center">
+          <div className="flex flex-1 items-center gap-2">
             <Progress amount={percentCovered} label />
           </div>
         ),

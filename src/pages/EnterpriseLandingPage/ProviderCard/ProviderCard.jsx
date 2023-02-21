@@ -7,7 +7,7 @@ import Button from 'ui/Button'
 function ProviderCard({ provider, providers }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="flex flex-row gap-1 items-center justify-center pb-2 w-64">
+      <div className="flex w-64 flex-row items-center justify-center gap-1 pb-2">
         <img
           alt={`Logo of ${provider.name}`}
           className="mx-2 h-6 w-6"
@@ -15,7 +15,7 @@ function ProviderCard({ provider, providers }) {
         />
         <h2 className="text-2xl">{provider.name}</h2>
       </div>
-      <div className="flex flex-col gap-2 w-64">
+      <div className="flex w-64 flex-col gap-2">
         {providers.includes(provider.external) && (
           <Button
             to={{

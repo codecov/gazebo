@@ -175,13 +175,13 @@ class NetworkErrorBoundary extends Component {
     const { illustration, title } = graphQLErrorToUI[error.__typename]
 
     return (
-      <article className="h-full mx-auto flex items-center justify-center flex-col">
+      <article className="mx-auto flex h-full flex-col items-center justify-center">
         <img
           alt="illustration error"
           className={cs(styles.illustrationError, 'mx-auto')}
           src={illustration}
         />
-        <h1 className="text-2xl mt-6">{title}</h1>
+        <h1 className="mt-6 text-2xl">{title}</h1>
         <NetworkErrorMessage />
         <ResetHandler reset={this.resetErrorBoundary} />
       </article>
@@ -193,13 +193,13 @@ class NetworkErrorBoundary extends Component {
     const { illustration, title, description } = errorToUI[status]
 
     return (
-      <article className="h-full mx-auto flex items-center justify-center flex-col">
+      <article className="mx-auto flex h-full flex-col items-center justify-center">
         <img
           alt="illustration error"
           className={cs(styles.illustrationError, 'mx-auto')}
           src={illustration}
         />
-        <h1 className="text-2xl mt-6">{title}</h1>
+        <h1 className="mt-6 text-2xl">{title}</h1>
         {description && <p className="mt-6">{description(data)}</p>}
         <NetworkErrorMessage />
         <p>

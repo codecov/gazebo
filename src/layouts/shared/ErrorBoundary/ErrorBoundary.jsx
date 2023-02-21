@@ -5,7 +5,7 @@ import A from 'ui/A'
 
 function DefaultUI() {
   return (
-    <div className="flex-1 flex justify-center items-center">
+    <div className="flex flex-1 items-center justify-center">
       <p>
         There&apos;s been an error. Please try refreshing your browser, if this
         error persists please{' '}

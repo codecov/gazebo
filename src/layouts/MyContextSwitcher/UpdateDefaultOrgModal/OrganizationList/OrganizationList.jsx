@@ -29,12 +29,12 @@ function OrganizationList({ selectedOrgUsername, setSelectedOrgUsername }) {
         <Icon name="home" />
         All orgs and repos
         {!defaultOrg && (
-          <span className="text-ds-gray-quaternary font-medium">
+          <span className="font-medium text-ds-gray-quaternary">
             Current default org
           </span>
         )}
       </button>
-      <ul className="text-ds-gray-octonary divide-y border border-ds-gray-secondary">
+      <ul className="divide-y border border-ds-gray-secondary text-ds-gray-octonary">
         {organizations?.map((organization) => {
           const currentOrgUsername = organization?.username
           return (
@@ -53,7 +53,7 @@ function OrganizationList({ selectedOrgUsername, setSelectedOrgUsername }) {
                 <Avatar user={organization} bordered />
                 <span>{currentOrgUsername}</span>
                 {currentOrgUsername === currentUser?.defaultOrgUsername && (
-                  <span className="text-ds-gray-quaternary font-medium">
+                  <span className="font-medium text-ds-gray-quaternary">
                     Current default org
                   </span>
                 )}
@@ -63,7 +63,7 @@ function OrganizationList({ selectedOrgUsername, setSelectedOrgUsername }) {
         })}
       </ul>
       {data?.hasNextPage && (
-        <div className="w-full flex justify-center">
+        <div className="flex w-full justify-center">
           <Button
             hook="load-more"
             isLoading={data?.isFetching}

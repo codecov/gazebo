@@ -45,7 +45,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
   }
 
   return (
-    <div className="flex gap-4 flex-wrap justify-center sm:flex-nowrap sm:justify-start">
+    <div className="flex flex-wrap justify-center gap-4 sm:flex-nowrap sm:justify-start">
       <div className="flex flex-col gap-3">
         <span className="font-semibold">Dates</span>
         <DateRangePicker
@@ -54,7 +54,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           onChange={onDateRangeChangeHandler}
         />
       </div>
-      <div className="flex flex-col w-52 gap-3">
+      <div className="flex w-52 flex-col gap-3">
         <span className="font-semibold">Repositories</span>
         <MultiSelect
           hook="repo-chart-selector"
@@ -71,7 +71,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
         />
       </div>
       <button
-        className="text-ds-blue-darker mt-7"
+        className="mt-7 text-ds-blue-darker"
         onClick={clearFiltersHandler}
       >
         Clear filters

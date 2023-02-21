@@ -22,9 +22,10 @@ export function useLegacyRepoCoverage({
   body,
   opts = {},
 }) {
-  return useQuery(
-    ['legacyRepo', 'coverage', provider, owner, branch, trend],
-    ({ signal }) => fetchRepoCoverage({ provider, owner, body, signal }),
-    opts
-  )
+  return useQuery({
+    queryKey: ['legacyRepo', 'coverage', provider, owner, branch, trend, body],
+    queryFn: ({ signal }) =>
+      fetchRepoCoverage({ provider, owner, body, signal }),
+    ...opts,
+  })
 }

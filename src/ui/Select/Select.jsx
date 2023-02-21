@@ -118,6 +118,7 @@ const Select = forwardRef(
       items,
       initialSelectedItem: value,
       onSelectedItemChange: ({ selectedItem }) => onChange(selectedItem),
+      selectedItem: value,
     })
 
     function renderButton() {
@@ -168,7 +169,9 @@ const Select = forwardRef(
               name={isOpen ? 'chevron-up' : 'chevron-down'}
             />
           </button>
-          <div className={cs(!onSearch && 'hidden', 'absolute', 'inset-x-0')}>
+          <div
+            className={cs(!onSearch && 'hidden', 'absolute', 'inset-x-0 z-10')}
+          >
             <div className={cs(!isOpen && 'hidden')}>
               <SearchField
                 dataMarketing="select-search"

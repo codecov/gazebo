@@ -49,7 +49,7 @@ function BotErrorBanner({ botErrorsCount }) {
       </BannerHeading>
       <BannerContent>
         {ghWithNoApp && (
-          <div className="lg:flex lg:w-max gap-1">
+          <div className="gap-1 lg:flex lg:w-max">
             <span>
               The bot posts the coverage report comment on pull requests. If
               you&apos;re using GitHub, the best way to integrate with

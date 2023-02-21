@@ -5,7 +5,7 @@ import Icon from 'ui/Icon'
 
 function Badge({ children }) {
   return (
-    <span className="ml-2 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
+    <span className="ml-2 rounded border border-ds-gray-tertiary px-1 py-0.5 text-xs text-ds-gray-senary">
       {children}
     </span>
   )
@@ -26,7 +26,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
   if (disabledLink) {
     return (
       <>
-        <div className="flex text-ds-gray-quinary items-center cursor-default">
+        <div className="flex cursor-default items-center text-ds-gray-quinary">
           <Icon
             size="sm"
             variant="solid"
@@ -48,7 +48,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
       <AppLink
         pageName={pageName}
         options={options}
-        className="flex text-ds-gray-quinary items-center hover:underline"
+        className="flex items-center text-ds-gray-quinary hover:underline"
       >
         <Icon
           size="sm"

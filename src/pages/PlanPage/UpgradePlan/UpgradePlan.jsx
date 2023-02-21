@@ -47,16 +47,16 @@ function UpgradePlan() {
   return (
     <>
       {/* TODO: Refactor this layout to be it's own reusable component (also used in CurrentPlanCard and the CancelPlan card) */}
-      <div className="flex flex-col md:flex-row gap-8 mt-6 md:w-11/12 lg:w-10/12">
+      <div className="mt-6 flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
         <Card variant="large">
           <div className="flex flex-col gap-4">
             <div className="-mt-16">
               <img src={parasolImg} alt="parasol" />
             </div>
-            <h3 className="text-2xl text-ds-pink-quinary bold">
+            <h3 className="text-2xl text-ds-pink-quinary">
               {proPlanYear?.marketingName}
             </h3>
-            <h2 className="text-5xl bold">${proPlanYear?.baseUnitPrice}*</h2>
+            <h2 className="text-5xl">${proPlanYear?.baseUnitPrice}*</h2>
             <BenefitList
               benefits={proPlanYear?.benefits}
               iconName="check"

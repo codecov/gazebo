@@ -63,13 +63,13 @@ function FilesChangedTab() {
   ) {
     return (
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-3 mt-4">
+        <div className="mt-4 flex flex-col gap-3">
           <p>
             Everything is accounted for! No changes detected that need to be
             reviewed.
           </p>
           <p className="font-medium">What changes does Codecov check for?</p>
-          <ul className="list-disc ml-6">
+          <ul className="ml-6 list-disc">
             <li>
               Lines, not adjusted in diff, that have changed coverage data.
             </li>

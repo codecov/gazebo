@@ -11,8 +11,8 @@ function StudentCard({ currentUser }) {
   if (!createdAt) return null
 
   return (
-    <Card className="p-10 mt-8">
-      <h1 className="text-2xl bold">Student details</h1>
+    <Card className="mt-8 p-10">
+      <h1 className="text-2xl">Student details</h1>
       <div className="mt-4 flex">
         <div>
           <h5 className="bold">Status</h5>

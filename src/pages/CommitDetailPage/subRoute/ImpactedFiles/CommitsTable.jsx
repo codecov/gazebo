@@ -39,7 +39,7 @@ const table = [
     cell: ({ row, getValue }) => {
       return (
         <div
-          className="flex gap-2 cursor-pointer items-center"
+          className="flex cursor-pointer items-center gap-2"
           data-testid="name-expand"
           onClick={() => row.toggleExpanded()}
         >
@@ -64,7 +64,7 @@ const table = [
     id: 'coverage',
     header: (
       <>
-        <span className="font-mono mr-2">HEAD</span> file coverage %
+        <span className="mr-2 font-mono">HEAD</span> file coverage %
       </>
     ),
     accessorKey: 'coverage',
@@ -118,7 +118,7 @@ function createTable({ tableData }) {
       change: hasData ? (
         <TotalsNumber value={change} showChange data-testid="change-value" />
       ) : (
-        <span className="text-ds-gray-quinary text-sm ml-4">
+        <span className="ml-4 text-sm text-ds-gray-quinary">
           No data available
         </span>
       ),
@@ -127,7 +127,7 @@ function createTable({ tableData }) {
 }
 
 const Loader = () => (
-  <div className="flex justify-center mb-4">
+  <div className="mb-4 flex justify-center">
     <Spinner size={60} />
   </div>
 )

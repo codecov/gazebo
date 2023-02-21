@@ -16,7 +16,7 @@ import Title from 'ui/FileViewer/ToggleHeader/Title'
 
 function ErrorDisplayMessage() {
   return (
-    <div className="border-solid border-ds-gray-tertiary border p-4">
+    <div className="border border-solid border-ds-gray-tertiary p-4">
       <p>
         There was a problem getting the source code from your provider. Unable
         to show line by line coverage.

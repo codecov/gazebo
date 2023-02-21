@@ -20,11 +20,11 @@ const Title = ({ message, author, commitid, createdAt }) => {
   }
 
   return (
-    <div className="flex-1 flex flex-row lg:w-auto items-center gap-4">
+    <div className="flex flex-1 flex-row items-center gap-4 lg:w-auto">
       <Avatar user={user} bordered />
       <div className="flex flex-col">
         <A to={{ pageName: 'commit', options: { commit: commitid } }}>
-          <h2 className="font-semibold text-sm text-black">
+          <h2 className="text-sm font-semibold text-black">
             {commitMessage()}
           </h2>
         </A>

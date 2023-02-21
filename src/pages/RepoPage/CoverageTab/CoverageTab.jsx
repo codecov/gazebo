@@ -25,7 +25,7 @@ const Loader = () => (
 function CoverageTab() {
   const { coverageSunburstChart } = useFlags({ coverageSunburstChart: false })
   return (
-    <div className="flex flex-col gap-2 mx-4 sm:mx-0 divide-y border-solid border-ds-gray-secondary">
+    <div className="mx-4 flex flex-col gap-2 divide-y border-solid border-ds-gray-secondary sm:mx-0">
       <Summary />
       <SentryRoute
         path={[
@@ -52,7 +52,7 @@ function CoverageTab() {
               </SilentNetworkErrorWrapper>
             </div>
             {coverageSunburstChart && (
-              <div className="col-span-3 aspect-square sticky top-[8rem] flex flex-col justify-center gap-4 px-8 py-4">
+              <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
                 <Sunburst />
               </div>
             )}

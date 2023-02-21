@@ -21,10 +21,10 @@ function LoginPage() {
   const providerName = getProviderShortName(provider)
 
   return (
-    <div className="flex flex-col justify-center items-center h-full">
-      <h1 className="text-3xl	mb-4">Login to Codecov</h1>
+    <div className="flex h-full flex-col items-center justify-center">
+      <h1 className="mb-4	text-3xl">Login to Codecov</h1>
       <p>You’ll be taken to your repo provider to authenticate</p>
-      <div className="w-96 mx-auto mt-6">
+      <div className="mx-auto mt-6 w-96">
         <div className="mb-4">
           <hr />
         </div>

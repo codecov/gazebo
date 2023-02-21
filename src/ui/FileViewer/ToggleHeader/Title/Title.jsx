@@ -15,7 +15,7 @@ export default function Title({ title, children, sticky = false }) {
       )}
     >
       {title && (
-        <span className="text-ds-gray-senary font-semibold text-base">
+        <span className="text-base font-semibold text-ds-gray-senary">
           {title}
         </span>
       )}

@@ -169,7 +169,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
       />
       {data?.repos?.length
         ? hasNextPage && (
-            <div className="w-full mt-4 flex justify-center">
+            <div className="mt-4 flex w-full justify-center">
               <Button
                 hook="load-more"
                 isLoading={isFetchingNextPage}

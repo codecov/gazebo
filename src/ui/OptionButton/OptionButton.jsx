@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 function OptionButton({ active, options, onChange }) {
   return (
-    <div className="flex flex-wrap rounded border divide-x">
+    <div className="flex flex-wrap divide-x rounded border">
       {options.map((o, index) => {
         return (
           <button

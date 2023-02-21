@@ -7,8 +7,8 @@ export function useRegenerateProfilingToken() {
   // TODO: would be ideal if these are called from the component itself and not from the hook itself. You never know which route will call this, so the useParams will be unpredictible :) changing the responsibility to the parent component ensures the parent has the necessary parameters
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
-  return useMutation(
-    () => {
+  return useMutation({
+    mutationFn: () => {
       const query = `
         mutation regenerateProfilingToken(
           $input: RegenerateProfilingTokenInput!
@@ -29,11 +29,9 @@ export function useRegenerateProfilingToken() {
         mutationPath: 'regenerateProfilingToken',
       })
     },
-    {
-      useErrorBoundary: true,
-      onSuccess: () => {
-        queryClient.invalidateQueries(['GetRepo'])
-      },
-    }
-  )
+    useErrorBoundary: true,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['GetRepo'])
+    },
+  })
 }

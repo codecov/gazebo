@@ -58,7 +58,7 @@ function DefaultBranch({ defaultBranch }) {
       description="Selection for branch context of data in coverage dashboard"
       content={
         <>
-          <h2 className="font-semibold flex gap-1">
+          <h2 className="flex gap-1 font-semibold">
             <Icon name="branch" variant="developer" size="sm" />
             Branch Context
           </h2>

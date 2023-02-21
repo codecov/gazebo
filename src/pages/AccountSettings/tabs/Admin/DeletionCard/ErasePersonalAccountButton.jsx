@@ -44,7 +44,7 @@ function ErasePersonalAccountButton({ provider, owner }) {
           <li>This will delete all your personal repositories</li>
           <li>This will NOT touch organization information</li>
         </ul>
-        <div className="flex justify-between mt-6">
+        <div className="mt-6 flex justify-between">
           <Button
             hook="cancel deleting personal data"
             onClick={() => setIsModalOpen(false)}

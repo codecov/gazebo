@@ -58,7 +58,7 @@ function Dropdown({ currentUser }) {
         Logged in user sub navigation
       </label>
       <button
-        className="flex justify-between items-center flex-1 text-left whitespace-nowrap focus:outline-1"
+        className="flex flex-1 items-center justify-between whitespace-nowrap text-left focus:outline-1"
         data-marketing="user profile menu"
         type="button"
         {...getToggleButtonProps()}

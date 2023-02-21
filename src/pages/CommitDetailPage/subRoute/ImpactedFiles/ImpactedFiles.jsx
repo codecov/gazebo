@@ -6,7 +6,7 @@ import Spinner from 'ui/Spinner'
 const CommitsTable = lazy(() => import('./CommitsTable'))
 
 const Loader = () => (
-  <div className="flex-1 flex justify-center m-4">
+  <div className="m-4 flex flex-1 justify-center">
     <Spinner size={60} />
   </div>
 )

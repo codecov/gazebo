@@ -28,7 +28,7 @@ const UpdateDefaultOrgModal = ({ closeModal }) => {
       footer={
         <div className="flex gap-2">
           <button
-            className="text-ds-blue flex-none font-semibold"
+            className="flex-none font-semibold text-ds-blue"
             onClick={() => {
               closeModal()
             }}

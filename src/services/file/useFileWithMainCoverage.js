@@ -44,18 +44,29 @@ export function useFileWithMainCoverage({ provider, owner, repo, ref, path }) {
       }
     }  
   `
-  return useQuery(['commit', provider, owner, repo, ref, path], ({ signal }) =>
-    Api.graphql({
+  return useQuery({
+    queryKey: [
+      'commit',
       provider,
+      owner,
+      repo,
+      ref,
+      path,
       query,
-      signal,
-      variables: {
+      extractCoverageFromResponse,
+    ],
+    queryFn: ({ signal }) =>
+      Api.graphql({
         provider,
-        owner,
-        repo,
-        ref,
-        path,
-      },
-    }).then(extractCoverageFromResponse)
-  )
+        query,
+        signal,
+        variables: {
+          provider,
+          owner,
+          repo,
+          ref,
+          path,
+        },
+      }).then(extractCoverageFromResponse),
+  })
 }
