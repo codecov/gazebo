@@ -15,6 +15,7 @@ const repositoryFragment = `
     coverage
     updatedAt
     latestCommitAt
+    lines
     author {
       username
     }
