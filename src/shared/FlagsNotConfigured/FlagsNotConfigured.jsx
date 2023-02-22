@@ -3,17 +3,17 @@ import A from 'ui/A'
 
 function FlagsNotConfigured() {
   return (
-    <div className="mt-2 flex flex-col items-center justify-center gap-2 text-ds-gray-octonary">
+    <div className="mt-2 flex flex-col items-center justify-center gap-2 text-base text-ds-gray-octonary">
       <div className="flex min-w-[60%] flex-col justify-center gap-2 text-center">
         <img
           alt="Flags feature not configured"
           className="mx-auto mb-8 w-screen"
           src={flagManagement}
         />
-        <span className="text-3xl">
+        <span className="font-semibold">
           The Flags feature is not yet configured{' '}
         </span>
-        <span className="text-base">
+        <span>
           Learn how flags can{' '}
           <A hook="flags" to={{ pageName: 'flags' }}>
             help your team today
