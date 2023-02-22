@@ -18,6 +18,7 @@ const wrapper = ({ children }) => (
 const repo1 = {
   name: 'codecov-bash',
   active: true,
+  lines: 99,
   private: false,
   coverage: null,
   updatedAt: '2021-04-22T14:09:39.822872+00:00',
@@ -35,6 +36,7 @@ const repo1 = {
 const repo2 = {
   name: 'codecov-circleci-orb',
   active: null,
+  lines: 99,
   private: false,
   coverage: null,
   updatedAt: '2021-04-22T14:09:39.826948+00:00',
