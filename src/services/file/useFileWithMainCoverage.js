@@ -26,7 +26,7 @@ export function useFileWithMainCoverage({ provider, owner, repo, ref, path }) {
         }
       }
     }
-    
+
     fragment CoverageForFile on Commit {
       commitid
       flagNames
@@ -42,7 +42,7 @@ export function useFileWithMainCoverage({ provider, owner, repo, ref, path }) {
           coverage # Absolute coverage of the commit
         }
       }
-    }  
+    }
   `
   return useQuery({
     queryKey: [

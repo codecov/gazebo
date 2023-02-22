@@ -49,8 +49,18 @@ export function usePrefetchCommitDirEntry({
   const queryClient = useQueryClient()
 
   const runPrefetch = async () =>
+    // TODO: Object notation
     await queryClient.prefetchQuery(
-      ['CommitPathContents', provider, owner, repo, commitSha, path, filters],
+      [
+        'CommitPathContents',
+        provider,
+        owner,
+        repo,
+        commitSha,
+        path,
+        filters,
+        query,
+      ],
       ({ signal }) =>
         Api.graphql({
           provider,

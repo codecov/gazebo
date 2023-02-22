@@ -426,6 +426,39 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}/flags`,
       isExternalLink: false,
     },
+    pullTreeView: {
+      text: 'Pull tree view',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi, tree } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => {
+        console.log(p, o, r, pi, tree)
+        if (tree) {
+          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}`
+        } else {
+          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree`
+        }
+      },
+      isExternalLink: false,
+    },
+    pullFileView: {
+      path: (
+        { provider = p, owner = o, repo = r, tree, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${tree}`
+      },
+      isExternalLink: false,
+      text: 'Pull File View',
+    },
     githubRepoSecrets: {
       text: 'GitHub Repo',
       path: (

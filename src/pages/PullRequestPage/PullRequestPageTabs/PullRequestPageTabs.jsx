@@ -51,6 +51,10 @@ function PullRequestPageTabs() {
             </>
           ),
         },
+        {
+          pageName: 'pullTreeView',
+          children: 'File explorer',
+        },
       ]}
       component={<ToggleHeader coverageIsLoading={false} />}
     />
