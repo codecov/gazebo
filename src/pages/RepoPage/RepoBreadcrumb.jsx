@@ -6,7 +6,7 @@ export default function RepoBreadcrumb() {
   const crumbs = useCrumbs()
 
   return (
-    <div className="sticky top-0 z-10 bg-white px-6 sm:px-0 py-2 flex flex-row">
+    <div className="sticky top-0 z-10 flex flex-row bg-white px-6 py-2 sm:px-0">
       <Breadcrumb paths={crumbs} />
     </div>
   )

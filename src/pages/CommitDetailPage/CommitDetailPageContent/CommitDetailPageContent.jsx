@@ -21,7 +21,7 @@ const ImpactedFiles = lazy(() => import('../subRoute/ImpactedFiles'))
 
 const Loader = () => {
   return (
-    <div className="flex flex-1 pt-2 justify-center">
+    <div className="flex flex-1 justify-center pt-2">
       <Spinner size={60} />
     </div>
   )

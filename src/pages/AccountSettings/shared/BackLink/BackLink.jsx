@@ -5,14 +5,14 @@ import Icon from 'old_ui/Icon'
 
 function BackLink({ textLink, ...props }) {
   return (
-    <div className="text-center flex items-center justify-center text-gray-500 bold">
-      <span className="text-blue-400 inline-block mr-1">
+    <div className="flex items-center justify-center text-center text-gray-500">
+      <span className="mr-1 inline-block text-blue-400">
         <Icon name="arrowLeft" />
       </span>
       Back to:
       <AppLink
         {...props}
-        className="underline text-gray-500 hover:text-gray-600 visited:text-gray-500 hover:underline ml-1"
+        className="ml-1 text-gray-500 underline visited:text-gray-500 hover:text-gray-600 hover:underline"
       >
         {textLink}
       </AppLink>

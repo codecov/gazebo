@@ -60,7 +60,7 @@ function AdminList() {
         ) : (
           admins.map((admin) => (
             <div
-              className="flex justify-between border-t border-gray-200 first:border-0 py-2"
+              className="flex justify-between border-t border-gray-200 py-2 first:border-0"
               key={admin.username}
             >
               <User

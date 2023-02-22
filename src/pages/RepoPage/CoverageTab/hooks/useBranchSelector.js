@@ -25,7 +25,13 @@ export function useBranchSelector({ branches, defaultBranch }) {
     },
   })
 
-  const selection = searchBranchValue?.branch
+  let selection = searchBranchValue?.branch
+  if (!selection) {
+    selection = {
+      name: 'Select branch',
+      head: {},
+    }
+  }
 
   return {
     selection,

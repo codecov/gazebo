@@ -40,7 +40,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
           openForm={() => setIsFormOpen(true)}
         />
       ) : (
-        <div className="text-ds-gray-quinary flex flex-col gap-4">
+        <div className="flex flex-col gap-4 text-ds-gray-quinary">
           <p>
             No credit card set. Please contact support if you think it’s an
             error or set it yourself.

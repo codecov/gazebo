@@ -20,7 +20,7 @@ function encodeString({ provider, owner, repo, value }) {
 
 export function useEncodeString() {
   const { provider, owner, repo } = useParams()
-  return useMutation(({ value }) =>
-    encodeString({ provider, owner, repo, value })
-  )
+  return useMutation({
+    mutationFn: ({ value }) => encodeString({ provider, owner, repo, value }),
+  })
 }

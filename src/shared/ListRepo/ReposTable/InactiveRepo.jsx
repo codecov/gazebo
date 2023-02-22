@@ -10,7 +10,7 @@ function InactiveRepo({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
       Not yet enabled{' '}
       {isCurrentUserPartOfOrg && (
         <AppLink
-          className="text-ds-blue font-semibold"
+          className="font-semibold text-ds-blue"
           pageName="new"
           options={{
             owner,

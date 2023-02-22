@@ -31,9 +31,9 @@ export function useCommitErrors() {
       }
     `
 
-  return useQuery(
-    ['CommitErrors', provider, owner, repo, commitid],
-    ({ signal }) => {
+  return useQuery({
+    queryKey: ['CommitErrors', provider, owner, repo, commitid, query],
+    queryFn: ({ signal }) => {
       return Api.graphql({
         provider,
         query,
@@ -45,14 +45,11 @@ export function useCommitErrors() {
         },
       })
     },
-    {
-      select: ({ data }) => {
-        return {
-          yamlErrors:
-            mapEdges(data?.owner?.repository?.commit?.yamlErrors) || [],
-          botErrors: mapEdges(data?.owner?.repository?.commit?.botErrors) || [],
-        }
-      },
-    }
-  )
+    select: ({ data }) => {
+      return {
+        yamlErrors: mapEdges(data?.owner?.repository?.commit?.yamlErrors) || [],
+        botErrors: mapEdges(data?.owner?.repository?.commit?.botErrors) || [],
+      }
+    },
+  })
 }

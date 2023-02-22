@@ -4,8 +4,8 @@ import Api from 'shared/api'
 
 export function useRevokeUserToken({ provider }) {
   const queryClient = useQueryClient()
-  return useMutation(
-    ({ tokenid }) => {
+  return useMutation({
+    mutationFn: ({ tokenid }) => {
       const query = `
       mutation RevokeUserToken($input: RevokeUserTokenInput!) {
         revokeUserToken(input: $input) {
@@ -26,8 +26,6 @@ export function useRevokeUserToken({ provider }) {
         queryClient.invalidateQueries('sessions')
       })
     },
-    {
-      useErrorBoundary: true,
-    }
-  )
+    useErrorBoundary: true,
+  })
 }

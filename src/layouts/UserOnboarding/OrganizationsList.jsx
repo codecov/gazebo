@@ -46,8 +46,8 @@ function OrganizationsList({
   return (
     <div className="h-80">
       {isHelpFindingOrg ? (
-        <div className="text-base w-[30rem]">
-          <h2 className="font-semibold pb-2">Enable org access</h2>
+        <div className="w-[30rem] text-base">
+          <h2 className="pb-2 font-semibold">Enable org access</h2>
           <p>
             GitHub requires{' '}
             <A to={{ pageName: 'oauthEnabling' }}>
@@ -56,14 +56,14 @@ function OrganizationsList({
             at the organizational level in{' '}
             <A to={{ pageName: 'userAppManagePage' }}>access settings</A>.
           </p>
-          <ul className="pt-2 pl-8 list-disc">
+          <ul className="list-disc pt-2 pl-8">
             <li>
               <span className="font-semibold">If you are an admin</span>, you
               may grant access by selecting the “grant” button in{' '}
               <A to={{ pageName: 'userAppManagePage' }}>access settings</A>.
               Once you’ve done this, then{' '}
               <button
-                className="align-bottom inline-flex items-center text-ds-blue"
+                className="inline-flex items-center align-bottom text-ds-blue"
                 onClick={() => {
                   refetch().then(() => setIsHelpFindingOrg(false))
                 }}

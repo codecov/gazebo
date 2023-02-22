@@ -20,7 +20,7 @@ function makeDesc({ first, last, repo, data }) {
 }
 
 const Placeholder = () => (
-  <div className="h-[22rem] animate-pulse bg-ds-gray-tertiary rounded" />
+  <div className="h-[22rem] animate-pulse rounded bg-ds-gray-tertiary" />
 )
 
 const useCoverageChart = () => {

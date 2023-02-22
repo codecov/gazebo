@@ -7,7 +7,7 @@ import { displayTypeParameter } from '../../constants'
 
 const FileHeader = ({ displayAsList, path, name }) => {
   return (
-    <div className="break-all flex gap-1 items-center">
+    <div className="flex items-center gap-1 break-all">
       {!displayAsList && <Icon name="document" size="md" />}
       {displayAsList ? path : name}
     </div>
@@ -51,7 +51,7 @@ function FileEntry({
         <FileHeader displayAsList={displayAsList} path={path} name={name} />
       </A>
       {isCriticalFile && (
-        <span className="ml-2 px-1 py-0.5 border border-ds-gray-tertiary rounded text-xs text-ds-gray-senary">
+        <span className="ml-2 rounded border border-ds-gray-tertiary px-1 py-0.5 text-xs text-ds-gray-senary">
           Critical File
         </span>
       )}

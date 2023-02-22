@@ -4,11 +4,11 @@ import TotalsNumber from 'ui/TotalsNumber'
 
 const Coverage = ({ totals }) => {
   return (
-    <div className="w-full justify-end flex">
+    <div className="flex w-full justify-end">
       {typeof totals?.coverage === 'number' ? (
         <TotalsNumber value={totals?.coverage} plain />
       ) : (
-        <span className="text-ds-gray-quinary text-sm">
+        <span className="text-sm text-ds-gray-quinary">
           No report uploaded yet
         </span>
       )}

@@ -25,7 +25,7 @@ function Admin({ provider, owner }) {
       )}
       <div className="mt-8 flex flex-col md:flex-row">
         <GithubIntegrationCard provider={provider} owner={owner} />
-        <div className="grow mt-8 md:mt-0">
+        <div className="mt-8 grow md:mt-0">
           <DeletionCard
             provider={provider}
             owner={owner}

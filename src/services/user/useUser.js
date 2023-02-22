@@ -59,9 +59,9 @@ export function useUser(options = {}) {
     ${currentUserFragment}
   `
 
-  return useQuery(
-    ['currentUser', provider],
-    async ({ signal }) => {
+  return useQuery({
+    queryKey: ['currentUser', provider],
+    queryFn: async ({ signal }) => {
       try {
         const { data } = await Api.graphql({ provider, query, signal })
         const currentUser = data?.me
@@ -73,9 +73,7 @@ export function useUser(options = {}) {
         return null
       }
     },
-    {
-      enabled: provider !== undefined,
-      ...options,
-    }
-  )
+    enabled: provider !== undefined,
+    ...options,
+  })
 }

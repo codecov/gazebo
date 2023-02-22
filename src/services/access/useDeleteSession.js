@@ -4,8 +4,8 @@ import Api from 'shared/api'
 
 export function useDeleteSession({ provider }) {
   const queryClient = useQueryClient()
-  return useMutation(
-    ({ sessionid }) => {
+  return useMutation({
+    mutationFn: ({ sessionid }) => {
       const query = `
       mutation DeleteSession($input: DeleteSessionInput!) {
         deleteSession(input: $input) {
@@ -26,8 +26,6 @@ export function useDeleteSession({ provider }) {
         queryClient.invalidateQueries('sessions')
       })
     },
-    {
-      useErrorBoundary: true,
-    }
-  )
+    useErrorBoundary: true,
+  })
 }

@@ -7,7 +7,7 @@ import { invoicePropType } from 'services/account'
 const InvoiceOverview = ({ isPaid, invoice, dueDate }) => {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-xl text-gray-800 font-semibold">
+      <h1 className="text-xl font-semibold text-gray-800">
         {isPaid ? 'Receipt' : 'Invoice'}
       </h1>
       <table>

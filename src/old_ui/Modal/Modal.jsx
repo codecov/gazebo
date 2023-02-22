@@ -11,13 +11,13 @@ function Modal({ isOpen, onClose, children, title, ...rest }) {
     <ReactModal
       isOpen={isOpen}
       onRequestClose={onClose}
-      className="h-screen w-screen flex items-center justify-center"
+      className="flex h-screen w-screen items-center justify-center"
       overlayClassName="fixed inset-0 bg-gray-900 bg-opacity-75"
       {...rest}
     >
       <Card className="w-1/2 p-8">
-        <header className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl bold">{title}</h2>
+        <header className="mb-4 flex items-center justify-between">
+          <h2 className="text-2xl">{title}</h2>
           <Button variant="text" onClick={onClose} aria-label="Close">
             <Icon name="times" />
           </Button>

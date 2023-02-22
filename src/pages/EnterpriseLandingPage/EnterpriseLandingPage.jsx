@@ -10,11 +10,11 @@ function EnterpriseLandingPage() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <div className="flex justify-center items-center h-96 bg-enterprise-banner-bg relative bg-cover bg-repeat-x bg-center">
+        <div className="relative flex h-96 items-center justify-center bg-enterprise-banner-bg bg-cover bg-center bg-repeat-x">
           <img className="h-3/4" alt="codecov space shuttle" src={rocketImg} />
         </div>
       </div>
-      <div className="flex md:flex-row md:gap-36 gap-8 flex-col text-center justify-center">
+      <div className="flex flex-col justify-center gap-8 text-center md:flex-row md:gap-36">
         {data?.github && (
           <ProviderCard
             provider={LoginProvidersEnum.GITHUB}

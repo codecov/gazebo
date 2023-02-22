@@ -10,7 +10,7 @@ function NoRepoCoverage({
   isCurrentUserPartOfOrg,
 }) {
   return (
-    <span className="text-ds-gray-quinary text-sm">
+    <span className="text-sm text-ds-gray-quinary">
       {activated ? (
         <div className="whitespace-nowrap">No data available</div>
       ) : (
