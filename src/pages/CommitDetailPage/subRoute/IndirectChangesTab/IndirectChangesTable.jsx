@@ -141,7 +141,7 @@ RenderSubComponent.propTypes = {
   row: PropTypes.object.isRequired,
 }
 
-function IndirectChangedTable() {
+function IndirectChangesTable() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
 
   const { data: commitData } = useCommit({
@@ -177,4 +177,4 @@ function IndirectChangedTable() {
   )
 }
 
-export default IndirectChangedTable
+export default IndirectChangesTable

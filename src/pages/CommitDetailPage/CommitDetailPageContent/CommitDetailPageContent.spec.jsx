@@ -16,7 +16,7 @@ jest.mock(
   () => () => 'CommitDetailFileViewer'
 )
 jest.mock('../subRoute/FilesChangedTab', () => () => 'FilesChangedTab')
-jest.mock('../subRoute/IndirectChangedTab', () => () => 'IndirectChangedTab')
+jest.mock('../subRoute/IndirectChangesTab', () => () => 'IndirectChangesTab')
 
 const mockCommitData = {
   owner: {
@@ -196,8 +196,8 @@ describe('CommitDetailPageContent', () => {
         ),
       })
 
-      const IndirectChangedTab = await screen.findByText('IndirectChangedTab')
-      expect(IndirectChangedTab).toBeInTheDocument()
+      const IndirectChangesTab = await screen.findByText('IndirectChangesTab')
+      expect(IndirectChangesTab).toBeInTheDocument()
     })
   })
 

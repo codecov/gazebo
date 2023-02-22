@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 
 import Spinner from 'ui/Spinner'
 
-const IndirectChangedTable = lazy(() => import('./IndirectChangedTable'))
+const IndirectChangesTable = lazy(() => import('./IndirectChangesTable'))
 
 const Loader = () => (
   <div className="m-4 flex flex-1 justify-center">
@@ -10,12 +10,12 @@ const Loader = () => (
   </div>
 )
 
-function IndirectChangedTab() {
+function IndirectChangesTab() {
   return (
     <Suspense fallback={<Loader />}>
-      <IndirectChangedTable />
+      <IndirectChangesTable />
     </Suspense>
   )
 }
 
-export default IndirectChangedTab
+export default IndirectChangesTab

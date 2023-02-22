@@ -18,7 +18,7 @@ const CommitDetailFileViewer = lazy(() =>
   import('../subRoute/CommitDetailFileViewer')
 )
 const FilesChangedTab = lazy(() => import('../subRoute/FilesChangedTab'))
-const IndirectChangedTab = lazy(() => import('../subRoute/IndirectChangedTab'))
+const IndirectChangesTab = lazy(() => import('../subRoute/IndirectChangesTab'))
 
 const Loader = () => {
   return (
@@ -68,7 +68,7 @@ function CommitDetailPageContent() {
             path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
             exact
           >
-            <IndirectChangedTab />
+            <IndirectChangesTab />
           </SentryRoute>
           <Redirect
             from="/:provider/:owner/:repo/commit/:commit/*"

@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import IndirectChangedTable from './IndirectChangedTable'
+import IndirectChangesTable from './IndirectChangesTable'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +34,7 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
-describe('IndirectChangedTable', () => {
+describe('IndirectChangesTable', () => {
   function setup(data = [], state = 'processed') {
     server.use(
       graphql.query('Commit', (req, res, ctx) =>
@@ -74,21 +74,21 @@ describe('IndirectChangedTable', () => {
     )
 
     it('renders name', async () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const buttons = await screen.findAllByText('src/index2.py')
       expect(buttons.length).toBe(1)
     })
 
     it('renders coverage', async () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const coverage = await screen.findByText(/50.00%/)
       expect(coverage).toBeInTheDocument()
     })
 
     it('render change', async () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const noData = await screen.findByText(/-12.50%/)
       expect(noData).toBeInTheDocument()
@@ -108,14 +108,14 @@ describe('IndirectChangedTable', () => {
     })
 
     it('does not render coverage', () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const coverage = screen.queryByText(/0.00%/)
       expect(coverage).not.toBeInTheDocument()
     })
 
     it('renders no available data copy', async () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const copy = await screen.findByText('No data available')
       expect(copy).toBeInTheDocument()
@@ -139,14 +139,14 @@ describe('IndirectChangedTable', () => {
     })
 
     it('renders head coverage', async () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const coverage = await screen.findByText(/67.00%/)
       expect(coverage).toBeInTheDocument()
     })
 
     it('renders dash for change', async () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const dash = await screen.findByText('-')
       expect(dash).toBeInTheDocument()
@@ -159,7 +159,7 @@ describe('IndirectChangedTable', () => {
     })
 
     it('renders coverage', async () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const coverage = await screen.findByText(
         'No Files covered by tests were changed'
@@ -174,7 +174,7 @@ describe('IndirectChangedTable', () => {
     })
 
     it('renders spinner', async () => {
-      render(<IndirectChangedTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper })
 
       const spinner = await screen.findByTestId('spinner')
       expect(spinner).toBeInTheDocument()
