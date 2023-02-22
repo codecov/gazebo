@@ -24,12 +24,14 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
+const defaultOrg = {
+  username: 'fearne-calloway',
+  avatarUrl: 'https://github.com/fearne.png?size=40',
+  defaultOrgUsername: null,
+}
+
 const orgList = [
-  {
-    username: 'fearne-calloway',
-    avatarUrl: 'https://github.com/fearne.png?size=40',
-    defaultOrgUsername: null,
-  },
+  defaultOrg,
   {
     username: 'ira-wendagoth',
     avatarUrl: 'https://github.com/fearne.png?size=40',
@@ -47,7 +49,7 @@ const contextData = {
   me: {
     owner: currentUser,
     myOrganizations: {
-      edges: [{ node: orgList }],
+      edges: [{ node: orgList[0] }, { node: orgList[1] }],
     },
   },
 }
@@ -75,13 +77,23 @@ describe('useOrganizations', () => {
 
       expect(result.current.organizations).toEqual([
         {
-          ...currentUser,
+          username: 'fearne-calloway',
+          avatarUrl: 'https://github.com/fearne.png?size=40',
+          defaultOrgUsername: null,
         },
         {
-          ...orgList,
+          username: 'morrigan',
+          avatarUrl: 'https://github.com/morri.png?size=40',
+          defaultOrgUsername: 'fearne-calloway',
+        },
+        {
+          username: 'ira-wendagoth',
+          avatarUrl: 'https://github.com/fearne.png?size=40',
+          defaultOrgUsername: null,
         },
       ])
       expect(result.current.currentUser).toEqual(currentUser)
+      expect(result.current.defaultOrg).toEqual(defaultOrg)
     })
   })
 })

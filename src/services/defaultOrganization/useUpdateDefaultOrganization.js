@@ -40,9 +40,12 @@ export function useUpdateDefaultOrganization() {
         )
       } else {
         queryClient.invalidateQueries('DetailOwner')
-        history.push(
-          `/${provider}/${data?.updateDefaultOrganization?.username}`
-        )
+        const username = data?.updateDefaultOrganization?.username
+        if (username) {
+          history.push(
+            `/${provider}/${data?.updateDefaultOrganization?.username}`
+          )
+        }
       }
     },
     onError: (e) => {
