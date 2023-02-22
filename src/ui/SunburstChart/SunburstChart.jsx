@@ -92,7 +92,7 @@ function SunburstChart({
       .filter((d) => d.children)
       .style('cursor', 'pointer')
       .on('click', clickedFolder)
-      .on('mouseover', hovered)
+      .on('mouseover', hoveredFolder)
       .on('mouseout', mouseout)
 
     // Events for file
@@ -100,7 +100,7 @@ function SunburstChart({
       .filter((d) => !d.children)
       .style('cursor', 'pointer')
       .on('click', clickedFile)
-      .on('mouseover', hovered)
+      .on('mouseover', hoveredFile)
 
     // Create a11y label / mouse hover tooltip
     const formatTitle = (d) =>
@@ -131,9 +131,14 @@ function SunburstChart({
       reactClickCallback({ target: p, type: 'file' })
     }
 
-    function hovered(_event, p) {
+    function hoveredFolder(_event, p) {
       select(this).attr('fill-opacity', 0.6)
-      reactHoverCallback(p)
+      reactHoverCallback({ target: p, type: 'folder' })
+    }
+
+    function hoveredFile(_event, p) {
+      select(this).attr('fill-opacity', 0.6)
+      reactHoverCallback({ target: p, type: 'file' })
     }
 
     function mouseout(_event, p) {
@@ -154,9 +159,9 @@ function SunburstChart({
       clickHandler.current({ path: filePath, data: target.data, target, type })
     }
 
-    function reactHoverCallback(p) {
+    function reactHoverCallback({ target, type }) {
       // Create a string from the root data down to the current item
-      const filePath = `${p
+      const filePath = `${target
         .ancestors()
         .map((d) => d.data.name)
         .slice(0, -1)
@@ -165,7 +170,7 @@ function SunburstChart({
 
       // callback to parent component with a path, the data node, and raw d3 data
       // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
-      hoverHandler.current(filePath, p.data, p)
+      hoverHandler.current({ path: filePath, data: target.data, target, type })
     }
 
     function changeLocation(p) {

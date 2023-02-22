@@ -38,7 +38,7 @@ function Sunburst() {
         svgFontSize="24px"
         svgRenderSize={930}
         selector={(data) => data?.coverage}
-        onClick={({ path, type }) => setCurrentPath({ path, type })}
+        onHover={({ path, type }) => setCurrentPath({ path, type })}
         colorDomainMin={config?.indicationRange?.lowerRange}
         colorDomainMax={config?.indicationRange?.upperRange}
       />
