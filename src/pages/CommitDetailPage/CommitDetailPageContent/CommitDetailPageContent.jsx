@@ -45,9 +45,18 @@ function CommitDetailPageContent() {
     return <ErroredUploads erroredUploads={erroredUploads} />
   }
 
+  const indirectChangedFilesCount =
+    commitData?.commit?.compareWithParent?.indirectChangedFilesCount ?? 0
+  const directChangedFilesCount =
+    commitData?.commit?.compareWithParent?.directChangedFilesCount ?? 0
+
   return (
     <>
-      <CommitPageTabs commitSHA={commitSHA} />
+      <CommitPageTabs
+        commitSHA={commitSHA}
+        indirectChangedFilesCount={indirectChangedFilesCount}
+        directChangedFilesCount={directChangedFilesCount}
+      />
       <Suspense fallback={<Loader />}>
         <Switch>
           <SentryRoute
