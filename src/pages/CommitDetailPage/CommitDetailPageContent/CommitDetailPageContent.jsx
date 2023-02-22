@@ -17,7 +17,7 @@ const CommitDetailFileExplorer = lazy(() =>
 const CommitDetailFileViewer = lazy(() =>
   import('../subRoute/CommitDetailFileViewer')
 )
-const ImpactedFiles = lazy(() => import('../subRoute/ImpactedFiles'))
+const FilesChanged = lazy(() => import('../subRoute/FilesChanged'))
 
 const Loader = () => {
   return (
@@ -61,7 +61,7 @@ function CommitDetailPageContent() {
             <CommitDetailFileViewer />
           </SentryRoute>
           <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
-            <ImpactedFiles commit={commitData?.commit} commitSHA={commitSHA} />
+            <FilesChanged />
           </SentryRoute>
           <Redirect
             from="/:provider/:owner/:repo/commit/:commit/*"

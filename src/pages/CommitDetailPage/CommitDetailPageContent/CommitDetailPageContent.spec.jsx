@@ -15,7 +15,7 @@ jest.mock(
   '../subRoute/CommitDetailFileViewer',
   () => () => 'CommitDetailFileViewer'
 )
-jest.mock('../subRoute/ImpactedFiles', () => () => 'ImpactedFiles')
+jest.mock('../subRoute/FilesChanged', () => () => 'FilesChanged')
 
 const mockCommitData = {
   owner: {
@@ -175,13 +175,13 @@ describe('CommitDetailPageContent', () => {
   describe('testing base commit path', () => {
     beforeEach(() => setup())
 
-    it('renders ImpactedFiles', async () => {
+    it('renders files changed', async () => {
       render(<CommitDetailPageContent />, {
         wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
       })
 
-      const impactedFiles = await screen.findByText('ImpactedFiles')
-      expect(impactedFiles).toBeInTheDocument()
+      const filesChanged = await screen.findByText('FilesChanged')
+      expect(filesChanged).toBeInTheDocument()
     })
   })
 
@@ -199,8 +199,8 @@ describe('CommitDetailPageContent', () => {
         )
       )
 
-      const impactedFiles = await screen.findByText('ImpactedFiles')
-      expect(impactedFiles).toBeInTheDocument()
+      const filesChanged = await screen.findByText('FilesChanged')
+      expect(filesChanged).toBeInTheDocument()
     })
   })
 
@@ -224,13 +224,13 @@ describe('CommitDetailPageContent', () => {
       })
     })
 
-    describe('user clicks impacted files tab', () => {
+    describe('user clicks files changed tab', () => {
       it('navigates to base url', async () => {
         render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
         })
 
-        const link = await screen.findByRole('link', { name: 'Impacted Files' })
+        const link = await screen.findByRole('link', { name: 'Files changed' })
         userEvent.click(link)
 
         await waitFor(() =>

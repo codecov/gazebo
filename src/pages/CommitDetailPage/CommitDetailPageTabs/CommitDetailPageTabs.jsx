@@ -32,7 +32,7 @@ function CommitDetailPageTabs({ commitSHA }) {
       tabs={[
         {
           pageName: 'commit',
-          children: 'Impacted Files',
+          children: 'Files changed',
           options: { commit: commitSHA },
           exact: true,
         },
