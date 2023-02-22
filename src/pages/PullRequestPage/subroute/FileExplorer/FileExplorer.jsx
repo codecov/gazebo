@@ -2,12 +2,13 @@ import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import MissingFileData from 'shared/ContentsTable/MissingFileData'
-import { useRepoPullContentsTable } from 'shared/ContentsTable/useRepoPullContentsTable'
 import { usePullTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
+
+import { useRepoPullContentsTable } from './hooks'
 
 const Loader = () => {
   return (

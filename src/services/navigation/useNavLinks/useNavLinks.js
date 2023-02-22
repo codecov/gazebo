@@ -436,7 +436,6 @@ export function useNavLinks() {
           pullId: pi,
         }
       ) => {
-        console.log(p, o, r, pi, tree)
         if (tree) {
           return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}`
         } else {

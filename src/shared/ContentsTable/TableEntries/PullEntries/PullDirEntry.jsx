@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { usePrefetchPullDirEntry } from './hooks'
+import { usePrefetchPullDirEntry } from 'services/pathContentsTable/pull/dir'
 
 import DirEntry from '../BaseEntries/DirEntry'
 
@@ -17,7 +17,6 @@ function PullDirEntry({ pullId, urlPath, name, filters }) {
       urlPath={urlPath}
       runPrefetch={runPrefetch}
       pageName="pullTreeView"
-      commitSha={null}
     />
   )
 }

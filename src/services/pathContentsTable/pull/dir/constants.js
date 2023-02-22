@@ -1,8 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
-
-import Api from 'shared/api'
-
-const query = `
+export const query = `
   query PullPathContents(
     $owner: String!,
     $repo: String!,
@@ -20,6 +16,7 @@ const query = `
         }
         pull(id: $pullId) {
           head {
+            commitid
             pathContents(path: $path, filters: $filters) {
               ... on PathContents {
                 results {
@@ -44,47 +41,3 @@ const query = `
     }
   }
 `
-
-export const useRepoPullContents = ({
-  provider,
-  owner,
-  repo,
-  pullId,
-  path,
-  filters,
-  opts = {},
-}) => {
-  return useQuery({
-    queryKey: [
-      'PullPathContents',
-      provider,
-      owner,
-      repo,
-      pullId,
-      path,
-      filters,
-      query,
-    ],
-    queryFn: ({ signal }) =>
-      Api.graphql({
-        provider,
-        query,
-        signal,
-        variables: {
-          owner,
-          repo,
-          pullId: parseInt(pullId, 10),
-          path,
-          filters,
-        },
-      }).then((res) => {
-        return {
-          results:
-            res?.data?.owner?.repository?.pull?.head?.pathContents?.results,
-          indicationRange:
-            res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
-        }
-      }),
-    ...opts,
-  })
-}

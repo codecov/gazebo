@@ -21,14 +21,10 @@ export function usePullTreePaths() {
       },
     }))
 
-  console.log('paths', paths)
-
   const repoPath = {
     pageName: 'pullTreeView',
     text: repo,
   }
-  console.log('repoPath', repoPath)
   const treePaths = [repoPath, ...paths]
-  console.log('treePaths', treePaths)
   return { treePaths }
 }

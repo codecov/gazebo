@@ -3,17 +3,16 @@ import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoPullContents } from 'services/repo'
+import { useRepoPullContents } from 'services/pathContentsTable/pull/dir'
+import { displayTypeParameter } from 'shared/ContentsTable/constants'
+import PullDirEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullDirEntry'
+import PullFileEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullFileEntry'
+import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
+import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
 import { usePullTreePaths } from 'shared/treePaths'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import CoverageProgress from 'ui/CoverageProgress'
 import { SortingDirection } from 'ui/Table/constants'
-
-import { displayTypeParameter } from '../constants'
-import PullDirEntry from '../TableEntries/PullEntries/PullDirEntry'
-import PullFileEntry from '../TableEntries/PullEntries/PullFileEntry'
-import { useTableDefaultSort } from '../useTableDefaultSort'
-import { adjustListIfUpDir } from '../utils'
 
 function determineDisplayType({ filters, isSearching }) {
   return filters?.displayType === displayTypeParameter.list || isSearching
@@ -24,6 +23,7 @@ function determineDisplayType({ filters, isSearching }) {
 function createTableData({
   tableData,
   pullId,
+  commitSHA,
   urlPath,
   isSearching,
   filters,
@@ -55,6 +55,7 @@ function createTableData({
             />
           ) : (
             <PullFileEntry
+              commitSHA={commitSHA}
               name={name}
               pullId={pullId}
               urlPath={urlPath}
@@ -189,6 +190,7 @@ export function useRepoPullContentsTable() {
       createTableData({
         tableData: pullData?.results,
         pullId,
+        commitSHA: pullData?.commitid,
         urlPath: urlPath || '',
         isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),

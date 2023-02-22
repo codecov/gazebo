@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 
-import { usePrefetchPullFileEntry } from './hooks/usePrefetchPullFileEntry'
+import { usePrefetchPullFileEntry } from 'services/pathContentsTable/pull/file'
 
 import { displayTypeParameter } from '../../constants'
 import FileEntry from '../BaseEntries/FileEntry'
 
 function PullFileEntry({
-  pullId,
+  commitSHA,
   path,
   isCriticalFile,
   name,
@@ -15,12 +15,11 @@ function PullFileEntry({
 }) {
   const { runPrefetch } = usePrefetchPullFileEntry({
     path,
-    pullId,
+    ref: commitSHA,
   })
 
   return (
     <FileEntry
-      commitSha={null}
       urlPath={urlPath}
       isCriticalFile={isCriticalFile}
       name={name}
@@ -33,6 +32,7 @@ function PullFileEntry({
 }
 
 PullFileEntry.propTypes = {
+  commitSHA: PropTypes.string.isRequired,
   pullId: PropTypes.string,
   urlPath: PropTypes.string,
   isCriticalFile: PropTypes.bool,

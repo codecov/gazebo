@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFileWithMainCoverage } from '.'
+import { useFileWithMainCoverage } from 'services/pathContentsTable'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
