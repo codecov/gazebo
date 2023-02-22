@@ -64,11 +64,7 @@ const table = [
   },
   {
     id: 'coverage',
-    header: (
-      <>
-        <span className="mr-2 font-mono">HEAD</span> file coverage %
-      </>
-    ),
+    header: 'Head coverage',
     accessorKey: 'coverage',
     width: 'w-3/12 justify-end',
     cell: (info) => info.getValue(),
@@ -77,7 +73,7 @@ const table = [
     id: 'change',
     header: 'Change',
     accessorKey: 'change',
-    width: 'w-1/12 justify-end',
+    width: 'w-2/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -111,7 +107,7 @@ function createTable({ tableData }) {
       change: hasData ? (
         <TotalsNumber value={change} showChange data-testid="change-value" />
       ) : (
-        <span className="ml-4 text-sm text-ds-gray-quinary">
+        <span className="ml-4 text-sm text-ds-gray-quinary md:whitespace-nowrap">
           No data available
         </span>
       ),
