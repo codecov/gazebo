@@ -123,6 +123,12 @@ describe('OrganizationList', () => {
       expect(allAvatars).toHaveLength(3)
     })
 
+    it('displays all orgs and repos', async () => {
+      render(<OrganizationList {...defaultProps} />, { wrapper })
+      const allOrgsAndReposText = await screen.findByText(/All orgs and repos/)
+      expect(allOrgsAndReposText).toBeInTheDocument()
+    })
+
     it('displays the load more button', async () => {
       render(<OrganizationList {...defaultProps} />, { wrapper })
       const loadMoreButton = await screen.findByText('Load More')
@@ -136,6 +142,36 @@ describe('OrganizationList', () => {
 
       const lilianaOrg = await screen.findByText('liliana-temult-org')
       expect(lilianaOrg).toBeInTheDocument()
+    })
+  })
+
+  describe('when there is no default org', () => {
+    beforeEach(() => {
+      const currentUser = {
+        username: 'morrigan-org',
+        avatarUrl: 'https://github.com/morri.png?size=40',
+        defaultOrgUsername: null,
+      }
+
+      const contextData = {
+        me: {
+          owner: currentUser,
+          myOrganizations: {
+            edges: [{ node: orgList[0] }, { node: orgList[1] }],
+            pageInfo: {
+              hasNextPage: true,
+              endCursor: '2',
+            },
+          },
+        },
+      }
+      setup(contextData)
+    })
+
+    it('displays default text if current user has no default org', async () => {
+      render(<OrganizationList {...defaultProps} />, { wrapper })
+      const allOrgsAndReposText = await screen.findByText(/All orgs and repos/)
+      expect(allOrgsAndReposText).toBeInTheDocument()
     })
   })
 })

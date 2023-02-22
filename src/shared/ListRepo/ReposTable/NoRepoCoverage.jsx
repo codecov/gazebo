@@ -12,7 +12,7 @@ function NoRepoCoverage({
   return (
     <span className="text-sm text-ds-gray-quinary">
       {activated ? (
-        'No data available'
+        <div className="whitespace-nowrap">No data available</div>
       ) : (
         <InactiveRepo
           owner={owner}

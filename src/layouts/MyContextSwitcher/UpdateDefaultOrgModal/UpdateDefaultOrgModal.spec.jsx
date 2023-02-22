@@ -143,4 +143,22 @@ describe('UpdateDefaultOrgModal', () => {
       await waitFor(() => expect(closeModal).toHaveBeenCalled())
     })
   })
+
+  describe('when clicking all orgs and repos button', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('updates default org to all orgs', async () => {
+      render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
+      const allOrgsAndReposButton = await screen.findByRole('button', {
+        name: /All orgs and repos/,
+      })
+      expect(allOrgsAndReposButton).toBeInTheDocument()
+      userEvent.click(allOrgsAndReposButton)
+
+      const defaultOrgText = await screen.findByText(/Current default org/)
+      expect(defaultOrgText).toBeInTheDocument()
+    })
+  })
 })

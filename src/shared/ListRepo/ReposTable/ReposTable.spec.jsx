@@ -150,6 +150,7 @@ describe('ReposTable', () => {
               latestCommitAt: subDays(new Date(), 3).toISOString(),
               coverage: 43,
               active: true,
+              lines: 99,
             },
           },
           {
@@ -163,6 +164,7 @@ describe('ReposTable', () => {
               latestCommitAt: subDays(new Date(), 2).toISOString(),
               coverage: 100,
               active: true,
+              lines: 101,
             },
           },
           {
@@ -175,9 +177,48 @@ describe('ReposTable', () => {
               name: 'Repo name 3',
               latestCommitAt: null,
               active: true,
+              lines: 207,
             },
           },
         ],
+      })
+    })
+
+    describe('renders active table headers', () => {
+      it('renders table name header', async () => {
+        render(<ReposTable {...props} />, {
+          wrapper: wrapper(repoDisplay),
+        })
+
+        const header = await screen.findByText(/Name/)
+        expect(header).toBeInTheDocument()
+      })
+
+      it('renders table coverage header', async () => {
+        render(<ReposTable {...props} />, {
+          wrapper: wrapper(repoDisplay),
+        })
+
+        const header = await screen.findByText(/Test coverage/)
+        expect(header).toBeInTheDocument()
+      })
+
+      it('renders table last updated header', async () => {
+        render(<ReposTable {...props} />, {
+          wrapper: wrapper(repoDisplay),
+        })
+
+        const header = await screen.findByText(/Last updated/)
+        expect(header).toBeInTheDocument()
+      })
+
+      it('renders table tracked lines header', async () => {
+        render(<ReposTable {...props} />, {
+          wrapper: wrapper(repoDisplay),
+        })
+
+        const header = await screen.findByText(/Tracked lines/)
+        expect(header).toBeInTheDocument()
       })
     })
 
@@ -210,7 +251,7 @@ describe('ReposTable', () => {
       expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3')
     })
 
-    it('renders second column', async () => {
+    it('renders last updated column', async () => {
       render(<ReposTable {...props} />, {
         wrapper: wrapper(repoDisplay),
       })
@@ -222,13 +263,28 @@ describe('ReposTable', () => {
       expect(lastSeen2).toBeInTheDocument()
     })
 
-    it('renders third column', async () => {
+    it('renders coverage column', async () => {
       render(<ReposTable {...props} />, {
         wrapper: wrapper(repoDisplay),
       })
 
-      const bars = await screen.findAllByTestId('org-progress-bar')
-      expect(bars.length).toBe(2)
+      const coverage1 = await screen.findByText(/43\.00/)
+      expect(coverage1).toBeInTheDocument()
+
+      const coverage2 = await screen.findByText(/100\.00/)
+      expect(coverage2).toBeInTheDocument()
+    })
+
+    it('renders tracked lines column', async () => {
+      render(<ReposTable {...props} />, {
+        wrapper: wrapper(repoDisplay),
+      })
+
+      const lines1 = await screen.findByText('99')
+      expect(lines1).toBeInTheDocument()
+
+      const lines2 = await screen.findByText('101')
+      expect(lines2).toBeInTheDocument()
     })
 
     it('renders handles null coverage', async () => {
