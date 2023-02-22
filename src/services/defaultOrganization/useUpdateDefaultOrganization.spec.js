@@ -17,11 +17,20 @@ afterEach(() => {
 afterAll(() => server.close())
 
 const queryClient = new QueryClient()
+
+let testLocation
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
     <Route path="/:provider/:owner/">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </Route>
+    <Route
+      path="*"
+      render={({ location }) => {
+        testLocation = location
+        return null
+      }}
+    />
   </MemoryRouter>
 )
 
@@ -32,7 +41,7 @@ describe('useUpdateDefaultOrganization', () => {
         if (triggerError) {
           return res(ctx.status(200), ctx.data(data))
         } else {
-          return res(ctx.status(200), ctx.data({}))
+          return res(ctx.status(200), ctx.data(data))
         }
       })
     )
@@ -40,7 +49,7 @@ describe('useUpdateDefaultOrganization', () => {
 
   describe('when called without an error', () => {
     beforeEach(() => {
-      setup()
+      setup({ updateDefaultOrganization: { username: 'Gilmore' } })
     })
 
     it('returns isLoading false', () => {
@@ -51,7 +60,7 @@ describe('useUpdateDefaultOrganization', () => {
     })
 
     describe('When mutation is a success', () => {
-      it('returns isSuccess true', async () => {
+      it('returns successful response', async () => {
         const { result, waitFor } = renderHook(
           () => useUpdateDefaultOrganization(),
           {
@@ -62,6 +71,11 @@ describe('useUpdateDefaultOrganization', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
         expect(result.current.isSuccess).toBeTruthy()
+
+        const username =
+          result.current.data.data.updateDefaultOrganization.username
+        expect(username).toBe('Gilmore')
+        expect(testLocation.pathname).toBe('/gh/Gilmore')
       })
     })
   })
