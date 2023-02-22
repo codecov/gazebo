@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useTreePaths } from 'shared/treePaths'
 
-function useConvertD3ToBreadcrumbs({ path, type }) {
+function useConvertD3ToBreadcrumbs({ path, type } = { path: '' }) {
   const { repo } = useParams()
   const { treePaths } = useTreePaths(path)
 
