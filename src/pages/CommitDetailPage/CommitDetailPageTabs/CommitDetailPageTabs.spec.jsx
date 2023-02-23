@@ -13,7 +13,7 @@ const wrapper =
             '/:provider/:owner/:repo/commit/:commit',
             '/:provider/:owner/:repo/commit/:commit/tree',
             '/:provider/:owner/:repo/commit/:commit/tree/:path+',
-            '/:provider/:owner/:repo/:commit/:commit/blob/:path+',
+            '/:provider/:owner/:repo/commit/:commit/blob/:path+',
           ]}
         >
           {children}
