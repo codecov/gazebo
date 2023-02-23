@@ -5,7 +5,7 @@ const NoData = ({ dataPointCount, ...props }) => {
   return (
     dataPointCount === 1 && (
       <VictoryGroup {...props}>
-        <text x="40%" y="45%" fontSize="5">
+        <text x="40%" y="45%" fontSize="4">
           Not enough data to render
         </text>
       </VictoryGroup>

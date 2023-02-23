@@ -32,7 +32,7 @@ export function RepoBreadcrumbProvider({ children }) {
         pageName: 'repo',
         children: (
           <div
-            className="flex items-center gap-1"
+            className="inline-flex items-center gap-1"
             data-testid="breadcrumb-repo"
           >
             {data?.repository?.private && (

@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
+import Breadcrumb from 'ui/Breadcrumb'
 import SunburstChart from 'ui/SunburstChart'
 
+import useConvertD3ToBreadcrumbs from './hooks/useConvertD3ToBreadcrumbs'
 import useSunburstChart from './hooks/useSunburstChart'
 
 const Placeholder = () => (
@@ -15,9 +17,11 @@ const Placeholder = () => (
 
 function Sunburst() {
   const { provider, owner, repo } = useParams()
-  const [currentPath, setCurrentPath] = useState('')
+  const [currentPath, setCurrentPath] = useState({ path: '', type: 'folder' })
   const { data, isFetching, isError, isLoading } = useSunburstChart()
   const { data: config } = useRepoConfig({ provider, owner, repo })
+
+  const breadcrumbPaths = useConvertD3ToBreadcrumbs(currentPath)
 
   if (isFetching || isLoading) {
     return <Placeholder />
@@ -34,12 +38,12 @@ function Sunburst() {
         svgFontSize="24px"
         svgRenderSize={930}
         selector={(data) => data?.coverage}
-        onHover={(path) => setCurrentPath(`${path}`)}
+        onHover={({ path, type }) => setCurrentPath({ path, type })}
         colorDomainMin={config?.indicationRange?.lowerRange}
         colorDomainMax={config?.indicationRange?.upperRange}
       />
       <span dir="rtl" className="truncate text-left">
-        {currentPath}
+        <Breadcrumb paths={breadcrumbPaths} />
       </span>
     </>
   )
