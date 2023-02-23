@@ -171,7 +171,7 @@ function FilesChangedTable() {
   if (commit?.state === 'pending') return <Loader />
 
   if (filesChanged?.length === 0)
-    return <p className="m-4">No Files covered by tests were changed</p>
+    return <p className="m-4">No files covered by tests were changed</p>
 
   return (
     <Table

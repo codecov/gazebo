@@ -14,12 +14,10 @@ import { TitleFlags } from 'ui/FileViewer/ToggleHeader/Title'
 
 function ErrorDisplayMessage() {
   return (
-    <div className="border border-solid border-ds-gray-tertiary p-4">
-      <p>
-        There was a problem getting the source code from your provider. Unable
-        to show line by line coverage.
-      </p>
-    </div>
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider. Unable to
+      show line by line coverage.
+    </p>
   )
 }
 

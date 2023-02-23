@@ -200,8 +200,8 @@ describe('CommitDetailPageContent', () => {
         ),
       })
 
-      const IndirectChangesTab = await screen.findByText('IndirectChangesTab')
-      expect(IndirectChangesTab).toBeInTheDocument()
+      const indirectChangesTab = await screen.findByText('IndirectChangesTab')
+      expect(indirectChangesTab).toBeInTheDocument()
     })
   })
 

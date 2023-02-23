@@ -76,8 +76,10 @@ describe('FilesChangedTable', () => {
     it('renders name', async () => {
       render(<FilesChangedTable />, { wrapper })
 
-      const buttons = await screen.findAllByText('src/index2.py')
-      expect(buttons.length).toBe(1)
+      const link = await screen.findByRole('link', {
+        name: 'src/index2.py',
+      })
+      expect(link).toBeInTheDocument()
     })
 
     it('renders coverage', async () => {
@@ -176,7 +178,7 @@ describe('FilesChangedTable', () => {
       render(<FilesChangedTable />, { wrapper })
 
       const coverage = await screen.findByText(
-        'No Files covered by tests were changed'
+        'No files covered by tests were changed'
       )
       expect(coverage).toBeInTheDocument()
     })

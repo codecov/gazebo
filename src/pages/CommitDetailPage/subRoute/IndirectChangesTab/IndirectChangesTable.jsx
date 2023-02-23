@@ -38,28 +38,26 @@ const table = [
     header: 'Name',
     accessorKey: 'name',
     width: 'w-7/12',
-    cell: ({ row, getValue }) => {
-      return (
-        <div
-          className="flex cursor-pointer items-center gap-2"
-          data-testid="name-expand"
-          onClick={() => row.toggleExpanded()}
+    cell: ({ row, getValue }) => (
+      <div
+        className="flex cursor-pointer items-center gap-2"
+        data-testid="name-expand"
+        onClick={() => row.toggleExpanded()}
+      >
+        <span
+          className={
+            row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
+          }
         >
-          <span
-            className={
-              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
-            }
-          >
-            <Icon
-              size="md"
-              name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
-              variant="solid"
-            />
-          </span>
-          {getValue()}
-        </div>
-      )
-    },
+          <Icon
+            size="md"
+            name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
+            variant="solid"
+          />
+        </span>
+        {getValue()}
+      </div>
+    ),
     justifyStart: true,
   },
   {
@@ -162,7 +160,7 @@ function IndirectChangesTable() {
   if (commit?.state === 'pending') return <Loader />
 
   if (indirectChangedFiles?.length === 0)
-    return <p className="m-4">No Files covered by tests were changed</p>
+    return <p className="m-4">No files covered by tests were changed</p>
 
   return (
     <Table
