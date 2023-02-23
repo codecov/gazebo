@@ -78,8 +78,8 @@ function CoverageChart() {
       // These aprox heights let us adjust the ratio and size of the chart.
       // I get these numbers by using the root container space and reducing
       // w/h to something that renders close to the DOM text sizes.
-      aproxHeight={coverageSunburstChart ? 70 * 1.3 : 62.25}
-      aproxWidth={coverageSunburstChart ? 217 * 1.3 : 375.5}
+      aproxHeight={coverageSunburstChart ? 91 : 62.25}
+      aproxWidth={coverageSunburstChart ? 282.1 : 375.5}
     />
   )
 }
