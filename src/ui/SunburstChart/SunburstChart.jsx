@@ -103,12 +103,16 @@ function SunburstChart({
       .on('mouseover', hoveredFile)
 
     // Create a11y label / mouse hover tooltip
-    const formatTitle = (d) =>
-      `${d
+    const formatTitle = (d) => {
+      const coverage = formatData(d.data.value)
+      const filePath = d
         .ancestors()
         .map((d) => d.data.name)
         .reverse()
-        .join('/')}\n${formatData(d.data.value)}% coverage`
+        .join('/')
+
+      return `${filePath}\n${coverage}% coverage`
+    }
 
     path.append('title').text((d) => formatTitle(d))
 
@@ -147,12 +151,12 @@ function SunburstChart({
 
     function reactClickCallback({ target, type }) {
       // Create a string from the root data down to the current item
-      const filePath = `${target
+      const filePath = target
         .ancestors()
         .map((d) => d.data.name)
         .slice(0, -1)
         .reverse()
-        .join('/')}`
+        .join('/')
 
       // callback to parent component with a path, the data node, and raw d3 data
       // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
@@ -161,12 +165,12 @@ function SunburstChart({
 
     function reactHoverCallback({ target, type }) {
       // Create a string from the root data down to the current item
-      const filePath = `${target
+      const filePath = target
         .ancestors()
         .map((d) => d.data.name)
         .slice(0, -1)
         .reverse()
-        .join('/')}`
+        .join('/')
 
       // callback to parent component with a path, the data node, and raw d3 data
       // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
