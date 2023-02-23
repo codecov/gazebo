@@ -59,7 +59,7 @@ function CommitsTab() {
         pageName: '',
         readOnly: true,
         children: (
-          <span className="flex items-center gap-1">
+          <span className="inline-flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
             {branch}
           </span>
