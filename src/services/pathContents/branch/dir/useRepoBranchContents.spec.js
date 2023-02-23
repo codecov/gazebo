@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoBranchContents } from './index'
+import { useRepoBranchContents } from '.'
 
 const queryClient = new QueryClient()
 

@@ -27,6 +27,12 @@ const mockData = {
   owner: {
     username: 'codecov',
     repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
       branch: {
         head: {
           pathContents: {
@@ -83,6 +89,10 @@ describe('usePrefetchBranchDirEntry', () => {
     await waitFor(() => !queryClient.getQueryState().isFetching)
 
     expect(queryClient.getQueryState().data).toStrictEqual({
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
+      },
       results: [
         {
           __typename: 'PathContentDir',

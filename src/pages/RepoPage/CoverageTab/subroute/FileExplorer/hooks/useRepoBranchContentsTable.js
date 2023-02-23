@@ -3,18 +3,18 @@ import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoBranchContents, useRepoOverview } from 'services/repo'
+import { useRepoBranchContents } from 'services/pathContents/branch/dir'
+import { useRepoOverview } from 'services/repo'
+import { displayTypeParameter } from 'shared/ContentsTable/constants'
+import BranchDirEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchDirEntry'
+import BranchFileEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchFileEntry'
 import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
+import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
 import { useTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import CoverageProgress from 'ui/CoverageProgress'
 import { SortingDirection } from 'ui/Table/constants'
-
-import { displayTypeParameter } from '../constants'
-import BranchDirEntry from '../TableEntries/BranchEntries/BranchDirEntry'
-import BranchFileEntry from '../TableEntries/BranchEntries/BranchFileEntry'
-import { adjustListIfUpDir } from '../utils'
 
 function determineDisplayType({ filters, isSearching }) {
   return filters?.displayType === displayTypeParameter.list || isSearching

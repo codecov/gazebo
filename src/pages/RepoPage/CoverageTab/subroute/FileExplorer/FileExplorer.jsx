@@ -4,10 +4,11 @@ import { useLocationParams } from 'services/navigation'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
 import MissingFileData from 'shared/ContentsTable/MissingFileData'
-import { useRepoBranchContentsTable } from 'shared/ContentsTable/useRepoBranchContentsTable'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
+
+import { useRepoBranchContentsTable } from './hooks'
 
 const Loader = ({ isLoading }) => {
   return (
@@ -44,7 +45,7 @@ const defaultQueryParams = {
   search: '',
 }
 
-function RepoContentsTable() {
+function FileExplorer() {
   const {
     data,
     headers,
@@ -93,4 +94,4 @@ function RepoContentsTable() {
   )
 }
 
-export default RepoContentsTable
+export default FileExplorer

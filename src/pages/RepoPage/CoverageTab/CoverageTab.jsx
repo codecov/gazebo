@@ -12,7 +12,7 @@ import Summary from './Summary'
 import ToggleElement from './ToggleElement'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
-const RepoContentsTable = lazy(() => import('./subroute/RepoContents'))
+const FileExplorer = lazy(() => import('./subroute/FileExplorer'))
 const CoverageChart = lazy(() => import('./subroute/CoverageChart'))
 const Sunburst = lazy(() => import('./subroute/Sunburst'))
 
@@ -76,7 +76,7 @@ function CoverageTab() {
           exact
         >
           <Suspense fallback={<Loader />}>
-            <RepoContentsTable />
+            <FileExplorer />
           </Suspense>
         </SentryRoute>
       </Switch>
