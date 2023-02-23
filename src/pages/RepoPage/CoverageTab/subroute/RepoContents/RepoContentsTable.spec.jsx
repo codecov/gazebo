@@ -80,9 +80,9 @@ describe('RepoContentsTable', () => {
     useRepoOverview.mockReturnValue(useRepoOverviewMock)
 
     useParams.mockReturnValue({
-      owner: 'Rabee-AbuBaker',
+      owner: 'critical-role',
       provider: 'gh',
-      repo: 'another-test',
+      repo: 'c3',
       branch: branch,
       path: path || '',
     })
@@ -96,7 +96,7 @@ describe('RepoContentsTable', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/gh/Rabee-AbuBaker/another-test']}>
+      <MemoryRouter initialEntries={['/gh/critical-role/c3']}>
         <Route path="/:provider/:owner/:repo/">
           <RepoContentsTable />
         </Route>
@@ -145,7 +145,7 @@ describe('RepoContentsTable', () => {
       const flag2Link = links[0]
       expect(flag2Link).toHaveAttribute(
         'href',
-        '/gh/Rabee-AbuBaker/another-test/tree/'
+        '/gh/critical-role/c3/tree/default-branch/'
       )
     })
 
@@ -155,7 +155,7 @@ describe('RepoContentsTable', () => {
       const flag2Link = links[2]
       expect(flag2Link).toHaveAttribute(
         'href',
-        '/gh/Rabee-AbuBaker/another-test/tree/default-branch/flag2'
+        '/gh/critical-role/c3/tree/default-branch/flag2'
       )
     })
   })
@@ -171,7 +171,7 @@ describe('RepoContentsTable', () => {
       const flag2Link = links[2]
       expect(flag2Link).toHaveAttribute(
         'href',
-        '/gh/Rabee-AbuBaker/another-test/tree/main/src/flag2'
+        '/gh/critical-role/c3/tree/main/src/flag2'
       )
     })
   })
