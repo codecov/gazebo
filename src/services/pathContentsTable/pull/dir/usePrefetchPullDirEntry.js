@@ -9,7 +9,7 @@ export function usePrefetchPullDirEntry({ pullId, path, filters, opts = {} }) {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
 
-  const runPrefetch = async () =>
+  const runPrefetch = async () => {
     await queryClient.prefetchQuery({
       queryKey: [
         'PullPathContents',
@@ -33,12 +33,13 @@ export function usePrefetchPullDirEntry({ pullId, path, filters, opts = {} }) {
             path,
             filters,
           },
-        }).then(
-          (res) => res?.data?.owner?.repository?.pull?.head?.pathContents
-        ),
+        }).then((res) => {
+          return res?.data?.owner?.repository?.pull?.head?.pathContents
+        }),
       staleTime: 10000,
       ...opts,
     })
+  }
 
   return { runPrefetch }
 }

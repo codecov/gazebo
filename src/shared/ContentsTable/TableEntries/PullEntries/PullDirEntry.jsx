@@ -7,7 +7,7 @@ import DirEntry from '../BaseEntries/DirEntry'
 function PullDirEntry({ pullId, urlPath, name, filters }) {
   const { runPrefetch } = usePrefetchPullDirEntry({
     pullId,
-    path: urlPath,
+    path: name,
     filters,
   })
 

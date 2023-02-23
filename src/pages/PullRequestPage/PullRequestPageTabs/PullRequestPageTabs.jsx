@@ -1,3 +1,9 @@
+import { useLocation, useParams } from 'react-router-dom'
+
+import {
+  pullFileviewString,
+  pullTreeviewString,
+} from 'pages/PullRequestPage/utils'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -10,6 +16,24 @@ function PullRequestPageTabs() {
     directChangedFilesCount,
     commitsCount,
   } = useTabsCounts()
+
+  const { pathname } = useLocation()
+  const { provider, owner, repo, pullId } = useParams()
+
+  const blobPath = pathname.includes(
+    `/${provider}/${pullFileviewString({ owner, repo, pullId })}`
+  )
+
+  const filePath = pathname.includes(
+    `/${provider}/${pullTreeviewString({ owner, repo, pullId })}`
+  )
+
+  let customLocation = undefined
+  if (blobPath || filePath) {
+    customLocation = {
+      pathname: `/${provider}/${owner}/${repo}/pull/${pullId}/tree`,
+    }
+  }
 
   return (
     <TabNavigation
@@ -54,6 +78,8 @@ function PullRequestPageTabs() {
         {
           pageName: 'pullTreeView',
           children: 'File explorer',
+          options: { pullId },
+          location: customLocation,
         },
       ]}
       component={<ToggleHeader coverageIsLoading={false} />}
