@@ -43,9 +43,9 @@ function CommitFileView({ path }) {
   })
 
   return (
-    <div className="flex flex-col">
+    <>
       <CodeRendererInfoRow>
-        <div className="flex w-full justify-end gap-4">
+        <div className="flex justify-end gap-4">
           {flagNames && flagNames?.length > 1 && (
             <TitleFlags
               flags={flagNames}
@@ -82,7 +82,7 @@ function CommitFileView({ path }) {
       ) : (
         <ErrorDisplayMessage />
       )}
-    </div>
+    </>
   )
 }
 

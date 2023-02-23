@@ -149,7 +149,7 @@ RenderSubComponent.propTypes = {
 function FilesChangedTable() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
 
-  const { data: commitData } = useCommit({
+  const { data: commitData, isLoading } = useCommit({
     provider,
     owner,
     repo,
@@ -168,7 +168,7 @@ function FilesChangedTable() {
   )
   const tableContent = createTable({ tableData: formattedData })
 
-  if (commit?.state === 'pending') return <Loader />
+  if (isLoading || commit?.state === 'pending') return <Loader />
 
   if (filesChanged?.length === 0)
     return <p className="m-4">No files covered by tests were changed</p>

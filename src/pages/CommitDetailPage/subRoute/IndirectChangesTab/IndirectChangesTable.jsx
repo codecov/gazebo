@@ -138,7 +138,7 @@ RenderSubComponent.propTypes = {
 function IndirectChangesTable() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
 
-  const { data: commitData } = useCommit({
+  const { data: commitData, isLoading } = useCommit({
     provider,
     owner,
     repo,
@@ -157,7 +157,7 @@ function IndirectChangesTable() {
   )
   const tableContent = createTable({ tableData: formattedData })
 
-  if (commit?.state === 'pending') return <Loader />
+  if (isLoading || commit?.state === 'pending') return <Loader />
 
   if (indirectChangedFiles?.length === 0)
     return <p className="m-4">No files covered by tests were changed</p>
