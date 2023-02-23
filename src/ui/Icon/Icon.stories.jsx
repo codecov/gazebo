@@ -46,10 +46,7 @@ export const AllOutlineIcons = (args) => {
       <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div
-              key={iconName}
-              className="center flex border border-gray-200 p-3"
-            >
+            <div key={iconName} className="flex border border-gray-200 p-3">
               <Icon name={iconName} {...args} />
               <p className="ml-2">{kebabCase(iconName)}</p>
             </div>
@@ -73,10 +70,7 @@ export const AllSolidIcons = (args) => {
       <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div
-              key={iconName}
-              className="center flex border border-gray-200 p-3"
-            >
+            <div key={iconName} className="flex border border-gray-200 p-3">
               <Icon name={iconName} {...args} />
               <p className="ml-2">{iconName}</p>
             </div>
@@ -100,10 +94,7 @@ export const AllDeveloperIcons = (args) => {
       <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div
-              key={iconName}
-              className="center flex border border-gray-200 p-3"
-            >
+            <div key={iconName} className="flex border border-gray-200 p-3">
               <Icon name={iconName} {...args} />
               <p className="ml-2">{kebabCase(iconName)}</p>
             </div>
