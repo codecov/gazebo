@@ -64,7 +64,7 @@ const table = [
   },
   {
     id: 'coverage',
-    header: 'Head coverage',
+    header: 'HEAD',
     accessorKey: 'coverage',
     width: 'w-3/12 justify-end',
     cell: (info) => info.getValue(),
