@@ -3,17 +3,16 @@ import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoCommitContents } from 'services/repo'
+import { useRepoCommitContents } from 'services/pathContents/commit/dir'
+import { displayTypeParameter } from 'shared/ContentsTable/constants'
+import CommitDirEntry from 'shared/ContentsTable/TableEntries/CommitEntries/CommitDirEntry'
+import CommitFileEntry from 'shared/ContentsTable/TableEntries/CommitEntries/CommitFileEntry'
+import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
+import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
 import { useCommitTreePaths } from 'shared/treePaths'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import CoverageProgress from 'ui/CoverageProgress'
 import { SortingDirection } from 'ui/Table/constants'
-
-import { displayTypeParameter } from '../constants'
-import CommitDirEntry from '../TableEntries/CommitEntries/CommitDirEntry'
-import CommitFileEntry from '../TableEntries/CommitEntries/CommitFileEntry'
-import { useTableDefaultSort } from '../useTableDefaultSort'
-import { adjustListIfUpDir } from '../utils'
 
 function determineDisplayType({ filters, isSearching }) {
   return filters?.displayType === displayTypeParameter.list || isSearching

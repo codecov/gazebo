@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoPullContents } from 'services/pathContentsTable/pull/dir'
+import { useRepoPullContents } from 'services/pathContents/pull/dir'
 import { displayTypeParameter } from 'shared/ContentsTable/constants'
 import PullDirEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullDirEntry'
 import PullFileEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullFileEntry'

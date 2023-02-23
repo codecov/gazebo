@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { usePrefetchPullFileEntry } from 'services/pathContentsTable/pull/file'
+import { usePrefetchPullFileEntry } from 'services/pathContents/pull/file'
 
 import { displayTypeParameter } from '../../constants'
 import FileEntry from '../BaseEntries/FileEntry'

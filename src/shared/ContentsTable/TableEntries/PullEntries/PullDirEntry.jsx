@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { usePrefetchPullDirEntry } from 'services/pathContentsTable/pull/dir'
+import { usePrefetchPullDirEntry } from 'services/pathContents/pull/dir'
 
 import DirEntry from '../BaseEntries/DirEntry'
 

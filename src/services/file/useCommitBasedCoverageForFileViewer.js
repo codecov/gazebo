@@ -1,4 +1,4 @@
-import { useFileWithMainCoverage } from 'services/pathContentsTable'
+import { useFileWithMainCoverage } from 'services/pathContents'
 
 import { useCoverageWithFlags } from '.'
 
