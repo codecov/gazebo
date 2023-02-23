@@ -90,6 +90,20 @@ const mockTreeData = {
   },
 }
 
+const mockNoHeadReport = {
+  username: 'nicholas-codecov',
+  repository: {
+    branch: {
+      head: {
+        pathContents: {
+          results: [],
+        },
+        __typename: 'MissingHeadReport',
+      },
+    },
+  },
+}
+
 const mockOverview = {
   owner: { repository: { private: false, defaultBranch: 'main' } },
 }
@@ -122,11 +136,15 @@ afterAll(() => {
 describe('FileExplorer', () => {
   const requestFilters = jest.fn()
 
-  function setup(noFiles = false) {
+  function setup(noFiles = false, noHeadReport = false) {
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
         if (req.variables?.filters) {
           requestFilters(req.variables?.filters)
+        }
+
+        if (noHeadReport) {
+          return res(ctx.status(200), ctx.data({ owner: mockNoHeadReport }))
         }
 
         if (noFiles || req.variables?.filters?.searchValue) {
@@ -300,6 +318,21 @@ describe('FileExplorer', () => {
 
         const message = await screen.findByText(
           'There was a problem getting repo contents from your provider'
+        )
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('when head commit has no reports', () => {
+      beforeEach(() => {
+        setup(false, true)
+      })
+
+      it('renders no report uploaded message', async () => {
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const message = await screen.findByText(
+          'No coverage report uploaded for this branch head commit'
         )
         expect(message).toBeInTheDocument()
       })

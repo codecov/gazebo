@@ -49,6 +49,7 @@ const mockData = {
               },
             ],
           },
+          __typename: 'PathContents',
         },
       },
     },
@@ -89,6 +90,7 @@ describe('usePrefetchBranchDirEntry', () => {
     await waitFor(() => !queryClient.getQueryState().isFetching)
 
     expect(queryClient.getQueryState().data).toStrictEqual({
+      __typename: 'PathContents',
       indicationRange: {
         upperRange: 80,
         lowerRange: 60,

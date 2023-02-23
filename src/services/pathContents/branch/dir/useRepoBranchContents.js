@@ -24,11 +24,15 @@ function fetchRepoContents({
       path,
       filters,
     },
-  }).then((res) => ({
-    results: res?.data?.owner?.repository?.branch?.head?.pathContents?.results,
-    indicationRange:
-      res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
-  }))
+  }).then((res) => {
+    return {
+      results:
+        res?.data?.owner?.repository?.branch?.head?.pathContents?.results,
+      indicationRange:
+        res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
+      __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
+    }
+  })
 }
 
 export function useRepoBranchContents({

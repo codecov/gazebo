@@ -47,6 +47,7 @@ const dataReturned = {
               },
             ],
           },
+          __typename: 'PathContents',
         },
       },
     },
@@ -118,6 +119,7 @@ describe('useRepoContents', () => {
             upperRange: 80,
             lowerRange: 60,
           },
+          __typename: 'PathContents',
         }
 
         // await waitFor(() =>

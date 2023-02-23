@@ -38,6 +38,7 @@ export function usePrefetchBranchDirEntry({ branch, path, filters }) {
             res?.data?.owner?.repository?.branch?.head?.pathContents?.results,
           indicationRange:
             res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
+          __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
         })),
       staleTime: 10000,
     })

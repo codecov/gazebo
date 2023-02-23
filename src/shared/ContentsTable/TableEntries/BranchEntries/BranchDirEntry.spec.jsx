@@ -33,6 +33,7 @@ const mockData = {
               },
             ],
           },
+          __typename: 'PathContents',
         },
       },
     },
@@ -108,6 +109,7 @@ describe('BranchDirEntry', () => {
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
+        __typename: 'PathContents',
         indicationRange: {
           upperRange: 80,
           lowerRange: 60,
