@@ -15,7 +15,6 @@ export function usePrefetchCommitDirEntry({
   const queryClient = useQueryClient()
 
   const runPrefetch = async () =>
-    // TODO: Object notation
     await queryClient.prefetchQuery({
       queryKey: [
         'CommitPathContents',
