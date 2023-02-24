@@ -1,7 +1,9 @@
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { Suspense, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { useCommit } from 'services/commit'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -62,18 +64,14 @@ const table = [
   },
   {
     id: 'coverage',
-    header: (
-      <>
-        <span className="mr-2 font-mono">HEAD</span> file coverage %
-      </>
-    ),
+    header: 'HEAD',
     accessorKey: 'coverage',
     width: 'w-3/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'patch',
-    header: 'Patch %',
+    header: 'Patch',
     accessorKey: 'patch',
     width: 'w-1/12 justify-end',
     cell: (info) => info.getValue(),
@@ -118,7 +116,7 @@ function createTable({ tableData }) {
       change: hasData ? (
         <TotalsNumber value={change} showChange data-testid="change-value" />
       ) : (
-        <span className="ml-4 text-sm text-ds-gray-quinary">
+        <span className="ml-4 text-sm text-ds-gray-quinary md:whitespace-nowrap">
           No data available
         </span>
       ),
@@ -148,47 +146,40 @@ RenderSubComponent.propTypes = {
   row: PropTypes.object.isRequired,
 }
 
-function CommitsTable({ data = [], commit, state }) {
+function FilesChangedTable() {
+  const { provider, owner, repo, commit: commitSHA } = useParams()
+
+  const { data: commitData, isLoading } = useCommit({
+    provider,
+    owner,
+    repo,
+    commitid: commitSHA,
+    filters: {
+      hasUnintendedChanges: false,
+    },
+  })
+
+  const commit = commitData?.commit
+  const filesChanged = commit?.compareWithParent?.impactedFiles
+
   const formattedData = useMemo(
-    () => data.map((row) => getFileData(row, commit)),
-    [data, commit]
+    () => filesChanged.map((row) => getFileData(row, commit)),
+    [filesChanged, commit]
   )
   const tableContent = createTable({ tableData: formattedData })
 
-  if (state === 'pending') return <Loader />
+  if (isLoading || commit?.state === 'pending') return <Loader />
+
+  if (filesChanged?.length === 0)
+    return <p className="m-4">No files covered by tests were changed</p>
 
   return (
-    <>
-      {data?.length === 0 ? (
-        <p className="m-4">No Files covered by tests were changed</p>
-      ) : (
-        <Table
-          data={tableContent}
-          columns={table}
-          renderSubComponent={RenderSubComponent}
-        />
-      )}
-    </>
+    <Table
+      data={tableContent}
+      columns={table}
+      renderSubComponent={RenderSubComponent}
+    />
   )
 }
 
-CommitsTable.propTypes = {
-  state: PropTypes.string,
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      headName: PropTypes.string,
-      headCoverage: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-      baseCoverage: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-      patchCoverage: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    })
-  ),
-  commit: PropTypes.string,
-}
-
-export default CommitsTable
+export default FilesChangedTable
