@@ -15,12 +15,17 @@ jest.mock(
   '../subRoute/CommitDetailFileViewer',
   () => () => 'CommitDetailFileViewer'
 )
-jest.mock('../subRoute/ImpactedFiles', () => () => 'ImpactedFiles')
+jest.mock('../subRoute/FilesChangedTab', () => () => 'FilesChangedTab')
+jest.mock('../subRoute/IndirectChangesTab', () => () => 'IndirectChangesTab')
 
 const mockCommitData = {
   owner: {
     repository: {
       commit: {
+        compareWithParent: {
+          indirectChangedFilesCount: 99,
+          directChangedFilesCount: 19,
+        },
         uploads: {
           edges: [
             {
@@ -175,13 +180,28 @@ describe('CommitDetailPageContent', () => {
   describe('testing base commit path', () => {
     beforeEach(() => setup())
 
-    it('renders ImpactedFiles', async () => {
+    it('renders files changed tab', async () => {
       render(<CommitDetailPageContent />, {
         wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
       })
 
-      const impactedFiles = await screen.findByText('ImpactedFiles')
-      expect(impactedFiles).toBeInTheDocument()
+      const filesChangedTab = await screen.findByText('FilesChangedTab')
+      expect(filesChangedTab).toBeInTheDocument()
+    })
+  })
+
+  describe('testing indirect changes path', () => {
+    beforeEach(() => setup())
+
+    it('renders indirect changed files tab', async () => {
+      render(<CommitDetailPageContent />, {
+        wrapper: wrapper(
+          '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
+        ),
+      })
+
+      const indirectChangesTab = await screen.findByText('IndirectChangesTab')
+      expect(indirectChangesTab).toBeInTheDocument()
     })
   })
 
@@ -199,8 +219,8 @@ describe('CommitDetailPageContent', () => {
         )
       )
 
-      const impactedFiles = await screen.findByText('ImpactedFiles')
-      expect(impactedFiles).toBeInTheDocument()
+      const filesChangedTab = await screen.findByText('FilesChangedTab')
+      expect(filesChangedTab).toBeInTheDocument()
     })
   })
 
@@ -224,13 +244,13 @@ describe('CommitDetailPageContent', () => {
       })
     })
 
-    describe('user clicks impacted files tab', () => {
+    describe('user clicks files changed tab', () => {
       it('navigates to base url', async () => {
         render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
         })
 
-        const link = await screen.findByRole('link', { name: 'Impacted Files' })
+        const link = await screen.findByRole('link', { name: /Files changed/ })
         userEvent.click(link)
 
         await waitFor(() =>
@@ -238,6 +258,45 @@ describe('CommitDetailPageContent', () => {
             '/gh/codecov/cool-repo/commit/sha256'
           )
         )
+      })
+    })
+
+    describe('user clicks indirect changes tab', () => {
+      it('navigates to base url', async () => {
+        render(<CommitDetailPageContent />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
+        })
+
+        const link = await screen.findByRole('link', {
+          name: /Indirect changes/,
+        })
+        userEvent.click(link)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
+          )
+        )
+      })
+    })
+
+    describe('rendering tabs count', () => {
+      it('renders files changed tab count', async () => {
+        render(<CommitDetailPageContent />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
+        })
+
+        const tabCount = await screen.findByText('19')
+        expect(tabCount).toBeInTheDocument()
+      })
+
+      it('renders indirect changes tab count', async () => {
+        render(<CommitDetailPageContent />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
+        })
+
+        const tabCount = await screen.findByText('99')
+        expect(tabCount).toBeInTheDocument()
       })
     })
   })

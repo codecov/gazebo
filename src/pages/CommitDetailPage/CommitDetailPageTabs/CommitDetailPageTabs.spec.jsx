@@ -23,14 +23,14 @@ const wrapper =
 
 describe('CommitDetailPageTabs', () => {
   describe('on base route', () => {
-    it('highlights impacted files tab', () => {
+    it('highlights files changed tab', () => {
       render(<CommitDetailPageTabs commitSHA="sha256" />, {
         wrapper: wrapper(),
       })
 
-      const impactedFiles = screen.getByText('Impacted Files')
-      expect(impactedFiles).toBeInTheDocument()
-      expect(impactedFiles).toHaveAttribute('aria-current', 'page')
+      const filesChanged = screen.getByText('Files changed')
+      expect(filesChanged).toBeInTheDocument()
+      expect(filesChanged).toHaveAttribute('aria-current', 'page')
     })
 
     it('does not highlight files tab', () => {
@@ -56,14 +56,14 @@ describe('CommitDetailPageTabs', () => {
         expect(files).toHaveAttribute('aria-current', 'page')
       })
 
-      it('does not highlight impacted files tab', () => {
+      it('does not highlight files changed tab', () => {
         render(<CommitDetailPageTabs commitSHA="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
-        const impactedFiles = screen.getByText('Impacted Files')
-        expect(impactedFiles).toBeInTheDocument()
-        expect(impactedFiles).not.toHaveAttribute('aria-current', 'page')
+        const filesChanged = screen.getByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+        expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
       })
     })
     describe('on a blob route', () => {
@@ -79,14 +79,14 @@ describe('CommitDetailPageTabs', () => {
         expect(files).toHaveAttribute('aria-current', 'page')
       })
 
-      it('does not highlight impacted files tab', () => {
+      it('does not highlight files changed tab', () => {
         render(<CommitDetailPageTabs commitSHA="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
-        const impactedFiles = screen.getByText('Impacted Files')
-        expect(impactedFiles).toBeInTheDocument()
-        expect(impactedFiles).not.toHaveAttribute('aria-current', 'page')
+        const filesChanged = screen.getByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+        expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
       })
     })
   })

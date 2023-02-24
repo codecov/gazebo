@@ -1,7 +1,10 @@
+import cs from 'classnames'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { Suspense, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { useCommit } from 'services/commit'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -36,53 +39,41 @@ const table = [
     header: 'Name',
     accessorKey: 'name',
     width: 'w-7/12',
-    cell: ({ row, getValue }) => {
-      return (
-        <div
-          className="flex cursor-pointer items-center gap-2"
-          data-testid="name-expand"
-          onClick={() => row.toggleExpanded()}
+    cell: ({ row, getValue }) => (
+      <div
+        className="flex cursor-pointer items-center gap-2"
+        data-testid="name-expand"
+        onClick={() => row.toggleExpanded()}
+      >
+        <span
+          className={cs({
+            'text-ds-blue-darker': row.getIsExpanded(),
+            'text-current': !row.getIsExpanded(),
+          })}
         >
-          <span
-            className={
-              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
-            }
-          >
-            <Icon
-              size="md"
-              name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
-              variant="solid"
-            />
-          </span>
-          {getValue()}
-        </div>
-      )
-    },
+          <Icon
+            size="md"
+            name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
+            variant="solid"
+          />
+        </span>
+        {getValue()}
+      </div>
+    ),
     justifyStart: true,
   },
   {
     id: 'coverage',
-    header: (
-      <>
-        <span className="mr-2 font-mono">HEAD</span> file coverage %
-      </>
-    ),
+    header: 'HEAD',
     accessorKey: 'coverage',
     width: 'w-3/12 justify-end',
-    cell: (info) => info.getValue(),
-  },
-  {
-    id: 'patch',
-    header: 'Patch %',
-    accessorKey: 'patch',
-    width: 'w-1/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
     id: 'change',
     header: 'Change',
     accessorKey: 'change',
-    width: 'w-1/12 justify-end',
+    width: 'w-2/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -93,8 +84,7 @@ function createTable({ tableData }) {
   }
 
   return tableData.map((row) => {
-    const { headName, headCoverage, hasData, change, patchCoverage, commit } =
-      row
+    const { headName, headCoverage, hasData, change, commit } = row
 
     return {
       name: (
@@ -114,12 +104,11 @@ function createTable({ tableData }) {
           The container div fot TotalsNumber is added due to the current state of table cells styling,
           shouldn't be necessary in the future if fixed/updated
       */
-      patch: <TotalsNumber value={patchCoverage} />,
       change: hasData ? (
         <TotalsNumber value={change} showChange data-testid="change-value" />
       ) : (
-        <span className="ml-4 text-sm text-ds-gray-quinary">
-          No data available
+        <span className="ml-4 text-sm text-ds-gray-quinary md:whitespace-nowrap">
+          No data
         </span>
       ),
     }
@@ -148,47 +137,40 @@ RenderSubComponent.propTypes = {
   row: PropTypes.object.isRequired,
 }
 
-function CommitsTable({ data = [], commit, state }) {
+function IndirectChangesTable() {
+  const { provider, owner, repo, commit: commitSHA } = useParams()
+
+  const { data: commitData, isLoading } = useCommit({
+    provider,
+    owner,
+    repo,
+    commitid: commitSHA,
+    filters: {
+      hasUnintendedChanges: true,
+    },
+  })
+
+  const commit = commitData?.commit
+  const indirectChangedFiles = commit?.compareWithParent?.impactedFiles
+
   const formattedData = useMemo(
-    () => data.map((row) => getFileData(row, commit)),
-    [data, commit]
+    () => indirectChangedFiles.map((row) => getFileData(row, commit)),
+    [indirectChangedFiles, commit]
   )
   const tableContent = createTable({ tableData: formattedData })
 
-  if (state === 'pending') return <Loader />
+  if (isLoading || commit?.state === 'pending') return <Loader />
+
+  if (indirectChangedFiles?.length === 0)
+    return <p className="m-4">No files covered by tests were changed</p>
 
   return (
-    <>
-      {data?.length === 0 ? (
-        <p className="m-4">No Files covered by tests were changed</p>
-      ) : (
-        <Table
-          data={tableContent}
-          columns={table}
-          renderSubComponent={RenderSubComponent}
-        />
-      )}
-    </>
+    <Table
+      data={tableContent}
+      columns={table}
+      renderSubComponent={RenderSubComponent}
+    />
   )
 }
 
-CommitsTable.propTypes = {
-  state: PropTypes.string,
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      headName: PropTypes.string,
-      headCoverage: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-      baseCoverage: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-      patchCoverage: PropTypes.shape({
-        coverage: PropTypes.number,
-      }),
-    })
-  ),
-  commit: PropTypes.string,
-}
-
-export default CommitsTable
+export default IndirectChangesTable

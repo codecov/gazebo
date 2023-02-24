@@ -83,7 +83,7 @@ function CommitPage() {
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
-        <aside className="sticky top-1.5 flex flex-1 flex-col gap-6 self-start md:max-w-sm">
+        <aside className="flex flex-1 flex-col gap-6 self-start md:sticky md:top-1.5 md:max-w-sm">
           <Suspense fallback={<Loader />}>
             <UploadsCard />
           </Suspense>
