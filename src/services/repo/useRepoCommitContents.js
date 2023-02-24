@@ -53,9 +53,18 @@ export const useRepoCommitContents = ({
   filters,
   opts = {},
 }) => {
-  return useQuery(
-    ['CommitPathContents', provider, owner, repo, commit, path, filters],
-    ({ signal }) =>
+  return useQuery({
+    queryKey: [
+      'CommitPathContents',
+      provider,
+      owner,
+      repo,
+      commit,
+      path,
+      filters,
+      query,
+    ],
+    queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
@@ -72,6 +81,6 @@ export const useRepoCommitContents = ({
         indicationRange:
           res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
       })),
-    opts
-  )
+    ...opts,
+  })
 }

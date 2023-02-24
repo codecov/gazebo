@@ -15,9 +15,10 @@ function fetchOrgCoverage({ provider, owner, query, signal }) {
 }
 
 export function useOrgCoverage({ provider, owner, query, opts = {} }) {
-  return useQuery(
-    ['organization', 'coverage', provider, owner, query],
-    ({ signal }) => fetchOrgCoverage({ provider, owner, query, signal }),
-    opts
-  )
+  return useQuery({
+    queryKey: ['organization', 'coverage', provider, owner, query],
+    queryFn: ({ signal }) =>
+      fetchOrgCoverage({ provider, owner, query, signal }),
+    ...opts,
+  })
 }

@@ -107,7 +107,7 @@ const branchMock = {
 }
 const branchesContentsMock = {
   owner: {
-    username: 'Rabee-AbuBaker',
+    username: 'critical-role',
     repository: {
       repositoryConfig: {
         indicationRange: {
@@ -151,13 +151,22 @@ describe('Coverage Tab', () => {
       graphql.query('RepoConfig', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(repoConfigMock))
       ),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(overviewMock))
-      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(overviewMock))
+      ),
+      graphql.query('GetRepoCoverage', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      ),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
         (req, res, ctx) => {
           return res(ctx.status(200), ctx.json({ data: treeMock }))
+        }
+      ),
+      rest.post(
+        '/internal/charts/:provider/:owner/coverage/:repo',
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({ data: {} }))
         }
       )
     )

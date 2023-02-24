@@ -8,7 +8,11 @@ import {
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
-function CommitDetailPageTabs({ commitSHA }) {
+function CommitDetailPageTabs({
+  commitSHA,
+  indirectChangedFilesCount,
+  directChangedFilesCount,
+}) {
   const { pathname } = useLocation()
   const { provider, owner, repo } = useParams()
 
@@ -32,9 +36,24 @@ function CommitDetailPageTabs({ commitSHA }) {
       tabs={[
         {
           pageName: 'commit',
-          children: 'Impacted Files',
+          children: (
+            <>
+              Files changed
+              <sup className="text-xs">{directChangedFilesCount}</sup>
+            </>
+          ),
           options: { commit: commitSHA },
           exact: true,
+        },
+        {
+          pageName: 'commitIndirectChanges',
+          options: { commit: commitSHA },
+          children: (
+            <>
+              Indirect changes
+              <sup className="text-xs">{indirectChangedFilesCount}</sup>
+            </>
+          ),
         },
         {
           pageName: 'commitTreeView',
@@ -50,6 +69,8 @@ function CommitDetailPageTabs({ commitSHA }) {
 
 CommitDetailPageTabs.propTypes = {
   commitSHA: PropTypes.string,
+  indirectChangedFilesCount: PropTypes.number,
+  directChangedFilesCount: PropTypes.number,
 }
 
 export default CommitDetailPageTabs

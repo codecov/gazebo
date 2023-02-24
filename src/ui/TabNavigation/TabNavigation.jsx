@@ -3,14 +3,14 @@ import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 
 const styles = {
-  link: 'mr-5 py-2 border-b-4 border-transparent hover:border-ds-gray-quinary text-ds-gray-quinary',
+  link: 'mr-5 py-2 hover:border-b-4 hover:border-ds-gray-quinary text-ds-gray-quinary',
   activeLink:
-    'text-ds-gray-octonary border-b-4 border-ds-gray-octonary font-semibold',
+    '!text-ds-gray-octonary border-b-4 !border-ds-gray-octonary font-semibold',
 }
 
 function TabNavigation({ tabs, component }) {
   return (
-    <div className="flex flex-wrap border-b border-ds-gray-tertiary justify-between overflow-auto mx-4 sm:mx-0">
+    <div className="mx-4 flex flex-wrap justify-between overflow-auto border-b border-ds-gray-tertiary sm:mx-0">
       <nav className="flex">
         {tabs.map((tab) => (
           <AppLink

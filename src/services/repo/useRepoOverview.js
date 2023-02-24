@@ -27,7 +27,9 @@ function fetchRepoOverviewInitial({ provider, owner, repo, signal }) {
 }
 
 export function useRepoOverview({ provider, owner, repo }) {
-  return useQuery(['overview init', provider, owner, repo], ({ signal }) =>
-    fetchRepoOverviewInitial({ provider, owner, repo, signal })
-  )
+  return useQuery({
+    queryKey: ['GetRepoOverview', provider, owner, repo],
+    queryFn: ({ signal }) =>
+      fetchRepoOverviewInitial({ provider, owner, repo, signal }),
+  })
 }

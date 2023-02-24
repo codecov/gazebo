@@ -1,5 +1,5 @@
 function ContentsTableHeader({ children }) {
-  return <div className="flex justify-between flex-wrap">{children}</div>
+  return <div className="flex flex-wrap justify-between">{children}</div>
 }
 
 export default ContentsTableHeader

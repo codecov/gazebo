@@ -115,7 +115,7 @@ const RenderError = ({ errors = [], state }) => {
       {filteredErrors.map(({ errorCode, readableError }, i) => (
         <span
           key={`errorCode-${errorCode}-${i}`}
-          className="flex gap-1 items-center text-ds-primary-red"
+          className="flex items-center gap-1 text-ds-primary-red"
         >
           <Icon size="sm" name="exclamation" variant="solid" />
           {readableError}
@@ -124,7 +124,7 @@ const RenderError = ({ errors = [], state }) => {
       {filteredErrors.length === 0 &&
         typeof state === 'string' &&
         state?.toUpperCase() === UploadStateEnum.error && (
-          <span className="flex gap-1 items-center text-ds-primary-red">
+          <span className="flex items-center gap-1 text-ds-primary-red">
             <Icon size="sm" name="exclamation" variant="solid" />
             {humanReadableError()}
           </span>

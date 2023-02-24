@@ -12,7 +12,7 @@ import Table from 'ui/Table'
 const Loader = ({ isLoading }) => {
   return (
     isLoading && (
-      <div className="flex-1 flex justify-center">
+      <div className="flex flex-1 justify-center">
         <Spinner size={60} />
       </div>
     )
@@ -26,7 +26,7 @@ Loader.propTypes = {
 function RepoContentsResult({ isSearching, isMissingHeadReport }) {
   if (isMissingHeadReport) {
     return (
-      <p className="flex justify-center flex-1">
+      <p className="flex flex-1 justify-center">
         No coverage report uploaded for this branch head commit
       </p>
     )
@@ -58,8 +58,8 @@ function RepoContentsTable() {
 
   return (
     <>
-      <div className="flex justify-between gap-2 pt-2 sticky top-[4.5rem] bg-white">
-        <div className="flex-1 flex gap-4">
+      <div className="sticky top-[4.5rem] flex justify-between gap-2 bg-white pt-2">
+        <div className="flex flex-1 items-center gap-4">
           <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
           <FileBreadcrumb />
         </div>
@@ -70,8 +70,8 @@ function RepoContentsTable() {
           setSearchValue={(search) => updateParams({ search })}
         />
       </div>
-      <div className=" flex-1 grid grid-cols-12 gap-8">
-        <div className="flex flex-col col-span-12 md:col-span-12">
+      <div className=" grid flex-1 grid-cols-12 gap-8">
+        <div className="col-span-12 flex flex-col md:col-span-12">
           <Table
             data={data}
             columns={headers}

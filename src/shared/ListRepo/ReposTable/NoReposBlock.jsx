@@ -13,11 +13,11 @@ const NoReposBlock = () => {
   const history = useHistory()
 
   return repoDisplay !== repoDisplayOptions.INACTIVE.text ? (
-    <div className="text-center mx-4 mt-8">
-      <h1 className="font-semibold text-3xl">No repos setup yet</h1>
-      <div className="text-base font-light my-6 flex justify-center gap-1">
+    <div className="mx-4 mt-8 text-center">
+      <h1 className="text-3xl font-semibold">No repos setup yet</h1>
+      <div className="my-6 flex justify-center gap-1 text-base font-light">
         <p
-          className="text-ds-blue font-sans cursor-pointer hover:underline focus:ring-2"
+          className="cursor-pointer font-sans text-ds-blue hover:underline focus:ring-2"
           onClick={() =>
             history.push(`/${provider}/${owner}?repoDisplay=Inactive`)
           }
@@ -27,7 +27,7 @@ const NoReposBlock = () => {
         you&#39;d like to setup and learn about setup with our{' '}
         <A to={{ pageName: 'docs' }}>quick start guide.</A>
       </div>
-      <div className="w-52 m-auto">
+      <div className="m-auto w-52">
         <Button
           variant="primary"
           onClick={() =>

@@ -29,7 +29,7 @@ function TriggerSyncBanner() {
     <div className="py-4">
       <Banner variant="plain">
         <BannerHeading>
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <Icon name="information-circle" />
             <h2 className="font-semibold">
               You need to enable Flag analytics to see coverage data

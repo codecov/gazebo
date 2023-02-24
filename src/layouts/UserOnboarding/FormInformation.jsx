@@ -58,7 +58,7 @@ function FormInformation({ form }) {
 
   return (
     <div>
-      <h3 className="font-semibold text-lg">
+      <h3 className="text-lg font-semibold">
         What type of projects brings you here?
       </h3>
       <div className="space-y-0.5 p-4 pb-6 text-base">
@@ -72,7 +72,7 @@ function FormInformation({ form }) {
           />
         ))}
       </div>
-      <h3 className="font-semibold text-lg">
+      <h3 className="text-lg font-semibold">
         What is your goal we can help with?
       </h3>
       <div className="p-4 pb-6 text-base">
@@ -86,7 +86,7 @@ function FormInformation({ form }) {
             />
           </div>
         ))}
-        <div className="flex items-start mt-2">
+        <div className="mt-2 flex items-start">
           <Checkbox
             dataMarketing="user-onboarding-other-goals"
             label="Other"

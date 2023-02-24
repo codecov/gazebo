@@ -43,13 +43,10 @@ export const AllOutlineIcons = (args) => {
   return (
     <>
       <Description />
-      <div className="w-full flex flex-wrap">
+      <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div
-              key={iconName}
-              className="p-3 center flex border border-gray-200"
-            >
+            <div key={iconName} className="flex border border-gray-200 p-3">
               <Icon name={iconName} {...args} />
               <p className="ml-2">{kebabCase(iconName)}</p>
             </div>
@@ -70,13 +67,10 @@ export const AllSolidIcons = (args) => {
   return (
     <>
       <Description />
-      <div className="w-full flex flex-wrap">
+      <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div
-              key={iconName}
-              className="p-3 center flex border border-gray-200"
-            >
+            <div key={iconName} className="flex border border-gray-200 p-3">
               <Icon name={iconName} {...args} />
               <p className="ml-2">{iconName}</p>
             </div>
@@ -97,13 +91,10 @@ export const AllDeveloperIcons = (args) => {
   return (
     <>
       <Description />
-      <div className="w-full flex flex-wrap">
+      <div className="flex w-full flex-wrap">
         {options.map((iconName) => {
           return (
-            <div
-              key={iconName}
-              className="p-3 center flex border border-gray-200"
-            >
+            <div key={iconName} className="flex border border-gray-200 p-3">
               <Icon name={iconName} {...args} />
               <p className="ml-2">{kebabCase(iconName)}</p>
             </div>
@@ -123,15 +114,15 @@ export const IconSize = (args) => {
     <>
       <h1 className="text-2xl">Icon size</h1>
       <br />
-      <div className="flex mt-2 items-center">
+      <div className="mt-2 flex items-center">
         <Icon name="search" size="sm" {...args} />
         <p className="ml-4">Size = sm</p>
       </div>
-      <div className="flex mt-2 items-center">
+      <div className="mt-2 flex items-center">
         <Icon name="search" size="md" {...args} />
         <p className="ml-4">Size = md</p>
       </div>
-      <div className="flex mt-2 items-center">
+      <div className="mt-2 flex items-center">
         <Icon name="search" size="lg" {...args} />
         <p className="ml-4">Size = lg</p>
       </div>

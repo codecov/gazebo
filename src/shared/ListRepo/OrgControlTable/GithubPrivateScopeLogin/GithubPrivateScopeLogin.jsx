@@ -16,13 +16,13 @@ function GithubPrivateScopeLogin() {
   }
 
   return (
-    <div className="flex items-center mr-4">
+    <div className="mr-4 flex items-center">
       <span className="text-ds-gray-quinary">
         <Icon size="sm" variant="solid" name="globe-alt" />
       </span>
-      <span className="ml-1 mr-1 text-ds-gray-quinary">Public repos only</span>
+      <span className="mx-1 text-ds-gray-quinary">Public repos only</span>
       <a
-        className="text-xs font-semibold mt-1 text-ds-blue-darker"
+        className="mt-1 text-xs font-semibold text-ds-blue-darker"
         href={`${signIn.path()}?private=true`}
       >
         add private

@@ -20,7 +20,7 @@ function FormEmails({ form, currentUser }) {
           />
         )}
         {errors.email && (
-          <p className="text-codecov-red mt-2">{errors.email?.message}</p>
+          <p className="mt-2 text-codecov-red">{errors.email?.message}</p>
         )}
       </div>
       <div>
@@ -33,7 +33,7 @@ function FormEmails({ form, currentUser }) {
           />
         )}
         {errors.businessEmail && (
-          <p className="text-codecov-red mt-2">
+          <p className="mt-2 text-codecov-red">
             {errors.businessEmail?.message}
           </p>
         )}

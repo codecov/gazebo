@@ -49,8 +49,8 @@ function RepoUploadToken({ uploadToken }) {
         </span>
       }
       content={
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="flex flex-1 flex-col gap-4">
             <p>Add this token to your codecov.yml</p>
             <p className="text-xs">
               <span className="font-semibold">Note:</span> Token not required

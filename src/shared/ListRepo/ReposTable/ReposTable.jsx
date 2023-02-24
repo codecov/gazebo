@@ -5,10 +5,9 @@ import { useRepos } from 'services/repos'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
-import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import Button from 'ui/Button'
-import CoverageProgress from 'ui/CoverageProgress'
 import Table from 'ui/Table'
+import TotalsNumber from 'ui/TotalsNumber'
 
 import InactiveRepo from './InactiveRepo'
 import NoRepoCoverage from './NoRepoCoverage'
@@ -28,15 +27,22 @@ const tableActive = [
   },
   {
     id: 'lastUpdated',
-    header: 'Last Updated',
+    header: 'Last updated',
     accessorKey: 'lastUpdated',
     width: 'w-2/12',
     cell: (info) => info.getValue(),
     justifyStart: true,
   },
   {
+    id: 'lines',
+    header: 'Tracked lines',
+    accessorKey: 'lines',
+    width: 'w-2/12',
+    cell: (info) => info.getValue(),
+  },
+  {
     id: 'coverage',
-    header: 'Test Coverage',
+    header: 'Test coverage',
     accessorKey: 'coverage',
     width: 'w-3/12',
     cell: (info) => info.getValue(),
@@ -78,16 +84,12 @@ function transformRepoToTable({
         lastUpdated: null,
         coverage: null,
         notEnabled: null,
+        lines: null,
       },
     ]
   }
 
   return repos?.map((repo) => {
-    const color = determineProgressColor({
-      coverage: repo?.coverage,
-      ...repo?.repositoryConfig?.indicationRange,
-    })
-
     return {
       title: (
         <RepoTitleLink
@@ -104,11 +106,7 @@ function transformRepoToTable({
       ),
       coverage:
         typeof repo?.coverage === 'number' ? (
-          <CoverageProgress
-            amount={repo?.coverage}
-            color={color}
-            label={true}
-          />
+          <TotalsNumber value={repo.coverage} plain />
         ) : (
           <NoRepoCoverage
             activated={repo.activated}
@@ -126,6 +124,7 @@ function transformRepoToTable({
           isActive={repo?.active}
         />
       ),
+      lines: <div className="w-full text-end">{repo?.lines}</div>,
     }
   })
 }
@@ -169,7 +168,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
       />
       {data?.repos?.length
         ? hasNextPage && (
-            <div className="w-full mt-4 flex justify-center">
+            <div className="mt-4 flex w-full justify-center">
               <Button
                 hook="load-more"
                 isLoading={isFetchingNextPage}

@@ -18,12 +18,12 @@ function CodeRendererCoverageHeader({ header, headName, coverage, fileLabel }) {
   return (
     <div
       className={`
-        flex flex-row flex-wrap items-center justify-between gap-2 sm:items-center
-        bg-ds-gray-primary
-        border-t p-3 border-r border-l border-b border-solid border-ds-gray-tertiary
+        flex flex-row flex-wrap items-center justify-between gap-2 border
+        border-solid
+        border-ds-gray-tertiary bg-ds-gray-primary p-3 sm:items-center
       `}
     >
-      <div className="flex gap-1 text-ds-gray-quinary items-center">
+      <div className="flex items-center gap-1 text-ds-gray-quinary">
         <span>{header}</span>
         <span className="font-semibold">{headName}</span>
         {headName && (

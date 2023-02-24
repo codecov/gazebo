@@ -12,9 +12,9 @@ function fetchAccountDetails({ provider, owner, signal }) {
 }
 
 export function useAccountDetails({ provider, owner, opts = {} }) {
-  return useQuery(
-    ['accountDetails', provider, owner],
-    ({ signal }) => fetchAccountDetails({ provider, owner, signal }),
-    opts
-  )
+  return useQuery({
+    queryKey: ['accountDetails', provider, owner],
+    queryFn: ({ signal }) => fetchAccountDetails({ provider, owner, signal }),
+    ...opts,
+  })
 }

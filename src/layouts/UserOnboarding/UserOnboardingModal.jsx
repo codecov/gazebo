@@ -35,10 +35,10 @@ function UserOnboardingModal({ currentUser }) {
       isOpen
       onRequestClose={noop}
       onAfterOpen={startOnboarding}
-      className="h-screen w-screen flex items-center justify-center"
+      className="flex h-screen w-screen items-center justify-center"
       overlayClassName="fixed inset-0 bg-ds-gray-octonary z-10"
     >
-      <div className="w-full h-full overflow-y-auto p-4 flex items-center justify-center">
+      <div className="flex h-full w-full items-center justify-center overflow-y-auto p-4">
         {Boolean(formData) ? (
           <OrganizationSelector
             currentUser={currentUser}

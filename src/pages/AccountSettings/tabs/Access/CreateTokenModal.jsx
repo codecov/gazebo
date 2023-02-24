@@ -74,14 +74,14 @@ function CreateTokenModal({ closeModal, provider }) {
       title="API access token"
       body={
         <div className="flex flex-col">
-          <span className="font-semibold mb-4 text-sm">Personal API token</span>
+          <span className="mb-4 text-sm font-semibold">Personal API token</span>
           <div className="flex items-center gap-2">
-            <span className="font-mono bg-ds-gray-secondary text-ds-gray-octonary mr-2">
+            <span className="mr-2 bg-ds-gray-secondary font-mono text-ds-gray-octonary">
               {token}
             </span>
             <CopyClipboard string={token} />
           </div>
-          <span className="text-xs mt-4">
+          <span className="mt-4 text-xs">
             Make sure to copy your token now. you won`t be able to see it again.
           </span>
         </div>

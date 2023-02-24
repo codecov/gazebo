@@ -14,12 +14,10 @@ import { TitleFlags } from 'ui/FileViewer/ToggleHeader/Title'
 
 function ErrorDisplayMessage() {
   return (
-    <div className="border-solid border-ds-gray-tertiary border p-4">
-      <p>
-        There was a problem getting the source code from your provider. Unable
-        to show line by line coverage.
-      </p>
-    </div>
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider. Unable to
+      show line by line coverage.
+    </p>
   )
 }
 
@@ -45,9 +43,9 @@ function CommitFileView({ path }) {
   })
 
   return (
-    <div className="flex flex-col">
+    <>
       <CodeRendererInfoRow>
-        <div className="flex justify-end w-full gap-4">
+        <div className="flex justify-end gap-4">
           {flagNames && flagNames?.length > 1 && (
             <TitleFlags
               flags={flagNames}
@@ -84,7 +82,7 @@ function CommitFileView({ path }) {
       ) : (
         <ErrorDisplayMessage />
       )}
-    </div>
+    </>
   )
 }
 

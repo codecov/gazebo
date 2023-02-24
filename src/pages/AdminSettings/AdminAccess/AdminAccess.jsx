@@ -15,14 +15,14 @@ function AdminAccess() {
   return (
     <>
       <div className="pb-4">
-        <h2 className="font-semibold text-2xl">Administrator Access</h2>
+        <h2 className="text-2xl font-semibold">Administrator Access</h2>
         <p>
           Admins are permitted to add other admins, change user activation
           status, and modify the organization&apos;s plan
         </p>
       </div>
       <hr />
-      <p className="text-xs py-4">
+      <p className="py-4 text-xs">
         Admins can be edited in the{' '}
         <A
           hook="docs"

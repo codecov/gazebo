@@ -26,9 +26,9 @@ const Upload = ({
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
 
   return (
-    <div className="py-2 px-4 flex flex-col gap-1 border-r border-ds-gray-secondary">
+    <div className="flex flex-col gap-1 border-r border-ds-gray-secondary py-2 px-4">
       <div className="flex justify-between ">
-        <div className="flex-1 flex gap-1 flex-wrap">
+        <div className="flex flex-1 flex-wrap gap-1">
           <UploadReference ciUrl={ciUrl} name={name} buildCode={buildCode} />
           <RenderError errors={errors} state={state} />
         </div>
@@ -39,15 +39,15 @@ const Upload = ({
         )}
       </div>
       <div className="flex justify-between">
-        <div className="flex gap-2 flex-wrap flex-col md:flex-row">
+        <div className="flex flex-col flex-wrap gap-2 md:flex-row">
           {flags.map((flag, i) => (
             <span key={`${flag}-${i}`} className="flex">
               <Icon variant="solid" size="sm" name="flag" />
-              <span className="text-xs ml-1">{flag}</span>
+              <span className="ml-1 text-xs">{flag}</span>
             </span>
           ))}
           {isCarriedForward && (
-            <span className="text-ds-gray-quinary text-xs">carry-forward</span>
+            <span className="text-xs text-ds-gray-quinary">carry-forward</span>
           )}
         </div>
         {downloadUrl && (

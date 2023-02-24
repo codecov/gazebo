@@ -26,7 +26,7 @@ const query = `
 
 export const usePullHeadData = ({ provider, owner, repo, pullId }) =>
   useQuery({
-    queryKey: ['PullHeader', provider, owner, repo, pullId],
+    queryKey: ['PullHeader', provider, owner, repo, pullId, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

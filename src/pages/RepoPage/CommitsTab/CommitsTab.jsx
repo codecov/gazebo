@@ -59,7 +59,7 @@ function CommitsTab() {
         pageName: '',
         readOnly: true,
         children: (
-          <span className="flex items-center gap-1">
+          <span className="inline-flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
             {branch}
           </span>
@@ -69,10 +69,10 @@ function CommitsTab() {
   }, [branch, setCrumbs])
 
   return (
-    <div className="flex-1 flex flex-col gap-4">
-      <div className="flex gap-2 justify-between px-2 sm:px-0">
-        <div className="flex gap-1 flex-col">
-          <h2 className="font-semibold flex gap-1 flex-initial items-center">
+    <div className="flex flex-1 flex-col gap-4">
+      <div className="flex justify-between gap-2 px-2 sm:px-0">
+        <div className="flex flex-col gap-1">
+          <h2 className="flex flex-initial items-center gap-1 font-semibold">
             <span className="text-ds-gray-quinary">
               <Icon name="branch" variant="developer" size="sm" />
             </span>

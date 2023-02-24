@@ -38,13 +38,11 @@ function CancelPlanPage() {
 
   return (
     <>
-      <div className="flex gap-8 w-4/5">
+      <div className="flex w-4/5 gap-8">
         <div className="flex basis-3/5">
           <Card variant="cancel">
             <div className="flex flex-col gap-4 text-ds-gray-quinary">
-              <h2 className="text-2xl text-codecov-red bold">
-                Downgrading to Free
-              </h2>
+              <h2 className="text-2xl text-codecov-red">Downgrading to Free</h2>
               <hr />
               <p>
                 Note that, when downgrading to free the following features will
@@ -82,10 +80,10 @@ function CancelPlanPage() {
             <div className="-mt-16 mb-4">
               <img src={umbrellaImg} alt="closed umbrella illustration" />
             </div>
-            <h3 className="text-2xl text-ds-pink-quinary bold">
+            <h3 className="text-2xl text-ds-pink-quinary">
               {freePlan?.marketingName}
             </h3>
-            <h2 className="text-5xl bold mb-8">Free</h2>
+            <h2 className="mb-8 text-5xl">Free</h2>
             <BenefitList
               benefits={freePlan?.benefits}
               iconName="check"

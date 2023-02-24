@@ -7,10 +7,10 @@ import Button from 'ui/Button'
 function ActionsBilling({ accountDetails, isFreePlan }) {
   if (accountDetails?.planProvider === 'github') {
     return (
-      <div className="border-ds-gray-secondary flex flex-col gap-4">
+      <div className="flex flex-col gap-4 border-ds-gray-secondary">
         <hr />
         <div className="flex gap-4">
-          <img className="w-8 h-8" alt="Github" src={githubLogo} />
+          <img className="h-8 w-8" alt="Github" src={githubLogo} />
           <p className="text-sm">
             Your account is configured via GitHub Marketplace
           </p>

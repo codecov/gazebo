@@ -9,8 +9,9 @@ function fetchPlan({ provider, signal }) {
 
 export function usePlans(provider) {
   // the plans are very static data
-  return useQuery(['plans'], ({ signal }) => fetchPlan({ provider, signal }), {
-    // I dunno here if staleTime should be infinity. Plans do change every now and then :surprised-face:
+  return useQuery({
+    queryKey: ['plans', provider],
+    queryFn: ({ signal }) => fetchPlan({ provider, signal }),
     cacheTime: Infinity,
     staleTime: Infinity,
   })

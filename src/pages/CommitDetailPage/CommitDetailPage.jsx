@@ -19,7 +19,7 @@ const UploadsCard = lazy(() => import('./UploadsCard'))
 
 const Loader = () => {
   return (
-    <div className="flex-1 flex justify-center">
+    <div className="flex flex-1 justify-center">
       <Spinner size={60} />
     </div>
   )
@@ -64,7 +64,7 @@ function CommitPage() {
   }
 
   return (
-    <div className="flex gap-4 flex-col px-3 sm:px-0">
+    <div className="flex flex-col gap-4 px-3 sm:px-0">
       <Breadcrumb
         paths={[
           { pageName: 'owner', text: owner },
@@ -85,7 +85,7 @@ function CommitPage() {
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
-        <aside className="flex flex-1 gap-6 md:max-w-sm flex-col self-start sticky top-1.5">
+        <aside className="flex flex-1 flex-col gap-6 self-start md:sticky md:top-1.5 md:max-w-sm">
           <Suspense fallback={<Loader />}>
             <UploadsCard />
           </Suspense>

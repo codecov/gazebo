@@ -13,7 +13,7 @@ import Icon from 'ui/Icon'
 
 const TableClasses = {
   headerCell:
-    'flex grow !font-sans font-semibold py-2 text-sm px-0 sm:px-3.5 text-ds-gray-quinary gap-1 items-center whitespace-nowrap',
+    'flex grow !font-sans font-semibold py-2 text-sm px-0 sm:px-3.5 text-ds-gray-quinary gap-1 items-center',
   headerRow: 'flex gap-2 text-left border-t border-b border-ds-black-secondary',
   tableRow: 'flex gap-2 border-t border-ds-black-secondary',
   tableCell:
@@ -191,7 +191,7 @@ const Table = memo(function ({
   )
 
   return (
-    <table className="flex-1 flex flex-col">
+    <table className="flex flex-1 flex-col">
       {_renderHead({ table, columnsWidth, onSort, colJustifyStart })}
       {_renderBody({ table, columnsWidth, renderSubComponent, enableHover })}
     </table>

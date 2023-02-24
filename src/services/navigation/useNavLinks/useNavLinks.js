@@ -402,6 +402,17 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirect-changes`,
       isExternalLink: false,
     },
+    commitIndirectChanges: {
+      text: 'Indirect changes',
+      path: (
+        { provider = p, owner = o, repo = r, commit } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/commit/${commit}/indirect-changes`,
+      isExternalLink: false,
+    },
     pullCommits: {
       text: 'Commits',
       path: (

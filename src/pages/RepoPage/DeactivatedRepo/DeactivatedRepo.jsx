@@ -16,8 +16,8 @@ function DeactivatedRepo() {
 
   // TODO: Add a link to 'our docs' page in the non-org user case once it's available.
   return (
-    <div className="flex items-center justify-center flex-col h-full text-ds-gray-octonary">
-      <div className="flex flex-col text-center justify-center max-w-lg gap-2">
+    <div className="flex h-full flex-col items-center justify-center text-ds-gray-octonary">
+      <div className="flex max-w-lg flex-col justify-center gap-2 text-center">
         <img
           alt="Repo deactivated illustration"
           className="mx-auto mb-8"

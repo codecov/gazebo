@@ -11,7 +11,7 @@ const getSourceSummaryCards = ({ headCommitId, parentCommitId, state }) =>
         {
           name: 'error',
           value: (
-            <p className="text-ds-gray-quinary text-sm leading-5 max-w-sm border-l border-ds-gray-secondary pl-4">
+            <p className="max-w-sm border-l border-ds-gray-secondary pl-4 text-sm leading-5 text-ds-gray-quinary">
               There is an error processing the coverage reports. Common issues
               are{' '}
               <A
@@ -40,7 +40,7 @@ const getSourceSummaryCards = ({ headCommitId, parentCommitId, state }) =>
           title: 'Source',
           value:
             headCommitId && parentCommitId ? (
-              <p className="text-ds-gray-octonary text-sm">
+              <p className="text-sm text-ds-gray-octonary">
                 This commit{' '}
                 <span className="font-mono font-semibold">
                   {headCommitId?.slice(0, 7)}
