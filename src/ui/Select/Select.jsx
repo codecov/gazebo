@@ -118,6 +118,7 @@ const Select = forwardRef(
       items,
       initialSelectedItem: value,
       onSelectedItemChange: ({ selectedItem }) => onChange(selectedItem),
+      selectedItem: value,
     })
 
     function renderButton() {

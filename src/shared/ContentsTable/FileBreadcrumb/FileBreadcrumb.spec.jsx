@@ -1,17 +1,28 @@
 import { render, screen } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileBreadcrumb from './FileBreadcrumb'
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
+
 describe('FileBreadcrumb', () => {
   function setup({ entries, path }) {
     render(
-      <MemoryRouter initialEntries={entries}>
-        <Route path={path}>
-          <FileBreadcrumb />
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={entries}>
+          <Route path={path}>
+            <FileBreadcrumb />
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
   }
 

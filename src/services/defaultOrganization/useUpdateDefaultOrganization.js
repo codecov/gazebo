@@ -10,7 +10,8 @@ export function useUpdateDefaultOrganization() {
   const queryClient = useQueryClient()
   const addToast = useAddNotification()
 
-  return useMutation({ mutationFn: ({ username = null }) => {
+  return useMutation({
+    mutationFn: ({ username = null }) => {
       const query = `
         mutation updateDefaultOrganization(
           $input: UpdateDefaultOrganizationInput!
@@ -30,22 +31,28 @@ export function useUpdateDefaultOrganization() {
         variables,
         mutationPath: 'updateDefaultOrganization',
       })
-    }, onSuccess: ({ data }) => {
-        const error = data?.updateDefaultOrganization?.error?.__typename
-        if (error === 'ValidationError') {
-          throw new Error(
-            'Organization does not belong in the current users organization list'
-          )
-        } else {
-          queryClient.invalidateQueries('DetailOwner')
+    },
+    onSuccess: ({ data }) => {
+      const error = data?.updateDefaultOrganization?.error?.__typename
+      if (error === 'ValidationError') {
+        throw new Error(
+          'Organization does not belong in the current users organization list'
+        )
+      } else {
+        queryClient.invalidateQueries('DetailOwner')
+        const username = data?.updateDefaultOrganization?.username
+        if (username) {
           history.push(
             `/${provider}/${data?.updateDefaultOrganization?.username}`
           )
         }
-      }, onError: (e) => {
-        return addToast({
-          type: 'error',
-          text: e.message,
-        })
-      } })
+      }
+    },
+    onError: (e) => {
+      return addToast({
+        type: 'error',
+        text: e.message,
+      })
+    },
+  })
 }

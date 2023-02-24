@@ -59,7 +59,7 @@ function RepoContentsTable() {
   return (
     <>
       <div className="sticky top-[4.5rem] flex justify-between gap-2 bg-white pt-2">
-        <div className="flex flex-1 gap-4">
+        <div className="flex flex-1 items-center gap-4">
           <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
           <FileBreadcrumb />
         </div>

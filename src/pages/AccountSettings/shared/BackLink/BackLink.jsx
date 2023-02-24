@@ -5,7 +5,7 @@ import Icon from 'old_ui/Icon'
 
 function BackLink({ textLink, ...props }) {
   return (
-    <div className="bold flex items-center justify-center text-center text-gray-500">
+    <div className="flex items-center justify-center text-center text-gray-500">
       <span className="mr-1 inline-block text-blue-400">
         <Icon name="arrowLeft" />
       </span>

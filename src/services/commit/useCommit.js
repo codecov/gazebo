@@ -9,11 +9,13 @@ import { useCompareTotals } from './useCompareTotals'
 const comparisonFragment = `
   fragment ComparisonFragment on Commit {
     compareWithParent {
+      indirectChangedFilesCount
+      directChangedFilesCount
       state
       patchTotals {
         coverage
       }
-      impactedFiles {
+      impactedFiles(filters:$filters) {
         patchCoverage {
           coverage
         }
@@ -40,10 +42,11 @@ export function useCommit({
   owner,
   repo,
   commitid,
+  filters = {},
   refetchInterval = 2000,
 }) {
   const query = `
-      query Commit($owner: String!, $repo: String!, $commitid: String!) {
+      query Commit($owner: String!, $repo: String!, $commitid: String!, $filters: ImpactedFilesFilters) {
           owner(username: $owner) {
             repository(name: $repo) {
               commit(id: $commitid) {
@@ -107,7 +110,7 @@ export function useCommit({
     }))
   }
 
-  const tempKey = ['commit', provider, owner, repo, commitid, query]
+  const tempKey = ['commit', provider, owner, repo, commitid, query, filters]
 
   const commitQuery = useQuery({
     queryKey: tempKey,
@@ -121,6 +124,7 @@ export function useCommit({
           owner,
           repo,
           commitid,
+          filters,
         },
       }).then((res) => {
         const commit = res?.data?.owner?.repository?.commit
