@@ -92,22 +92,27 @@ function SunburstChart({
       .filter((d) => d.children)
       .style('cursor', 'pointer')
       .on('click', clickedFolder)
-      .on('mouseover', hovered)
+      .on('mouseover', hoveredFolder)
+      .on('mouseout', mouseout)
 
     // Events for file
     path
       .filter((d) => !d.children)
-      .style('cursor', 'auto')
+      .style('cursor', 'pointer')
       .on('click', clickedFile)
-      .on('mouseover', hovered)
+      .on('mouseover', hoveredFile)
 
     // Create a11y label / mouse hover tooltip
-    const formatTitle = (d) =>
-      `${d
+    const formatTitle = (d) => {
+      const coverage = formatData(d.data.value)
+      const filePath = d
         .ancestors()
         .map((d) => d.data.name)
         .reverse()
-        .join('/')}\n${formatData(d.data.value)}`
+        .join('/')
+
+      return `${filePath}\n${coverage}% coverage`
+    }
 
     path.append('title').text((d) => formatTitle(d))
 
@@ -122,42 +127,54 @@ function SunburstChart({
       .on('click', clickedFolder)
 
     function clickedFolder(_event, p) {
-      reactClickCallback(p)
+      reactClickCallback({ target: p, type: 'folder' })
       changeLocation(p)
     }
 
     function clickedFile(_event, p) {
-      reactClickCallback(p)
+      reactClickCallback({ target: p, type: 'file' })
     }
 
-    function hovered(_event, p) {
-      reactHoverCallback(p)
+    function hoveredFolder(_event, p) {
+      select(this).attr('fill-opacity', 0.6)
+      reactHoverCallback({ target: p, type: 'folder' })
     }
 
-    function reactClickCallback(p) {
+    function hoveredFile(_event, p) {
+      select(this).attr('fill-opacity', 0.6)
+      reactHoverCallback({ target: p, type: 'file' })
+    }
+
+    function mouseout(_event, p) {
+      select(this).attr('fill-opacity', 1)
+    }
+
+    function reactClickCallback({ target, type }) {
       // Create a string from the root data down to the current item
-      const filePath = `${p
+      const filePath = target
         .ancestors()
         .map((d) => d.data.name)
+        .slice(0, -1)
         .reverse()
-        .join('/')}`
+        .join('/')
 
       // callback to parent component with a path, the data node, and raw d3 data
       // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
-      clickHandler.current(filePath, p.data, p)
+      clickHandler.current({ path: filePath, data: target.data, target, type })
     }
 
-    function reactHoverCallback(p) {
+    function reactHoverCallback({ target, type }) {
       // Create a string from the root data down to the current item
-      const filePath = `${p
+      const filePath = target
         .ancestors()
         .map((d) => d.data.name)
+        .slice(0, -1)
         .reverse()
-        .join('/')}`
+        .join('/')
 
       // callback to parent component with a path, the data node, and raw d3 data
       // (just in case we need it for the second iteration to listen to location changes and direct to the correct folder.)
-      hoverHandler.current(filePath, p.data, p)
+      hoverHandler.current({ path: filePath, data: target.data, target, type })
     }
 
     function changeLocation(p) {
