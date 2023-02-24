@@ -47,6 +47,8 @@ function SunburstChart({
       .domain([colorDomainMin, colorDomainMax])
       .interpolator(colorRange)
       .clamp(true)
+    // Tracks previous location for rendering .. in the breadcrumb.
+    let previous
 
     const selectorMutate = (node) => {
       if (Array.isArray(node.children)) {
@@ -125,6 +127,18 @@ function SunburstChart({
       .attr('pointer-events', 'all')
       .attr('cursor', 'pointer')
       .on('click', clickedFolder)
+      .on('mouseover', hoveredRoot)
+
+    const backText = g
+      .append('text')
+      .datum(root)
+      .text('..')
+      .attr('fill-opacity', 0)
+      .attr('text-anchor', 'middle')
+      .attr('class', 'text-7xl fill-ds-gray-quinary')
+      .attr('cursor', 'pointer')
+      .on('click', clickedFolder)
+      .on('mouseover', hoveredRoot)
 
     function clickedFolder(_event, p) {
       reactClickCallback({ target: p, type: 'folder' })
@@ -133,6 +147,14 @@ function SunburstChart({
 
     function clickedFile(_event, p) {
       reactClickCallback({ target: p, type: 'file' })
+    }
+
+    function hoveredRoot(_event, p) {
+      if (previous) {
+        reactHoverCallback({ target: previous, type: 'folder' })
+        return
+      }
+      reactHoverCallback({ target: p, type: 'folder' })
     }
 
     function hoveredFolder(_event, p) {
@@ -178,32 +200,55 @@ function SunburstChart({
     }
 
     function changeLocation(p) {
-      parent.datum(p.parent || root)
+      // Because you can move two layers at a time previous !== parent
+      previous = p
+
+      const t = g.transition().duration(750)
+
+      handleArcsUpdate({
+        current: p,
+        selected: p.parent || root,
+        transition: t,
+      })
+
+      handleTextUpdate({
+        current: p,
+        selected: p.parent || root,
+        transition: t,
+      })
+    }
+
+    function handleArcsUpdate({ current, selected, transition }) {
+      parent.datum(selected)
 
       // Handle animating in/out of a folder
       root.each(
         (d) =>
           (d.target = {
             x0:
-              Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) *
+              Math.max(
+                0,
+                Math.min(1, (d.x0 - current.x0) / (current.x1 - current.x0))
+              ) *
               2 *
               Math.PI,
             x1:
-              Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) *
+              Math.max(
+                0,
+                Math.min(1, (d.x1 - current.x0) / (current.x1 - current.x0))
+              ) *
               2 *
               Math.PI,
-            y0: Math.max(0, d.y0 - p.depth),
-            y1: Math.max(0, d.y1 - p.depth),
+            y0: Math.max(0, d.y0 - current.depth),
+            y1: Math.max(0, d.y1 - current.depth),
           })
       )
-
-      const t = g.transition().duration(750)
 
       // Transition the data on all arcs, even the ones that aren’t visible,
       // so that if this transition is interrupted, entering arcs will start
       // the next transition from the desired position.
       path
-        .transition(t)
+        .transition(transition)
         .tween('data', (d) => {
           const i = interpolate(d.current, d.target)
           return (t) => (d.current = i(t))
@@ -217,6 +262,17 @@ function SunburstChart({
         .attr('pointer-events', (d) => (arcVisible(d.target) ? 'auto' : 'none'))
 
         .attrTween('d', (d) => () => drawArc(d.current))
+    }
+
+    function handleTextUpdate({ current, selected, transition }) {
+      backText.datum(selected)
+
+      // Only show back if not on root
+      if (current.parent) {
+        backText.transition(transition).attr('fill-opacity', 1)
+      } else {
+        backText.transition(transition).attr('fill-opacity', 0)
+      }
     }
 
     // Calculate if a arc is visible
