@@ -13,7 +13,7 @@ export function usePullTreePaths() {
 
   const paths =
     filePaths &&
-    filePaths.map((location, index) => ({
+    filePaths?.map((location, index) => ({
       pageName: 'pullTreeView',
       text: location,
       options: {

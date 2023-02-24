@@ -19,13 +19,11 @@ const CommitDetailFileViewer = lazy(() =>
 )
 const ImpactedFiles = lazy(() => import('../subRoute/ImpactedFiles'))
 
-const Loader = () => {
-  return (
-    <div className="flex flex-1 justify-center pt-2">
-      <Spinner size={60} />
-    </div>
-  )
-}
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner size={60} />
+  </div>
+)
 
 function CommitDetailPageContent() {
   const { provider, owner, repo, commit: commitSHA } = useParams()

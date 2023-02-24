@@ -10,13 +10,11 @@ import Table from 'ui/Table'
 
 import { useRepoPullContentsTable } from './hooks'
 
-const Loader = () => {
-  return (
-    <div className="flex flex-1 justify-center">
-      <Spinner size={60} />
-    </div>
-  )
-}
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner size={60} />
+  </div>
+)
 
 const defaultQueryParams = {
   search: '',
@@ -32,7 +30,7 @@ function FileExplorer() {
   return (
     <div className="mt-2 flex flex-col gap-2">
       <ContentsTableHeader>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <DisplayTypeButton />
           <Breadcrumb paths={treePaths} />
         </div>

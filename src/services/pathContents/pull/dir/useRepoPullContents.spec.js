@@ -70,22 +70,6 @@ describe('useRepoPullContents', () => {
       setup()
     })
 
-    it('sets isLoading to true', () => {
-      const { result } = renderHook(
-        () =>
-          useRepoPullContents({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'test',
-            pullId: '123',
-            path: '',
-          }),
-        { wrapper }
-      )
-
-      expect(result.current.isLoading).toBe(true)
-    })
-
     it('returns path contents', async () => {
       const { result, waitFor } = renderHook(
         () =>

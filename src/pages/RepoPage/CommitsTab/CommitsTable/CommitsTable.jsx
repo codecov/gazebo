@@ -113,13 +113,11 @@ function transformPullToTable(commits) {
   return []
 }
 
-const Loader = () => {
-  return (
-    <div className="flex flex-1 justify-center py-16">
-      <Spinner size={60} />
-    </div>
-  )
-}
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner size={60} />
+  </div>
+)
 
 function CommitsTable({ branch, paramCIStatus }) {
   const { provider, owner, repo, pullId } = useParams()

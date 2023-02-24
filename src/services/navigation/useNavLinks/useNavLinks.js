@@ -209,11 +209,10 @@ export function useNavLinks() {
           repo: r,
         }
       ) => {
-        if (!tree) {
-          return `/${provider}/${owner}/${repo}/commit/${commit}/tree`
-        } else {
+        if (tree) {
           return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${tree}`
         }
+        return `/${provider}/${owner}/${repo}/commit/${commit}/tree`
       },
       isExternalLink: false,
       text: 'Commit Tree View',
@@ -438,9 +437,8 @@ export function useNavLinks() {
       ) => {
         if (tree) {
           return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}`
-        } else {
-          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree`
         }
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/tree`
       },
       isExternalLink: false,
     },

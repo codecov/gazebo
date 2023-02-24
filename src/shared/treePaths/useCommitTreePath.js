@@ -13,7 +13,7 @@ export function useCommitTreePaths() {
 
   const paths =
     filePaths &&
-    filePaths.map((location, index) => ({
+    filePaths?.map((location, index) => ({
       pageName: 'commitTreeView',
       text: location,
       options: {

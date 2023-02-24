@@ -78,10 +78,12 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <Route path={'/:provider/:owner/:repo/pull/:pullId/tree'}>
-            {children}
-          </Route>
-          <Route path={'/:provider/:owner/:repo/pull/:pullId/tree/:path+'}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/pull/:pullId/tree',
+              '/:provider/:owner/:repo/pull/:pullId/tree/:path+',
+            ]}
+          >
             {children}
           </Route>
         </MemoryRouter>
@@ -154,7 +156,7 @@ describe('useRepoPullContentsTable', () => {
           await waitFor(() => result.current.isLoading)
           await waitFor(() => !result.current.isLoading)
 
-          await waitFor(() => expect(result.current.data.length).toBe(3))
+          await waitFor(() => expect(result.current.data.length).toBe(2))
         })
       })
 

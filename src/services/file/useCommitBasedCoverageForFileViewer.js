@@ -1,6 +1,6 @@
 import { useFileWithMainCoverage } from 'services/pathContents'
 
-import { useCoverageWithFlags } from '.'
+import { useCoverageWithFlags } from './index'
 
 export function useCommitBasedCoverageForFileViewer({
   owner,

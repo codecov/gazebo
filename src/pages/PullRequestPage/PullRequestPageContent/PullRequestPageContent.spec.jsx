@@ -11,6 +11,8 @@ jest.mock('../subroute/FilesChangedTab', () => () => 'FilesChangedTab')
 jest.mock('../subroute/IndirectChangesTab', () => () => 'IndirectChangesTab')
 jest.mock('../subroute/CommitsTab', () => () => 'CommitsTab')
 jest.mock('../subroute/FlagsTab', () => () => 'FlagsTab')
+jest.mock('../subRoute/FileExplorer', () => () => 'FileExplorer')
+jest.mock('../subRoute/FileViewer', () => () => 'FileViewer')
 
 const mockPullData = (resultType) => ({
   owner: {
@@ -40,7 +42,16 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/pull/:pullId/blob/:path+',
+              '/:provider/:owner/:repo/pull/:pullId/tree/:path+',
+              '/:provider/:owner/:repo/pull/:pullId/tree/',
+              '/:provider/:owner/:repo/pull/:pullId',
+            ]}
+          >
+            {children}
+          </Route>
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -132,6 +143,45 @@ describe('PullRequestPageContent', () => {
         const filesChangedTab = await screen.findByText('FilesChangedTab')
         expect(filesChangedTab).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('testing tree route', () => {
+    beforeEach(() => setup())
+
+    describe('not path provided', () => {
+      it('renders FileExplorer', async () => {
+        render(<PullRequestPageContent />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pull/1/tree'),
+        })
+
+        const fileExplorer = await screen.findByText('FileExplorer')
+        expect(fileExplorer).toBeInTheDocument()
+      })
+    })
+
+    describe('path provided', () => {
+      it('renders FileExplorer', async () => {
+        render(<PullRequestPageContent />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pull/1/tree/src/dir'),
+        })
+
+        const fileExplorer = await screen.findByText('FileExplorer')
+        expect(fileExplorer).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('testing blob path', () => {
+    beforeEach(() => setup())
+
+    it('renders FileViewer', async () => {
+      render(<PullRequestPageContent />, {
+        wrapper: wrapper('/gh/codecov/test-repo/pull/1/blob/src/file.js'),
+      })
+
+      const fileViewer = await screen.findByText('FileViewer')
+      expect(fileViewer).toBeInTheDocument()
     })
   })
 })

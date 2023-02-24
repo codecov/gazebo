@@ -23,7 +23,7 @@ export function useTreePaths(passedPath) {
 
   const paths =
     filePaths &&
-    filePaths.map((location, index) => ({
+    filePaths?.map((location, index) => ({
       pageName: 'treeView',
       text: location,
       options: {
