@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 import { usePrefetchSingleFileComp } from 'services/pull'
@@ -25,7 +26,10 @@ export default function NameColumn({ row, getValue }) {
       }}
     >
       <span
-        className={row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'}
+        className={cs({
+          'text-ds-blue-darker': row.getIsExpanded(),
+          'text-current': !row.getIsExpanded(),
+        })}
       >
         <Icon
           size="md"
