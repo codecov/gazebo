@@ -129,7 +129,7 @@ describe('FilesChangedTable', () => {
     it('renders no available data copy', async () => {
       render(<FilesChangedTable />, { wrapper })
 
-      const copy = await screen.findByText('No data available')
+      const copy = await screen.findByText('No data')
       expect(copy).toBeInTheDocument()
     })
   })

@@ -292,7 +292,7 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      const noData = await screen.findByText(/No data available/)
+      const noData = await screen.findByText(/No data/)
       expect(noData).toBeInTheDocument()
     })
   })

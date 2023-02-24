@@ -68,9 +68,7 @@ function createTable({ tableData }) {
               data-testid="change-value"
             />
           ) : (
-            <span className="ml-4 text-sm text-ds-gray-quinary">
-              No data available
-            </span>
+            <span className="ml-4 text-sm text-ds-gray-quinary">No data</span>
           ),
         }
       })

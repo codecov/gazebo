@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { Suspense, useMemo } from 'react'
@@ -46,9 +47,10 @@ const table = [
           onClick={() => row.toggleExpanded()}
         >
           <span
-            className={
-              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
-            }
+            className={cs({
+              'text-ds-blue-darker': row.getIsExpanded(),
+              'text-current': !row.getIsExpanded(),
+            })}
           >
             <Icon
               size="md"
@@ -116,9 +118,7 @@ function createTable({ tableData }) {
       change: hasData ? (
         <TotalsNumber value={change} showChange data-testid="change-value" />
       ) : (
-        <span className="ml-4 text-sm text-ds-gray-quinary md:whitespace-nowrap">
-          No data available
-        </span>
+        <span className="ml-4 text-sm text-ds-gray-quinary">No data</span>
       ),
     }
   })
