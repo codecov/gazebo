@@ -122,7 +122,7 @@ describe('IndirectChangesTable', () => {
     it('renders no available data copy', async () => {
       render(<IndirectChangesTable />, { wrapper })
 
-      const copy = await screen.findByText('No data available')
+      const copy = await screen.findByText('No data')
       expect(copy).toBeInTheDocument()
     })
   })
