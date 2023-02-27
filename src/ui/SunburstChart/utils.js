@@ -14,5 +14,5 @@ export const formatData = format(',d')
 // Interpolate in between --color-ds-primary-red, --color-ds-primary-green
 export const colorRange = interpolateHslLong(
   'rgb(254, 0, 0)',
-  'rgb(33, 155, 82)'
+  'rgb(33, 181, 119)'
 )
