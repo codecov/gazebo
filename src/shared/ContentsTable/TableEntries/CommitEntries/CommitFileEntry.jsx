@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { usePrefetchCommitFileEntry } from './hooks/usePrefetchCommitFileEntry'
+import { usePrefetchCommitFileEntry } from 'services/pathContents/commit/file'
 
 import { displayTypeParameter } from '../../constants'
 import FileEntry from '../BaseEntries/FileEntry'
@@ -15,7 +15,7 @@ function CommitFileEntry({
 }) {
   const { runPrefetch } = usePrefetchCommitFileEntry({
     path,
-    commitSha: commitSha,
+    commitSha,
   })
 
   return (

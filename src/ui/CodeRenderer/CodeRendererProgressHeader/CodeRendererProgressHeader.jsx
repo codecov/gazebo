@@ -6,7 +6,7 @@ import CopyClipboard from 'ui/CopyClipboard'
 import Progress from 'ui/Progress'
 import TotalsNumber from 'ui/TotalsNumber'
 
-function CodeRendererProgressHeader({ path, pathRef, fileCoverage, change }) {
+function CodeRendererProgressHeader({ path, fileCoverage, change }) {
   /**
    * Header component that shows progress bar for the Code Renderer component.
    * @param {[String]} treePaths path of file from root directory. Only used in standalone file viewer

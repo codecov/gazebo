@@ -60,8 +60,9 @@ function RawFileViewer({
   sticky = false,
   withKey = true,
   stickyPadding,
+  commit,
 }) {
-  const { owner, repo, provider, ref, path, commit } = useParams()
+  const { owner, repo, provider, path } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const [selectedFlags, setSelectedFlags] = useState([])
 
@@ -76,7 +77,7 @@ function RawFileViewer({
     owner,
     repo,
     provider,
-    commit: ref || commit,
+    commit,
     path,
     selectedFlags,
   })
@@ -95,11 +96,7 @@ function RawFileViewer({
         onFlagsChange={setSelectedFlags}
       />
       <div id={path} className="target:ring">
-        <CodeRendererProgressHeader
-          path={path}
-          pathRef={ref}
-          fileCoverage={fileCoverage}
-        />
+        <CodeRendererProgressHeader path={path} fileCoverage={fileCoverage} />
         {!!isCriticalFile && <CriticalFileLabel variant="borderTop" />}
         {content ? (
           <CodeRenderer
@@ -131,6 +128,7 @@ RawFileViewer.propTypes = {
   sticky: PropTypes.bool,
   withKey: PropTypes.bool,
   stickyPadding: PropTypes.number,
+  commit: PropTypes.string,
 }
 
 export default RawFileViewer

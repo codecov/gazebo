@@ -17,13 +17,11 @@ const CommitDetailPageContent = lazy(() => import('./CommitDetailPageContent'))
 const CommitDetailSummary = lazy(() => import('./CommitDetailSummary'))
 const UploadsCard = lazy(() => import('./UploadsCard'))
 
-const Loader = () => {
-  return (
-    <div className="flex flex-1 justify-center">
-      <Spinner size={60} />
-    </div>
-  )
-}
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner size={60} />
+  </div>
+)
 
 function CommitErrorBanners() {
   const { owner } = useParams()

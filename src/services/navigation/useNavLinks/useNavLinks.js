@@ -209,11 +209,10 @@ export function useNavLinks() {
           repo: r,
         }
       ) => {
-        if (!tree) {
-          return `/${provider}/${owner}/${repo}/commit/${commit}/tree`
-        } else {
+        if (tree) {
           return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${tree}`
         }
+        return `/${provider}/${owner}/${repo}/commit/${commit}/tree`
       },
       isExternalLink: false,
       text: 'Commit Tree View',
@@ -436,6 +435,37 @@ export function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}/flags`,
       isExternalLink: false,
+    },
+    pullTreeView: {
+      text: 'Pull tree view',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi, tree } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => {
+        if (tree) {
+          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}`
+        }
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/tree`
+      },
+      isExternalLink: false,
+    },
+    pullFileView: {
+      path: (
+        { provider = p, owner = o, repo = r, tree, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${tree}`
+      },
+      isExternalLink: false,
+      text: 'Pull File View',
     },
     githubRepoSecrets: {
       text: 'GitHub Repo',
