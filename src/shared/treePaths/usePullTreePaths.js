@@ -11,15 +11,13 @@ export function usePullTreePaths() {
   const { repo, path } = useParams()
   const filePaths = getFilePathParts(path)
 
-  const paths =
-    filePaths &&
-    filePaths?.map((location, index) => ({
-      pageName: 'pullTreeView',
-      text: location,
-      options: {
-        tree: getTreeLocation(filePaths, index),
-      },
-    }))
+  const paths = filePaths?.map((location, index) => ({
+    pageName: 'pullTreeView',
+    text: location,
+    options: {
+      tree: getTreeLocation(filePaths, index),
+    },
+  }))
 
   const repoPath = {
     pageName: 'pullTreeView',
