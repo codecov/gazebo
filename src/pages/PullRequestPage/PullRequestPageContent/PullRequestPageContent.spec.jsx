@@ -11,8 +11,8 @@ jest.mock('../subroute/FilesChangedTab', () => () => 'FilesChangedTab')
 jest.mock('../subroute/IndirectChangesTab', () => () => 'IndirectChangesTab')
 jest.mock('../subroute/CommitsTab', () => () => 'CommitsTab')
 jest.mock('../subroute/FlagsTab', () => () => 'FlagsTab')
-jest.mock('../subRoute/FileExplorer', () => () => 'FileExplorer')
-jest.mock('../subRoute/FileViewer', () => () => 'FileViewer')
+jest.mock('../subroute/FileExplorer', () => () => 'FileExplorer')
+jest.mock('../subroute/FileViewer', () => () => 'FileViewer')
 
 const mockPullData = (resultType) => ({
   owner: {
