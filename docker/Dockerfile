@@ -39,6 +39,7 @@ RUN apk --no-cache add curl nginx gettext
 RUN mkdir -p /var/www/app
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf.template
+COPY docker/nginx-no-ipv6.conf /etc/nginx/nginx-no-ipv6.conf.template
 
 RUN  addgroup -S application \
      && adduser -D -u 1000 -S codecov -G application
