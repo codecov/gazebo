@@ -163,14 +163,14 @@ function FilesChangedTable() {
   const filesChanged = commit?.compareWithParent?.impactedFiles
 
   const formattedData = useMemo(
-    () => filesChanged.map((row) => getFileData(row, commit)),
+    () => filesChanged?.map((row) => getFileData(row, commit)),
     [filesChanged, commit]
   )
   const tableContent = createTable({ tableData: formattedData })
 
   if (isLoading || commit?.state === 'pending') return <Loader />
 
-  if (filesChanged?.length === 0)
+  if (!filesChanged?.length)
     return <p className="m-4">No files covered by tests were changed</p>
 
   return (
