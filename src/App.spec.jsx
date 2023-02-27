@@ -14,6 +14,7 @@ import App from './App'
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
 jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
+jest.mock('./pages/AllOrgsPlanPage', () => () => 'AllOrgsPlanPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
 jest.mock('./pages/CommitDetailPage', () => () => 'CommitDetailPage')
 jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
@@ -342,6 +343,42 @@ describe('App', () => {
         render(<App />, { wrapper })
 
         const page = screen.queryByText(/PlanPage/i)
+        expect(page).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('rendering all orgs plan page', () => {
+    describe('cloud', () => {
+      beforeEach(() => {
+        window.history.pushState({}, 'Test Plan Page', '/plan/gh')
+        config.IS_SELF_HOSTED = false
+        setup()
+      })
+
+      afterEach(() => (config.IS_SELF_HOSTED = false))
+
+      it('renders plan page', async () => {
+        render(<App />, { wrapper })
+
+        const page = await screen.findByText(/AllOrgsPlanPage/i)
+        expect(page).toBeInTheDocument()
+      })
+    })
+
+    describe('self hosted', () => {
+      beforeEach(() => {
+        window.history.pushState({}, 'Test Plan Page', '/plan/gh/')
+        config.IS_SELF_HOSTED = true
+        setup()
+      })
+
+      afterEach(() => (config.IS_SELF_HOSTED = false))
+
+      it('renders plan page', async () => {
+        render(<App />, { wrapper })
+
+        const page = screen.queryByText(/AllOrgsPlanPage/i)
         expect(page).not.toBeInTheDocument()
       })
     })
