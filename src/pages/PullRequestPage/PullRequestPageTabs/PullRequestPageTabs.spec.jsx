@@ -43,7 +43,16 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/pull/:pullId',
+              '/:provider/:owner/:repo/pull/:pullId/tree',
+              '/:provider/:owner/:repo/pull/:pullId/tree/:path+',
+              '/:provider/:owner/:repo/pull/:pullId/blob/:path+',
+            ]}
+          >
+            {children}
+          </Route>
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -71,85 +80,166 @@ describe('PullRequestPageTabs', () => {
     )
   }
 
-  describe('rendering files changed tab', () => {
-    beforeEach(() => setup())
+  describe('on base route', () => {
+    describe('rendering files changed tab', () => {
+      beforeEach(() => setup())
 
-    it('renders link to root pull route', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+      it('renders link to root pull route', async () => {
+        render(<PullRequestPageTabs />, { wrapper: wrapper() })
 
-      const link = await screen.findByRole('link', { name: /Files changed/ })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/gh/codecov/test-repo/pull/1')
+        const link = await screen.findByRole('link', { name: /Files changed/ })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', '/gh/codecov/test-repo/pull/1')
+      })
+
+      it('renders the correct tab count', async () => {
+        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+        const tabCount = await screen.findByText('4')
+        expect(tabCount).toBeInTheDocument()
+      })
     })
 
-    it('renders the correct tab count', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+    describe('rendering indirect changes tab', () => {
+      beforeEach(() => setup())
 
-      const tabCount = await screen.findByText('4')
-      expect(tabCount).toBeInTheDocument()
+      it('renders link to indirect changes pull route', async () => {
+        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+        const link = await screen.findByRole('link', {
+          name: /Indirect changes/,
+        })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          '/gh/codecov/test-repo/pull/1/indirect-changes'
+        )
+      })
+
+      it('renders the correct tab count', async () => {
+        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+        const tabCount = await screen.findByText('5')
+        expect(tabCount).toBeInTheDocument()
+      })
+    })
+
+    describe('rendering commits tab', () => {
+      beforeEach(() => setup())
+
+      it('renders link to commits pull route', async () => {
+        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+        const link = await screen.findByRole('link', { name: /Commits/ })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          '/gh/codecov/test-repo/pull/1/commits'
+        )
+      })
+
+      it('renders the correct tab count', async () => {
+        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+        const tabCount = await screen.findByText('11')
+        expect(tabCount).toBeInTheDocument()
+      })
+    })
+
+    describe('rendering flags tab', () => {
+      beforeEach(() => setup())
+
+      it('renders link to flags pull route', async () => {
+        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+        const link = await screen.findByRole('link', { name: /Flags/ })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          '/gh/codecov/test-repo/pull/1/flags'
+        )
+      })
+
+      it('renders the correct tab count', async () => {
+        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+        const tabCount = await screen.findByText('3')
+        expect(tabCount).toBeInTheDocument()
+      })
     })
   })
 
-  describe('rendering indirect changes tab', () => {
-    beforeEach(() => setup())
+  describe('on file explorer route', () => {
+    describe('on tree route', () => {
+      beforeEach(() => setup())
 
-    it('renders link to indirect changes pull route', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+      it('highlights file explorer tab', async () => {
+        render(<PullRequestPageTabs />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pull/1/tree'),
+        })
 
-      const link = await screen.findByRole('link', { name: /Indirect changes/ })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        '/gh/codecov/test-repo/pull/1/indirect-changes'
-      )
+        const fileExplorer = await screen.findByText(/File explorer/)
+        expect(fileExplorer).toBeInTheDocument()
+        expect(fileExplorer).toHaveAttribute('aria-current', 'page')
+      })
+
+      it('does not highlight any other tab', async () => {
+        render(<PullRequestPageTabs />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pull/1/tree'),
+        })
+
+        const filesChanged = await screen.findByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+        expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
+
+        const indirectChanges = await screen.findByText('Indirect changes')
+        expect(indirectChanges).toBeInTheDocument()
+        expect(indirectChanges).not.toHaveAttribute('aria-current', 'page')
+
+        const flags = await screen.findByText('Flags')
+        expect(flags).toBeInTheDocument()
+        expect(flags).not.toHaveAttribute('aria-current', 'page')
+
+        const commits = await screen.findByText('Commits')
+        expect(commits).toBeInTheDocument()
+        expect(commits).not.toHaveAttribute('aria-current', 'page')
+      })
     })
 
-    it('renders the correct tab count', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+    describe('on a blob route', () => {
+      beforeEach(() => setup())
 
-      const tabCount = await screen.findByText('5')
-      expect(tabCount).toBeInTheDocument()
-    })
-  })
+      it('highlights files tab', async () => {
+        render(<PullRequestPageTabs />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pull/1/blob/index.js'),
+        })
 
-  describe('rendering commits tab', () => {
-    beforeEach(() => setup())
+        const fileExplorer = await screen.findByText(/File explorer/)
+        expect(fileExplorer).toBeInTheDocument()
+        expect(fileExplorer).toHaveAttribute('aria-current', 'page')
+      })
 
-    it('renders link to commits pull route', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+      it('does not highlight any other tab', async () => {
+        render(<PullRequestPageTabs />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pull/1/blob/index.js'),
+        })
 
-      const link = await screen.findByRole('link', { name: /Commits/ })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        '/gh/codecov/test-repo/pull/1/commits'
-      )
-    })
+        const filesChanged = await screen.findByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+        expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
 
-    it('renders the correct tab count', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        const indirectChanges = await screen.findByText('Indirect changes')
+        expect(indirectChanges).toBeInTheDocument()
+        expect(indirectChanges).not.toHaveAttribute('aria-current', 'page')
 
-      const tabCount = await screen.findByText('11')
-      expect(tabCount).toBeInTheDocument()
-    })
-  })
+        const flags = await screen.findByText('Flags')
+        expect(flags).toBeInTheDocument()
+        expect(flags).not.toHaveAttribute('aria-current', 'page')
 
-  describe('rendering flags tab', () => {
-    beforeEach(() => setup())
-
-    it('renders link to flags pull route', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
-
-      const link = await screen.findByRole('link', { name: /Flags/ })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/gh/codecov/test-repo/pull/1/flags')
-    })
-
-    it('renders the correct tab count', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
-
-      const tabCount = await screen.findByText('3')
-      expect(tabCount).toBeInTheDocument()
+        const commits = await screen.findByText('Commits')
+        expect(commits).toBeInTheDocument()
+        expect(commits).not.toHaveAttribute('aria-current', 'page')
+      })
     })
   })
 })

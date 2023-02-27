@@ -2,20 +2,19 @@ import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import MissingFileData from 'shared/ContentsTable/MissingFileData'
-import { useRepoCommitContentsTable } from 'shared/ContentsTable/useRepoCommitContentsTable'
 import { useCommitTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
-const Loader = () => {
-  return (
-    <div className="flex flex-1 justify-center">
-      <Spinner size={60} />
-    </div>
-  )
-}
+import { useRepoCommitContentsTable } from './hooks'
+
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner size={60} />
+  </div>
+)
 
 const defaultQueryParams = {
   search: '',
@@ -31,7 +30,7 @@ function CommitDetailFileExplorer() {
   return (
     <div className="mt-2 flex flex-col gap-2">
       <ContentsTableHeader>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <DisplayTypeButton />
           <Breadcrumb paths={treePaths} />
         </div>

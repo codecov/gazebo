@@ -10,6 +10,12 @@ import CommitDirEntry from './CommitDirEntry'
 const mockData = {
   username: 'codecov',
   repository: {
+    repositoryConfig: {
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
+      },
+    },
     commit: {
       pathContents: {
         results: [
@@ -125,6 +131,10 @@ describe('CommitDirEntry', () => {
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
         results: [
           {
             __typename: 'PathContentDir',

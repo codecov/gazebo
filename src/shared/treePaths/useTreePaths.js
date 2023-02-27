@@ -21,16 +21,14 @@ export function useTreePaths(passedPath) {
   )
   const defaultBranch = repoOverview?.defaultBranch
 
-  const paths =
-    filePaths &&
-    filePaths.map((location, index) => ({
-      pageName: 'treeView',
-      text: location,
-      options: {
-        tree: getTreeLocation(filePaths, location, index),
-        ref: branch ?? ref ?? defaultBranch,
-      },
-    }))
+  const paths = filePaths?.map((location, index) => ({
+    pageName: 'treeView',
+    text: location,
+    options: {
+      tree: getTreeLocation(filePaths, location, index),
+      ref: branch ?? ref ?? defaultBranch,
+    },
+  }))
 
   const repoPath = {
     pageName: 'treeView',

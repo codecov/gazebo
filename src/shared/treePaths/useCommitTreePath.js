@@ -11,16 +11,14 @@ export function useCommitTreePaths() {
   const { repo, path, commit } = useParams()
   const filePaths = getFilePathParts(path)
 
-  const paths =
-    filePaths &&
-    filePaths.map((location, index) => ({
-      pageName: 'commitTreeView',
-      text: location,
-      options: {
-        tree: getTreeLocation(filePaths, location, index),
-        commit,
-      },
-    }))
+  const paths = filePaths?.map((location, index) => ({
+    pageName: 'commitTreeView',
+    text: location,
+    options: {
+      tree: getTreeLocation(filePaths, location, index),
+      commit,
+    },
+  }))
 
   const repoPath = {
     pageName: 'commitTreeView',

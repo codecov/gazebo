@@ -15,6 +15,8 @@ const FilesChangedTab = lazy(() => import('../subroute/FilesChangedTab'))
 const IndirectChangesTab = lazy(() => import('../subroute/IndirectChangesTab'))
 const CommitsTab = lazy(() => import('../subroute/CommitsTab'))
 const FlagsTab = lazy(() => import('../subroute/FlagsTab'))
+const FileExplorer = lazy(() => import('../subroute/FileExplorer'))
+const FileViewer = lazy(() => import('../subroute/FileViewer'))
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -34,6 +36,21 @@ function PullRequestPageContent() {
 
   return (
     <Switch>
+      <SentryRoute
+        path={[
+          '/:provider/:owner/:repo/pull/:pullId/tree/:path+',
+          '/:provider/:owner/:repo/pull/:pullId/tree/',
+        ]}
+      >
+        <Suspense fallback={<Loader />}>
+          <FileExplorer />
+        </Suspense>
+      </SentryRoute>
+      <SentryRoute path={['/:provider/:owner/:repo/pull/:pullId/blob/:path+']}>
+        <Suspense fallback={<Loader />}>
+          <FileViewer />
+        </Suspense>
+      </SentryRoute>
       <SentryRoute
         path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
         exact
