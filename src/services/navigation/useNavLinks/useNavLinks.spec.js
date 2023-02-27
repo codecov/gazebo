@@ -181,6 +181,21 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('All orgs an repo plans', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.allOrgsPlanPage.path()).toBe(`/plan/gl`)
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.allOrgsPlanPage.path({ provider: 'bb' })
+      ).toBe(`/plan/bb`)
+    })
+  })
+
   describe('Members', () => {
     beforeAll(() => {
       setup(['/gh/critical-role/calloway'])
