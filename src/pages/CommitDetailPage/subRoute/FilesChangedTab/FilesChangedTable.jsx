@@ -163,7 +163,7 @@ function FilesChangedTable() {
   const filesChanged = commit?.compareWithParent?.impactedFiles
 
   const formattedData = useMemo(
-    () => filesChanged.map((row) => getFileData(row, commit)),
+    () => filesChanged?.map((row) => getFileData(row, commit)),
     [filesChanged, commit]
   )
   const tableContent = createTable({ tableData: formattedData })
