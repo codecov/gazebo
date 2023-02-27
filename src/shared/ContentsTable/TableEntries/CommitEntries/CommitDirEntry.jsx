@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 
-import { usePrefetchCommitDirEntry } from './hooks'
+import { usePrefetchCommitDirEntry } from 'services/pathContents/commit/dir'
 
 import DirEntry from '../BaseEntries/DirEntry'
 
 function CommitDirEntry({ commitSha, urlPath, name, filters }) {
   const { runPrefetch } = usePrefetchCommitDirEntry({
-    commitSha,
-    path: urlPath,
+    commit: commitSha,
+    path: name,
     filters,
   })
 

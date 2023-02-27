@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 
-import { usePrefetchBranchDirEntry } from './hooks/usePrefetchBranchDirEntry'
+import { usePrefetchBranchDirEntry } from 'services/pathContents/branch/dir'
 
 import DirEntry from '../BaseEntries/DirEntry'
 
 function BranchDirEntry({ branch, urlPath, name, filters }) {
   const { runPrefetch } = usePrefetchBranchDirEntry({
     branch,
-    path: urlPath,
+    path: name,
     filters,
   })
 
