@@ -1,6 +1,88 @@
-import { EnterprisePlans, isEnterprisePlan, isFreePlan, Plans } from './billing'
+import { renderHook } from '@testing-library/react-hooks'
+
+import { useFlags } from 'shared/featureFlags'
+
+import {
+  EnterprisePlans,
+  isEnterprisePlan,
+  isFreePlan,
+  Plans,
+  useProPlans,
+} from './billing'
+
+jest.mock('shared/featureFlags')
+
+function getPlans() {
+  return [
+    {
+      marketingName: 'Basic',
+      value: 'users-free',
+      billingRate: null,
+      baseUnitPrice: 0,
+      benefits: [
+        'Up to 5 users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+      ],
+    },
+    {
+      marketingName: 'Pro Team',
+      value: 'users-pr-inappm',
+      billingRate: 'monthly',
+      baseUnitPrice: 12,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    },
+    {
+      marketingName: 'Pro Team',
+      value: 'users-pr-inappy',
+      billingRate: 'annually',
+      baseUnitPrice: 10,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    },
+    {
+      marketingName: 'Pro Team',
+      value: 'users-enterprisem',
+      billingRate: 'monthly',
+      baseUnitPrice: 12,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    },
+    {
+      marketingName: 'Pro Team',
+      value: 'users-enterprisey',
+      billingRate: 'annually',
+      baseUnitPrice: 10,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    },
+  ]
+}
 
 describe('billing utils', () => {
+  function setup(flagValue) {
+    useFlags.mockReturnValue({
+      enterpriseCloudPlanSupport: flagValue,
+    })
+  }
+
   describe('isFreePlan', () => {
     it('supports old free plan', () => {
       expect(isFreePlan('users-free')).toBe(true)
@@ -38,6 +120,81 @@ describe('billing utils', () => {
       expect(isEnterprisePlan(undefined)).toBe(false)
       expect(isEnterprisePlan(12345)).toBe(false)
       expect(isEnterprisePlan({})).toBe(false)
+    })
+  })
+
+  describe('useProPlans', () => {
+    describe('flag is true', () => {
+      beforeEach(() => {
+        setup(true)
+      })
+
+      it('contains enterprise plans', async () => {
+        const { result } = renderHook(() => useProPlans({ plans: getPlans() }))
+
+        expect(result.current).toEqual({
+          proPlanMonth: {
+            marketingName: 'Pro Team',
+            value: 'users-pr-inappm',
+            billingRate: 'monthly',
+            baseUnitPrice: 12,
+            benefits: [
+              'Configureable # of users',
+              'Unlimited public repositories',
+              'Unlimited private repositories',
+              'Priorty Support',
+            ],
+          },
+          proPlanYear: {
+            marketingName: 'Pro Team',
+            value: 'users-pr-inappy',
+            billingRate: 'annually',
+            baseUnitPrice: 10,
+            benefits: [
+              'Configureable # of users',
+              'Unlimited public repositories',
+              'Unlimited private repositories',
+              'Priorty Support',
+            ],
+          },
+        })
+      })
+    })
+
+    describe('flag is false', () => {
+      beforeEach(() => {
+        setup(false)
+      })
+      it('does not contain enterprise plans', () => {
+        const { result } = renderHook(() => useProPlans({ plans: getPlans() }))
+
+        expect(result.current).toEqual({
+          proPlanMonth: {
+            marketingName: 'Pro Team',
+            value: 'users-pr-inappm',
+            billingRate: 'monthly',
+            baseUnitPrice: 12,
+            benefits: [
+              'Configureable # of users',
+              'Unlimited public repositories',
+              'Unlimited private repositories',
+              'Priorty Support',
+            ],
+          },
+          proPlanYear: {
+            marketingName: 'Pro Team',
+            value: 'users-pr-inappy',
+            billingRate: 'annually',
+            baseUnitPrice: 10,
+            benefits: [
+              'Configureable # of users',
+              'Unlimited public repositories',
+              'Unlimited private repositories',
+              'Priorty Support',
+            ],
+          },
+        })
+      })
     })
   })
 })
