@@ -92,7 +92,7 @@ function createTable({ tableData }) {
     return [{ name: null, coverage: null, patch: null, change: null }]
   }
 
-  return tableData.map((row) => {
+  return tableData?.map((row) => {
     const { headName, headCoverage, hasData, change, patchCoverage, commit } =
       row
 
@@ -163,7 +163,7 @@ function FilesChangedTable() {
   const filesChanged = commit?.compareWithParent?.impactedFiles
 
   const formattedData = useMemo(
-    () => filesChanged.map((row) => getFileData(row, commit)),
+    () => filesChanged?.map((row) => getFileData(row, commit)),
     [filesChanged, commit]
   )
   const tableContent = createTable({ tableData: formattedData })

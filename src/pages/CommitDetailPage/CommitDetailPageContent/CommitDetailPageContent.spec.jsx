@@ -118,8 +118,8 @@ describe('CommitDetailPageContent', () => {
         wrapper: wrapper(),
       })
 
-      const filesTab = await screen.findByText('Files')
-      expect(filesTab).toBeInTheDocument()
+      const fileExplorerTab = await screen.findByText('File explorer')
+      expect(fileExplorerTab).toBeInTheDocument()
     })
   })
 
@@ -233,7 +233,7 @@ describe('CommitDetailPageContent', () => {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
         })
 
-        const link = await screen.findByRole('link', { name: 'Files' })
+        const link = await screen.findByRole('link', { name: 'File explorer' })
         userEvent.click(link)
 
         await waitFor(() =>

@@ -117,30 +117,16 @@ describe('FileDiff', () => {
       const calcMode = await screen.findByText(/calcMode/)
       expect(calcMode).toBeInTheDocument()
     })
-  })
 
-  describe('when coverage has changed outside of the git diff', () => {
-    beforeEach(() => {
-      const impactedFile = {
-        isCriticalFile: false,
-        headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          {
-            header: '-0,0 +1,48',
-            hasUnintendedChanges: true,
-            lines: [{ content: 'abc' }, { content: 'def' }],
-          },
-        ],
-      }
-      setup({ impactedFile })
-    })
-    it('renders unexpected changes', async () => {
+    it('renders the commit redirect url', async () => {
       render(<FileDiff path={'flag1/file.js'} />, { wrapper })
 
-      const indirectChange = await screen.findByText(
-        /indirect coverage change/i
+      const viewFullFileText = await screen.findByText(/View full file/)
+      expect(viewFullFileText).toBeInTheDocument()
+      expect(viewFullFileText).toHaveAttribute(
+        'href',
+        '/gh/codecov/cool-repo/pull/1/blob/flag1/file.js'
       )
-      expect(indirectChange).toBeInTheDocument()
     })
   })
 
