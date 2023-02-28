@@ -5,7 +5,6 @@
   "dependencies": {
     "@hookform/resolvers": "^2.8.5",
     "@reach/menu-button": "^0.18.0",
-    "@sentry/cli": "^2.13.0",
     "@sentry/react": "^7.39.0",
     "@sentry/replay": "^7.39.0",
     "@sentry/tracing": "^7.39.0",
@@ -84,6 +83,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.8",
+    "@sentry/cli": "^2.13.0",
     "@storybook/addon-a11y": "^6.5.16",
     "@storybook/addon-actions": "^6.5.16",
     "@storybook/addon-essentials": "^6.5.16",
