@@ -83,7 +83,7 @@ function createTable({ tableData }) {
     return [{ name: null, coverage: null, patch: null, change: null }]
   }
 
-  return tableData.map((row) => {
+  return tableData?.map((row) => {
     const { headName, headCoverage, hasData, change, commit } = row
 
     return {
@@ -92,7 +92,7 @@ function createTable({ tableData }) {
           <A
             to={{
               pageName: 'commitFileView',
-              options: { commit, tree: headName },
+              options: { commit: commit?.commitid, tree: headName },
             }}
           >
             {headName}
@@ -154,7 +154,7 @@ function IndirectChangesTable() {
   const indirectChangedFiles = commit?.compareWithParent?.impactedFiles
 
   const formattedData = useMemo(
-    () => indirectChangedFiles.map((row) => getFileData(row, commit)),
+    () => indirectChangedFiles?.map((row) => getFileData(row, commit)),
     [indirectChangedFiles, commit]
   )
   const tableContent = createTable({ tableData: formattedData })

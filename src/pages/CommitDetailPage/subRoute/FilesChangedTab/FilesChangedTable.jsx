@@ -92,7 +92,7 @@ function createTable({ tableData }) {
     return [{ name: null, coverage: null, patch: null, change: null }]
   }
 
-  return tableData.map((row) => {
+  return tableData?.map((row) => {
     const { headName, headCoverage, hasData, change, patchCoverage, commit } =
       row
 
@@ -102,7 +102,7 @@ function createTable({ tableData }) {
           <A
             to={{
               pageName: 'commitFileView',
-              options: { commit, tree: headName },
+              options: { commit: commit?.commitid, tree: headName },
             }}
           >
             {headName}

@@ -57,7 +57,7 @@ function CommitDetailPageTabs({
         },
         {
           pageName: 'commitTreeView',
-          children: 'Files',
+          children: 'File explorer',
           options: { commit: commitSHA },
           location: customLocation,
         },
