@@ -8,6 +8,7 @@ const baseClass = `
   font-sans cursor-pointer
 
   hover:underline
+  break-all
 
   focus:ring-2
 `
