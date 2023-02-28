@@ -140,7 +140,7 @@ function pendingCard({ patchCoverage, headCoverage, changeCoverage }) {
 function lastCommitErrorCard({ recentCommit }) {
   const card = []
 
-  if (recentCommit?.state.toLowerCase() === 'error') {
+  if (recentCommit?.state?.toLowerCase() === 'error') {
     card.push({
       name: 'error',
       value: (
