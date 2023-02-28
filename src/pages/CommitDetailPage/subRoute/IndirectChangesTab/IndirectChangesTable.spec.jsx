@@ -29,8 +29,15 @@ afterAll(() => server.close())
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh']}>
-      <Route path="/:provider">
+    <MemoryRouter
+      initialEntries={['/gh/vex/trinket/commit/123/indirect-changes']}
+    >
+      <Route
+        path={[
+          '/:provider/:owner/:repo/commit/:commit/indirect-changes',
+          '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+        ]}
+      >
         <Suspense fallback="Loading...">{children}</Suspense>
       </Route>
     </MemoryRouter>
@@ -48,6 +55,7 @@ describe('IndirectChangesTable', () => {
               repository: {
                 commit: {
                   state,
+                  commitid: '123',
                   compareWithParent: { impactedFiles: data },
                 },
               },
@@ -83,6 +91,10 @@ describe('IndirectChangesTable', () => {
         name: 'src/index2.py',
       })
       expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        '/gh/vex/trinket/commit/123/blob/src/index2.py'
+      )
     })
 
     it('renders coverage', async () => {

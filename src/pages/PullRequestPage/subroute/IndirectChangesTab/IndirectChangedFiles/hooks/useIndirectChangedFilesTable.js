@@ -48,6 +48,7 @@ function transformIndirectChangesData({ pull }) {
       headName: impactedFile?.headName,
       fileName: impactedFile?.fileName,
       isCriticalFile: impactedFile?.isCriticalFile,
+      pullId: pull?.pullId,
     }
   })
   return {

@@ -141,6 +141,7 @@ describe('useImpactedFilesTable', () => {
               isCriticalFile: true,
               patchCoverage: 27.43,
               missesInComparison: 3,
+              pullId: 14,
             },
             {
               changeCoverage: 41,
@@ -151,6 +152,7 @@ describe('useImpactedFilesTable', () => {
               isCriticalFile: true,
               patchCoverage: 48.23,
               missesInComparison: 7,
+              pullId: 14,
             },
           ],
           pullBaseCoverage: 27.35,
@@ -201,6 +203,7 @@ describe('useImpactedFilesTable', () => {
             headName: 'flag1/mafs.js',
             isCriticalFile: true,
             patchCoverage: 27.43,
+            pullId: 14,
             missesInComparison: 0,
           },
         ],

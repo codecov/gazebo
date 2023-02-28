@@ -94,6 +94,7 @@ fragment ImpactedFilesOnPull on Pull {
   head {
     state
   }
+  pullId
   compareWithBase {
     __typename
     ... on Comparison {

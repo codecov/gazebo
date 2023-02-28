@@ -92,7 +92,7 @@ function createTable({ tableData }) {
           <A
             to={{
               pageName: 'commitFileView',
-              options: { commit, tree: headName },
+              options: { commit: commit?.commitid, tree: headName },
             }}
           >
             {headName}

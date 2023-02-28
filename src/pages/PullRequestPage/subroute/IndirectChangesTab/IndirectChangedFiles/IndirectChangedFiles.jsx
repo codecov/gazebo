@@ -1,3 +1,4 @@
+import A from 'ui/A'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
@@ -36,7 +37,7 @@ const columns = [
   },
 ]
 
-function createTable({ tableData }) {
+function createTable({ tableData, pullId }) {
   return tableData?.length > 0
     ? tableData?.map((row) => {
         const {
@@ -51,7 +52,14 @@ function createTable({ tableData }) {
         return {
           name: (
             <div className="flex gap-4">
-              <span className="break-all text-ds-blue">{headName}</span>
+              <A
+                to={{
+                  pageName: 'pullFileView',
+                  options: { pullId, tree: headName },
+                }}
+              >
+                {headName}
+              </A>
               {isCriticalFile && (
                 <span className="self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                   Critical File
@@ -96,6 +104,7 @@ function IndirectChangedFiles() {
 
   const tableContent = createTable({
     tableData: data?.impactedFiles,
+    pullId: data?.pullId,
   })
 
   if (isLoading) {

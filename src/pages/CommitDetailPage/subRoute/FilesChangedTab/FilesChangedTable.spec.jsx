@@ -29,8 +29,13 @@ afterAll(() => server.close())
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh']}>
-      <Route path="/:provider">
+    <MemoryRouter initialEntries={['/gh/vax/keyleth/commit/123']}>
+      <Route
+        path={[
+          '/:provider/:owner/:repo/commit/:commit',
+          '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+        ]}
+      >
         <Suspense fallback="Loading...">{children}</Suspense>
       </Route>
     </MemoryRouter>
@@ -48,6 +53,7 @@ describe('FilesChangedTable', () => {
               repository: {
                 commit: {
                   state,
+                  commitid: '123',
                   compareWithParent: { impactedFiles: data },
                 },
               },
@@ -83,6 +89,10 @@ describe('FilesChangedTable', () => {
         name: 'src/index2.py',
       })
       expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        '/gh/vax/keyleth/commit/123/blob/src/index2.py'
+      )
     })
 
     it('renders coverage', async () => {
