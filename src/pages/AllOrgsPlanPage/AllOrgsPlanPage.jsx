@@ -18,7 +18,7 @@ const Loader = () => (
   </div>
 )
 
-function AllReposPlanPage() {
+function AllOrgsPlanPage() {
   return (
     <div className="mt-2 flex flex-col gap-4">
       <Header />
@@ -34,4 +34,4 @@ function AllReposPlanPage() {
   )
 }
 
-export default AllReposPlanPage
+export default AllOrgsPlanPage

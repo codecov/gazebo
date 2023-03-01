@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import AllReposPlanPage from './AllOrgsPlanPage'
+import AllOrgsPlanPage from './AllOrgsPlanPage'
 
 jest.mock('./UpgradePlan', () => () => 'UpgradePlan')
 jest.mock('config')
@@ -30,7 +30,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('AllReposPlanPage', () => {
+describe('AllOrgsPlanPage', () => {
   function setup() {
     server.use(
       graphql.query('MyContexts', (req, res, ctx) => {
@@ -61,7 +61,7 @@ describe('AllReposPlanPage', () => {
   beforeEach(() => setup())
 
   it('renders header component', async () => {
-    render(<AllReposPlanPage />, { wrapper: wrapper() })
+    render(<AllOrgsPlanPage />, { wrapper: wrapper() })
 
     const contextBtn = await screen.findByText('All my orgs and repos')
     expect(contextBtn).toBeInTheDocument()
@@ -69,7 +69,7 @@ describe('AllReposPlanPage', () => {
 
   describe('renders tabs', () => {
     it('renders repos tab', async () => {
-      render(<AllReposPlanPage />, { wrapper: wrapper() })
+      render(<AllOrgsPlanPage />, { wrapper: wrapper() })
 
       const repos = await screen.findByRole('link', { name: 'Repos' })
       expect(repos).toBeInTheDocument()
@@ -77,7 +77,7 @@ describe('AllReposPlanPage', () => {
     })
 
     it('renders plan tab', async () => {
-      render(<AllReposPlanPage />, { wrapper: wrapper() })
+      render(<AllOrgsPlanPage />, { wrapper: wrapper() })
 
       const plan = await screen.findByRole('link', { name: 'Plan' })
       expect(plan).toBeInTheDocument()
@@ -86,7 +86,7 @@ describe('AllReposPlanPage', () => {
   })
 
   it('renders the upgrade plan component', async () => {
-    render(<AllReposPlanPage />, { wrapper: wrapper() })
+    render(<AllOrgsPlanPage />, { wrapper: wrapper() })
 
     const upgradePlan = await screen.findByText(/UpgradePlan/)
     expect(upgradePlan).toBeInTheDocument()
