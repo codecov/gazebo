@@ -24,10 +24,10 @@ function DowngradePlan() {
   }, [setCrumbs])
 
   return (
-    <div className="flex gap-8 w-8/12">
+    <div className="flex w-8/12 gap-8">
       <Card variant="cancel">
         <div className="flex flex-col gap-4 text-ds-gray-quinary">
-          <h2 className="text-2xl text-codecov-red bold">
+          <h2 className="bold text-2xl text-codecov-red">
             Downgrading to basic
           </h2>
           <hr />
@@ -36,25 +36,25 @@ function DowngradePlan() {
             become unavailable:
           </p>
           <ul>
-            <li className="flex gap-1 items-center">
+            <li className="flex items-center gap-1">
               <span className="stroke-codecov-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
               Configurable # of users
             </li>
-            <li className="flex gap-1 items-center pt-3">
+            <li className="flex items-center gap-1 pt-3">
               <span className="stroke-codecov-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
               Technical support
             </li>
-            <li className="flex gap-1 items-center pt-3">
+            <li className="flex items-center gap-1 pt-3">
               <span className="stroke-codecov-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
               Carry-forward flags
             </li>
-            <li className="flex gap-1 items-center pt-3">
+            <li className="flex items-center gap-1 pt-3">
               <span className="stroke-codecov-red">
                 <Icon variant="solid" size="sm" name="no-symbol" />
               </span>
