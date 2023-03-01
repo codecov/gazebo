@@ -32,10 +32,12 @@ function getInitialDataForm(planOptions, accountDetails) {
   }
 }
 
-function formatNumber(value) {
-  // 10000 becomes 10,000 for easier understanding
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
+const formatNumber = (value) =>
+  Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    currencyDisplay: 'narrowSymbol',
+  }).format(value)
 
 function getNextBillingDate(accountDetails) {
   const timestamp = accountDetails.latestInvoice?.periodEnd
@@ -261,14 +263,14 @@ function UpgradePlanForm({
           <div className="flex flex-col gap-3">
             <p>
               <span className="font-semibold">
-                ${formatNumber(perYearPrice)}
+                {formatNumber(perYearPrice)}
               </span>
               /per year
             </p>
             <p>
               &#127881; You{' '}
               <span className="font-semibold">
-                save ${formatNumber(perMonthPrice - perYearPrice)}
+                save {formatNumber(perMonthPrice - perYearPrice)}
               </span>{' '}
               with the annual plan
             </p>
@@ -277,7 +279,7 @@ function UpgradePlanForm({
           <div className="flex flex-col gap-3">
             <p>
               <span className="font-semibold">
-                ${formatNumber(perMonthPrice / 12)}
+                {formatNumber(perMonthPrice / 12)}
               </span>
               /total monthly
             </p>
@@ -286,12 +288,12 @@ function UpgradePlanForm({
               <p>
                 You could save{' '}
                 <span className="font-semibold">
-                  ${formatNumber(perMonthPrice - perYearPrice)}
+                  {formatNumber(perMonthPrice - perYearPrice)}
                 </span>{' '}
                 a year with the annual plan,{' '}
                 <span
                   className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-                  onClick={() => setValue('newPlan', 'users-pr-inappy')}
+                  onClick={() => setValue('newPlan', proPlanYear?.value)}
                 >
                   switch to annual
                 </span>
