@@ -21,8 +21,8 @@ function BenefitList({ benefits, iconName, iconColor }) {
 }
 
 BenefitList.propTypes = {
-  benefits: PropType.arrayOf(PropType.string).isRequired,
-  iconName: PropType.string.isRequired,
+  benefits: PropType.arrayOf(PropType.string),
+  iconName: PropType.string,
   iconColor: PropType.string,
 }
 
