@@ -79,7 +79,7 @@ const table = [
 ]
 
 function createTable({ tableData }) {
-  if (tableData.length <= 0) {
+  if (tableData?.length <= 0) {
     return [{ name: null, coverage: null, patch: null, change: null }]
   }
 
