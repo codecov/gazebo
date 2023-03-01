@@ -38,18 +38,18 @@ export function useProPlans({ plans }) {
   })
 
   const proPlanMonth = enterpriseCloudPlanSupport
-    ? plans.find(
+    ? plans?.find(
         (plan) =>
           plan.value === 'users-pr-inappm' || plan.value === 'users-enterprisem'
       )
-    : plans.find((plan) => plan.value === 'users-pr-inappm')
+    : plans?.find((plan) => plan.value === 'users-pr-inappm')
 
   const proPlanYear = enterpriseCloudPlanSupport
-    ? plans.find(
+    ? plans?.find(
         (plan) =>
           plan.value === 'users-pr-inappy' || plan.value === 'users-enterprisey'
       )
-    : plans.find((plan) => plan.value === 'users-pr-inappy')
+    : plans?.find((plan) => plan.value === 'users-pr-inappy')
 
   return {
     proPlanMonth,
