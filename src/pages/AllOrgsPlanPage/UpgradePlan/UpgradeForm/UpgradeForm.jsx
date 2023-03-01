@@ -226,7 +226,7 @@ function TotalBanner({
           a year with the annual plan,{' '}
           <span
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setValue('newPlan', proPlanYear?.value)}
+            onClick={() => setValue('newPlan', 'users-pr-inappy')}
           >
             switch to annual
           </span>
@@ -296,7 +296,7 @@ function UpgradeForm({
               </>
             }
             name="billing-options"
-            value={proPlanYear?.value}
+            value="users-pr-inappy"
             {...register('newPlan')}
           />
           <RadioInput
@@ -312,7 +312,7 @@ function UpgradeForm({
               </>
             }
             name="billing-options"
-            value={proPlanMonth?.value}
+            value="users-pr-inappm"
             {...register('newPlan')}
           />
         </div>
