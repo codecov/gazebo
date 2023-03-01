@@ -4,6 +4,8 @@ import { useFlags } from 'shared/featureFlags'
 
 import {
   EnterprisePlans,
+  formatNumberToUSD,
+  getNextBillingDate,
   isEnterprisePlan,
   isFreePlan,
   Plans,
@@ -194,6 +196,36 @@ describe('billing utils', () => {
             ],
           },
         })
+      })
+    })
+  })
+
+  describe('formatNumberToUSD', () => {
+    it('formats number into currency string', () => {
+      const value = formatNumberToUSD(10_000)
+
+      expect(value).toBe('$10,000.00')
+    })
+  })
+
+  describe('getNextBillingDate', () => {
+    describe('there is a valid timestamp', () => {
+      it('returns formatted timestamp', () => {
+        const value = getNextBillingDate({})
+
+        expect(value).toBeNull()
+      })
+    })
+
+    describe('there is no timestamp', () => {
+      it('returns null', () => {
+        const value = getNextBillingDate({
+          latestInvoice: {
+            periodEnd: 1660000000,
+          },
+        })
+
+        expect(value).toBe('August 8th, 2022')
       })
     })
   })
