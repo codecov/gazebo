@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { format, fromUnixTime } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -12,6 +11,11 @@ import {
   useUpgradePlan,
 } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import {
+  formatNumberToUSD,
+  getNextBillingDate,
+  Plans,
+} from 'shared/utils/billing'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import RadioInput from 'ui/RadioInput/RadioInput'
@@ -33,18 +37,6 @@ function getInitialDataForm(planOptions, accountDetails) {
     // get the number of seats of the current plan, but minimum 6 seats
     seats: Math.max(currentNbSeats, MIN_NB_SEATS),
   }
-}
-
-const formatNumber = (value) =>
-  Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    currencyDisplay: 'narrowSymbol',
-  }).format(value)
-
-function getNextBillingDate(accountDetails) {
-  const timestamp = accountDetails?.latestInvoice?.periodEnd
-  return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
 }
 
 function getSchema(accountDetails) {
@@ -94,7 +86,7 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const perYearPrice = Math.floor(seats) * proPlanYear?.baseUnitPrice * 12
   const perMonthPrice = Math.floor(seats) * proPlanMonth?.baseUnitPrice * 12
 
-  const isPerYear = newPlan === 'users-pr-inappy'
+  const isPerYear = newPlan === Plans.USERS_PR_INAPPY
 
   return {
     seats,
@@ -184,35 +176,32 @@ UpdateButton.propTypes = {
   accountDetails: PropTypes.object,
 }
 
-function TotalBanner({
-  isPerYear,
-  perYearPrice,
-  perMonthPrice,
-  setValue,
-  proPlanYear,
-}) {
+function TotalBanner({ isPerYear, perYearPrice, perMonthPrice, setValue }) {
   if (isPerYear) {
     return (
       <div className="flex flex-col gap-3">
         <p>
-          <span className="font-semibold">{formatNumber(perYearPrice)}</span>
+          <span className="font-semibold">
+            {formatNumberToUSD(perYearPrice)}
+          </span>
           /per year
         </p>
         <p>
           &#127881; You{' '}
           <span className="font-semibold">
-            save {formatNumber(perMonthPrice - perYearPrice)}
+            save {formatNumberToUSD(perMonthPrice - perYearPrice)}
           </span>{' '}
           with the annual plan
         </p>
       </div>
     )
   }
+
   return (
     <div className="flex flex-col gap-3">
       <p>
         <span className="font-semibold">
-          {formatNumber(perMonthPrice / 12)}
+          {formatNumberToUSD(perMonthPrice / 12)}
         </span>
         /total monthly
       </p>
@@ -221,12 +210,12 @@ function TotalBanner({
         <p>
           You could save{' '}
           <span className="font-semibold">
-            {formatNumber(perMonthPrice - perYearPrice)}
+            {formatNumberToUSD(perMonthPrice - perYearPrice)}
           </span>{' '}
           a year with the annual plan,{' '}
           <span
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setValue('newPlan', 'users-pr-inappy')}
+            onClick={() => setValue('newPlan', Plans.USERS_PR_INAPPY)}
           >
             switch to annual
           </span>
@@ -237,7 +226,6 @@ function TotalBanner({
 }
 
 TotalBanner.propTypes = {
-  proPlanYear: planPropType.isRequired,
   setValue: PropTypes.func,
   isPerYear: PropTypes.bool,
   perYearPrice: PropTypes.number,
@@ -296,7 +284,7 @@ function UpgradeForm({
               </>
             }
             name="billing-options"
-            value="users-pr-inappy"
+            value={Plans.USERS_PR_INAPPY}
             {...register('newPlan')}
           />
           <RadioInput
@@ -312,7 +300,7 @@ function UpgradeForm({
               </>
             }
             name="billing-options"
-            value="users-pr-inappm"
+            value={Plans.USERS_PR_INAPPM}
             {...register('newPlan')}
           />
         </div>
