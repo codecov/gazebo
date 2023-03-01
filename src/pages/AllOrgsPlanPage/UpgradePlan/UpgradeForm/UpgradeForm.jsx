@@ -21,13 +21,15 @@ const MIN_NB_SEATS = 6
 
 function getInitialDataForm(planOptions, accountDetails) {
   const currentPlan = accountDetails?.plan
-  const proPlan = planOptions?.find((plan) => plan.value === currentPlan?.value)
+  const proPlan = planOptions?.find(
+    (plan) => plan?.value === currentPlan?.value
+  )
 
   const currentNbSeats = accountDetails?.plan?.quantity ?? MIN_NB_SEATS
 
   return {
     // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
-    newPlan: proPlan ? proPlan.value : planOptions[0].value,
+    newPlan: proPlan ? proPlan?.value : planOptions[0]?.value,
     // get the number of seats of the current plan, but minimum 6 seats
     seats: Math.max(currentNbSeats, MIN_NB_SEATS),
   }
@@ -89,8 +91,8 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const seats = watch('seats')
   const newPlan = watch('newPlan')
 
-  const perYearPrice = Math.floor(seats) * proPlanYear.baseUnitPrice * 12
-  const perMonthPrice = Math.floor(seats) * proPlanMonth.baseUnitPrice * 12
+  const perYearPrice = Math.floor(seats) * proPlanYear?.baseUnitPrice * 12
+  const perMonthPrice = Math.floor(seats) * proPlanMonth?.baseUnitPrice * 12
 
   const isPerYear = newPlan === 'users-pr-inappy'
 
@@ -282,35 +284,35 @@ function UpgradeForm({
         <h3 className="pb-2 font-semibold">Billing</h3>
         <div className="flex flex-col gap-2">
           <RadioInput
-            key={proPlanYear.billingRate}
-            data-cy={`select-${proPlanYear.billingRate}`}
-            dataMarketing={`plan-pricing-option-${proPlanYear.billingRate}`}
+            key={proPlanYear?.billingRate}
+            data-cy={`select-${proPlanYear?.billingRate}`}
+            dataMarketing={`plan-pricing-option-${proPlanYear?.billingRate}`}
             label={
               <>
                 <span className="font-semibold">
-                  ${proPlanYear.baseUnitPrice}
+                  ${proPlanYear?.baseUnitPrice}
                 </span>
-                /month, billed {proPlanYear.billingRate}
+                /month, billed {proPlanYear?.billingRate}
               </>
             }
             name="billing-options"
-            value={proPlanYear.value}
+            value={proPlanYear?.value}
             {...register('newPlan')}
           />
           <RadioInput
-            key={proPlanMonth.billingRate}
-            data-cy={`select-${proPlanMonth.billingRate}`}
-            dataMarketing={`plan-pricing-option-${proPlanMonth.billingRate}`}
+            key={proPlanMonth?.billingRate}
+            data-cy={`select-${proPlanMonth?.billingRate}`}
+            dataMarketing={`plan-pricing-option-${proPlanMonth?.billingRate}`}
             label={
               <>
                 <span className="font-semibold">
-                  ${proPlanMonth.baseUnitPrice}
+                  ${proPlanMonth?.baseUnitPrice}
                 </span>
-                /month, billed {proPlanMonth.billingRate}
+                /month, billed {proPlanMonth?.billingRate}
               </>
             }
             name="billing-options"
-            value={proPlanMonth.value}
+            value={proPlanMonth?.value}
             {...register('newPlan')}
           />
         </div>
@@ -375,8 +377,8 @@ function UpgradeForm({
 }
 
 UpgradeForm.propTypes = {
-  proPlanYear: planPropType.isRequired,
-  proPlanMonth: planPropType.isRequired,
+  proPlanYear: planPropType,
+  proPlanMonth: planPropType,
   accountDetails: accountDetailsPropType,
   organizationName: PropTypes.string,
 }
