@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import React from 'react'
+import type { ReactNode } from 'react'
 
 import { useRepoConfig } from './useRepoConfig'
 
@@ -22,7 +22,7 @@ const mockRepoConfig = {
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 

@@ -133,8 +133,6 @@ describe('GetBranches', () => {
 
       await waitFor(() => result.current.isSuccess)
       result.current.fetchNextPage()
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
 
       const expectedData = {
         branches: [
@@ -153,7 +151,9 @@ describe('GetBranches', () => {
         ],
       }
 
-      expect(result.current.data).toStrictEqual(expectedData)
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual(expectedData)
+      )
     })
   })
 })
