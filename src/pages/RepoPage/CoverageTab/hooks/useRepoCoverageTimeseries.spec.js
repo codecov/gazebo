@@ -1,209 +1,279 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useLegacyRepoCoverage } from 'services/charts'
 import { Trend } from 'shared/utils/legacyCharts'
 
 import { useRepoCoverageTimeseries } from './useRepoCoverageTimeseries'
 
-jest.mock('services/charts')
+const mockRepoOverview = {
+  owner: {
+    repository: {
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T12:00:00',
+    },
+  },
+}
 
+const mockBranchMeasurements = {
+  owner: {
+    repository: {
+      measurements: [
+        {
+          timestamp: '2023-01-01T00:00:00+00:00',
+          max: 85,
+        },
+        {
+          timestamp: '2023-01-02T00:00:00+00:00',
+          max: 80,
+        },
+        {
+          timestamp: '2023-01-03T00:00:00+00:00',
+          max: 90,
+        },
+        {
+          timestamp: '2023-01-04T00:00:00+00:00',
+          max: 100,
+        },
+      ],
+    },
+  },
+}
+
+const mockNullBranchMeasurements = {
+  owner: {
+    repository: {
+      measurements: [
+        {
+          timestamp: '2023-01-01T00:00:00+00:00',
+          max: null,
+        },
+        {
+          timestamp: '2023-01-02T00:00:00+00:00',
+          max: null,
+        },
+      ],
+    },
+  },
+}
+
+const server = setupServer()
 const queryClient = new QueryClient()
 const wrapper =
   (searchParams = '') =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[`/gh/caleb/mighty-nein${searchParams}`]}>
-        <Route path="/:provider/:owner/:repo">
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[`/gh/caleb/mighty-nein${searchParams}`]}>
+          <Route path="/:provider/:owner/:repo">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
+
 describe('useRepoCoverageTimeseries', () => {
-  let config
+  let config = jest.fn()
 
-  const mockCoverageData = {
-    coverage: [{ coverage: 40.4 }, { coverage: 41 }, { coverage: 39.5 }],
-  }
-  const setupMockQuery = (mockData = mockCoverageData) => {
-    useLegacyRepoCoverage.mockImplementation(({ body, trend, opts }) => {
-      config = body
+  function setup({ noCoverageData = false } = { noCoverageData: false }) {
+    server.use(
+      graphql.query('GetRepoOverview', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockRepoOverview))
+      ),
+      graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) => {
+        config(req.variables)
 
-      return opts.select(mockData)
-    })
+        if (noCoverageData) {
+          return res(ctx.status(200), ctx.data(mockNullBranchMeasurements))
+        }
+
+        return res(ctx.status(200), ctx.data(mockBranchMeasurements))
+      })
+    )
   }
 
   describe('with a trend in the url', () => {
     beforeEach(() => {
-      queryClient.clear()
-      jest.clearAllMocks()
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2022/01/01'))
-      setupMockQuery()
+      setup()
     })
 
-    it('called the legacy repo coverage with the correct body', () => {
-      renderHook(
+    it('called the legacy repo coverage with the correct body', async () => {
+      const { waitFor } = renderHook(
         () =>
           useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
         {
-          wrapper: wrapper(`?trend=${Trend.TWENTY_FOUR_HOURS}`),
+          wrapper: wrapper(`?trend=${Trend.ALL_TIME}`),
         }
       )
-      expect(config).toStrictEqual({
-        aggFunction: 'max',
-        aggValue: 'timestamp',
-        branch: {
-          name: 'c3',
-          options: {},
-        },
-        coverageTimestampOrdering: 'increasing',
-        groupingUnit: 'hour',
-        repositories: ['mighty-nein'],
-        startDate: new Date('2021-12-31T00:00:00.000Z'),
-      })
+
+      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() =>
+        expect(config).toBeCalledWith(
+          expect.objectContaining({ interval: 'INTERVAL_30_DAY' })
+        )
+      )
     })
   })
 
   describe('with no trend in the url', () => {
     beforeEach(() => {
-      queryClient.clear()
-      jest.clearAllMocks()
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2022/01/01'))
-      setupMockQuery()
+      setup()
     })
 
-    it('called the legacy repo coverage with the correct body when no trend is set', () => {
-      renderHook(
+    it('called the legacy repo coverage with the correct body when no trend is set', async () => {
+      const { waitFor } = renderHook(
         () =>
           useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
         {
           wrapper: wrapper(''),
         }
       )
-      expect(config).toStrictEqual({
-        aggFunction: 'max',
-        aggValue: 'timestamp',
-        branch: {
-          name: 'c3',
-          options: {},
-        },
-        coverageTimestampOrdering: 'increasing',
-        groupingUnit: 'week',
-        repositories: ['mighty-nein'],
-        startDate: new Date('2021-10-01T00:00:00.000Z'),
-      })
+
+      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() =>
+        expect(config).toBeCalledWith(
+          expect.objectContaining({
+            interval: 'INTERVAL_7_DAY',
+          })
+        )
+      )
     })
   })
 
   describe('Coverage Axis Label', () => {
     beforeEach(() => {
-      queryClient.clear()
-      jest.clearAllMocks()
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2022/01/01'))
-      setupMockQuery()
+      setup()
     })
 
-    it('returns the right format for hours', () => {
-      const { result } = renderHook(() => useRepoCoverageTimeseries({}), {
-        wrapper: wrapper('?trend=24 hours'),
-      })
-      expect(config.groupingUnit).toEqual('hour')
-      expect(
-        result.current.coverageAxisLabel(new Date('June 21, 2020'))
-      ).toEqual('Sun, 12:00 am')
+    it('returns the right format for 30 days', async () => {
+      const { result, waitFor } = renderHook(
+        () => useRepoCoverageTimeseries({}),
+        {
+          wrapper: wrapper('?trend=30 days'),
+        }
+      )
+
+      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() =>
+        expect(config).toBeCalledWith(
+          expect.objectContaining({ interval: 'INTERVAL_1_DAY' })
+        )
+      )
+
+      await waitFor(() =>
+        expect(
+          result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
+        ).toEqual('Jun 21')
+      )
     })
 
-    it('returns the right format for 30 days', () => {
-      const { result } = renderHook(() => useRepoCoverageTimeseries({}), {
-        wrapper: wrapper('?trend=30 days'),
-      })
-      expect(config.groupingUnit).toEqual('day')
-      expect(
-        result.current.coverageAxisLabel(new Date('June 21, 2020'))
-      ).toEqual('Jun 21')
+    it('returns the right format for 6 months', async () => {
+      const { result, waitFor } = renderHook(
+        () => useRepoCoverageTimeseries({}),
+        {
+          wrapper: wrapper('?trend=6 months'),
+        }
+      )
+
+      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() =>
+        expect(config).toBeCalledWith(
+          expect.objectContaining({ interval: 'INTERVAL_7_DAY' })
+        )
+      )
+
+      await waitFor(() =>
+        expect(
+          result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
+        ).toEqual('Jun')
+      )
     })
 
-    it('returns the right format for 6 months', () => {
-      const { result } = renderHook(() => useRepoCoverageTimeseries({}), {
-        wrapper: wrapper('?trend=6 months'),
-      })
-      expect(config.groupingUnit).toEqual('week')
-      expect(
-        result.current.coverageAxisLabel(new Date('June 21, 2020'))
-      ).toEqual('Jun')
-    })
+    it('returns the right format for 12 months', async () => {
+      const { result, waitFor } = renderHook(
+        () => useRepoCoverageTimeseries({}),
+        {
+          wrapper: wrapper('?trend=12 months'),
+        }
+      )
 
-    it('returns the right format for 12 months', () => {
-      const { result } = renderHook(() => useRepoCoverageTimeseries({}), {
-        wrapper: wrapper('?trend=12 months'),
-      })
-      expect(config.groupingUnit).toEqual('month')
-      expect(
-        result.current.coverageAxisLabel(new Date('June 21, 2020'))
-      ).toEqual('Jun 2020')
+      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() =>
+        expect(config).toBeCalledWith(
+          expect.objectContaining({ interval: 'INTERVAL_30_DAY' })
+        )
+      )
+
+      await waitFor(() =>
+        expect(
+          result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
+        ).toEqual('Jun 2020')
+      )
     })
   })
 
   describe('coverage change', () => {
-    beforeEach(() => {
-      queryClient.clear()
-      jest.clearAllMocks()
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2022/01/01'))
-    })
-
-    it('returns the correct change', () => {
-      setupMockQuery()
-      const { result } = renderHook(
-        () =>
-          useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
-        {
-          wrapper: wrapper(''),
-        }
-      )
-
-      expect(result.current.coverageChange).toBe(-0.8999999999999986)
-    })
-
-    it('returns 0 if not enough data', () => {
-      setupMockQuery({
-        coverage: [{ coverage: 40.4 }],
+    describe('there is coverage data', () => {
+      beforeEach(() => {
+        setup()
       })
-      const { result } = renderHook(
-        () =>
-          useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
-        {
-          wrapper: wrapper(''),
-        }
-      )
-      expect(result.current.coverageChange).toBe(0)
+
+      it('returns the correct change', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
+          {
+            wrapper: wrapper(''),
+          }
+        )
+
+        await waitFor(() => expect(result.current.data.coverageChange).toBe(15))
+      })
+    })
+
+    describe('there is no coverage data', () => {
+      beforeEach(() => {
+        setup({ noCoverageData: true })
+      })
+
+      it('returns zero', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
+          {
+            wrapper: wrapper(''),
+          }
+        )
+
+        await waitFor(() => expect(result.current.data.coverageChange).toBe(0))
+      })
     })
   })
 
   describe('select', () => {
     beforeEach(() => {
-      queryClient.clear()
-      jest.clearAllMocks()
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2022/01/01'))
-      setupMockQuery()
+      setup()
     })
 
-    it('calls select', () => {
+    it('calls select', async () => {
       let selectMock = jest.fn()
 
-      renderHook(() => useRepoCoverageTimeseries({}, { select: selectMock }), {
-        wrapper: wrapper(''),
-      })
+      const { waitFor } = renderHook(
+        () => useRepoCoverageTimeseries({}, { select: selectMock }),
+        {
+          wrapper: wrapper(''),
+        }
+      )
 
-      expect(selectMock).toBeCalled()
+      await waitFor(() => expect(selectMock).toBeCalled())
     })
   })
 })
