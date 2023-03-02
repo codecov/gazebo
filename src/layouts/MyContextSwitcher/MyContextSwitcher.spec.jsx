@@ -26,15 +26,18 @@ const org2 = {
   avatarUrl: 'https://github.com/spotify.png?size=40',
 }
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gl']}>
-      <Route path="/:provider" exact>
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (initialEntries = '/gl') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider" exact>
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => server.listen())
 
@@ -88,7 +91,7 @@ describe('MyContextSwitcher', () => {
       const { container } = render(
         <MyContextSwitcher activeContext={null} pageName="accountPage" />,
         {
-          wrapper,
+          wrapper: wrapper(),
         }
       )
 
@@ -103,7 +106,7 @@ describe('MyContextSwitcher', () => {
 
     it('renders the button with the organization', async () => {
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const button = await screen.findByRole('button', {
@@ -114,7 +117,7 @@ describe('MyContextSwitcher', () => {
 
     it('renders the default org modal', async () => {
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const editDefaultButton = await screen.findByText(/Edit default/i)
@@ -144,7 +147,7 @@ describe('MyContextSwitcher', () => {
 
     it('loads second item', async () => {
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const button = await screen.findByRole('button', {
