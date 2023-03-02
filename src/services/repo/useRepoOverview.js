@@ -9,6 +9,7 @@ function fetchRepoOverviewInitial({ provider, owner, repo, signal }) {
         repository(name:$repo){
           private
           defaultBranch
+          oldestCommitAt
         }
       }
     }

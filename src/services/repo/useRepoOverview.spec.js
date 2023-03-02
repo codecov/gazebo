@@ -14,24 +14,18 @@ const wrapper = ({ children }) => (
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
 afterAll(() => server.close())
 
 describe('useRepoOverview', () => {
-  let hookData
-
   function setup(data) {
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(data))
       })
-    )
-
-    hookData = renderHook(
-      () => useRepoOverview({ provider: 'bb', owner: 'doggo', repo: 'woof' }),
-      {
-        wrapper,
-      }
     )
   }
 
@@ -40,36 +34,29 @@ describe('useRepoOverview', () => {
       setup({
         owner: {
           repository: {
+            private: true,
             defaultBranch: 'main',
-            branches: {
-              edges: [
-                { node: { name: 'test', head: { commitid: '1234567' } } },
-              ],
-            },
+            oldestCommitAt: '2022-10-10T11:59:59',
           },
         },
       })
     })
-    afterEach(() => server.resetHandlers())
-
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
-
       it('returns the data', async () => {
-        await hookData.waitFor(() =>
-          expect(hookData.result.current.data).toEqual({
+        const { result, waitFor } = renderHook(
+          () =>
+            useRepoOverview({ provider: 'bb', owner: 'doggo', repo: 'woof' }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            private: true,
             defaultBranch: 'main',
-            branches: {
-              edges: [
-                { node: { name: 'test', head: { commitid: '1234567' } } },
-              ],
-            },
+            oldestCommitAt: '2022-10-10T11:59:59',
           })
         )
       })
@@ -80,12 +67,16 @@ describe('useRepoOverview', () => {
     beforeEach(() => {
       setup({})
     })
-    afterEach(() => server.resetHandlers())
 
     it('returns the data', async () => {
-      await hookData.waitFor(() =>
-        expect(hookData.result.current.data).toEqual({})
+      const { result, waitFor } = renderHook(
+        () => useRepoOverview({ provider: 'bb', owner: 'doggo', repo: 'woof' }),
+        {
+          wrapper,
+        }
       )
+
+      await waitFor(() => expect(result.current.data).toEqual({}))
     })
   })
 })
