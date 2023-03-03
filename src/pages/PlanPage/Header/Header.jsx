@@ -5,7 +5,11 @@ function Header() {
   const { data: ownerData } = usePlanPageData()
 
   return (
-    <MyContextSwitcher pageName="planTab" activeContext={ownerData?.username} />
+    <MyContextSwitcher
+      pageName="planTab"
+      allOrgsPageName="allOrgsPlanPage"
+      activeContext={ownerData?.username}
+    />
   )
 }
 

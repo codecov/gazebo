@@ -6,7 +6,7 @@ import ContextSwitcher from 'ui/ContextSwitcher'
 
 import UpdateDefaultOrgModal from './UpdateDefaultOrgModal'
 
-function MyContextSwitcher({ activeContext, pageName }) {
+function MyContextSwitcher({ activeContext, pageName, allOrgsPageName }) {
   const { provider } = useParams()
   const {
     data: myContexts,
@@ -37,6 +37,7 @@ function MyContextSwitcher({ activeContext, pageName }) {
       currentUser={currentUser}
       isLoading={isLoading}
       onLoadMore={() => hasNextPage && fetchNextPage()}
+      allOrgsPageName={allOrgsPageName}
       ModalControl={({ onClick }) => (
         <button className="flex-none text-ds-blue" onClick={onClick}>
           Edit default
@@ -60,6 +61,7 @@ MyContextSwitcher.propTypes = {
    ** The page name where each context will point to
    */
   pageName: PropTypes.string.isRequired,
+  allOrgsPageName: PropTypes.string,
 }
 
 export default MyContextSwitcher

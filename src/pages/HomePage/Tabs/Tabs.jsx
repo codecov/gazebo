@@ -42,6 +42,7 @@ function Tabs({ currentUsername }) {
         pageName: 'provider',
         children: 'Repos',
       },
+      ...(config.IS_SELF_HOSTED ? [] : [{ pageName: 'allOrgsPlanPage' }]),
     ]
   }
 

@@ -47,15 +47,18 @@ const defaultProps = {
   ModalControl,
 }
 
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh']}>
-    <Switch>
-      <Route path="/:provider" exact>
-        {children}
-      </Route>
-    </Switch>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = '/gh') =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Switch>
+          <Route path="/:provider" exact>
+            {children}
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    )
 
 describe('ContextSwitcher', () => {
   let props
@@ -74,7 +77,7 @@ describe('ContextSwitcher', () => {
 
     it('does not render any link', () => {
       render(<ContextSwitcher {...props} />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       expect(screen.queryAllByRole('link')).toHaveLength(0)
@@ -88,7 +91,7 @@ describe('ContextSwitcher', () => {
 
     it('renders the menu', async () => {
       render(<ContextSwitcher {...props} />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const button = await screen.findByRole('button')
@@ -100,7 +103,7 @@ describe('ContextSwitcher', () => {
 
     it('renders the orgs', async () => {
       render(<ContextSwitcher {...props} />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const button = await screen.findByRole('button')
@@ -129,7 +132,7 @@ describe('ContextSwitcher', () => {
 
     it('renders all orgs and repos', async () => {
       render(<ContextSwitcher {...props} />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const allOrgsAndRepos = await /all my orgs and repos/i
@@ -138,7 +141,7 @@ describe('ContextSwitcher', () => {
 
     it('renders manage access restrictions', async () => {
       render(<ContextSwitcher {...props} />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const manageAccess = await screen.findByText(
@@ -153,7 +156,7 @@ describe('ContextSwitcher', () => {
       beforeEach(() => setup({ isLoading: true }))
       it('renders spinner', async () => {
         render(<ContextSwitcher {...props} />, {
-          wrapper,
+          wrapper: wrapper(),
         })
 
         const button = await screen.findByRole('button')
@@ -167,7 +170,7 @@ describe('ContextSwitcher', () => {
       beforeEach(() => setup({ isLoading: false }))
       it('does not render spinner', async () => {
         render(<ContextSwitcher {...props} />, {
-          wrapper,
+          wrapper: wrapper(),
         })
 
         const button = await screen.findByRole('button')
@@ -190,7 +193,7 @@ describe('ContextSwitcher', () => {
 
     it('calls onLoadMore', async () => {
       render(<ContextSwitcher {...props} />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const button = await screen.findByRole('button')
@@ -208,7 +211,7 @@ describe('ContextSwitcher', () => {
 
     it('renders the custom component', async () => {
       render(<ContextSwitcher {...props} />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const modalControlButton = await screen.findByText('display')

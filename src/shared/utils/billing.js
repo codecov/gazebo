@@ -1,3 +1,7 @@
+import { format, fromUnixTime } from 'date-fns'
+
+import { useFlags } from 'shared/featureFlags'
+
 export const Plans = Object.freeze({
   USERS_FREE: 'users-free',
   USERS_BASIC: 'users-basic',
@@ -29,3 +33,42 @@ export const CollectionMethods = Object.freeze({
   INVOICED_CUSTOMER_METHOD: 'send_invoice',
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',
 })
+
+export function useProPlans({ plans }) {
+  const { enterpriseCloudPlanSupport } = useFlags({
+    enterpriseCloudPlanSupport: true,
+  })
+
+  const proPlanMonth = enterpriseCloudPlanSupport
+    ? plans?.find(
+        (plan) =>
+          plan.value === Plans.USERS_PR_INAPPM ||
+          plan.value === EnterprisePlans.USERS_ENTERPRISEM
+      )
+    : plans?.find((plan) => plan.value === Plans.USERS_PR_INAPPM)
+
+  const proPlanYear = enterpriseCloudPlanSupport
+    ? plans?.find(
+        (plan) =>
+          plan.value === Plans.USERS_PR_INAPPY ||
+          plan.value === EnterprisePlans.USERS_ENTERPRISEY
+      )
+    : plans?.find((plan) => plan.value === Plans.USERS_PR_INAPPY)
+
+  return {
+    proPlanMonth,
+    proPlanYear,
+  }
+}
+
+export const formatNumberToUSD = (value) =>
+  Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    currencyDisplay: 'narrowSymbol',
+  }).format(value)
+
+export function getNextBillingDate(accountDetails) {
+  const timestamp = accountDetails?.latestInvoice?.periodEnd
+  return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
+}
