@@ -67,10 +67,8 @@ describe('ListRepo', () => {
         wrapper: wrapper({ url: '?ordering=NAME&direction=ASC' }),
       })
 
-      const select = screen.getByRole('button', {
-        name: /Sort Order/,
-      })
-      expect(select).toBeInTheDocument()
+      const sortOption = screen.getByText('Name [A-Z]')
+      expect(sortOption).toBeInTheDocument()
     })
 
     it('reads ordering & direction (DESC) parameter from URL', () => {
@@ -78,21 +76,17 @@ describe('ListRepo', () => {
         wrapper: wrapper({ url: '?ordering=NAME&direction=DESC' }),
       })
 
-      const select = screen.getByRole('button', {
-        name: /Sort Order/,
-      })
-      expect(select).toBeInTheDocument()
+      const sortOption = screen.getByText('Name [Z-A]')
+      expect(sortOption).toBeInTheDocument()
     })
 
     it('default fallback for ordering & direction parameter from URL', () => {
       render(<ListRepo canRefetch />, {
-        wrapper: wrapper({ url: '?ordering=NAMEe&direction=DESC' }),
+        wrapper: wrapper(),
       })
 
-      const select = screen.getByRole('button', {
-        name: /Sort Order/,
-      })
-      expect(select).toBeInTheDocument()
+      const sortOption = screen.getByText('Most recent commit')
+      expect(sortOption).toBeInTheDocument()
     })
   })
 
