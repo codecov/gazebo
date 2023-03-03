@@ -6,18 +6,13 @@ import { CollectionMethods, isEnterprisePlan } from 'shared/utils/billing'
 import A from 'ui/A'
 
 function ChangePlanLink({ accountDetails }) {
+  accountDetails = undefined
   const isInvoicedCustomer =
     accountDetails?.subscriptionDetail?.collectionMethod ===
     CollectionMethods.INVOICED_CUSTOMER_METHOD
   const plan = accountDetails?.plan?.value
 
-  const showChangePlanLink = !(
-    config.IS_SELF_HOSTED ||
-    isInvoicedCustomer ||
-    isEnterprisePlan(plan)
-  )
-
-  if (!showChangePlanLink) {
+  if (config.IS_SELF_HOSTED || isInvoicedCustomer || isEnterprisePlan(plan)) {
     return null
   }
 
@@ -34,7 +29,7 @@ ChangePlanLink.propTypes = {
   accountDetails: PropType.shape({
     subscriptionDetail: PropType.shape({ collectionMethod: PropType.string }),
     plan: PropType.shape({ value: PropType.string }),
-  }),
+  }).isRequired,
 }
 
 export default ChangePlanLink

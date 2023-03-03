@@ -18,7 +18,8 @@ function Activation() {
         <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
         active members of{' '}
         <span className="text-lg font-semibold">{planQuantity}</span> available
-        seats <ChangePlanLink accountDetails={accountDetails} />
+        seats{' '}
+        {accountDetails && <ChangePlanLink accountDetails={accountDetails} />}
       </p>
       {/* TODO: new feature https://www.figma.com/file/iNTJAiBYGem3A4LmI4gvKX/Plan-and-members?node-id=103%3A1696 */}
     </div>
