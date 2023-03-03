@@ -4,6 +4,7 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useAccountDetails } from 'services/account'
+import { isMonthlyPlan } from 'shared/utils/billing'
 import Spinner from 'ui/Spinner'
 
 import SpecialOffer from './subRoutes/SpecialOffer'
@@ -20,10 +21,13 @@ function CancelPlanPage() {
   const { provider, owner } = useParams()
   const { data: accountDetailsData } = useAccountDetails({ provider, owner })
 
-  const discountNotApplied = !accountDetailsData?.subscriptionDetail?.discount
+  const discountNotApplied =
+    !accountDetailsData?.subscriptionDetail?.customer?.discount
+  const showDiscount =
+    discountNotApplied && isMonthlyPlan(accountDetailsData?.plan?.value)
 
   let redirectTo = '/plan/:provider/:owner/cancel/downgrade'
-  if (discountNotApplied) {
+  if (showDiscount) {
     redirectTo = '/plan/:provider/:owner/cancel'
   }
 
@@ -34,7 +38,7 @@ function CancelPlanPage() {
           <DowngradePlan />
         </Suspense>
       </SentryRoute>
-      {discountNotApplied && (
+      {showDiscount && (
         <SentryRoute path="/plan/:provider/:owner/cancel" exact>
           <SpecialOffer />
         </SentryRoute>

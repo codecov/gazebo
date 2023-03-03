@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import CancelPlanPage from './CancelPlanPage'
 
 jest.mock('./subRoutes/SpecialOffer', () => () => 'SpecialOffer')
@@ -52,14 +54,24 @@ afterAll(() => {
 })
 
 describe('CancelPlanPage', () => {
-  function setup({ hasDiscount = false } = { hasDiscount: false }) {
+  function setup(
+    { hasDiscount = false, planValue = Plans.USERS_PR_INAPPM } = {
+      hasDiscount: false,
+      planValue: Plans.USERS_PR_INAPPM,
+    }
+  ) {
     server.use(
       rest.get('internal/gh/codecov/account-details/', (req, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
+            plan: {
+              value: planValue,
+            },
             subscriptionDetail: {
-              discount: hasDiscount,
+              customer: {
+                discount: hasDiscount,
+              },
             },
           })
         )
@@ -175,6 +187,23 @@ describe('CancelPlanPage', () => {
           expect(downgrade).toBeInTheDocument()
         })
       })
+    })
+  })
+
+  describe('user is on a annual plan', () => {
+    beforeEach(() => setup({ planValue: Plans.USERS_INAPPY }))
+
+    it('directs them directly to downgrade page', async () => {
+      render(<CancelPlanPage />, {
+        wrapper: wrapper('/plan/gh/codecov/cancel'),
+      })
+
+      await waitFor(() =>
+        expect(testLocation.pathname).toBe('/plan/gh/codecov/cancel/downgrade')
+      )
+
+      const downgrade = await screen.findByText('DowngradePlan')
+      expect(downgrade).toBeInTheDocument()
     })
   })
 })
