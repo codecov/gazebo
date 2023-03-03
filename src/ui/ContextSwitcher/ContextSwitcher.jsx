@@ -75,6 +75,7 @@ function ContextSwitcher({
   onLoadMore,
   ModalControl,
   ModalComponent,
+  allOrgsPageName,
 }) {
   const intersectionRef = useRef(null)
   const currentContext = getCurrentContext({ activeContext, contexts })
@@ -142,7 +143,7 @@ function ContextSwitcher({
           />
         </div>
         <div className="max-h-64 overflow-y-auto">
-          <MenuLink as={AppLink} pageName="provider">
+          <MenuLink as={AppLink} pageName={allOrgsPageName ?? 'provider'}>
             <Icon name="home" />
             <div className={cs('mx-2', { 'font-semibold': !activeContext })}>
               All orgs and repos
@@ -192,6 +193,7 @@ ContextSwitcher.propTypes = {
   isLoading: PropTypes.bool,
   ModalComponent: PropTypes.func,
   ModalControl: PropTypes.func,
+  allOrgsPageName: PropTypes.string,
 }
 
 export default ContextSwitcher

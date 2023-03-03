@@ -14,6 +14,7 @@ import { useUTM } from 'services/tracking/utm'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
+const AllOrgsPlanPage = lazy(() => import('./pages/AllOrgsPlanPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
@@ -71,6 +72,13 @@ function App() {
             <SentryRoute path="/plan/:provider/:owner/">
               <BaseLayout>
                 <PlanPage />
+              </BaseLayout>
+            </SentryRoute>
+          )}
+          {!config.IS_SELF_HOSTED && (
+            <SentryRoute path="/plan/:provider/" exact>
+              <BaseLayout>
+                <AllOrgsPlanPage />
               </BaseLayout>
             </SentryRoute>
           )}

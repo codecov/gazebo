@@ -1,14 +1,13 @@
 import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
+import parasolImg from 'assets/plan/parasol.png'
 import { useAccountDetails, usePlans } from 'services/account'
-import { isFreePlan } from 'shared/utils/billing'
+import { isFreePlan, useProPlans } from 'shared/utils/billing'
 import A from 'ui/A'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 
-import { useProPlans } from './hooks'
-import parasolImg from './parasol.png'
 import UpgradeFreePlanBanner from './UpgradeFreePlanBanner'
 import UpgradePlanForm from './UpgradePlanForm'
 
