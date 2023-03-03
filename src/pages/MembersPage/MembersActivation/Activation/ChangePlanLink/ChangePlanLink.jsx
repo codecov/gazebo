@@ -6,7 +6,6 @@ import { CollectionMethods, isEnterprisePlan } from 'shared/utils/billing'
 import A from 'ui/A'
 
 function ChangePlanLink({ accountDetails }) {
-  accountDetails = undefined
   const isInvoicedCustomer =
     accountDetails?.subscriptionDetail?.collectionMethod ===
     CollectionMethods.INVOICED_CUSTOMER_METHOD
