@@ -206,4 +206,18 @@ describe('CancelPlanPage', () => {
       expect(downgrade).toBeInTheDocument()
     })
   })
+
+  describe('user is on an enterprise plan', () => {
+    beforeEach(() => setup({ planValue: Plans.USERS_ENTERPRISEM }))
+
+    it('directs them directly to plan page', async () => {
+      render(<CancelPlanPage />, {
+        wrapper: wrapper('/plan/gh/codecov/cancel'),
+      })
+
+      await waitFor(() =>
+        expect(testLocation.pathname).toBe('/plan/gh/codecov')
+      )
+    })
+  })
 })

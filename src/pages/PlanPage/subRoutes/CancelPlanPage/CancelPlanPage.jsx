@@ -4,7 +4,7 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useAccountDetails } from 'services/account'
-import { isMonthlyPlan } from 'shared/utils/billing'
+import { isEnterprisePlan, isMonthlyPlan } from 'shared/utils/billing'
 import Spinner from 'ui/Spinner'
 
 import SpecialOffer from './subRoutes/SpecialOffer'
@@ -21,14 +21,24 @@ function CancelPlanPage() {
   const { provider, owner } = useParams()
   const { data: accountDetailsData } = useAccountDetails({ provider, owner })
 
+  // redirect right away if the user is on an enterprise plan
+  if (isEnterprisePlan(accountDetailsData?.plan?.value)) {
+    return (
+      <Redirect
+        from="/plan/:provider/:owner/cancel"
+        to={`/plan/${provider}/${owner}`}
+      />
+    )
+  }
+
   const discountNotApplied =
     !accountDetailsData?.subscriptionDetail?.customer?.discount
   const showDiscount =
     discountNotApplied && isMonthlyPlan(accountDetailsData?.plan?.value)
 
-  let redirectTo = '/plan/:provider/:owner/cancel/downgrade'
+  let redirectTo = `/plan/${provider}/${owner}/cancel/downgrade`
   if (showDiscount) {
-    redirectTo = '/plan/:provider/:owner/cancel'
+    redirectTo = `/plan/${provider}/${owner}/cancel`
   }
 
   return (
