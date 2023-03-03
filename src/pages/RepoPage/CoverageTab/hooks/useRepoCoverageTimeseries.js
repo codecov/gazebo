@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { isFunction } from 'lodash'
+import isFunction from 'lodash/isFunction'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
