@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
@@ -72,7 +73,13 @@ const plans = [
   },
 ]
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
 const server = setupServer()
 
 let testLocation
@@ -82,7 +89,9 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialWrappers]}>
-          <Route path="/plan/:provider/:owner/upgrade">{children}</Route>
+          <Route path="/plan/:provider/:owner/upgrade">
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
           <Route
             path="*"
             render={({ location }) => {
