@@ -62,9 +62,9 @@ function OrgControlTable({
         ariaName="Sort Order"
         value={sortItem}
         items={
-          repoDisplay === repoDisplayOptions.ACTIVE.text
-            ? orderingOptions
-            : nonActiveOrderingOptions
+          repoDisplay === repoDisplayOptions.INACTIVE.text
+            ? nonActiveOrderingOptions
+            : orderingOptions
         }
         onChange={setSortItem}
         renderItem={(option) => option.text}
