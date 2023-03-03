@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { Suspense, useMemo } from 'react'
@@ -46,9 +47,10 @@ const table = [
           onClick={() => row.toggleExpanded()}
         >
           <span
-            className={
-              row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
-            }
+            className={cs({
+              'text-ds-blue-darker': row.getIsExpanded(),
+              'text-current': !row.getIsExpanded(),
+            })}
           >
             <Icon
               size="md"
@@ -86,11 +88,11 @@ const table = [
 ]
 
 function createTable({ tableData }) {
-  if (tableData.length <= 0) {
+  if (tableData?.length <= 0) {
     return [{ name: null, coverage: null, patch: null, change: null }]
   }
 
-  return tableData.map((row) => {
+  return tableData?.map((row) => {
     const { headName, headCoverage, hasData, change, patchCoverage, commit } =
       row
 
@@ -100,7 +102,7 @@ function createTable({ tableData }) {
           <A
             to={{
               pageName: 'commitFileView',
-              options: { commit, tree: headName },
+              options: { commit: commit?.commitid, tree: headName },
             }}
           >
             {headName}
@@ -116,9 +118,7 @@ function createTable({ tableData }) {
       change: hasData ? (
         <TotalsNumber value={change} showChange data-testid="change-value" />
       ) : (
-        <span className="ml-4 text-sm text-ds-gray-quinary md:whitespace-nowrap">
-          No data available
-        </span>
+        <span className="ml-4 text-sm text-ds-gray-quinary">No data</span>
       ),
     }
   })
@@ -163,14 +163,14 @@ function FilesChangedTable() {
   const filesChanged = commit?.compareWithParent?.impactedFiles
 
   const formattedData = useMemo(
-    () => filesChanged.map((row) => getFileData(row, commit)),
+    () => filesChanged?.map((row) => getFileData(row, commit)),
     [filesChanged, commit]
   )
   const tableContent = createTable({ tableData: formattedData })
 
   if (isLoading || commit?.state === 'pending') return <Loader />
 
-  if (filesChanged?.length === 0)
+  if (!filesChanged?.length)
     return <p className="m-4">No files covered by tests were changed</p>
 
   return (

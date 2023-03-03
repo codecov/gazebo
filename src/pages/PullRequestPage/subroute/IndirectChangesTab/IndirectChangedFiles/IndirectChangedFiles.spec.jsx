@@ -278,8 +278,14 @@ describe('IndirectChangedFiles', () => {
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
 
-        const fileName = await screen.findByText('flag1/mafs.js')
-        expect(fileName).toBeInTheDocument()
+        const link = await screen.findByRole('link', {
+          name: 'flag1/mafs.js',
+        })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          '/gh/test-org/test-repo/pull/12/blob/flag1/mafs.js'
+        )
       })
 
       it('renders file coverage', async () => {
@@ -342,14 +348,14 @@ describe('IndirectChangedFiles', () => {
       setup(mockNoChange)
     })
 
-    it('renders no data available for the change', async () => {
+    it('renders no data for the change', async () => {
       render(<IndirectChangedFiles />, { wrapper: wrapper() })
 
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const noData = await screen.findByText('No data available')
+      const noData = await screen.findByText('No data')
       expect(noData).toBeInTheDocument()
     })
   })

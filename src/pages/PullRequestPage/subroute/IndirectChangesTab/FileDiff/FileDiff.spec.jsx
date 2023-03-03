@@ -117,6 +117,17 @@ describe('FileDiff', () => {
       const calcMode = await screen.findByText(/calcMode/)
       expect(calcMode).toBeInTheDocument()
     })
+
+    it('renders the commit redirect url', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+      const viewFullFileText = await screen.findByText(/View full file/)
+      expect(viewFullFileText).toBeInTheDocument()
+      expect(viewFullFileText).toHaveAttribute(
+        'href',
+        '/gh/codecov/cool-repo/pull/1/blob/flag1/file.js'
+      )
+    })
   })
 
   describe('when segment is an empty array', () => {

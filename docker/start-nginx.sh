@@ -4,6 +4,7 @@ set -e
 
 if [ -z "$1" ];
 then
+  echo "Codecov Frontend preflight started."
   echo "Running for base: ${CODECOV_BASE_HOST} and api: ${CODECOV_API_HOST}"
   SCHEME_BASE=${CODECOV_SCHEME_SEARCH:=https}
   SCHEME=${CODECOV_SCHEME:=https}
@@ -14,7 +15,13 @@ then
   sed -i "s/${SCHEME_BASE}:\/\/${WEB_BASE}/${SCHEME}:\/\/${CODECOV_BASE_HOST}/g" /var/www/app/gazebo/static/js/main.*
 
   export DOLLAR='$'
-  envsubst < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+  if [ "$CODECOV_FRONTEND_IPV6_DISABLED" ]; then
+    echo 'Codecov frontend ipv6 disabled'
+    envsubst < /etc/nginx/nginx-no-ipv6.conf.template > /etc/nginx/nginx.conf
+  else
+    envsubst < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+  fi
+  echo "Codecov Frontend starting nginx"
   nginx -g 'daemon off;'
 else
   exec "$@"

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import { usePrefetchBranchFileEntry } from './hooks/usePrefetchBranchFileEntry'
+import { usePrefetchBranchFileEntry } from 'services/pathContents/branch/file'
 
 import { displayTypeParameter } from '../../constants'
 import FileEntry from '../BaseEntries/FileEntry'

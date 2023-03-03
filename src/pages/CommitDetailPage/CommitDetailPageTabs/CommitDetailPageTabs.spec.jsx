@@ -13,7 +13,7 @@ const wrapper =
             '/:provider/:owner/:repo/commit/:commit',
             '/:provider/:owner/:repo/commit/:commit/tree',
             '/:provider/:owner/:repo/commit/:commit/tree/:path+',
-            '/:provider/:owner/:repo/:commit/:commit/blob/:path+',
+            '/:provider/:owner/:repo/commit/:commit/blob/:path+',
           ]}
         >
           {children}
@@ -38,9 +38,9 @@ describe('CommitDetailPageTabs', () => {
         wrapper: wrapper(),
       })
 
-      const files = screen.getByText('Files')
-      expect(files).toBeInTheDocument()
-      expect(files).not.toHaveAttribute('aria-current', 'page')
+      const filesExplorerTab = screen.getByText('File explorer')
+      expect(filesExplorerTab).toBeInTheDocument()
+      expect(filesExplorerTab).not.toHaveAttribute('aria-current', 'page')
     })
   })
 
@@ -51,9 +51,9 @@ describe('CommitDetailPageTabs', () => {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
-        const files = screen.getByText('Files')
-        expect(files).toBeInTheDocument()
-        expect(files).toHaveAttribute('aria-current', 'page')
+        const filesExplorerTab = screen.getByText('File explorer')
+        expect(filesExplorerTab).toBeInTheDocument()
+        expect(filesExplorerTab).toHaveAttribute('aria-current', 'page')
       })
 
       it('does not highlight files changed tab', () => {
@@ -74,9 +74,9 @@ describe('CommitDetailPageTabs', () => {
           ]),
         })
 
-        const files = screen.getByText('Files')
-        expect(files).toBeInTheDocument()
-        expect(files).toHaveAttribute('aria-current', 'page')
+        const filesExplorerTab = screen.getByText('File explorer')
+        expect(filesExplorerTab).toBeInTheDocument()
+        expect(filesExplorerTab).toHaveAttribute('aria-current', 'page')
       })
 
       it('does not highlight files changed tab', () => {

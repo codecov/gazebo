@@ -11,6 +11,9 @@ const query = `
         private
         pull(id: $pullId) {
           pullId
+          head {
+            commitid
+          }
           compareWithBase {
             ... on Comparison {
               impactedFilesCount

@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { Suspense, useMemo } from 'react'
@@ -45,9 +46,10 @@ const table = [
         onClick={() => row.toggleExpanded()}
       >
         <span
-          className={
-            row.getIsExpanded() ? 'text-ds-blue-darker' : 'text-current'
-          }
+          className={cs({
+            'text-ds-blue-darker': row.getIsExpanded(),
+            'text-current': !row.getIsExpanded(),
+          })}
         >
           <Icon
             size="md"
@@ -77,11 +79,11 @@ const table = [
 ]
 
 function createTable({ tableData }) {
-  if (tableData.length <= 0) {
+  if (tableData?.length <= 0) {
     return [{ name: null, coverage: null, patch: null, change: null }]
   }
 
-  return tableData.map((row) => {
+  return tableData?.map((row) => {
     const { headName, headCoverage, hasData, change, commit } = row
 
     return {
@@ -90,7 +92,7 @@ function createTable({ tableData }) {
           <A
             to={{
               pageName: 'commitFileView',
-              options: { commit, tree: headName },
+              options: { commit: commit?.commitid, tree: headName },
             }}
           >
             {headName}
@@ -106,7 +108,7 @@ function createTable({ tableData }) {
         <TotalsNumber value={change} showChange data-testid="change-value" />
       ) : (
         <span className="ml-4 text-sm text-ds-gray-quinary md:whitespace-nowrap">
-          No data available
+          No data
         </span>
       ),
     }
@@ -152,7 +154,7 @@ function IndirectChangesTable() {
   const indirectChangedFiles = commit?.compareWithParent?.impactedFiles
 
   const formattedData = useMemo(
-    () => indirectChangedFiles.map((row) => getFileData(row, commit)),
+    () => indirectChangedFiles?.map((row) => getFileData(row, commit)),
     [indirectChangedFiles, commit]
   )
   const tableContent = createTable({ tableData: formattedData })

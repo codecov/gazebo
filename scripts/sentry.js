@@ -5,6 +5,7 @@ async function createReleaseAndUpload() {
   const release = process.env.REACT_APP_SENTRY_RELEASE
   if (!release) {
     console.warn('REACT_APP_SENTRY_RELEASE is not set')
+    process.exitCode = 1
     return
   }
   const cli = new SentryCli()
@@ -21,6 +22,7 @@ async function createReleaseAndUpload() {
     await cli.releases.finalize(release)
   } catch (e) {
     console.error('Source maps uploading failed:', e)
+    process.exitCode = 1
   }
 }
 
