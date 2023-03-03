@@ -53,10 +53,12 @@ function CoverageChart() {
   const { data, isPreviousData, isSuccess, isError } = useCoverageChart()
   const { coverageSunburstChart } = useFlags({ coverageSunburstChart: false })
 
+  console.debug(data, isError)
+
   const desc = makeDesc({
     data: data?.coverage,
-    first: data?.coverage[0],
-    last: data?.coverage[data?.coverage.length - 1],
+    first: data?.coverage?.[0],
+    last: data?.coverage?.[data?.coverage.length - 1],
     repo,
   })
 

@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -38,8 +38,15 @@ afterAll(() => {
 })
 
 const overviewMock = {
-  owner: { repository: { private: false, defaultBranch: 'main' } },
+  owner: {
+    repository: {
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T12:00:00',
+    },
+  },
 }
+
 const branchesMock = {
   owner: {
     repository: {
@@ -78,13 +85,28 @@ const branchesMock = {
     },
   },
 }
-const chartMock = {
-  coverageAxisLabel: (t) => t,
-  coverage: [
-    { date: '2020-01-15T20:18:39.413Z', coverage: 20 },
-    { date: '2020-01-17T20:18:39.413Z', coverage: 50 },
+
+const mockBranchMeasurements = {
+  measurements: [
+    {
+      timestamp: '2023-01-01T00:00:00+00:00',
+      max: 85,
+    },
+    {
+      timestamp: '2023-01-02T00:00:00+00:00',
+      max: 80,
+    },
+    {
+      timestamp: '2023-01-03T00:00:00+00:00',
+      max: 90,
+    },
+    {
+      timestamp: '2023-01-04T00:00:00+00:00',
+      max: 100,
+    },
   ],
 }
+
 const branchMock = {
   owner: {
     repository: {
@@ -101,7 +123,7 @@ const branchMock = {
 describe('CoverageChart', () => {
   function setup({
     repoOverviewData = overviewMock,
-    coverageTreeRes = chartMock,
+    branchMeasurementsData = mockBranchMeasurements,
     branchesData = branchesMock,
     coverageRepoStatus,
   }) {
@@ -115,11 +137,16 @@ describe('CoverageChart', () => {
       graphql.query('GetBranch', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(branchMock))
       ),
-      rest.post(
-        '/internal/charts/:provider/:owner/coverage/repository',
-        (req, res, ctx) =>
-          res(ctx.status(coverageRepoStatus || 200), ctx.json(coverageTreeRes))
-      )
+      graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) => {
+        if (coverageRepoStatus) {
+          return res(ctx.status(400), ctx.errors({}))
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: branchMeasurementsData } })
+        )
+      })
     )
   }
 
@@ -128,11 +155,10 @@ describe('CoverageChart', () => {
       setup({
         repoOverviewData: overviewMock,
         branchesData: branchesMock,
-        coverageTreeRes: {
-          coverageAxisLabel: (t) => t,
-          coverage: [
-            { date: '2020-01-15T20:18:39.413Z', coverage: 20 },
-            { date: '2020-01-17T20:18:39.413Z', coverage: 50 },
+        branchMeasurementsData: {
+          measurements: [
+            { timestamp: '2020-01-15T20:18:39.413Z', max: 20 },
+            { timestamp: '2020-01-17T20:18:39.413Z', max: 50 },
           ],
         },
       })
@@ -156,11 +182,10 @@ describe('CoverageChart', () => {
       setup({
         repoOverviewData: overviewMock,
         branchesData: branchesMock,
-        coverageTreeRes: {
-          coverageAxisLabel: (t) => t,
-          coverage: [
-            { date: '2020-01-15T20:18:39.413Z', coverage: 20 },
-            { date: '2020-01-17T20:18:39.413Z', coverage: 0 },
+        branchMeasurementsData: {
+          measurements: [
+            { timestamp: '2020-01-15T20:18:39.413Z', max: 20 },
+            { timestamp: '2020-01-17T20:18:39.413Z', max: 0 },
           ],
         },
       })
@@ -184,9 +209,8 @@ describe('CoverageChart', () => {
       setup({
         repoOverviewData: overviewMock,
         branchesData: branchesMock,
-        coverageTreeRes: {
-          coverageAxisLabel: (t) => t,
-          coverage: [{ date: '2020-01-15T20:18:39.413Z', coverage: 20 }],
+        branchMeasurementsData: {
+          measurements: [{ timestamp: '2020-01-15T20:18:39.413Z', max: 20 }],
         },
         coverageRepoStatus: 500,
       })
