@@ -1,9 +1,9 @@
 import { useLayoutEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 
 import parasolImg from 'assets/plan/parasol.png'
 import { useAccountDetails, usePlans } from 'services/account'
-import { isFreePlan, useProPlans } from 'shared/utils/billing'
+import { isEnterprisePlan, isFreePlan, useProPlans } from 'shared/utils/billing'
 import A from 'ui/A'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'
@@ -27,6 +27,11 @@ function shouldRenderCancelLink(accountDetails, plan) {
 function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: plans } = usePlans(provider)
+  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+
+  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -37,11 +42,10 @@ function UpgradePlanPage() {
     ])
   }, [setCrumbs])
 
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const { data: plans } = usePlans(provider)
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
-
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  // redirect right away if the user is on an enterprise plan
+  if (isEnterprisePlan(plan?.value)) {
+    return <Redirect to={`/plan/${provider}/${owner}`} />
+  }
 
   return (
     <>
