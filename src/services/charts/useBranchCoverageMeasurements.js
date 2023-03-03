@@ -61,6 +61,6 @@ export const useBranchCoverageMeasurements = ({
           after,
           branch,
         },
-      }).then((res) => res?.data?.owner?.repository),
+      }).then((res) => res?.data?.owner?.repository ?? {}),
     ...opts,
   })

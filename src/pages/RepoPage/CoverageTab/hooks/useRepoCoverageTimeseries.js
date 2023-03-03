@@ -46,12 +46,12 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
       staleTime: 30000,
       keepPreviousData: false,
       select: (data) => {
-        if (data?.measurements[0]?.max === null) {
+        if (data?.measurements?.[0]?.max === null) {
           data.measurements[0].max = 0
         }
 
         // set set initial t
-        let prevPercent = data?.measurements[0]
+        let prevPercent = data?.measurements?.[0]
         const coverage = data?.measurements?.map((measurement) => {
           let coverage = measurement?.max ?? prevPercent
 
@@ -67,7 +67,7 @@ export function useRepoCoverageTimeseries({ branch }, options = {}) {
         })
 
         const coverageChange =
-          coverage[coverage?.length - 1]?.coverage - coverage[0]?.coverage
+          coverage?.[coverage?.length - 1]?.coverage - coverage?.[0]?.coverage
 
         const coverageAxisLabel = (time) => {
           switch (queryVars?.interval) {
