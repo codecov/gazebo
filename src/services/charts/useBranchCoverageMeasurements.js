@@ -46,6 +46,7 @@ export const useBranchCoverageMeasurements = ({
       before,
       after,
       branch,
+      query,
     ],
     queryFn: ({ signal }) =>
       Api.graphql({
