@@ -23,12 +23,7 @@ function CancelPlanPage() {
 
   // redirect right away if the user is on an enterprise plan
   if (isEnterprisePlan(accountDetailsData?.plan?.value)) {
-    return (
-      <Redirect
-        from="/plan/:provider/:owner/cancel"
-        to={`/plan/${provider}/${owner}`}
-      />
-    )
+    return <Redirect to={`/plan/${provider}/${owner}`} />
   }
 
   const discountNotApplied =
