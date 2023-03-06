@@ -13,7 +13,11 @@ jest.mock('services/toastNotification', () => ({
   useAddNotification: () => (data) => mockToast(data),
 }))
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  logger: {
+    error: () => {},
+  },
+})
 const server = setupServer()
 
 let testLocation

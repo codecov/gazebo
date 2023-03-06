@@ -1,8 +1,14 @@
+import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import parasolImg from 'assets/plan/parasol.png'
-import { useAccountDetails, usePlans } from 'services/account'
+import {
+  accountDetailsPropType,
+  planPropType,
+  useAccountDetails,
+  usePlans,
+} from 'services/account'
 import { useMyContexts } from 'services/user'
 import { isEnterprisePlan, isFreePlan, useProPlans } from 'shared/utils/billing'
 import A from 'ui/A'
@@ -24,15 +30,58 @@ function shouldRenderCancelLink(accountDetails, plan) {
   return true
 }
 
-// eslint-disable-next-line complexity
+const mergeOrgs = ({ contexts }) => [
+  contexts?.currentUser,
+  ...(contexts ? contexts?.myOrganizations : []),
+]
+
+const determinePlan = ({ accountDetails }) =>
+  accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+
+const FormDetails = ({
+  accountDetails,
+  organizationName,
+  plan,
+  proPlanMonth,
+  proPlanYear,
+}) => {
+  if (isEnterprisePlan(plan?.value)) {
+    return (
+      <div className="items-center pt-4">
+        <p>
+          This organization is on an enterprise plan, to change or cancel your
+          plan please contact <A to={{ pageName: 'sales' }}>sales@codecov.io</A>
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <UpgradeForm
+      accountDetails={accountDetails}
+      proPlanYear={proPlanYear}
+      proPlanMonth={proPlanMonth}
+      organizationName={organizationName}
+    />
+  )
+}
+
+FormDetails.propTypes = {
+  accountDetails: accountDetailsPropType,
+  organizationName: PropTypes.string,
+  plan: PropTypes.shape({
+    value: PropTypes.string,
+  }),
+  proPlanMonth: planPropType,
+  proPlanYear: planPropType,
+}
+
 function UpgradePlan() {
   const { provider } = useParams()
+  const [organizationName, setOrganizationName] = useState()
   const { data: plans } = usePlans(provider)
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
-  const [organizationName, setOrganizationName] = useState()
-
   const { data: contexts } = useMyContexts({ provider })
-
   const { data: accountDetails } = useAccountDetails({
     provider,
     owner: organizationName,
@@ -42,11 +91,23 @@ function UpgradePlan() {
     },
   })
 
-  const organizations = [
-    contexts?.currentUser,
-    ...(contexts ? contexts?.myOrganizations : []),
-  ]
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const organizations = mergeOrgs({ contexts })
+  const plan = determinePlan({ accountDetails })
+
+  const details = isEnterprisePlan(plan?.value)
+    ? {
+        marketingName: plan?.marketingName,
+        baseUnitPrice: 'Custom Pricing',
+      }
+    : {
+        marketingName: proPlanYear?.marketingName,
+        baseUnitPrice: `$${proPlanYear?.baseUnitPrice}*`,
+        priceDisclaimer: (
+          <p className="text-ds-gray-quaternary">
+            *${proPlanMonth?.baseUnitPrice} per user / month if paid monthly
+          </p>
+        ),
+      }
 
   return (
     <div className="mt-6 flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
@@ -56,25 +117,15 @@ function UpgradePlan() {
             <img src={parasolImg} alt="parasol" />
           </div>
           <h3 className="text-2xl text-ds-pink-quinary">
-            {isEnterprisePlan(plan?.value)
-              ? plan?.marketingName
-              : proPlanYear?.marketingName}
+            {details?.marketingName}
           </h3>
-          <h2 className="text-4xl">
-            {isEnterprisePlan(plan?.value)
-              ? 'Custom Pricing'
-              : `$${proPlanYear?.baseUnitPrice}*`}
-          </h2>
+          <h2 className="text-4xl">{details?.baseUnitPrice}</h2>
           <BenefitList
             iconName="check"
             iconColor="text-ds-pink-quinary"
             benefits={plan?.benefits ?? proPlanYear?.benefits}
           />
-          {!isEnterprisePlan(plan?.value) && (
-            <p className="text-ds-gray-quaternary">
-              *${proPlanMonth?.baseUnitPrice} per user / month if paid monthly
-            </p>
-          )}
+          {details?.priceDisclaimer}
           {organizationName && shouldRenderCancelLink(accountDetails, plan) && (
             <A
               to={{
@@ -104,22 +155,13 @@ function UpgradePlan() {
               />
             </div>
           </div>
-          {isEnterprisePlan(plan?.value) ? (
-            <div className="items-center pt-4">
-              <p>
-                This organization is on an enterprise plan, to change or cancel
-                your plan please contact{' '}
-                <A to={{ pageName: 'sales' }}>sales@codecov.io</A>
-              </p>
-            </div>
-          ) : (
-            <UpgradeForm
-              accountDetails={accountDetails}
-              proPlanYear={proPlanYear}
-              proPlanMonth={proPlanMonth}
-              organizationName={organizationName}
-            />
-          )}
+          <FormDetails
+            accountDetails={accountDetails}
+            organizationName={organizationName}
+            plan={plan}
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+          />
         </Card>
       </div>
     </div>

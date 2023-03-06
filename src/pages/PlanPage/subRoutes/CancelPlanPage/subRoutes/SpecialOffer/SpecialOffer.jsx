@@ -2,15 +2,13 @@ import { useMutation } from '@tanstack/react-query'
 import { useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
+import { useSetCrumbs } from 'pages/PlanPage/context'
 import { useNavLinks } from 'services/navigation'
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
-
-import { useSetCrumbs } from '../../../../context'
-
-const { default: A } = require('ui/A')
-const { default: Button } = require('ui/Button')
-const { default: Icon } = require('ui/Icon')
+import A from 'ui/A'
+import Button from 'ui/Button'
+import Icon from 'ui/Icon'
 
 function SpecialOffer() {
   const { provider, owner } = useParams()
