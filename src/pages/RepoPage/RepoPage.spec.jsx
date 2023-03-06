@@ -15,16 +15,19 @@ jest.mock('./NewRepoTab', () => () => 'NewRepoTab')
 jest.mock('./PullsTab', () => () => 'PullsTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
+jest.mock('./UnauthorizedAccess', () => () => 'Unauthorized Access')
 
 const mockGetRepo = (
   noUploadToken,
   isRepoPrivate = false,
   isRepoActivated = true,
   isCurrentUserPartOfOrg = true,
-  isRepoActive = true
+  isRepoActive = true,
+  isCurrentUserActivated = true
 ) => ({
   owner: {
     isCurrentUserPartOfOrg,
+    isCurrentUserActivated,
     repository: {
       private: isRepoPrivate,
       uploadToken: noUploadToken
@@ -427,6 +430,23 @@ describe('RepoPage', () => {
 
       const repoCrumb = await screen.findByText('cool-repo')
       expect(repoCrumb).toBeInTheDocument()
+    })
+  })
+
+  describe('user is not activated and repo is private', () => {
+    beforeEach(() =>
+      setup({
+        hasRepoData: true,
+        isCurrentUserActivated: false,
+        isRepoPrivate: true,
+      })
+    )
+
+    it('renders unauthorized access error', async () => {
+      render(<RepoPage />, { wrapper: wrapper() })
+
+      const error = await screen.findByText('Unauthorized Access')
+      expect(error).toBeInTheDocument()
     })
   })
 })

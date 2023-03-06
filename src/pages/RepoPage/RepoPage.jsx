@@ -12,6 +12,7 @@ import { RepoBreadcrumbProvider } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
 import { useMatchBlobsPath, useMatchTreePath } from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
+import UnauthorizedAccess from './UnauthorizedAccess'
 
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
@@ -72,18 +73,13 @@ function RepoPage() {
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
+  const isCurrentUserActivated = repoData?.isCurrentUserActivated
   const isRepoPrivate = !!repoData?.repository?.private
 
-  // if there is no repo data
-  if (!repoData?.repository) {
+  if (!repoData?.repository || (isRepoPrivate && !isCurrentUserPartOfOrg))
     return <NotFound />
-  }
 
-  // if the repo is private and the user is not associated
-  // then hard redirect to provider
-  else if (isRepoPrivate && !isCurrentUserPartOfOrg) {
-    return <NotFound />
-  }
+  if (!isCurrentUserActivated && isRepoPrivate) return <UnauthorizedAccess />
 
   return (
     <RepoBreadcrumbProvider>

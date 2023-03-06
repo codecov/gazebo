@@ -7,6 +7,7 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
     query GetRepo($name: String!, $repo: String!){
       owner(username:$name){
         isCurrentUserPartOfOrg
+        isCurrentUserActivated
         repository(name:$repo){
           private
           uploadToken
