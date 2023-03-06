@@ -29,6 +29,7 @@ const NoReposBlock = () => {
       </div>
       <div className="m-auto w-52">
         <Button
+          hook="no-repos-block"
           variant="primary"
           onClick={() =>
             history.push(`/${provider}/${owner}?repoDisplay=Inactive`)
