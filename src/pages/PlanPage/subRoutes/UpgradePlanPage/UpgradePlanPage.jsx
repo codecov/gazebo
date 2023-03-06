@@ -1,9 +1,9 @@
 import { useLayoutEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 
 import parasolImg from 'assets/plan/parasol.png'
 import { useAccountDetails, usePlans } from 'services/account'
-import { isFreePlan, useProPlans } from 'shared/utils/billing'
+import { isEnterprisePlan, isFreePlan, useProPlans } from 'shared/utils/billing'
 import A from 'ui/A'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'
@@ -11,8 +11,8 @@ import Icon from 'ui/Icon'
 import UpgradeFreePlanBanner from './UpgradeFreePlanBanner'
 import UpgradePlanForm from './UpgradePlanForm'
 
-import { useSetCrumbs } from '../context'
-import BenefitList from '../shared/BenefitList'
+import { useSetCrumbs } from '../../context'
+import BenefitList from '../../shared/BenefitList'
 
 function shouldRenderCancelLink(accountDetails, plan) {
   // cant cancel a free plan
@@ -24,9 +24,14 @@ function shouldRenderCancelLink(accountDetails, plan) {
   return true
 }
 
-function UpgradePlan() {
+function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: plans } = usePlans(provider)
+  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+
+  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -37,11 +42,10 @@ function UpgradePlan() {
     ])
   }, [setCrumbs])
 
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const { data: plans } = usePlans(provider)
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
-
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  // redirect right away if the user is on an enterprise plan
+  if (isEnterprisePlan(plan?.value)) {
+    return <Redirect to={`/plan/${provider}/${owner}`} />
+  }
 
   return (
     <>
@@ -67,10 +71,10 @@ function UpgradePlan() {
             {shouldRenderCancelLink(accountDetails, plan) && (
               <A
                 to={{ pageName: 'cancelOrgPlan' }}
-                variant="grayQuinary"
+                variant="black"
                 hook="cancel-plan"
               >
-                Cancel plan{' '}
+                Cancel plan
                 <Icon name="chevronRight" size="sm" variant="solid" />
               </A>
             )}
@@ -93,4 +97,4 @@ function UpgradePlan() {
   )
 }
 
-export default UpgradePlan
+export default UpgradePlanPage

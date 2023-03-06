@@ -7,7 +7,7 @@ import { useInvoices } from 'services/account'
 
 import InvoiceCard from './InvoiceCard'
 
-import { useSetCrumbs } from '../context'
+import { useSetCrumbs } from '../../context'
 
 function useGroupedInvoices() {
   const { owner, provider } = useParams()
@@ -24,7 +24,7 @@ function useGroupedInvoices() {
   return groupedInvoices
 }
 
-function Invoices() {
+function InvoicesPage() {
   const { provider, owner } = useParams()
   const groupedInvoices = useGroupedInvoices({ provider, owner })
   // extract the years so we can be sure of the desc order of the years
@@ -59,4 +59,4 @@ function Invoices() {
   )
 }
 
-export default Invoices
+export default InvoicesPage

@@ -6,8 +6,10 @@ import {
   EnterprisePlans,
   formatNumberToUSD,
   getNextBillingDate,
+  isAnnualPlan,
   isEnterprisePlan,
   isFreePlan,
+  isMonthlyPlan,
   Plans,
   useProPlans,
 } from './billing'
@@ -227,6 +229,56 @@ describe('billing utils', () => {
 
         expect(value).toBe('August 8th, 2022')
       })
+    })
+  })
+
+  describe('isAnnualPlan', () => {
+    it('supports enterprise annual plan', () => {
+      expect(isAnnualPlan('users-enterprisey')).toBe(true)
+      expect(isAnnualPlan(EnterprisePlans.USERS_ENTERPRISEY)).toBe(true)
+    })
+
+    it('supports basic annual plan', () => {
+      expect(isAnnualPlan('users-inappy')).toBe(true)
+      expect(isAnnualPlan(Plans.USERS_INAPPY)).toBe(true)
+    })
+
+    it('supports annual pr plan', () => {
+      expect(isAnnualPlan('users-pr-inappy')).toBe(true)
+      expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
+    })
+
+    it('defaults to false otherwise', () => {
+      expect(isAnnualPlan('users-pro')).toBe(false)
+      expect(isAnnualPlan('rable rable')).toBe(false)
+      expect(isAnnualPlan(undefined)).toBe(false)
+      expect(isAnnualPlan(12345)).toBe(false)
+      expect(isAnnualPlan({})).toBe(false)
+    })
+  })
+
+  describe('isMonthlyPlan', () => {
+    it('supports enterprise monthly plan', () => {
+      expect(isMonthlyPlan('users-enterprisem')).toBe(true)
+      expect(isMonthlyPlan(EnterprisePlans.USERS_ENTERPRISEM)).toBe(true)
+    })
+
+    it('supports basic monthly plan', () => {
+      expect(isMonthlyPlan('users-inappm')).toBe(true)
+      expect(isMonthlyPlan(Plans.USERS_INAPP)).toBe(true)
+    })
+
+    it('supports monthly pr plan', () => {
+      expect(isMonthlyPlan('users-pr-inappm')).toBe(true)
+      expect(isMonthlyPlan(Plans.USERS_PR_INAPPM)).toBe(true)
+    })
+
+    it('defaults to false otherwise', () => {
+      expect(isMonthlyPlan('users-pro')).toBe(false)
+      expect(isMonthlyPlan('rable rable')).toBe(false)
+      expect(isMonthlyPlan(undefined)).toBe(false)
+      expect(isMonthlyPlan(12345)).toBe(false)
+      expect(isMonthlyPlan({})).toBe(false)
     })
   })
 })
