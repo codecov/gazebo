@@ -285,6 +285,7 @@ function UpgradeForm({
             }
             name="billing-options"
             value={Plans.USERS_PR_INAPPY}
+            disabled={!organizationName}
             {...register('newPlan')}
           />
           <RadioInput
@@ -301,6 +302,7 @@ function UpgradeForm({
             }
             name="billing-options"
             value={Plans.USERS_PR_INAPPM}
+            disabled={!organizationName}
             {...register('newPlan')}
           />
         </div>
@@ -316,6 +318,7 @@ function UpgradeForm({
             className="w-full rounded border bg-ds-gray-secondary p-2"
             type="number"
             label="User Seats"
+            disabled={!organizationName}
           />
         </div>
         {accountDetails && (

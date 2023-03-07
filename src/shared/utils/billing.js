@@ -29,6 +29,28 @@ export function isFreePlan(plan) {
   return false
 }
 
+export function isMonthlyPlan(plan) {
+  if (typeof plan !== 'string') return false
+  if (
+    plan === Plans.USERS_INAPP ||
+    plan === Plans.USERS_PR_INAPPM ||
+    plan === Plans.USERS_ENTERPRISEM
+  )
+    return true
+  return false
+}
+
+export function isAnnualPlan(plan) {
+  if (typeof plan !== 'string') return false
+  if (
+    plan === Plans.USERS_INAPPY ||
+    plan === Plans.USERS_PR_INAPPY ||
+    plan === Plans.USERS_ENTERPRISEY
+  )
+    return true
+  return false
+}
+
 export const CollectionMethods = Object.freeze({
   INVOICED_CUSTOMER_METHOD: 'send_invoice',
   AUTOMATICALLY_CHARGED_METHOD: 'charge_automatically',

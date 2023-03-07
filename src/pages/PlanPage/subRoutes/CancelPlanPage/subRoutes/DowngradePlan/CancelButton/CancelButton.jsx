@@ -48,7 +48,7 @@ function CancelButton({
         onClick={() => setIsModalOpen(true)}
         disabled={isDisabled}
       >
-        {isAlreadyFreeUser ? 'Already free user' : 'Downgrade to Free'}
+        {isAlreadyFreeUser ? 'Already free user' : 'Downgrade to basic'}
       </Button>
       <Modal
         isOpen={isModalOpen}

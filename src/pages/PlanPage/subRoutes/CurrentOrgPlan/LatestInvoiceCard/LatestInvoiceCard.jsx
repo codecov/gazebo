@@ -10,9 +10,9 @@ import Icon from 'ui/Icon'
 function LatestInvoiceCard() {
   const { provider, owner } = useParams()
   const { data: invoices } = useInvoices({ provider, owner })
-  const lastestInvoice = !!invoices?.length && invoices[0]
+  const latestInvoice = !!invoices?.length && invoices[0]
 
-  if (!lastestInvoice || !lastestInvoice?.dueDate || !lastestInvoice?.created)
+  if (!latestInvoice || !latestInvoice?.dueDate || !latestInvoice?.created)
     return null
 
   return (
@@ -22,18 +22,18 @@ function LatestInvoiceCard() {
           <img src={invoiceImg} alt="invoice icon" />
           <div className="flex flex-col">
             <div className="text-ds-gray-quinary">
-              {format(fromUnixTime(lastestInvoice?.created), 'MMMM yyyy')}
+              {format(fromUnixTime(latestInvoice?.created), 'MMMM yyyy')}
             </div>
             <div className="text-ds-gray-quaternary">
               <span className="italic">
                 Due date{' '}
-                {format(fromUnixTime(lastestInvoice?.dueDate), 'do MMM')} - $
-                {(lastestInvoice?.total / 100).toFixed(2)}{' '}
+                {format(fromUnixTime(latestInvoice?.dueDate), 'do MMM')} - $
+                {(latestInvoice?.total / 100).toFixed(2)}{' '}
               </span>
               <A
                 to={{
                   pageName: 'invoiceDetail',
-                  options: { id: lastestInvoice?.id },
+                  options: { id: latestInvoice?.id },
                 }}
                 isExternal={false}
               >

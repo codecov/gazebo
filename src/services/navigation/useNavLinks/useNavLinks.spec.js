@@ -296,6 +296,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('downgradePlanPage', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/9'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.downgradePlanPage.path()).toBe(
+        `/plan/gl/doggo/cancel/downgrade`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.downgradePlanPage.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/cancel/downgrade`)
+      expect(
+        hookData.result.current.downgradePlanPage.path({ owner: 'cat' })
+      ).toBe(`/plan/gl/cat/cancel/downgrade`)
+    })
+  })
+
   describe('repo link', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])

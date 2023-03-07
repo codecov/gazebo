@@ -7,7 +7,7 @@ import PlanPricing from './PlanPricing'
 import ScheduledPlanDetails from './ScheduledPlanDetails'
 import Usage from './Usage'
 
-import BenefitList from '../shared/BenefitList'
+import BenefitList from '../../../shared/BenefitList'
 
 function CurrentPlanCard({ accountDetails }) {
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
