@@ -41,6 +41,14 @@ const mockSecondResponse = {
   total_pages: 2,
 }
 
+const wrapper =
+  (initialEntries = '/gh') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <Suspense fallback={null}>{children}</Suspense>
+      </QueryClientProvider>
+    )
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -87,14 +95,6 @@ describe('AdminAccessTable', () => {
         return res(ctx.status(200), ctx.json(mockFirstResponse))
       })
     )
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <Suspense fallback={null}>
-          <AdminAccessTable />
-        </Suspense>
-      </QueryClientProvider>
-    )
   }
 
   describe('renders table', () => {
@@ -103,6 +103,8 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays the table heading', async () => {
+      render(<AdminAccessTable />, { wrapper: wrapper() })
+
       const admin = await screen.findByText('Admin')
       expect(admin).toBeInTheDocument()
     })
@@ -114,6 +116,8 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays the button', async () => {
+      render(<AdminAccessTable />, { wrapper: wrapper() })
+
       const button = await screen.findByText('Load More')
       expect(button).toBeInTheDocument()
     })
@@ -125,19 +129,23 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays an initial user set', async () => {
+      render(<AdminAccessTable />, { wrapper: wrapper() })
+
       const user = await screen.findByText('User 1')
       expect(user).toBeInTheDocument()
     })
 
     it('displays extended list after button click', async () => {
-      const button = await screen.findByText('Load More')
-      await userEvent.click(button)
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<AdminAccessTable />, { wrapper: wrapper() })
 
       const user1 = await screen.findByText('User 1')
       expect(user1).toBeInTheDocument()
+
+      const button = await screen.findByText('Load More')
+      userEvent.click(button)
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       const user2 = await screen.findByText('user2-codecov')
       expect(user2).toBeInTheDocument()
@@ -150,6 +158,8 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays an empty table', async () => {
+      render(<AdminAccessTable />, { wrapper: wrapper() })
+
       const table = await screen.findByTestId('body-row')
       expect(table).toBeEmptyDOMElement()
     })
