@@ -143,6 +143,7 @@ describe('UpgradeForm', () => {
 
       const radio = await screen.findByRole('radio', { name: /\$12/i })
       expect(radio).toBeInTheDocument()
+      expect(radio).not.toBeDisabled()
     })
 
     it('renders annual radio button', async () => {
@@ -150,6 +151,7 @@ describe('UpgradeForm', () => {
 
       const radio = await screen.findByRole('radio', { name: /\$10/i })
       expect(radio).toBeInTheDocument()
+      expect(radio).not.toBeDisabled()
     })
 
     it('renders the seat input with 6 seats', async () => {
@@ -158,6 +160,7 @@ describe('UpgradeForm', () => {
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toBeInTheDocument()
       expect(numberInput).toHaveValue(6)
+      expect(numberInput).not.toBeDisabled()
     })
   })
 
@@ -170,6 +173,7 @@ describe('UpgradeForm', () => {
 
       const radio = await screen.findByRole('radio', { name: /\$12/i })
       expect(radio).toBeInTheDocument()
+      expect(radio).toBeDisabled()
     })
 
     it('renders annual radio button', async () => {
@@ -180,6 +184,7 @@ describe('UpgradeForm', () => {
 
       const radio = await screen.findByRole('radio', { name: /\$10/i })
       expect(radio).toBeInTheDocument()
+      expect(radio).toBeDisabled()
     })
 
     it('renders the seat input with 6 seats', async () => {
@@ -191,6 +196,7 @@ describe('UpgradeForm', () => {
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toBeInTheDocument()
       expect(numberInput).toHaveValue(6)
+      expect(numberInput).toBeDisabled()
     })
 
     it('has the update button disabled', async () => {
