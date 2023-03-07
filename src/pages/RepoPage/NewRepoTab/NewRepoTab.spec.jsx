@@ -160,6 +160,22 @@ describe('NewRepoTab', () => {
         expect(fourOhFour).toBeInTheDocument()
       })
     })
+
+    describe('users provider is not github', () => {
+      beforeEach(() => setup())
+
+      it('redirects to other ci page', async () => {
+        render(<NewRepoTab />, {
+          wrapper: wrapper('/gl/codecov/cool-repo/new'),
+        })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gl/codecov/cool-repo/new/other-ci'
+          )
+        )
+      })
+    })
   })
 
   describe('testing tab navigation', () => {
