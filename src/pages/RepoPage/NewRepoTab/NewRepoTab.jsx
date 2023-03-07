@@ -6,6 +6,7 @@ import { SentryRoute } from 'sentry'
 import NotFound from 'pages/NotFound'
 import { useRepo } from 'services/repo'
 import { useRedirect } from 'shared/useRedirect'
+import { providerToName } from 'shared/utils'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -32,6 +33,10 @@ function NewRepoTab() {
   else if (!data?.repository?.uploadToken) {
     hardRedirect()
     return <NotFound />
+  }
+  // if user is not on gh as a provider
+  else if (providerToName(provider) !== 'Github') {
+    return <Redirect to={`/${provider}/${owner}/${repo}/new/other-ci`} />
   }
 
   return (
