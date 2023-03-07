@@ -1,4 +1,5 @@
-import { isEmpty, isEqual } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
+import isEqual from 'lodash/isEqual'
 import PropTypes from 'prop-types'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
