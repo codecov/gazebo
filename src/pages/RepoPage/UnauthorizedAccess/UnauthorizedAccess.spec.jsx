@@ -28,7 +28,7 @@ describe('UnauthorizedAccess', () => {
   it('renders error status', () => {
     render(<UnauthorizedAccess />, { wrapper })
 
-    const status = screen.getByText(/Error 401/)
+    const status = screen.getByText(/Error 403/)
     expect(status).toBeInTheDocument()
   })
 })
