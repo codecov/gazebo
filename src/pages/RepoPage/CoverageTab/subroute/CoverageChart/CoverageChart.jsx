@@ -55,8 +55,8 @@ function CoverageChart() {
 
   const desc = makeDesc({
     data: data?.coverage,
-    first: data?.coverage[0],
-    last: data?.coverage[data?.coverage.length - 1],
+    first: data?.coverage?.[0],
+    last: data?.coverage?.[data?.coverage.length - 1],
     repo,
   })
 

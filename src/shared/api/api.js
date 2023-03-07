@@ -78,7 +78,14 @@ function graphql({ provider, query, variables = {}, signal }) {
       query,
       variables,
     }),
-  }).then((d) => d.json())
+  }).then(async (res) =>
+    res.ok
+      ? await res.json()
+      : Promise.reject({
+          status: res.status,
+          data: await res.json(),
+        })
+  )
 }
 
 function graphqlMutation({ mutationPath, ...graphqlParams }) {
