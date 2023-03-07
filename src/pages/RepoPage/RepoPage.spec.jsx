@@ -106,6 +106,7 @@ describe('RepoPage', () => {
       isRepoPrivate,
       isRepoActivated,
       isRepoActive,
+      isCurrentUserActivated,
     } = {
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
@@ -113,6 +114,7 @@ describe('RepoPage', () => {
       isRepoPrivate: false,
       isRepoActivated: true,
       isRepoActive: true,
+      isCurrentUserActivated: true,
     }
   ) {
     server.use(
@@ -126,7 +128,8 @@ describe('RepoPage', () => {
                 isRepoPrivate,
                 isRepoActivated,
                 isCurrentUserPartOfOrg,
-                isRepoActive
+                isRepoActive,
+                isCurrentUserActivated
               )
             )
           )
