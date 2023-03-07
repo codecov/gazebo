@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom/cjs/react-router-dom.min'
 
@@ -7,14 +7,13 @@ import MemberList from './MemberList'
 jest.useFakeTimers()
 jest.mock('./MemberTable', () => () => 'MemberTable')
 
-describe('MemberList', () => {
-  let testLocation
-  function setup() {
-    render(
+let testLocation
+const wrapper =
+  (initialEntries = '/') =>
+  ({ children }) =>
+    (
       <MemoryRouter initialEntries={['/']}>
-        <Route path="/">
-          <MemberList />
-        </Route>
+        <Route path="/">{children}</Route>
         <Route
           path="*"
           render={({ location }) => {
@@ -24,26 +23,28 @@ describe('MemberList', () => {
         />
       </MemoryRouter>
     )
-  }
 
+describe('MemberList', () => {
   describe('renders user activated status selector', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('default activated status selector', () => {
       it('renders All Users by default', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const allUsers = await screen.findByText('All Users')
         expect(allUsers).toBeInTheDocument()
       })
 
       it('does not have any location state', () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         expect(testLocation.state).toBeUndefined()
       })
     })
 
     describe('selecting All Users', () => {
       it('renders All Users', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const allUsersInitial = await screen.findByText('All Users')
         userEvent.click(allUsersInitial)
 
@@ -61,6 +62,8 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const allUsersInitial = await screen.findByText('All Users')
         userEvent.click(allUsersInitial)
 
@@ -73,12 +76,16 @@ describe('MemberList', () => {
         const allUsersSelect = await screen.findByText('All Users')
         userEvent.click(allUsersSelect)
 
-        expect(testLocation.state.activated).toBeUndefined()
+        await waitFor(() =>
+          expect(testLocation.state.activated).toBeUndefined()
+        )
       })
     })
 
     describe('selecting Active', () => {
       it('renders Active when selected', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const allUsers = await screen.findByText('All Users')
         userEvent.click(allUsers)
 
@@ -90,17 +97,22 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const allUsers = await screen.findByText('All Users')
         userEvent.click(allUsers)
 
         const activeSelect = await screen.findByText('Active')
         userEvent.click(activeSelect)
-        expect(testLocation.state.activated).toBeTruthy()
+
+        await waitFor(() => expect(testLocation.state.activated).toBeTruthy())
       })
     })
 
     describe('selecting Non-Active', () => {
       it('renders Non-Active when selected', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const allUsers = await screen.findByText('All Users')
         userEvent.click(allUsers)
 
@@ -112,35 +124,39 @@ describe('MemberList', () => {
       })
 
       it('updates location state', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const allUsers = await screen.findByText('All Users')
         userEvent.click(allUsers)
 
         const nonActiveSelect = await screen.findByText('Non-Active')
         userEvent.click(nonActiveSelect)
 
-        expect(testLocation.state.activated).toBeFalsy()
+        await waitFor(() => expect(testLocation.state.activated).toBeFalsy())
       })
     })
   })
 
   describe('renders user role selector', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('default role selector', () => {
       it('renders Everyone by default', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const everyone = await screen.findByText('Everyone')
         expect(everyone).toBeInTheDocument()
       })
 
       it('does not have any location state', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         expect(testLocation.state).toBeUndefined()
       })
     })
 
     describe('selecting Everyone', () => {
       it('renders Everyone when selected', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const everyoneInitial = await screen.findByText('Everyone')
         userEvent.click(everyoneInitial)
 
@@ -158,13 +174,15 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const everyoneInitial = await screen.findByText('Everyone')
         userEvent.click(everyoneInitial)
 
         const adminSelect = await screen.findByText('Admins')
         userEvent.click(adminSelect)
 
-        expect(testLocation.state.isAdmin).toBeTruthy()
+        await waitFor(() => expect(testLocation.state.isAdmin).toBeTruthy())
 
         const admin = await screen.findByText('Admins')
         userEvent.click(admin)
@@ -172,12 +190,14 @@ describe('MemberList', () => {
         const everyoneSelect = await screen.findByText('Everyone')
         userEvent.click(everyoneSelect)
 
-        expect(testLocation.state.isAdmin).toBeUndefined()
+        await waitFor(() => expect(testLocation.state.isAdmin).toBeUndefined())
       })
     })
 
     describe('selecting Admins', () => {
       it('renders Admin when selected', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const everyone = await screen.findByText('Everyone')
         userEvent.click(everyone)
 
@@ -189,18 +209,22 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const everyone = await screen.findByText('Everyone')
         userEvent.click(everyone)
 
         const adminSelect = await screen.findByText('Admins')
         userEvent.click(adminSelect)
 
-        expect(testLocation.state.isAdmin).toBeTruthy()
+        await waitFor(() => expect(testLocation.state.isAdmin).toBeTruthy())
       })
     })
 
     describe('selecting Developers', () => {
       it('renders Developers when selected', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const everyone = await screen.findByText('Everyone')
         userEvent.click(everyone)
 
@@ -212,29 +236,31 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         const everyone = await screen.findByText('Everyone')
         userEvent.click(everyone)
 
         const developersSelect = await screen.findByText('Developers')
         userEvent.click(developersSelect)
 
-        expect(testLocation.state.isAdmin).toBeFalsy()
+        await waitFor(() => expect(testLocation.state.isAdmin).toBeFalsy())
       })
     })
   })
 
   describe('renders search input', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays the search box', async () => {
+      render(<MemberList />, { wrapper: wrapper() })
+
       const search = await screen.findByTestId('search-input-members')
       expect(search).toBeInTheDocument()
     })
 
     describe('when the user types', () => {
       it('updates the text box', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         let search = await screen.findByTestId('search-input-members')
 
         userEvent.type(search, 'codecov')
@@ -244,6 +270,8 @@ describe('MemberList', () => {
       })
 
       it('updates the location params', async () => {
+        render(<MemberList />, { wrapper: wrapper() })
+
         let search = await screen.findByTestId('search-input-members')
 
         userEvent.type(search, 'codecov')
@@ -256,11 +284,9 @@ describe('MemberList', () => {
   })
 
   describe('renders MemberTable', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders MemberTable', async () => {
+      render(<MemberList />, { wrapper: wrapper() })
+
       const table = await screen.findByText('MemberTable')
       expect(table).toBeInTheDocument()
     })
