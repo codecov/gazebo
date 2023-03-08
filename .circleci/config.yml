@@ -60,6 +60,7 @@ jobs:
   sentry:
     docker:
       - image: cimg/node:18.8.0
+    resource_class: large
     steps:
       - checkout
       - restore_cache:
