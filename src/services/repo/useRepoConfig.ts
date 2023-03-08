@@ -9,12 +9,16 @@ export interface UseRepoConfigArgs {
   repo: string
 }
 
-export const RepoConfig = z.object({
-  indicationRange: z.object({
-    lowerRange: z.number(),
-    upperRange: z.number(),
-  }),
-})
+export const RepoConfig = z
+  .object({
+    indicationRange: z
+      .object({
+        lowerRange: z.number(),
+        upperRange: z.number(),
+      })
+      .nullish(),
+  })
+  .nullish()
 
 const query = `
   query RepoConfig($owner: String!, $repo: String!) {
@@ -43,7 +47,8 @@ export const useRepoConfig = ({ provider, owner, repo }: UseRepoConfigArgs) =>
           owner,
           repo,
         },
-      }).then((res) =>
-        RepoConfig.parse(res?.data?.owner?.repository?.repositoryConfig)
+      }).then(
+        (res) =>
+          RepoConfig.parse(res?.data?.owner?.repository?.repositoryConfig) ?? {}
       ),
   })
