@@ -60,7 +60,7 @@ jobs:
   sentry:
     docker:
       - image: cimg/node:18.8.0
-    resource_class: large
+    resource_class: medium+
     steps:
       - checkout
       - restore_cache:
@@ -85,7 +85,7 @@ jobs:
   storybook:
     docker:
       - image: cimg/node:18.8.0
-    resource_class: large
+    resource_class: medium+
     steps:
       - checkout
       - restore_cache:
