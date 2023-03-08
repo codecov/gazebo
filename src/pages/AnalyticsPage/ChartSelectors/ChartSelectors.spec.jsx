@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
-import { act } from 'react-dom/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
@@ -15,7 +14,6 @@ jest.mock('react-use/lib/useIntersection')
 beforeAll(() => {
   jest.useFakeTimers().setSystemTime(new Date('2022-04-20'))
 })
-afterEach(() => {})
 afterAll(() => {
   jest.useRealTimers()
 })
@@ -132,10 +130,12 @@ describe('ChartSelectors', () => {
       })
       userEvent.click(selectedDate)
 
-      expect(updateParams).toBeCalledWith({
-        endDate: null,
-        startDate: new Date('2022-03-23T00:00:00.000Z'),
-      })
+      await waitFor(() =>
+        expect(updateParams).toBeCalledWith({
+          endDate: null,
+          startDate: new Date('2022-03-23T00:00:00.000Z'),
+        })
+      )
     })
   })
 
@@ -176,7 +176,9 @@ describe('ChartSelectors', () => {
         const repo1 = await screen.findByText('Repo name 1')
         userEvent.click(repo1)
 
-        expect(updateParams).toBeCalledWith({ repositories: ['Repo name 1'] })
+        await waitFor(() =>
+          expect(updateParams).toBeCalledWith({ repositories: ['Repo name 1'] })
+        )
       })
     })
 
@@ -205,21 +207,19 @@ describe('ChartSelectors', () => {
         )
         expect(searchBoxUpdated).toHaveAttribute('value', 'codecov')
 
-        act(() => {
-          jest.advanceTimersByTime(5000)
-        })
-
-        expect(useRepos).toBeCalledWith({
-          active: true,
-          first: Infinity,
-          owner: 'bob',
-          sortItem: {
-            direction: 'ASC',
-            ordering: 'NAME',
-          },
-          suspense: false,
-          term: 'codecov',
-        })
+        await waitFor(() =>
+          expect(useRepos).toBeCalledWith({
+            active: true,
+            first: Infinity,
+            owner: 'bob',
+            sortItem: {
+              direction: 'ASC',
+              ordering: 'NAME',
+            },
+            suspense: false,
+            term: 'codecov',
+          })
+        )
       })
     })
 
@@ -242,7 +242,7 @@ describe('ChartSelectors', () => {
           const multiselect = await screen.findByText('All Repos')
           userEvent.click(multiselect)
 
-          expect(fetchNextPage).toBeCalled()
+          await waitFor(() => expect(fetchNextPage).toBeCalled())
         })
       })
 
@@ -268,17 +268,21 @@ describe('ChartSelectors', () => {
   })
 
   describe('interacting with clear filters', () => {
-    it('updates params', () => {
+    it('updates params', async () => {
       render(<ChartSelectors {...props} />, { wrapper })
 
-      const clearFilters = screen.getByRole('button', { name: 'Clear filters' })
+      const clearFilters = await screen.findByRole('button', {
+        name: 'Clear filters',
+      })
       userEvent.click(clearFilters)
 
-      expect(props.updateParams).toHaveBeenCalledWith({
-        endDate: null,
-        repositories: [],
-        startDate: null,
-      })
+      await waitFor(() =>
+        expect(props.updateParams).toHaveBeenCalledWith({
+          endDate: null,
+          repositories: [],
+          startDate: null,
+        })
+      )
     })
   })
 })

@@ -7,13 +7,16 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useRepos } from './useRepos'
 
 const queryClient = new QueryClient()
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh']}>
-    <Route path="/:provider">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = '/gh') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 const repo1 = {
   name: 'codecov-bash',
@@ -95,9 +98,7 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useRepos', () => {
-  let hookData
-
-  function setup(hookArgs = { filters: { active: true } }) {
+  function setup() {
     server.use(
       graphql.query('MyRepos', (req, res, ctx) => {
         const data = {
@@ -157,21 +158,26 @@ describe('useRepos', () => {
         return res(ctx.status(200), ctx.data(data))
       })
     )
-    hookData = renderHook(() => useRepos(hookArgs), {
-      wrapper,
-    })
   }
 
   describe('when called and user is authenticated', () => {
     beforeEach(() => {
       setup()
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns repositories', () => {
-      expect(hookData.result.current.data).toEqual({
-        repos: [repo1, repo2, repo3],
-      })
+    it('returns repositories', async () => {
+      const { result, waitFor } = renderHook(
+        () => useRepos({ filters: { active: true } }),
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          repos: [repo1, repo2, repo3],
+        })
+      )
     })
   })
 
@@ -180,29 +186,43 @@ describe('useRepos', () => {
       setup({
         owner: 'codecov',
       })
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns repositories of the owner', () => {
-      expect(hookData.result.current.data).toEqual({
-        repos: [repo1, repo2],
-      })
+    it('returns repositories of the owner', async () => {
+      const { result, waitFor } = renderHook(
+        () => useRepos({ owner: 'codecov' }),
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          repos: [repo1, repo2],
+        })
+      )
     })
   })
 
   describe('when call next page', () => {
     beforeEach(async () => {
       setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-      hookData.result.current.fetchNextPage()
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('returns repositories of the user', () => {
-      expect(hookData.result.current.data).toEqual({
-        repos: [repo1, repo2, repo3, repo4],
+    it('returns repositories of the user', async () => {
+      const { result, waitFor } = renderHook(() => useRepos({}), {
+        wrapper: wrapper(),
       })
+
+      await waitFor(() => result.current.isSuccess)
+
+      result.current.fetchNextPage()
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          repos: [repo1, repo2, repo3, repo4],
+        })
+      )
     })
   })
 })

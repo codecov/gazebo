@@ -24,7 +24,7 @@ const mockedAccountDetails = {
   inactiveUserCount: 1,
 }
 
-const server = new setupServer()
+const server = setupServer()
 
 beforeAll(() => server.listen())
 afterEach(() => {

@@ -19,7 +19,7 @@ const mockUndefinedSeats = {
 
 const queryClient = new QueryClient()
 
-const server = new setupServer()
+const server = setupServer()
 beforeAll(() => server.listen())
 beforeEach(() => {
   server.resetHandlers()

@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { mapEdges } from 'shared/utils/graphql'
 
-import { useDeleteSession, useSessions } from './index'
+import { useSessions } from './useSessions'
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
@@ -78,17 +78,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useSessions', () => {
-  let hookData
-
   function setup(dataReturned) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({ data: dataReturned }))
       })
     )
-    hookData = renderHook(() => useSessions({ provider }), {
-      wrapper,
-    })
   }
 
   describe('when called and user is unauthenticated', () => {
@@ -98,20 +93,20 @@ describe('useSessions', () => {
       })
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns null', async () => {
+        const { result, waitFor } = renderHook(
+          () => useSessions({ provider }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns null', () => {
-        expect(hookData.result.current.data).toEqual(null)
+        await waitFor(() => expect(result.current.data).toEqual(null))
       })
     })
   })
+
   describe('when called and user is authenticated', () => {
     beforeEach(() => {
       setup({
@@ -124,56 +119,19 @@ describe('useSessions', () => {
           },
         },
       })
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns sessions', () => {
-      expect(hookData.result.current.data).toEqual({
-        sessions: mapEdges(sessions),
-        tokens: mapEdges(tokens),
-      })
-    })
-  })
-})
-
-describe('useDeleteSession', () => {
-  let hookData
-
-  function setup(dataReturned) {
-    server.use(
-      rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ data: dataReturned }))
-      })
-    )
-    hookData = renderHook(() => useDeleteSession({ provider }), {
-      wrapper,
-    })
-  }
-
-  describe('when called', () => {
-    beforeEach(() => {
-      setup({
-        me: null,
-      })
-    })
-
-    it('is not loading yet', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
-    describe('when calling the mutation', () => {
-      const data = {
-        sessionid: 1,
-      }
-      beforeEach(async () => {
-        hookData.result.current.mutate(data)
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
+    it('returns sessions', async () => {
+      const { result, waitFor } = renderHook(() => useSessions({ provider }), {
+        wrapper,
       })
 
-      it('returns success', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
-      })
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          sessions: mapEdges(sessions),
+          tokens: mapEdges(tokens),
+        })
+      )
     })
   })
 })

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import ToggleHeader from './ToggleHeader'
@@ -75,7 +75,7 @@ describe('ToggleHeader', () => {
     })
 
     describe('when a flag is selected', () => {
-      it('calls onFlagsChange with the value', () => {
+      it('calls onFlagsChange with the value', async () => {
         render(
           <ToggleHeader
             title={'sample title'}
@@ -91,7 +91,9 @@ describe('ToggleHeader', () => {
         const flag1Click = screen.getByText(/flag1/)
         userEvent.click(flag1Click)
 
-        expect(onFlagsChange).toHaveBeenCalledWith(['flag1'])
+        await waitFor(() =>
+          expect(onFlagsChange).toHaveBeenCalledWith(['flag1'])
+        )
       })
     })
   })

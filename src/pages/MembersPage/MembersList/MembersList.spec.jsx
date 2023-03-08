@@ -128,9 +128,6 @@ describe('MembersList', () => {
     it('renders MembersTable', async () => {
       render(<MembersList />, { wrapper })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
@@ -146,56 +143,66 @@ describe('MembersList', () => {
   describe('interacting with the status selector', () => {
     beforeEach(() => setup({}))
     describe('selecting Active Users', () => {
-      it('updates select text', () => {
+      it('updates select text', async () => {
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('All users')
+        const select = await screen.findByText('All users')
         userEvent.click(select)
 
-        const selectActive = screen.getByText('Active users')
+        const selectActive = await screen.findByRole('option', {
+          name: 'Active users',
+        })
         userEvent.click(selectActive)
 
-        const activeUsers = screen.getByText('Active users')
+        const activeUsers = await screen.findByText('Active users')
         expect(activeUsers).toBeInTheDocument()
       })
 
-      it('updates query params', () => {
+      it('updates query params', async () => {
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('All users')
+        const select = await screen.findByText('All users')
         userEvent.click(select)
 
-        const selectActive = screen.getByText('Active users')
+        const selectActive = await screen.findByRole('option', {
+          name: 'Active users',
+        })
         userEvent.click(selectActive)
 
-        expect(testLocation.search).toBe('?activated=True')
+        await waitFor(() => expect(testLocation.search).toBe('?activated=True'))
       })
     })
 
     describe('selecting Inactive Users', () => {
-      it('updates select text', () => {
+      it('updates select text', async () => {
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('All users')
+        const select = await screen.findByText('All users')
         userEvent.click(select)
 
-        const selectActive = screen.getByText('Inactive users')
+        const selectActive = await screen.findByRole('option', {
+          name: 'Inactive users',
+        })
         userEvent.click(selectActive)
 
-        const inactiveUsers = screen.getByText('Inactive users')
+        const inactiveUsers = await screen.findByText('Inactive users')
         expect(inactiveUsers).toBeInTheDocument()
       })
 
-      it('updates query params', () => {
+      it('updates query params', async () => {
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('All users')
+        const select = await screen.findByText('All users')
         userEvent.click(select)
 
-        const selectInactive = screen.getByText('Inactive users')
+        const selectInactive = await screen.findByRole('option', {
+          name: 'Inactive users',
+        })
         userEvent.click(selectInactive)
 
-        expect(testLocation.search).toBe('?activated=False')
+        await waitFor(() =>
+          expect(testLocation.search).toBe('?activated=False')
+        )
       })
     })
   })
@@ -204,19 +211,13 @@ describe('MembersList', () => {
     describe('user types into search field', () => {
       beforeEach(() => {
         setup({})
-        jest.useFakeTimers()
       })
-      afterEach(() => jest.useRealTimers())
 
       it('updates url params', async () => {
         render(<MembersList />, { wrapper })
 
         const searchField = await screen.findByTestId('search-input-members')
-        expect(searchField).toBeInTheDocument()
-
         userEvent.type(searchField, 'codecov')
-
-        jest.runAllTimers()
 
         await waitFor(() => expect(testLocation.search).toBe('?search=codecov'))
       })
@@ -226,20 +227,22 @@ describe('MembersList', () => {
   describe('interacting with the role selector', () => {
     beforeEach(() => setup({}))
     describe('selecting Admins Users', () => {
-      it('updates select text', () => {
+      it('updates select text', async () => {
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('Everyone')
+        const select = await screen.findByText('Everyone')
         userEvent.click(select)
 
-        const selectAdmins = screen.getByText('Admins')
+        const selectAdmins = await screen.findByRole('option', {
+          name: 'Admins',
+        })
         userEvent.click(selectAdmins)
 
-        const admins = screen.getByText('Admins')
+        const admins = await screen.findByText('Admins')
         expect(admins).toBeInTheDocument()
       })
 
-      it('updates query params', () => {
+      it('updates query params', async () => {
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
@@ -248,25 +251,25 @@ describe('MembersList', () => {
         const selectAdmins = screen.getByText('Admins')
         userEvent.click(selectAdmins)
 
-        expect(testLocation.search).toBe('?isAdmin=True')
+        await waitFor(() => expect(testLocation.search).toBe('?isAdmin=True'))
       })
     })
 
     describe('selecting Developers', () => {
-      it('updates select text', () => {
+      it('updates select text', async () => {
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('Everyone')
+        const select = await screen.findByText('Everyone')
         userEvent.click(select)
 
-        const selectDevelopers = screen.getByText('Developers')
+        const selectDevelopers = await screen.findByText('Developers')
         userEvent.click(selectDevelopers)
 
-        const developers = screen.getByText('Developers')
+        const developers = await screen.findByText('Developers')
         expect(developers).toBeInTheDocument()
       })
 
-      it('updates query params', () => {
+      it('updates query params', async () => {
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
@@ -275,7 +278,7 @@ describe('MembersList', () => {
         const selectDevelopers = screen.getByText('Developers')
         userEvent.click(selectDevelopers)
 
-        expect(testLocation.search).toBe('?isAdmin=False')
+        await waitFor(() => expect(testLocation.search).toBe('?isAdmin=False'))
       })
     })
   })

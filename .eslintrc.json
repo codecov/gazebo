@@ -154,7 +154,11 @@
         "src/ui/**/*.js",
         "src/ui/*.js",
         "src/ui/**/*.jsx",
-        "src/ui/*.jsx"
+        "src/ui/*.jsx",
+        "src/ui/**/*.ts",
+        "src/ui/*.ts",
+        "src/ui/**/*.tsx",
+        "src/ui/*.tsx"
       ],
       "rules": {
         "no-restricted-imports": [
@@ -185,7 +189,11 @@
         "src/services/**/*.js",
         "src/services/*.js",
         "src/services/**/*.jsx",
-        "src/services/*.jsx"
+        "src/services/*.jsx",
+        "src/services/**/*.ts",
+        "src/services/*.ts",
+        "src/services/**/*.tsx",
+        "src/services/*.tsx"
       ],
       "rules": {
         "no-restricted-imports": [
@@ -212,7 +220,7 @@
     },
     // All
     {
-      "files": ["src/**/*.js", "src/**/*.jsx"],
+      "files": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -236,7 +244,13 @@
         "*.test.js",
         "*-test.jsx",
         "*.spec.jsx",
-        "*.test.jsx"
+        "*.test.jsx",
+        "*-test.ts",
+        "*.spec.ts",
+        "*.test.ts",
+        "*-test.tsx",
+        "*.spec.tsx",
+        "*.test.tsx"
       ],
       "rules": {
         "max-nested-callbacks": "off",
@@ -255,7 +269,7 @@
     }
   ],
   "settings": {
-    "import/extensions": [".js", ".jsx"],
+    "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
     "import/resolver": {
       "alias": {
         "map": [
@@ -271,7 +285,7 @@
           ["config", "./src/config"],
           ["sentry", "./src/sentry"]
         ],
-        "extensions": [".js", ".jsx", ".json"]
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
       }
     }
   }

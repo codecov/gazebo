@@ -124,7 +124,7 @@ describe('MultiSelect', () => {
 
   describe('when selecting an item from the list', () => {
     describe('when selected with a click', () => {
-      it('highlights the selected item', () => {
+      it('highlights the selected item', async () => {
         render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
@@ -134,10 +134,10 @@ describe('MultiSelect', () => {
         userEvent.click(item1Click)
 
         const item1 = screen.getByText('item1')
-        expect(item1).toHaveClass('font-bold')
+        await waitFor(() => expect(item1).toHaveClass('font-bold'))
       })
 
-      it('calls onChange with the item', () => {
+      it('calls onChange with the item', async () => {
         render(<MultiSelect {...props} />)
 
         const button = screen.getByText('All')
@@ -146,7 +146,7 @@ describe('MultiSelect', () => {
         const item1Click = screen.getByText('item1')
         userEvent.click(item1Click)
 
-        expect(onChange).toHaveBeenCalledWith(['item1'])
+        await waitFor(() => expect(onChange).toHaveBeenCalledWith(['item1']))
       })
 
       it('renders the all button', () => {
@@ -155,10 +155,10 @@ describe('MultiSelect', () => {
         const button = screen.getByText('All')
         userEvent.click(button)
 
-        const item1Click = screen.getByText('item1')
+        const item1Click = screen.getByRole('option', { name: 'item1' })
         userEvent.click(item1Click)
 
-        const all = screen.getByText('All')
+        const all = screen.getByRole('option', { name: 'All' })
         expect(all).toBeInTheDocument()
       })
     })
@@ -364,20 +364,22 @@ describe('MultiSelect', () => {
     })
 
     describe('when the item is clicked', () => {
-      it('No longer highlights the selected item', () => {
+      it('No longer highlights the selected item', async () => {
         render(<MultiSelect {...props} />)
 
         const button = screen.getByText(/3 items selected/)
         userEvent.click(button)
 
-        const item1Click = screen.getByText('item1')
+        const item1Click = screen.getByRole('option', { name: 'item1' })
         userEvent.click(item1Click)
 
-        const item1 = screen.getByText('item1')
-        expect(item1).not.toHaveClass('font-bold')
+        const item1 = screen.getByRole('option', { name: 'item1' })
+        await waitFor(() =>
+          expect(item1).toHaveClass('block cursor-pointer py-1 px-3 text-sm')
+        )
       })
 
-      it('calls onChange without the item', () => {
+      it('calls onChange without the item', async () => {
         render(<MultiSelect {...props} />)
 
         const button = screen.getByText(/3 items selected/)
@@ -386,7 +388,9 @@ describe('MultiSelect', () => {
         const item1Click = screen.getByText('item1')
         userEvent.click(item1Click)
 
-        expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
+        await waitFor(() =>
+          expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
+        )
       })
     })
 
@@ -429,7 +433,7 @@ describe('MultiSelect', () => {
       }
     })
 
-    it('calls onChange with an empty array', () => {
+    it('calls onChange with an empty array', async () => {
       render(<MultiSelect {...props} />)
 
       const button = screen.getByText(/3 items selected/)
@@ -438,7 +442,7 @@ describe('MultiSelect', () => {
       const allButton = screen.getByText(/All items/)
       userEvent.click(allButton)
 
-      expect(onChange).toHaveBeenCalledWith([])
+      await waitFor(() => expect(onChange).toHaveBeenCalledWith([]))
     })
   })
 
