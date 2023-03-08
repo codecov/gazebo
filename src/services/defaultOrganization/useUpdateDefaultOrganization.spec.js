@@ -68,14 +68,13 @@ describe('useUpdateDefaultOrganization', () => {
           }
         )
         result.current.mutate({ username: 'codecov' })
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-        expect(result.current.isSuccess).toBeTruthy()
+
+        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
         const username =
           result.current.data.data.updateDefaultOrganization.username
-        expect(username).toBe('Gilmore')
-        expect(testLocation.pathname).toBe('/gh/Gilmore')
+        await waitFor(() => expect(username).toBe('Gilmore'))
+        await waitFor(() => expect(testLocation.pathname).toBe('/gh/Gilmore'))
       })
     })
   })
@@ -102,11 +101,12 @@ describe('useUpdateDefaultOrganization', () => {
           }
         )
         result.current.mutate({ username: 'random org!' })
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-        expect(result.current.error).toEqual(
-          new Error(
-            'Organization does not belong in the current users organization list'
+
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            new Error(
+              'Organization does not belong in the current users organization list'
+            )
           )
         )
       })

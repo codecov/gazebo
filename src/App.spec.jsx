@@ -42,7 +42,7 @@ const user = {
   onboardingCompleted: false,
 }
 
-const server = new setupServer()
+const server = setupServer()
 beforeAll(() => {
   // silence Error at useUser: Aborted
   console.error = () => {}

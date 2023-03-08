@@ -47,6 +47,14 @@ const server = setupServer(
       })
     )
   }),
+  graphql.query('ErrorQuery', (req, res, ctx) => {
+    return res(
+      ctx.status(400),
+      ctx.data({
+        me: 'Codecov',
+      })
+    )
+  }),
   graphql.query('CoverageForFile', (req, res, ctx) => {
     const { ref } = req.variables
     return res(
@@ -182,19 +190,35 @@ describe('when using a delete request', () => {
 })
 
 describe('when using a graphql request', () => {
-  beforeEach(() => {
-    result = Api.graphql({
-      provider: 'gh',
-      query: 'query MyInfo { me }',
+  describe('the request is successful', () => {
+    beforeEach(() => {
+      result = Api.graphql({
+        provider: 'gh',
+        query: 'query MyInfo { me }',
+      })
+      return result
     })
-    return result
+
+    it('returns what the server retuns', () => {
+      return expect(result).resolves.toEqual({
+        data: {
+          me: 'Codecov',
+        },
+      })
+    })
   })
 
-  it('returns what the server retuns', () => {
-    return expect(result).resolves.toEqual({
-      data: {
-        me: 'Codecov',
-      },
+  describe('the request is unsuccessful', () => {
+    it('returns the error status code', async () => {
+      const data = Api.graphql({
+        provider: 'gh',
+        query: 'query ErrorQuery { me }',
+      })
+
+      await expect(data).rejects.toStrictEqual({
+        data: { data: { me: 'Codecov' } },
+        status: 400,
+      })
     })
   })
 

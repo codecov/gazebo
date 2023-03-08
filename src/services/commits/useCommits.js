@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { isNumber } from 'lodash'
+import isNumber from 'lodash/isNumber'
 
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'

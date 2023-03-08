@@ -17,8 +17,12 @@ const UpdateDefaultOrgModal = ({ closeModal }) => {
       onClose={closeModal}
       hasCloseButton={false}
       size="small"
-      title="Select default organization"
-      subtitle="Org will appear as default for landing page context"
+      title={<span className="text-lg">Select default organization</span>}
+      subtitle={
+        <span className="text-base">
+          Org will appear as default for landing page context
+        </span>
+      }
       body={
         <OrganizationList
           selectedOrgUsername={selectedOrgUsername}

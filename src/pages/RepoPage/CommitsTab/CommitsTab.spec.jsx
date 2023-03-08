@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { act } from 'react-test-renderer'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import CommitsTab from './CommitsTab'
@@ -261,11 +260,6 @@ describe('Commits Tab', () => {
   describe('user searches for branch', () => {
     beforeEach(() => {
       setup({ hasNextPage: false })
-      jest.useFakeTimers()
-    })
-
-    afterEach(() => {
-      jest.useRealTimers()
     })
 
     it('fetches request with search term', async () => {
@@ -278,21 +272,11 @@ describe('Commits Tab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
       const select = await screen.findByText('Select')
       userEvent.click(select)
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      const search = screen.getByRole('textbox')
+      const search = await screen.findByRole('textbox')
       userEvent.type(search, 'searching for a branch')
-
-      act(() => {
-        jest.advanceTimersByTime(5000)
-      })
 
       await waitFor(() => expect(searches).toBeCalled())
       await waitFor(() =>

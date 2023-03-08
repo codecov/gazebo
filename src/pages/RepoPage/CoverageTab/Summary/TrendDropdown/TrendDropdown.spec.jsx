@@ -1,21 +1,19 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
 import { Route, Router } from 'react-router-dom'
 
 import TrendDropdown from './TrendDropdown'
 
-describe('TrendDropdown', () => {
-  let history
-  let testLocation
+let testLocation
 
-  function setup() {
-    history = createMemoryHistory()
-
-    // I don't fully get this * route but it works. Neat!
-    render(
+const history = createMemoryHistory()
+const wrapper =
+  () =>
+  ({ children }) =>
+    (
       <Router history={history}>
-        <TrendDropdown />
+        {children}
         <Route
           path="*"
           render={({ location }) => {
@@ -25,17 +23,18 @@ describe('TrendDropdown', () => {
         />
       </Router>
     )
-  }
 
-  it('updates the search params on select', () => {
-    setup()
+describe('TrendDropdown', () => {
+  it('updates the search params on select', async () => {
+    render(<TrendDropdown />, { wrapper: wrapper() })
 
     const button = screen.getByRole('button', {
       name: /select coverage over time range/,
     })
+
     userEvent.click(button)
     userEvent.click(screen.getAllByRole('option')[1])
 
-    expect(testLocation.search).toBe('?trend=7%20days')
+    await waitFor(() => expect(testLocation.search).toBe('?trend=30%20days'))
   })
 })
