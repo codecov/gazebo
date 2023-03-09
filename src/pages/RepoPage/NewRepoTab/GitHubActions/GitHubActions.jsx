@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 
-import codecovReport from 'assets/repoConfig/codecov-report.png'
-import patchAndProject from 'assets/repoConfig/patch-and-project.png'
+import codecovReport from 'assets/repoConfig/codecov-report.svg'
+import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
 import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
@@ -70,12 +70,12 @@ function GitHubActions() {
         <img
           alt="codecov patch and project"
           src={patchAndProject}
-          className="mt-2 self-center xl:w-2/3"
+          className="my-2"
         />
         <p className="text-base">
           and a comment with coverage report in the pull request:
         </p>
-        <img alt="codecov report" src={codecovReport} />
+        <img alt="codecov report" src={codecovReport} className="my-2" />
         <p>
           Learn more about the comment report and customizing{' '}
           <A to={{ pageName: 'prCommentLayout' }}>here</A>
