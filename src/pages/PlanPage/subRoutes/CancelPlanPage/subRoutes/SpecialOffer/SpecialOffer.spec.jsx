@@ -87,7 +87,7 @@ describe('SpecialOffer', () => {
       render(<SpecialOffer />, { wrapper: wrapper() })
 
       const body = screen.getByText(
-        'Keep enjoying the features that help you analyze your code coverage quickly so you can deploy with confidence...for less.'
+        'Keep enjoying the features that help you analyze your code coverage quickly so you can deploy with confidence... for less.'
       )
       expect(body).toBeInTheDocument()
     })
