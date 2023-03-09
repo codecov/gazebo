@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSelfHostedUserList } from './useSelfHostedUserList'
 
@@ -39,22 +40,28 @@ const mockSecondResponse = {
   total_pages: 2,
 }
 
+const queryClient = new QueryClient()
+const server = setupServer()
+const wrapper =
+  (initialEntries = '/gh') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => server.listen())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+afterAll(() => server.close())
+
 describe('useSelfHostedUserList', () => {
-  let hookData
-  const queryClient = new QueryClient()
-  const server = setupServer()
-  const wrapper = ({ children }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  )
-
-  beforeAll(() => server.listen())
-  beforeEach(() => {
-    server.resetHandlers()
-    queryClient.clear()
-  })
-  afterAll(() => server.close())
-
-  function setup(options = {}) {
+  function setup() {
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
         const {
@@ -69,96 +76,114 @@ describe('useSelfHostedUserList', () => {
         return res(ctx.status(200), ctx.json(mockFirstResponse))
       })
     )
-
-    hookData = renderHook(() => useSelfHostedUserList(options), { wrapper })
   }
 
   describe('hook queries first dataset', () => {
     beforeEach(async () => {
-      setup({ search: '' })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
+      setup()
     })
 
-    it('returns the data', () => {
-      expect(hookData.result.current.data).toStrictEqual([
-        {
-          activated: true,
-          email: 'user1@codecov.io',
-          isAdmin: true,
-          name: 'User 1',
-          ownerid: 1,
-          username: 'user1-codecov',
-        },
-      ])
+    it('returns the data', async () => {
+      const { result, waitFor } = renderHook(
+        () => useSelfHostedUserList({ search: '' }),
+        { wrapper: wrapper() }
+      )
+
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual([
+          {
+            activated: true,
+            email: 'user1@codecov.io',
+            isAdmin: true,
+            name: 'User 1',
+            ownerid: 1,
+            username: 'user1-codecov',
+          },
+        ])
+      )
     })
   })
 
   describe('hook can fetch the next dataset', () => {
     describe('not other options set', () => {
       beforeEach(async () => {
-        setup({ search: '' })
-        await hookData.waitFor(() => hookData.result.current.isFetching)
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
-
-        hookData.result.current.fetchNextPage()
-
-        await hookData.waitFor(() => hookData.result.current.isFetching)
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
+        setup()
       })
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toStrictEqual([
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(
+          () => useSelfHostedUserList({ search: '' }),
           {
-            activated: true,
-            email: 'user1@codecov.io',
-            isAdmin: true,
-            name: 'User 1',
-            ownerid: 1,
-            username: 'user1-codecov',
-          },
-          {
-            ownerid: 2,
-            username: 'user2-codecov',
-            email: 'user2@codecov.io',
-            name: 'User 2',
-            isAdmin: true,
-            activated: true,
-          },
-        ])
+            wrapper: wrapper(),
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        result.current.fetchNextPage()
+
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual([
+            {
+              activated: true,
+              email: 'user1@codecov.io',
+              isAdmin: true,
+              name: 'User 1',
+              ownerid: 1,
+              username: 'user1-codecov',
+            },
+            {
+              ownerid: 2,
+              username: 'user2-codecov',
+              email: 'user2@codecov.io',
+              name: 'User 2',
+              isAdmin: true,
+              activated: true,
+            },
+          ])
+        )
       })
     })
 
     describe('an option is set', () => {
       beforeEach(async () => {
         setup({ search: 'codecov' })
-        await hookData.waitFor(() => hookData.result.current.isFetching)
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
-
-        hookData.result.current.fetchNextPage()
-
-        await hookData.waitFor(() => hookData.result.current.isFetching)
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
       })
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toStrictEqual([
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(
+          () => useSelfHostedUserList({ search: 'codecov' }),
           {
-            activated: true,
-            email: 'user1@codecov.io',
-            isAdmin: true,
-            name: 'User 1',
-            ownerid: 1,
-            username: 'user1-codecov',
-          },
-          {
-            ownerid: 2,
-            username: 'user2-codecov',
-            email: 'user2@codecov.io',
-            name: 'User 2',
-            isAdmin: true,
-            activated: true,
-          },
-        ])
+            wrapper: wrapper(),
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        result.current.fetchNextPage()
+
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual([
+            {
+              activated: true,
+              email: 'user1@codecov.io',
+              isAdmin: true,
+              name: 'User 1',
+              ownerid: 1,
+              username: 'user1-codecov',
+            },
+            {
+              ownerid: 2,
+              username: 'user2-codecov',
+              email: 'user2@codecov.io',
+              name: 'User 2',
+              isAdmin: true,
+              activated: true,
+            },
+          ])
+        )
       })
     })
   })

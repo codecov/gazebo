@@ -60,6 +60,7 @@ jobs:
   sentry:
     docker:
       - image: cimg/node:18.8.0
+    resource_class: medium+
     steps:
       - checkout
       - restore_cache:
@@ -84,6 +85,7 @@ jobs:
   storybook:
     docker:
       - image: cimg/node:18.8.0
+    resource_class: medium+
     steps:
       - checkout
       - restore_cache:
@@ -126,6 +128,9 @@ workflows:
           requires:
             - install
       - sentry:
+          filters:
+            branches:
+              only: /main/
           requires:
             - install
       - fossa:

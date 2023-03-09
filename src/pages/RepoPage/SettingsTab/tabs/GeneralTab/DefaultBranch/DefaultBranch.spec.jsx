@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -52,6 +52,29 @@ const mockBranches = (hasNextPage) => ({
   },
 })
 
+const mockNextBranches = (hasNextPage) => ({
+  owner: {
+    repository: {
+      branches: {
+        edges: [
+          {
+            node: {
+              name: 'second',
+              head: {
+                commitid: '1',
+              },
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage,
+          endCursor: 'someEndCursor',
+        },
+      },
+    },
+  },
+})
+
 const queryClient = new QueryClient({
   logger: {
     error: () => {},
@@ -59,13 +82,16 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
-    <QueryClientProvider client={queryClient}>
-      <Route path="/:provider/:owner/:repo/settings">{children}</Route>
-    </QueryClientProvider>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = '/gh/codecov/codecov-client/settings') =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <QueryClientProvider client={queryClient}>
+          <Route path="/:provider/:owner/:repo/settings">{children}</Route>
+        </QueryClientProvider>
+      </MemoryRouter>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -96,11 +122,13 @@ describe('DefaultBranch', () => {
         const afterCursorPassed = !!req.variables?.after
         if (afterCursorPassed) {
           fetchesNextPage()
+          const data = mockNextBranches(false)
+          return res(ctx.status(200), ctx.data(data))
         }
 
         fetchFilters(req.variables?.filters)
-
         const data = mockBranches(hasNextPage)
+
         return res(ctx.status(200), ctx.data(data))
       }),
 
@@ -132,14 +160,14 @@ describe('DefaultBranch', () => {
     })
 
     it('renders title', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const title = await screen.findByText(/Default Branch/)
       expect(title).toBeInTheDocument()
     })
 
     it('renders body', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const p = await screen.findByText(
         'Selection for branch context of data in coverage dashboard'
@@ -148,7 +176,7 @@ describe('DefaultBranch', () => {
     })
 
     it('renders branch context', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const label = screen.getByText(/Branch Context/)
       expect(label).toBeInTheDocument()
@@ -166,10 +194,7 @@ describe('DefaultBranch', () => {
     })
 
     it('renders all branches of repo', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const branchSelector = await screen.findByRole('button', {
         name: 'Branch selector',
@@ -185,10 +210,7 @@ describe('DefaultBranch', () => {
 
     describe('when user selects a branch', () => {
       it('calls the mutation', async () => {
-        render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
         const branchSelector = await screen.findByRole('button', {
           name: 'Branch selector',
@@ -209,10 +231,7 @@ describe('DefaultBranch', () => {
     })
 
     it('renders new default branch', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const branchSelector = await screen.findByRole('button', {
         name: 'Branch selector',
@@ -221,9 +240,6 @@ describe('DefaultBranch', () => {
 
       const dummyBranch = await screen.findByText('dummy')
       userEvent.click(dummyBranch)
-
-      await waitFor(() => queryClient.isMutating)
-      await waitFor(() => !queryClient.isMutating)
 
       const updatedSelector = await screen.findByRole('button', {
         name: 'Branch selector',
@@ -239,10 +255,7 @@ describe('DefaultBranch', () => {
     })
 
     it('calls the mutation', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const branchSelector = await screen.findByRole('button', {
         name: 'Branch selector',
@@ -252,17 +265,11 @@ describe('DefaultBranch', () => {
       const dummyBranch = await screen.findByText('dummy')
       userEvent.click(dummyBranch)
 
-      await waitFor(() => queryClient.isMutating)
-      await waitFor(() => !queryClient.isMutating)
-
       await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
     it('adds an error notification', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const branchSelector = await screen.findByRole('button', {
         name: 'Branch selector',
@@ -288,10 +295,7 @@ describe('DefaultBranch', () => {
       })
 
       it('calls fetchNextPage', async () => {
-        render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
         const select = screen.getByText('main')
         userEvent.click(select)
@@ -306,10 +310,7 @@ describe('DefaultBranch', () => {
       })
 
       it('does not call fetchNextPage', async () => {
-        render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
         const select = await screen.findByText('main')
         userEvent.click(select)
@@ -322,29 +323,16 @@ describe('DefaultBranch', () => {
   describe('when onSearch is triggered', () => {
     beforeEach(() => {
       setup({ hasNextPage: true, isIntersecting: true })
-      jest.useFakeTimers()
-    })
-
-    afterEach(() => {
-      jest.useRealTimers()
     })
 
     it('fetches with search value', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const select = await screen.findByText('main')
       userEvent.click(select)
 
       const searchInput = await screen.findByText('Search')
       userEvent.type(searchInput, 'cool branch name')
-
-      act(() => jest.runOnlyPendingTimers())
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
 
       await waitFor(() => expect(fetchFilters).toBeCalled())
       await waitFor(() =>

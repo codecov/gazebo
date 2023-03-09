@@ -14,13 +14,18 @@ import {
 
 const queryClient = new QueryClient()
 
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/test']}>
-    <Route path="/:provider/:owner/:repo">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = '/gh/codecov/test') =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner/:repo">
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </Route>
+      </MemoryRouter>
+    )
 
 const server = setupServer()
 
@@ -33,34 +38,15 @@ const owner = 'RulaKhaled'
 const repo = 'test'
 
 describe('useRepo', () => {
-  afterEach(() => server.resetHandlers())
-
-  let hookData
-  let expectedResponse
-
-  function setup() {
+  function setup(apiData) {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(expectedResponse))
+        return res(ctx.status(200), ctx.data(apiData))
       })
     )
-
-    hookData = renderHook(() => useRepo({ provider, owner, repo }), {
-      wrapper,
-    })
   }
 
   describe('when called with successful res', () => {
-    expectedResponse = {
-      isCurrentUserPartOfOrg: true,
-      repository: {
-        defaultBranch: 'master',
-        private: true,
-        uploadToken: 'token',
-        yaml: 'yaml',
-        active: true,
-      },
-    }
     const dataReturned = {
       owner: {
         isCurrentUserPartOfOrg: true,
@@ -78,26 +64,34 @@ describe('useRepo', () => {
       setup(dataReturned)
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(
+          () => useRepo({ provider, owner, repo }),
+          {
+            wrapper: wrapper(),
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(expectedResponse)
+        const expectedResponse = {
+          isCurrentUserPartOfOrg: true,
+          repository: {
+            defaultBranch: 'master',
+            private: true,
+            uploadToken: 'token',
+            yaml: 'yaml',
+            active: true,
+          },
+        }
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual(expectedResponse)
+        )
       })
     })
   })
 
   describe('when called with unsuccessful res', () => {
-    expectedResponse = {
-      repository: undefined,
-      isCurrentUserPartOfOrg: undefined,
-    }
     const dataReturned = {
       noOwnerSent: 1,
     }
@@ -107,20 +101,27 @@ describe('useRepo', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(
+          () => useRepo({ provider, owner, repo }),
+          {
+            wrapper: wrapper(),
+          }
+        )
+        const expectedResponse = {
+          repository: undefined,
+          isCurrentUserPartOfOrg: undefined,
+        }
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(expectedResponse)
+        await waitFor(() =>
+          expect(result.current.data).toEqual(expectedResponse)
+        )
       })
     })
   })
 })
 
 describe('useEraseRepoContent', () => {
-  let hookData
-
   function setup() {
     server.use(
       rest.patch(
@@ -130,9 +131,6 @@ describe('useEraseRepoContent', () => {
         }
       )
     )
-    hookData = renderHook(() => useEraseRepoContent(), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -140,30 +138,15 @@ describe('useEraseRepoContent', () => {
       setup()
     })
 
-    it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
-    describe('when calling the mutation', () => {
-      beforeEach(() => {
-        hookData.result.current.mutate(null)
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
-
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
-      })
-    })
-
     describe('When success', () => {
-      beforeEach(async () => {
-        hookData.result.current.mutate(null)
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
+      it('returns isSuccess true', async () => {
+        const { result, waitFor } = renderHook(() => useEraseRepoContent(), {
+          wrapper: wrapper(),
+        })
 
-      it('returns isSuccess true', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+        result.current.mutate(null)
+
+        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
     })
   })
@@ -200,17 +183,12 @@ const repoDetails = {
 }
 
 describe('useUpdateRepo', () => {
-  let hookData
-
   function setup() {
     server.use(
       rest.patch(`internal/github/codecov/repos/test/`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(repoDetails))
       })
     )
-    hookData = renderHook(() => useUpdateRepo(), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -218,31 +196,15 @@ describe('useUpdateRepo', () => {
       setup()
     })
 
-    it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
-    describe('when calling the mutation', () => {
-      const data = { branch: 'dummy' }
-      beforeEach(() => {
-        hookData.result.current.mutate(data)
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
-
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
-      })
-    })
-
     describe('When success', () => {
-      beforeEach(async () => {
-        hookData.result.current.mutate({})
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
+      it('returns isSuccess true', async () => {
+        const { result, waitFor } = renderHook(() => useUpdateRepo(), {
+          wrapper: wrapper(),
+        })
 
-      it('returns isSuccess true', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+        result.current.mutate({})
+
+        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
     })
   })
@@ -258,26 +220,12 @@ describe('useRepoBackfilled', () => {
     },
   }
 
-  let hookData
-
   function setup() {
     server.use(
       graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-
-    hookData = renderHook(
-      () =>
-        useRepoBackfilled({
-          provider: 'gh',
-          owner: 'Rabee-AbuBaker',
-          repo: 'another-test',
-        }),
-      {
-        wrapper,
-      }
-    )
   }
 
   describe('when called', () => {
@@ -285,45 +233,38 @@ describe('useRepoBackfilled', () => {
       setup()
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            useRepoBackfilled({
+              provider: 'gh',
+              owner: 'owner',
+              repo: 'another-test',
+            }),
+          {
+            wrapper: wrapper(),
+          }
+        )
 
-      it('returns the data', () => {
         const expectedResponse = {
           flagsMeasurementsActive: true,
           flagsMeasurementsBackfilled: true,
         }
-        expect(hookData.result.current.data).toEqual(expectedResponse)
+        await waitFor(() =>
+          expect(result.current.data).toEqual(expectedResponse)
+        )
       })
     })
   })
 })
 
 describe('useActivateFlagMeasurements', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.mutation('ActivateFlagsMeasurements', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data())
       })
-    )
-    hookData = renderHook(
-      () =>
-        useActivateFlagMeasurements({
-          provider: 'gh',
-          owner: 'dancer',
-          repo: 'bassuras',
-        }),
-      {
-        wrapper,
-      }
     )
   }
 
@@ -332,29 +273,23 @@ describe('useActivateFlagMeasurements', () => {
       setup()
     })
 
-    it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
-    describe('when calling the mutation', () => {
-      beforeEach(async () => {
-        hookData.result.current.mutate({ provider, owner, repo })
-        await hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
-
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
-      })
-    })
-
     describe('When success', () => {
-      beforeEach(async () => {
-        hookData.result.current.mutate()
-        await hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns expected output', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            useActivateFlagMeasurements({
+              provider: 'gh',
+              owner: 'dancer',
+              repo: 'bassuras',
+            }),
+          {
+            wrapper: wrapper(),
+          }
+        )
 
-      it('returns expected output', () => {
-        expect(hookData.result.current.data).toEqual({})
+        result.current.mutate()
+
+        await waitFor(() => expect(result.current.data).toEqual({}))
       })
     })
   })

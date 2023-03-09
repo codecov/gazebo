@@ -153,7 +153,7 @@ describe('Select', () => {
       expect(item1Button).toBeInTheDocument()
     })
 
-    it('calls onChange with the item', () => {
+    it('calls onChange with the item', async () => {
       render(<Select {...props} />)
 
       const button = screen.getByText('Select')
@@ -162,7 +162,7 @@ describe('Select', () => {
       const item1Click = screen.getByText('item1')
       userEvent.click(item1Click)
 
-      expect(onChange).toHaveBeenCalledWith('item1')
+      await waitFor(() => expect(onChange).toHaveBeenCalledWith('item1'))
     })
   })
 

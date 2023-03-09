@@ -1,6 +1,24 @@
 import { useQuery } from '@tanstack/react-query'
+import { z } from 'zod'
 
 import Api from 'shared/api'
+
+export interface UseRepoConfigArgs {
+  provider: string
+  owner: string
+  repo: string
+}
+
+export const RepoConfig = z
+  .object({
+    indicationRange: z
+      .object({
+        lowerRange: z.number(),
+        upperRange: z.number(),
+      })
+      .nullish(),
+  })
+  .nullish()
 
 const query = `
   query RepoConfig($owner: String!, $repo: String!) {
@@ -17,18 +35,20 @@ const query = `
   }
 `
 
-export const useRepoConfig = ({ provider, owner, repo }) =>
+export const useRepoConfig = ({ provider, owner, repo }: UseRepoConfigArgs) =>
   useQuery({
     queryKey: ['RepoConfig', provider, owner, repo, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
-        repo,
         query,
         signal,
         variables: {
           owner,
           repo,
         },
-      }).then((res) => res?.data?.owner?.repository?.repositoryConfig || {}),
+      }).then(
+        (res) =>
+          RepoConfig.parse(res?.data?.owner?.repository?.repositoryConfig) ?? {}
+      ),
   })

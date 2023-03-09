@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -133,6 +133,7 @@ describe('ListRepo', () => {
         expect.stringContaining('Active')
       )
     })
+
     it('switches to all repos owner page', () => {
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
@@ -168,7 +169,7 @@ describe('ListRepo', () => {
   })
 
   describe('update params after using select', () => {
-    it('renders the option user the custom rendered', () => {
+    it('renders the option user the custom rendered', async () => {
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh',
@@ -184,8 +185,10 @@ describe('ListRepo', () => {
       const option = screen.getByRole('option', { name: 'Least recent commit' })
       userEvent.click(option)
 
-      expect(testLocation.state.direction).toBe('ASC')
-      expect(testLocation.state.ordering).toBe('COMMIT_DATE')
+      await waitFor(() => expect(testLocation.state.direction).toBe('ASC'))
+      await waitFor(() =>
+        expect(testLocation.state.ordering).toBe('COMMIT_DATE')
+      )
     })
   })
 

@@ -130,18 +130,12 @@ describe('MembersTable', () => {
       it('has User name column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
         const userName = await screen.findByText('User name')
         expect(userName).toBeInTheDocument()
       })
 
       it('has Type column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         const type = await screen.findByText('Type')
         expect(type).toBeInTheDocument()
@@ -150,18 +144,12 @@ describe('MembersTable', () => {
       it('has email column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
         const email = await screen.findByText('email')
         expect(email).toBeInTheDocument()
       })
 
       it('has Activation status column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         const activationStatus = await screen.findByText('Activation status')
         expect(activationStatus).toBeInTheDocument()
@@ -188,9 +176,6 @@ describe('MembersTable', () => {
           it('renders with name', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            await waitFor(() => queryClient.isFetching)
-            await waitFor(() => !queryClient.isFetching)
-
             const name = await screen.findByText('codecov-name')
             expect(name).toBeInTheDocument()
           })
@@ -201,9 +186,6 @@ describe('MembersTable', () => {
 
           it('renders with the username', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
-
-            await waitFor(() => queryClient.isFetching)
-            await waitFor(() => !queryClient.isFetching)
 
             const userName = await screen.findByText('codecov')
             expect(userName).toBeInTheDocument()
@@ -230,9 +212,6 @@ describe('MembersTable', () => {
           it('renders admin', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            await waitFor(() => queryClient.isFetching)
-            await waitFor(() => !queryClient.isFetching)
-
             const admin = await screen.findByText('Admin')
             expect(admin).toBeInTheDocument()
           })
@@ -243,9 +222,6 @@ describe('MembersTable', () => {
 
           it('renders Developer', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
-
-            await waitFor(() => queryClient.isFetching)
-            await waitFor(() => !queryClient.isFetching)
 
             const developer = await screen.findByText('Developer')
             expect(developer).toBeInTheDocument()
@@ -258,9 +234,6 @@ describe('MembersTable', () => {
 
         it('displays users email', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
-
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
 
           const email = await screen.findByText('user@codecov.io')
           expect(email).toBeInTheDocument()
@@ -278,9 +251,6 @@ describe('MembersTable', () => {
           it('displays disabled toggle', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            await waitFor(() => queryClient.isFetching)
-            await waitFor(() => !queryClient.isFetching)
-
             const toggle = await screen.findByRole('button')
             expect(toggle).toBeDisabled()
           })
@@ -295,9 +265,6 @@ describe('MembersTable', () => {
 
           it('renders an non-disabled toggle', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
-
-            await waitFor(() => queryClient.isFetching)
-            await waitFor(() => !queryClient.isFetching)
 
             const toggle = await screen.findByRole('button')
             expect(toggle).not.toBeDisabled()
@@ -315,9 +282,6 @@ describe('MembersTable', () => {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
       const toggle = await screen.findByRole('button')
       userEvent.click(toggle)
 
@@ -334,16 +298,12 @@ describe('MembersTable', () => {
         it('updates the request params', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const userName = await screen.findByText('User name')
           userEvent.click(userName)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('-name,-username')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('-name,-username')
+          )
         })
       })
 
@@ -351,17 +311,13 @@ describe('MembersTable', () => {
         it('updates the request params', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const userName = await screen.findByText('User name')
           userEvent.click(userName)
           userEvent.click(userName)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('name,username')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('name,username')
+          )
         })
       })
 
@@ -377,10 +333,9 @@ describe('MembersTable', () => {
           userEvent.click(userName)
           userEvent.click(userName)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('')
+          )
         })
       })
     })
@@ -390,16 +345,12 @@ describe('MembersTable', () => {
         it('updates the request params', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const type = await screen.findByText('Type')
           userEvent.click(type)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('-type')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('-type')
+          )
         })
       })
 
@@ -407,17 +358,13 @@ describe('MembersTable', () => {
         it('updates the request params', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const type = await screen.findByText('Type')
           userEvent.click(type)
           userEvent.click(type)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('type')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('type')
+          )
         })
       })
 
@@ -425,18 +372,14 @@ describe('MembersTable', () => {
         it('removes the request param', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const type = await screen.findByText('Type')
           userEvent.click(type)
           userEvent.click(type)
           userEvent.click(type)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('')
+          )
         })
       })
     })
@@ -446,16 +389,12 @@ describe('MembersTable', () => {
         it('updates the request params', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const email = await screen.findByText('email')
           userEvent.click(email)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('-email')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('-email')
+          )
         })
       })
 
@@ -463,17 +402,13 @@ describe('MembersTable', () => {
         it('updates the request params', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const email = await screen.findByText('email')
           userEvent.click(email)
           userEvent.click(email)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('email')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('email')
+          )
         })
       })
 
@@ -481,18 +416,14 @@ describe('MembersTable', () => {
         it('removes the request param', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const email = await screen.findByText('email')
           userEvent.click(email)
           userEvent.click(email)
           userEvent.click(email)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('')
+          )
         })
       })
     })
@@ -502,16 +433,12 @@ describe('MembersTable', () => {
         it('updates the request params', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const activationStatus = await screen.findByText('Activation status')
           userEvent.click(activationStatus)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('-activated')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('-activated')
+          )
         })
       })
 
@@ -519,17 +446,13 @@ describe('MembersTable', () => {
         it('updates the request params', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const activationStatus = await screen.findByText('Activation status')
           userEvent.click(activationStatus)
           userEvent.click(activationStatus)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('activated')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('activated')
+          )
         })
       })
 
@@ -537,18 +460,14 @@ describe('MembersTable', () => {
         it('removes the request param', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
           const activationStatus = await screen.findByText('Activation status')
           userEvent.click(activationStatus)
           userEvent.click(activationStatus)
           userEvent.click(activationStatus)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          expect(requestSearchParams.get('ordering')).toBe('')
+          await waitFor(() =>
+            expect(requestSearchParams.get('ordering')).toBe('')
+          )
         })
       })
     })
@@ -562,17 +481,11 @@ describe('MembersTable', () => {
     it('displays two users', async () => {
       render(<MembersTable />, { wrapper: wrapper() })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
       const user1 = await screen.findByText('User 1')
       expect(user1).toBeInTheDocument()
 
       expect(requestSearchParams.get('page')).toBe('1')
       mockAllIsIntersecting(true)
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
 
       const user2 = await screen.findByText('user2-codecov')
       expect(user2).toBeInTheDocument()
@@ -597,9 +510,6 @@ describe('MembersTable', () => {
 
       it('uses default author', async () => {
         render(<MembersTable />, { wrapper: wrapper(['/gl/codecov']) })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         const avatar = await screen.findByRole('img')
         expect(avatar).toBeInTheDocument()

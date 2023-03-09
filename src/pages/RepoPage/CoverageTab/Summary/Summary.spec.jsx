@@ -105,16 +105,19 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/test/critical-role']}>
-      <Route path="/:provider/:owner/:repo">
-        <Suspense fallback={<div>loading</div>}>{children}</Suspense>
-      </Route>
-      <Route path="*" render={({ location }) => location.pathname} />
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (initialEntries = '/gh/test/critical-role') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo">
+            <Suspense fallback={<div>loading</div>}>{children}</Suspense>
+          </Route>
+          <Route path="*" render={({ location }) => location.pathname} />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -198,21 +201,21 @@ describe('Summary', () => {
     })
 
     it('renders the branch selector', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const branchContext = await screen.findByText(/Branch Context/)
       expect(branchContext).toBeInTheDocument()
     })
 
     it('renders default branch as selected branch', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const dropDownBtn = await screen.findByText('main')
       expect(dropDownBtn).toBeInTheDocument()
     })
 
     it('renders the source commit short sha', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const shortSha = await screen.findByText(/321fdsa/)
       expect(shortSha).toBeInTheDocument()
@@ -225,13 +228,13 @@ describe('Summary', () => {
     })
 
     it('renders the branch coverage', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const percentage = await screen.findByText('95.00%')
       expect(percentage).toBeInTheDocument()
     })
     it('renders the lines covered', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const lineCoverage = await screen.findByText('100 of 100 lines covered')
       expect(lineCoverage).toBeInTheDocument()
@@ -255,7 +258,7 @@ describe('Summary', () => {
     })
 
     it('updates the location', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const button = await screen.findByText('main')
       userEvent.click(button)
@@ -263,7 +266,7 @@ describe('Summary', () => {
       const branch1 = await screen.findByText('branch-1')
       userEvent.click(branch1)
 
-      expect(mockSetNewPath).toHaveBeenCalled()
+      await waitFor(() => expect(mockSetNewPath).toHaveBeenCalled())
     })
   })
 
@@ -273,7 +276,7 @@ describe('Summary', () => {
     })
 
     it('updates the location', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const main = await screen.findByText('main')
       userEvent.click(main)
@@ -281,8 +284,10 @@ describe('Summary', () => {
       const branch1 = await screen.findByText('branch-1')
       userEvent.click(branch1)
 
-      expect(mockSetNewPath).toHaveBeenCalled()
-      expect(mockSetNewPath).toHaveBeenCalledWith('branch-1')
+      await waitFor(() => expect(mockSetNewPath).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(mockSetNewPath).toHaveBeenCalledWith('branch-1')
+      )
     })
   })
 
@@ -306,7 +311,7 @@ describe('Summary', () => {
       })
 
       it('calls fetchNextPage', async () => {
-        render(<Summary />, { wrapper })
+        render(<Summary />, { wrapper: wrapper() })
 
         const select = await screen.findByRole('button', {
           name: 'select branch',
@@ -336,7 +341,7 @@ describe('Summary', () => {
         })
       })
       it('does not call fetchNextPage', async () => {
-        render(<Summary />, { wrapper })
+        render(<Summary />, { wrapper: wrapper() })
 
         const select = await screen.findByRole('button', {
           name: 'select branch',
@@ -354,7 +359,7 @@ describe('Summary', () => {
     })
 
     it('calls the api with the search value', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const select = await screen.findByText('main')
       userEvent.click(select)
