@@ -70,12 +70,12 @@ function GitHubActions() {
         <img
           alt="codecov patch and project"
           src={patchAndProject}
-          className="my-2"
+          className="my-3 md:px-5"
         />
         <p className="text-base">
           and a comment with coverage report in the pull request:
         </p>
-        <img alt="codecov report" src={codecovReport} className="my-2" />
+        <img alt="codecov report" src={codecovReport} />
         <p>
           Learn more about the comment report and customizing{' '}
           <A to={{ pageName: 'prCommentLayout' }}>here</A>

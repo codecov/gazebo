@@ -53,7 +53,7 @@ function OtherCI() {
           </p>
         </div>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         <div>
           <h2 className="pt-6 text-base font-semibold">
             Step 3: get coverage analysis from Codecov
@@ -66,12 +66,12 @@ function OtherCI() {
         <img
           alt="codecov patch and project"
           src={patchAndProject}
-          className="my-2"
+          className="my-3 md:px-5"
         />
         <p className="text-base">
           and a comment with coverage report in the pull request:
         </p>
-        <img alt="codecov report" src={codecovReport} className="my-2" />
+        <img alt="codecov report" src={codecovReport} />
         <p>
           Learn more about the comment report and customizing{' '}
           <A to={{ pageName: 'prCommentLayout' }}>here</A>
