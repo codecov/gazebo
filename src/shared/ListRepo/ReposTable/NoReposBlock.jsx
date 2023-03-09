@@ -1,47 +1,40 @@
-import { useContext } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import isEmpty from 'lodash/isEmpty'
+import isNull from 'lodash/isNull'
+import PropType from 'prop-types'
 
-import { ActiveContext } from 'shared/context'
-import A from 'ui/A'
-import Button from 'ui/Button'
+import { useNavLinks } from 'services/navigation'
 
-import { repoDisplayOptions } from '../ListRepo'
+function NoReposBlock({ privateAccess, searchValue }) {
+  const { signIn } = useNavLinks()
 
-const NoReposBlock = () => {
-  const repoDisplay = useContext(ActiveContext)
-  const { provider, owner } = useParams()
-  const history = useHistory()
+  if (!isEmpty(searchValue)) {
+    return <h1 className="mt-8 text-center text-lg">No results found</h1>
+  }
 
-  return repoDisplay !== repoDisplayOptions.INACTIVE.text ? (
-    <div className="mx-4 mt-8 text-center">
-      <h1 className="text-3xl font-semibold">No repos setup yet</h1>
-      <div className="my-6 flex justify-center gap-1 text-base font-light">
-        <p
-          className="cursor-pointer font-sans text-ds-blue hover:underline focus:ring-2"
-          onClick={() =>
-            history.push(`/${provider}/${owner}?repoDisplay=Inactive`)
-          }
-        >
-          Select the repo
+  const showPrivatePrompt = isNull(privateAccess) || privateAccess === false
+
+  return (
+    <div className="mt-8 text-center">
+      <h1 className="text-3xl font-semibold">There are no repos detected</h1>
+      {showPrivatePrompt && (
+        <p>
+          Try adding{' '}
+          <a
+            className="text-ds-blue-darker"
+            href={`${signIn.path()}?private=true`}
+          >
+            private scope
+          </a>{' '}
+          for access to private repos
         </p>
-        you&#39;d like to setup and learn about setup with our{' '}
-        <A to={{ pageName: 'docs' }}>quick start guide.</A>
-      </div>
-      <div className="m-auto w-52">
-        <Button
-          hook="no-repos-block"
-          variant="primary"
-          onClick={() =>
-            history.push(`/${provider}/${owner}?repoDisplay=Inactive`)
-          }
-        >
-          View repos for setup
-        </Button>
-      </div>
+      )}
     </div>
-  ) : (
-    <div className="text-sm">You need to create repos first</div>
   )
+}
+
+NoReposBlock.propTypes = {
+  privateAccess: PropType.bool,
+  searchValue: PropType.string,
 }
 
 export default NoReposBlock
