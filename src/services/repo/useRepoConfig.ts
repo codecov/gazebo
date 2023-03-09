@@ -3,13 +3,6 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 
-export interface UseRepoConfigArgs {
-  provider: string
-  owner: string
-  repo: string
-  opts?: UseQueryOptions
-}
-
 export const RepoConfig = z
   .object({
     indicationRange: z
@@ -20,6 +13,15 @@ export const RepoConfig = z
       .nullish(),
   })
   .nullish()
+
+type RepoConfigData = z.infer<typeof RepoConfig>
+
+export interface UseRepoConfigArgs {
+  provider: string
+  owner: string
+  repo: string
+  opts?: UseQueryOptions<RepoConfigData>
+}
 
 const query = `
   query RepoConfig($owner: String!, $repo: String!) {
@@ -40,7 +42,7 @@ export const useRepoConfig = ({
   provider,
   owner,
   repo,
-  opts = {},
+  opts,
 }: UseRepoConfigArgs) =>
   useQuery({
     queryKey: ['RepoConfig', provider, owner, repo, query],
@@ -57,5 +59,5 @@ export const useRepoConfig = ({
         (res) =>
           RepoConfig.parse(res?.data?.owner?.repository?.repositoryConfig) ?? {}
       ),
-    ...opts,
+    ...(!!opts && opts),
   })
