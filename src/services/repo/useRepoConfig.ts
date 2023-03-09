@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -7,6 +7,7 @@ export interface UseRepoConfigArgs {
   provider: string
   owner: string
   repo: string
+  opts?: UseQueryOptions
 }
 
 export const RepoConfig = z
@@ -35,7 +36,12 @@ const query = `
   }
 `
 
-export const useRepoConfig = ({ provider, owner, repo }: UseRepoConfigArgs) =>
+export const useRepoConfig = ({
+  provider,
+  owner,
+  repo,
+  opts = {},
+}: UseRepoConfigArgs) =>
   useQuery({
     queryKey: ['RepoConfig', provider, owner, repo, query],
     queryFn: ({ signal }) =>
@@ -51,4 +57,5 @@ export const useRepoConfig = ({ provider, owner, repo }: UseRepoConfigArgs) =>
         (res) =>
           RepoConfig.parse(res?.data?.owner?.repository?.repositoryConfig) ?? {}
       ),
+    ...opts,
   })
