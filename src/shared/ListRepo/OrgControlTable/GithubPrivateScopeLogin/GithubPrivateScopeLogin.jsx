@@ -17,25 +17,28 @@ function GithubPrivateScopeLogin() {
     activated: repoDisplayOptions.ALL.status,
   })
 
-  if (!currentUser || provider !== 'gh' || currentUser?.privateAccess) {
+  if (
+    !currentUser ||
+    provider !== 'gh' ||
+    currentUser?.privateAccess ||
+    isEmpty(repoData?.repos)
+  ) {
     return null
   }
 
   return (
-    !isEmpty(repoData?.repos) && (
-      <div className="mr-4 flex items-center">
-        <span className="text-ds-gray-quinary">
-          <Icon size="sm" variant="solid" name="globe-alt" />
-        </span>
-        <span className="mx-1 text-ds-gray-quinary">Public repos only</span>
-        <a
-          className="text-xs font-semibold text-ds-blue-darker"
-          href={`${signIn.path()}?private=true`}
-        >
-          add private
-        </a>
-      </div>
-    )
+    <div className="mr-4 flex items-center">
+      <span className="text-ds-gray-quinary">
+        <Icon size="sm" variant="solid" name="globe-alt" />
+      </span>
+      <span className="mx-1 text-ds-gray-quinary">Public repos only</span>
+      <a
+        className="text-xs font-semibold text-ds-blue-darker"
+        href={`${signIn.path()}?private=true`}
+      >
+        add private
+      </a>
+    </div>
   )
 }
 
