@@ -56,7 +56,7 @@ function SpecialOffer() {
         </h2>
         <p>
           Keep enjoying the features that help you analyze your code coverage
-          quickly so you can deploy with confidence...for less.
+          quickly so you can deploy with confidence... for less.
         </p>
       </div>
       <p className="font-semibold">

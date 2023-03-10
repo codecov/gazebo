@@ -20,7 +20,7 @@ import Icon from 'ui/Icon'
 import RadioInput from 'ui/RadioInput/RadioInput'
 import TextInput from 'ui/TextInput'
 
-const MIN_NB_SEATS = 6
+const MIN_NB_SEATS = 2
 
 function getInitialDataForm(planOptions, accountDetails) {
   const currentPlan = accountDetails.plan

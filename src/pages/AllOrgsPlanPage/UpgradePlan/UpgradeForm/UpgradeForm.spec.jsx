@@ -12,17 +12,17 @@ import UpgradeForm from './UpgradeForm'
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
 
-const freePlan = {
+const basicPlan = {
   marketingName: 'Basic',
-  value: 'users-free',
+  value: 'users-basic',
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
-    'Up to 5 users',
+    'Up to 1 user',
     'Unlimited public repositories',
     'Unlimited private repositories',
   ],
-  quantity: 5,
+  quantity: 1,
 }
 
 const proPlanMonth = {
@@ -154,12 +154,12 @@ describe('UpgradeForm', () => {
       expect(radio).not.toBeDisabled()
     })
 
-    it('renders the seat input with 6 seats', async () => {
+    it('renders the seat input with 2 seats', async () => {
       render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toBeInTheDocument()
-      expect(numberInput).toHaveValue(6)
+      expect(numberInput).toHaveValue(2)
       expect(numberInput).not.toBeDisabled()
     })
   })
@@ -187,7 +187,7 @@ describe('UpgradeForm', () => {
       expect(radio).toBeDisabled()
     })
 
-    it('renders the seat input with 6 seats', async () => {
+    it('renders the seat input with 2 seats', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
         { wrapper: wrapper() }
@@ -195,7 +195,7 @@ describe('UpgradeForm', () => {
 
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toBeInTheDocument()
-      expect(numberInput).toHaveValue(6)
+      expect(numberInput).toHaveValue(2)
       expect(numberInput).toBeDisabled()
     })
 
@@ -212,7 +212,7 @@ describe('UpgradeForm', () => {
 
   describe('when the user have a free plan', () => {
     beforeEach(() => {
-      setup(freePlan)
+      setup(basicPlan)
     })
 
     it('renders annual', async () => {
@@ -223,11 +223,11 @@ describe('UpgradeForm', () => {
       expect(radio).toBeChecked()
     })
 
-    it('renders the seat input with 6 seats', async () => {
+    it('renders the seat input with 2 seats', async () => {
       render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
       const numberInput = await screen.findByRole('spinbutton')
-      expect(numberInput).toHaveValue(6)
+      expect(numberInput).toHaveValue(2)
     })
   })
 
@@ -305,7 +305,7 @@ describe('UpgradeForm', () => {
           latestInvoice: null,
           activatedStudentCount: 0,
         }
-        setup(freePlan, null, accountDetails)
+        setup(basicPlan, null, accountDetails)
       })
 
       it('renders text for 1 student not taking active seats', async () => {
@@ -332,7 +332,7 @@ describe('UpgradeForm', () => {
           latestInvoice: null,
           activatedStudentCount: 1,
         }
-        setup(freePlan, null, accountDetails)
+        setup(basicPlan, null, accountDetails)
       })
 
       it('renders text for 1 student not taking active seats', async () => {
@@ -354,7 +354,7 @@ describe('UpgradeForm', () => {
           latestInvoice: null,
           activatedStudentCount: 3,
         }
-        setup(freePlan, null, accountDetails)
+        setup(basicPlan, null, accountDetails)
       })
 
       it('renders text for two or more student not taking active seats', async () => {
@@ -415,7 +415,7 @@ describe('UpgradeForm', () => {
     })
   })
 
-  describe('when the user chooses less than 6 seats', () => {
+  describe('when the user chooses less than 2 seats', () => {
     beforeEach(() => {
       setup()
     })
@@ -431,7 +431,7 @@ describe('UpgradeForm', () => {
       userEvent.click(updateButton)
 
       const error = screen.getByText(
-        /You cannot purchase a per user plan for less than 6 users/
+        /You cannot purchase a per user plan for less than 2 users/
       )
       expect(error).toBeInTheDocument()
     })
