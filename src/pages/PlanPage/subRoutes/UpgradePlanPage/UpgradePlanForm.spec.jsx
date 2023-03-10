@@ -14,15 +14,15 @@ jest.mock('@stripe/react-stripe-js')
 
 const freePlan = {
   marketingName: 'Basic',
-  value: 'users-free',
+  value: 'users-basic',
   billingRate: null,
   baseUnitPrice: 0,
   benefits: [
-    'Up to 5 users',
+    'Up to 1 user',
     'Unlimited public repositories',
     'Unlimited private repositories',
   ],
-  quantity: 5,
+  quantity: 1,
 }
 
 const proPlanMonth = {
@@ -146,7 +146,7 @@ describe('UpgradePlanForm', () => {
       expect(radio).toBeInTheDocument()
     })
 
-    it('renders the seat input with 6 seats', async () => {
+    it('renders the seat input with 2 seats', async () => {
       render(
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/my/initial/route']}>
@@ -157,7 +157,7 @@ describe('UpgradePlanForm', () => {
 
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toBeInTheDocument()
-      expect(numberInput).toHaveValue(6)
+      expect(numberInput).toHaveValue(2)
     })
   })
 
@@ -180,7 +180,7 @@ describe('UpgradePlanForm', () => {
       expect(radio).toBeChecked()
     })
 
-    it('renders the seat input with 6 seats', async () => {
+    it('renders the seat input with 2 seats', async () => {
       render(
         <QueryClientProvider client={queryClient}>
           <MemoryRouter initialEntries={['/my/initial/route']}>
@@ -190,7 +190,7 @@ describe('UpgradePlanForm', () => {
       )
 
       const numberInput = await screen.findByRole('spinbutton')
-      expect(numberInput).toHaveValue(6)
+      expect(numberInput).toHaveValue(2)
     })
   })
 
@@ -444,7 +444,7 @@ describe('UpgradePlanForm', () => {
     })
   })
 
-  describe('when the user chooses less than 6 seats', () => {
+  describe('when the user chooses less than 2 seats', () => {
     beforeEach(() => {
       setup()
     })
@@ -466,7 +466,7 @@ describe('UpgradePlanForm', () => {
       userEvent.click(updateButton)
 
       const error = screen.getByText(
-        /You cannot purchase a per user plan for less than 6 users/
+        /You cannot purchase a per user plan for less than 2 users/
       )
       expect(error).toBeInTheDocument()
     })
