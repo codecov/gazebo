@@ -51,21 +51,46 @@ describe('useRepoConfig', () => {
   describe('calling hook', () => {
     beforeEach(() => setup())
 
-    it('returns the repository config', async () => {
-      const { result, waitFor } = renderHook(
-        () =>
-          useRepoConfig({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'cool-repo',
-          }),
-        { wrapper }
-      )
+    describe('no options are passed', () => {
+      it('returns the repository config', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            useRepoConfig({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+            }),
+          { wrapper }
+        )
 
-      await waitFor(() => result.current.isSuccess)
+        await waitFor(() => result.current.isSuccess)
 
-      expect(result.current.data).toStrictEqual({
-        indicationRange: { lowerRange: 60, upperRange: 80 },
+        expect(result.current.data).toStrictEqual({
+          indicationRange: { lowerRange: 60, upperRange: 80 },
+        })
+      })
+    })
+
+    describe('options are passed', () => {
+      it('returns the repository config', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            useRepoConfig({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              opts: {
+                onSuccess: () => {},
+              },
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isSuccess)
+
+        expect(result.current.data).toStrictEqual({
+          indicationRange: { lowerRange: 60, upperRange: 80 },
+        })
       })
     })
   })
