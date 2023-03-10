@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
@@ -6,6 +7,7 @@ import { SentryRoute } from 'sentry'
 import NotFound from 'pages/NotFound'
 import { useRepo } from 'services/repo'
 import { useRedirect } from 'shared/useRedirect'
+import { providerToName } from 'shared/utils'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -19,10 +21,49 @@ const Loader = () => (
   </div>
 )
 
+function Content({ provider }) {
+  if (providerToName(provider) !== 'Github') {
+    return (
+      <div className="mt-6">
+        <Suspense fallback={<Loader />}>
+          <OtherCI />
+        </Suspense>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <TabNavigation
+        tabs={[
+          { pageName: 'new', children: 'GitHub Actions', exact: true },
+          { pageName: 'newOtherCI' },
+        ]}
+      />
+      <div className="mt-6">
+        <Switch>
+          <SentryRoute path="/:provider/:owner/:repo/new" exact>
+            <GitHubActions />
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/new/other-ci">
+            <Suspense fallback={<Loader />}>
+              <OtherCI />
+            </Suspense>
+          </SentryRoute>
+        </Switch>
+      </div>
+    </>
+  )
+}
+
+Content.propTypes = {
+  provider: PropTypes.string,
+}
+
 function NewRepoTab() {
   const { provider, owner, repo } = useParams()
-  const { hardRedirect } = useRedirect({ href: `/${provider}` })
   const { data } = useRepo({ provider, owner, repo })
+  const { hardRedirect } = useRedirect({ href: `/${provider}` })
 
   // if the repo has commits redirect to coverage tab
   if (data?.repository?.active) {
@@ -41,24 +82,7 @@ function NewRepoTab() {
         <h1 className="mb-4 text-3xl font-semibold">
           Let&apos;s get your repo covered
         </h1>
-        <TabNavigation
-          tabs={[
-            { pageName: 'new', children: 'GitHub Actions', exact: true },
-            { pageName: 'newOtherCI' },
-          ]}
-        />
-        <div className="mt-6">
-          <Switch>
-            <SentryRoute path="/:provider/:owner/:repo/new" exact>
-              <GitHubActions />
-            </SentryRoute>
-            <SentryRoute path="/:provider/:owner/:repo/new/other-ci">
-              <Suspense fallback={<Loader />}>
-                <OtherCI />
-              </Suspense>
-            </SentryRoute>
-          </Switch>
-        </div>
+        <Content provider={provider} />
       </div>
     </div>
   )
