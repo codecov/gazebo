@@ -46,6 +46,7 @@ function CommitDetailFileExplorer() {
         columns={headers}
         onSort={handleSort}
         enableHover={true}
+        defaultSort={[{ id: 'name', desc: false }]}
       />
       {isLoading && <Loader />}
       {data?.length === 0 && !isLoading && (

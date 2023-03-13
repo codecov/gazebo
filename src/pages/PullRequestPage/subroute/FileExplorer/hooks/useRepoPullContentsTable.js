@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -7,7 +7,6 @@ import { useRepoPullContents } from 'services/pathContents/pull/dir'
 import { displayTypeParameter } from 'shared/ContentsTable/constants'
 import PullDirEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullDirEntry'
 import PullFileEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullFileEntry'
-import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
 import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
 import { usePullTreePaths } from 'shared/treePaths'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
@@ -171,7 +170,7 @@ export function useRepoPullContentsTable() {
   const { provider, owner, repo, path: urlPath, pullId } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = usePullTreePaths()
-  const [sortBy, setSortBy] = useTableDefaultSort()
+  const [sortBy, setSortBy] = useState([{ id: 'name', desc: false }])
 
   const { data: pullData, isLoading: pullIsLoading } = useRepoPullContents({
     provider,

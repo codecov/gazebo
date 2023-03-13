@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -7,7 +7,6 @@ import { useRepoCommitContents } from 'services/pathContents/commit/dir'
 import { displayTypeParameter } from 'shared/ContentsTable/constants'
 import CommitDirEntry from 'shared/ContentsTable/TableEntries/CommitEntries/CommitDirEntry'
 import CommitFileEntry from 'shared/ContentsTable/TableEntries/CommitEntries/CommitFileEntry'
-import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
 import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
 import { useCommitTreePaths } from 'shared/treePaths'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
@@ -169,7 +168,7 @@ export function useRepoCommitContentsTable() {
   const { provider, owner, repo, path: urlPath, commit } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
-  const [sortBy, setSortBy] = useTableDefaultSort()
+  const [sortBy, setSortBy] = useState([{ id: 'name', desc: false }])
 
   const { data: commitData, isLoading: commitIsLoading } =
     useRepoCommitContents({

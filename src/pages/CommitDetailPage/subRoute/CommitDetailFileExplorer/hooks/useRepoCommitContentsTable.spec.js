@@ -211,6 +211,10 @@ describe('useRepoCommitContentsTable', () => {
         commit: 'sha256',
         filters: {
           searchValue: 'file.js',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
         },
         name: 'test-org',
         repo: 'test-repo',
@@ -242,6 +246,10 @@ describe('useRepoCommitContentsTable', () => {
         commit: 'sha256',
         filters: {
           displayType: 'LIST',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
         },
         name: 'test-org',
         repo: 'test-repo',
@@ -275,8 +283,8 @@ describe('useRepoCommitContentsTable', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(calledCommitContents).toHaveBeenCalledTimes(3)
-      expect(calledCommitContents).toHaveBeenNthCalledWith(3, {
+      expect(calledCommitContents).toHaveBeenCalledTimes(2)
+      expect(calledCommitContents).toHaveBeenNthCalledWith(2, {
         commit: 'sha256',
         filters: {
           ordering: {

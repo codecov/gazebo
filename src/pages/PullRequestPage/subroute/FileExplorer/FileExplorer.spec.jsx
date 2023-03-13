@@ -261,7 +261,7 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toBeCalledWith({
               displayType: 'LIST',
-              ordering: { direction: 'DESC', parameter: 'MISSES' },
+              ordering: { direction: 'ASC', parameter: 'NAME' },
             })
           )
         })

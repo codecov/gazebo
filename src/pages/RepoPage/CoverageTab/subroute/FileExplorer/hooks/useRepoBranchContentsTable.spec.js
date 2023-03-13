@@ -220,6 +220,10 @@ describe('useRepoBranchContentsTable', () => {
         branch: 'main',
         filters: {
           searchValue: 'file.js',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
         },
         name: 'test-org',
         repo: 'test-repo',
@@ -251,6 +255,10 @@ describe('useRepoBranchContentsTable', () => {
         branch: 'main',
         filters: {
           displayType: 'LIST',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
         },
         name: 'test-org',
         repo: 'test-repo',
@@ -284,8 +292,8 @@ describe('useRepoBranchContentsTable', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(calledCommitContents).toHaveBeenCalledTimes(3)
-      expect(calledCommitContents).toHaveBeenNthCalledWith(3, {
+      expect(calledCommitContents).toHaveBeenCalledTimes(2)
+      expect(calledCommitContents).toHaveBeenNthCalledWith(2, {
         branch: 'main',
         filters: {
           ordering: {

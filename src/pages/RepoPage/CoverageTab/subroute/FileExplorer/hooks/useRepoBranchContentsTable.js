@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -8,7 +8,6 @@ import { useRepoOverview } from 'services/repo'
 import { displayTypeParameter } from 'shared/ContentsTable/constants'
 import BranchDirEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchDirEntry'
 import BranchFileEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchFileEntry'
-import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
 import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
 import { useTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
@@ -171,7 +170,7 @@ export function useRepoBranchContentsTable() {
   const { provider, owner, repo, path: urlPath, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useTreePaths()
-  const [sortBy, setSortBy] = useTableDefaultSort()
+  const [sortBy, setSortBy] = useState([{ id: 'name', desc: false }])
 
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
