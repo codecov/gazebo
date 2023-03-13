@@ -15,20 +15,20 @@ const SelectClasses = {
   root: 'relative',
   item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
   button:
-    'flex justify-between items-center w-full rounded bg-white text-left whitespace-nowrap disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
-  ul: 'overflow-hidden rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute w-full z-20 max-h-80 min-w-fit',
+    'flex justify-between items-center w-full rounded text-left whitespace-nowrap disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
+  ul: 'rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute z-20 max-h-80 min-w-fit',
   loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
 }
 
 const UlVariantClass = {
-  default: 'w-full border-gray-ds-tertiary',
-  gray: 'w-full border-gray-ds-tertiary',
+  default: 'border-gray-ds-tertiary',
+  gray: 'border-gray-ds-tertiary',
   text: 'left-0 whitespace-nowrap',
 }
 
 const ButtonVariantClass = {
   default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
-  gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
+  gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
   text: `flex-init text-ds-blue`,
 }
 
@@ -67,6 +67,7 @@ const Select = forwardRef(
       /* renderItem props:
        *  isHover: boolean
        *  isSelected: boolean
+       *  selectedItem: value | item
        */
       renderItem = identity,
       /* renderSelected props:
@@ -82,6 +83,7 @@ const Select = forwardRef(
       onLoadMore,
       isLoading,
       searchValue = '',
+      label,
     },
     ref
   ) => {
@@ -137,11 +139,12 @@ const Select = forwardRef(
         <li
           className={cs(SelectClasses.item, {
             'bg-ds-gray-secondary': isHover,
+            'font-semibold': isSelected,
           })}
           key={`${item}${index}`}
           {...getItemProps({ item, index })}
         >
-          {renderItem(item, { isHover, isSelected })}
+          {renderItem(item, { isHover, isSelected, selectedItem })}
         </li>
       )
     }
@@ -169,16 +172,19 @@ const Select = forwardRef(
               name={isOpen ? 'chevron-up' : 'chevron-down'}
             />
           </button>
-          <div
-            className={cs(!onSearch && 'hidden', 'absolute', 'inset-x-0 z-10')}
-          >
-            <div className={cs(!isOpen && 'hidden')}>
+          <div className={cs(!onSearch && 'hidden', 'absolute inset-x-0 z-10')}>
+            <div
+              className={cs(
+                { hidden: !isOpen },
+                'bg-white border-l border-r border-t rounded border-ds-gray-tertiary pt-2 pb-4 px-2'
+              )}
+            >
               <SearchField
                 dataMarketing="select-search"
-                variant="topRounded"
                 placeholder={getSearchPlaceholder(resourceName)}
                 searchValue={searchValue}
                 setSearchValue={(search) => !!onSearch && onSearch(search)}
+                label={label}
                 {...getInputProps({ ref: inputRef })}
               />
             </div>
@@ -189,9 +195,13 @@ const Select = forwardRef(
               SelectClasses.ul,
               UlVariantClass[variant],
               {
-                'border overflow-scroll': isOpen,
+                'border-l border-r border-b overflow-auto': isOpen,
               },
-              !!onSearch ? 'top-16' : 'top-8 rounded'
+              !!onSearch
+                ? !!label
+                  ? 'top-24 mt-1'
+                  : 'top-20'
+                : 'top-8 rounded border-t'
             )}
             {...getMenuProps()}
           >
@@ -204,7 +214,7 @@ const Select = forwardRef(
                   </p>
                 )}
                 {isLoading && (
-                  <span className="flex py-2 px-3">
+                  <span className="flex justify-center py-2 px-3">
                     <Spinner />
                   </span>
                 )}
@@ -239,6 +249,7 @@ Select.propTypes = {
   onLoadMore: PropTypes.func,
   isLoading: PropTypes.bool,
   searchValue: PropTypes.string,
+  label: PropTypes.string,
 }
 
 export default Select
