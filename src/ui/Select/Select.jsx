@@ -13,23 +13,24 @@ import Spinner from 'ui/Spinner'
 
 const SelectClasses = {
   root: 'relative',
-  item: 'block cursor-pointer py-1 px-3 text-sm font-normal',
-  button:
-    'flex justify-between items-center w-full rounded text-left whitespace-nowrap disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary focus:outline-1',
-  ul: 'rounded-bl rounded-br bg-white border-ds-gray-tertiary absolute z-20 max-h-80 min-w-fit',
-  loadMoreTrigger: 'relative top-[-65px] invisible block leading-[0]',
+  item: 'block cursor-pointer py-2 px-4 text-sm font-normal',
+  button: `flex w-full items-center justify-between whitespace-nowrap rounded text-left focus:outline-1 disabled:bg-ds-gray-primary disabled:text-ds-gray-quaternary`,
+  ul: 'absolute z-20 max-h-80 min-w-fit rounded-bl rounded-br border-ds-gray-tertiary bg-white',
+  loadMoreTrigger: 'invisible relative top-[-65px] block leading-[0]',
+  searchInput:
+    'bg-white border-l border-r border-t rounded border-ds-gray-tertiary pt-2 pb-4 px-4',
 }
 
 const UlVariantClass = {
-  default: 'border-gray-ds-tertiary',
-  gray: 'border-gray-ds-tertiary',
-  text: 'left-0 whitespace-nowrap',
+  default: 'inset-x-0 border-gray-ds-tertiary',
+  gray: 'inset-x-0 border-gray-ds-tertiary',
+  text: 'left-0 whitespace-nowrap rounded border-t',
 }
 
 const ButtonVariantClass = {
-  default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
-  gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
-  text: `flex-init text-ds-blue`,
+  default: `h-8 rounded-md border border-ds-gray-tertiary bg-white px-3 hover:bg-ds-gray-secondary active:bg-ds-gray-secondary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-quaternary`,
+  gray: `h-8 rounded-md border border-ds-gray-tertiary bg-ds-gray-primary px-3 hover:bg-ds-gray-secondary active:bg-ds-gray-secondary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary disabled:text-ds-gray-quaternary`,
+  text: `flex text-ds-blue`,
 }
 
 function getSearchPlaceholder(resourceName) {
@@ -157,7 +158,10 @@ const Select = forwardRef(
             disabled={disabled}
             aria-label={ariaName}
             type="button"
-            className={cs(SelectClasses.button, ButtonVariantClass[variant])}
+            className={cs(SelectClasses.button, ButtonVariantClass[variant], {
+              'bg-ds-gray-secondary':
+                isOpen && (variant === 'gray' || variant === 'default'),
+            })}
             {...getToggleButtonProps({
               onClick: () => {
                 if (!isOpen && onSearch) {
@@ -173,12 +177,7 @@ const Select = forwardRef(
             />
           </button>
           <div className={cs(!onSearch && 'hidden', 'absolute inset-x-0 z-10')}>
-            <div
-              className={cs(
-                { hidden: !isOpen },
-                'bg-white border-l border-r border-t rounded border-ds-gray-tertiary pt-2 pb-4 px-2'
-              )}
-            >
+            <div className={cs({ hidden: !isOpen }, SelectClasses.searchInput)}>
               <SearchField
                 dataMarketing="select-search"
                 placeholder={getSearchPlaceholder(resourceName)}
@@ -197,11 +196,12 @@ const Select = forwardRef(
               {
                 'border-l border-r border-b overflow-auto': isOpen,
               },
-              !!onSearch
-                ? !!label
-                  ? 'top-24 mt-1'
-                  : 'top-20'
-                : 'top-8 rounded border-t'
+              variant !== 'text' &&
+                (!!onSearch
+                  ? !!label
+                    ? 'top-24 mt-1'
+                    : 'top-20'
+                  : 'top-8 rounded border-t')
             )}
             {...getMenuProps()}
           >
