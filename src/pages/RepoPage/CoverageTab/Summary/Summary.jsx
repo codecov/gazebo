@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import { useLayoutEffect } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
@@ -70,7 +71,15 @@ const Summary = () => {
               ariaName="select branch"
               onChange={onChangeHandler}
               variant="gray"
-              renderItem={(item) => <span>{item?.name}</span>}
+              renderItem={(item, { selectedItem }) => (
+                <span
+                  className={cs({
+                    'font-semibold': item?.name === selectedItem?.name,
+                  })}
+                >
+                  {item?.name}
+                </span>
+              )}
               isLoading={branchListIsFetching}
               onLoadMore={() => {
                 if (branchListHasNextPage) {
@@ -80,6 +89,8 @@ const Summary = () => {
               }}
               onSearch={(term) => setBranchSearchTerm(term)}
               items={branchList}
+              label={<p className="text-xs">Switch branch context</p>}
+              resourceName="branch"
             />
           </span>
 

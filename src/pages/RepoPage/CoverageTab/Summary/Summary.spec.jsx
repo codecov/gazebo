@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -212,6 +212,19 @@ describe('Summary', () => {
 
       const dropDownBtn = await screen.findByText('main')
       expect(dropDownBtn).toBeInTheDocument()
+    })
+
+    it('renders selected list entry as bold', async () => {
+      render(<Summary />, { wrapper: wrapper() })
+
+      const dropDownBtn = await screen.findByText('main')
+      userEvent.click(dropDownBtn)
+
+      const mainOption = await screen.findByRole('option', { name: /main/ })
+      expect(mainOption).toBeInTheDocument()
+
+      // find internal element with bold class name
+      expect(within(mainOption).getByText('main')).toHaveClass('font-semibold')
     })
 
     it('renders the source commit short sha', async () => {
