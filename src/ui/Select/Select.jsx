@@ -40,6 +40,19 @@ function getSearchPlaceholder(resourceName) {
   return 'Search'
 }
 
+const determineUlStyles = ({ variant, isOpen, onSearch, label }) => {
+  if (variant !== 'text' && isOpen) {
+    if (!!onSearch) {
+      if (!!label) {
+        return 'top-24 mt-1'
+      }
+      return 'top-20'
+    }
+    return 'top-8 rounded border-t'
+  }
+  return ''
+}
+
 function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
   return (
     <>
@@ -196,12 +209,7 @@ const Select = forwardRef(
               {
                 'border-l border-r border-b overflow-auto': isOpen,
               },
-              variant !== 'text' &&
-                (!!onSearch
-                  ? !!label
-                    ? 'top-24 mt-1'
-                    : 'top-20'
-                  : 'top-8 rounded border-t')
+              determineUlStyles({ variant, isOpen, onSearch, label })
             )}
             {...getMenuProps()}
           >
