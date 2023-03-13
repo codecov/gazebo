@@ -67,7 +67,7 @@ const TextInput = forwardRef(
 TextInput.displayName = 'TextInput'
 
 TextInput.propTypes = {
-  label: PropTypes.string,
+  label: PropTypes.oneOf([PropTypes.string, PropTypes.object]),
   type: PropTypes.string,
   icon: PropTypes.string,
   placeholder: PropTypes.string,
