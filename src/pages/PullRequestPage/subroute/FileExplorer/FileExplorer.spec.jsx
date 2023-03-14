@@ -199,12 +199,12 @@ describe('FileExplorer', () => {
       })
 
       describe('default sort is set', () => {
-        it('sets default sort to name asc', async () => {
+        it('sets default sort to misses desc', async () => {
           render(<FileExplorer />, { wrapper: wrapper() })
 
           await waitFor(() =>
             expect(requestFilters).toBeCalledWith({
-              ordering: { direction: 'ASC', parameter: 'NAME' },
+              ordering: { direction: 'DESC', parameter: 'MISSES' },
             })
           )
         })
@@ -261,7 +261,7 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toBeCalledWith({
               displayType: 'LIST',
-              ordering: { direction: 'ASC', parameter: 'NAME' },
+              ordering: { direction: 'DESC', parameter: 'MISSES' },
             })
           )
         })
@@ -323,7 +323,7 @@ describe('FileExplorer', () => {
 
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'NAME' },
+              ordering: { direction: 'DESC', parameter: 'MISSES' },
             })
           )
         })
@@ -504,7 +504,7 @@ describe('FileExplorer', () => {
         await waitFor(() => {
           expect(requestFilters).toHaveBeenCalledWith({
             searchValue: 'cool-file.rs',
-            ordering: { direction: 'ASC', parameter: 'NAME' },
+            ordering: { direction: 'DESC', parameter: 'MISSES' },
           })
         })
       })

@@ -212,8 +212,8 @@ describe('useRepoCommitContentsTable', () => {
         filters: {
           searchValue: 'file.js',
           ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
+            direction: 'DESC',
+            parameter: 'MISSES',
           },
         },
         name: 'test-org',
@@ -247,8 +247,8 @@ describe('useRepoCommitContentsTable', () => {
         filters: {
           displayType: 'LIST',
           ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
+            direction: 'DESC',
+            parameter: 'MISSES',
           },
         },
         name: 'test-org',

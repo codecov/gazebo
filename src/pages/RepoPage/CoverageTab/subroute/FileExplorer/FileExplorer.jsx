@@ -76,7 +76,7 @@ function FileExplorer() {
           <Table
             data={data}
             columns={headers}
-            defaultSort={[{ id: 'name', desc: false }]}
+            defaultSort={[{ id: 'misses', desc: true }]}
             onSort={handleSort}
             enableHover
           />

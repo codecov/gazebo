@@ -170,8 +170,7 @@ export function useRepoPullContentsTable() {
   const { provider, owner, repo, path: urlPath, pullId } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = usePullTreePaths()
-  const [sortBy, setSortBy] = useState([{ id: 'name', desc: false }])
-
+  const [sortBy, setSortBy] = useState([{ id: 'misses', desc: true }])
   const { data: pullData, isLoading: pullIsLoading } = useRepoPullContents({
     provider,
     owner,

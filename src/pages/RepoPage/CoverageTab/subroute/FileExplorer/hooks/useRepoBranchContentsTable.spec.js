@@ -221,8 +221,8 @@ describe('useRepoBranchContentsTable', () => {
         filters: {
           searchValue: 'file.js',
           ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
+            direction: 'DESC',
+            parameter: 'MISSES',
           },
         },
         name: 'test-org',
@@ -256,8 +256,8 @@ describe('useRepoBranchContentsTable', () => {
         filters: {
           displayType: 'LIST',
           ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
+            direction: 'DESC',
+            parameter: 'MISSES',
           },
         },
         name: 'test-org',

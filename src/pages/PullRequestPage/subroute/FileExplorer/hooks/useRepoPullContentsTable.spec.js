@@ -219,8 +219,8 @@ describe('useRepoPullContentsTable', () => {
         filters: {
           searchValue: 'file.js',
           ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
+            direction: 'DESC',
+            parameter: 'MISSES',
           },
         },
         owner: 'test-org',
@@ -253,8 +253,8 @@ describe('useRepoPullContentsTable', () => {
         filters: {
           displayType: 'LIST',
           ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
+            direction: 'DESC',
+            parameter: 'MISSES',
           },
         },
         owner: 'test-org',

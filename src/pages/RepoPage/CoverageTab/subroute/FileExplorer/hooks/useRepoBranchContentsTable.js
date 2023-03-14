@@ -170,8 +170,7 @@ export function useRepoBranchContentsTable() {
   const { provider, owner, repo, path: urlPath, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useTreePaths()
-  const [sortBy, setSortBy] = useState([{ id: 'name', desc: false }])
-
+  const [sortBy, setSortBy] = useState([{ id: 'misses', desc: true }])
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
     repo,

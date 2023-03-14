@@ -168,8 +168,7 @@ export function useRepoCommitContentsTable() {
   const { provider, owner, repo, path: urlPath, commit } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
-  const [sortBy, setSortBy] = useState([{ id: 'name', desc: false }])
-
+  const [sortBy, setSortBy] = useState([{ id: 'misses', desc: true }])
   const { data: commitData, isLoading: commitIsLoading } =
     useRepoCommitContents({
       provider,
