@@ -10,9 +10,9 @@ export const RepoConfig = z
         lowerRange: z.number(),
         upperRange: z.number(),
       })
-      .nullish(),
+      .optional(),
   })
-  .nullish()
+  .optional()
 
 type RepoConfigData = z.infer<typeof RepoConfig>
 
