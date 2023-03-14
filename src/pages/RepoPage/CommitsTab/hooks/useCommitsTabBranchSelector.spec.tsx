@@ -230,7 +230,12 @@ describe('useCommitsTabBranchSelector', () => {
 
     it('returns undefined selection', async () => {
       const { result, waitFor } = renderHook(
-        () => useCommitsTabBranchSelector({ passedBranch, defaultBranch }),
+        () =>
+          useCommitsTabBranchSelector({
+            passedBranch,
+            defaultBranch,
+            isAllCommits: false,
+          }),
         { wrapper: wrapper('/gh/codecov/cool-repo/commits?branch=branchName') }
       )
 
