@@ -28,14 +28,6 @@ afterAll(() => {
   server.close()
 })
 
-const mockRepo = {
-  owner: {
-    repository: {
-      defaultBranch: 'main',
-    },
-  },
-}
-
 const mockBranches = (hasNextPage = false) => ({
   owner: {
     repository: {
@@ -71,20 +63,22 @@ const mockCommits = {
   },
 }
 
-describe('Commits Tab', () => {
-  afterAll(() => {
-    jest.resetAllMocks()
-  })
+const mockOverview = {
+  owner: {
+    repository: {
+      defaultBranch: 'main',
+    },
+  },
+}
 
-  function setup({ hasNextPage }) {
+describe('CommitsTab', () => {
+  function setup({ hasNextPage, hasBranches }) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const searches = jest.fn()
+    const branchName = jest.fn()
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockRepo))
-      ),
       graphql.query('GetBranches', (req, res, ctx) => {
         if (!!req?.variables?.after) {
           fetchNextPage(req?.variables?.after)
@@ -94,15 +88,31 @@ describe('Commits Tab', () => {
           searches(req?.variables?.filters?.searchValue)
         }
 
+        if (hasBranches) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { repository: { branches: {} } } })
+          )
+        }
+
         return res(ctx.status(200), ctx.data(mockBranches(hasNextPage)))
       }),
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockCommits))
+      graphql.query('GetCommits', (req, res, ctx) => {
+        branchName(req?.variables?.filters?.branchName)
+
+        return res(ctx.status(200), ctx.data(mockCommits))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockOverview))
       )
     )
 
-    return { fetchNextPage, searches, user }
+    return { fetchNextPage, searches, user, branchName }
   }
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   describe('when rendered', () => {
     beforeEach(() => {
@@ -151,7 +161,7 @@ describe('Commits Tab', () => {
       expect(head).toBeInTheDocument()
     })
 
-    it('render the checkbox', () => {
+    it('renders the checkbox', () => {
       repoPageRender({
         renderCommits: () => (
           <Wrapper>
@@ -217,7 +227,7 @@ describe('Commits Tab', () => {
           initialEntries: ['/gh/codecov/gazebo/commits'],
         })
 
-        const select = await screen.findByText('Select')
+        const select = await screen.findByText('Select branch')
         await user.click(select)
 
         await waitFor(() => queryClient.isFetching)
@@ -233,8 +243,6 @@ describe('Commits Tab', () => {
           actually calling it but because of scoping it was
           always falsy
       */
-      const fetchNextPage = jest.fn()
-
       beforeEach(() => {
         useIntersection.mockReturnValue({
           isIntersecting: true,
@@ -242,7 +250,7 @@ describe('Commits Tab', () => {
       })
 
       it('does not call fetchNextPage', async () => {
-        const { user } = setup({ hasNextPage: false })
+        const { user, branchName } = setup({ hasNextPage: false })
         repoPageRender({
           renderCommits: () => (
             <Wrapper>
@@ -255,7 +263,68 @@ describe('Commits Tab', () => {
         const select = await screen.findByRole('button')
         await user.click(select)
 
-        expect(fetchNextPage).not.toBeCalled()
+        const allCommits = await screen.findByText('All Commits')
+        userEvent.click(allCommits)
+
+        await waitFor(() => expect(branchName).toHaveBeenCalled())
+        await waitFor(() => expect(branchName).toHaveBeenCalledWith(''))
+      })
+    })
+
+    describe('when select onLoadMore is triggered', () => {
+      describe('when there is a next page', () => {
+        it('calls fetchNextPage', async () => {
+          const { fetchNextPage } = setup({ hasNextPage: true })
+          useIntersection.mockReturnValue({
+            isIntersecting: true,
+          })
+
+          repoPageRender({
+            renderCommits: () => (
+              <Wrapper>
+                <CommitsTab />
+              </Wrapper>
+            ),
+            initialEntries: ['/gh/codecov/gazebo/commits'],
+          })
+
+          const select = await screen.findByText('Select branch')
+          userEvent.click(select)
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          await waitFor(() => expect(fetchNextPage).toBeCalled())
+          await waitFor(() =>
+            expect(fetchNextPage).toBeCalledWith('some cursor')
+          )
+        })
+      })
+
+      describe('when there is not a next page', () => {
+        const fetchNextPage = jest.fn()
+        beforeEach(() => {
+          setup({ hasNextPage: false })
+          useIntersection.mockReturnValue({
+            isIntersecting: true,
+          })
+        })
+
+        it('does not call fetchNextPage', async () => {
+          repoPageRender({
+            renderCommits: () => (
+              <Wrapper>
+                <CommitsTab />
+              </Wrapper>
+            ),
+            initialEntries: ['/gh/codecov/gazebo/commits'],
+          })
+
+          const select = await screen.findByRole('button')
+          userEvent.click(select)
+
+          expect(fetchNextPage).not.toBeCalled()
+        })
       })
     })
   })
@@ -273,7 +342,7 @@ describe('Commits Tab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      const select = await screen.findByText('Select')
+      const select = await screen.findByText('Select branch')
       await user.click(select)
 
       const search = await screen.findByRole('textbox')
