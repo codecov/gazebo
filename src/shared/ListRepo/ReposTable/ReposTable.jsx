@@ -146,37 +146,37 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
     isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
   })
 
-  if (!isEmpty(data?.repos)) {
+  if (isEmpty(data?.repos)) {
     return (
-      <>
-        <Table
-          data={dataTable}
-          columns={
-            repoDisplay === repoDisplayOptions.INACTIVE.text
-              ? tableInactive
-              : tableActive
-          }
-        />
-        {hasNextPage && (
-          <div className="mt-4 flex w-full justify-center">
-            <Button
-              hook="load-more"
-              isLoading={isFetchingNextPage}
-              onClick={fetchNextPage}
-            >
-              Load More
-            </Button>
-          </div>
-        )}
-      </>
+      <NoReposBlock
+        searchValue={searchValue}
+        privateAccess={userData?.privateAccess}
+      />
     )
   }
 
   return (
-    <NoReposBlock
-      searchValue={searchValue}
-      privateAccess={userData?.privateAccess}
-    />
+    <>
+      <Table
+        data={dataTable}
+        columns={
+          repoDisplay === repoDisplayOptions.INACTIVE.text
+            ? tableInactive
+            : tableActive
+        }
+      />
+      {hasNextPage && (
+        <div className="mt-4 flex w-full justify-center">
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
+    </>
   )
 }
 

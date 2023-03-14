@@ -523,8 +523,8 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplay),
       })
 
-      const buttons = await screen.findAllByText(/No results found/)
-      expect(buttons.length).toBe(1)
+      const noResultsFound = await screen.findByText(/No results found/)
+      expect(noResultsFound).toBeInTheDocument()
     })
   })
 
