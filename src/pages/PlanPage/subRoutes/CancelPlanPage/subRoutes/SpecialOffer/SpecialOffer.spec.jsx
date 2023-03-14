@@ -70,9 +70,7 @@ describe('SpecialOffer', () => {
   }
 
   describe('rendering component', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     it('renders header', () => {
       render(<SpecialOffer />, { wrapper: wrapper() })
@@ -140,6 +138,7 @@ describe('SpecialOffer', () => {
       beforeEach(() => setup())
 
       it('passes the correct body', async () => {
+        const user = userEvent.setup()
         render(<SpecialOffer />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
@@ -147,7 +146,7 @@ describe('SpecialOffer', () => {
         })
         expect(button).toBeInTheDocument()
 
-        userEvent.click(button)
+        await user.click(button)
 
         await waitFor(() => expect(mockBody).toBeCalled())
         await waitFor(() =>
@@ -156,6 +155,7 @@ describe('SpecialOffer', () => {
       })
 
       it('renders a success toast', async () => {
+        const user = userEvent.setup()
         render(<SpecialOffer />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
@@ -163,7 +163,7 @@ describe('SpecialOffer', () => {
         })
         expect(button).toBeInTheDocument()
 
-        userEvent.click(button)
+        await user.click(button)
 
         await waitFor(() => expect(mockToast).toBeCalled())
         await waitFor(() =>
@@ -175,6 +175,7 @@ describe('SpecialOffer', () => {
       })
 
       it('redirects the user to the org page', async () => {
+        const user = userEvent.setup()
         render(<SpecialOffer />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
@@ -182,7 +183,7 @@ describe('SpecialOffer', () => {
         })
         expect(button).toBeInTheDocument()
 
-        userEvent.click(button)
+        await user.click(button)
 
         await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
       })
@@ -190,7 +191,9 @@ describe('SpecialOffer', () => {
 
     describe('discount is not successfully applied', () => {
       beforeEach(() => setup({ unsuccessfulReq: true }))
+
       it('renders an error toast', async () => {
+        const user = userEvent.setup()
         render(<SpecialOffer />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
@@ -198,7 +201,7 @@ describe('SpecialOffer', () => {
         })
         expect(button).toBeInTheDocument()
 
-        userEvent.click(button)
+        await user.click(button)
 
         await waitFor(() => expect(mockToast).toBeCalled())
         await waitFor(() =>
@@ -212,7 +215,8 @@ describe('SpecialOffer', () => {
   })
 
   describe('user continues with downgrade', () => {
-    it('navigates to downgrade page', () => {
+    it('navigates to downgrade page', async () => {
+      const user = userEvent.setup()
       render(<SpecialOffer />, { wrapper: wrapper() })
 
       const link = screen.getByRole('link', {
@@ -222,7 +226,7 @@ describe('SpecialOffer', () => {
 
       expect(testLocation.pathname).toBe('/plan/gh/codecov/cancel')
 
-      userEvent.click(link)
+      await user.click(link)
 
       expect(testLocation.pathname).toBe('/plan/gh/codecov/cancel/downgrade')
     })

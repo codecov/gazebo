@@ -134,12 +134,13 @@ describe('YamlModal', () => {
     beforeEach(() => setup())
 
     it('calls the setter function', async () => {
+      const user = userEvent.setup()
       render(<YamlModal showYAMLModal={true} setShowYAMLModal={showModal} />, {
         wrapper,
       })
 
       const svg = await screen.findByText(/x.svg/)
-      userEvent.click(svg)
+      await user.click(svg)
 
       expect(showModal).toBeCalled()
       expect(showModal).toBeCalledWith(false)

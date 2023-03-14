@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -15,7 +15,7 @@ const mockSeatData = {
   },
 }
 
-let mockUserData = {
+const mockUserData = {
   activated: false,
   email: 'codecov-user@codecov.io',
   isAdmin: true,
@@ -38,6 +38,14 @@ afterAll(() => {
   server.close()
 })
 
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path="/:provider">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
 describe('ActivationBanner', () => {
   describe('rendering banner header', () => {
     beforeEach(() => {
@@ -52,18 +60,7 @@ describe('ActivationBanner', () => {
     })
 
     it('renders header content', async () => {
-      render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/gh']}>
-            <Route path="/:provider">
-              <ActivationBanner />
-            </Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      render(<ActivationBanner />, { wrapper })
 
       const heading = await screen.findByText('Activation Status')
       expect(heading).toBeInTheDocument()
@@ -84,18 +81,7 @@ describe('ActivationBanner', () => {
       })
 
       it('displays user is activated', async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/gh']}>
-              <Route path="/:provider">
-                <ActivationBanner />
-              </Route>
-            </MemoryRouter>
-          </QueryClientProvider>
-        )
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        render(<ActivationBanner />, { wrapper })
 
         const activated = await screen.findByText('You are currently activated')
         expect(activated).toBeInTheDocument()
@@ -119,18 +105,7 @@ describe('ActivationBanner', () => {
         })
 
         it('displays user is not activated', async () => {
-          render(
-            <QueryClientProvider client={queryClient}>
-              <MemoryRouter initialEntries={['/gh']}>
-                <Route path="/:provider">
-                  <ActivationBanner />
-                </Route>
-              </MemoryRouter>
-            </QueryClientProvider>
-          )
-
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
+          render(<ActivationBanner />, { wrapper })
 
           const activated = await screen.findByText(
             'You are currently not activated'
@@ -158,18 +133,7 @@ describe('ActivationBanner', () => {
         })
 
         it('displays org out of seat message', async () => {
-          render(
-            <QueryClientProvider client={queryClient}>
-              <MemoryRouter initialEntries={['/gh']}>
-                <Route path="/:provider">
-                  <ActivationBanner />
-                </Route>
-              </MemoryRouter>
-            </QueryClientProvider>
-          )
-
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
+          render(<ActivationBanner />, { wrapper })
 
           const noSeatMsg = await screen.findByText(
             /unable to activate because there are no available seats/
@@ -178,18 +142,7 @@ describe('ActivationBanner', () => {
         })
 
         it('sets toggle to disabled', async () => {
-          render(
-            <QueryClientProvider client={queryClient}>
-              <MemoryRouter initialEntries={['/gh']}>
-                <Route path="/:provider">
-                  <ActivationBanner />
-                </Route>
-              </MemoryRouter>
-            </QueryClientProvider>
-          )
-
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
+          render(<ActivationBanner />, { wrapper })
 
           const button = await screen.findByRole('button')
           expect(button).toHaveClass('cursor-not-allowed')
@@ -201,35 +154,28 @@ describe('ActivationBanner', () => {
   describe('updating users activation', () => {
     describe('user activates their account', () => {
       beforeEach(() => {
-        mockUserData = { ...mockUserData, activated: false }
+        let getUserCurrentData = { ...mockUserData, activated: false }
         server.use(
           rest.get('/internal/users/current', (req, res, ctx) =>
-            res(ctx.status(200), ctx.json(mockUserData))
+            res(ctx.status(200), ctx.json(getUserCurrentData))
           ),
           graphql.query('Seats', (req, res, ctx) =>
             res(ctx.status(200), ctx.data({ ...mockSeatData }))
           ),
           rest.patch('/internal/users/current', (req, res, ctx) => {
-            const { body } = req
-            mockUserData = { ...mockUserData, activated: body.activated }
+            const { activated } = req.json()
+            getUserCurrentData = {
+              ...mockUserData,
+              activated,
+            }
             return res(ctx.status(200))
           })
         )
       })
 
       it('updates their activation status', async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/gh']}>
-              <Route path="/:provider">
-                <ActivationBanner />
-              </Route>
-            </MemoryRouter>
-          </QueryClientProvider>
-        )
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        const user = userEvent.setup()
+        render(<ActivationBanner />, { wrapper })
 
         const notActivated = await screen.findByText(
           'You are currently not activated'
@@ -237,12 +183,7 @@ describe('ActivationBanner', () => {
         expect(notActivated).toBeInTheDocument()
 
         const toggle = await screen.findByTestId('switch')
-        await userEvent.click(toggle)
-
-        await waitFor(() => queryClient.isMutating)
-        await waitFor(() => !queryClient.isMutating)
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await user.click(toggle)
 
         const activated = await screen.findByText('You are currently activated')
         expect(activated).toBeInTheDocument()
@@ -251,46 +192,31 @@ describe('ActivationBanner', () => {
 
     describe('user deactivates their account', () => {
       beforeEach(() => {
-        mockUserData = { ...mockUserData, activated: true }
+        let getUserCurrentData = { ...mockUserData, activated: true }
         server.use(
           rest.get('/internal/users/current', (req, res, ctx) =>
-            res(ctx.status(200), ctx.json(mockUserData))
+            res(ctx.status(200), ctx.json(getUserCurrentData))
           ),
           graphql.query('Seats', (req, res, ctx) =>
             res(ctx.status(200), ctx.data({ ...mockSeatData }))
           ),
           rest.patch('/internal/users/current', (req, res, ctx) => {
-            const { body } = req
-            mockUserData = { ...mockUserData, activated: body.activated }
+            const { activated } = req.json()
+            getUserCurrentData = { ...mockUserData, activated }
             return res(ctx.status(200))
           })
         )
       })
 
       it('updates their activation status', async () => {
-        render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/gh']}>
-              <Route path="/:provider">
-                <ActivationBanner />
-              </Route>
-            </MemoryRouter>
-          </QueryClientProvider>
-        )
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        const user = userEvent.setup()
+        render(<ActivationBanner />, { wrapper })
 
         const activated = await screen.findByText('You are currently activated')
         expect(activated).toBeInTheDocument()
 
         const toggle = await screen.findByTestId('switch')
-        await userEvent.click(toggle)
-
-        await waitFor(() => queryClient.isMutating)
-        await waitFor(() => !queryClient.isMutating)
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await user.click(toggle)
 
         const notActivated = await screen.findByText(
           'You are currently not activated'

@@ -131,9 +131,8 @@ afterAll(() => {
 })
 
 describe('CommitsTable', () => {
-  const fetchesNextPage = jest.fn()
-
   function setup({ commitData } = { commitData: mockCommits() }) {
+    const fetchesNextPage = jest.fn()
     server.use(
       graphql.query('GetCommits', (req, res, ctx) => {
         if (!!req?.variables?.after) {
@@ -143,6 +142,8 @@ describe('CommitsTable', () => {
         return res(ctx.status(200), ctx.data(commitData))
       })
     )
+
+    return { fetchesNextPage }
   }
 
   describe('when rendered', () => {
@@ -239,11 +240,9 @@ describe('CommitsTable', () => {
 
   describe('load more button', () => {
     describe('hasNextPage is set to true', () => {
-      beforeEach(() => {
-        setup({ commitData: mockCommits({ hasNextPage: true }) })
-      })
-
       it('displays the loadMore button', async () => {
+        setup({ commitData: mockCommits({ hasNextPage: true }) })
+
         render(<CommitsTable />, {
           wrapper,
         })
@@ -254,14 +253,19 @@ describe('CommitsTable', () => {
 
       describe('user clicks on load more button', () => {
         it('fetches the next page', async () => {
+          const { fetchesNextPage } = setup({
+            commitData: mockCommits({ hasNextPage: true }),
+          })
+
+          const user = userEvent.setup()
           render(<CommitsTable />, {
             wrapper,
           })
 
           const loadMoreButton = await screen.findByText('Load More')
-          userEvent.click(loadMoreButton)
 
-          await waitFor(() => expect(fetchesNextPage).toBeCalled())
+          await user.click(loadMoreButton)
+
           await waitFor(() =>
             expect(fetchesNextPage).toBeCalledWith('some cursor')
           )

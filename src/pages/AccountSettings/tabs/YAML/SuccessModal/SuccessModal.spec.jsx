@@ -5,44 +5,60 @@ import userEvent from '@testing-library/user-event'
 import SuccessModal from './SuccessModal'
 
 describe('SuccessModal', () => {
-  const closeModal = jest.fn()
-  const defaultProps = {
-    owner: 'gh',
-    isOpen: true,
-    closeModal: closeModal,
-  }
-
-  function setup(props) {
-    const _props = { ...defaultProps, ...props }
-    render(<SuccessModal {..._props} />)
-  }
-
   describe('renders initial SuccessModal', () => {
-    beforeEach(() => {
-      setup({ owner: 'doggo' })
-    })
     it('renders title', () => {
+      const closeModal = jest.fn()
+      render(
+        <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
+      )
+
       const title = screen.getByText(/Yaml configuration updated/)
       expect(title).toBeInTheDocument()
     })
+
     it('renders body', () => {
+      const closeModal = jest.fn()
+      render(
+        <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
+      )
+
       const label = screen.getByText(
         /doggo yaml configuration has been successfully saved. New coverage reports will reflect these changes. Repositories with a codecov.yaml file extend and override this account level Codecov config/
       )
       expect(label).toBeInTheDocument()
     })
+
     it('renders footer', () => {
+      const closeModal = jest.fn()
+      render(
+        <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
+      )
+
       const button = screen.getByRole('button')
       expect(button).toBeInTheDocument()
     })
 
-    it('closes on done click', () => {
-      userEvent.click(screen.getByText('Done'))
+    it('closes on done click', async () => {
+      const closeModal = jest.fn()
+      render(
+        <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
+      )
+
+      const user = userEvent.setup()
+
+      await user.click(screen.getByText('Done'))
       expect(closeModal).toHaveBeenCalled()
     })
 
-    it('closes on X click', () => {
-      userEvent.click(screen.getByText('x.svg'))
+    it('closes on X click', async () => {
+      const closeModal = jest.fn()
+      render(
+        <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
+      )
+
+      const user = userEvent.setup()
+
+      await user.click(screen.getByText('x.svg'))
       expect(closeModal).toHaveBeenCalled()
     })
   })

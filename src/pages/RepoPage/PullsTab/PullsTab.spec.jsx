@@ -1,4 +1,6 @@
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 
 import PullsTab from './PullsTab'
 
@@ -6,10 +8,28 @@ import { repoPageRender, screen } from '../repo-jest-setup'
 
 jest.mock('./PullsTable/PullsTable', () => () => 'PullsTable')
 
-describe('Pulls Pab', () => {
-  afterAll(() => {
-    jest.resetAllMocks()
-  })
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+afterEach(() => {
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
+describe('Pulls Tab', () => {
+  beforeEach(() => setup())
+
+  function setup() {
+    server.use(
+      graphql.query('GetRepo', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      )
+    )
+  }
 
   describe('when rendered', () => {
     it('renders select by updatestamp label', () => {
@@ -54,14 +74,15 @@ describe('Pulls Pab', () => {
   })
 
   describe('view by state', () => {
-    it('renders all options', () => {
+    it('renders all options', async () => {
+      const user = userEvent.setup()
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
       })
 
       const select = screen.getByText('All')
-      userEvent.click(select)
+      await user.click(select)
 
       const openOption = screen.getByText('Open')
       expect(openOption).toBeInTheDocument()
@@ -75,14 +96,15 @@ describe('Pulls Pab', () => {
   })
 
   describe('order by updatestamp', () => {
-    it('renders all options', () => {
+    it('renders all options', async () => {
+      const user = userEvent.setup()
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
       })
 
       const select = screen.getByText('Newest')
-      userEvent.click(select)
+      await user.click(select)
 
       const oldest = screen.getByText('Oldest')
       expect(oldest).toBeInTheDocument()
@@ -91,16 +113,17 @@ describe('Pulls Pab', () => {
 
   describe('order by Oldest', () => {
     it('renders the selected option', async () => {
+      const user = userEvent.setup()
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
       })
 
       const select = screen.getByText('Newest')
-      userEvent.click(select)
+      await user.click(select)
 
       const state = screen.getByRole('option', { name: 'Oldest' })
-      userEvent.click(state)
+      await user.click(state)
 
       const oldestOption = await screen.findByText('Oldest')
       expect(oldestOption).toBeInTheDocument()
@@ -112,16 +135,17 @@ describe('Pulls Pab', () => {
 
   describe('view by Merged', () => {
     it('renders the number of selected options', async () => {
+      const user = userEvent.setup()
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
       })
 
       const select = screen.getByText('All')
-      userEvent.click(select)
+      await user.click(select)
 
       const state = screen.getAllByRole('option')[2]
-      userEvent.click(state)
+      await user.click(state)
 
       const itemSelected = await screen.findByText(/1 selected/)
       expect(itemSelected).toBeInTheDocument()

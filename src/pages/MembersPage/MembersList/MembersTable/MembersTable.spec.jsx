@@ -83,7 +83,6 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('MembersTable', () => {
-  const handleActivate = jest.fn()
   let requestSearchParams
 
   const wrapper =
@@ -278,12 +277,14 @@ describe('MembersTable', () => {
     beforeEach(() => setup({}))
 
     it('calls handleActivate', async () => {
+      const user = userEvent.setup()
+      const handleActivate = jest.fn()
       render(<MembersTable handleActivate={handleActivate} />, {
         wrapper: wrapper(),
       })
 
       const toggle = await screen.findByRole('button')
-      userEvent.click(toggle)
+      await user.click(toggle)
 
       expect(handleActivate).toBeCalled()
       expect(handleActivate).toBeCalledWith({ activated: false, ownerid: 1 })
@@ -296,10 +297,11 @@ describe('MembersTable', () => {
     describe('interacting with the username column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const userName = await screen.findByText('User name')
-          userEvent.click(userName)
+          await user.click(userName)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('-name,-username')
@@ -309,11 +311,12 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const userName = await screen.findByText('User name')
-          userEvent.click(userName)
-          userEvent.click(userName)
+          await user.click(userName)
+          await user.click(userName)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('name,username')
@@ -323,15 +326,16 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           await waitFor(() => queryClient.isFetching)
           await waitFor(() => !queryClient.isFetching)
 
           const userName = await screen.findByText('User name')
-          userEvent.click(userName)
-          userEvent.click(userName)
-          userEvent.click(userName)
+          await user.click(userName)
+          await user.click(userName)
+          await user.click(userName)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('')
@@ -343,10 +347,11 @@ describe('MembersTable', () => {
     describe('interacting with the type column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const type = await screen.findByText('Type')
-          userEvent.click(type)
+          await user.click(type)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('-type')
@@ -356,11 +361,12 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const type = await screen.findByText('Type')
-          userEvent.click(type)
-          userEvent.click(type)
+          await user.click(type)
+          await user.click(type)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('type')
@@ -370,12 +376,13 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const type = await screen.findByText('Type')
-          userEvent.click(type)
-          userEvent.click(type)
-          userEvent.click(type)
+          await user.click(type)
+          await user.click(type)
+          await user.click(type)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('')
@@ -387,10 +394,11 @@ describe('MembersTable', () => {
     describe('interacting with the email column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const email = await screen.findByText('email')
-          userEvent.click(email)
+          await user.click(email)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('-email')
@@ -400,11 +408,12 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const email = await screen.findByText('email')
-          userEvent.click(email)
-          userEvent.click(email)
+          await user.click(email)
+          await user.click(email)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('email')
@@ -414,12 +423,13 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const email = await screen.findByText('email')
-          userEvent.click(email)
-          userEvent.click(email)
-          userEvent.click(email)
+          await user.click(email)
+          await user.click(email)
+          await user.click(email)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('')
@@ -431,10 +441,11 @@ describe('MembersTable', () => {
     describe('interacting with the activation status column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const activationStatus = await screen.findByText('Activation status')
-          userEvent.click(activationStatus)
+          await user.click(activationStatus)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('-activated')
@@ -444,11 +455,12 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const activationStatus = await screen.findByText('Activation status')
-          userEvent.click(activationStatus)
-          userEvent.click(activationStatus)
+          await user.click(activationStatus)
+          await user.click(activationStatus)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('activated')
@@ -458,12 +470,13 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
+          const user = userEvent.setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const activationStatus = await screen.findByText('Activation status')
-          userEvent.click(activationStatus)
-          userEvent.click(activationStatus)
-          userEvent.click(activationStatus)
+          await user.click(activationStatus)
+          await user.click(activationStatus)
+          await user.click(activationStatus)
 
           await waitFor(() =>
             expect(requestSearchParams.get('ordering')).toBe('')

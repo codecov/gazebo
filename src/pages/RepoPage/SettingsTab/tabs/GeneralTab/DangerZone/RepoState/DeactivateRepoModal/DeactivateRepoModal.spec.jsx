@@ -1,15 +1,15 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen } from 'custom-testing-library'
+
 import userEvent from '@testing-library/user-event'
-import React from 'react'
 
 import DeactivateRepoModal from './DeactivateRepoModal'
 
 describe('DeactivateRepoModal component', () => {
-  const closeModalMock = jest.fn()
-  const deactivateRepoMock = jest.fn()
-
   describe('renders the component correctly', () => {
     it('renders modal title', () => {
+      const closeModalMock = jest.fn()
+      const deactivateRepoMock = jest.fn()
+
       render(
         <DeactivateRepoModal
           closeModal={closeModalMock}
@@ -26,6 +26,9 @@ describe('DeactivateRepoModal component', () => {
     })
 
     it('renders modal body', () => {
+      const closeModalMock = jest.fn()
+      const deactivateRepoMock = jest.fn()
+
       render(
         <DeactivateRepoModal
           closeModal={closeModalMock}
@@ -42,6 +45,9 @@ describe('DeactivateRepoModal component', () => {
     })
 
     it('renders cancel button', () => {
+      const closeModalMock = jest.fn()
+      const deactivateRepoMock = jest.fn()
+
       render(
         <DeactivateRepoModal
           closeModal={closeModalMock}
@@ -56,6 +62,9 @@ describe('DeactivateRepoModal component', () => {
     })
 
     it('renders deactivate button', () => {
+      const closeModalMock = jest.fn()
+      const deactivateRepoMock = jest.fn()
+
       render(
         <DeactivateRepoModal
           closeModal={closeModalMock}
@@ -71,7 +80,11 @@ describe('DeactivateRepoModal component', () => {
       expect(deactivateButton).toBeInTheDocument()
     })
 
-    it('closes modal when cancel is clicked', () => {
+    it('closes modal when cancel is clicked', async () => {
+      const user = userEvent.setup()
+      const closeModalMock = jest.fn()
+      const deactivateRepoMock = jest.fn()
+
       render(
         <DeactivateRepoModal
           closeModal={closeModalMock}
@@ -83,11 +96,15 @@ describe('DeactivateRepoModal component', () => {
       )
       const cancelButton = screen.getByRole('button', { name: /Cancel/ })
 
-      userEvent.click(cancelButton)
+      await user.click(cancelButton)
       expect(closeModalMock).toHaveBeenCalled()
     })
 
-    it('calls deactivate when deactivate button is clicked', () => {
+    it('calls deactivate when deactivate button is clicked', async () => {
+      const user = userEvent.setup()
+      const closeModalMock = jest.fn()
+      const deactivateRepoMock = jest.fn()
+
       render(
         <DeactivateRepoModal
           closeModal={closeModalMock}
@@ -100,12 +117,16 @@ describe('DeactivateRepoModal component', () => {
       const deactivateButton = screen.getByRole('button', {
         name: 'Deactivate repo',
       })
-      userEvent.click(deactivateButton)
+      await user.click(deactivateButton)
       expect(deactivateRepoMock).toHaveBeenCalledWith(true)
     })
   })
 
-  it('renders correctly when repo is deactivated', () => {
+  it('renders correctly when repo is deactivated', async () => {
+    const user = userEvent.setup()
+    const closeModalMock = jest.fn()
+    const deactivateRepoMock = jest.fn()
+
     render(
       <DeactivateRepoModal
         closeModal={closeModalMock}
@@ -121,7 +142,7 @@ describe('DeactivateRepoModal component', () => {
     })
     expect(deactivateButton).toBeInTheDocument()
 
-    userEvent.click(deactivateButton)
+    await user.click(deactivateButton)
     expect(deactivateRepoMock).toHaveBeenCalledWith(false)
   })
 })

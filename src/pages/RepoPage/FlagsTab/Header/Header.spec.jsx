@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
-import { act } from 'react-dom/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
@@ -15,18 +14,21 @@ jest.mock('services/navigation/useLocationParams')
 jest.mock('services/repo/useRepoBackfilled')
 jest.mock('services/repo/useRepoFlagsSelect')
 
-beforeAll(() => {
-  jest.useFakeTimers()
-})
-afterAll(() => {
-  jest.useRealTimers()
-})
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
+    <Route path="/:provider/:owner/:repo/flags" exact={true}>
+      {children}
+    </Route>
+  </MemoryRouter>
+)
 
 describe('Header', () => {
-  const updateLocationMock = jest.fn()
-  const fetchNextPage = jest.fn()
+  afterEach(() => jest.resetAllMocks())
 
   function setup(setRepoFlags = true) {
+    const user = userEvent.setup()
+    const updateLocationMock = jest.fn()
+
     useLocationParams.mockReturnValue({
       params: { search: '', historicalTrend: '', flags: [] },
       updateParams: updateLocationMock,
@@ -34,80 +36,87 @@ describe('Header', () => {
     useRepoBackfilled.mockReturnValue({
       data: { flagsCount: 99 },
     })
-
     if (setRepoFlags) {
       useRepoFlagsSelect.mockReturnValue({
         data: [{ name: 'flag1' }],
       })
     }
 
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
-        <Route path="/:provider/:owner/:repo/flags" exact={true}>
-          <Header />
-        </Route>
-      </MemoryRouter>
-    )
+    return { user, updateLocationMock }
   }
+
   describe('Configured Flags', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     it('Renders the label', () => {
+      render(<Header />, { wrapper })
+
       expect(screen.getByText(/Configured flags/)).toBeInTheDocument()
     })
     it('Renders the correct number of flags on the repo', () => {
+      render(<Header />, { wrapper })
+
       expect(screen.getByText(/99/)).toBeInTheDocument()
     })
   })
 
   describe('Historical Trend', () => {
     describe('Title', () => {
-      beforeEach(() => {
-        setup()
-      })
+      beforeEach(() => setup())
 
       it('Renders the label', () => {
+        render(<Header />, { wrapper })
+
         expect(screen.getByText(/Historical trend/)).toBeInTheDocument()
       })
     })
 
     describe('Select', () => {
-      beforeEach(() => {
-        setup()
+      beforeEach(() => setup())
+
+      it('loads the expected list', async () => {
+        const { user } = setup()
+        render(<Header />, { wrapper })
+
         const historicalTrend = screen.getByRole('button', {
           name: 'Select Historical Trend',
         })
-        userEvent.click(historicalTrend)
-      })
+        await user.click(historicalTrend)
 
-      it('loads the expected list', async () => {
-        expect(await screen.findByText('Last 6 months')).toBeVisible()
+        expect(screen.getByText('Last 6 months')).toBeVisible()
       })
 
       it('updates the location params on select', async () => {
-        const item = screen.getByText('Last 7 days')
-        userEvent.click(item)
+        const { user, updateLocationMock } = setup()
+        render(<Header />, { wrapper })
 
-        await waitFor(() =>
-          expect(updateLocationMock).toHaveBeenCalledWith({
-            historicalTrend: 'LAST_7_DAYS',
-          })
-        )
+        const historicalTrend = screen.getByRole('button', {
+          name: 'Select Historical Trend',
+        })
+        await user.click(historicalTrend)
+
+        const item = screen.getByText('Last 7 days')
+        await user.click(item)
+
+        expect(updateLocationMock).toHaveBeenCalledWith({
+          historicalTrend: 'LAST_7_DAYS',
+        })
       })
     })
   })
 
   describe('Flags feedback link', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     it('Renders the right copy', () => {
+      render(<Header />, { wrapper })
+
       expect(screen.getByText(/Please drop us a comment/)).toBeInTheDocument()
     })
+
     it('Renders the right link', () => {
+      render(<Header />, { wrapper })
+
       const link = screen.getByRole('link', {
         name: /here/i,
       })
@@ -119,29 +128,33 @@ describe('Header', () => {
   })
 
   describe('Search', () => {
-    beforeEach(() => {
-      setup()
+    beforeEach(() => setup())
+
+    it('calls setSearchValue', async () => {
+      const { user, updateLocationMock } = setup()
+      render(<Header />, { wrapper })
+
       const searchInput = screen.getByRole('textbox', {
         name: 'Search for flags',
       })
-      userEvent.type(searchInput, 'flag1')
-    })
+      await user.click(searchInput)
+      await user.keyboard('flag1')
 
-    it('calls setSearchValue', async () => {
-      await waitFor(() => expect(updateLocationMock).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(updateLocationMock).toHaveBeenCalledWith({ search: 'flag1' })
+      await waitFor(
+        () =>
+          expect(updateLocationMock).toHaveBeenCalledWith({ search: 'flag1' }),
+        { timeout: 600 }
       )
     })
   })
 
   describe('Show by', () => {
     describe('Title', () => {
-      beforeEach(() => {
-        setup()
-      })
+      beforeEach(() => setup())
 
       it('renders the label', () => {
+        render(<Header />, { wrapper })
+
         const showBy = screen.getByText('Show by')
         expect(showBy).toBeInTheDocument()
       })
@@ -149,67 +162,69 @@ describe('Header', () => {
 
     describe('MultiSelect', () => {
       describe('on page load', () => {
-        beforeEach(() => {
-          setup()
-        })
+        it('loads the expected list', async () => {
+          const { user } = setup()
+          render(<Header />, { wrapper })
 
-        it('loads the expected list', () => {
           const button = screen.getByText('All flags')
-          userEvent.click(button)
+          await user.click(button)
 
           const flag1 = screen.getByText('flag1')
           expect(flag1).toBeInTheDocument()
         })
 
         it('updates the location params on select', async () => {
+          const { user, updateLocationMock } = setup()
+          render(<Header />, { wrapper })
+
           const button = screen.getByText('All flags')
-          userEvent.click(button)
+          await user.click(button)
 
           const flag1 = screen.getByText('flag1')
-          userEvent.click(flag1)
+          await user.click(flag1)
 
-          await waitFor(() =>
-            expect(updateLocationMock).toHaveBeenCalledWith({
-              flags: ['flag1'],
-            })
-          )
+          expect(updateLocationMock).toHaveBeenCalledWith({
+            flags: ['flag1'],
+          })
         })
       })
 
       describe('where onLoadMore is triggered', () => {
         describe('when there is a next page', () => {
-          beforeEach(() => {
+          it('calls fetchNextPage', async () => {
+            const { user } = setup(false)
+            const fetchNextPage = jest.fn()
             useRepoFlagsSelect.mockReturnValue({
               data: [{ name: 'flag1' }],
               fetchNextPage,
               hasNextPage: true,
             })
             useIntersection.mockReturnValue({ isIntersecting: true })
-            setup(false)
-          })
 
-          it('calls fetchNextPage', () => {
+            render(<Header />, { wrapper })
+
             const button = screen.getByText('All flags')
-            userEvent.click(button)
+            await user.click(button)
 
             expect(fetchNextPage).toBeCalled()
           })
         })
 
         describe('when there is no next page', () => {
-          beforeEach(() => {
+          it('does not calls fetchNextPage', async () => {
+            const { user } = setup(false)
+            const fetchNextPage = jest.fn()
             useRepoFlagsSelect.mockReturnValue({
               data: [{ name: 'flag1' }],
               fetchNextPage,
               hasNextPage: false,
             })
             useIntersection.mockReturnValue({ isIntersecting: true })
-            setup(false)
-          })
 
-          it('does not calls fetchNextPage', () => {
+            render(<Header />, { wrapper })
+
             const button = screen.getByText('All flags')
-            userEvent.click(button)
+            await user.click(button)
 
             expect(fetchNextPage).not.toBeCalled()
           })
@@ -217,45 +232,50 @@ describe('Header', () => {
       })
 
       describe('when searching for a flag', () => {
-        beforeEach(() => {
-          setup()
-        })
+        it('displays the search box', async () => {
+          const { user } = setup()
+          render(<Header />, { wrapper })
 
-        it('displays the search box', () => {
           const button = screen.getByText('All flags')
-          userEvent.click(button)
+          await user.click(button)
 
           const searchBox = screen.getByPlaceholderText('Search for Flags')
           expect(searchBox).toBeInTheDocument()
         })
 
-        it('updates the textbox value when typing', () => {
+        it('updates the textbox value when typing', async () => {
+          const { user } = setup()
+          render(<Header />, { wrapper })
+
           const button = screen.getByText('All flags')
-          userEvent.click(button)
+          await user.click(button)
 
           const searchBox = screen.getByPlaceholderText('Search for Flags')
-          userEvent.type(searchBox, 'flag2')
+          await user.type(searchBox, 'flag2')
 
           const searchBoxUpdated =
             screen.getByPlaceholderText('Search for Flags')
           expect(searchBoxUpdated).toHaveAttribute('value', 'flag2')
         })
 
-        it('calls useRepoFlagsSelect with term', () => {
+        it('calls useRepoFlagsSelect with term', async () => {
+          const { user } = setup()
+          render(<Header />, { wrapper })
+
           const button = screen.getByText('All flags')
-          userEvent.click(button)
+          await user.click(button)
 
           const searchBox = screen.getByPlaceholderText('Search for Flags')
-          userEvent.type(searchBox, 'flag2')
+          await user.type(searchBox, 'flag2')
 
-          act(() => {
-            jest.advanceTimersByTime(5000)
-          })
-
-          expect(useRepoFlagsSelect).toBeCalledWith({
-            filters: { term: 'flag2' },
-            options: { suspense: false },
-          })
+          await waitFor(
+            () =>
+              expect(useRepoFlagsSelect).toBeCalledWith({
+                filters: { term: 'flag2' },
+                options: { suspense: false },
+              }),
+            { timeout: 600 }
+          )
         })
       })
     })

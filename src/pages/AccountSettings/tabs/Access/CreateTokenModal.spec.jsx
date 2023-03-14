@@ -9,95 +9,179 @@ import CreateTokenModal from './CreateTokenModal'
 jest.mock('services/access')
 
 describe('CreateTokenModal', () => {
-  const closeModal = jest.fn()
-  const defaultProps = {
-    provider: 'gh',
-    showModal: true,
-    closeModal: closeModal,
-  }
-  const mutate = jest.fn()
-
-  function setup(props) {
+  function setup() {
+    const closeModal = jest.fn()
+    const success = {
+      data: {
+        createUserToken: {
+          fullToken: '111-222-333',
+        },
+      },
+    }
+    const mutate = jest.fn((_, { onSuccess }) => {
+      return onSuccess(success)
+    })
     useGenerateUserToken.mockReturnValue({
       mutate,
     })
 
-    const _props = { ...defaultProps, ...props }
-    render(<CreateTokenModal {..._props} />)
+    return { mutate, closeModal }
   }
 
   describe('renders initial CreateTokenModal', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
     it('renders title', () => {
+      const { closeModal } = setup()
+      render(
+        <CreateTokenModal
+          provider="gh"
+          showModal={true}
+          closeModal={closeModal}
+        />
+      )
+
       const title = screen.getByText(/Generate new API access token/)
       expect(title).toBeInTheDocument()
     })
+
     it('renders body', () => {
+      const { closeModal } = setup()
+      render(
+        <CreateTokenModal
+          provider="gh"
+          showModal={true}
+          closeModal={closeModal}
+        />
+      )
+
       const label = screen.getByText(/Token Name/)
       expect(label).toBeInTheDocument()
-      const input = document.querySelector('#token-name')
+      const input = screen.getByRole('textbox', { name: /token name/ })
       expect(input).toBeInTheDocument()
     })
+
     it('renders footer', () => {
+      const { closeModal } = setup()
+      render(
+        <CreateTokenModal
+          provider="gh"
+          showModal={true}
+          closeModal={closeModal}
+        />
+      )
+
       const buttons = screen.getAllByRole('button')
       expect(buttons.length).toBe(2)
     })
   })
 
   describe('when the user types a token name and submits', () => {
-    beforeEach(() => {
-      setup()
-      userEvent.type(screen.getByRole('textbox'), '2333')
-      return act(() => {
-        userEvent.click(screen.getByText('Generate Token'))
-        return Promise.resolve()
-      })
-    })
+    it('calls the mutation', async () => {
+      const user = userEvent.setup()
+      const { mutate, closeModal } = setup()
+      render(
+        <CreateTokenModal
+          provider="gh"
+          showModal={true}
+          closeModal={closeModal}
+        />
+      )
 
-    it('calls the mutation', () => {
+      const input = screen.getByRole('textbox')
+      const generateToken = screen.getByText('Generate Token')
+      await user.type(input, '2333')
+      await act(async () => {
+        await user.click(generateToken)
+      })
+
       expect(mutate).toHaveBeenCalled()
     })
 
-    describe('when mutation is successfull', () => {
-      beforeEach(() => {
-        return act(() => {
-          mutate.mock.calls[0][1].onSuccess({
-            data: {
-              createUserToken: {
-                fullToken: '111-222-333',
-              },
-            },
-          })
-          return Promise.resolve()
-        })
-      })
+    describe('when mutation is successful', () => {
+      it('renders title', async () => {
+        const { closeModal } = setup()
+        render(
+          <CreateTokenModal
+            provider="gh"
+            showModal={true}
+            closeModal={closeModal}
+          />
+        )
 
-      it('renders title', () => {
-        const title = screen.getByText(/API access token/)
+        const title = await screen.findByText(/API access token/)
         expect(title).toBeInTheDocument()
       })
 
-      it('renders body', () => {
+      it('renders body', async () => {
+        const user = userEvent.setup()
+        const { closeModal } = setup()
+        render(
+          <CreateTokenModal
+            provider="gh"
+            showModal={true}
+            closeModal={closeModal}
+          />
+        )
+
+        const input = screen.getByRole('textbox')
+        const generateToken = screen.getByText('Generate Token')
+        await user.type(input, '2333')
+        await act(async () => {
+          await user.click(generateToken)
+        })
+
         const label = screen.getByText(/Personal API token/)
         expect(label).toBeInTheDocument()
         const copyElements = screen.getByText('copy', { exact: true })
         expect(copyElements).toBeInTheDocument()
         window.prompt = jest.fn()
-        userEvent.click(copyElements)
+        await user.click(copyElements)
         expect(window.prompt).toHaveBeenCalled()
         const warning = screen.getByText(/Make sure to copy your token now/)
         expect(warning).toBeInTheDocument()
       })
-      it('renders footer', () => {
+      it('renders footer', async () => {
+        const user = userEvent.setup()
+        const { closeModal } = setup()
+        render(
+          <CreateTokenModal
+            provider="gh"
+            showModal={true}
+            closeModal={closeModal}
+          />
+        )
+
+        const input = screen.getByRole('textbox')
+        const generateToken = screen.getByText('Generate Token')
+        await user.type(input, '2333')
+        await act(async () => {
+          await user.click(generateToken)
+        })
+
         const button = screen.getByRole('button', {
           name: /done/i,
         })
         expect(button).toBeInTheDocument()
       })
-      it('close modals', () => {
-        userEvent.click(screen.getByText('Done'))
+      it('close modals', async () => {
+        const user = userEvent.setup()
+        const { closeModal } = setup()
+        render(
+          <CreateTokenModal
+            provider="gh"
+            showModal={true}
+            closeModal={closeModal}
+          />
+        )
+
+        const input = screen.getByRole('textbox')
+        const generateToken = screen.getByText('Generate Token')
+        await user.type(input, '2333')
+        await act(async () => {
+          await user.click(generateToken)
+        })
+
+        await user.click(screen.getByText('Done'))
         expect(closeModal).toHaveBeenCalled()
       })
     })

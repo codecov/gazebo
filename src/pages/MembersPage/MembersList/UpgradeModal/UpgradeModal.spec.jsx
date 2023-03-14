@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen } from 'custom-testing-library'
+
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -11,22 +12,18 @@ const wrapper = ({ children }) => (
 )
 
 describe('UpgradeModal', () => {
-  const setIsOpen = jest.fn()
-  const defaultProps = {
-    isOpen: true,
-    setIsOpen: setIsOpen,
-  }
-
   describe('rendering UpgradeModal', () => {
     it('renders the title', () => {
-      render(<UpgradeModal {...defaultProps} />, { wrapper })
+      const setIsOpen = jest.fn()
+      render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, { wrapper })
 
       const title = screen.getByText('Upgrade to Pro')
       expect(title).toBeInTheDocument()
     })
 
     it('renders body', () => {
-      render(<UpgradeModal {...defaultProps} />, { wrapper })
+      const setIsOpen = jest.fn()
+      render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, { wrapper })
 
       const firstParagraph = screen.getByText(/maximum number of free users/i)
       expect(firstParagraph).toBeInTheDocument()
@@ -40,7 +37,8 @@ describe('UpgradeModal', () => {
     })
 
     it('renders footer', () => {
-      render(<UpgradeModal {...defaultProps} />, { wrapper })
+      const setIsOpen = jest.fn()
+      render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, { wrapper })
 
       const cancel = screen.getByRole('button', { name: 'Cancel' })
       expect(cancel).toBeInTheDocument()
@@ -53,22 +51,30 @@ describe('UpgradeModal', () => {
 
   describe('when interacting with the modal', () => {
     describe('when clicking x', () => {
-      it('calls setIsOpen', () => {
-        render(<UpgradeModal {...defaultProps} />, { wrapper })
+      it('calls setIsOpen', async () => {
+        const user = userEvent.setup()
+        const setIsOpen = jest.fn()
+        render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, {
+          wrapper,
+        })
 
         const close = screen.getByLabelText('Close')
-        userEvent.click(close)
+        await user.click(close)
 
         expect(setIsOpen).toBeCalledWith(false)
       })
     })
 
     describe('when clicking cancel', () => {
-      it('calls setIsOpen', () => {
-        render(<UpgradeModal {...defaultProps} />, { wrapper })
+      it('calls setIsOpen', async () => {
+        const user = userEvent.setup()
+        const setIsOpen = jest.fn()
+        render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, {
+          wrapper,
+        })
 
         const cancel = screen.getByRole('button', { name: 'Cancel' })
-        userEvent.click(cancel)
+        await user.click(cancel)
 
         expect(setIsOpen).toBeCalledWith(false)
       })

@@ -329,6 +329,7 @@ describe('IndirectChangedFiles', () => {
     })
 
     it('renders the FileDiff component', async () => {
+      const user = userEvent.setup()
       render(<IndirectChangedFiles />, { wrapper: wrapper() })
 
       await waitFor(() =>
@@ -336,7 +337,7 @@ describe('IndirectChangedFiles', () => {
       )
 
       const nameExpander = await screen.findByTestId('name-expand')
-      userEvent.click(nameExpander)
+      await user.click(nameExpander)
 
       const fileDiff = await screen.findByText('FileDiff Component')
       expect(fileDiff).toBeInTheDocument()

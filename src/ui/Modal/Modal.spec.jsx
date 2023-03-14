@@ -6,96 +6,120 @@ import BaseModal from './BaseModal'
 import Modal from './Modal'
 
 describe('Modal', () => {
-  let wrapper, props
-
-  const defaultProps = {
-    isOpen: true,
-    onClose: jest.fn(),
-    body: 'hello',
-    title: 'modal title',
-  }
-
-  function setup(over = {}) {
-    props = {
-      ...over,
-      ...defaultProps,
-    }
-    wrapper = render(<Modal {...props} />)
-  }
-
   describe('when the modal is closed', () => {
-    beforeEach(() => {
-      setup({
-        isOpen: false,
-      })
-    })
-
     it('renders nothing', () => {
-      expect(wrapper.container).toBeEmptyDOMElement()
+      const { container } = render(
+        <Modal
+          isOpen={false}
+          onClose={jest.fn()}
+          body="hello"
+          title="modal title"
+        />
+      )
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 
   describe('when the modal is open', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the title', () => {
-      expect(screen.getByRole('heading')).toHaveTextContent(props.title)
+      render(
+        <Modal
+          isOpen={true}
+          onClose={jest.fn()}
+          body="hello"
+          title="modal title"
+        />
+      )
+
+      expect(screen.getByRole('heading')).toHaveTextContent('modal title')
     })
 
     it('renders the children', () => {
-      expect(screen.getByText(props.body)).toBeInTheDocument()
+      render(
+        <Modal
+          isOpen={true}
+          onClose={jest.fn()}
+          body="hello"
+          title="modal title"
+        />
+      )
+
+      expect(screen.getByText('hello')).toBeInTheDocument()
     })
   })
 
   describe('when clicking on the close button', () => {
-    beforeEach(() => {
-      setup()
-      userEvent.click(wrapper.getByLabelText('Close'))
-    })
+    it('calls the close handler', async () => {
+      const onClose = jest.fn()
+      const user = userEvent.setup()
+      render(
+        <Modal
+          isOpen={true}
+          onClose={onClose}
+          body="hello"
+          title="modal title"
+        />
+      )
 
-    it('calls the close handler', () => {
-      expect(props.onClose).toHaveBeenCalled()
+      await user.click(screen.getByLabelText('Close'))
+      expect(onClose).toHaveBeenCalled()
     })
   })
 
   describe('renders a footer', () => {
-    beforeEach(() => {
-      setup({ footer: <span>this is the footer</span> })
-    })
+    it('renders footer', () => {
+      render(
+        <Modal
+          isOpen={true}
+          onClose={jest.fn()}
+          body="hello"
+          title="modal title"
+          footer={<span>this is the footer</span>}
+        />
+      )
 
-    it('redners footer', () => {
       expect(screen.getByText(/this is the footer/)).toBeInTheDocument()
     })
   })
 
   describe('renders a subtitle', () => {
-    beforeEach(() => {
-      setup({ subtitle: 'to complete the title' })
-    })
-
     it('renders subtitle', () => {
+      render(
+        <Modal
+          isOpen={true}
+          onClose={jest.fn()}
+          body="hello"
+          title="modal title"
+          subtitle="to complete the title"
+        />
+      )
+
       expect(screen.getByText(/to complete the title/)).toBeInTheDocument()
     })
   })
 
   describe('when hasCloseButton is false', () => {
-    beforeEach(() => {
-      setup({ hasCloseButton: false })
-    })
+    it(`doesn't render close button`, () => {
+      render(
+        <Modal
+          isOpen={false}
+          hasCloseButton={false}
+          onClose={jest.fn()}
+          body="hello"
+          title="modal title"
+          subtitle="to complete the title"
+        />
+      )
 
-    it('doesnt render close button', () => {
-      expect(wrapper.queryByLabelText('Close')).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('Close')).not.toBeInTheDocument()
     })
   })
 
   describe('When rendered BaseModal', () => {
-    beforeEach(() => {
-      render(<BaseModal title="title" body="body" onClose={() => null} />)
-    })
-
     it('renders it', () => {
+      render(<BaseModal title="title" body="body" onClose={() => null} />)
+
       expect(screen.getByText(/title/)).toBeInTheDocument()
       expect(screen.getByText(/body/)).toBeInTheDocument()
     })

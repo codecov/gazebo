@@ -43,8 +43,7 @@ BaseModal.propTypes = {
   hasCloseButton: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
-  subtitle: PropTypes.oneOfType([PropTypes.element, PropTypes.string])
-    .isRequired,
+  subtitle: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   body: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
   footer: PropTypes.element,
 }

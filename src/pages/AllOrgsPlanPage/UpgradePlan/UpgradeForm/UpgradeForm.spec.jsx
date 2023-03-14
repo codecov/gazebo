@@ -61,23 +61,20 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 let testLocation
-const wrapper =
-  (initialEntries = '/plan/gh') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/plan/:provider">{children}</Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/plan/gh']}>
+      <Route path="/plan/:provider">{children}</Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -139,7 +136,7 @@ describe('UpgradeForm', () => {
     })
 
     it('renders monthly radio button', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const radio = await screen.findByRole('radio', { name: /\$12/i })
       expect(radio).toBeInTheDocument()
@@ -147,7 +144,7 @@ describe('UpgradeForm', () => {
     })
 
     it('renders annual radio button', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const radio = await screen.findByRole('radio', { name: /\$10/i })
       expect(radio).toBeInTheDocument()
@@ -155,7 +152,7 @@ describe('UpgradeForm', () => {
     })
 
     it('renders the seat input with 2 seats', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toBeInTheDocument()
@@ -168,7 +165,7 @@ describe('UpgradeForm', () => {
     it('renders monthly radio button', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const radio = await screen.findByRole('radio', { name: /\$12/i })
@@ -179,7 +176,7 @@ describe('UpgradeForm', () => {
     it('renders annual radio button', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const radio = await screen.findByRole('radio', { name: /\$10/i })
@@ -190,7 +187,7 @@ describe('UpgradeForm', () => {
     it('renders the seat input with 2 seats', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const numberInput = await screen.findByRole('spinbutton')
@@ -202,7 +199,7 @@ describe('UpgradeForm', () => {
     it('has the update button disabled', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const update = await screen.findByText(/Update/)
@@ -216,7 +213,7 @@ describe('UpgradeForm', () => {
     })
 
     it('renders annual', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const radio = await screen.findByRole('radio', { name: /\$10/ })
       expect(radio).toBeInTheDocument()
@@ -224,7 +221,7 @@ describe('UpgradeForm', () => {
     })
 
     it('renders the seat input with 2 seats', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toHaveValue(2)
@@ -237,28 +234,28 @@ describe('UpgradeForm', () => {
     })
 
     it('renders annual radio to be checked', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const radio = await screen.findByRole('radio', { name: /10/i })
       expect(radio).toBeChecked()
     })
 
     it('renders the seat input with 10 seats (existing subscription)', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const seatCount = await screen.findByRole('spinbutton')
       expect(seatCount).toHaveValue(10)
     })
 
     it('has the price for the year', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const price = await screen.findByText(/\$1,200/)
       expect(price).toBeInTheDocument()
     })
 
     it('has the update button disabled', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const update = await screen.findByText(/Update/)
       expect(update).toBeDisabled()
@@ -266,10 +263,11 @@ describe('UpgradeForm', () => {
 
     describe('when updating to a month plan', () => {
       it('has the price for the month', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        const user = userEvent.setup()
+        render(<UpgradeForm {...props} />, { wrapper })
 
         const monthRadio = await screen.findByRole('radio', { name: /12/i })
-        userEvent.click(monthRadio)
+        await user.click(monthRadio)
 
         const price = screen.getByText(/\$120/)
         expect(price).toBeInTheDocument()
@@ -283,11 +281,13 @@ describe('UpgradeForm', () => {
     })
 
     describe('user clicks select annual', () => {
+      const user = userEvent.setup()
+
       it('renders annual radio to be checked', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm {...props} />, { wrapper })
 
         const switchAnnual = await screen.findByText('switch to annual')
-        userEvent.click(switchAnnual)
+        await user.click(switchAnnual)
 
         const annualRadio = await screen.findByRole('radio', { name: /10/i })
         expect(annualRadio).toBeChecked()
@@ -309,7 +309,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders text for 1 student not taking active seats', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm {...props} />, { wrapper })
 
         const singleStudentText = screen.queryByText(
           /\*You have 1 active student that does not count towards the number of active users./
@@ -336,7 +336,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders text for 1 student not taking active seats', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm {...props} />, { wrapper })
 
         const studentText = await screen.findByText(
           /\*You have 1 active student that does not count towards the number of active users./
@@ -358,7 +358,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders text for two or more student not taking active seats', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm {...props} />, { wrapper })
 
         const studentText = await screen.findByText(
           /\*You have 3 active students that do not count towards the number of active users./
@@ -386,7 +386,7 @@ describe('UpgradeForm', () => {
     })
 
     it('renders the next billing period', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const nextBillingData = await screen.findByText(/Next Billing Date/)
       expect(nextBillingData).toBeInTheDocument()
@@ -402,13 +402,15 @@ describe('UpgradeForm', () => {
     })
 
     it('displays an error', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      const user = userEvent.setup()
+
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
+      await user.type(input, '{backspace}{backspace}{backspace}')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = await screen.findByText(/Number of seats is required/)
       expect(error).toBeInTheDocument()
@@ -421,14 +423,16 @@ describe('UpgradeForm', () => {
     })
 
     it('displays an error', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      const user = userEvent.setup()
+
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
-      userEvent.type(input, '1')
+      await user.type(input, '{backspace}{backspace}{backspace}')
+      await user.type(input, '1')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = screen.getByText(
         /You cannot purchase a per user plan for less than 2 users/
@@ -443,14 +447,16 @@ describe('UpgradeForm', () => {
     })
 
     it('displays an error', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      const user = userEvent.setup()
+
+      render(<UpgradeForm {...props} />, { wrapper })
 
       const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
-      userEvent.type(input, '8')
+      await user.type(input, '{backspace}{backspace}{backspace}')
+      await user.type(input, '8')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = await screen.findByText(
         /deactivate more users before downgrading plans/i
@@ -466,16 +472,18 @@ describe('UpgradeForm', () => {
       })
 
       it('adds a success notification', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        const user = userEvent.setup()
+
+        render(<UpgradeForm {...props} />, { wrapper })
 
         const input = await screen.findByRole('spinbutton')
-        userEvent.type(input, '{backspace}{backspace}{backspace}')
-        userEvent.type(input, '20')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '20')
 
         const updateButton = await screen.findByRole('button', {
           name: 'Update',
         })
-        userEvent.click(updateButton)
+        await user.click(updateButton)
 
         await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
@@ -486,16 +494,18 @@ describe('UpgradeForm', () => {
       })
 
       it('redirects the user to the plan page', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        const user = userEvent.setup()
+
+        render(<UpgradeForm {...props} />, { wrapper })
 
         const input = await screen.findByRole('spinbutton')
-        userEvent.type(input, '{backspace}{backspace}{backspace}')
-        userEvent.type(input, '20')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '20')
 
         const updateButton = await screen.findByRole('button', {
           name: 'Update',
         })
-        userEvent.click(updateButton)
+        await user.click(updateButton)
 
         await waitFor(() =>
           expect(testLocation.pathname).toEqual('/plan/gh/codecov')
@@ -516,16 +526,18 @@ describe('UpgradeForm', () => {
         })
 
         it('adds an error notification with detail message', async () => {
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+          const user = userEvent.setup()
+
+          render(<UpgradeForm {...props} />, { wrapper })
 
           const input = await screen.findByRole('spinbutton')
-          userEvent.type(input, '{backspace}{backspace}{backspace}')
-          userEvent.type(input, '20')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
             name: 'Update',
           })
-          userEvent.click(updateButton)
+          await user.click(updateButton)
 
           await waitFor(() =>
             expect(addNotification).toHaveBeenCalledWith({
@@ -542,16 +554,18 @@ describe('UpgradeForm', () => {
         })
 
         it('adds an error notification with a default message', async () => {
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+          const user = userEvent.setup()
+
+          render(<UpgradeForm {...props} />, { wrapper })
 
           const input = await screen.findByRole('spinbutton')
-          userEvent.type(input, '{backspace}{backspace}{backspace}')
-          userEvent.type(input, '20')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
             name: 'Update',
           })
-          userEvent.click(updateButton)
+          await user.click(updateButton)
 
           await waitFor(() =>
             expect(addNotification).toHaveBeenCalledWith({

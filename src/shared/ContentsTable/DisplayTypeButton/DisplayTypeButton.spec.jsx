@@ -50,11 +50,9 @@ const mockUrlParams = {
 }
 
 describe('Coverage Tab', () => {
-  const mockUpdateParams = jest.fn()
-
   function setup(urlParams = mockUrlParams) {
     useLocationParams.mockReturnValue({
-      updateParams: mockUpdateParams,
+      updateParams: jest.fn(),
       params: urlParams,
     })
   }
@@ -98,7 +96,8 @@ describe('Coverage Tab', () => {
       setup()
     })
 
-    it('renders sets the list button as selected', () => {
+    it('renders sets the list button as selected', async () => {
+      const user = userEvent.setup()
       render(
         <QueryClientProvider client={queryClient}>
           <DisplayTypeButton dataLength={mockRepoContents.data.length} />
@@ -108,7 +107,7 @@ describe('Coverage Tab', () => {
       const fileList = screen.getByRole('button', {
         name: /File list/i,
       })
-      userEvent.click(fileList)
+      await user.click(fileList)
 
       const codeTree = screen.getByText(/Code tree/)
       expect(codeTree).not.toHaveClass('bg-ds-blue-darker')
@@ -116,7 +115,8 @@ describe('Coverage Tab', () => {
       expect(fileList).toHaveClass('bg-ds-blue-darker')
     })
 
-    it('renders length of files if data is not empty', () => {
+    it('renders length of files if data is not empty', async () => {
+      const user = userEvent.setup()
       render(
         <QueryClientProvider client={queryClient}>
           <DisplayTypeButton dataLength={mockRepoContents.data.length} />
@@ -126,7 +126,7 @@ describe('Coverage Tab', () => {
       const fileList = screen.getByRole('button', {
         name: /File list/i,
       })
-      userEvent.click(fileList)
+      await user.click(fileList)
 
       const fileCount = screen.getByText(
         `${mockRepoContents.data.length} total files`
@@ -140,7 +140,8 @@ describe('Coverage Tab', () => {
       setup()
     })
 
-    it('renders sets the list button as selected', () => {
+    it('renders sets the list button as selected', async () => {
+      const user = userEvent.setup()
       render(
         <QueryClientProvider client={queryClient}>
           <DisplayTypeButton dataLength={mockRepoContents.data.length} />
@@ -150,12 +151,12 @@ describe('Coverage Tab', () => {
       const fileList = screen.getByRole('button', {
         name: /File list/i,
       })
-      userEvent.click(fileList)
+      await user.click(fileList)
 
       const codeTree = screen.getByRole('button', {
         name: /Code tree/i,
       })
-      userEvent.click(codeTree)
+      await user.click(codeTree)
 
       expect(codeTree).toHaveClass('bg-ds-blue-darker')
       expect(fileList).not.toHaveClass('bg-ds-blue-darker')

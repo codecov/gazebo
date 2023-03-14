@@ -1,5 +1,6 @@
+import { render, screen, waitFor } from 'custom-testing-library'
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -116,13 +117,14 @@ describe('MyContextSwitcher', () => {
     })
 
     it('renders the default org modal', async () => {
+      const user = userEvent.setup()
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
         wrapper: wrapper(),
       })
 
       const editDefaultButton = await screen.findByText(/Edit default/i)
       expect(editDefaultButton).toBeInTheDocument()
-      userEvent.click(editDefaultButton)
+      await user.click(editDefaultButton)
 
       const title = await screen.findByText(/Select default organization/)
       expect(title).toBeInTheDocument()

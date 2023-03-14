@@ -91,7 +91,8 @@ describe('ListRepo', () => {
   })
 
   describe('switches active/inactive/all repos', () => {
-    it('switches to active repos', () => {
+    it('switches to active repos', async () => {
+      const user = userEvent.setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '/gh', path: '/:provider' }),
       })
@@ -99,13 +100,14 @@ describe('ListRepo', () => {
       const button = screen.getByRole('button', {
         name: /Active/,
       })
-      userEvent.click(button)
+      await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
         expect.stringContaining('Active')
       )
     })
 
-    it('switches to inactive repos', () => {
+    it('switches to inactive repos', async () => {
+      const user = userEvent.setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '/gh', path: '/:provider' }),
       })
@@ -113,12 +115,14 @@ describe('ListRepo', () => {
       const button = screen.getByRole('button', {
         name: /Inactive/,
       })
-      userEvent.click(button)
+      await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
         expect.stringContaining('Inactive')
       )
     })
-    it('switches to active repos owner page', () => {
+
+    it('switches to active repos owner page', async () => {
+      const user = userEvent.setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/hola',
@@ -128,13 +132,14 @@ describe('ListRepo', () => {
       const button = screen.getByRole('button', {
         name: /Active/,
       })
-      userEvent.click(button)
+      await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
         expect.stringContaining('Active')
       )
     })
 
-    it('switches to all repos owner page', () => {
+    it('switches to all repos owner page', async () => {
+      const user = userEvent.setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/hola',
@@ -145,7 +150,7 @@ describe('ListRepo', () => {
       const button = screen.getByRole('button', {
         name: /All/,
       })
-      userEvent.click(button)
+      await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
         expect.stringContaining('All')
       )
@@ -153,23 +158,26 @@ describe('ListRepo', () => {
   })
 
   describe('update params after typing', () => {
-    it('calls setSearchValue', () => {
+    it('calls setSearchValue', async () => {
+      const user = userEvent.setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper(),
       })
-      jest.useFakeTimers()
+
       const searchInput = screen.getByRole('textbox', {
         name: /Search/,
       })
-      userEvent.type(searchInput, 'some random repo')
+      await user.type(searchInput, 'some random repo')
 
-      jest.advanceTimersByTime(600)
-      expect(testLocation.state.search).toBe('some random repo')
+      await waitFor(() => {
+        expect(testLocation.state.search).toBe('some random repo')
+      })
     })
   })
 
   describe('update params after using select', () => {
     it('renders the option user the custom rendered', async () => {
+      const user = userEvent.setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh',
@@ -180,10 +188,10 @@ describe('ListRepo', () => {
       const sortButton = screen.getByRole('button', {
         name: /Sort Order/,
       })
-      userEvent.click(sortButton)
+      await user.click(sortButton)
 
       const option = screen.getByRole('option', { name: 'Least recent commit' })
-      userEvent.click(option)
+      await user.click(option)
 
       await waitFor(() => expect(testLocation.state.direction).toBe('ASC'))
       await waitFor(() =>

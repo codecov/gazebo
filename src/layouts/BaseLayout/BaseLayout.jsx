@@ -9,7 +9,6 @@ import Header from '../Header'
 import ErrorBoundary from '../shared/ErrorBoundary'
 import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
 import ToastNotifications from '../ToastNotifications'
-import UserOnboarding from '../UserOnboarding'
 
 function BaseLayout({ children }) {
   useTracking()
@@ -29,7 +28,6 @@ function BaseLayout({ children }) {
             <main className="container mt-2 mb-8 flex grow flex-col gap-2 md:p-0">
               <GlobalBanners />
               {children}
-              <UserOnboarding />
             </main>
           </NetworkErrorBoundary>
         </ErrorBoundary>

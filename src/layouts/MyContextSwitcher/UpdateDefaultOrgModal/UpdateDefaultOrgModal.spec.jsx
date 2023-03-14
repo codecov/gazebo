@@ -71,6 +71,8 @@ describe('UpdateDefaultOrgModal', () => {
         res(ctx.status(200), ctx.data(contextData))
       )
     )
+
+    return { user: userEvent.setup() }
   }
 
   describe('when the modal is shown', () => {
@@ -107,11 +109,8 @@ describe('UpdateDefaultOrgModal', () => {
   })
 
   describe('when clicking update button', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('selects a default organization', async () => {
+      const { user } = setup()
       render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
       const updateButton = await screen.findByRole('button', { name: 'Update' })
       expect(updateButton).toHaveClass('disabled:cursor-not-allowed')
@@ -121,41 +120,35 @@ describe('UpdateDefaultOrgModal', () => {
         name: /fearne-calloway/,
       })
       expect(fearneUsername).toBeInTheDocument()
-      userEvent.click(fearneUsername)
+      await user.click(fearneUsername)
 
       // Update org
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       await waitFor(() => expect(closeModal).toHaveBeenCalled())
     })
   })
 
   describe('when clicking cancel button', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('closes the modal', async () => {
+      const { user } = setup()
       render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
       const cancelButton = await screen.findByRole('button', { name: 'Cancel' })
-      userEvent.click(cancelButton)
+      await user.click(cancelButton)
 
       await waitFor(() => expect(closeModal).toHaveBeenCalled())
     })
   })
 
   describe('when clicking all orgs and repos button', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('updates default org to all orgs', async () => {
+      const { user } = setup()
       render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
       const allOrgsAndReposButton = await screen.findByRole('button', {
         name: /All orgs and repos/,
       })
       expect(allOrgsAndReposButton).toBeInTheDocument()
-      userEvent.click(allOrgsAndReposButton)
+      await user.click(allOrgsAndReposButton)
 
       const defaultOrgText = await screen.findByText(/Current default org/)
       expect(defaultOrgText).toBeInTheDocument()

@@ -59,14 +59,6 @@ afterAll(() => {
 })
 
 describe('CommitFileEntry', () => {
-  let commonProps = {
-    commitSha: '1234',
-    path: 'dir/file.js',
-    name: 'file.js',
-    urlPath: 'dir',
-    isCriticalFile: false,
-  }
-
   function setup() {
     server.use(
       graphql.query('CoverageForFile', (req, res, ctx) =>
@@ -83,7 +75,12 @@ describe('CommitFileEntry', () => {
     it('displays the file path', () => {
       render(
         <CommitFileEntry
-          {...commonProps}
+          commitSha="1234"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          commitSHA="1234"
           displayType={displayTypeParameter.list}
         />,
         { wrapper }
@@ -101,7 +98,12 @@ describe('CommitFileEntry', () => {
     it('displays the file name', () => {
       render(
         <CommitFileEntry
-          {...commonProps}
+          commitSha="1234"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          commitSHA="1234"
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }
@@ -113,7 +115,12 @@ describe('CommitFileEntry', () => {
     it('does not display the file name', () => {
       render(
         <CommitFileEntry
-          {...commonProps}
+          commitSha="1234"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          commitSHA="1234"
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }
@@ -131,7 +138,11 @@ describe('CommitFileEntry', () => {
     it('displays critical file label', () => {
       render(
         <CommitFileEntry
-          {...commonProps}
+          commitSha="1234"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          commitSHA="1234"
           isCriticalFile={true}
           displayType={displayTypeParameter.tree}
         />,
@@ -150,7 +161,12 @@ describe('CommitFileEntry', () => {
     it('displays the file path label', () => {
       render(
         <CommitFileEntry
-          {...commonProps}
+          commitSha="1234"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          commitSHA="1234"
           displayType={displayTypeParameter.list}
         />,
         { wrapper }
@@ -166,15 +182,21 @@ describe('CommitFileEntry', () => {
     })
 
     it('fires the prefetch function on hover', async () => {
+      const user = userEvent.setup()
       render(
         <CommitFileEntry
-          {...commonProps}
+          commitSha="1234"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          commitSHA="1234"
           displayType={displayTypeParameter.tree}
         />,
         { wrapper }
       )
 
-      userEvent.hover(screen.getByText('file.js'))
+      await user.hover(screen.getByText('file.js'))
 
       await waitFor(() => queryClient.getQueryState().isFetching)
       await waitFor(() => !queryClient.getQueryState().isFetching)

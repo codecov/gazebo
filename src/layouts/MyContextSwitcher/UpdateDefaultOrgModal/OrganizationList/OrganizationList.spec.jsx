@@ -136,9 +136,10 @@ describe('OrganizationList', () => {
     })
 
     it('loads next page of data', async () => {
+      const user = userEvent.setup()
       render(<OrganizationList {...defaultProps} />, { wrapper })
       const loadMoreButton = await screen.findByText('Load More')
-      userEvent.click(loadMoreButton)
+      await user.click(loadMoreButton)
 
       const lilianaOrg = await screen.findByText('liliana-temult-org')
       expect(lilianaOrg).toBeInTheDocument()

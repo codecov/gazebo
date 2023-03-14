@@ -49,11 +49,18 @@ const mockAllSeatsTaken = {
   seatsUsed: 10,
   seatsLimit: 10,
 }
+
 const mockOpenSeatsTaken = {
   planAutoActivate: true,
   seatsUsed: 5,
   seatsLimit: 10,
 }
+
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/admin/gh/members']}>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  </MemoryRouter>
+)
 
 beforeAll(() => server.listen())
 beforeEach(() => {
@@ -130,42 +137,25 @@ describe('MemberTable', () => {
     })
 
     it('displays header', async () => {
-      render(
-        <MemoryRouter initialEntries={['/admin/gh/members']}>
-          <QueryClientProvider client={queryClient}>
-            <MemberTable />
-          </QueryClientProvider>
-        </MemoryRouter>
-      )
+      render(<MemberTable />, { wrapper })
 
       const header = await screen.findByText('User Name')
       expect(header).toBeInTheDocument()
     })
 
     it('displays initial user set', async () => {
-      render(
-        <MemoryRouter initialEntries={['/admin/gh/members']}>
-          <QueryClientProvider client={queryClient}>
-            <MemberTable />
-          </QueryClientProvider>
-        </MemoryRouter>
-      )
+      render(<MemberTable />, { wrapper })
 
       const user = await screen.findByText('User 1')
       expect(user).toBeInTheDocument()
     })
 
     it('displays extended list after loading more', async () => {
-      render(
-        <MemoryRouter initialEntries={['/admin/gh/members']}>
-          <QueryClientProvider client={queryClient}>
-            <MemberTable />
-          </QueryClientProvider>
-        </MemoryRouter>
-      )
+      const user = userEvent.setup()
+      render(<MemberTable />, { wrapper })
 
       const button = await screen.findByText('Load More')
-      userEvent.click(button)
+      await user.click(button)
 
       const user1 = screen.getByText('User 1')
       expect(user1).toBeInTheDocument()
@@ -181,13 +171,7 @@ describe('MemberTable', () => {
     })
 
     it('displays the button', async () => {
-      render(
-        <MemoryRouter initialEntries={['/admin/gh/members']}>
-          <QueryClientProvider client={queryClient}>
-            <MemberTable />
-          </QueryClientProvider>
-        </MemoryRouter>
-      )
+      render(<MemberTable />, { wrapper })
 
       const button = await screen.findByText('Load More')
       expect(button).toBeInTheDocument()
@@ -201,13 +185,8 @@ describe('MemberTable', () => {
       })
 
       it('disables the toggle', async () => {
-        render(
-          <MemoryRouter initialEntries={['/admin/gh/members']}>
-            <QueryClientProvider client={queryClient}>
-              <MemberTable />
-            </QueryClientProvider>
-          </MemoryRouter>
-        )
+        const user = userEvent.setup()
+        render(<MemberTable />, { wrapper })
 
         let toggles = await screen.findAllByRole('button', {
           name: 'Non-Active',
@@ -215,7 +194,7 @@ describe('MemberTable', () => {
         expect(toggles.length).toBe(1)
 
         let toggle = await screen.findByRole('button', { name: 'Non-Active' })
-        userEvent.click(toggle)
+        await user.click(toggle)
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
@@ -234,19 +213,14 @@ describe('MemberTable', () => {
       })
 
       it('updates the users activation', async () => {
-        render(
-          <MemoryRouter initialEntries={['/admin/gh/members']}>
-            <QueryClientProvider client={queryClient}>
-              <MemberTable />
-            </QueryClientProvider>
-          </MemoryRouter>
-        )
+        const user = userEvent.setup()
+        render(<MemberTable />, { wrapper })
 
         const nonActiveToggleClick = await screen.findByRole('button', {
           name: 'Non-Active',
         })
 
-        userEvent.click(nonActiveToggleClick)
+        await user.click(nonActiveToggleClick)
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
@@ -270,18 +244,13 @@ describe('MemberTable', () => {
     })
 
     it('updates the users activation', async () => {
-      render(
-        <MemoryRouter initialEntries={['/admin/gh/members']}>
-          <QueryClientProvider client={queryClient}>
-            <MemberTable />
-          </QueryClientProvider>
-        </MemoryRouter>
-      )
+      const user = userEvent.setup()
+      render(<MemberTable />, { wrapper })
 
       const activeToggleClick = await screen.findByRole('button', {
         name: 'Activated',
       })
-      userEvent.click(activeToggleClick)
+      await user.click(activeToggleClick)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -302,13 +271,7 @@ describe('MemberTable', () => {
     })
 
     it('displays an empty table', async () => {
-      render(
-        <MemoryRouter initialEntries={['/admin/gh/members']}>
-          <QueryClientProvider client={queryClient}>
-            <MemberTable />
-          </QueryClientProvider>
-        </MemoryRouter>
-      )
+      render(<MemberTable />, { wrapper })
 
       const table = await screen.findByTestId('body-row')
       expect(table).toBeEmptyDOMElement()

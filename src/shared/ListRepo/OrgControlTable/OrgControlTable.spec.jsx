@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { orderingOptions } from 'services/repos'
@@ -9,30 +9,20 @@ jest.mock('./GithubPrivateScopeLogin', () => () => 'GithubPrivateScopeLogin')
 jest.mock('./ResyncButton', () => () => 'ResyncButton')
 
 describe('OrgControlTable', () => {
-  let props
-
-  function setup(over = {}) {
-    props = {
-      sortItem: orderingOptions[0],
-      setSortItem: jest.fn(),
-      repoDisplay: 'All',
-      setRepoDisplay: jest.fn(),
-      setSearchValue: jest.fn(),
-      searchValue: '',
-      canRefetch: true,
-      ...over,
-    }
-    render(<OrgControlTable {...props} />)
-  }
-
   describe('when rendering with repo display set to active', () => {
-    beforeEach(() => {
-      setup({
-        repoDisplay: 'Active',
-      })
-    })
-
     it('renders the active button selected', () => {
+      render(
+        <OrgControlTable
+          sortItem={orderingOptions[0]}
+          setSortItem={jest.fn()}
+          setRepoDisplay={jest.fn()}
+          setSearchValue={jest.fn()}
+          searchValue=""
+          canRefetch={true}
+          repoDisplay="Active"
+        />
+      )
+
       const buttonEnabled = screen.getByRole('button', {
         name: /Active/,
       })
@@ -45,28 +35,43 @@ describe('OrgControlTable', () => {
     })
 
     describe('when clicking on inactive button', () => {
-      beforeEach(() => {
-        screen
-          .getByRole('button', {
-            name: /Inactive/,
-          })
-          .click()
-      })
+      it('calls setRepoDisplay with false', async () => {
+        const user = userEvent.setup()
+        const setRepoDisplay = jest.fn()
+        render(
+          <OrgControlTable
+            sortItem={orderingOptions[0]}
+            setSortItem={jest.fn()}
+            repoDisplay="All"
+            setRepoDisplay={setRepoDisplay}
+            setSearchValue={jest.fn()}
+            searchValue=""
+            canRefetch={true}
+          />
+        )
 
-      it('calls setRepoDisplay with false', () => {
-        expect(props.setRepoDisplay).toHaveBeenCalledWith('Inactive')
+        const inactiveButton = screen.getByRole('button', { name: /Inactive/ })
+        await user.click(inactiveButton)
+
+        expect(setRepoDisplay).toHaveBeenCalledWith('Inactive')
       })
     })
   })
 
   describe('when rendering with repo display set to inactive', () => {
-    beforeEach(() => {
-      setup({
-        repoDisplay: 'Inactive',
-      })
-    })
-
     it('renders the not yet active button selected', () => {
+      render(
+        <OrgControlTable
+          sortItem={orderingOptions[0]}
+          setSortItem={jest.fn()}
+          setRepoDisplay={jest.fn()}
+          setSearchValue={jest.fn()}
+          searchValue=""
+          canRefetch={true}
+          repoDisplay="Inactive"
+        />
+      )
+
       const buttonEnabled = screen.getByRole('button', {
         name: /Active/,
       })
@@ -79,65 +84,113 @@ describe('OrgControlTable', () => {
     })
 
     describe('when clicking on Active button', () => {
-      beforeEach(() => {
-        screen
-          .getByRole('button', {
-            name: /Active/,
-          })
-          .click()
-      })
+      it('calls setActive with false', async () => {
+        const user = userEvent.setup()
+        const setRepoDisplay = jest.fn()
+        render(
+          <OrgControlTable
+            sortItem={orderingOptions[0]}
+            setSortItem={jest.fn()}
+            repoDisplay="All"
+            setRepoDisplay={setRepoDisplay}
+            setSearchValue={jest.fn()}
+            searchValue=""
+            canRefetch={true}
+          />
+        )
 
-      it('calls setActive with false', () => {
-        expect(props.setRepoDisplay).toHaveBeenCalledWith('Active')
+        const activeButton = screen.getByRole('button', {
+          name: /Active/,
+        })
+
+        await user.click(activeButton)
+
+        expect(setRepoDisplay).toHaveBeenCalledWith('Active')
       })
     })
   })
 
   describe('when typing in the search', () => {
-    beforeEach(() => {
-      jest.useFakeTimers()
-      setup()
+    it(`doesn't call setSearchValue yet`, async () => {
+      const user = userEvent.setup()
+      const setSearchValue = jest.fn()
+      render(
+        <OrgControlTable
+          sortItem={orderingOptions[0]}
+          setSortItem={jest.fn()}
+          repoDisplay="All"
+          setRepoDisplay={jest.fn()}
+          setSearchValue={setSearchValue}
+          searchValue=""
+          canRefetch={true}
+        />
+      )
+
       const searchInput = screen.getByRole('textbox', {
         name: /search/i,
       })
-      userEvent.type(searchInput, 'search')
-    })
+      await user.type(searchInput, 'search')
 
-    it('doesnt call setSearchValue yet', () => {
-      expect(props.setSearchValue).not.toHaveBeenCalledWith('search')
+      expect(setSearchValue).not.toHaveBeenCalledWith('search')
     })
 
     describe('after waiting some time', () => {
-      beforeEach(() => {
-        jest.advanceTimersByTime(600)
-      })
+      it('calls setSearchValue', async () => {
+        const user = userEvent.setup()
+        const setSearchValue = jest.fn()
+        render(
+          <OrgControlTable
+            sortItem={orderingOptions[0]}
+            setSortItem={jest.fn()}
+            repoDisplay="All"
+            setRepoDisplay={jest.fn()}
+            setSearchValue={setSearchValue}
+            searchValue=""
+            canRefetch={true}
+          />
+        )
 
-      it('calls setSearchValue', () => {
-        expect(props.setSearchValue).toHaveBeenCalled()
+        const searchInput = screen.getByRole('textbox', {
+          name: /search/i,
+        })
+        await user.type(searchInput, 'search')
+
+        await waitFor(() => expect(setSearchValue).toHaveBeenCalled())
       })
     })
   })
 
   describe('when the user can refetch', () => {
-    beforeEach(() => {
-      setup({
-        canRefetch: true,
-      })
-    })
-
     it('renders the ResyncButton', () => {
+      render(
+        <OrgControlTable
+          sortItem={orderingOptions[0]}
+          setSortItem={jest.fn()}
+          repoDisplay="All"
+          setRepoDisplay={jest.fn()}
+          setSearchValue={jest.fn()}
+          searchValue=""
+          canRefetch={true}
+        />
+      )
       expect(screen.getByText(/ResyncButton/)).toBeInTheDocument()
     })
   })
 
   describe('when the user cant refetch', () => {
-    beforeEach(() => {
-      setup({
-        canRefetch: false,
-      })
-    })
+    it(`doesn't render the ResyncButton`, () => {
+      render(
+        <OrgControlTable
+          sortItem={orderingOptions[0]}
+          setSortItem={jest.fn()}
+          repoDisplay="All"
+          setRepoDisplay={jest.fn()}
+          setSearchValue={jest.fn()}
+          searchValue=""
+          canRefetch={false}
+        />
+      )
 
-    it('doesnt render the ResyncButton', () => {
       expect(screen.queryByText(/ResyncButton/)).not.toBeInTheDocument()
     })
   })

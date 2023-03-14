@@ -14,26 +14,27 @@ jest.mock('react-router-dom', () => ({
 jest.mock('services/user')
 
 describe('ResyncButton', () => {
-  function setup(returnValueResync, provider) {
+  function setup(
+    provider,
+    returnValueResync = {
+      isSyncing: false,
+    }
+  ) {
+    const trigger = jest.fn()
+
+    const resyncUser = { triggerResync: trigger, ...returnValueResync }
+
     useParams.mockReturnValue({ provider })
-    useResyncUser.mockReturnValue(returnValueResync)
-    render(<ResyncButton />, { wrapper: MemoryRouter })
+    useResyncUser.mockReturnValue(resyncUser)
+
+    return { trigger }
   }
 
   describe('when rendered with gh provider and the sync is not in progress', () => {
-    const trigger = jest.fn()
-
-    beforeEach(() => {
-      setup(
-        {
-          isSyncing: false,
-          triggerResync: trigger,
-        },
-        'gh'
-      )
-    })
-
     it('renders the button to resync', () => {
+      setup('gh')
+      render(<ResyncButton />, { wrapper: MemoryRouter })
+
       expect(
         screen.getByRole('button', {
           name: /re-sync/i,
@@ -42,40 +43,37 @@ describe('ResyncButton', () => {
     })
 
     it('renders text related to gh provider', () => {
+      setup('gh')
+      render(<ResyncButton />, { wrapper: MemoryRouter })
+
       expect(screen.getByText(/or org?/)).toBeInTheDocument()
       expect(screen.getByText(/check org access/)).toBeInTheDocument()
       expect(screen.getByText(/Learn more in/)).toBeInTheDocument()
     })
 
     describe('when the user clicks on the button', () => {
-      beforeEach(() => {
-        userEvent.click(
+      it('calls the triggerResync from the service', async () => {
+        const { trigger } = setup('gh')
+        const user = userEvent.setup()
+        render(<ResyncButton />, { wrapper: MemoryRouter })
+
+        await user.click(
           screen.getByRole('button', {
             name: /re-sync/i,
           })
         )
-      })
 
-      it('calls the triggerResync from the service', () => {
         expect(trigger).toHaveBeenCalled()
       })
     })
   })
 
   describe('when rendered without gh provider and the sync is not in progress', () => {
-    const trigger = jest.fn()
+    beforeEach(() => setup('not-gh'))
 
-    beforeEach(() => {
-      setup(
-        {
-          isSyncing: false,
-          triggerResync: trigger,
-        },
-        'not-gh'
-      )
-    })
+    it(`shouldn't render text related to gh provider`, () => {
+      render(<ResyncButton />, { wrapper: MemoryRouter })
 
-    it('shouldnt render text related to gh provider', () => {
       expect(screen.queryByText(/or org?/)).toBeNull()
       expect(screen.queryByText(/check org access/)).toBeNull()
     })
@@ -83,16 +81,15 @@ describe('ResyncButton', () => {
 
   describe('when the syncing is in progress', () => {
     beforeEach(() => {
-      setup(
-        {
-          isSyncing: true,
-          triggerResync: () => null,
-        },
-        'gh'
-      )
+      setup('gh', {
+        isSyncing: true,
+        triggerResync: () => null,
+      })
     })
 
     it('renders a loading message', () => {
+      render(<ResyncButton />, { wrapper: MemoryRouter })
+
       expect(screen.getByText(/Syncing\.\.\./i)).toBeInTheDocument()
     })
   })

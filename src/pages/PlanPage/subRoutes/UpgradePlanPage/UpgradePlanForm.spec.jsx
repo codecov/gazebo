@@ -67,39 +67,19 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
+const wrapper =
+  (initialEntries = ['/my/initial/route']) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+      </QueryClientProvider>
+    )
+
 describe('UpgradePlanForm', () => {
-  let addNotification
-  let props
+  function setup(successfulRequest = true, errorDetails = undefined) {
+    const addNotification = jest.fn()
 
-  const defaultProps = {
-    owner: 'codecov',
-    provider: 'gh',
-    proPlanMonth,
-    proPlanYear,
-    accountDetails: {
-      activatedUserCount: 9,
-      inactiveUserCount: 0,
-      plan: null,
-      latestInvoice: null,
-    },
-  }
-
-  function setup(
-    selectedPlan = null,
-    invoice = null,
-    accountDetails = defaultProps.accountDetails,
-    successfulRequest = true,
-    errorDetails = undefined
-  ) {
-    addNotification = jest.fn()
-    props = {
-      ...defaultProps,
-      accountDetails: {
-        ...accountDetails,
-        plan: selectedPlan,
-        latestInvoice: invoice,
-      },
-    }
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
@@ -113,6 +93,8 @@ describe('UpgradePlanForm', () => {
         return res(ctx.status(200), ctx.json({ success: true }))
       })
     )
+
+    return { addNotification }
   }
 
   describe('when the user does not have any plan', () => {
@@ -122,11 +104,19 @@ describe('UpgradePlanForm', () => {
 
     it('renders monthly radio button', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const radio = await screen.findByLabelText(/\$12/i)
@@ -135,11 +125,19 @@ describe('UpgradePlanForm', () => {
 
     it('renders annual radio button', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const radio = await screen.findByLabelText(/\$10/i)
@@ -148,11 +146,19 @@ describe('UpgradePlanForm', () => {
 
     it('renders the seat input with 2 seats', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const numberInput = await screen.findByRole('spinbutton')
@@ -163,16 +169,24 @@ describe('UpgradePlanForm', () => {
 
   describe('when the user have a free plan', () => {
     beforeEach(() => {
-      setup(freePlan)
+      setup()
     })
 
     it('renders annual', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: freePlan,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const radio = await screen.findByRole('radio', { name: /\$10/ })
@@ -182,11 +196,19 @@ describe('UpgradePlanForm', () => {
 
     it('renders the seat input with 2 seats', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: freePlan,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const numberInput = await screen.findByRole('spinbutton')
@@ -195,17 +217,23 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user have a pro year plan', () => {
-    beforeEach(() => {
-      setup(proPlanYear)
-    })
+    beforeEach(() => setup())
 
     it('renders annual radio to be checked', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanYear,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const radio = await screen.findByRole('radio', { name: /10/i })
@@ -214,11 +242,19 @@ describe('UpgradePlanForm', () => {
 
     it('renders the seat input with 10 seats (existing subscription)', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanYear,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const seatCount = await screen.findByRole('spinbutton')
@@ -227,11 +263,19 @@ describe('UpgradePlanForm', () => {
 
     it('has the price for the year', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanYear,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const price = await screen.findByText(/\$1,200/)
@@ -240,11 +284,19 @@ describe('UpgradePlanForm', () => {
 
     it('has the update button disabled', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanYear,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const update = await screen.findByText(/Update/)
@@ -253,16 +305,25 @@ describe('UpgradePlanForm', () => {
 
     describe('when updating to a month plan', () => {
       it('has the price for the month', async () => {
+        const user = userEvent.setup()
         render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/my/initial/route']}>
-              <UpgradePlanForm {...props} />
-            </MemoryRouter>
-          </QueryClientProvider>
+          <UpgradePlanForm
+            owner="codecov"
+            provider="gh"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: proPlanYear,
+              latestInvoice: null,
+            }}
+          />,
+          { wrapper: wrapper() }
         )
 
         const monthRadio = await screen.findByRole('radio', { name: /12/i })
-        userEvent.click(monthRadio)
+        await user.click(monthRadio)
 
         const price = screen.getByText(/\$120/)
         expect(price).toBeInTheDocument()
@@ -271,22 +332,29 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user have a pro year monthly', () => {
-    beforeEach(() => {
-      setup(proPlanMonth)
-    })
+    beforeEach(() => setup())
 
     describe('user clicks select annual', () => {
       it('renders annual radio to be checked', async () => {
+        const user = userEvent.setup()
         render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/my/initial/route']}>
-              <UpgradePlanForm {...props} />
-            </MemoryRouter>
-          </QueryClientProvider>
+          <UpgradePlanForm
+            owner="codecov"
+            provider="gh"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: proPlanMonth,
+              latestInvoice: null,
+            }}
+          />,
+          { wrapper: wrapper() }
         )
 
         const switchAnnual = await screen.findByText('switch to annual')
-        userEvent.click(switchAnnual)
+        await user.click(switchAnnual)
 
         const annualRadio = await screen.findByRole('radio', { name: /10/i })
         expect(annualRadio).toBeChecked()
@@ -296,24 +364,24 @@ describe('UpgradePlanForm', () => {
 
   describe('display student info', () => {
     describe('when there are no students', () => {
-      beforeEach(() => {
-        const accountDetails = {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-          activatedStudentCount: 0,
-        }
-        setup(freePlan, null, accountDetails)
-      })
+      beforeEach(() => setup())
 
       it('renders text for 1 student not taking active seats', async () => {
         render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/my/initial/route']}>
-              <UpgradePlanForm {...props} />
-            </MemoryRouter>
-          </QueryClientProvider>
+          <UpgradePlanForm
+            owner="codecov"
+            provider="gh"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: freePlan,
+              latestInvoice: null,
+              activatedStudentCount: 0,
+            }}
+          />,
+          { wrapper: wrapper() }
         )
 
         const singleStudentText = screen.queryByText(
@@ -329,24 +397,24 @@ describe('UpgradePlanForm', () => {
     })
 
     describe('when there is a single student', () => {
-      beforeEach(() => {
-        const accountDetails = {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-          activatedStudentCount: 1,
-        }
-        setup(freePlan, null, accountDetails)
-      })
+      beforeEach(() => setup())
 
       it('renders text for 1 student not taking active seats', async () => {
         render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/my/initial/route']}>
-              <UpgradePlanForm {...props} />
-            </MemoryRouter>
-          </QueryClientProvider>
+          <UpgradePlanForm
+            owner="codecov"
+            provider="gh"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: freePlan,
+              latestInvoice: null,
+              activatedStudentCount: 1,
+            }}
+          />,
+          { wrapper: wrapper() }
         )
 
         const studentText = await screen.findByText(
@@ -357,24 +425,24 @@ describe('UpgradePlanForm', () => {
     })
 
     describe('when there are two or more students', () => {
-      beforeEach(() => {
-        const accountDetails = {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-          activatedStudentCount: 3,
-        }
-        setup(freePlan, null, accountDetails)
-      })
+      beforeEach(() => setup())
 
       it('renders text for two or more student not taking active seats', async () => {
         render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/my/initial/route']}>
-              <UpgradePlanForm {...props} />
-            </MemoryRouter>
-          </QueryClientProvider>
+          <UpgradePlanForm
+            owner="codecov"
+            provider="gh"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: freePlan,
+              latestInvoice: null,
+              activatedStudentCount: 3,
+            }}
+          />,
+          { wrapper: wrapper() }
         )
 
         const studentText = await screen.findByText(
@@ -386,29 +454,34 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('if there is an invoice', () => {
-    beforeEach(() => {
-      const invoice = {
-        periodStart: 1595270468,
-        periodEnd: 1597948868,
-        dueDate: '1600544863',
-        amountPaid: 9600.0,
-        amountDue: 9600.0,
-        amountRemaining: 0.0,
-        total: 9600.0,
-        subtotal: 9600.0,
-        invoicePdf:
-          'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
-      }
-      setup(proPlanMonth, invoice)
-    })
+    beforeEach(() => setup())
 
     it('renders the next billing period', async () => {
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: {
+              periodStart: 1595270468,
+              periodEnd: 1597948868,
+              dueDate: '1600544863',
+              amountPaid: 9600.0,
+              amountDue: 9600.0,
+              amountRemaining: 0.0,
+              total: 9600.0,
+              subtotal: 9600.0,
+              invoicePdf:
+                'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+            },
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const nextBillingData = await screen.findByText(/Next Billing Date/)
@@ -420,24 +493,31 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user leave the nb of seats blank', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     it('displays an error', async () => {
+      const user = userEvent.setup()
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
+      await user.type(input, '{backspace}{backspace}{backspace}')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = await screen.findByText(/Number of seats is required/)
       expect(error).toBeInTheDocument()
@@ -445,25 +525,32 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user chooses less than 2 seats', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     it('displays an error', async () => {
+      const user = userEvent.setup()
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
-      userEvent.type(input, '1')
+      await user.type(input, '{backspace}{backspace}{backspace}')
+      await user.type(input, '1')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = screen.getByText(
         /You cannot purchase a per user plan for less than 2 users/
@@ -473,25 +560,32 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user chooses less than the number of active users', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     it('displays an error', async () => {
+      const user = userEvent.setup()
       render(
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={['/my/initial/route']}>
-            <UpgradePlanForm {...props} />
-          </MemoryRouter>
-        </QueryClientProvider>
+        <UpgradePlanForm
+          owner="codecov"
+          provider="gh"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper: wrapper() }
       )
 
       const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
-      userEvent.type(input, '8')
+      await user.type(input, '{backspace}{backspace}{backspace}')
+      await user.type(input, '8')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = await screen.findByText(
         /deactivate more users before downgrading plans/i
@@ -502,27 +596,33 @@ describe('UpgradePlanForm', () => {
 
   describe('when clicking on the button to upgrade', () => {
     describe('when mutation is successful', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('adds a success notification', async () => {
+        const { addNotification } = setup()
+        const user = userEvent.setup()
         render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/my/initial/route']}>
-              <UpgradePlanForm {...props} />
-            </MemoryRouter>
-          </QueryClientProvider>
+          <UpgradePlanForm
+            owner="codecov"
+            provider="gh"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: null,
+              latestInvoice: null,
+            }}
+          />,
+          { wrapper: wrapper() }
         )
 
         const input = await screen.findByRole('spinbutton')
-        userEvent.type(input, '{backspace}{backspace}{backspace}')
-        userEvent.type(input, '20')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '20')
 
         const updateButton = await screen.findByRole('button', {
           name: 'Update',
         })
-        userEvent.click(updateButton)
+        await user.click(updateButton)
 
         await waitFor(() => queryClient.isMutating())
         await waitFor(() => queryClient.isFetching())
@@ -538,30 +638,42 @@ describe('UpgradePlanForm', () => {
       })
 
       it('redirects the user to the plan page', async () => {
+        setup()
+        const user = userEvent.setup()
         let testLocation
         render(
-          <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={['/plan/gh/codecov']}>
-              <UpgradePlanForm {...props} />
-              <Route
-                path="*"
-                render={({ location }) => {
-                  testLocation = location
-                  return null
-                }}
-              />
-            </MemoryRouter>
-          </QueryClientProvider>
+          <>
+            <UpgradePlanForm
+              owner="codecov"
+              provider="gh"
+              proPlanMonth={proPlanMonth}
+              proPlanYear={proPlanYear}
+              accountDetails={{
+                activatedUserCount: 9,
+                inactiveUserCount: 0,
+                plan: null,
+                latestInvoice: null,
+              }}
+            />
+            <Route
+              path="*"
+              render={({ location }) => {
+                testLocation = location
+                return null
+              }}
+            />
+          </>,
+          { wrapper: wrapper(['/plan/gh/codecov']) }
         )
 
         const input = await screen.findByRole('spinbutton')
-        userEvent.type(input, '{backspace}{backspace}{backspace}')
-        userEvent.type(input, '20')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '20')
 
         const updateButton = await screen.findByRole('button', {
           name: 'Update',
         })
-        userEvent.click(updateButton)
+        await user.click(updateButton)
 
         await waitFor(() => queryClient.isMutating())
         await waitFor(() => !queryClient.isMutating())
@@ -574,33 +686,34 @@ describe('UpgradePlanForm', () => {
 
     describe('when mutation is not successful', () => {
       describe('an error message is provided', () => {
-        beforeEach(() => {
-          setup(
-            null,
-            null,
-            defaultProps.accountDetails,
-            false,
-            'Insufficient funds.'
-          )
-        })
-
         it('adds an error notification with detail message', async () => {
+          const { addNotification } = setup(false, 'Insufficient funds.')
+
+          const user = userEvent.setup()
           render(
-            <QueryClientProvider client={queryClient}>
-              <MemoryRouter initialEntries={['/my/initial/route']}>
-                <UpgradePlanForm {...props} />
-              </MemoryRouter>
-            </QueryClientProvider>
+            <UpgradePlanForm
+              owner="codecov"
+              provider="gh"
+              proPlanMonth={proPlanMonth}
+              proPlanYear={proPlanYear}
+              accountDetails={{
+                activatedUserCount: 9,
+                inactiveUserCount: 0,
+                plan: null,
+                latestInvoice: null,
+              }}
+            />,
+            { wrapper: wrapper() }
           )
 
           const input = await screen.findByRole('spinbutton')
-          userEvent.type(input, '{backspace}{backspace}{backspace}')
-          userEvent.type(input, '20')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
             name: 'Update',
           })
-          userEvent.click(updateButton)
+          await user.click(updateButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())
@@ -617,27 +730,33 @@ describe('UpgradePlanForm', () => {
       })
 
       describe('no error message is provided', () => {
-        beforeEach(() => {
-          setup(null, null, defaultProps.accountDetails, false)
-        })
-
         it('adds an error notification with a default message', async () => {
+          const { addNotification } = setup(false)
+          const user = userEvent.setup()
           render(
-            <QueryClientProvider client={queryClient}>
-              <MemoryRouter initialEntries={['/my/initial/route']}>
-                <UpgradePlanForm {...props} />
-              </MemoryRouter>
-            </QueryClientProvider>
+            <UpgradePlanForm
+              owner="codecov"
+              provider="gh"
+              proPlanMonth={proPlanMonth}
+              proPlanYear={proPlanYear}
+              accountDetails={{
+                activatedUserCount: 9,
+                inactiveUserCount: 0,
+                plan: null,
+                latestInvoice: null,
+              }}
+            />,
+            { wrapper: wrapper() }
           )
 
           const input = await screen.findByRole('spinbutton')
-          userEvent.type(input, '{backspace}{backspace}{backspace}')
-          userEvent.type(input, '20')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
             name: 'Update',
           })
-          userEvent.click(updateButton)
+          await user.click(updateButton)
 
           await waitFor(() => queryClient.isMutating())
           await waitFor(() => queryClient.isFetching())

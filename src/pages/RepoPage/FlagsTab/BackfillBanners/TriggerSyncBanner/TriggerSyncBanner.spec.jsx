@@ -34,9 +34,19 @@ const user = {
   },
 }
 
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
+    <Route path="/:provider/:owner/:repo/flags" exact={true}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
+
 describe('TriggerSyncBanner', () => {
-  const mutate = jest.fn()
+  afterEach(() => jest.resetAllMocks())
+
   function setup() {
+    const mutate = jest.fn()
     useParams.mockReturnValue({
       owner: 'codecov',
       provider: 'gh',
@@ -45,23 +55,14 @@ describe('TriggerSyncBanner', () => {
     useUser.mockReturnValue({ data: user })
     useActivateFlagMeasurements.mockReturnValue({ mutate })
 
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
-        <Route path="/:provider/:owner/:repo/flags" exact={true}>
-          <QueryClientProvider client={queryClient}>
-            <TriggerSyncBanner />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+    return { mutate }
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders heading and content components', () => {
+      setup()
+      render(<TriggerSyncBanner />, { wrapper })
+
       expect(
         screen.getByText(
           'You need to enable Flag analytics to see coverage data'
@@ -76,11 +77,13 @@ describe('TriggerSyncBanner', () => {
     })
 
     describe('when clicking on the button to upgrade', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByTestId('backfill-task'))
-      })
+      it('calls the mutate function', async () => {
+        const { mutate } = setup()
+        render(<TriggerSyncBanner />, { wrapper })
 
-      it('calls the mutate function', () => {
+        const user = userEvent.setup()
+        await user.click(screen.getByTestId('backfill-task'))
+
         expect(mutate).toHaveBeenCalledWith({
           provider: 'gh',
           repo: 'gazebo',

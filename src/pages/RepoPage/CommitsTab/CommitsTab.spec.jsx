@@ -76,10 +76,10 @@ describe('Commits Tab', () => {
     jest.resetAllMocks()
   })
 
-  const fetchNextPage = jest.fn()
-  const searches = jest.fn()
-
   function setup({ hasNextPage }) {
+    const fetchNextPage = jest.fn()
+    const searches = jest.fn()
+
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockRepo))
@@ -99,6 +99,8 @@ describe('Commits Tab', () => {
         res(ctx.status(200), ctx.data(mockCommits))
       )
     )
+
+    return { fetchNextPage, searches }
   }
 
   describe('when rendered', () => {
@@ -182,7 +184,8 @@ describe('Commits Tab', () => {
       setup({ hasNextPage: true })
     })
 
-    it('changes checked property value to true', () => {
+    it('changes checked property value to true', async () => {
+      const user = userEvent.setup()
       repoPageRender({
         renderCommits: () => (
           <Wrapper>
@@ -193,7 +196,7 @@ describe('Commits Tab', () => {
       })
 
       const initialCheckBox = screen.getByRole('checkbox')
-      userEvent.click(initialCheckBox)
+      await user.click(initialCheckBox)
 
       const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toBeChecked()
@@ -202,14 +205,13 @@ describe('Commits Tab', () => {
 
   describe('when select onLoadMore is triggered', () => {
     describe('when there is a next page', () => {
-      beforeEach(() => {
-        setup({ hasNextPage: true })
+      it('calls fetchNextPage', async () => {
+        const { fetchNextPage } = setup({ hasNextPage: true })
         useIntersection.mockReturnValue({
           isIntersecting: true,
         })
-      })
+        const user = userEvent.setup()
 
-      it('calls fetchNextPage', async () => {
         repoPageRender({
           renderCommits: () => (
             <Wrapper>
@@ -220,7 +222,7 @@ describe('Commits Tab', () => {
         })
 
         const select = await screen.findByText('Select')
-        userEvent.click(select)
+        await user.click(select)
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
@@ -231,6 +233,7 @@ describe('Commits Tab', () => {
     })
 
     describe('when there is not a next page', () => {
+      // I don't think this test is working, fetchNextPage will never been called.
       const fetchNextPage = jest.fn()
       beforeEach(() => {
         setup({ hasNextPage: false })
@@ -240,6 +243,7 @@ describe('Commits Tab', () => {
       })
 
       it('does not call fetchNextPage', async () => {
+        const user = userEvent.setup()
         repoPageRender({
           renderCommits: () => (
             <Wrapper>
@@ -250,7 +254,7 @@ describe('Commits Tab', () => {
         })
 
         const select = await screen.findByRole('button')
-        userEvent.click(select)
+        await user.click(select)
 
         expect(fetchNextPage).not.toBeCalled()
       })
@@ -258,11 +262,9 @@ describe('Commits Tab', () => {
   })
 
   describe('user searches for branch', () => {
-    beforeEach(() => {
-      setup({ hasNextPage: false })
-    })
-
     it('fetches request with search term', async () => {
+      const { searches } = setup({ hasNextPage: false })
+      const user = userEvent.setup()
       repoPageRender({
         renderCommits: () => (
           <Wrapper>
@@ -273,10 +275,10 @@ describe('Commits Tab', () => {
       })
 
       const select = await screen.findByText('Select')
-      userEvent.click(select)
+      await user.click(select)
 
       const search = await screen.findByRole('textbox')
-      userEvent.type(search, 'searching for a branch')
+      await user.type(search, 'searching for a branch')
 
       await waitFor(() => expect(searches).toBeCalled())
       await waitFor(() =>

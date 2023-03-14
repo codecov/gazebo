@@ -2,8 +2,8 @@ import { useParams } from 'react-router-dom'
 
 import codecovReport from 'assets/repoConfig/codecov-report.png'
 import patchAndProject from 'assets/repoConfig/patch-and-project.png'
-import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
 import { useRepo } from 'services/repo'
+import { useOnboardingTracking } from 'services/user'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 

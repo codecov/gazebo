@@ -46,6 +46,7 @@ describe('Toggle Element', () => {
 
     describe('renders the closed', () => {
       it('toggle controls', async () => {
+        const user = userEvent.setup()
         render(
           <ToggleElement
             localStorageKey="c2"
@@ -62,7 +63,7 @@ describe('Toggle Element', () => {
         expect(hideChart).toBeInTheDocument()
         expect(chevronDown).toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         const removedHideChart = screen.queryByText('Hide Chart')
         const removedChevronDown = screen.queryByText('chevron-down.svg')
@@ -76,6 +77,7 @@ describe('Toggle Element', () => {
       })
 
       it('children', async () => {
+        const user = userEvent.setup()
         render(
           <ToggleElement
             localStorageKey="c2"
@@ -91,7 +93,7 @@ describe('Toggle Element', () => {
 
         expect(contents).not.toHaveClass('hidden')
 
-        userEvent.click(button)
+        await user.click(button)
 
         const hiddenContents = screen.getByText('Mighty Nein')
 
