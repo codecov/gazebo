@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import UpgradePlan from './UpgradePlan'
@@ -95,24 +94,13 @@ const enterprisePlan = {
   ],
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-    },
-  },
-  logger: {
-    error: () => {},
-  },
-})
+const queryClient = new QueryClient()
 const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/plan/gh']}>
-      <Route path="/plan/:provider">
-        <Suspense fallback={null}>{children}</Suspense>
-      </Route>
+      <Route path="/plan/:provider">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -263,14 +251,12 @@ describe('UpgradePlan', () => {
         const note = await screen.findByText(
           '*$12 per user / month if paid monthly'
         )
-        expect(note).toBeInTheDocument()
+
+        await waitFor(() => expect(note).toBeInTheDocument())
       })
 
       it('does not render cancel plan link', async () => {
         render(<UpgradePlan />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         const cancelLink = screen.queryByRole('link', { name: /Cancel plan/i })
         expect(cancelLink).not.toBeInTheDocument()
@@ -528,9 +514,6 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
         const planName = await screen.findByRole('heading', {
           name: 'Enterprise Cloud',
         })
@@ -549,9 +532,6 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
         const price = await screen.findByText('Custom Pricing')
         expect(price).toBeInTheDocument()
       })
@@ -567,9 +547,6 @@ describe('UpgradePlan', () => {
 
         const org1 = await screen.findByText('org1')
         await user.click(org1)
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         const configurableUsers = await screen.findByText(
           'Configurable # of users'
@@ -602,9 +579,6 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
         const note = screen.queryByText('*$12 per user / month if paid monthly')
         expect(note).toBeInTheDocument()
       })
@@ -612,9 +586,6 @@ describe('UpgradePlan', () => {
       it('does not render cancel plan link', async () => {
         setup({ isEnterprisePlan: true })
         render(<UpgradePlan />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         const cancelLink = screen.queryByRole('link', { name: /Cancel plan/i })
         expect(cancelLink).not.toBeInTheDocument()
@@ -648,9 +619,6 @@ describe('UpgradePlan', () => {
 
         const org1 = await screen.findByText('org1')
         await user.click(org1)
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         const message = await screen.findByText(
           /This organization is on an enterprise plan, to change or cancel your plan please contact/
