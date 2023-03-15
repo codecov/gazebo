@@ -4,6 +4,11 @@ import userEvent from '@testing-library/user-event'
 import Table from './Table'
 
 describe('Table', () => {
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
+
   describe('render Table', () => {
     it('renders table', () => {
       render(
@@ -224,7 +229,7 @@ describe('Table', () => {
 
   describe('when sorting is enabled and a header is clicked', () => {
     it('onSort is called', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onSort = jest.fn()
       render(
         <Table
@@ -272,7 +277,7 @@ describe('Table', () => {
     })
 
     it('shows sorting icon', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onSort = jest.fn()
       render(
         <Table

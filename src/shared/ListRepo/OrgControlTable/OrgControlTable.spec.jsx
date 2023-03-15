@@ -9,6 +9,10 @@ jest.mock('./GithubPrivateScopeLogin', () => () => 'GithubPrivateScopeLogin')
 jest.mock('./ResyncButton', () => () => 'ResyncButton')
 
 describe('OrgControlTable', () => {
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
   describe('when rendering with repo display set to active', () => {
     it('renders the active button selected', () => {
       render(
@@ -36,7 +40,7 @@ describe('OrgControlTable', () => {
 
     describe('when clicking on inactive button', () => {
       it('calls setRepoDisplay with false', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const setRepoDisplay = jest.fn()
         render(
           <OrgControlTable
@@ -85,7 +89,7 @@ describe('OrgControlTable', () => {
 
     describe('when clicking on Active button', () => {
       it('calls setActive with false', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const setRepoDisplay = jest.fn()
         render(
           <OrgControlTable
@@ -112,7 +116,7 @@ describe('OrgControlTable', () => {
 
   describe('when typing in the search', () => {
     it(`doesn't call setSearchValue yet`, async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const setSearchValue = jest.fn()
       render(
         <OrgControlTable
@@ -136,7 +140,7 @@ describe('OrgControlTable', () => {
 
     describe('after waiting some time', () => {
       it('calls setSearchValue', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const setSearchValue = jest.fn()
         render(
           <OrgControlTable

@@ -17,10 +17,11 @@ const wrapper = ({ children }) => (
 
 describe('TokensTable', () => {
   function setup() {
+    const user = userEvent.setup()
     const mutate = jest.fn()
     useRevokeUserToken.mockReturnValue({ mutate })
 
-    return { mutate }
+    return { mutate, user }
   }
 
   afterEach(() => {
@@ -126,7 +127,7 @@ describe('TokensTable', () => {
 
     describe('when revoking tokens', () => {
       it('triggers revoke on click', async () => {
-        const { mutate } = setup()
+        const { mutate, user } = setup()
 
         render(
           <TokensTable
@@ -144,7 +145,6 @@ describe('TokensTable', () => {
           }
         )
 
-        const user = userEvent.setup()
         await user.click(screen.getAllByText(/Revoke/)[0])
 
         expect(mutate).toBeCalled()
@@ -153,17 +153,14 @@ describe('TokensTable', () => {
     })
 
     describe('render empty table', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       describe('renders triggers a revoke event', () => {
-        it('triggers revoke on click', () => {
+        it('triggers revoke on click', async () => {
+          const { user } = setup()
           render(<TokensTable tokens={[]} />, {
             wrapper,
           })
 
-          userEvent.click(screen.getByText(/No tokens created yet/))
+          await user.click(screen.getByText(/No tokens created yet/))
           expect(screen.getByText(/No tokens created yet/)).toBeInTheDocument()
         })
       })

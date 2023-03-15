@@ -79,6 +79,7 @@ const wrapper =
 describe('UpgradePlanForm', () => {
   function setup(successfulRequest = true, errorDetails = undefined) {
     const addNotification = jest.fn()
+    const user = userEvent.setup()
 
     useAddNotification.mockReturnValue(addNotification)
 
@@ -94,7 +95,7 @@ describe('UpgradePlanForm', () => {
       })
     )
 
-    return { addNotification }
+    return { addNotification, user }
   }
 
   describe('when the user does not have any plan', () => {
@@ -305,7 +306,7 @@ describe('UpgradePlanForm', () => {
 
     describe('when updating to a month plan', () => {
       it('has the price for the month', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <UpgradePlanForm
             owner="codecov"
@@ -332,11 +333,9 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user have a pro year monthly', () => {
-    beforeEach(() => setup())
-
     describe('user clicks select annual', () => {
       it('renders annual radio to be checked', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <UpgradePlanForm
             owner="codecov"
@@ -493,10 +492,8 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user leave the nb of seats blank', () => {
-    beforeEach(() => setup())
-
     it('displays an error', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <UpgradePlanForm
           owner="codecov"
@@ -525,10 +522,8 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user chooses less than 2 seats', () => {
-    beforeEach(() => setup())
-
     it('displays an error', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <UpgradePlanForm
           owner="codecov"
@@ -560,10 +555,8 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('when the user chooses less than the number of active users', () => {
-    beforeEach(() => setup())
-
     it('displays an error', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <UpgradePlanForm
           owner="codecov"
@@ -597,8 +590,7 @@ describe('UpgradePlanForm', () => {
   describe('when clicking on the button to upgrade', () => {
     describe('when mutation is successful', () => {
       it('adds a success notification', async () => {
-        const { addNotification } = setup()
-        const user = userEvent.setup()
+        const { addNotification, user } = setup()
         render(
           <UpgradePlanForm
             owner="codecov"
@@ -638,8 +630,7 @@ describe('UpgradePlanForm', () => {
       })
 
       it('redirects the user to the plan page', async () => {
-        setup()
-        const user = userEvent.setup()
+        const { user } = setup()
         let testLocation
         render(
           <>
@@ -687,9 +678,8 @@ describe('UpgradePlanForm', () => {
     describe('when mutation is not successful', () => {
       describe('an error message is provided', () => {
         it('adds an error notification with detail message', async () => {
-          const { addNotification } = setup(false, 'Insufficient funds.')
+          const { addNotification, user } = setup(false, 'Insufficient funds.')
 
-          const user = userEvent.setup()
           render(
             <UpgradePlanForm
               owner="codecov"
@@ -731,8 +721,8 @@ describe('UpgradePlanForm', () => {
 
       describe('no error message is provided', () => {
         it('adds an error notification with a default message', async () => {
-          const { addNotification } = setup(false)
-          const user = userEvent.setup()
+          const { addNotification, user } = setup(false)
+
           render(
             <UpgradePlanForm
               owner="codecov"

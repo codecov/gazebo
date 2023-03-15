@@ -30,7 +30,11 @@ const wrapper =
 
 describe('ContextSwitcher', () => {
   function setup() {
+    const user = userEvent.setup()
+
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
+
+    return { user }
   }
 
   describe('when rendered', () => {
@@ -83,11 +87,10 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when the button is clicked', () => {
-    beforeEach(() => setup())
     afterEach(() => jest.restoreAllMocks())
 
     it('renders the menu', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <ContextSwitcher
           activeContext="laudna"
@@ -136,7 +139,7 @@ describe('ContextSwitcher', () => {
     })
 
     it('renders the orgs', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <ContextSwitcher
           activeContext="laudna"
@@ -293,11 +296,10 @@ describe('ContextSwitcher', () => {
 
   describe('when isLoading is passed', () => {
     describe('isLoading set to true', () => {
-      beforeEach(() => setup())
       afterEach(() => jest.restoreAllMocks())
 
       it('renders spinner', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <ContextSwitcher
             activeContext="laudna"
@@ -346,11 +348,10 @@ describe('ContextSwitcher', () => {
       })
     })
     describe('isLoading set to false', () => {
-      beforeEach(() => setup())
       afterEach(() => jest.restoreAllMocks())
 
       it('does not render spinner', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <ContextSwitcher
             activeContext="laudna"
@@ -402,13 +403,12 @@ describe('ContextSwitcher', () => {
 
   describe('when onLoadMore is passed and is intersecting', () => {
     beforeEach(() => {
-      setup()
       useIntersection.mockReturnValue({ isIntersecting: true })
     })
     afterEach(() => jest.restoreAllMocks())
 
     it('calls onLoadMore', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onLoadMoreFunc = jest.fn()
       render(
         <ContextSwitcher
@@ -459,11 +459,10 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when custom component is passed', () => {
-    beforeEach(() => setup())
     afterEach(() => jest.restoreAllMocks())
 
     it('renders the custom component', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <ContextSwitcher
           activeContext="laudna"

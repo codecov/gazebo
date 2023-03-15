@@ -86,6 +86,7 @@ describe('NewRepoTab', () => {
   function setup(
     { hasCommits, noUploadToken } = { hasCommits: false, noUploadToken: false }
   ) {
+    const user = userEvent.setup()
     const hardRedirect = jest.fn()
     useRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
@@ -100,7 +101,7 @@ describe('NewRepoTab', () => {
       )
     )
 
-    return { hardRedirect }
+    return { hardRedirect, user }
   }
 
   describe('rendering component', () => {
@@ -165,10 +166,8 @@ describe('NewRepoTab', () => {
 
   describe('testing tab navigation', () => {
     describe('clicking on other ci', () => {
-      beforeEach(() => setup())
-
       it('navigates to /other-ci', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<NewRepoTab />, { wrapper: wrapper() })
 
         const tab = await screen.findByRole('link', { name: 'Other CI' })
@@ -185,10 +184,8 @@ describe('NewRepoTab', () => {
     })
 
     describe('clicking on github actions', () => {
-      beforeEach(() => setup())
-
       it('navigates to /new', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<NewRepoTab />, {
           wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
         })

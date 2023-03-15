@@ -4,6 +4,11 @@ import userEvent from '@testing-library/user-event'
 import Toggle from './Toggle'
 
 describe('Toggle', () => {
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
+
   describe('Toggle is active', () => {
     it('renders active state', () => {
       const mockFn = jest.fn()
@@ -36,6 +41,7 @@ describe('Toggle', () => {
     })
 
     it('calls onClick', async () => {
+      const { user } = setup()
       const mockFn = jest.fn()
       render(
         <Toggle
@@ -46,7 +52,6 @@ describe('Toggle', () => {
         />
       )
 
-      const user = userEvent.setup()
       const button = screen.getByRole('button')
 
       await user.click(button)
@@ -87,6 +92,7 @@ describe('Toggle', () => {
     })
 
     it('calls onClick', async () => {
+      const { user } = setup()
       const mockFn = jest.fn()
       render(
         <Toggle
@@ -97,7 +103,6 @@ describe('Toggle', () => {
         />
       )
 
-      const user = userEvent.setup()
       const button = screen.getByRole('button')
 
       await user.click(button)
@@ -140,6 +145,7 @@ describe('Toggle', () => {
     })
 
     it('does not trigger onClick', async () => {
+      const { user } = setup()
       const mockFn = jest.fn()
       render(
         <Toggle
@@ -151,7 +157,6 @@ describe('Toggle', () => {
         />
       )
 
-      const user = userEvent.setup()
       const button = screen.getByRole('button')
 
       await user.click(button)

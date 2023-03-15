@@ -7,6 +7,12 @@ jest.spyOn(window.localStorage.__proto__, 'setItem')
 window.localStorage.__proto__.setItem = jest.fn()
 
 describe('Toggle Element', () => {
+  function setup() {
+    const user = userEvent.setup()
+
+    return { user }
+  }
+
   describe('custom props', () => {
     describe('renders the open', () => {
       it('toggle controls', () => {
@@ -46,7 +52,7 @@ describe('Toggle Element', () => {
 
     describe('renders the closed', () => {
       it('toggle controls', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <ToggleElement
             localStorageKey="c2"
@@ -77,7 +83,7 @@ describe('Toggle Element', () => {
       })
 
       it('children', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <ToggleElement
             localStorageKey="c2"

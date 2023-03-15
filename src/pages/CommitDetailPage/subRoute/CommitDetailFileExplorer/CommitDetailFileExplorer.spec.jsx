@@ -111,6 +111,7 @@ afterAll(() => {
 
 describe('CommitDetailFileExplorer', () => {
   function setup(noFiles = false) {
+    const user = userEvent.setup()
     const requestFilters = jest.fn()
 
     server.use(
@@ -134,7 +135,7 @@ describe('CommitDetailFileExplorer', () => {
       })
     )
 
-    return { requestFilters }
+    return { requestFilters, user }
   }
 
   describe('rendering table', () => {
@@ -295,8 +296,7 @@ describe('CommitDetailFileExplorer', () => {
     describe('sorting on name column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const files = await screen.findByText('Files')
@@ -312,8 +312,7 @@ describe('CommitDetailFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let files = await screen.findByText('Files')
@@ -333,8 +332,7 @@ describe('CommitDetailFileExplorer', () => {
     describe('sorting on tracked lines column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const trackedLines = await screen.findByText('Tracked lines')
@@ -350,8 +348,7 @@ describe('CommitDetailFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let trackedLines = await screen.findByText('Tracked lines')
@@ -371,8 +368,7 @@ describe('CommitDetailFileExplorer', () => {
     describe('sorting on the covered column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const covered = await screen.findByText('Covered')
@@ -389,8 +385,7 @@ describe('CommitDetailFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let covered = await screen.findByText('Covered')
@@ -410,8 +405,7 @@ describe('CommitDetailFileExplorer', () => {
     describe('sorting on the partial column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const partial = await screen.findByText('Partial')
@@ -428,8 +422,7 @@ describe('CommitDetailFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let partial = await screen.findByText('Partial')
@@ -449,8 +442,7 @@ describe('CommitDetailFileExplorer', () => {
     describe('sorting on the coverage line', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const missed = await screen.findByText('Missed')
@@ -467,8 +459,7 @@ describe('CommitDetailFileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let missed = await screen.findByText('Missed')
@@ -489,8 +480,7 @@ describe('CommitDetailFileExplorer', () => {
   describe('searching on the table', () => {
     describe('api variables are being set', () => {
       it('sets the correct api variables', async () => {
-        const { requestFilters } = setup()
-        const user = userEvent.setup()
+        const { user, requestFilters } = setup()
         render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const search = await screen.findByRole('textbox', {
@@ -509,9 +499,8 @@ describe('CommitDetailFileExplorer', () => {
 
     describe('there are no files to be found', () => {
       beforeEach(() => setup())
-
       it('displays no items found message', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
         const dir = await screen.findByText('src')

@@ -51,10 +51,13 @@ const mockUrlParams = {
 
 describe('Coverage Tab', () => {
   function setup(urlParams = mockUrlParams) {
+    const user = userEvent.setup()
     useLocationParams.mockReturnValue({
       updateParams: jest.fn(),
       params: urlParams,
     })
+
+    return { user }
   }
 
   describe('when rendered', () => {
@@ -92,12 +95,8 @@ describe('Coverage Tab', () => {
   })
 
   describe('when list button is clicked', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders sets the list button as selected', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <QueryClientProvider client={queryClient}>
           <DisplayTypeButton dataLength={mockRepoContents.data.length} />
@@ -116,7 +115,7 @@ describe('Coverage Tab', () => {
     })
 
     it('renders length of files if data is not empty', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <QueryClientProvider client={queryClient}>
           <DisplayTypeButton dataLength={mockRepoContents.data.length} />
@@ -136,12 +135,8 @@ describe('Coverage Tab', () => {
   })
 
   describe('when tree button is clicked', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders sets the list button as selected', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <QueryClientProvider client={queryClient}>
           <DisplayTypeButton dataLength={mockRepoContents.data.length} />

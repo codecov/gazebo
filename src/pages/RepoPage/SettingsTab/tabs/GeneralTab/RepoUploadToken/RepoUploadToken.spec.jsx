@@ -46,6 +46,7 @@ describe('RepoUploadToken', () => {
       triggerError: false,
     }
   ) {
+    const user = userEvent.setup()
     const mutate = jest.fn()
     const addNotification = jest.fn()
 
@@ -70,7 +71,7 @@ describe('RepoUploadToken', () => {
       )
     )
 
-    return { mutate, addNotification }
+    return { mutate, addNotification, user }
   }
 
   describe('renders RepoUploadToken component', () => {
@@ -116,11 +117,10 @@ describe('RepoUploadToken', () => {
   })
 
   describe('when the user clicks on regenerate button', () => {
-    beforeEach(() => setup())
     afterEach(() => jest.resetAllMocks())
 
     it('displays the regenerate upload token modal', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
 
       const regenerate = screen.getByRole('button', { name: 'Regenerate' })
@@ -148,8 +148,7 @@ describe('RepoUploadToken', () => {
     afterEach(() => jest.resetAllMocks())
 
     it('does not call the mutation', async () => {
-      const { mutate } = setup()
-      const user = userEvent.setup()
+      const { mutate, user } = setup()
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
 
       const regenerate = screen.getByRole('button', { name: 'Regenerate' })
@@ -160,8 +159,7 @@ describe('RepoUploadToken', () => {
     })
 
     it('renders the old token', async () => {
-      setup()
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
 
       const regenerate = screen.getByRole('button', { name: 'Regenerate' })
@@ -176,9 +174,8 @@ describe('RepoUploadToken', () => {
     afterEach(() => jest.resetAllMocks())
 
     it('calls the mutation', async () => {
-      const user = userEvent.setup()
       const tokenName = 'new token'
-      const { mutate } = setup({ uploadToken: tokenName })
+      const { mutate, user } = setup({ uploadToken: tokenName })
       render(<RepoUploadToken uploadToken={tokenName} />, { wrapper })
 
       const regenerate = screen.getByRole('button', { name: 'Regenerate' })
@@ -192,9 +189,8 @@ describe('RepoUploadToken', () => {
     })
 
     it('renders the new token', async () => {
-      const user = userEvent.setup()
       const tokenName = 'new token'
-      setup({ uploadToken: tokenName })
+      const { user } = setup({ uploadToken: tokenName })
       render(<RepoUploadToken uploadToken={tokenName} />, { wrapper })
 
       const regenerate = screen.getByRole('button', { name: 'Regenerate' })
@@ -213,9 +209,8 @@ describe('RepoUploadToken', () => {
     afterEach(() => jest.resetAllMocks())
 
     it('adds an error notification', async () => {
-      const user = userEvent.setup()
       const tokenName = 'new token'
-      const { addNotification } = setup({
+      const { addNotification, user } = setup({
         uploadToken: tokenName,
         triggerError: true,
       })

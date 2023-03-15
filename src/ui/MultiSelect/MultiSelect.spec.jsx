@@ -8,6 +8,12 @@ import MultiSelect from './MultiSelect'
 jest.mock('react-use/lib/useIntersection')
 
 describe('MultiSelect', () => {
+  function setup() {
+    const user = userEvent.setup()
+
+    return { user }
+  }
+
   describe('when rendered', () => {
     it('renders the default placeholder', () => {
       const onChange = jest.fn()
@@ -94,7 +100,7 @@ describe('MultiSelect', () => {
   describe('when select button is triggered', () => {
     describe('when triggered with a click', () => {
       it('renders the items', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -124,7 +130,7 @@ describe('MultiSelect', () => {
 
     describe('when triggered enter', () => {
       it('renders the items', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -145,7 +151,7 @@ describe('MultiSelect', () => {
   describe('when selecting an item from the list', () => {
     describe('when selected with a click', () => {
       it('highlights the selected item', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -167,7 +173,7 @@ describe('MultiSelect', () => {
       })
 
       it('calls onChange with the item', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -188,7 +194,7 @@ describe('MultiSelect', () => {
       })
 
       it('renders the all button', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -211,7 +217,7 @@ describe('MultiSelect', () => {
 
     describe('when selected with enter key', () => {
       it('calls onChange with the item', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -256,7 +262,7 @@ describe('MultiSelect', () => {
 
     describe('when clicking on the button', () => {
       it('renders the option user the custom rendered', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const items = [{ name: 'item1' }, { name: 'item2' }, { name: 'item3' }]
         const value = [items[0]]
         const onChange = jest.fn()
@@ -312,7 +318,7 @@ describe('MultiSelect', () => {
 
   describe('when onSearch function is passed without a resourceName', () => {
     it('renders a search input with the correct placeholder', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onSearch = jest.fn()
       const onChange = jest.fn()
       render(
@@ -337,7 +343,7 @@ describe('MultiSelect', () => {
   describe('when onSearch function is passed', () => {
     describe('there are items found', () => {
       it('renders a search input', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onSearch = jest.fn()
         const onChange = jest.fn()
         render(
@@ -361,7 +367,7 @@ describe('MultiSelect', () => {
 
       describe('when typing in the search field', () => {
         it('calls onSearch with the search value', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           const onSearch = jest.fn()
           const onChange = jest.fn()
           render(
@@ -389,7 +395,7 @@ describe('MultiSelect', () => {
 
     describe('when there are no items returned', () => {
       it('renders no results found', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onSearch = jest.fn()
         const onChange = jest.fn()
         render(
@@ -417,7 +423,7 @@ describe('MultiSelect', () => {
       useIntersection.mockReturnValue({ isIntersecting: true })
     })
     it('renders an invisible load more trigger', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onLoadMore = jest.fn()
       const onChange = jest.fn()
       render(
@@ -438,7 +444,7 @@ describe('MultiSelect', () => {
 
     describe('when load more trigger span is intersecting', () => {
       it('calls onLoadMore with the search value', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onLoadMore = jest.fn()
         const onChange = jest.fn()
         render(
@@ -461,7 +467,7 @@ describe('MultiSelect', () => {
   describe('when selecting a selected item from the list', () => {
     describe('when the item is clicked', () => {
       it('No longer highlights the selected item', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -485,7 +491,7 @@ describe('MultiSelect', () => {
       })
 
       it('calls onChange without the item', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -512,7 +518,7 @@ describe('MultiSelect', () => {
 
     describe('when the item is selected with enter key', () => {
       it('No longer highlights the selected item', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -537,7 +543,7 @@ describe('MultiSelect', () => {
       })
 
       it('calls onChange without the item', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         render(
           <MultiSelect
@@ -564,7 +570,7 @@ describe('MultiSelect', () => {
 
   describe('when selecting all button', () => {
     it('calls onChange with an empty array', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <MultiSelect
@@ -589,7 +595,7 @@ describe('MultiSelect', () => {
 
   describe('when isLoading is true', () => {
     it('a spinner is rendered', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <MultiSelect
@@ -611,7 +617,7 @@ describe('MultiSelect', () => {
 
   describe('when forward ref is passed', () => {
     it('reset selected function is defined', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       let multiSelectRef
       render(

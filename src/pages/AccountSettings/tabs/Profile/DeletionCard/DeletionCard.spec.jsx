@@ -38,9 +38,10 @@ const wrapper = ({ children }) => (
 
 describe('DeletionCard', () => {
   function setup({ returnError = false } = { returnError: false }) {
+    const user = userEvent.setup()
     const addNotification = jest.fn()
-    useAddNotification.mockReturnValue(addNotification)
 
+    useAddNotification.mockReturnValue(addNotification)
     server.use(
       rest.delete('/internal/gh/codecov/account-details/', (req, res, ctx) => {
         if (returnError) {
@@ -50,7 +51,7 @@ describe('DeletionCard', () => {
       })
     )
 
-    return { addNotification }
+    return { addNotification, user }
   }
 
   describe('when rendering for individual', () => {
@@ -92,10 +93,8 @@ describe('DeletionCard', () => {
   })
 
   describe('when clicking on the button to erase', () => {
-    beforeEach(() => setup())
-
     it('opens the modal with warning', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <DeletionCard
           provider="gh"
@@ -118,7 +117,7 @@ describe('DeletionCard', () => {
 
     describe('when clicking Cancel', () => {
       it('closes the modal', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <DeletionCard
             provider="gh"
@@ -147,9 +146,7 @@ describe('DeletionCard', () => {
 
     describe('when clicking Close icon', () => {
       it('closes the modal', async () => {
-        setup()
-
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <DeletionCard
             provider="gh"
@@ -176,9 +173,7 @@ describe('DeletionCard', () => {
 
     describe('when confirming', () => {
       it('calls the mutation', async () => {
-        setup()
-
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <DeletionCard
             provider="gh"
@@ -205,11 +200,8 @@ describe('DeletionCard', () => {
 
     describe('when the mutation fails', () => {
       it('adds an error notification', async () => {
-        setup()
-
+        const { user } = setup()
         const { addNotification } = setup({ returnError: true })
-
-        const user = userEvent.setup()
         render(
           <DeletionCard
             provider="gh"

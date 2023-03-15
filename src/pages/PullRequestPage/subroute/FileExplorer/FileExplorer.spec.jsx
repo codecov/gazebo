@@ -120,6 +120,7 @@ afterAll(() => {
 
 describe('FileExplorer', () => {
   function setup(noFiles = false) {
+    const user = userEvent.setup()
     const requestFilters = jest.fn()
 
     server.use(
@@ -143,7 +144,7 @@ describe('FileExplorer', () => {
       })
     )
 
-    return { requestFilters }
+    return { requestFilters, user }
   }
 
   describe('rendering table', () => {
@@ -306,8 +307,8 @@ describe('FileExplorer', () => {
     describe('sorting on head column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           let files = await screen.findByText('Files')
@@ -328,8 +329,8 @@ describe('FileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           let files = await screen.findByText('Files')
@@ -349,8 +350,8 @@ describe('FileExplorer', () => {
     describe('sorting on tracked lines column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           const trackedLines = await screen.findByText('Tracked lines')
@@ -368,8 +369,8 @@ describe('FileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           let trackedLines = await screen.findByText('Tracked lines')
@@ -389,8 +390,8 @@ describe('FileExplorer', () => {
     describe('sorting on the covered column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           const covered = await screen.findByText('Covered')
@@ -408,8 +409,8 @@ describe('FileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           let covered = await screen.findByText('Covered')
@@ -429,8 +430,8 @@ describe('FileExplorer', () => {
     describe('sorting on the partial column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           const partial = await screen.findByText('Partial')
@@ -448,8 +449,8 @@ describe('FileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           let partial = await screen.findByText('Partial')
@@ -469,8 +470,8 @@ describe('FileExplorer', () => {
     describe('sorting on the coverage line', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           const missed = await screen.findByText('Missed')
@@ -488,8 +489,8 @@ describe('FileExplorer', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters } = setup()
-          const user = userEvent.setup()
+          const { requestFilters, user } = setup()
+
           render(<FileExplorer />, { wrapper: wrapper() })
 
           let missed = await screen.findByText('Missed')
@@ -510,8 +511,8 @@ describe('FileExplorer', () => {
   describe('searching on the table', () => {
     describe('api variables are being set', () => {
       it('sets the correct api variables', async () => {
-        const { requestFilters } = setup()
-        const user = userEvent.setup()
+        const { requestFilters, user } = setup()
+
         render(<FileExplorer />, { wrapper: wrapper() })
 
         const search = await screen.findByRole('textbox', {

@@ -21,6 +21,10 @@ const wrapper = ({ children }) => (
 )
 
 describe('MemberList', () => {
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
   describe('renders user activated status selector', () => {
     afterEach(() => (testLocation = undefined))
 
@@ -41,7 +45,7 @@ describe('MemberList', () => {
 
     describe('selecting All Users', () => {
       it('renders All Users', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const allUsersInitial = await screen.findByText('All Users')
@@ -61,7 +65,7 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const allUsersInitial = await screen.findByText('All Users')
@@ -84,7 +88,7 @@ describe('MemberList', () => {
 
     describe('selecting Active', () => {
       it('renders Active when selected', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const allUsers = await screen.findByText('All Users')
@@ -98,7 +102,7 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const allUsers = await screen.findByText('All Users')
@@ -113,7 +117,7 @@ describe('MemberList', () => {
 
     describe('selecting Non-Active', () => {
       it('renders Non-Active when selected', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const allUsers = await screen.findByText('All Users')
@@ -127,7 +131,7 @@ describe('MemberList', () => {
       })
 
       it('updates location state', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const allUsers = await screen.findByText('All Users')
@@ -161,7 +165,7 @@ describe('MemberList', () => {
 
     describe('selecting Everyone', () => {
       it('renders Everyone when selected', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const everyoneInitial = await screen.findByText('Everyone')
@@ -181,7 +185,7 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const everyoneInitial = await screen.findByText('Everyone')
@@ -204,7 +208,7 @@ describe('MemberList', () => {
 
     describe('selecting Admins', () => {
       it('renders Admin when selected', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const everyone = await screen.findByText('Everyone')
@@ -218,7 +222,7 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const everyone = await screen.findByText('Everyone')
@@ -233,7 +237,7 @@ describe('MemberList', () => {
 
     describe('selecting Developers', () => {
       it('renders Developers when selected', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const everyone = await screen.findByText('Everyone')
@@ -247,7 +251,7 @@ describe('MemberList', () => {
       })
 
       it('updates the location state', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         const everyone = await screen.findByText('Everyone')
@@ -273,7 +277,7 @@ describe('MemberList', () => {
 
     describe('when the user types', () => {
       it('updates the text box', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         let search = await screen.findByTestId('search-input-members')
@@ -285,7 +289,7 @@ describe('MemberList', () => {
       })
 
       it('updates the location params', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberList />, { wrapper })
 
         let search = await screen.findByTestId('search-input-members')

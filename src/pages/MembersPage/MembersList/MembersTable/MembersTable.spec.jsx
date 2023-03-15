@@ -96,11 +96,18 @@ describe('MembersTable', () => {
         </QueryClientProvider>
       )
 
-  function setup({
-    accountDetails = {},
-    mockUserRequest = mockBaseUserRequest,
-    usePaginatedRequest = false,
-  }) {
+  function setup(
+    {
+      accountDetails = {},
+      mockUserRequest = mockBaseUserRequest,
+      usePaginatedRequest = false,
+    } = {
+      accountDetails: {},
+      mockUserRequest: mockBaseUserRequest,
+      usePaginatedRequest: false,
+    }
+  ) {
+    const user = userEvent.setup()
     useImage.mockReturnValue({ src: 'mocked-avatar-url' })
     server.use(
       rest.get('/internal/:provider/codecov/account-details', (req, res, ctx) =>
@@ -120,6 +127,8 @@ describe('MembersTable', () => {
         return res(ctx.status(200), ctx.json(mockUserRequest))
       })
     )
+
+    return { user }
   }
 
   describe('rendering MembersTable', () => {
@@ -274,10 +283,8 @@ describe('MembersTable', () => {
   })
 
   describe('user interacts with toggle', () => {
-    beforeEach(() => setup({}))
-
     it('calls handleActivate', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const handleActivate = jest.fn()
       render(<MembersTable handleActivate={handleActivate} />, {
         wrapper: wrapper(),
@@ -286,18 +293,15 @@ describe('MembersTable', () => {
       const toggle = await screen.findByRole('button')
       await user.click(toggle)
 
-      expect(handleActivate).toBeCalled()
       expect(handleActivate).toBeCalledWith({ activated: false, ownerid: 1 })
     })
   })
 
   describe('user interacts with table headers', () => {
-    beforeEach(() => setup({}))
-
     describe('interacting with the username column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const userName = await screen.findByText('User name')
@@ -311,11 +315,12 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const userName = await screen.findByText('User name')
+          let userName = await screen.findByText('User name')
           await user.click(userName)
+          userName = await screen.findByText('User name')
           await user.click(userName)
 
           await waitFor(() =>
@@ -326,15 +331,14 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          const userName = await screen.findByText('User name')
+          let userName = await screen.findByText('User name')
           await user.click(userName)
+          userName = await screen.findByText('User name')
           await user.click(userName)
+          userName = await screen.findByText('User name')
           await user.click(userName)
 
           await waitFor(() =>
@@ -347,7 +351,7 @@ describe('MembersTable', () => {
     describe('interacting with the type column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const type = await screen.findByText('Type')
@@ -361,11 +365,12 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const type = await screen.findByText('Type')
+          let type = await screen.findByText('Type')
           await user.click(type)
+          type = await screen.findByText('Type')
           await user.click(type)
 
           await waitFor(() =>
@@ -376,12 +381,14 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const type = await screen.findByText('Type')
+          let type = await screen.findByText('Type')
           await user.click(type)
+          type = await screen.findByText('Type')
           await user.click(type)
+          type = await screen.findByText('Type')
           await user.click(type)
 
           await waitFor(() =>
@@ -394,7 +401,7 @@ describe('MembersTable', () => {
     describe('interacting with the email column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const email = await screen.findByText('email')
@@ -408,11 +415,12 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const email = await screen.findByText('email')
+          let email = await screen.findByText('email')
           await user.click(email)
+          email = await screen.findByText('email')
           await user.click(email)
 
           await waitFor(() =>
@@ -423,12 +431,14 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const email = await screen.findByText('email')
+          let email = await screen.findByText('email')
           await user.click(email)
+          email = await screen.findByText('email')
           await user.click(email)
+          email = await screen.findByText('email')
           await user.click(email)
 
           await waitFor(() =>
@@ -441,7 +451,7 @@ describe('MembersTable', () => {
     describe('interacting with the activation status column', () => {
       describe('setting in asc order', () => {
         it('updates the request params', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
           const activationStatus = await screen.findByText('Activation status')
@@ -455,11 +465,12 @@ describe('MembersTable', () => {
 
       describe('setting in desc order', () => {
         it('updates the request params', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const activationStatus = await screen.findByText('Activation status')
+          let activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
+          activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
 
           await waitFor(() =>
@@ -470,12 +481,14 @@ describe('MembersTable', () => {
 
       describe('setting in originally order', () => {
         it('removes the request param', async () => {
-          const user = userEvent.setup()
+          const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const activationStatus = await screen.findByText('Activation status')
+          let activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
+          activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
+          activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
 
           await waitFor(() =>

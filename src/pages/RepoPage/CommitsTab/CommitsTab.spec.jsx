@@ -77,6 +77,7 @@ describe('Commits Tab', () => {
   })
 
   function setup({ hasNextPage }) {
+    const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const searches = jest.fn()
 
@@ -100,7 +101,7 @@ describe('Commits Tab', () => {
       )
     )
 
-    return { fetchNextPage, searches }
+    return { fetchNextPage, searches, user }
   }
 
   describe('when rendered', () => {
@@ -180,12 +181,8 @@ describe('Commits Tab', () => {
   })
 
   describe('when user clicks on the checkbox', () => {
-    beforeEach(() => {
-      setup({ hasNextPage: true })
-    })
-
     it('changes checked property value to true', async () => {
-      const user = userEvent.setup()
+      const { user } = setup({ hasNextPage: true })
       repoPageRender({
         renderCommits: () => (
           <Wrapper>
@@ -206,11 +203,10 @@ describe('Commits Tab', () => {
   describe('when select onLoadMore is triggered', () => {
     describe('when there is a next page', () => {
       it('calls fetchNextPage', async () => {
-        const { fetchNextPage } = setup({ hasNextPage: true })
+        const { fetchNextPage, user } = setup({ hasNextPage: true })
         useIntersection.mockReturnValue({
           isIntersecting: true,
         })
-        const user = userEvent.setup()
 
         repoPageRender({
           renderCommits: () => (
@@ -235,15 +231,15 @@ describe('Commits Tab', () => {
     describe('when there is not a next page', () => {
       // I don't think this test is working, fetchNextPage will never been called.
       const fetchNextPage = jest.fn()
+
       beforeEach(() => {
-        setup({ hasNextPage: false })
         useIntersection.mockReturnValue({
           isIntersecting: true,
         })
       })
 
       it('does not call fetchNextPage', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ hasNextPage: false })
         repoPageRender({
           renderCommits: () => (
             <Wrapper>
@@ -263,8 +259,8 @@ describe('Commits Tab', () => {
 
   describe('user searches for branch', () => {
     it('fetches request with search term', async () => {
-      const { searches } = setup({ hasNextPage: false })
-      const user = userEvent.setup()
+      const { searches, user } = setup({ hasNextPage: false })
+
       repoPageRender({
         renderCommits: () => (
           <Wrapper>

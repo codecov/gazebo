@@ -8,6 +8,12 @@ import Select from './Select'
 jest.mock('react-use/lib/useIntersection')
 
 describe('Select', () => {
+  function setup() {
+    const user = userEvent.setup()
+
+    return { user }
+  }
+
   describe('rendering with default values', () => {
     it('renders the default placeholder', () => {
       const onChange = jest.fn()
@@ -42,7 +48,7 @@ describe('Select', () => {
 
   describe('toggling dropdown', () => {
     it('displays the dropdown', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <Select
@@ -60,7 +66,7 @@ describe('Select', () => {
     })
 
     it('hides the dropdown', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <Select
@@ -82,7 +88,7 @@ describe('Select', () => {
 
   describe('rendering with a resourceName', () => {
     it('renders with correct placeholder', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <Select
@@ -123,7 +129,7 @@ describe('Select', () => {
 
   describe('when rendering with a searchValue', () => {
     it('renders the default selected item', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <Select
@@ -146,7 +152,7 @@ describe('Select', () => {
 
   describe('when select is triggered', () => {
     it('renders the items', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <Select
@@ -180,7 +186,7 @@ describe('Select', () => {
     })
 
     it('highlights the selected item', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <Select
@@ -202,7 +208,7 @@ describe('Select', () => {
     })
 
     it('calls onChange with the item', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <Select
@@ -224,7 +230,7 @@ describe('Select', () => {
 
   describe('when rendered with complex items and custom item rendering', () => {
     it('renders the option user the custom rendered', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       render(
         <Select
@@ -279,7 +285,7 @@ describe('Select', () => {
     })
 
     it('renders search input', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
 
       const onChange = jest.fn()
       const onSearch = jest.fn()
@@ -302,7 +308,7 @@ describe('Select', () => {
     })
 
     it('calls onSearch with the search value', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       const onSearch = jest.fn()
       render(
@@ -329,7 +335,7 @@ describe('Select', () => {
 
     describe('when there are no items', () => {
       it('renders no results found when item length is zero', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const onChange = jest.fn()
         const onSearch = jest.fn()
         render(
@@ -368,7 +374,7 @@ describe('Select', () => {
     })
 
     it('renders an invisible load more trigger', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       const onSearch = jest.fn()
       const onLoadMore = jest.fn()
@@ -391,7 +397,7 @@ describe('Select', () => {
     })
 
     it('when load more trigger span is intersecting calls onLoadMore', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onChange = jest.fn()
       const onSearch = jest.fn()
       const onLoadMore = jest.fn()
@@ -415,7 +421,7 @@ describe('Select', () => {
 
   describe('when isLoading is true', () => {
     it('renders a spinner', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const onSearch = jest.fn()
       const onChange = jest.fn()
 
@@ -441,7 +447,7 @@ describe('Select', () => {
   describe('when ref is forwarded', () => {
     it('sets reset function', async () => {
       let selectRef
-      const user = userEvent.setup()
+      const { user } = setup()
       const onSearch = jest.fn()
       const onChange = jest.fn()
 

@@ -52,6 +52,8 @@ afterAll(() => {
 
 describe('SpecialOffer', () => {
   function setup({ unsuccessfulReq = false } = { unsuccessfulReq: false }) {
+    const user = userEvent.setup()
+
     server.use(
       rest.patch(
         '/internal/gh/codecov/account-details',
@@ -67,6 +69,8 @@ describe('SpecialOffer', () => {
         }
       )
     )
+
+    return { user }
   }
 
   describe('rendering component', () => {
@@ -135,10 +139,8 @@ describe('SpecialOffer', () => {
 
   describe('user accepts discount offer', () => {
     describe('discount is successfully applied', () => {
-      beforeEach(() => setup())
-
       it('passes the correct body', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<SpecialOffer />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
@@ -148,14 +150,13 @@ describe('SpecialOffer', () => {
 
         await user.click(button)
 
-        await waitFor(() => expect(mockBody).toBeCalled())
         await waitFor(() =>
           expect(mockBody).toBeCalledWith({ apply_cancellation_discount: true })
         )
       })
 
       it('renders a success toast', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<SpecialOffer />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
@@ -165,7 +166,6 @@ describe('SpecialOffer', () => {
 
         await user.click(button)
 
-        await waitFor(() => expect(mockToast).toBeCalled())
         await waitFor(() =>
           expect(mockToast).toBeCalledWith({
             type: 'success',
@@ -175,7 +175,7 @@ describe('SpecialOffer', () => {
       })
 
       it('redirects the user to the org page', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<SpecialOffer />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
@@ -190,10 +190,8 @@ describe('SpecialOffer', () => {
     })
 
     describe('discount is not successfully applied', () => {
-      beforeEach(() => setup({ unsuccessfulReq: true }))
-
       it('renders an error toast', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ unsuccessfulReq: true })
         render(<SpecialOffer />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
@@ -203,7 +201,6 @@ describe('SpecialOffer', () => {
 
         await user.click(button)
 
-        await waitFor(() => expect(mockToast).toBeCalled())
         await waitFor(() =>
           expect(mockToast).toBeCalledWith({
             type: 'error',
@@ -216,7 +213,7 @@ describe('SpecialOffer', () => {
 
   describe('user continues with downgrade', () => {
     it('navigates to downgrade page', async () => {
-      const user = userEvent.setup()
+      const { user } = setup({ unsuccessfulReq: true })
       render(<SpecialOffer />, { wrapper: wrapper() })
 
       const link = screen.getByRole('link', {

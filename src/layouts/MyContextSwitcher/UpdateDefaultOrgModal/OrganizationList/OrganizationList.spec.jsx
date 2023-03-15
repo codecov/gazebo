@@ -78,6 +78,8 @@ const defaultProps = {
 
 describe('OrganizationList', () => {
   function setup(data = contextData) {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('MyContexts', (req, res, ctx) => {
         if (req?.variables?.after === '2') {
@@ -99,15 +101,15 @@ describe('OrganizationList', () => {
         }
       })
     )
+
+    return { user }
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays the usernames and avatars', async () => {
+      setup()
       render(<OrganizationList {...defaultProps} />, { wrapper })
+
       const fearneUsername = await screen.findByText(/fearne-calloway-org/)
       expect(fearneUsername).toBeInTheDocument()
       const defaultOrg = await screen.findByText(/Current default org/)
@@ -124,19 +126,23 @@ describe('OrganizationList', () => {
     })
 
     it('displays all orgs and repos', async () => {
+      setup()
       render(<OrganizationList {...defaultProps} />, { wrapper })
+
       const allOrgsAndReposText = await screen.findByText(/All orgs and repos/)
       expect(allOrgsAndReposText).toBeInTheDocument()
     })
 
     it('displays the load more button', async () => {
+      setup()
       render(<OrganizationList {...defaultProps} />, { wrapper })
+
       const loadMoreButton = await screen.findByText('Load More')
       expect(loadMoreButton).toBeInTheDocument()
     })
 
     it('loads next page of data', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<OrganizationList {...defaultProps} />, { wrapper })
       const loadMoreButton = await screen.findByText('Load More')
       await user.click(loadMoreButton)

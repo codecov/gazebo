@@ -46,6 +46,7 @@ const wrapper = ({ children }) => (
 
 describe('NameEmailCard', () => {
   function setup() {
+    const user = userEvent.setup()
     const addNotification = jest.fn()
     server.use(
       graphql.mutation('UpdateProfile', async (req, res, ctx) => {
@@ -69,7 +70,7 @@ describe('NameEmailCard', () => {
     )
     useAddNotification.mockReturnValue(addNotification)
 
-    return { addNotification }
+    return { addNotification, user }
   }
 
   describe('when rendered', () => {
@@ -106,14 +107,12 @@ describe('NameEmailCard', () => {
   })
 
   describe('when updating one field', () => {
-    beforeEach(() => setup())
-
     it('updates the field with the right value', async () => {
+      const { user } = setup()
       render(<NameEmailCard currentUser={currentUser} provider="gh" />, {
         wrapper,
       })
 
-      const user = userEvent.setup()
       const emailField = await screen.findByRole('textbox', {
         name: /email/i,
       })
@@ -127,10 +126,8 @@ describe('NameEmailCard', () => {
   })
 
   describe('when submitting with an empty name', () => {
-    beforeEach(() => setup())
-
     it('renders an error message', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<NameEmailCard currentUser={currentUser} provider="gh" />, {
         wrapper,
       })
@@ -152,12 +149,8 @@ describe('NameEmailCard', () => {
   })
 
   describe('when submitting with an empty email', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders an error message', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<NameEmailCard currentUser={currentUser} provider="gh" />, {
         wrapper,
       })
@@ -179,12 +172,8 @@ describe('NameEmailCard', () => {
   })
 
   describe('when submitting with a wrong email', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders an error message', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<NameEmailCard currentUser={currentUser} provider="gh" />, {
         wrapper,
       })
@@ -207,9 +196,7 @@ describe('NameEmailCard', () => {
 
   describe('when submitting correct data', () => {
     it('updates the fields with the new values', async () => {
-      setup()
-      const user = userEvent.setup()
-
+      const { user } = setup()
       render(<NameEmailCard currentUser={currentUser} provider="gh" />, {
         wrapper,
       })
@@ -237,8 +224,7 @@ describe('NameEmailCard', () => {
 
     describe('when mutation is successful', () => {
       it('adds a success notification', async () => {
-        const { addNotification } = setup()
-        const user = userEvent.setup()
+        const { addNotification, user } = setup()
         render(<NameEmailCard currentUser={currentUser} provider="gh" />, {
           wrapper,
         })
@@ -269,8 +255,7 @@ describe('NameEmailCard', () => {
 
     describe('when mutation is not successful', () => {
       it('adds an error notification', async () => {
-        const { addNotification } = setup()
-        const user = userEvent.setup()
+        const { addNotification, user } = setup()
         render(<NameEmailCard currentUser={currentUser} provider="gh" />, {
           wrapper,
         })

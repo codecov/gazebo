@@ -5,6 +5,10 @@ import userEvent from '@testing-library/user-event'
 import SuccessModal from './SuccessModal'
 
 describe('SuccessModal', () => {
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
   describe('renders initial SuccessModal', () => {
     it('renders title', () => {
       const closeModal = jest.fn()
@@ -39,24 +43,22 @@ describe('SuccessModal', () => {
     })
 
     it('closes on done click', async () => {
+      const { user } = setup()
       const closeModal = jest.fn()
       render(
         <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
       )
-
-      const user = userEvent.setup()
 
       await user.click(screen.getByText('Done'))
       expect(closeModal).toHaveBeenCalled()
     })
 
     it('closes on X click', async () => {
+      const { user } = setup()
       const closeModal = jest.fn()
       render(
         <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
       )
-
-      const user = userEvent.setup()
 
       await user.click(screen.getByText('x.svg'))
       expect(closeModal).toHaveBeenCalled()

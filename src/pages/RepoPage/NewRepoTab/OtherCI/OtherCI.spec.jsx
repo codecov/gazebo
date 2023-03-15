@@ -63,6 +63,7 @@ afterAll(() => server.close())
 
 describe('OtherCI', () => {
   function setup() {
+    const user = userEvent.setup()
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
@@ -73,6 +74,8 @@ describe('OtherCI', () => {
     )
 
     trackSegmentEvent.mockImplementation((data) => data)
+
+    return { user }
   }
 
   describe('step one', () => {
@@ -99,7 +102,7 @@ describe('OtherCI', () => {
 
     describe('user copies token', () => {
       it('fires segment event', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<OtherCI />, { wrapper })
 
         // this is needed to wait for all the data to be loaded
@@ -127,9 +130,8 @@ describe('OtherCI', () => {
   })
 
   describe('step two', () => {
-    beforeEach(() => setup())
-
     it('renders header', async () => {
+      setup()
       render(<OtherCI />, { wrapper })
 
       const header = await screen.findByText(/Step 2/)
@@ -147,7 +149,7 @@ describe('OtherCI', () => {
 
     describe('user clicks on header link', () => {
       it('triggers segment event', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<OtherCI />, { wrapper })
 
         const tokenValue = await screen.findByText(

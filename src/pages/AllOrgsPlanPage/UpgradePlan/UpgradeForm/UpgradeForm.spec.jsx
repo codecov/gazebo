@@ -84,7 +84,6 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('UpgradeForm', () => {
-  let addNotification
   let props
 
   const defaultProps = {
@@ -106,7 +105,8 @@ describe('UpgradeForm', () => {
     successfulRequest = true,
     errorDetails = undefined
   ) {
-    addNotification = jest.fn()
+    const user = userEvent.setup()
+    const addNotification = jest.fn()
     props = {
       ...defaultProps,
       accountDetails: {
@@ -115,6 +115,7 @@ describe('UpgradeForm', () => {
         latestInvoice: invoice,
       },
     }
+
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
@@ -128,6 +129,8 @@ describe('UpgradeForm', () => {
         return res(ctx.status(200), ctx.json({ success: true }))
       })
     )
+
+    return { user, addNotification }
   }
 
   describe('when the user does not have any plan', () => {
@@ -263,7 +266,7 @@ describe('UpgradeForm', () => {
 
     describe('when updating to a month plan', () => {
       it('has the price for the month', async () => {
-        const user = userEvent.setup()
+        const { user } = setup(proPlanYear)
         render(<UpgradeForm {...props} />, { wrapper })
 
         const monthRadio = await screen.findByRole('radio', { name: /12/i })
@@ -276,14 +279,9 @@ describe('UpgradeForm', () => {
   })
 
   describe('when the user have a pro year monthly', () => {
-    beforeEach(() => {
-      setup(proPlanMonth)
-    })
-
     describe('user clicks select annual', () => {
-      const user = userEvent.setup()
-
       it('renders annual radio to be checked', async () => {
+        const { user } = setup(proPlanMonth)
         render(<UpgradeForm {...props} />, { wrapper })
 
         const switchAnnual = await screen.findByText('switch to annual')
@@ -397,13 +395,8 @@ describe('UpgradeForm', () => {
   })
 
   describe('when the user leave the nb of seats blank', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays an error', async () => {
-      const user = userEvent.setup()
-
+      const { user } = setup()
       render(<UpgradeForm {...props} />, { wrapper })
 
       const input = await screen.findByRole('spinbutton')
@@ -418,17 +411,13 @@ describe('UpgradeForm', () => {
   })
 
   describe('when the user chooses less than 2 seats', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays an error', async () => {
-      const user = userEvent.setup()
-
+      const { user } = setup()
       render(<UpgradeForm {...props} />, { wrapper })
 
-      const input = await screen.findByRole('spinbutton')
+      let input = await screen.findByRole('spinbutton')
       await user.type(input, '{backspace}{backspace}{backspace}')
+      input = await screen.findByRole('spinbutton')
       await user.type(input, '1')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
@@ -442,17 +431,13 @@ describe('UpgradeForm', () => {
   })
 
   describe('when the user chooses less than the number of active users', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays an error', async () => {
-      const user = userEvent.setup()
-
+      const { user } = setup()
       render(<UpgradeForm {...props} />, { wrapper })
 
-      const input = await screen.findByRole('spinbutton')
+      let input = await screen.findByRole('spinbutton')
       await user.type(input, '{backspace}{backspace}{backspace}')
+      input = await screen.findByRole('spinbutton')
       await user.type(input, '8')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
@@ -467,17 +452,13 @@ describe('UpgradeForm', () => {
 
   describe('when clicking on the button to upgrade', () => {
     describe('when mutation is successful', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('adds a success notification', async () => {
-        const user = userEvent.setup()
-
+        const { user, addNotification } = setup()
         render(<UpgradeForm {...props} />, { wrapper })
 
-        const input = await screen.findByRole('spinbutton')
+        let input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
+        input = await screen.findByRole('spinbutton')
         await user.type(input, '20')
 
         const updateButton = await screen.findByRole('button', {
@@ -494,8 +475,7 @@ describe('UpgradeForm', () => {
       })
 
       it('redirects the user to the plan page', async () => {
-        const user = userEvent.setup()
-
+        const { user } = setup()
         render(<UpgradeForm {...props} />, { wrapper })
 
         const input = await screen.findByRole('spinbutton')
@@ -515,23 +495,19 @@ describe('UpgradeForm', () => {
 
     describe('when mutation is not successful', () => {
       describe('an error message is provided', () => {
-        beforeEach(() => {
-          setup(
+        it('adds an error notification with detail message', async () => {
+          const { user, addNotification } = setup(
             null,
             null,
             defaultProps.accountDetails,
             false,
             'Insufficient funds.'
           )
-        })
-
-        it('adds an error notification with detail message', async () => {
-          const user = userEvent.setup()
-
           render(<UpgradeForm {...props} />, { wrapper })
 
-          const input = await screen.findByRole('spinbutton')
+          let input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
+          input = await screen.findByRole('spinbutton')
           await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
@@ -549,17 +525,19 @@ describe('UpgradeForm', () => {
       })
 
       describe('no error message is provided', () => {
-        beforeEach(() => {
-          setup(null, null, defaultProps.accountDetails, false)
-        })
-
         it('adds an error notification with a default message', async () => {
-          const user = userEvent.setup()
+          const { user, addNotification } = setup(
+            null,
+            null,
+            defaultProps.accountDetails,
+            false
+          )
 
           render(<UpgradeForm {...props} />, { wrapper })
 
-          const input = await screen.findByRole('spinbutton')
+          let input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
+          input = await screen.findByRole('spinbutton')
           await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {

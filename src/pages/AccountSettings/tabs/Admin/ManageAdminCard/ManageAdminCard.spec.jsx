@@ -16,6 +16,7 @@ jest.mock('react-router-dom', () => ({
 
 describe('ManageAdminCard', () => {
   function setup(adminResults = []) {
+    const user = userEvent.setup()
     const refetch = jest.fn()
     const mutate = jest.fn()
     useUsers.mockReturnValue({
@@ -29,7 +30,7 @@ describe('ManageAdminCard', () => {
       mutate,
     })
 
-    return { refetch, mutate }
+    return { refetch, mutate, user }
   }
 
   describe('when rendered when there are no admins', () => {
@@ -74,7 +75,7 @@ describe('ManageAdminCard', () => {
 
   describe('when clicking on revoking admin', () => {
     it('calls the mutation with the user and is_admin=false', async () => {
-      const { mutate } = setup([
+      const { mutate, user } = setup([
         {
           username: 'laudna',
           email: 'c3@cr.io',
@@ -83,7 +84,6 @@ describe('ManageAdminCard', () => {
         },
       ])
 
-      const user = userEvent.setup()
       render(<ManageAdminCard />)
 
       const revokeButton = screen.getByRole('button', {

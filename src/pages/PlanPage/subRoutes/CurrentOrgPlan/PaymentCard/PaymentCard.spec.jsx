@@ -43,6 +43,12 @@ jest.mock('@stripe/react-stripe-js', () => {
 })
 
 describe('PaymentCard', () => {
+  function setup() {
+    const user = userEvent.setup()
+
+    return { user }
+  }
+
   describe(`when the user doesn't have any subscriptionDetail`, () => {
     it('renders nothing', () => {
       const { container } = render(
@@ -95,7 +101,7 @@ describe('PaymentCard', () => {
 
     describe('when the user clicks on Set card', () => {
       it(`doesn't render the card anymore`, async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <PaymentCard
             subscriptionDetail={{
@@ -117,7 +123,7 @@ describe('PaymentCard', () => {
       })
 
       it('renders the form', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <PaymentCard
             subscriptionDetail={{
@@ -191,7 +197,7 @@ describe('PaymentCard', () => {
 
   describe('when the user clicks on Edit card', () => {
     it(`doesn't render the card anymore`, async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const updateCard = jest.fn()
       useUpdateCard.mockReturnValue({
         mutate: updateCard,
@@ -211,12 +217,12 @@ describe('PaymentCard', () => {
     })
 
     it('renders the form', async () => {
+      const { user } = setup()
       const updateCard = jest.fn()
       useUpdateCard.mockReturnValue({
         mutate: updateCard,
         isLoading: false,
       })
-      const user = userEvent.setup()
       render(
         <PaymentCard
           subscriptionDetail={subscriptionDetail}
@@ -233,12 +239,12 @@ describe('PaymentCard', () => {
 
     describe('when submitting', () => {
       it('calls the service to update the card', async () => {
+        const { user } = setup()
         const updateCard = jest.fn()
         useUpdateCard.mockReturnValue({
           mutate: updateCard,
           isLoading: false,
         })
-        const user = userEvent.setup()
         render(
           <PaymentCard
             subscriptionDetail={subscriptionDetail}
@@ -255,11 +261,11 @@ describe('PaymentCard', () => {
 
     describe('when the user clicks on cancel', () => {
       it(`doesn't render the form anymore`, async () => {
+        const { user } = setup()
         useUpdateCard.mockReturnValue({
           mutate: jest.fn(),
           isLoading: false,
         })
-        const user = userEvent.setup()
         render(
           <PaymentCard
             subscriptionDetail={subscriptionDetail}
@@ -280,12 +286,12 @@ describe('PaymentCard', () => {
 
   describe('when there is an error in the form', () => {
     it('renders the error', async () => {
+      const { user } = setup()
       const randomError = 'not rich enough'
       useUpdateCard.mockReturnValue({
         mutate: jest.fn(),
         error: { data: { detail: randomError } },
       })
-      const user = userEvent.setup()
       render(
         <PaymentCard
           subscriptionDetail={subscriptionDetail}
@@ -302,8 +308,8 @@ describe('PaymentCard', () => {
 
   describe('when the form is loading', () => {
     it('has the error and save button disabled', async () => {
+      const { user } = setup()
       useUpdateCard.mockReturnValue({ mutate: jest.fn(), isLoading: true })
-      const user = userEvent.setup()
       render(
         <PaymentCard
           subscriptionDetail={subscriptionDetail}

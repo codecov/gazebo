@@ -12,6 +12,11 @@ const wrapper = ({ children }) => (
 )
 
 describe('UpgradeModal', () => {
+  function setup() {
+    const user = userEvent.setup()
+
+    return { user }
+  }
   describe('rendering UpgradeModal', () => {
     it('renders the title', () => {
       const setIsOpen = jest.fn()
@@ -52,7 +57,7 @@ describe('UpgradeModal', () => {
   describe('when interacting with the modal', () => {
     describe('when clicking x', () => {
       it('calls setIsOpen', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const setIsOpen = jest.fn()
         render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, {
           wrapper,
@@ -67,7 +72,7 @@ describe('UpgradeModal', () => {
 
     describe('when clicking cancel', () => {
       it('calls setIsOpen', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         const setIsOpen = jest.fn()
         render(<UpgradeModal isOpen={true} setIsOpen={setIsOpen} />, {
           wrapper,

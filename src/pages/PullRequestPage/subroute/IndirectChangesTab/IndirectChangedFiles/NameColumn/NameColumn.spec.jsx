@@ -73,17 +73,20 @@ const wrapper = ({ children }) => (
 
 describe('NameColumn', () => {
   function setup() {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('ImpactedFileComparison', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSingularImpactedFilesData))
       )
     )
+
+    return { user }
   }
 
   describe('when component is not expanded', () => {
-    beforeEach(() => setup())
-
     it('renders value', async () => {
+      setup()
       const getValue = jest.fn()
       getValue.mockImplementation(() => 'file.ts')
 
@@ -103,6 +106,7 @@ describe('NameColumn', () => {
     })
 
     it('prefetches query data', async () => {
+      const { user } = setup()
       const getValue = jest.fn()
       getValue.mockImplementation(() => 'file.ts')
 
@@ -115,7 +119,6 @@ describe('NameColumn', () => {
         getIsExpanded: jest.fn().mockImplementation(() => false),
       }
 
-      const user = userEvent.setup()
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
 
       const expander = await screen.findByTestId('name-expand')
@@ -149,9 +152,8 @@ describe('NameColumn', () => {
   })
 
   describe('when component is expanded', () => {
-    beforeEach(() => setup())
-
     it('renders value', async () => {
+      setup()
       const getValue = jest.fn()
       getValue.mockImplementation(() => 'file.ts')
 
@@ -171,6 +173,7 @@ describe('NameColumn', () => {
     })
 
     it('prefetches query data', async () => {
+      const { user } = setup()
       const getValue = jest.fn()
       getValue.mockImplementation(() => 'file.ts')
 
@@ -183,7 +186,6 @@ describe('NameColumn', () => {
         getIsExpanded: jest.fn().mockImplementation(() => true),
       }
 
-      const user = userEvent.setup()
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
 
       const expander = await screen.findByTestId('name-expand')

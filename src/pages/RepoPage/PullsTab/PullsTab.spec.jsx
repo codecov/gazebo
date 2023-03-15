@@ -21,17 +21,21 @@ afterAll(() => {
 })
 
 describe('Pulls Tab', () => {
-  beforeEach(() => setup())
-
   function setup() {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       )
     )
+
+    return { user }
   }
 
   describe('when rendered', () => {
+    beforeEach(() => setup())
+
     it('renders select by updatestamp label', () => {
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
@@ -75,7 +79,7 @@ describe('Pulls Tab', () => {
 
   describe('view by state', () => {
     it('renders all options', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
@@ -97,7 +101,7 @@ describe('Pulls Tab', () => {
 
   describe('order by updatestamp', () => {
     it('renders all options', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
@@ -113,7 +117,7 @@ describe('Pulls Tab', () => {
 
   describe('order by Oldest', () => {
     it('renders the selected option', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
@@ -135,7 +139,7 @@ describe('Pulls Tab', () => {
 
   describe('view by Merged', () => {
     it('renders the number of selected options', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,

@@ -5,6 +5,11 @@ import userEvent from '@testing-library/user-event'
 import DeactivateRepoModal from './DeactivateRepoModal'
 
 describe('DeactivateRepoModal component', () => {
+  function setup() {
+    const user = userEvent.setup()
+
+    return { user }
+  }
   describe('renders the component correctly', () => {
     it('renders modal title', () => {
       const closeModalMock = jest.fn()
@@ -81,7 +86,7 @@ describe('DeactivateRepoModal component', () => {
     })
 
     it('closes modal when cancel is clicked', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const closeModalMock = jest.fn()
       const deactivateRepoMock = jest.fn()
 
@@ -101,7 +106,7 @@ describe('DeactivateRepoModal component', () => {
     })
 
     it('calls deactivate when deactivate button is clicked', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       const closeModalMock = jest.fn()
       const deactivateRepoMock = jest.fn()
 
@@ -123,7 +128,7 @@ describe('DeactivateRepoModal component', () => {
   })
 
   it('renders correctly when repo is deactivated', async () => {
-    const user = userEvent.setup()
+    const { user } = setup()
     const closeModalMock = jest.fn()
     const deactivateRepoMock = jest.fn()
 

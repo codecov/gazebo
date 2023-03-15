@@ -152,6 +152,7 @@ describe('Summary', () => {
       },
     }
   ) {
+    const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const mockSearching = jest.fn()
 
@@ -201,7 +202,7 @@ describe('Summary', () => {
       )
     )
 
-    return { fetchNextPage, mockSearching }
+    return { fetchNextPage, mockSearching, user }
   }
 
   describe('with populated data', () => {
@@ -252,7 +253,6 @@ describe('Summary', () => {
 
   describe('uses a conditional Redirect', () => {
     it('updates the location', async () => {
-      const user = userEvent.setup()
       const mockSetNewPath = jest.fn()
       const coverageRedirectData = {
         redirectState: {
@@ -262,7 +262,7 @@ describe('Summary', () => {
         setNewPath: mockSetNewPath,
       }
 
-      setup({
+      const { user } = setup({
         coverageRedirectData: coverageRedirectData,
       })
       render(<Summary />, { wrapper: wrapper() })
@@ -279,7 +279,6 @@ describe('Summary', () => {
 
   describe('fires the setNewPath on branch selection', () => {
     it('updates the location', async () => {
-      const user = userEvent.setup()
       const mockSetNewPath = jest.fn()
       const coverageRedirectData = {
         redirectState: {
@@ -289,7 +288,7 @@ describe('Summary', () => {
         setNewPath: mockSetNewPath,
       }
 
-      setup({
+      const { user } = setup({
         coverageRedirectData: coverageRedirectData,
       })
       render(<Summary />, { wrapper: wrapper() })
@@ -308,9 +307,8 @@ describe('Summary', () => {
   describe('when onLoadMore is triggered', () => {
     describe('there is a next page', () => {
       it('calls fetchNextPage', async () => {
-        const user = userEvent.setup()
         const mockSetNewPath = jest.fn()
-        const { fetchNextPage } = setup({
+        const { fetchNextPage, user } = setup({
           hasNextPage: true,
           coverageRedirectData: {
             redirectState: {
@@ -338,10 +336,9 @@ describe('Summary', () => {
       // I don't think this test was ever working as expected
       const fetchNextPage = jest.fn()
       it('does not call fetchNextPage', async () => {
-        const user = userEvent.setup()
         const mockSetNewPath = jest.fn()
 
-        setup({
+        const { user } = setup({
           hasNextPage: false,
           coverageRedirectData: {
             redirectState: {
@@ -370,8 +367,7 @@ describe('Summary', () => {
 
   describe('user searches for branch', () => {
     it('calls the api with the search value', async () => {
-      const user = userEvent.setup()
-      const { mockSearching } = setup()
+      const { mockSearching, user } = setup()
       render(<Summary />, { wrapper: wrapper() })
 
       const select = await screen.findByText('main')

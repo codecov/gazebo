@@ -4,10 +4,16 @@ import userEvent from '@testing-library/user-event'
 import ToggleHeader from './ToggleHeader'
 
 describe('ToggleHeader', () => {
-  const onFlagsChange = jest.fn()
+  function setup() {
+    const user = userEvent.setup()
+    const onFlagsChange = jest.fn()
+
+    return { user, onFlagsChange }
+  }
 
   describe('when there is no flags data', () => {
     it('renders title', () => {
+      const { onFlagsChange } = setup()
       render(
         <ToggleHeader
           title={'sample title'}
@@ -22,6 +28,7 @@ describe('ToggleHeader', () => {
     })
 
     it('does not render flags multi-select', () => {
+      const { onFlagsChange } = setup()
       render(
         <ToggleHeader
           title={'sample title'}
@@ -38,7 +45,7 @@ describe('ToggleHeader', () => {
 
   describe('when there is flags data', () => {
     it('renders all flags title', async () => {
-      const user = userEvent.setup()
+      const { onFlagsChange, user } = setup()
       render(
         <ToggleHeader
           title={'sample title'}
@@ -59,7 +66,7 @@ describe('ToggleHeader', () => {
     })
 
     it('renders flags in the list', async () => {
-      const user = userEvent.setup()
+      const { onFlagsChange, user } = setup()
       render(
         <ToggleHeader
           title={'sample title'}
@@ -78,7 +85,7 @@ describe('ToggleHeader', () => {
 
     describe('when a flag is selected', () => {
       it('calls onFlagsChange with the value', async () => {
-        const user = userEvent.setup()
+        const { onFlagsChange, user } = setup()
         render(
           <ToggleHeader
             title={'sample title'}

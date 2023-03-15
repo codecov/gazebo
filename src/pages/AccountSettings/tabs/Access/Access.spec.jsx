@@ -24,6 +24,8 @@ const wrapper = ({ children }) => (
 )
 describe('AccessTab', () => {
   function setup() {
+    const user = userEvent.setup()
+
     useSessions.mockReturnValue({
       data: {
         sessions: [
@@ -43,6 +45,8 @@ describe('AccessTab', () => {
     useDeleteSession.mockReturnValue({})
     useRevokeUserToken.mockReturnValue({})
     useGenerateUserToken.mockReturnValue({})
+
+    return { user }
   }
 
   describe('when rendering on base url', () => {
@@ -88,7 +92,7 @@ describe('AccessTab', () => {
     })
     describe('on revoke', () => {
       it('triggers confirmation Modal', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<Access provider="gh" owner="codecov" />, { wrapper })
 
         await user.click(screen.getAllByText(/Revoke/)[0])
@@ -97,7 +101,7 @@ describe('AccessTab', () => {
     })
     describe('on open modal', () => {
       it('opens create token modal', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<Access provider="gh" owner="codecov" />, { wrapper })
 
         await user.click(screen.getByText(/Generate Token/))

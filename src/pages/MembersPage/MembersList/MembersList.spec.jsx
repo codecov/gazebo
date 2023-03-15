@@ -74,7 +74,9 @@ describe('MembersList', () => {
     </QueryClientProvider>
   )
 
-  function setup({ accountDetails = {} }) {
+  function setup({ accountDetails = {} } = { accountDetails: {} }) {
+    const user = userEvent.setup()
+
     let sendActivatedUser = false
 
     server.use(
@@ -93,10 +95,12 @@ describe('MembersList', () => {
         return res(ctx.status(200))
       })
     )
+
+    return { user }
   }
 
   describe('rendering MembersList', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() => setup())
 
     it('does not render UpgradeModal', () => {
       render(<MembersList />, { wrapper })
@@ -142,10 +146,9 @@ describe('MembersList', () => {
   })
 
   describe('interacting with the status selector', () => {
-    beforeEach(() => setup({}))
     describe('selecting Active Users', () => {
       it('updates select text', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -161,7 +164,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -178,7 +181,7 @@ describe('MembersList', () => {
 
     describe('selecting Inactive Users', () => {
       it('updates select text', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -194,7 +197,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('All users')
@@ -214,12 +217,8 @@ describe('MembersList', () => {
 
   describe('interacting with the search field', () => {
     describe('user types into search field', () => {
-      beforeEach(() => {
-        setup({})
-      })
-
       it('updates url params', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const searchField = await screen.findByTestId('search-input-members')
@@ -231,10 +230,9 @@ describe('MembersList', () => {
   })
 
   describe('interacting with the role selector', () => {
-    beforeEach(() => setup({}))
     describe('selecting Admins Users', () => {
       it('updates select text', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('Everyone')
@@ -250,7 +248,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
@@ -265,7 +263,7 @@ describe('MembersList', () => {
 
     describe('selecting Developers', () => {
       it('updates select text', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = await screen.findByText('Everyone')
@@ -279,7 +277,7 @@ describe('MembersList', () => {
       })
 
       it('updates query params', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
@@ -295,21 +293,14 @@ describe('MembersList', () => {
 
   describe('interacting with user toggles', () => {
     describe('user has reached max seats, and on a free plan', () => {
-      beforeEach(() => {
-        setup({
+      it('opens up upgrade modal', async () => {
+        const { user } = setup({
           accountDetails: {
             activatedUserCount: 100,
             plan: { value: 'users-free' },
           },
         })
-      })
-
-      it('opens up upgrade modal', async () => {
-        const user = userEvent.setup()
         render(<MembersList />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -328,21 +319,14 @@ describe('MembersList', () => {
     })
 
     describe('user has not reached max seats', () => {
-      beforeEach(() => {
-        setup({
+      it('opens up upgrade modal', async () => {
+        const { user } = setup({
           accountDetails: {
             activatedUserCount: 0,
             plan: { value: 'users-free' },
           },
         })
-      })
-
-      it('opens up upgrade modal', async () => {
-        const user = userEvent.setup()
         render(<MembersList />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -354,11 +338,6 @@ describe('MembersList', () => {
         const toggle = await screen.findByLabelText('Non-Active')
         expect(toggle).toBeInTheDocument()
         await user.click(toggle)
-
-        await waitFor(() => queryClient.isMutating)
-        await waitFor(() => !queryClient.isMutating)
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         const activeToggle = await screen.findByText('Activated')
         expect(activeToggle).toBeInTheDocument()

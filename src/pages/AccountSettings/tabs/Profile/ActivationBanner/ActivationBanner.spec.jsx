@@ -47,17 +47,49 @@ const wrapper = ({ children }) => (
 )
 
 describe('ActivationBanner', () => {
+  function setup(
+    { overrideUserData = {}, overrideSeatData = {} } = {
+      overrideUserData: {},
+      overrideSeatData: {},
+    }
+  ) {
+    const user = userEvent.setup()
+
+    let restUsersCurrent = { ...mockUserData, ...overrideUserData }
+    const querySeats = { ...mockSeatData, ...overrideSeatData }
+
+    server.use(
+      rest.get('/internal/users/current', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(restUsersCurrent))
+      }),
+      graphql.query('Seats', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(querySeats))
+      }),
+
+      rest.patch('/internal/users/current', (req, res, ctx) => {
+        const { activated } = req.json()
+        restUsersCurrent = {
+          ...mockUserData,
+          activated,
+        }
+
+        return res(ctx.status(200))
+      })
+    )
+
+    // let getUserCurrentData = { ...mockUserData, activated: true }
+    // server.use(
+    //   rest.patch('/internal/users/current', (req, res, ctx) => {
+    //     const { activated } = req.json()
+    //     getUserCurrentData = { ...mockUserData, activated }
+    //     return res(ctx.status(200))
+    //   })
+    // )
+
+    return { user }
+  }
   describe('rendering banner header', () => {
-    beforeEach(() => {
-      server.use(
-        rest.get('/internal/users/current', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ ...mockUserData }))
-        }),
-        graphql.query('Seats', (req, res, ctx) => {
-          return res(ctx.status(200), ctx.data({ ...mockSeatData }))
-        })
-      )
-    })
+    beforeEach(() => setup())
 
     it('renders header content', async () => {
       render(<ActivationBanner />, { wrapper })
@@ -69,16 +101,7 @@ describe('ActivationBanner', () => {
 
   describe('rendering banner content', () => {
     describe('user is activated', () => {
-      beforeEach(() => {
-        server.use(
-          rest.get('/internal/users/current', (req, res, ctx) =>
-            res(ctx.status(200), ctx.json({ ...mockUserData, activated: true }))
-          ),
-          graphql.query('Seats', (req, res, ctx) =>
-            res(ctx.status(200), ctx.data({ ...mockSeatData }))
-          )
-        )
-      })
+      beforeEach(() => setup({ overrideUserData: { activated: true } }))
 
       it('displays user is activated', async () => {
         render(<ActivationBanner />, { wrapper })
@@ -90,19 +113,7 @@ describe('ActivationBanner', () => {
 
     describe('user is not activated', () => {
       describe('org has free seats', () => {
-        beforeEach(() => {
-          server.use(
-            rest.get('/internal/users/current', (req, res, ctx) =>
-              res(
-                ctx.status(200),
-                ctx.json({ ...mockUserData, activated: false })
-              )
-            ),
-            graphql.query('Seats', (req, res, ctx) =>
-              res(ctx.status(200), ctx.data({ ...mockSeatData }))
-            )
-          )
-        })
+        beforeEach(() => setup({ overrideSeatData: { activated: false } }))
 
         it('displays user is not activated', async () => {
           render(<ActivationBanner />, { wrapper })
@@ -115,22 +126,12 @@ describe('ActivationBanner', () => {
       })
 
       describe('org does not have free seats', () => {
-        beforeEach(() => {
-          server.use(
-            rest.get('/internal/users/current', (req, res, ctx) =>
-              res(
-                ctx.status(200),
-                ctx.json({ ...mockUserData, activated: false })
-              )
-            ),
-            graphql.query('Seats', (req, res, ctx) =>
-              res(
-                ctx.status(200),
-                ctx.data({ config: { seatsUsed: 5, seatsLimit: 5 } })
-              )
-            )
-          )
-        })
+        beforeEach(() =>
+          setup({
+            overrideSeatData: { seatsUsed: 10, seatsLimit: 10 },
+            overrideUserData: { activated: false },
+          })
+        )
 
         it('displays org out of seat message', async () => {
           render(<ActivationBanner />, { wrapper })
@@ -153,28 +154,8 @@ describe('ActivationBanner', () => {
 
   describe('updating users activation', () => {
     describe('user activates their account', () => {
-      beforeEach(() => {
-        let getUserCurrentData = { ...mockUserData, activated: false }
-        server.use(
-          rest.get('/internal/users/current', (req, res, ctx) =>
-            res(ctx.status(200), ctx.json(getUserCurrentData))
-          ),
-          graphql.query('Seats', (req, res, ctx) =>
-            res(ctx.status(200), ctx.data({ ...mockSeatData }))
-          ),
-          rest.patch('/internal/users/current', (req, res, ctx) => {
-            const { activated } = req.json()
-            getUserCurrentData = {
-              ...mockUserData,
-              activated,
-            }
-            return res(ctx.status(200))
-          })
-        )
-      })
-
       it('updates their activation status', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ overrideUserData: { activated: false } })
         render(<ActivationBanner />, { wrapper })
 
         const notActivated = await screen.findByText(
@@ -191,25 +172,8 @@ describe('ActivationBanner', () => {
     })
 
     describe('user deactivates their account', () => {
-      beforeEach(() => {
-        let getUserCurrentData = { ...mockUserData, activated: true }
-        server.use(
-          rest.get('/internal/users/current', (req, res, ctx) =>
-            res(ctx.status(200), ctx.json(getUserCurrentData))
-          ),
-          graphql.query('Seats', (req, res, ctx) =>
-            res(ctx.status(200), ctx.data({ ...mockSeatData }))
-          ),
-          rest.patch('/internal/users/current', (req, res, ctx) => {
-            const { activated } = req.json()
-            getUserCurrentData = { ...mockUserData, activated }
-            return res(ctx.status(200))
-          })
-        )
-      })
-
       it('updates their activation status', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ overrideUserData: { activated: true } })
         render(<ActivationBanner />, { wrapper })
 
         const activated = await screen.findByText('You are currently activated')

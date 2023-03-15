@@ -10,6 +10,12 @@ describe('CopyClipboard', () => {
   beforeAll(() => jest.useFakeTimers())
   afterAll(() => jest.useRealTimers())
 
+  function setup() {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+
+    return { user }
+  }
+
   describe('when the component is mounted', () => {
     it('renders the button with clipboard icon', () => {
       render(<CopyClipboard string="to be copied" />)
@@ -21,7 +27,7 @@ describe('CopyClipboard', () => {
 
   describe('when the user clicks on the button to copy', () => {
     it('renders the success icon', async () => {
-      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      const { user } = setup()
       render(<CopyClipboard string="to be copied" />)
 
       const button = screen.getByRole('button', {
@@ -35,9 +41,7 @@ describe('CopyClipboard', () => {
 
     describe('renders clipboard after delay', () => {
       it('goes back to original state', async () => {
-        const user = userEvent.setup({
-          advanceTimers: jest.advanceTimersByTime,
-        })
+        const { user } = setup()
         render(<CopyClipboard string="to be copied" />)
 
         const button = screen.getByRole('button', {

@@ -7,6 +7,11 @@ const longMessage =
   'In id magna dolor reprehenderit Lorem anim incididunt excepteur occaecat. Enim elit exercitation labore ut qui ad deserunt irure irure. Non magna et deserunt quis tempor cillum velit cupidatat irure irure. Non magna et deserunt quis tempor cillum velit else.'
 
 describe('TruncatedMessage', () => {
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
+
   describe('When commit message is less than a line', () => {
     it('renders the the full message', () => {
       render(<TruncatedMessage message="This is a short message" />)
@@ -60,7 +65,7 @@ describe('TruncatedMessage', () => {
     })
 
     it('renders the collapse button', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<TruncatedMessage message={longMessage} />)
 
       const btn = screen.getByText('see more')
@@ -71,7 +76,7 @@ describe('TruncatedMessage', () => {
     })
 
     it('renders the expand button', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<TruncatedMessage message={longMessage} />)
 
       const seeMoreBtn = screen.getByText('see more')

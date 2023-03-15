@@ -13,7 +13,9 @@ jest.mock('config')
 
 describe('InstructionBox', () => {
   function setup({ isSelfHosted = false } = {}) {
+    const user = userEvent.setup()
     const mockTerminalUploaderCommandClicked = jest.fn()
+
     config.BASE_URL = 'https://app.codecov.io'
     config.IS_SELF_HOSTED = isSelfHosted
 
@@ -39,6 +41,7 @@ describe('InstructionBox', () => {
 
     return {
       terminalUploaderCommandClicked: mockTerminalUploaderCommandClicked,
+      user,
     }
   }
 
@@ -93,10 +96,8 @@ describe('InstructionBox', () => {
   })
 
   describe('when click on windows', () => {
-    beforeEach(() => setup())
-
     it('renders the windows instruction', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<InstructionBox />)
 
       await user.click(screen.getByRole('button', { name: 'Windows' }))
@@ -106,10 +107,8 @@ describe('InstructionBox', () => {
   })
 
   describe('when click on windows an user is a self hosted user', () => {
-    beforeEach(() => setup({ isSelfHosted: true }))
-
     it('renders windows specific instruction', async () => {
-      const user = userEvent.setup()
+      const { user } = setup({ isSelfHosted: true })
       render(<InstructionBox />)
 
       await user.click(screen.getByRole('button', { name: 'Windows' }))
@@ -119,7 +118,7 @@ describe('InstructionBox', () => {
     })
 
     it('renders with expected base uploader url', async () => {
-      const user = userEvent.setup()
+      const { user } = setup({ isSelfHosted: true })
       render(<InstructionBox />)
 
       await user.click(screen.getByRole('button', { name: 'Windows' }))
@@ -129,7 +128,7 @@ describe('InstructionBox', () => {
     })
 
     it('renders self hosted specific instruction', async () => {
-      const user = userEvent.setup()
+      const { user } = setup({ isSelfHosted: true })
       render(<InstructionBox />)
 
       await user.click(screen.getByRole('button', { name: 'Windows' }))
@@ -142,10 +141,8 @@ describe('InstructionBox', () => {
   })
 
   describe('when click on linux', () => {
-    beforeEach(() => setup())
-
     it('renders the linux instruction', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<InstructionBox />)
 
       await user.click(screen.getByRole('button', { name: 'Linux' }))
@@ -157,10 +154,8 @@ describe('InstructionBox', () => {
   })
 
   describe('when click on Alpine', () => {
-    beforeEach(() => setup())
-
     it('renders the Alpine instruction', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<InstructionBox />)
 
       await user.click(screen.getByRole('button', { name: 'Alpine Linux' }))
@@ -172,10 +167,8 @@ describe('InstructionBox', () => {
   })
 
   describe('when click on Mac', () => {
-    beforeEach(() => setup())
-
     it('renders the Mac instruction', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<InstructionBox />)
 
       await user.click(screen.getByRole('button', { name: 'macOS' }))
@@ -188,8 +181,7 @@ describe('InstructionBox', () => {
 
   describe('when the user clicks on the clipboard copy link', () => {
     it('calls the trackSegmentEvent', async () => {
-      const { terminalUploaderCommandClicked } = setup()
-      const user = userEvent.setup()
+      const { terminalUploaderCommandClicked, user } = setup()
       render(<InstructionBox />)
 
       const clipboard = screen.getByRole('button', {

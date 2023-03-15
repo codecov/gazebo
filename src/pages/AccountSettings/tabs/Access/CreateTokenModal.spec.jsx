@@ -10,6 +10,7 @@ jest.mock('services/access')
 
 describe('CreateTokenModal', () => {
   function setup() {
+    const user = userEvent.setup()
     const closeModal = jest.fn()
     const success = {
       data: {
@@ -25,7 +26,7 @@ describe('CreateTokenModal', () => {
       mutate,
     })
 
-    return { mutate, closeModal }
+    return { mutate, closeModal, user }
   }
 
   describe('renders initial CreateTokenModal', () => {
@@ -77,8 +78,7 @@ describe('CreateTokenModal', () => {
 
   describe('when the user types a token name and submits', () => {
     it('calls the mutation', async () => {
-      const user = userEvent.setup()
-      const { mutate, closeModal } = setup()
+      const { mutate, closeModal, user } = setup()
       render(
         <CreateTokenModal
           provider="gh"
@@ -113,8 +113,7 @@ describe('CreateTokenModal', () => {
       })
 
       it('renders body', async () => {
-        const user = userEvent.setup()
-        const { closeModal } = setup()
+        const { closeModal, user } = setup()
         render(
           <CreateTokenModal
             provider="gh"
@@ -141,8 +140,7 @@ describe('CreateTokenModal', () => {
         expect(warning).toBeInTheDocument()
       })
       it('renders footer', async () => {
-        const user = userEvent.setup()
-        const { closeModal } = setup()
+        const { closeModal, user } = setup()
         render(
           <CreateTokenModal
             provider="gh"
@@ -164,8 +162,7 @@ describe('CreateTokenModal', () => {
         expect(button).toBeInTheDocument()
       })
       it('close modals', async () => {
-        const user = userEvent.setup()
-        const { closeModal } = setup()
+        const { closeModal, user } = setup()
         render(
           <CreateTokenModal
             provider="gh"

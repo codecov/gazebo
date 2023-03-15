@@ -34,6 +34,7 @@ afterAll(() => server.close())
 
 describe('RepoState', () => {
   function setup({ activated = false, failMutation = false } = {}) {
+    const user = userEvent.setup()
     const mutate = jest.fn()
     const addNotification = jest.fn()
 
@@ -66,7 +67,7 @@ describe('RepoState', () => {
 
     useAddNotification.mockReturnValue(addNotification)
 
-    return { mutate, addNotification }
+    return { mutate, addNotification, user }
   }
 
   describe('renders DeactivateRepo component', () => {
@@ -92,8 +93,8 @@ describe('RepoState', () => {
 
   describe('when the user clicks on Activate button', () => {
     it('calls the mutation', async () => {
-      const { mutate } = setup()
-      const user = userEvent.setup()
+      const { mutate, user } = setup()
+
       render(<RepoState />, { wrapper })
 
       const activationButton = await screen.findByRole('button', {
@@ -126,8 +127,8 @@ describe('RepoState', () => {
 
     describe('when the user clicks on Deactivate button', () => {
       it('displays Deactivate Repo Modal', async () => {
-        setup({ activated: true })
-        const user = userEvent.setup()
+        const { user } = setup({ activated: true })
+
         render(<RepoState />, {
           wrapper,
         })
@@ -153,8 +154,8 @@ describe('RepoState', () => {
 
       describe('when user clicks on Cancel button', () => {
         it('does not call the mutation', async () => {
-          const { mutate } = setup({ activated: true })
-          const user = userEvent.setup()
+          const { mutate, user } = setup({ activated: true })
+
           render(<RepoState />, {
             wrapper,
           })
@@ -173,8 +174,8 @@ describe('RepoState', () => {
 
       describe('when user clicks on Deactivate button', () => {
         it('calls the mutation', async () => {
-          const { mutate } = setup({ activated: true })
-          const user = userEvent.setup()
+          const { mutate, user } = setup({ activated: true })
+
           render(<RepoState />, {
             wrapper,
           })
@@ -194,8 +195,8 @@ describe('RepoState', () => {
 
   describe('when activate mutation is not successful', () => {
     it('calls the mutation', async () => {
-      const { mutate } = setup({ failMutation: true })
-      const user = userEvent.setup()
+      const { mutate, user } = setup({ failMutation: true })
+
       render(<RepoState />, { wrapper })
 
       const activationButton = await screen.findByRole('button', {
@@ -208,8 +209,8 @@ describe('RepoState', () => {
     })
 
     it('adds an error notification', async () => {
-      const { addNotification } = setup({ failMutation: true })
-      const user = userEvent.setup()
+      const { addNotification, user } = setup({ failMutation: true })
+
       render(<RepoState />, { wrapper })
 
       const activationButton = await screen.findByRole('button', {
@@ -228,8 +229,8 @@ describe('RepoState', () => {
 
   describe('when deactivate mutation is not successful', () => {
     it('calls the mutation', async () => {
-      const { mutate } = setup({ activated: true, failMutation: true })
-      const user = userEvent.setup()
+      const { mutate, user } = setup({ activated: true, failMutation: true })
+
       render(<RepoState />, {
         wrapper,
       })
@@ -246,8 +247,11 @@ describe('RepoState', () => {
     })
 
     it('adds an error notification', async () => {
-      const { addNotification } = setup({ activated: true, failMutation: true })
-      const user = userEvent.setup()
+      const { addNotification, user } = setup({
+        activated: true,
+        failMutation: true,
+      })
+
       render(<RepoState />, {
         wrapper,
       })

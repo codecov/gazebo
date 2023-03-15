@@ -108,6 +108,7 @@ afterAll(() => server.close())
 
 describe('RepoContentsTable', () => {
   function setup({ noData } = { noData: false }) {
+    const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const handleSort = jest.fn()
 
@@ -133,7 +134,7 @@ describe('RepoContentsTable', () => {
       )
     )
 
-    return { fetchNextPage, handleSort }
+    return { fetchNextPage, handleSort, user }
   }
 
   describe('when rendered', () => {
@@ -237,8 +238,7 @@ describe('RepoContentsTable', () => {
     })
 
     it('fires next page button click', async () => {
-      const user = userEvent.setup()
-      const { fetchNextPage } = setup()
+      const { fetchNextPage, user } = setup()
       render(<FlagsTable />, { wrapper: wrapper() })
 
       const loadMore = await screen.findByText('Load More')
@@ -251,8 +251,7 @@ describe('RepoContentsTable', () => {
 
   describe('when sorting', () => {
     it('calls handleSort', async () => {
-      const { handleSort } = setup()
-      const user = userEvent.setup()
+      const { handleSort, user } = setup()
       render(<FlagsTable />, { wrapper: wrapper() })
 
       const flags = await screen.findByText('Flags')

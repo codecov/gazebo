@@ -34,6 +34,12 @@ const wrapper =
     )
 
 describe('ListRepo', () => {
+  function setup() {
+    const user = userEvent.setup()
+
+    return { user }
+  }
+
   describe('renders', () => {
     it('renders the children', () => {
       render(<ListRepo canRefetch />, {
@@ -92,7 +98,7 @@ describe('ListRepo', () => {
 
   describe('switches active/inactive/all repos', () => {
     it('switches to active repos', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '/gh', path: '/:provider' }),
       })
@@ -107,7 +113,7 @@ describe('ListRepo', () => {
     })
 
     it('switches to inactive repos', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '/gh', path: '/:provider' }),
       })
@@ -122,7 +128,7 @@ describe('ListRepo', () => {
     })
 
     it('switches to active repos owner page', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/hola',
@@ -139,7 +145,7 @@ describe('ListRepo', () => {
     })
 
     it('switches to all repos owner page', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh/hola',
@@ -159,7 +165,7 @@ describe('ListRepo', () => {
 
   describe('update params after typing', () => {
     it('calls setSearchValue', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper(),
       })
@@ -177,7 +183,7 @@ describe('ListRepo', () => {
 
   describe('update params after using select', () => {
     it('renders the option user the custom rendered', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           url: '/gh',

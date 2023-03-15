@@ -6,11 +6,16 @@ import SearchField from './SearchField'
 describe('SearchField', () => {
   afterAll(() => jest.resetAllMocks())
 
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
+
   describe('Basic', () => {
     describe('when typing in the search field', () => {
       it('waits to call setSearchValue', async () => {
         const setSearchValue = jest.fn()
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <SearchField
             searchValue=""
@@ -34,7 +39,7 @@ describe('SearchField', () => {
     describe('after waiting for debounce', () => {
       it('calls setSearchValue', async () => {
         const setSearchValue = jest.fn()
-        const user = userEvent.setup()
+        const { user } = setup()
         render(
           <SearchField
             searchValue=""
@@ -60,7 +65,7 @@ describe('SearchField', () => {
     it('fired the custom onChange', async () => {
       const onChange = jest.fn()
       const setSearchValue = jest.fn()
-      const user = userEvent.setup()
+      const { user } = setup()
       render(
         <SearchField
           searchValue=""

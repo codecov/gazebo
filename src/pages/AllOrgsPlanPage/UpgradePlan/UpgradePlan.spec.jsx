@@ -136,6 +136,8 @@ describe('UpgradePlan', () => {
       isEnterprisePlan: false,
     }
   ) {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('MyContexts', (req, res, ctx) =>
         res(
@@ -209,6 +211,8 @@ describe('UpgradePlan', () => {
         )
       })
     )
+
+    return { user }
   }
 
   describe('no org selected', () => {
@@ -312,11 +316,9 @@ describe('UpgradePlan', () => {
   })
 
   describe('user selects an org on a pro plan', () => {
-    beforeEach(() => setup())
-
     describe('renders plan card', () => {
       it('has plan name', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -334,7 +336,7 @@ describe('UpgradePlan', () => {
       })
 
       it('has plan price', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -350,7 +352,7 @@ describe('UpgradePlan', () => {
       })
 
       it('has list of benefits', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -381,7 +383,7 @@ describe('UpgradePlan', () => {
       })
 
       it('has note about monthly payments', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -399,7 +401,7 @@ describe('UpgradePlan', () => {
       })
 
       it('renders cancel plan link', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -419,7 +421,7 @@ describe('UpgradePlan', () => {
 
     describe('renders form card', () => {
       it('renders select', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const orgHeader = await screen.findByRole('heading', {
@@ -442,7 +444,7 @@ describe('UpgradePlan', () => {
       })
 
       it('renders billing', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -458,7 +460,7 @@ describe('UpgradePlan', () => {
       })
 
       it('renders user seats', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -474,7 +476,7 @@ describe('UpgradePlan', () => {
       })
 
       it('renders update button', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -492,10 +494,8 @@ describe('UpgradePlan', () => {
   })
 
   describe('user has a free plan', () => {
-    beforeEach(() => setup({ isFreePlan: true }))
-
     it('does not render cancel plan link', async () => {
-      const user = userEvent.setup()
+      const { user } = setup({ isFreePlan: true })
       render(<UpgradePlan />, { wrapper })
 
       const select = await screen.findByRole('button', {
@@ -515,11 +515,9 @@ describe('UpgradePlan', () => {
   })
 
   describe('user has an enterprise plan', () => {
-    beforeEach(() => setup({ isEnterprisePlan: true }))
-
     describe('renders plan card', () => {
       it('has plan name', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ isEnterprisePlan: true })
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -540,7 +538,7 @@ describe('UpgradePlan', () => {
       })
 
       it('has plan price', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ isEnterprisePlan: true })
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -559,7 +557,7 @@ describe('UpgradePlan', () => {
       })
 
       it('has list of benefits', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ isEnterprisePlan: true })
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -593,7 +591,7 @@ describe('UpgradePlan', () => {
       })
 
       it('does not have a note about monthly payments', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ isEnterprisePlan: true })
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -612,6 +610,7 @@ describe('UpgradePlan', () => {
       })
 
       it('does not render cancel plan link', async () => {
+        setup({ isEnterprisePlan: true })
         render(<UpgradePlan />, { wrapper })
 
         await waitFor(() => queryClient.isFetching)
@@ -624,6 +623,7 @@ describe('UpgradePlan', () => {
 
     describe('renders form card', () => {
       it('renders select', async () => {
+        setup({ isEnterprisePlan: true })
         render(<UpgradePlan />, { wrapper })
 
         const orgHeader = await screen.findByRole('heading', {
@@ -638,7 +638,7 @@ describe('UpgradePlan', () => {
       })
 
       it('renders enterprise message', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ isEnterprisePlan: true })
         render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
@@ -666,10 +666,8 @@ describe('UpgradePlan', () => {
   })
 
   describe('user has already cancelled their plan', () => {
-    const user = userEvent.setup()
-    beforeEach(() => setup({ isCancelledPlan: true }))
-
     it('does not render cancel plan link', async () => {
+      const { user } = setup({ isCancelledPlan: true })
       render(<UpgradePlan />, { wrapper })
 
       const select = await screen.findByRole('button', {

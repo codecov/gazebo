@@ -70,11 +70,14 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('MemberTable', () => {
-  function setup({
-    noData = false,
-    seatsOpen = true,
-    returnActivated = false,
-  }) {
+  function setup(
+    { noData = false, seatsOpen = true, returnActivated = false } = {
+      noData: false,
+      seatsOpen: true,
+      returnActivated: false,
+    }
+  ) {
+    const user = userEvent.setup()
     // resetting mock response values
     mockedFirstResponse.results[0].activated = false
     mockSecondResponse.results[0].activated = true
@@ -129,14 +132,13 @@ describe('MemberTable', () => {
         return res(ctx.status(200), ctx.json(mockAllSeatsTaken))
       })
     )
+
+    return { user }
   }
 
   describe('renders table', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('displays header', async () => {
+      setup()
       render(<MemberTable />, { wrapper })
 
       const header = await screen.findByText('User Name')
@@ -144,6 +146,7 @@ describe('MemberTable', () => {
     })
 
     it('displays initial user set', async () => {
+      setup()
       render(<MemberTable />, { wrapper })
 
       const user = await screen.findByText('User 1')
@@ -151,7 +154,7 @@ describe('MemberTable', () => {
     })
 
     it('displays extended list after loading more', async () => {
-      const user = userEvent.setup()
+      const { user } = setup()
       render(<MemberTable />, { wrapper })
 
       const button = await screen.findByText('Load More')
@@ -166,9 +169,7 @@ describe('MemberTable', () => {
   })
 
   describe('renders load more button', () => {
-    beforeEach(() => {
-      setup({})
-    })
+    beforeEach(() => setup())
 
     it('displays the button', async () => {
       render(<MemberTable />, { wrapper })
@@ -180,12 +181,8 @@ describe('MemberTable', () => {
 
   describe('activating a user', () => {
     describe('there are no seats open', () => {
-      beforeEach(() => {
-        setup({ seatsOpen: false })
-      })
-
       it('disables the toggle', async () => {
-        const user = userEvent.setup()
+        const { user } = setup({ seatsOpen: false })
         render(<MemberTable />, { wrapper })
 
         let toggles = await screen.findAllByRole('button', {
@@ -208,12 +205,8 @@ describe('MemberTable', () => {
     })
 
     describe('there are open seats', () => {
-      beforeEach(() => {
-        setup({})
-      })
-
       it('updates the users activation', async () => {
-        const user = userEvent.setup()
+        const { user } = setup()
         render(<MemberTable />, { wrapper })
 
         const nonActiveToggleClick = await screen.findByRole('button', {
@@ -239,12 +232,8 @@ describe('MemberTable', () => {
   })
 
   describe('deactivating a user', () => {
-    beforeEach(() => {
-      setup({ returnActivated: true })
-    })
-
     it('updates the users activation', async () => {
-      const user = userEvent.setup()
+      const { user } = setup({ returnActivated: true })
       render(<MemberTable />, { wrapper })
 
       const activeToggleClick = await screen.findByRole('button', {
@@ -266,9 +255,7 @@ describe('MemberTable', () => {
   })
 
   describe('table has no data', () => {
-    beforeEach(() => {
-      setup({ noData: true })
-    })
+    beforeEach(() => setup({ noData: true }))
 
     it('displays an empty table', async () => {
       render(<MemberTable />, { wrapper })
