@@ -10,13 +10,13 @@ export const BranchConfig = z
         name: z.string(),
         head: z
           .object({
-            commitid: z.string().optional(),
+            commitid: z.string().nullish(),
           })
-          .optional(),
+          .nullish(),
       })
-      .optional(),
+      .nullish(),
   })
-  .optional()
+  .nullish()
 
 type BranchConfigData = z.infer<typeof BranchConfig>
 
