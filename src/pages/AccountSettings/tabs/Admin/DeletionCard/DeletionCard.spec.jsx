@@ -11,6 +11,8 @@ import DeletionCard from './DeletionCard'
 jest.mock('services/account')
 jest.mock('services/toastNotification')
 
+const wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>
+
 describe('DeletionCard', () => {
   function setup() {
     const user = userEvent.setup()
@@ -34,7 +36,7 @@ describe('DeletionCard', () => {
           isPersonalSettings={false}
         />,
         {
-          wrapper: MemoryRouter,
+          wrapper,
         }
       )
 
@@ -52,7 +54,7 @@ describe('DeletionCard', () => {
           isPersonalSettings={false}
         />,
         {
-          wrapper: MemoryRouter,
+          wrapper,
         }
       )
 
@@ -74,7 +76,7 @@ describe('DeletionCard', () => {
           isPersonalSettings={true}
         />,
         {
-          wrapper: MemoryRouter,
+          wrapper,
         }
       )
 
@@ -92,7 +94,7 @@ describe('DeletionCard', () => {
           isPersonalSettings={true}
         />,
         {
-          wrapper: MemoryRouter,
+          wrapper,
         }
       )
 
@@ -113,7 +115,7 @@ describe('DeletionCard', () => {
           isPersonalSettings={true}
         />,
         {
-          wrapper: MemoryRouter,
+          wrapper,
         }
       )
 
@@ -140,7 +142,7 @@ describe('DeletionCard', () => {
             isPersonalSettings={true}
           />,
           {
-            wrapper: MemoryRouter,
+            wrapper,
           }
         )
 
@@ -169,7 +171,7 @@ describe('DeletionCard', () => {
             isPersonalSettings={true}
           />,
           {
-            wrapper: MemoryRouter,
+            wrapper,
           }
         )
 
@@ -198,7 +200,7 @@ describe('DeletionCard', () => {
             isPersonalSettings={true}
           />,
           {
-            wrapper: MemoryRouter,
+            wrapper,
           }
         )
 
@@ -225,7 +227,7 @@ describe('DeletionCard', () => {
               isPersonalSettings={true}
             />,
             {
-              wrapper: MemoryRouter,
+              wrapper,
             }
           )
 
