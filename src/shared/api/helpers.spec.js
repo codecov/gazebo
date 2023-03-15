@@ -26,21 +26,33 @@ describe('getHeaders', () => {
     Cookie.set('github-token', 'github token')
     Cookie.set('gitlab-token', 'gitlab token')
     Cookie.set('bitbucket-token', 'bitbucket token')
+    Cookie.set('github_enterprise-token', 'github-enterprise token')
+    Cookie.set('gitlab_enterprise-token', 'gitlab-enterprise token')
+    Cookie.set('bitbucket_server-token', 'bitbucket-server token')
   })
 
   afterEach(() => {
     Cookie.set('github-token')
     Cookie.set('gitlab-token')
     Cookie.set('bitbucket-token')
+    Cookie.set('github_enterprise-token')
+    Cookie.set('gitlab_enterprise-token')
+    Cookie.set('bitbucket_server-token')
   })
 
   test.each([
     ['gh', 'github-token'],
     ['gl', 'gitlab-token'],
     ['bb', 'bitbucket-token'],
+    ['ghe', 'github_enterprise-token'],
+    ['gle', 'gitlab_enterprise-token'],
+    ['bbs', 'bitbucket_server-token'],
     ['github', 'github-token'],
     ['bitbucket', 'bitbucket-token'],
     ['gitlab', 'gitlab-token'],
+    ['github_enterprise', 'github_enterprise-token'],
+    ['gitlab_enterprise', 'gitlab_enterprise-token'],
+    ['bitbucket_server', 'bitbucket_server-token'],
     ['invalid', undefined],
   ])(
     'Passing %s as a provider creates the correct auth header',
