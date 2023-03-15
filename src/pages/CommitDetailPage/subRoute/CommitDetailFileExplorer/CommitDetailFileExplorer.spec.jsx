@@ -116,9 +116,7 @@ describe('CommitDetailFileExplorer', () => {
 
     server.use(
       graphql.query('CommitPathContents', (req, res, ctx) => {
-        if (req.variables?.filters) {
-          requestFilters(req.variables?.filters)
-        }
+        requestFilters(req.variables.filters)
 
         if (noFiles || req.variables?.filters?.searchValue) {
           return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
