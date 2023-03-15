@@ -107,7 +107,7 @@ describe('Footer', () => {
     it('renders a link', async () => {
       render(<Footer />, { wrapper })
 
-      const copyright = await screen.findByText(`© 3301 Codecov`)
+      const copyright = await screen.findByText(`© 3301 Sentry`)
       expect(copyright).toBeInTheDocument()
     })
   })

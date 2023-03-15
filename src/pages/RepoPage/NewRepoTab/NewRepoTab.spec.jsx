@@ -11,6 +11,8 @@ import { useRedirect } from 'shared/useRedirect'
 import NewRepoTab from './NewRepoTab'
 
 jest.mock('shared/useRedirect')
+jest.mock('./GitHubActions', () => () => 'GitHubActions')
+jest.mock('./OtherCI', () => () => 'OtherCI')
 
 const mockCurrentUser = {
   me: {
@@ -61,6 +63,7 @@ const wrapper =
           >
             <Suspense fallback={null}>{children}</Suspense>
           </Route>
+
           <Route
             path="*"
             render={({ location }) => {
@@ -73,7 +76,7 @@ const wrapper =
     )
 
 beforeAll(() => {
-  console.error = () => {}
+  // console.error = () => {}
   server.listen()
 })
 afterEach(() => {
@@ -116,20 +119,57 @@ describe('NewRepoTab', () => {
       expect(header).toBeInTheDocument()
     })
 
-    it('renders github actions tab', async () => {
-      render(<NewRepoTab />, { wrapper: wrapper() })
+    describe('users provider is github', () => {
+      it('renders github actions tab', async () => {
+        render(<NewRepoTab />, { wrapper: wrapper() })
 
-      const tab = await screen.findByRole('link', { name: 'GitHub Actions' })
-      expect(tab).toBeInTheDocument()
-      expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
+        const content = await screen.findByText('GitHubActions')
+        expect(content).toBeInTheDocument()
+
+        const tab = await screen.findByRole('link', { name: 'GitHub Actions' })
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
+      })
+
+      it('renders other ci tab', async () => {
+        render(<NewRepoTab />, { wrapper: wrapper() })
+
+        const content = await screen.findByText('GitHubActions')
+        expect(content).toBeInTheDocument()
+
+        const tab = await screen.findByRole('link', { name: 'Other CI' })
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/new/other-ci'
+        )
+      })
     })
 
-    it('renders other ci tab', async () => {
-      render(<NewRepoTab />, { wrapper: wrapper() })
+    describe('users provider is not github', () => {
+      it('does not render github actions tab', async () => {
+        render(<NewRepoTab />, {
+          wrapper: wrapper('/gl/codecov/cool-repo/new'),
+        })
 
-      const tab = await screen.findByRole('link', { name: 'Other CI' })
-      expect(tab).toBeInTheDocument()
-      expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new/other-ci')
+        const content = await screen.findByText('OtherCI')
+        expect(content).toBeInTheDocument()
+
+        const tab = screen.queryByRole('link', { name: 'GitHub Actions' })
+        expect(tab).not.toBeInTheDocument()
+      })
+
+      it('does not render other ci tab', async () => {
+        render(<NewRepoTab />, {
+          wrapper: wrapper('/gl/codecov/cool-repo/new'),
+        })
+
+        const content = await screen.findByText('OtherCI')
+        expect(content).toBeInTheDocument()
+
+        const tab = screen.queryByRole('link', { name: 'Other CI' })
+        expect(tab).not.toBeInTheDocument()
+      })
     })
   })
 
@@ -164,39 +204,51 @@ describe('NewRepoTab', () => {
     })
   })
 
-  describe('testing tab navigation', () => {
-    describe('clicking on other ci', () => {
-      it('navigates to /other-ci', async () => {
-        const { user } = setup()
-        render(<NewRepoTab />, { wrapper: wrapper() })
+  describe('users provider is github', () => {
+    describe('testing tab navigation', () => {
+      describe('clicking on other ci', () => {
+        it('navigates to /other-ci', async () => {
+          const { user } = setup()
+          render(<NewRepoTab />, { wrapper: wrapper() })
 
-        const tab = await screen.findByRole('link', { name: 'Other CI' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute(
-          'href',
-          '/gh/codecov/cool-repo/new/other-ci'
-        )
+          const tab = await screen.findByRole('link', { name: 'Other CI' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute(
+            'href',
+            '/gh/codecov/cool-repo/new/other-ci'
+          )
 
-        await user.click(tab)
+          await user.click(tab)
 
-        expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new/other-ci')
-      })
-    })
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/new/other-ci'
+          )
 
-    describe('clicking on github actions', () => {
-      it('navigates to /new', async () => {
-        const { user } = setup()
-        render(<NewRepoTab />, {
-          wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
+          const content = await screen.findByText('OtherCI')
+          expect(content).toBeInTheDocument()
         })
+      })
 
-        const tab = await screen.findByRole('link', { name: 'GitHub Actions' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
+      describe('clicking on github actions', () => {
+        it('navigates to /new', async () => {
+          const { user } = setup()
+          render(<NewRepoTab />, {
+            wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
+          })
 
-        await user.click(tab)
+          const tab = await screen.findByRole('link', {
+            name: 'GitHub Actions',
+          })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
 
-        expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
+          await user.click(tab)
+
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
+
+          const content = await screen.findByText('GitHubActions')
+          expect(content).toBeInTheDocument()
+        })
       })
     })
   })

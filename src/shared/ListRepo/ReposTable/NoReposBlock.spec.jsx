@@ -1,90 +1,131 @@
 import { render, screen } from 'custom-testing-library'
 
-import { MemoryRouter, Route, useHistory } from 'react-router-dom'
-
-import { ActiveContext } from 'shared/context'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import NoReposBlock from './NoReposBlock'
 
-jest.mock('services/navigation', () => ({
-  ...jest.requireActual('services/navigation'),
-  useLocationParams: jest.fn(),
-}))
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useHistory: jest.fn(),
-}))
-
-const mockHistoryPush = jest.fn()
-
-describe('NoReposBlock', () => {
-  function setup({ owner, repoDisplay }) {
-    const props = {
-      owner,
-    }
-    useHistory.mockReturnValue({ push: mockHistoryPush })
-
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/']}>
-        <Route path="/:provider/:owner">
-          <ActiveContext.Provider value={repoDisplay}>
-            <NoReposBlock {...props} />
-          </ActiveContext.Provider>
-        </Route>
+const wrapper =
+  (initialEntries = ['/gh/codecov']) =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner">{children}</Route>
       </MemoryRouter>
     )
-  }
 
-  describe('when renderd with an owner and active repos', () => {
-    beforeEach(() => {
-      setup({
-        owner: 'rula',
-        repoDisplay: 'Active',
+describe('NoReposBlock', () => {
+  describe('when rendered without private access', () => {
+    it('renders no repo detected text', async () => {
+      const props = { privateAccess: false, searchValue: '' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
       })
+
+      const noReposDetected = await screen.findByText(
+        /There are no repos detected/
+      )
+      expect(noReposDetected).toBeInTheDocument()
     })
 
-    it('renders select the repo text', () => {
-      const p = screen.getByText('Select the repo')
-      expect(p).toBeInTheDocument()
+    it('renders private scope text', async () => {
+      const props = { privateAccess: false, searchValue: '' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
+      })
+
+      const privateScopeButton = await screen.findByText(/private scope/)
+      expect(privateScopeButton).toBeInTheDocument()
+      expect(privateScopeButton).toHaveAttribute(
+        'href',
+        'https://stage-web.codecov.dev/login/gh?private=true'
+      )
+
+      const privateScopeText = await screen.findByText(
+        /for access to private repos/
+      )
+      expect(privateScopeText).toBeInTheDocument()
     })
 
-    it('updates the params when clicking on select the repo text', () => {
-      const p = screen.getByText('Select the repo')
-      p.click()
+    it('does not render search prompt', () => {
+      const props = { privateAccess: false, searchValue: '' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
+      })
 
-      expect(mockHistoryPush).toBeCalledWith('/gh/codecov?repoDisplay=Inactive')
-    })
-
-    it('renders the button the set up link', () => {
-      const buttons = screen.getAllByText(/No repos setup yet/)
-      expect(buttons.length).toBe(1)
-    })
-
-    it('updates the params when clicking on View repos for setup button', () => {
-      const btn = screen.getByText('View repos for setup')
-      btn.click()
-
-      expect(mockHistoryPush).toBeCalledWith('/gh/codecov?repoDisplay=Inactive')
+      const searchNotFoundText = screen.queryByText('No results found')
+      expect(searchNotFoundText).not.toBeInTheDocument()
     })
   })
 
-  describe('when renderd with an owner but no active repos', () => {
-    beforeEach(() => {
-      setup({
-        owner: 'rula',
-        repoDisplay: 'Inactive',
+  describe('when rendered with private access', () => {
+    it('renders no repo detected text', async () => {
+      const props = { privateAccess: true, searchValue: '' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
       })
+
+      const noReposDetected = await screen.findByText(
+        /There are no repos detected/
+      )
+      expect(noReposDetected).toBeInTheDocument()
     })
 
-    it('displays the msg for no repos', () => {
-      const msg = screen.queryByText(/You need to create repos first/)
-      expect(msg).toBeInTheDocument()
+    it('does not render private scope text', () => {
+      const props = { privateAccess: true, searchValue: '' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
+      })
+
+      const privateScopeButton = screen.queryByText(/private scope/)
+      expect(privateScopeButton).not.toBeInTheDocument()
+
+      const privateScopeText = screen.queryByText(/for access to private repos/)
+      expect(privateScopeText).not.toBeInTheDocument()
     })
 
-    it('does not render the button the set up link', () => {
-      const buttons = screen.queryByText(/No repos setup yet/)
-      expect(buttons).not.toBeInTheDocument()
+    it('does not render search prompt', () => {
+      const props = { privateAccess: true, searchValue: '' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
+      })
+
+      const searchNotFoundText = screen.queryByText('No results found')
+      expect(searchNotFoundText).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with search value', () => {
+    it('renders search prompt', async () => {
+      const props = { privateAccess: true, searchValue: 'asff' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
+      })
+
+      const searchNotFoundText = await screen.findByText('No results found')
+      expect(searchNotFoundText).toBeInTheDocument()
+    })
+
+    it('does not render no repo detected text', () => {
+      const props = { privateAccess: true, searchValue: 'asff' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
+      })
+
+      const noReposDetected = screen.queryByText(/There are no repos detected/)
+      expect(noReposDetected).not.toBeInTheDocument()
+    })
+
+    it('does not render private scope text', () => {
+      const props = { privateAccess: true, searchValue: 'asff' }
+      render(<NoReposBlock {...props} />, {
+        wrapper: wrapper(),
+      })
+
+      const privateScopeButton = screen.queryByText(/private scope/)
+      expect(privateScopeButton).not.toBeInTheDocument()
+
+      const privateScopeText = screen.queryByText(/for access to private repos/)
+      expect(privateScopeText).not.toBeInTheDocument()
     })
   })
 })
