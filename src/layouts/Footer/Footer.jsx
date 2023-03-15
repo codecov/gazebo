@@ -17,7 +17,7 @@ function Footer() {
     : []
 
   const leftMenu = [
-    { text: `© ${year} Codecov` },
+    { text: `© ${year} Sentry` },
     ...buildModeLeftMenu,
     { to: { pageName: 'terms' } },
     { to: { pageName: 'privacy' } },
