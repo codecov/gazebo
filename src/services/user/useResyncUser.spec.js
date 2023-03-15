@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -82,10 +82,8 @@ describe('useResyncUser', () => {
         wrapper: wrapper(),
       })
 
-      await act(() => {
-        // triggerResync returns a promise on which we can await
-        return result.current.triggerResync()
-      })
+      // triggerResync returns a promise on which we can await
+      result.current.triggerResync()
 
       await waitFor(() => expect(result.current.isSyncing).toBeTruthy())
     })

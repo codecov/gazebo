@@ -1,4 +1,4 @@
-import { act, render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 
@@ -88,11 +88,9 @@ describe('CreateTokenModal', () => {
       )
 
       const input = screen.getByRole('textbox')
-      const generateToken = screen.getByText('Generate Token')
       await user.type(input, '2333')
-      await act(async () => {
-        await user.click(generateToken)
-      })
+      const generateToken = screen.getByText('Generate Token')
+      await user.click(generateToken)
 
       expect(mutate).toHaveBeenCalled()
     })
@@ -123,11 +121,9 @@ describe('CreateTokenModal', () => {
         )
 
         const input = screen.getByRole('textbox')
-        const generateToken = screen.getByText('Generate Token')
         await user.type(input, '2333')
-        await act(async () => {
-          await user.click(generateToken)
-        })
+        const generateToken = screen.getByText('Generate Token')
+        await user.click(generateToken)
 
         const label = screen.getByText(/Personal API token/)
         expect(label).toBeInTheDocument()
@@ -135,6 +131,7 @@ describe('CreateTokenModal', () => {
         expect(copyElements).toBeInTheDocument()
         window.prompt = jest.fn()
         await user.click(copyElements)
+
         expect(window.prompt).toHaveBeenCalled()
         const warning = screen.getByText(/Make sure to copy your token now/)
         expect(warning).toBeInTheDocument()
@@ -150,11 +147,9 @@ describe('CreateTokenModal', () => {
         )
 
         const input = screen.getByRole('textbox')
-        const generateToken = screen.getByText('Generate Token')
         await user.type(input, '2333')
-        await act(async () => {
-          await user.click(generateToken)
-        })
+        const generateToken = screen.getByText('Generate Token')
+        await user.click(generateToken)
 
         const button = screen.getByRole('button', {
           name: /done/i,
@@ -172,14 +167,15 @@ describe('CreateTokenModal', () => {
         )
 
         const input = screen.getByRole('textbox')
-        const generateToken = screen.getByText('Generate Token')
         await user.type(input, '2333')
-        await act(async () => {
-          await user.click(generateToken)
-        })
+        const generateToken = screen.getByText('Generate Token')
+        await user.click(generateToken)
+        const done = screen.getByText('Done')
+        await user.click(done)
 
-        await user.click(screen.getByText('Done'))
-        expect(closeModal).toHaveBeenCalled()
+        await waitFor(() => {
+          expect(closeModal).toHaveBeenCalled()
+        })
       })
     })
   })
