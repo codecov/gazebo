@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
@@ -7,9 +8,15 @@ export function providerToName(provider) {
     gh: 'Github',
     bb: 'BitBucket',
     gl: 'Gitlab',
+    ghe: 'Github Enterprise',
+    gle: 'Gitlab Enterprise',
+    bbs: 'BitBucket Server',
     github: 'Github',
     bitbucket: 'BitBucket',
     gitlab: 'Gitlab',
+    github_enterprise: 'Github Enterprise',
+    gitlab_enterprise: 'Gitlab Enterprise',
+    bitbucket_server: 'BitBucket Server',
   }[provider.toLowerCase()]
 }
 
@@ -18,6 +25,9 @@ export function providerImage(providerName) {
     Github: githubLogo,
     Gitlab: gitlabLogo,
     BitBucket: bitbucketLogo,
+    'Github Enterprise': githubLogo,
+    'Gitlab Enterprise': gitlabLogo,
+    'BitBucket Server': bitbucketLogo,
   }[providerToName(providerName)]
 }
 
@@ -27,6 +37,12 @@ export function providerFeedback(providerName) {
     Gitlab:
       'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1',
     BitBucket:
+      'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback',
+    'Github Enterprise':
+      'https://github.com/codecov/Codecov-user-feedback/issues/1',
+    'Gitlab Enterprise':
+      'https://gitlab.com/codecov-open-source/codecov-user-feedback/-/issues/1',
+    'BitBucket Server':
       'https://bitbucket.org/kylemann/codecov/issues/1/wed-love-your-feedback',
   }[providerToName(providerName)]
 }

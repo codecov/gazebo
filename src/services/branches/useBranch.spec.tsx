@@ -21,7 +21,7 @@ const mockBranch = {
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
@@ -50,7 +50,13 @@ describe('useBranch', () => {
 
     it('fetches the branch data', async () => {
       const { result, waitFor } = renderHook(
-        () => useBranch({ provider: 'gh', owner: 'repo', branch: 'main' }),
+        () =>
+          useBranch({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+            branch: 'main',
+          }),
         { wrapper }
       )
 
