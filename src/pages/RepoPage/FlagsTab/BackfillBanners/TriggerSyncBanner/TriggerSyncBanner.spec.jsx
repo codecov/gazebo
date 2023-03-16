@@ -27,7 +27,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const user = {
+const userData = {
   username: 'codecov',
   trackingMetadata: {
     ownerid: 4,
@@ -46,16 +46,18 @@ describe('TriggerSyncBanner', () => {
   afterEach(() => jest.resetAllMocks())
 
   function setup() {
+    const user = userEvent.setup()
     const mutate = jest.fn()
+
     useParams.mockReturnValue({
       owner: 'codecov',
       provider: 'gh',
       repo: 'gazebo',
     })
-    useUser.mockReturnValue({ data: user })
+    useUser.mockReturnValue({ data: userData })
     useActivateFlagMeasurements.mockReturnValue({ mutate })
 
-    return { mutate }
+    return { mutate, user }
   }
 
   describe('when rendered', () => {
@@ -78,11 +80,11 @@ describe('TriggerSyncBanner', () => {
 
     describe('when clicking on the button to upgrade', () => {
       it('calls the mutate function', async () => {
-        const { mutate } = setup()
+        const { mutate, user } = setup()
         render(<TriggerSyncBanner />, { wrapper })
 
-        const user = userEvent.setup()
-        await user.click(screen.getByTestId('backfill-task'))
+        const backfill = screen.getByTestId('backfill-task')
+        await user.click(backfill)
 
         expect(mutate).toHaveBeenCalledWith({
           provider: 'gh',

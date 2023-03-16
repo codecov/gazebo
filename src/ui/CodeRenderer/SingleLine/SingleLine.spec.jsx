@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { LINE_TYPE } from 'shared/utils/fileviewer'
@@ -32,6 +31,7 @@ const wrapper = ({ children }) => (
 
 describe('SingleLine', () => {
   function setup(targeted = false) {
+    const user = userEvent.setup()
     const mockHandleClick = jest.fn()
 
     useScrollToLine.mockImplementation(() => ({
@@ -40,7 +40,7 @@ describe('SingleLine', () => {
       targeted,
     }))
 
-    return { mockHandleClick }
+    return { mockHandleClick, user }
   }
 
   describe('renders highlighted covered line', () => {
@@ -173,8 +173,7 @@ describe('SingleLine', () => {
 
   describe('user clicks on a number', () => {
     it('calls handle click function', async () => {
-      const user = userEvent.setup()
-      const { mockHandleClick } = setup()
+      const { mockHandleClick, user } = setup()
       render(
         <SingleLine
           line={[

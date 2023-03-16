@@ -229,7 +229,10 @@ describe('Commits Tab', () => {
     })
 
     describe('when there is not a next page', () => {
-      // I don't think this test is working, fetchNextPage will never been called.
+      /*  TODO: this is a false positive test. The component is
+          actually calling it but because of scoping it was
+          always falsy
+      */
       const fetchNextPage = jest.fn()
 
       beforeEach(() => {

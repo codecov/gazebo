@@ -29,7 +29,7 @@ function OptionButton({ active, options, onChange }) {
 }
 
 OptionButton.propTypes = {
-  active: PropTypes.string.isRequired, // Why is this text? Shouldn't it be boolean?
+  active: PropTypes.string.isRequired, // TODO: should be oneOf(options)
   options: PropTypes.arrayOf(
     PropTypes.shape({
       text: PropTypes.string,
