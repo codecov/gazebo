@@ -67,11 +67,12 @@ function OtherCI() {
           alt="codecov patch and project"
           src={patchAndProject}
           className="my-3 md:px-5"
+          loading="lazy"
         />
         <p className="text-base">
           and a comment with coverage report in the pull request:
         </p>
-        <img alt="codecov report" src={codecovReport} />
+        <img alt="codecov report" src={codecovReport} loading="lazy" />
         <p>
           Learn more about the comment report and customizing{' '}
           <A to={{ pageName: 'prCommentLayout' }}>here</A>
