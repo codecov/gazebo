@@ -82,8 +82,8 @@ function RepoPage() {
 
   if (!isCurrentUserActivated && isRepoPrivate)
     throw new CustomError({
-      code: 403,
-      message: (
+      status: 403,
+      detail: (
         <p>
           Activation is required to view this repo, please{' '}
           <A to={{ pageName: 'membersTab' }}>click here </A> to activate your

@@ -1,7 +1,7 @@
 class CustomError {
-  constructor({ message, code }) {
-    this.message = message
-    this.code = code
+  constructor({ detail, status }) {
+    this.data = { detail }
+    this.status = status
   }
 }
 
