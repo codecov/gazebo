@@ -57,19 +57,6 @@ jobs:
             chmod +x codecov
             ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z
 
-  sentry:
-    docker:
-      - image: cimg/node:18.8.0
-    resource_class: medium+
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - npm-deps-{{ checksum "package-lock.json" }}
-      - run:
-          name: Sentry Release
-          command: npm run sentry
-
   build:
     docker:
       - image: cimg/node:18.8.0
@@ -125,12 +112,6 @@ workflows:
           requires:
             - install
       - test:
-          requires:
-            - install
-      - sentry:
-          filters:
-            branches:
-              only: /main/
           requires:
             - install
       - fossa:

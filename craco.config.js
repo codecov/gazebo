@@ -1,8 +1,11 @@
 /* eslint-disable camelcase */
+const SentryWebpackPlugin = require('@sentry/webpack-plugin')
+
 const { resolve } = require('path')
 
 module.exports = {
   webpack: {
+    devtool: 'source-map',
     configure: {
       entry: './src/index.js',
     },
@@ -22,6 +25,16 @@ module.exports = {
       config: resolve(__dirname, 'src/config'),
       sentry: resolve(__dirname, 'src/sentry'),
     },
+    plugins: [
+      new SentryWebpackPlugin({
+        org: 'example-org',
+        project: 'example-project',
+        include: './dist',
+        // Auth tokens can be obtained from https://sentry.io/settings/account/api/auth-tokens/
+        // and needs the `project:releases` and `org:read` scopes
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      }),
+    ],
   },
   jest: {
     configure: {
