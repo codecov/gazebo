@@ -82,7 +82,6 @@ describe('useResyncUser', () => {
         wrapper: wrapper(),
       })
 
-      // triggerResync returns a promise on which we can await
       result.current.triggerResync()
 
       await waitFor(() => expect(result.current.isSyncing).toBeTruthy())
