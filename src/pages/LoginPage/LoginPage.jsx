@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { useLocationParams } from 'services/navigation'
 import A from 'ui/A'
 
 import LoginButton from './LoginButton'
@@ -18,12 +19,17 @@ function getProviderShortName(provider) {
 
 function LoginPage() {
   const { provider } = useParams()
+  const { params } = useLocationParams()
   const providerName = getProviderShortName(provider)
+
+  if ('state' in params) {
+    localStorage.setItem('sentry-token', params?.state)
+  }
 
   return (
     <div className="flex h-full flex-col items-center justify-center">
       <h1 className="mb-4	text-3xl">Login to Codecov</h1>
-      <p>You’ll be taken to your repo provider to authenticate</p>
+      <p>You&apos;ll be taken to your repo provider to authenticate</p>
       <div className="mx-auto mt-6 w-96">
         <div className="mb-4">
           <hr />
