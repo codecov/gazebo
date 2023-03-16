@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom'
 
 import config from 'config'
 
+import CustomError from 'shared/CustomError'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
@@ -48,6 +49,21 @@ const graphQLErrorToUI = {
     title: 'Unauthorized',
   },
   NotFoundError: {
+    illustration: img404,
+    title: 'Not found',
+  },
+}
+
+const customErrorToUI = {
+  401: {
+    illustration: img401,
+    title: 'Unauthenticated',
+  },
+  403: {
+    illustration: img403,
+    title: 'Unauthorized',
+  },
+  404: {
     illustration: img404,
     title: 'Not found',
   },
@@ -155,6 +171,8 @@ class NetworkErrorBoundary extends Component {
     }
     if (Object.keys(graphQLErrorToUI).includes(error.__typename))
       return { hasGraphqlError: true, error }
+
+    if (error instanceof CustomError) return { hasCustomError: true, error }
     return {}
   }
 
@@ -166,6 +184,7 @@ class NetworkErrorBoundary extends Component {
     this.setState({
       hasNetworkError: false,
       hasGraphqlError: false,
+      hasCustomError: false,
       error: null,
     })
   }
@@ -210,9 +229,29 @@ class NetworkErrorBoundary extends Component {
     )
   }
 
+  renderCustomError() {
+    const { code, message } = this.state.error
+    const { illustration, title } = customErrorToUI[code]
+
+    return (
+      <article className="flex h-full flex-col items-center justify-center gap-4">
+        <img
+          alt="illustration error"
+          className={cs(styles.illustrationError, 'mx-auto')}
+          src={illustration}
+        />
+        <h1 className="text-2xl">{title}</h1>
+        <p>{message}</p>
+        <strong>Error {code}</strong>
+        <ResetHandler reset={this.resetErrorBoundary} />
+      </article>
+    )
+  }
+
   render() {
     if (this.state.hasNetworkError) return this.renderError()
     if (this.state.hasGraphqlError) return this.renderGraphQLError()
+    if (this.state.hasCustomError) return this.renderCustomError()
     return <>{this.props.children}</>
   }
 }
