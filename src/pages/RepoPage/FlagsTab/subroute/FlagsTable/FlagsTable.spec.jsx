@@ -107,10 +107,11 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('RepoContentsTable', () => {
-  const fetchNextPage = jest.fn()
-  const handleSort = jest.fn()
-
   function setup({ noData } = { noData: false }) {
+    const user = userEvent.setup()
+    const fetchNextPage = jest.fn()
+    const handleSort = jest.fn()
+
     server.use(
       graphql.query('FlagMeasurements', (req, res, ctx) => {
         handleSort(req?.variables?.orderingDirection)
@@ -132,6 +133,8 @@ describe('RepoContentsTable', () => {
         res(ctx.status(200), ctx.data(mockRepoConfig))
       )
     )
+
+    return { fetchNextPage, handleSort, user }
   }
 
   describe('when rendered', () => {
@@ -226,11 +229,8 @@ describe('RepoContentsTable', () => {
   })
 
   describe('when hasNextPage is true', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders load more button', async () => {
+      setup()
       render(<FlagsTable />, { wrapper: wrapper() })
 
       const loadMore = await screen.findByText('Load More')
@@ -238,30 +238,28 @@ describe('RepoContentsTable', () => {
     })
 
     it('fires next page button click', async () => {
+      const { fetchNextPage, user } = setup()
       render(<FlagsTable />, { wrapper: wrapper() })
 
       const loadMore = await screen.findByText('Load More')
-      userEvent.click(loadMore)
+
+      await user.click(loadMore)
 
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
     })
   })
 
   describe('when sorting', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('calls handleSort', async () => {
+      const { handleSort, user } = setup()
       render(<FlagsTable />, { wrapper: wrapper() })
 
       const flags = await screen.findByText('Flags')
-      userEvent.click(flags)
 
+      await user.click(flags)
       await waitFor(() => expect(handleSort).toHaveBeenLastCalledWith('DESC'))
 
-      userEvent.click(flags)
-
+      await user.click(flags)
       await waitFor(() => expect(handleSort).toHaveBeenLastCalledWith('ASC'))
     })
   })

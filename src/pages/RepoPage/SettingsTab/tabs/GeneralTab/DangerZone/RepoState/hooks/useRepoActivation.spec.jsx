@@ -4,7 +4,6 @@ import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { act } from 'react-test-renderer'
 
 import { useAddNotification } from 'services/toastNotification'
 
@@ -75,9 +74,7 @@ describe('useRepoActivation', () => {
     it('displays a toast notification on error', async () => {
       const { result } = renderHook(() => useRepoActivation(), { wrapper })
 
-      await act(async () => {
-        result.current.toggleRepoState(false)
-      })
+      result.current.toggleRepoState(false)
 
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({

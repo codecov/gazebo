@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -115,6 +115,7 @@ describe('GitHubActions', () => {
 
     describe('user copies token', () => {
       it('fires segment event', async () => {
+        const user = userEvent.setup()
         render(<GitHubActions />, { wrapper })
 
         // this is needed to wait for all the data to be loaded
@@ -126,19 +127,17 @@ describe('GitHubActions', () => {
         const buttons = await screen.findAllByTestId('clipboard')
         const button = buttons[0]
 
-        userEvent.click(button)
+        await user.click(button)
 
-        await waitFor(() => expect(trackSegmentEvent).toBeCalled())
-        await waitFor(() =>
-          expect(trackSegmentEvent).toBeCalledWith({
-            data: {
-              category: 'Onboarding',
-              tokenHash: 'a2629295',
-              userId: 'user-owner-id',
-            },
-            event: 'User Onboarding Copied CI Token',
-          })
-        )
+        expect(trackSegmentEvent).toBeCalled()
+        expect(trackSegmentEvent).toBeCalledWith({
+          data: {
+            category: 'Onboarding',
+            tokenHash: 'a2629295',
+            userId: 'user-owner-id',
+          },
+          event: 'User Onboarding Copied CI Token',
+        })
       })
     })
   })

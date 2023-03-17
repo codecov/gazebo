@@ -57,11 +57,6 @@ const contextData = {
 }
 
 describe('UpdateDefaultOrgModal', () => {
-  const closeModal = jest.fn()
-  const defaultProps = {
-    isOpen: true,
-    closeModal,
-  }
   function setup() {
     server.use(
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) =>
@@ -71,6 +66,8 @@ describe('UpdateDefaultOrgModal', () => {
         res(ctx.status(200), ctx.data(contextData))
       )
     )
+
+    return { user: userEvent.setup() }
   }
 
   describe('when the modal is shown', () => {
@@ -79,7 +76,9 @@ describe('UpdateDefaultOrgModal', () => {
     })
 
     it('renders the organization list', async () => {
-      render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
+      render(<UpdateDefaultOrgModal isOpen={true} closeModal={jest.fn()} />, {
+        wrapper,
+      })
       const fearneUsername = await screen.findByText(/fearne-calloway/)
       expect(fearneUsername).toBeInTheDocument()
 
@@ -88,7 +87,9 @@ describe('UpdateDefaultOrgModal', () => {
     })
 
     it('renders update and cancel buttons', async () => {
-      render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
+      render(<UpdateDefaultOrgModal isOpen={true} closeModal={jest.fn()} />, {
+        wrapper,
+      })
       const updateButton = await screen.findByText(/Update/)
       expect(updateButton).toBeInTheDocument()
       const cancelButton = await screen.findByText(/Cancel/)
@@ -96,7 +97,9 @@ describe('UpdateDefaultOrgModal', () => {
     })
 
     it('renders appropriate labels', async () => {
-      render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
+      render(<UpdateDefaultOrgModal isOpen={true} closeModal={jest.fn()} />, {
+        wrapper,
+      })
       const title = await screen.findByText(/Select default organization/)
       expect(title).toBeInTheDocument()
       const subTitle = await screen.findByText(
@@ -107,12 +110,12 @@ describe('UpdateDefaultOrgModal', () => {
   })
 
   describe('when clicking update button', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('selects a default organization', async () => {
-      render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
+      const { user } = setup()
+      const closeModal = jest.fn()
+      render(<UpdateDefaultOrgModal isOpen={true} closeModal={closeModal} />, {
+        wrapper,
+      })
       const updateButton = await screen.findByRole('button', { name: 'Update' })
       expect(updateButton).toHaveClass('disabled:cursor-not-allowed')
 
@@ -121,41 +124,40 @@ describe('UpdateDefaultOrgModal', () => {
         name: /fearne-calloway/,
       })
       expect(fearneUsername).toBeInTheDocument()
-      userEvent.click(fearneUsername)
+      await user.click(fearneUsername)
 
       // Update org
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       await waitFor(() => expect(closeModal).toHaveBeenCalled())
     })
   })
 
   describe('when clicking cancel button', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('closes the modal', async () => {
-      render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
+      const { user } = setup()
+      const closeModal = jest.fn()
+      render(<UpdateDefaultOrgModal isOpen={true} closeModal={closeModal} />, {
+        wrapper,
+      })
       const cancelButton = await screen.findByRole('button', { name: 'Cancel' })
-      userEvent.click(cancelButton)
+      await user.click(cancelButton)
 
       await waitFor(() => expect(closeModal).toHaveBeenCalled())
     })
   })
 
   describe('when clicking all orgs and repos button', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('updates default org to all orgs', async () => {
-      render(<UpdateDefaultOrgModal {...defaultProps} />, { wrapper })
+      const { user } = setup()
+      render(<UpdateDefaultOrgModal isOpen={true} closeModal={jest.fn()} />, {
+        wrapper,
+      })
       const allOrgsAndReposButton = await screen.findByRole('button', {
         name: /All orgs and repos/,
       })
       expect(allOrgsAndReposButton).toBeInTheDocument()
-      userEvent.click(allOrgsAndReposButton)
+      await user.click(allOrgsAndReposButton)
 
       const defaultOrgText = await screen.findByText(/Current default org/)
       expect(defaultOrgText).toBeInTheDocument()

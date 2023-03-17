@@ -9,58 +9,83 @@ import NameEmailCard from './NameEmailCard'
 jest.mock('services/user')
 jest.mock('services/toastNotification')
 
-const currentUser = {
-  user: {
-    name: 'donald duck',
-  },
-  email: 'donald@duck.com',
-}
-
 describe('NameEmailCard', () => {
-  const mutate = jest.fn()
-  const addNotification = jest.fn()
-
   function setup() {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+    const addNotification = jest.fn()
+
     useAddNotification.mockReturnValue(addNotification)
     useUpdateProfile.mockReturnValue({ mutate, isLoading: false })
-    render(<NameEmailCard currentUser={currentUser} provider="gh" />)
+
+    return { mutate, addNotification, user }
   }
 
   describe('when rendered', () => {
     beforeEach(setup)
 
     it('renders the name and email input with the data of the user', () => {
-      expect(
-        screen.getByRole('textbox', {
-          name: /name/i,
-        })
-      ).toHaveValue(currentUser.user.name)
-      expect(
-        screen.getByRole('textbox', {
-          name: /email/i,
-        })
-      ).toHaveValue(currentUser.email)
+      render(
+        <NameEmailCard
+          currentUser={{
+            user: {
+              name: 'donald duck',
+            },
+            email: 'donald@duck.com',
+          }}
+          provider="gh"
+        />
+      )
+
+      const name = screen.getByRole('textbox', {
+        name: /name/i,
+      })
+      expect(name).toHaveValue('donald duck')
+
+      const email = screen.getByRole('textbox', { name: /email/i })
+      expect(email).toHaveValue('donald@duck.com')
     })
 
     it('has the submit button disabled', () => {
-      expect(
-        screen.getByRole('button', {
-          name: /save changes/i,
-        })
-      ).toBeDisabled()
+      render(
+        <NameEmailCard
+          currentUser={{
+            user: {
+              name: 'donald duck',
+            },
+            email: 'donald@duck.com',
+          }}
+          provider="gh"
+        />
+      )
+
+      const saveChangesButton = screen.getByRole('button', {
+        name: /save changes/i,
+      })
+      expect(saveChangesButton).toBeDisabled()
     })
   })
 
   describe('when updating one field', () => {
-    beforeEach(() => {
-      setup()
+    it('updates the field with the right value', async () => {
+      const { user } = setup()
+      render(
+        <NameEmailCard
+          currentUser={{
+            user: {
+              name: 'donald duck',
+            },
+            email: 'donald@duck.com',
+          }}
+          provider="gh"
+        />
+      )
+
       const emailField = screen.getByRole('textbox', {
         name: /email/i,
       })
-      userEvent.type(emailField, '{backspace}{backspace}{backspace}nl')
-    })
+      await user.type(emailField, '{backspace}{backspace}{backspace}nl')
 
-    it('updates the field with the right value', () => {
       expect(
         screen.getByRole('textbox', {
           name: /email/i,
@@ -70,83 +95,151 @@ describe('NameEmailCard', () => {
   })
 
   describe('when submitting with an empty name', () => {
-    beforeEach(() => {
-      setup()
+    it('renders an error message', async () => {
+      const { user } = setup()
+      render(
+        <NameEmailCard
+          currentUser={{
+            user: {
+              name: 'donald duck',
+            },
+            email: 'donald@duck.com',
+          }}
+          provider="gh"
+        />
+      )
+
       const nameField = screen.getByRole('textbox', {
         name: /name/i,
       })
-      userEvent.type(nameField, '{selectall}{backspace}')
-      userEvent.click(
-        screen.getByRole('button', {
-          name: /save changes/i,
-        })
-      )
-    })
+      await user.tripleClick(nameField)
+      await user.keyboard('{backspace}')
 
-    it('renders an error message', () => {
-      expect(screen.getByText('Name is required')).toBeInTheDocument()
+      const saveChanges = screen.getByRole('button', {
+        name: /save changes/i,
+      })
+      await user.click(saveChanges)
+
+      const nameIsRequired = screen.getByText('Name is required')
+      expect(nameIsRequired).toBeInTheDocument()
     })
   })
 
   describe('when submitting with an empty email', () => {
-    beforeEach(() => {
-      setup()
+    it('renders an error message', async () => {
+      const { user } = setup()
+      render(
+        <NameEmailCard
+          currentUser={{
+            user: {
+              name: 'donald duck',
+            },
+            email: 'donald@duck.com',
+          }}
+          provider="gh"
+        />
+      )
+
       const emailField = screen.getByRole('textbox', {
         name: /email/i,
       })
-      userEvent.type(emailField, '{selectall}{backspace}')
-      userEvent.click(
+      await user.tripleClick(emailField)
+      await user.keyboard('{backspace}')
+      await user.click(
         screen.getByRole('button', {
           name: /save changes/i,
         })
       )
-    })
 
-    it('renders an error message', () => {
       expect(screen.getByText('Email is required')).toBeInTheDocument()
     })
   })
 
   describe('when submitting with a wrong email', () => {
-    beforeEach(() => {
-      setup()
+    it('renders an error message', async () => {
+      const { user } = setup()
+      render(
+        <NameEmailCard
+          currentUser={{
+            user: {
+              name: 'donald duck',
+            },
+            email: 'donald@duck.com',
+          }}
+          provider="gh"
+        />
+      )
+
       const emailField = screen.getByRole('textbox', {
         name: /email/i,
       })
-      userEvent.type(emailField, '{selectall}{backspace}blaabla')
-      userEvent.click(
+      await user.tripleClick(emailField)
+      await user.keyboard('{backspace}blaabla')
+      await user.click(
         screen.getByRole('button', {
           name: /save changes/i,
         })
       )
-    })
 
-    it('renders an error message', () => {
       expect(screen.getByText('Not a valid email')).toBeInTheDocument()
     })
   })
 
   describe('when submitting correct data', () => {
-    beforeEach(() => {
-      setup()
+    it('calls the mutation', async () => {
+      const { mutate, user } = setup()
+      render(
+        <NameEmailCard
+          currentUser={{
+            user: {
+              name: 'donald duck',
+            },
+            email: 'donald@duck.com',
+          }}
+          provider="gh"
+        />
+      )
+
       const nameField = screen.getByRole('textbox', {
         name: /name/i,
       })
-      userEvent.type(nameField, '{selectall}{backspace}picsou')
-      userEvent.click(
+      await user.tripleClick(nameField)
+      await user.keyboard('{backspace}picsou')
+      await user.click(
         screen.getByRole('button', {
           name: /save changes/i,
         })
       )
-      return Promise.resolve()
-    })
 
-    it('calls the mutation', () => {
       expect(mutate).toHaveBeenCalled()
     })
 
     describe('when mutation is successful', () => {
-      beforeEach(() => {
+      it('adds a success notification', async () => {
+        const { user, mutate, addNotification } = setup()
+        render(
+          <NameEmailCard
+            currentUser={{
+              user: {
+                name: 'donald duck',
+              },
+              email: 'donald@duck.com',
+            }}
+            provider="gh"
+          />
+        )
+
+        const nameField = screen.getByRole('textbox', {
+          name: /name/i,
+        })
+        await user.tripleClick(nameField)
+        await user.keyboard('{backspace}picsou')
+        await user.click(
+          screen.getByRole('button', {
+            name: /save changes/i,
+          })
+        )
+
         // simulating the onSuccess callback given to mutate
         mutate.mock.calls[0][1].onSuccess({
           user: {
@@ -154,9 +247,6 @@ describe('NameEmailCard', () => {
           },
           email: 'picsou@gmail.com',
         })
-      })
-
-      it('adds a success notification', () => {
         expect(addNotification).toHaveBeenCalledWith({
           type: 'success',
           text: 'Information successfully updated',
@@ -165,12 +255,33 @@ describe('NameEmailCard', () => {
     })
 
     describe('when mutation is not successful', () => {
-      beforeEach(() => {
+      it('adds an error notification', async () => {
+        const { user, mutate, addNotification } = setup()
+        render(
+          <NameEmailCard
+            currentUser={{
+              user: {
+                name: 'donald duck',
+              },
+              email: 'donald@duck.com',
+            }}
+            provider="gh"
+          />
+        )
+
+        const nameField = screen.getByRole('textbox', {
+          name: /name/i,
+        })
+        await user.tripleClick(nameField)
+        await user.keyboard('{backspace}picsou')
+        await user.click(
+          screen.getByRole('button', {
+            name: /save changes/i,
+          })
+        )
         // simulating the onError callback given to useCancelPlan
         mutate.mock.calls[0][1].onError()
-      })
 
-      it('adds an error notification', () => {
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
           text: 'Something went wrong',

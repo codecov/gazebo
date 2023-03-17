@@ -3,45 +3,53 @@ import userEvent from '@testing-library/user-event'
 
 import Table from './Table'
 
-const data = [
-  {
-    col1: 'Row1Col1',
-    col2: 'Row1Col2',
-    col3: 'Row1Col3',
-  },
-  {
-    col1: 'Row2Col1',
-    col2: 'Row2Col2',
-    col3: 'Row2Col3',
-  },
-  {
-    col1: 'Row3Col1',
-    col2: 'Row3Col2',
-    col3: <button>Button Here</button>,
-  },
-]
-const columns = [
-  {
-    header: 'Header 1',
-    accessorKey: 'col1',
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: 'Header 2',
-    accessorKey: 'col2',
-    cell: (info) => info.getValue(),
-  },
-  {
-    header: 'Header 3',
-    accessorKey: 'col3',
-    cell: (info) => info.getValue(),
-  },
-]
-
 describe('Table', () => {
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
+
   describe('render Table', () => {
     it('renders table', () => {
-      render(<Table data={data} columns={columns} />)
+      render(
+        <Table
+          data={[
+            {
+              col1: 'Row1Col1',
+              col2: 'Row1Col2',
+              col3: 'Row1Col3',
+            },
+            {
+              col1: 'Row2Col1',
+              col2: 'Row2Col2',
+              col3: 'Row2Col3',
+            },
+            {
+              col1: 'Row3Col1',
+              col2: 'Row3Col2',
+              col3: <button>Button Here</button>,
+            },
+          ]}
+          columns={[
+            {
+              header: 'Header 1',
+              accessorKey: 'col1',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 2',
+              accessorKey: 'col2',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 3',
+              accessorKey: 'col3',
+              cell: (info) => info.getValue(),
+            },
+          ]}
+        />
+      )
+
       const table = screen.getByRole('table')
       expect(table).toBeInTheDocument()
     })
@@ -49,7 +57,45 @@ describe('Table', () => {
 
   describe('renders headers', () => {
     it('renders table headers', () => {
-      render(<Table data={data} columns={columns} />)
+      render(
+        <Table
+          data={[
+            {
+              col1: 'Row1Col1',
+              col2: 'Row1Col2',
+              col3: 'Row1Col3',
+            },
+            {
+              col1: 'Row2Col1',
+              col2: 'Row2Col2',
+              col3: 'Row2Col3',
+            },
+            {
+              col1: 'Row3Col1',
+              col2: 'Row3Col2',
+              col3: <button>Button Here</button>,
+            },
+          ]}
+          columns={[
+            {
+              header: 'Header 1',
+              accessorKey: 'col1',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 2',
+              accessorKey: 'col2',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 3',
+              accessorKey: 'col3',
+              cell: (info) => info.getValue(),
+            },
+          ]}
+        />
+      )
+
       const headerRow = screen.getByTestId('header-row')
       expect(within(headerRow).getAllByRole('row').length).toBe(1)
 
@@ -65,7 +111,45 @@ describe('Table', () => {
 
   describe('renders body', () => {
     it('renders table cells', () => {
-      render(<Table data={data} columns={columns} />)
+      render(
+        <Table
+          data={[
+            {
+              col1: 'Row1Col1',
+              col2: 'Row1Col2',
+              col3: 'Row1Col3',
+            },
+            {
+              col1: 'Row2Col1',
+              col2: 'Row2Col2',
+              col3: 'Row2Col3',
+            },
+            {
+              col1: 'Row3Col1',
+              col2: 'Row3Col2',
+              col3: <button>Button Here</button>,
+            },
+          ]}
+          columns={[
+            {
+              header: 'Header 1',
+              accessorKey: 'col1',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 2',
+              accessorKey: 'col2',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 3',
+              accessorKey: 'col3',
+              cell: (info) => info.getValue(),
+            },
+          ]}
+        />
+      )
+
       const bodyRow = screen.getByTestId('body-row')
       expect(within(bodyRow).getAllByRole('row').length).toBe(3)
 
@@ -111,7 +195,29 @@ describe('Table', () => {
           cell: (info) => info.getValue(),
         },
       ]
-      render(<Table data={data} columns={_columns} />)
+      render(
+        <Table
+          data={[
+            {
+              col1: 'Row1Col1',
+              col2: 'Row1Col2',
+              col3: 'Row1Col3',
+            },
+            {
+              col1: 'Row2Col1',
+              col2: 'Row2Col2',
+              col3: 'Row2Col3',
+            },
+            {
+              col1: 'Row3Col1',
+              col2: 'Row3Col2',
+              col3: <button>Button Here</button>,
+            },
+          ]}
+          columns={_columns}
+        />
+      )
+
       let cell = screen.getByText('Row1Col1')
       expect(cell.className).toMatch('w-1/12')
       cell = screen.getByText('Row1Col2')
@@ -123,22 +229,102 @@ describe('Table', () => {
 
   describe('when sorting is enabled and a header is clicked', () => {
     it('onSort is called', async () => {
+      const { user } = setup()
       const onSort = jest.fn()
-      render(<Table data={data} columns={columns} onSort={onSort} />)
+      render(
+        <Table
+          data={[
+            {
+              col1: 'Row1Col1',
+              col2: 'Row1Col2',
+              col3: 'Row1Col3',
+            },
+            {
+              col1: 'Row2Col1',
+              col2: 'Row2Col2',
+              col3: 'Row2Col3',
+            },
+            {
+              col1: 'Row3Col1',
+              col2: 'Row3Col2',
+              col3: <button>Button Here</button>,
+            },
+          ]}
+          columns={[
+            {
+              header: 'Header 1',
+              accessorKey: 'col1',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 2',
+              accessorKey: 'col2',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 3',
+              accessorKey: 'col3',
+              cell: (info) => info.getValue(),
+            },
+          ]}
+          onSort={onSort}
+        />
+      )
+
       const header = screen.getByText('Header 1')
-      userEvent.click(header)
+      await user.click(header)
       expect(onSort).toHaveBeenCalled()
     })
 
-    it('shows sorting icon', () => {
+    it('shows sorting icon', async () => {
+      const { user } = setup()
       const onSort = jest.fn()
-      render(<Table data={data} columns={columns} onSort={onSort} />)
+      render(
+        <Table
+          data={[
+            {
+              col1: 'Row1Col1',
+              col2: 'Row1Col2',
+              col3: 'Row1Col3',
+            },
+            {
+              col1: 'Row2Col1',
+              col2: 'Row2Col2',
+              col3: 'Row2Col3',
+            },
+            {
+              col1: 'Row3Col1',
+              col2: 'Row3Col2',
+              col3: <button>Button Here</button>,
+            },
+          ]}
+          columns={[
+            {
+              header: 'Header 1',
+              accessorKey: 'col1',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 2',
+              accessorKey: 'col2',
+              cell: (info) => info.getValue(),
+            },
+            {
+              header: 'Header 3',
+              accessorKey: 'col3',
+              cell: (info) => info.getValue(),
+            },
+          ]}
+          onSort={onSort}
+        />
+      )
+
       const header = screen.getByText('Header 1')
-      userEvent.click(header)
+      await user.click(header)
       expect(within(header).getByText('arrow-up.svg')).toBeInTheDocument()
-      userEvent.click(header)
+      await user.click(header)
       expect(within(header).getByText('arrow-down.svg')).toBeInTheDocument()
-      userEvent.click(header)
+      await user.click(header)
       expect(within(header).queryByText('arrow-up.svg')).toBeNull()
       expect(within(header).queryByText('arrow-down.svg')).toBeNull()
     })

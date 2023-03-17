@@ -14,37 +14,29 @@ jest.mock('services/tracking/segment')
 jest.mock('services/location')
 jest.mock('services/user')
 
-const user = {
-  username: 'Laerryn Coramar-Seelie',
-  trackingMetadata: {
-    ownerid: 4,
-  },
-}
-
 describe('useOnboardingTracking', () => {
-  let hookData
-
-  function setup() {
-    hookData = renderHook(() => useOnboardingTracking())
-  }
-
   beforeEach(() => {
-    useUser.mockReturnValue({ data: user })
+    useUser.mockReturnValue({
+      data: {
+        username: 'Laerryn Coramar-Seelie',
+        trackingMetadata: {
+          ownerid: 4,
+        },
+      },
+    })
     useOnboardingLocation.mockReturnValue({
       path: '/campaign/three/rocks',
       url: 'www.criticalrole.com/campaign/three/rocks',
     })
-    setup()
   })
 
   describe('startOnboarding', () => {
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.startOnboarding()
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.startOnboarding()
+      })
+
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         data: {
           category: 'Onboarding',
@@ -60,13 +52,12 @@ describe('useOnboardingTracking', () => {
   })
 
   describe('secondPage', () => {
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.secondPage()
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.secondPage()
+      })
+
       expect(pageSegmentEvent).toHaveBeenCalledWith({
         event: 'Onboarding Page 2',
         path: '/campaign/three/rocks/onboarding/2',
@@ -76,13 +67,12 @@ describe('useOnboardingTracking', () => {
   })
 
   describe('helpFindingOrganization', () => {
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.helpFindingOrganization()
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.helpFindingOrganization()
+      })
+
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Help Finding Org Clicked',
         data: {
@@ -93,13 +83,12 @@ describe('useOnboardingTracking', () => {
   })
 
   describe('skipOnboarding', () => {
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.skipOnboarding()
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.skipOnboarding()
+      })
+
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Skipped',
         data: {
@@ -110,13 +99,21 @@ describe('useOnboardingTracking', () => {
   })
 
   describe('selectOrganization', () => {
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.selectOrganization(user, 'codecov')
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.selectOrganization(
+          {
+            username: 'Laerryn Coramar-Seelie',
+            trackingMetadata: {
+              ownerid: 4,
+            },
+          },
+
+          'codecov'
+        )
+      })
+
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Selected Org',
         data: {
@@ -131,20 +128,27 @@ describe('useOnboardingTracking', () => {
   })
 
   describe('completedOnboarding', () => {
-    const data = {
-      businessEmail: '',
-      email: 'adrian@codecov.io',
-      goals: ['MAINTAIN_COVERAGE', 'TEAM_REQUIREMENTS'],
-      otherGoal: '',
-      typeProjects: ['EDUCATIONAL'],
-    }
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.completedOnboarding(user, data)
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.completedOnboarding(
+          {
+            username: 'Laerryn Coramar-Seelie',
+            trackingMetadata: {
+              ownerid: 4,
+            },
+          },
+
+          {
+            businessEmail: '',
+            email: 'adrian@codecov.io',
+            goals: ['MAINTAIN_COVERAGE', 'TEAM_REQUIREMENTS'],
+            otherGoal: '',
+            typeProjects: ['EDUCATIONAL'],
+          }
+        )
+      })
+
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Completed Onboarding',
         data: {
@@ -165,37 +169,34 @@ describe('useOnboardingTracking', () => {
   })
 
   describe('downloadUploaderClicked', () => {
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.downloadUploaderClicked()
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.downloadUploaderClicked()
+      })
+
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Download Uploader Clicked',
         data: {
           category: 'Onboarding',
-          userId: user.trackingMetadata.ownerid,
+          userId: 4,
         },
       })
     })
   })
 
   describe('copiedCIToken', () => {
-    beforeEach(() => {
-      const token = 'c8859fa7-9449-45ba-9210-69c12034f097'
-      act(() => {
-        hookData.result.current.copiedCIToken(token)
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.copiedCIToken('c8859fa7-9449-45ba-9210-69c12034f097')
+      })
+
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Copied CI Token',
         data: {
           category: 'Onboarding',
-          userId: user.trackingMetadata.ownerid,
+          userId: 4,
           tokenHash: '2034f097',
         },
       })
@@ -203,18 +204,17 @@ describe('useOnboardingTracking', () => {
   })
 
   describe('terminalUploaderCommandClicked', () => {
-    beforeEach(() => {
-      act(() => {
-        hookData.result.current.terminalUploaderCommandClicked()
-      })
-    })
-
     it('calls segment event with specific information', () => {
+      const { result } = renderHook(() => useOnboardingTracking())
+      act(() => {
+        result.current.terminalUploaderCommandClicked()
+      })
+
       expect(trackSegmentEvent).toHaveBeenCalledWith({
         event: 'User Onboarding Terminal Uploader Command Clicked',
         data: {
           category: 'Onboarding',
-          userId: user.trackingMetadata.ownerid,
+          userId: 4,
         },
       })
     })

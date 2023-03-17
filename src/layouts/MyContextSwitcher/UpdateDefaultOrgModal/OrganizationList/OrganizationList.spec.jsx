@@ -68,16 +68,10 @@ const contextData = {
   },
 }
 
-const selectedOrgUsername = 'fearne-calloway-org'
-const setSelectedOrgUsername = jest.fn()
-
-const defaultProps = {
-  selectedOrgUsername,
-  setSelectedOrgUsername,
-}
-
 describe('OrganizationList', () => {
   function setup(data = contextData) {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('MyContexts', (req, res, ctx) => {
         if (req?.variables?.after === '2') {
@@ -99,15 +93,21 @@ describe('OrganizationList', () => {
         }
       })
     )
+
+    return { user }
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays the usernames and avatars', async () => {
-      render(<OrganizationList {...defaultProps} />, { wrapper })
+      setup()
+      render(
+        <OrganizationList
+          selectedOrgUsername="fearne-calloway-org"
+          setSelectedOrgUsername={jest.fn()}
+        />,
+        { wrapper }
+      )
+
       const fearneUsername = await screen.findByText(/fearne-calloway-org/)
       expect(fearneUsername).toBeInTheDocument()
       const defaultOrg = await screen.findByText(/Current default org/)
@@ -124,21 +124,44 @@ describe('OrganizationList', () => {
     })
 
     it('displays all orgs and repos', async () => {
-      render(<OrganizationList {...defaultProps} />, { wrapper })
+      setup()
+      render(
+        <OrganizationList
+          selectedOrgUsername="fearne-calloway-org"
+          setSelectedOrgUsername={jest.fn()}
+        />,
+        { wrapper }
+      )
+
       const allOrgsAndReposText = await screen.findByText(/All orgs and repos/)
       expect(allOrgsAndReposText).toBeInTheDocument()
     })
 
     it('displays the load more button', async () => {
-      render(<OrganizationList {...defaultProps} />, { wrapper })
+      setup()
+      render(
+        <OrganizationList
+          selectedOrgUsername="fearne-calloway-org"
+          setSelectedOrgUsername={jest.fn()}
+        />,
+        { wrapper }
+      )
+
       const loadMoreButton = await screen.findByText('Load More')
       expect(loadMoreButton).toBeInTheDocument()
     })
 
     it('loads next page of data', async () => {
-      render(<OrganizationList {...defaultProps} />, { wrapper })
+      const { user } = setup()
+      render(
+        <OrganizationList
+          selectedOrgUsername="fearne-calloway-org"
+          setSelectedOrgUsername={jest.fn()}
+        />,
+        { wrapper }
+      )
       const loadMoreButton = await screen.findByText('Load More')
-      userEvent.click(loadMoreButton)
+      await user.click(loadMoreButton)
 
       const lilianaOrg = await screen.findByText('liliana-temult-org')
       expect(lilianaOrg).toBeInTheDocument()
@@ -169,7 +192,13 @@ describe('OrganizationList', () => {
     })
 
     it('displays default text if current user has no default org', async () => {
-      render(<OrganizationList {...defaultProps} />, { wrapper })
+      render(
+        <OrganizationList
+          selectedOrgUsername="fearne-calloway-org"
+          setSelectedOrgUsername={jest.fn()}
+        />,
+        { wrapper }
+      )
       const allOrgsAndReposText = await screen.findByText(/All orgs and repos/)
       expect(allOrgsAndReposText).toBeInTheDocument()
     })

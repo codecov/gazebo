@@ -33,10 +33,11 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('RepoState', () => {
-  const mutate = jest.fn()
-  const addNotification = jest.fn()
-
   function setup({ activated = false, failMutation = false } = {}) {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+    const addNotification = jest.fn()
+
     server.use(
       graphql.query('GetRepoSettings', (req, res, ctx) => {
         return res(
@@ -65,6 +66,8 @@ describe('RepoState', () => {
     )
 
     useAddNotification.mockReturnValue(addNotification)
+
+    return { mutate, addNotification, user }
   }
 
   describe('renders DeactivateRepo component', () => {
@@ -89,28 +92,23 @@ describe('RepoState', () => {
   })
 
   describe('when the user clicks on Activate button', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('calls the mutation', async () => {
+      const { mutate, user } = setup()
+
       render(<RepoState />, { wrapper })
 
       const activationButton = await screen.findByRole('button', {
         name: 'Activate',
       })
-      userEvent.click(activationButton)
+      await user.click(activationButton)
 
       await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
   })
 
   describe('when mutation data has active set to true', () => {
-    beforeEach(() => {
-      setup({ activated: true })
-    })
-
     it('displays deactivate button', async () => {
+      setup({ activated: true })
       render(<RepoState />, { wrapper })
 
       const deactivateButton = await screen.findByTestId('deactivate-repo')
@@ -118,6 +116,7 @@ describe('RepoState', () => {
     })
 
     it('displays the warning', async () => {
+      setup({ activated: true })
       render(<RepoState />, { wrapper })
 
       const warning = await screen.findByText(
@@ -128,12 +127,14 @@ describe('RepoState', () => {
 
     describe('when the user clicks on Deactivate button', () => {
       it('displays Deactivate Repo Modal', async () => {
+        const { user } = setup({ activated: true })
+
         render(<RepoState />, {
           wrapper,
         })
 
         const deactivateButton = await screen.findByTestId('deactivate-repo')
-        userEvent.click(deactivateButton)
+        await user.click(deactivateButton)
 
         const warning = await screen.findByText(
           'Are you sure you want to deactivate the repo?'
@@ -153,17 +154,19 @@ describe('RepoState', () => {
 
       describe('when user clicks on Cancel button', () => {
         it('does not call the mutation', async () => {
+          const { mutate, user } = setup({ activated: true })
+
           render(<RepoState />, {
             wrapper,
           })
 
           const deactivateButton = await screen.findByTestId('deactivate-repo')
-          userEvent.click(deactivateButton)
+          await user.click(deactivateButton)
 
           const cancelButton = await screen.findByRole('button', {
             name: 'Cancel',
           })
-          userEvent.click(cancelButton)
+          await user.click(cancelButton)
 
           expect(mutate).not.toHaveBeenCalled()
         })
@@ -171,17 +174,19 @@ describe('RepoState', () => {
 
       describe('when user clicks on Deactivate button', () => {
         it('calls the mutation', async () => {
+          const { mutate, user } = setup({ activated: true })
+
           render(<RepoState />, {
             wrapper,
           })
 
           const deactivateButton = await screen.findByTestId('deactivate-repo')
-          userEvent.click(deactivateButton)
+          await user.click(deactivateButton)
 
           const modalDeactivateButton = await screen.findByTestId(
             'deactivate-repo-modal'
           )
-          userEvent.click(modalDeactivateButton)
+          await user.click(modalDeactivateButton)
           await waitFor(() => expect(mutate).toHaveBeenCalled())
         })
       })
@@ -189,11 +194,9 @@ describe('RepoState', () => {
   })
 
   describe('when activate mutation is not successful', () => {
-    beforeEach(() => {
-      setup({ failMutation: true })
-    })
-
     it('calls the mutation', async () => {
+      const { mutate, user } = setup({ failMutation: true })
+
       render(<RepoState />, { wrapper })
 
       const activationButton = await screen.findByRole('button', {
@@ -201,17 +204,19 @@ describe('RepoState', () => {
       })
       expect(activationButton).toBeInTheDocument()
 
-      userEvent.click(activationButton)
+      await user.click(activationButton)
       await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
     it('adds an error notification', async () => {
+      const { addNotification, user } = setup({ failMutation: true })
+
       render(<RepoState />, { wrapper })
 
       const activationButton = await screen.findByRole('button', {
         name: 'Activate',
       })
-      userEvent.click(activationButton)
+      await user.click(activationButton)
 
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
@@ -223,37 +228,41 @@ describe('RepoState', () => {
   })
 
   describe('when deactivate mutation is not successful', () => {
-    beforeEach(() => {
-      setup({ activated: true, failMutation: true })
-    })
     it('calls the mutation', async () => {
+      const { mutate, user } = setup({ activated: true, failMutation: true })
+
       render(<RepoState />, {
         wrapper,
       })
 
       const deactivateButton = await screen.findByTestId('deactivate-repo')
-      userEvent.click(deactivateButton)
+      await user.click(deactivateButton)
 
       const modalDeactivateButton = await screen.findByTestId(
         'deactivate-repo-modal'
       )
-      userEvent.click(modalDeactivateButton)
+      await user.click(modalDeactivateButton)
 
       await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
     it('adds an error notification', async () => {
+      const { addNotification, user } = setup({
+        activated: true,
+        failMutation: true,
+      })
+
       render(<RepoState />, {
         wrapper,
       })
 
       const deactivateButton = await screen.findByTestId('deactivate-repo')
-      userEvent.click(deactivateButton)
+      await user.click(deactivateButton)
 
       const modalDeactivateButton = await screen.findByTestId(
         'deactivate-repo-modal'
       )
-      userEvent.click(modalDeactivateButton)
+      await user.click(modalDeactivateButton)
 
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({

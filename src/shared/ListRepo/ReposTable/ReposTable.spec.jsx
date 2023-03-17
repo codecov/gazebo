@@ -39,8 +39,6 @@ const wrapper =
     )
 
 describe('ReposTable', () => {
-  let props, repoDisplay
-
   function setup({
     propObj = {},
     edges = [],
@@ -127,20 +125,11 @@ describe('ReposTable', () => {
         )
       })
     )
-
-    props = {
-      searchValue: '',
-      sortItem: orderingOptions[0],
-      ...propObj,
-    }
-
-    repoDisplay = repoDisplayPassed
   }
 
   describe('when rendered with active true', () => {
     beforeEach(() => {
       setup({
-        repoDisplayPassed: repoDisplayOptions.ACTIVE.text,
         edges: [
           {
             node: {
@@ -189,8 +178,8 @@ describe('ReposTable', () => {
 
     describe('renders active table headers', () => {
       it('renders table name header', async () => {
-        render(<ReposTable {...props} />, {
-          wrapper: wrapper(repoDisplay),
+        render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
         })
 
         const header = await screen.findByText(/Name/)
@@ -198,8 +187,8 @@ describe('ReposTable', () => {
       })
 
       it('renders table coverage header', async () => {
-        render(<ReposTable {...props} />, {
-          wrapper: wrapper(repoDisplay),
+        render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
         })
 
         const header = await screen.findByText(/Test coverage/)
@@ -207,8 +196,8 @@ describe('ReposTable', () => {
       })
 
       it('renders table last updated header', async () => {
-        render(<ReposTable {...props} />, {
-          wrapper: wrapper(repoDisplay),
+        render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
         })
 
         const header = await screen.findByText(/Last updated/)
@@ -216,8 +205,8 @@ describe('ReposTable', () => {
       })
 
       it('renders table tracked lines header', async () => {
-        render(<ReposTable {...props} />, {
-          wrapper: wrapper(repoDisplay),
+        render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
         })
 
         const header = await screen.findByText(/Tracked lines/)
@@ -226,8 +215,8 @@ describe('ReposTable', () => {
     })
 
     it('renders table repo name', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
       const buttons = await screen.findAllByText(/Repo name/)
@@ -235,8 +224,8 @@ describe('ReposTable', () => {
     })
 
     it('links to /:organization/:owner/:repo', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
       const repo1 = await screen.findByRole('link', {
@@ -255,8 +244,8 @@ describe('ReposTable', () => {
     })
 
     it('renders last updated column', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
       const lastSeen1 = await screen.findByText(/3 days ago/)
@@ -267,8 +256,8 @@ describe('ReposTable', () => {
     })
 
     it('renders coverage column', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
       const coverage1 = await screen.findByText(/43\.00/)
@@ -279,8 +268,8 @@ describe('ReposTable', () => {
     })
 
     it('renders tracked lines column', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
       const lines1 = await screen.findByText('99')
@@ -291,8 +280,8 @@ describe('ReposTable', () => {
     })
 
     it('renders handles null coverage', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
       const noData = await screen.findByText(/No data/)
@@ -304,7 +293,6 @@ describe('ReposTable', () => {
     describe('user belongs to org', () => {
       beforeEach(() => {
         setup({
-          repoDisplayPassed: repoDisplayOptions.INACTIVE.text,
           edges: [
             {
               node: {
@@ -350,10 +338,16 @@ describe('ReposTable', () => {
       })
 
       it('links to /:organization/:owner/:repo/new', async () => {
-        const linkProps = { ...props, owner: 'owner1' }
-        render(<ReposTable {...linkProps} />, {
-          wrapper: wrapper(repoDisplay),
-        })
+        render(
+          <ReposTable
+            searchValue=""
+            sortItem={orderingOptions[0]}
+            owner="owner1"
+          />,
+          {
+            wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
+          }
+        )
 
         const repo1 = await screen.findByRole('link', {
           name: 'globe-alt.svg Repo name 1',
@@ -375,7 +369,6 @@ describe('ReposTable', () => {
     describe('user does not belongs to org', () => {
       beforeEach(() => {
         setup({
-          repoDisplayPassed: repoDisplayOptions.INACTIVE.text,
           isCurrentUserPartOfOrg: false,
           edges: [
             {
@@ -422,8 +415,8 @@ describe('ReposTable', () => {
       })
 
       it('does not link to setup repo from repo name', async () => {
-        render(<ReposTable {...props} />, {
-          wrapper: wrapper(repoDisplay),
+        render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+          wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
         })
 
         const repo1 = await screen.findByText('Repo name 1')
@@ -437,8 +430,8 @@ describe('ReposTable', () => {
       })
 
       it('does not show setup repo link', async () => {
-        render(<ReposTable {...props} />, {
-          wrapper: wrapper(repoDisplay),
+        render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+          wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
         })
 
         const notEnabled = await screen.findAllByText('Not yet enabled')
@@ -460,8 +453,8 @@ describe('ReposTable', () => {
     })
 
     it('renders no repos detected and no private repo info', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
       const noReposDetected = await screen.findByText(
@@ -487,8 +480,8 @@ describe('ReposTable', () => {
     })
 
     it('renders no repos detected and no private repo info', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
       const noReposDetected = await screen.findByText(
@@ -513,15 +506,16 @@ describe('ReposTable', () => {
   describe('when rendered empty search', () => {
     beforeEach(() => {
       setup({
-        repoDisplayPassed: repoDisplayOptions.ALL.text,
         edges: [],
-        propObj: { searchValue: 'something' },
       })
     })
     it('renders no results found', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
-      })
+      render(
+        <ReposTable searchValue="something" sortItem={orderingOptions[0]} />,
+        {
+          wrapper: wrapper(repoDisplayOptions.ALL.text),
+        }
+      )
 
       const noResultsFound = await screen.findByText(/No results found/)
       expect(noResultsFound).toBeInTheDocument()
@@ -531,7 +525,6 @@ describe('ReposTable', () => {
   describe('render next page button', () => {
     beforeEach(() => {
       setup({
-        repoDisplayPassed: repoDisplayOptions.ALL.text,
         edges: [
           {
             node: {
@@ -551,8 +544,8 @@ describe('ReposTable', () => {
     })
 
     it('renders button', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
 
       const button = await screen.findByText(/Load More/)
@@ -560,12 +553,13 @@ describe('ReposTable', () => {
     })
 
     it('loads next page of data', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      const user = userEvent.setup()
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
 
       const loadMore = await screen.findByText(/Load More/)
-      userEvent.click(loadMore)
+      await user.click(loadMore)
 
       const newlyLoadedRepo = await screen.findByText('Repo name extra')
       expect(newlyLoadedRepo).toBeInTheDocument()
@@ -575,7 +569,6 @@ describe('ReposTable', () => {
   describe('when rendered with all repos', () => {
     beforeEach(() => {
       setup({
-        repoDisplayPassed: repoDisplayOptions.ALL.text,
         edges: [
           {
             node: {
@@ -621,8 +614,8 @@ describe('ReposTable', () => {
     })
 
     it('renders all repos', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
 
       await waitFor(() => queryClient.isFetching())
@@ -633,8 +626,8 @@ describe('ReposTable', () => {
     })
 
     it('renders not yet set up for inactive repos', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
 
       await waitFor(() => queryClient.isFetching())
@@ -645,8 +638,8 @@ describe('ReposTable', () => {
     })
 
     it('renders deactivated for inactive repos', async () => {
-      render(<ReposTable {...props} />, {
-        wrapper: wrapper(repoDisplay),
+      render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
+        wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
 
       await waitFor(() => queryClient.isFetching())

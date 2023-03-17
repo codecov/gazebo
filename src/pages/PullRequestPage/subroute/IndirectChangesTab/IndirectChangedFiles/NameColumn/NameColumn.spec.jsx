@@ -72,31 +72,33 @@ const wrapper = ({ children }) => (
 )
 
 describe('NameColumn', () => {
-  const row = {}
-  const getValue = jest.fn()
+  function setup() {
+    const user = userEvent.setup()
 
-  function setup({ isExpanded = false }) {
     server.use(
       graphql.query('ImpactedFileComparison', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSingularImpactedFilesData))
       )
     )
 
-    getValue.mockImplementation(() => 'file.ts')
-    row.getValue = jest.fn().mockImplementation(() => ({
-      props: {
-        children: ['file.ts'],
-      },
-    }))
-    row.getIsExpanded = jest.fn().mockImplementation(() => isExpanded)
+    return { user }
   }
 
   describe('when component is not expanded', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('renders value', async () => {
+      setup()
+      const getValue = jest.fn()
+      getValue.mockImplementation(() => 'file.ts')
+
+      const row = {
+        getValue: jest.fn().mockImplementation(() => ({
+          props: {
+            children: ['file.ts'],
+          },
+        })),
+        getIsExpanded: jest.fn().mockImplementation(() => false),
+      }
+
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
 
       const name = screen.getByText('file.ts')
@@ -104,10 +106,23 @@ describe('NameColumn', () => {
     })
 
     it('prefetches query data', async () => {
+      const { user } = setup()
+      const getValue = jest.fn()
+      getValue.mockImplementation(() => 'file.ts')
+
+      const row = {
+        getValue: jest.fn().mockImplementation(() => ({
+          props: {
+            children: ['file.ts'],
+          },
+        })),
+        getIsExpanded: jest.fn().mockImplementation(() => false),
+      }
+
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
 
       const expander = await screen.findByTestId('name-expand')
-      userEvent.hover(expander)
+      await user.hover(expander)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -137,11 +152,20 @@ describe('NameColumn', () => {
   })
 
   describe('when component is expanded', () => {
-    beforeEach(() => {
-      setup({ isExpanded: true })
-    })
-
     it('renders value', async () => {
+      setup()
+      const getValue = jest.fn()
+      getValue.mockImplementation(() => 'file.ts')
+
+      const row = {
+        getValue: jest.fn().mockImplementation(() => ({
+          props: {
+            children: ['file.ts'],
+          },
+        })),
+        getIsExpanded: jest.fn().mockImplementation(() => true),
+      }
+
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
 
       const name = screen.getByText('file.ts')
@@ -149,10 +173,23 @@ describe('NameColumn', () => {
     })
 
     it('prefetches query data', async () => {
+      const { user } = setup()
+      const getValue = jest.fn()
+      getValue.mockImplementation(() => 'file.ts')
+
+      const row = {
+        getValue: jest.fn().mockImplementation(() => ({
+          props: {
+            children: ['file.ts'],
+          },
+        })),
+        getIsExpanded: jest.fn().mockImplementation(() => true),
+      }
+
       render(<NameColumn row={row} getValue={getValue} />, { wrapper })
 
       const expander = await screen.findByTestId('name-expand')
-      userEvent.hover(expander)
+      await user.hover(expander)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)

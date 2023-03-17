@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -63,6 +63,7 @@ afterAll(() => server.close())
 
 describe('OtherCI', () => {
   function setup() {
+    const user = userEvent.setup()
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
@@ -73,6 +74,8 @@ describe('OtherCI', () => {
     )
 
     trackSegmentEvent.mockImplementation((data) => data)
+
+    return { user }
   }
 
   describe('step one', () => {
@@ -99,6 +102,7 @@ describe('OtherCI', () => {
 
     describe('user copies token', () => {
       it('fires segment event', async () => {
+        const { user } = setup()
         render(<OtherCI />, { wrapper })
 
         // this is needed to wait for all the data to be loaded
@@ -110,27 +114,24 @@ describe('OtherCI', () => {
         const buttons = await screen.findAllByTestId('clipboard')
         const button = buttons[0]
 
-        userEvent.click(button)
+        await user.click(button)
 
-        await waitFor(() => expect(trackSegmentEvent).toBeCalled())
-        await waitFor(() =>
-          expect(trackSegmentEvent).toBeCalledWith({
-            data: {
-              category: 'Onboarding',
-              tokenHash: 'a2629295',
-              userId: 'user-owner-id',
-            },
-            event: 'User Onboarding Copied CI Token',
-          })
-        )
+        expect(trackSegmentEvent).toBeCalled()
+        expect(trackSegmentEvent).toBeCalledWith({
+          data: {
+            category: 'Onboarding',
+            tokenHash: 'a2629295',
+            userId: 'user-owner-id',
+          },
+          event: 'User Onboarding Copied CI Token',
+        })
       })
     })
   })
 
   describe('step two', () => {
-    beforeEach(() => setup())
-
     it('renders header', async () => {
+      setup()
       render(<OtherCI />, { wrapper })
 
       const header = await screen.findByText(/Step 2/)
@@ -148,6 +149,7 @@ describe('OtherCI', () => {
 
     describe('user clicks on header link', () => {
       it('triggers segment event', async () => {
+        const { user } = setup()
         render(<OtherCI />, { wrapper })
 
         const tokenValue = await screen.findByText(
@@ -160,15 +162,13 @@ describe('OtherCI', () => {
         })
         expect(headerLink).toBeInTheDocument()
 
-        userEvent.click(headerLink)
+        await user.click(headerLink)
 
-        await waitFor(() => expect(trackSegmentEvent).toBeCalled())
-        await waitFor(() =>
-          expect(trackSegmentEvent).toHaveBeenCalledWith({
-            data: { category: 'Onboarding', userId: 'user-owner-id' },
-            event: 'User Onboarding Download Uploader Clicked',
-          })
-        )
+        expect(trackSegmentEvent).toBeCalled()
+        expect(trackSegmentEvent).toHaveBeenCalledWith({
+          data: { category: 'Onboarding', userId: 'user-owner-id' },
+          event: 'User Onboarding Download Uploader Clicked',
+        })
       })
     })
 

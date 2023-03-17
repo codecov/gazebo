@@ -27,41 +27,44 @@ const queryClient = new QueryClient({
   },
 })
 
-const user = {
+const userData = {
   username: 'codecov',
   trackingMetadata: {
     ownerid: 4,
   },
 }
 
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
+    <Route path="/:provider/:owner/:repo/flags" exact={true}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
+
 describe('TriggerSyncBanner', () => {
-  const mutate = jest.fn()
+  afterEach(() => jest.resetAllMocks())
+
   function setup() {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+
     useParams.mockReturnValue({
       owner: 'codecov',
       provider: 'gh',
       repo: 'gazebo',
     })
-    useUser.mockReturnValue({ data: user })
+    useUser.mockReturnValue({ data: userData })
     useActivateFlagMeasurements.mockReturnValue({ mutate })
 
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
-        <Route path="/:provider/:owner/:repo/flags" exact={true}>
-          <QueryClientProvider client={queryClient}>
-            <TriggerSyncBanner />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+    return { mutate, user }
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders heading and content components', () => {
+      setup()
+      render(<TriggerSyncBanner />, { wrapper })
+
       expect(
         screen.getByText(
           'You need to enable Flag analytics to see coverage data'
@@ -76,11 +79,13 @@ describe('TriggerSyncBanner', () => {
     })
 
     describe('when clicking on the button to upgrade', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByTestId('backfill-task'))
-      })
+      it('calls the mutate function', async () => {
+        const { mutate, user } = setup()
+        render(<TriggerSyncBanner />, { wrapper })
 
-      it('calls the mutate function', () => {
+        const backfill = screen.getByTestId('backfill-task')
+        await user.click(backfill)
+
         expect(mutate).toHaveBeenCalledWith({
           provider: 'gh',
           repo: 'gazebo',

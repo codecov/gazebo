@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import config from 'config'
 
-import { useOnboardingTracking } from 'layouts/UserOnboarding/useOnboardingTracking'
+import { useOnboardingTracking } from 'services/user'
 import CopyClipboard from 'ui/CopyClipboard'
 
 const systemsEnum = Object.freeze({
@@ -62,7 +62,6 @@ const WindowsSystemInstructions = () => {
 
 export default function InstructionBox() {
   const { terminalUploaderCommandClicked } = useOnboardingTracking()
-
   const [curSystem, setCurSystem] = useState(systemsEnum.LINUX)
 
   const handleInstructionClick = (e) => {

@@ -36,14 +36,15 @@ const wrapper = ({ children }) => (
 )
 
 describe('DiffLine', () => {
-  const mockHandleClick = jest.fn()
-
   function setup(targeted = false) {
+    const mockHandleClick = jest.fn()
     useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: mockHandleClick,
       targeted,
     }))
+
+    return { mockHandleClick }
   }
 
   describe('renders base lines', () => {
@@ -305,11 +306,9 @@ describe('DiffLine', () => {
   })
 
   describe('user clicks on a number', () => {
-    beforeEach(() => {
-      setup(true)
-    })
-
-    it('calls handle click function', () => {
+    it('calls handle click function', async () => {
+      const { mockHandleClick } = setup(true)
+      const user = userEvent.setup()
       const props = {
         edgeOfFile: false,
         headNumber: '1',
@@ -329,7 +328,7 @@ describe('DiffLine', () => {
       )
 
       const button = screen.getByRole('button', { name: /# 1/ })
-      userEvent.click(button)
+      await user.click(button)
 
       expect(mockHandleClick).toBeCalled()
     })

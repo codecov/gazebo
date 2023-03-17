@@ -4,10 +4,16 @@ import userEvent from '@testing-library/user-event'
 import ToggleHeader from './ToggleHeader'
 
 describe('ToggleHeader', () => {
-  const onFlagsChange = jest.fn()
+  function setup() {
+    const user = userEvent.setup()
+    const onFlagsChange = jest.fn()
+
+    return { user, onFlagsChange }
+  }
 
   describe('when there is no flags data', () => {
     it('renders title', () => {
+      const { onFlagsChange } = setup()
       render(
         <ToggleHeader
           title={'sample title'}
@@ -22,6 +28,7 @@ describe('ToggleHeader', () => {
     })
 
     it('does not render flags multi-select', () => {
+      const { onFlagsChange } = setup()
       render(
         <ToggleHeader
           title={'sample title'}
@@ -37,7 +44,8 @@ describe('ToggleHeader', () => {
   })
 
   describe('when there is flags data', () => {
-    it('renders all flags title', () => {
+    it('renders all flags title', async () => {
+      const { onFlagsChange, user } = setup()
       render(
         <ToggleHeader
           title={'sample title'}
@@ -48,7 +56,7 @@ describe('ToggleHeader', () => {
       )
 
       const button = screen.getByText('All Flags')
-      userEvent.click(button)
+      await user.click(button)
 
       const title = screen.getByRole('button', {
         name: /Filter by flags/i,
@@ -57,7 +65,8 @@ describe('ToggleHeader', () => {
       expect(title).toHaveTextContent(/All Flags/)
     })
 
-    it('renders flags in the list', () => {
+    it('renders flags in the list', async () => {
+      const { onFlagsChange, user } = setup()
       render(
         <ToggleHeader
           title={'sample title'}
@@ -68,7 +77,7 @@ describe('ToggleHeader', () => {
       )
 
       const button = screen.getByText('All Flags')
-      userEvent.click(button)
+      await user.click(button)
 
       expect(screen.getByText('flag1')).toBeInTheDocument()
       expect(screen.getByText('flag2')).toBeInTheDocument()
@@ -76,6 +85,7 @@ describe('ToggleHeader', () => {
 
     describe('when a flag is selected', () => {
       it('calls onFlagsChange with the value', async () => {
+        const { onFlagsChange, user } = setup()
         render(
           <ToggleHeader
             title={'sample title'}
@@ -86,10 +96,10 @@ describe('ToggleHeader', () => {
         )
 
         const button = screen.getByText('All Flags')
-        userEvent.click(button)
+        await user.click(button)
 
         const flag1Click = screen.getByText(/flag1/)
-        userEvent.click(flag1Click)
+        await user.click(flag1Click)
 
         await waitFor(() =>
           expect(onFlagsChange).toHaveBeenCalledWith(['flag1'])
