@@ -17,6 +17,7 @@ comment:
   require_changes: no
   require_base: no
   require_head: yes
+  after_n_builds: 6
 
 ignore:
   - ./src/**/*.stories.js

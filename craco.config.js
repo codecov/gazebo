@@ -1,8 +1,11 @@
 /* eslint-disable camelcase */
+const SentryWebpackPlugin = require('@sentry/webpack-plugin')
+
 const { resolve } = require('path')
 
 module.exports = {
   webpack: {
+    devtool: 'source-map',
     configure: {
       entry: './src/index.js',
     },
@@ -22,6 +25,14 @@ module.exports = {
       config: resolve(__dirname, 'src/config'),
       sentry: resolve(__dirname, 'src/sentry'),
     },
+    plugins: [
+      new SentryWebpackPlugin({
+        org: 'codecov',
+        project: 'gazebo',
+        include: './build',
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      }),
+    ],
   },
   jest: {
     configure: {
