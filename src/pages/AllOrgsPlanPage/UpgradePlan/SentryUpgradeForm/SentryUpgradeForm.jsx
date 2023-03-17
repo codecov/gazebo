@@ -21,20 +21,13 @@ import Icon from 'ui/Icon'
 import RadioInput from 'ui/RadioInput/RadioInput'
 import TextInput from 'ui/TextInput'
 
-const MIN_NB_SEATS = 2
+const MIN_NB_SEATS = 5
 
-function getInitialDataForm(planOptions, accountDetails) {
-  const currentPlan = accountDetails?.plan
-  const proPlan = planOptions?.find(
-    (plan) => plan?.value === currentPlan?.value
-  )
-
+function getInitialDataForm(sentryPlanYear, accountDetails) {
   const currentNbSeats = accountDetails?.plan?.quantity ?? MIN_NB_SEATS
-
   return {
-    // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
-    newPlan: proPlan ? proPlan?.value : planOptions[0]?.value,
-    // get the number of seats of the current plan, but minimum 6 seats
+    newPlan: sentryPlanYear?.value,
+    // get the number of seats of the current plan, but minimum 5 seats
     seats: Math.max(currentNbSeats, MIN_NB_SEATS),
   }
 }
@@ -61,10 +54,11 @@ function getSchema(accountDetails) {
   })
 }
 
-function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
-  const planOptions = [proPlanYear, proPlanMonth]
+// eslint-disable-next-line max-statements
+function useUpgradeForm({ sentryPlanMonth, sentryPlanYear, accountDetails }) {
+  const planOptions = [sentryPlanYear, sentryPlanMonth]
 
-  const values = getInitialDataForm(planOptions, accountDetails)
+  const values = getInitialDataForm(sentryPlanYear, accountDetails)
 
   const {
     register,
@@ -83,10 +77,17 @@ function useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails }) {
   const seats = watch('seats')
   const newPlan = watch('newPlan')
 
-  const perYearPrice = Math.floor(seats) * proPlanYear?.baseUnitPrice * 12
-  const perMonthPrice = Math.floor(seats) * proPlanMonth?.baseUnitPrice * 12
+  let perYearPrice = 29.99
+  if (seats > 5) {
+    perYearPrice += Math.floor(seats - 5) * sentryPlanYear?.baseUnitPrice
+  }
 
-  const isPerYear = newPlan === Plans.USERS_PR_INAPPY
+  let perMonthPrice = 29.99
+  if (seats > 5) {
+    perMonthPrice += Math.floor(seats - 5) * sentryPlanMonth?.baseUnitPrice
+  }
+
+  const isPerYear = newPlan === Plans.USERS_SENTRYY
 
   return {
     seats,
@@ -184,12 +185,12 @@ function TotalBanner({ isPerYear, perYearPrice, perMonthPrice, setValue }) {
           <span className="font-semibold">
             {formatNumberToUSD(perYearPrice)}
           </span>
-          /per year
+          /per month billed annually at {formatNumberToUSD(perYearPrice * 12)}
         </p>
         <p>
           &#127881; You{' '}
           <span className="font-semibold">
-            save {formatNumberToUSD(perMonthPrice - perYearPrice)}
+            save {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
           </span>{' '}
           with the annual plan
         </p>
@@ -201,21 +202,21 @@ function TotalBanner({ isPerYear, perYearPrice, perMonthPrice, setValue }) {
     <div className="flex flex-col gap-3">
       <p>
         <span className="font-semibold">
-          {formatNumberToUSD(perMonthPrice / 12)}
+          {formatNumberToUSD(perMonthPrice)}
         </span>
-        /total monthly
+        /per month
       </p>
       <div className="flex flex-row gap-1">
         <Icon size="sm" name="light-bulb" variant="solid" />
         <p>
           You could save{' '}
           <span className="font-semibold">
-            {formatNumberToUSD(perMonthPrice - perYearPrice)}
+            {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
           </span>{' '}
           a year with the annual plan,{' '}
           <span
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setValue('newPlan', Plans.USERS_PR_INAPPY)}
+            onClick={() => setValue('newPlan', Plans.USERS_SENTRYY)}
           >
             switch to annual
           </span>
@@ -232,10 +233,10 @@ TotalBanner.propTypes = {
   perMonthPrice: PropTypes.number,
 }
 
-function UpgradeForm({
+function SentryUpgradeForm({
   accountDetails,
-  proPlanYear,
-  proPlanMonth,
+  sentryPlanYear,
+  sentryPlanMonth,
   organizationName,
 }) {
   const { provider } = useParams()
@@ -251,17 +252,20 @@ function UpgradeForm({
     getValues,
     formState: { isValid, errors },
     reset,
-  } = useUpgradeForm({ proPlanYear, proPlanMonth, accountDetails })
+  } = useUpgradeForm({ sentryPlanYear, sentryPlanMonth, accountDetails })
 
   const { upgradePlan } = useSubmit({ owner: organizationName, provider })
 
   useEffect(() => {
     if (organizationName && accountDetails) {
       reset({
-        ...getInitialDataForm([proPlanYear, proPlanMonth], accountDetails),
+        ...getInitialDataForm(
+          [sentryPlanYear, sentryPlanMonth],
+          accountDetails
+        ),
       })
     }
-  }, [reset, organizationName, proPlanYear, proPlanMonth, accountDetails])
+  }, [reset, organizationName, sentryPlanYear, sentryPlanMonth, accountDetails])
 
   return (
     <form
@@ -269,39 +273,46 @@ function UpgradeForm({
       onSubmit={handleSubmit(upgradePlan)}
     >
       <div>
-        <h3 className="pb-2 font-semibold">Billing</h3>
+        <h2 className="text-lg font-semibold">Plan Details</h2>
+        <p>
+          <span className="font-semibold">14 day free trial</span>, then $29.99
+          monthly includes 5 seats.
+        </p>
+      </div>
+      <div>
+        <h3 className="pb-2 font-semibold">Additional Seats</h3>
         <div className="flex flex-col gap-2">
           <RadioInput
-            key={proPlanYear?.billingRate}
-            data-cy={`select-${proPlanYear?.billingRate}`}
-            dataMarketing={`plan-pricing-option-${proPlanYear?.billingRate}`}
+            key={sentryPlanYear?.billingRate}
+            data-cy={`select-${sentryPlanYear?.billingRate}`}
+            dataMarketing={`plan-pricing-option-${sentryPlanYear?.billingRate}`}
             label={
               <>
                 <span className="font-semibold">
-                  ${proPlanYear?.baseUnitPrice}
+                  ${sentryPlanYear?.baseUnitPrice}
                 </span>
-                /per seat, billed {proPlanYear?.billingRate}
+                /per seat, billed {sentryPlanYear?.billingRate}
               </>
             }
             name="billing-options"
-            value={Plans.USERS_PR_INAPPY}
+            value={Plans.USERS_SENTRYY}
             disabled={!organizationName}
             {...register('newPlan')}
           />
           <RadioInput
-            key={proPlanMonth?.billingRate}
-            data-cy={`select-${proPlanMonth?.billingRate}`}
-            dataMarketing={`plan-pricing-option-${proPlanMonth?.billingRate}`}
+            key={sentryPlanMonth?.billingRate}
+            data-cy={`select-${sentryPlanMonth?.billingRate}`}
+            dataMarketing={`plan-pricing-option-${sentryPlanMonth?.billingRate}`}
             label={
               <>
                 <span className="font-semibold">
-                  ${proPlanMonth?.baseUnitPrice}
+                  ${sentryPlanMonth?.baseUnitPrice}
                 </span>
-                /per seat, billed {proPlanMonth?.billingRate}
+                /per seat, billed {sentryPlanMonth?.billingRate}
               </>
             }
             name="billing-options"
-            value={Plans.USERS_PR_INAPPM}
+            value={Plans.USERS_SENTRYM}
             disabled={!organizationName}
             {...register('newPlan')}
           />
@@ -341,7 +352,7 @@ function UpgradeForm({
             perYearPrice={perYearPrice}
             perMonthPrice={perMonthPrice}
             setValue={setValue}
-            proPlanYear={proPlanYear}
+            sentryPlanYear={sentryPlanYear}
           />
         </div>
       )}
@@ -367,11 +378,11 @@ function UpgradeForm({
   )
 }
 
-UpgradeForm.propTypes = {
-  proPlanYear: planPropType,
-  proPlanMonth: planPropType,
+SentryUpgradeForm.propTypes = {
+  sentryPlanYear: planPropType,
+  sentryPlanMonth: planPropType,
   accountDetails: accountDetailsPropType,
   organizationName: PropTypes.string,
 }
 
-export default UpgradeForm
+export default SentryUpgradeForm

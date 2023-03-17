@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import parasolImg from 'assets/plan/parasol.png'
+import sentryCodecov from 'assets/plan/sentry_codecov.svg'
 import {
   accountDetailsPropType,
   planPropType,
@@ -10,12 +11,19 @@ import {
   usePlans,
 } from 'services/account'
 import { useMyContexts } from 'services/user'
-import { isEnterprisePlan, isFreePlan, useProPlans } from 'shared/utils/billing'
+import {
+  canApplySentryUpgrade,
+  findSentryPlans,
+  isEnterprisePlan,
+  isFreePlan,
+  useProPlans,
+} from 'shared/utils/billing'
 import A from 'ui/A'
 import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 
+import SentryUpgradeForm from './SentryUpgradeForm'
 import UpgradeForm from './UpgradeForm'
 
 import BenefitList from '../BenefitList'
@@ -42,8 +50,11 @@ const FormDetails = ({
   accountDetails,
   organizationName,
   plan,
+  plans,
   proPlanMonth,
   proPlanYear,
+  sentryPlanMonth,
+  sentryPlanYear,
 }) => {
   if (isEnterprisePlan(plan?.value)) {
     return (
@@ -53,6 +64,17 @@ const FormDetails = ({
           plan please contact <A to={{ pageName: 'sales' }}>sales@codecov.io</A>
         </p>
       </div>
+    )
+  }
+
+  if (canApplySentryUpgrade({ plans })) {
+    return (
+      <SentryUpgradeForm
+        accountDetails={accountDetails}
+        sentryPlanYear={sentryPlanYear}
+        sentryPlanMonth={sentryPlanMonth}
+        organizationName={organizationName}
+      />
     )
   }
 
@@ -72,15 +94,20 @@ FormDetails.propTypes = {
   plan: PropTypes.shape({
     value: PropTypes.string,
   }),
+  plans: PropTypes.arrayOf(planPropType),
   proPlanMonth: planPropType,
   proPlanYear: planPropType,
+  sentryPlanMonth: planPropType,
+  sentryPlanYear: planPropType,
 }
 
+// eslint-disable-next-line max-statements, complexity
 function UpgradePlan() {
   const { provider } = useParams()
   const [organizationName, setOrganizationName] = useState()
   const { data: plans } = usePlans(provider)
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
   const { data: contexts } = useMyContexts({ provider })
   const { data: accountDetails } = useAccountDetails({
     provider,
@@ -94,36 +121,73 @@ function UpgradePlan() {
   const organizations = mergeOrgs({ contexts })
   const plan = determinePlan({ accountDetails })
 
-  const details = isEnterprisePlan(plan?.value)
-    ? {
-        marketingName: plan?.marketingName,
-        baseUnitPrice: 'Custom Pricing',
-      }
-    : {
-        marketingName: proPlanYear?.marketingName,
-        baseUnitPrice: `$${proPlanYear?.baseUnitPrice}*`,
-        priceDisclaimer: (
-          <p className="text-ds-gray-quaternary">
-            *${proPlanMonth?.baseUnitPrice} per user / month if paid monthly
-          </p>
-        ),
-      }
+  let details = {
+    img: (
+      <div className="-mt-16">
+        <img src={parasolImg} alt="parasol" />
+      </div>
+    ),
+    marketingName: proPlanYear?.marketingName,
+    baseUnitPrice: (
+      <>
+        ${proPlanYear?.baseUnitPrice}*
+        <span className="text-base">/monthly</span>
+      </>
+    ),
+    priceDisclaimer: (
+      <p className="text-ds-gray-quaternary">
+        *${proPlanMonth?.baseUnitPrice} per user / month if paid monthly
+      </p>
+    ),
+    benefits: plan?.benefits ?? proPlanYear?.benefits,
+  }
+
+  if (isEnterprisePlan(plan?.value)) {
+    details = {
+      img: (
+        <div className="-mt-16">
+          <img src={parasolImg} alt="parasol" />
+        </div>
+      ),
+      marketingName: plan?.marketingName,
+      baseUnitPrice: 'Custom Pricing',
+      benefits: plan?.benefits ?? proPlanYear?.benefits,
+    }
+  } else if (canApplySentryUpgrade({ plans })) {
+    details = {
+      img: (
+        <div>
+          <img src={sentryCodecov} alt="sentry codecov logos" />
+        </div>
+      ),
+      marketingName: sentryPlanYear?.marketingName,
+      baseUnitPrice: (
+        <>
+          $29.99<span className="text-base">/monthly</span>
+        </>
+      ),
+      priceDisclaimer: (
+        <p className="text-ds-gray-quaternary">
+          *${sentryPlanMonth?.baseUnitPrice} per user / month if paid monthly
+        </p>
+      ),
+      benefits: plan?.benefits ?? sentryPlanYear?.benefits,
+    }
+  }
 
   return (
     <div className="mt-6 flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
       <Card variant="large">
         <div className="flex flex-col gap-4">
-          <div className="-mt-16">
-            <img src={parasolImg} alt="parasol" />
-          </div>
-          <h3 className="text-2xl text-ds-pink-quinary">
+          {details?.img}
+          <h3 className="text-2xl font-semibold text-ds-pink-quinary">
             {details?.marketingName}
           </h3>
           <h2 className="text-4xl">{details?.baseUnitPrice}</h2>
           <BenefitList
             iconName="check"
             iconColor="text-ds-pink-quinary"
-            benefits={plan?.benefits ?? proPlanYear?.benefits}
+            benefits={details?.benefits}
           />
           {details?.priceDisclaimer}
           {organizationName && shouldRenderCancelLink(accountDetails, plan) && (
@@ -159,8 +223,11 @@ function UpgradePlan() {
             accountDetails={accountDetails}
             organizationName={organizationName}
             plan={plan}
+            plans={plans}
             proPlanMonth={proPlanMonth}
             proPlanYear={proPlanYear}
+            sentryPlanYear={sentryPlanYear}
+            sentryPlanMonth={sentryPlanMonth}
           />
         </Card>
       </div>
