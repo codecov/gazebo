@@ -52,7 +52,7 @@ export default function TermsOfService() {
           </div>
           <p className="text-xs text-ds-gray-quaternary">
             Don&apos;t see your org?{' '}
-            <A href="#" hook="help finding an org">
+            <A href="#" hook="help finding an org" isExternal>
               Help finding org
               <Icon name="chevronRight" size="sm" variant="solid" />
             </A>
@@ -86,6 +86,7 @@ export default function TermsOfService() {
                   <A
                     href="https://about.codecov.io/terms-of-service"
                     hook="terms of service"
+                    isExternal
                   >
                     terms of services
                   </A>{' '}
@@ -93,6 +94,7 @@ export default function TermsOfService() {
                   <A
                     href="https://about.codecov.io/privacy"
                     hook="privacy policy"
+                    isExternal
                   >
                     privacy policy
                   </A>
