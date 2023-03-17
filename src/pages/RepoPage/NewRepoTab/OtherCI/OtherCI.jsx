@@ -1,7 +1,7 @@
-import codecovReport from 'assets/repoConfig/codecov-report.png'
-import patchAndProject from 'assets/repoConfig/patch-and-project.png'
 import { useParams } from 'react-router-dom'
 
+import codecovReport from 'assets/repoConfig/codecov-report.svg'
+import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
 import { useRepo } from 'services/repo'
 import { useOnboardingTracking } from 'services/user'
 import A from 'ui/A'
