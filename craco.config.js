@@ -29,7 +29,7 @@ module.exports = {
       new SentryWebpackPlugin({
         org: 'codecov',
         project: 'gazebo',
-        include: './build',
+        include: './build/static/js',
         authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
     ],
