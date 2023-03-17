@@ -97,12 +97,13 @@ describe('BranchDirEntry', () => {
   })
 
   it('fires the prefetch function on hover', async () => {
+    const user = userEvent.setup()
     render(
       <BranchDirEntry branch="branch" name="dir" urlPath="path/to/directory" />,
       { wrapper }
     )
 
-    userEvent.hover(screen.getByText('dir'))
+    await user.hover(screen.getByText('dir'))
 
     await waitFor(() => queryClient.getQueryState().isFetching)
     await waitFor(() => !queryClient.getQueryState().isFetching)

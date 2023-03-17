@@ -1,61 +1,89 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import SearchField from './SearchField'
 
 describe('SearchField', () => {
-  let props
+  afterAll(() => jest.resetAllMocks())
 
-  function setup(over = {}) {
-    props = {
-      searchValue: '',
-      setSearchValue: jest.fn(),
-      placeholder: 'Search',
-      ...over,
-    }
-    render(<SearchField {...props} />)
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
   }
 
   describe('Basic', () => {
-    beforeEach(() => {
-      jest.useFakeTimers()
-      setup()
-      const searchField = screen.getByRole('textbox', {
-        name: 'Search',
-      })
-      userEvent.type(searchField, 'file.js')
-    })
-
     describe('when typing in the search field', () => {
-      it('waits to call setSearchValue', () => {
-        expect(props.setSearchValue).not.toHaveBeenCalledWith('file.js')
+      it('waits to call setSearchValue', async () => {
+        const setSearchValue = jest.fn()
+        const { user } = setup()
+        render(
+          <SearchField
+            searchValue=""
+            setSearchValue={setSearchValue}
+            placeholder="Search"
+            dataMarketing="marketing"
+          />
+        )
+
+        const searchField = screen.getByRole('textbox', {
+          name: 'Search',
+        })
+
+        await user.click(searchField)
+        await user.keyboard('file.js')
+
+        expect(setSearchValue).not.toHaveBeenCalledWith('file.js')
       })
     })
 
     describe('after waiting for debounce', () => {
-      beforeEach(() => {
-        jest.advanceTimersByTime(1000)
-      })
+      it('calls setSearchValue', async () => {
+        const setSearchValue = jest.fn()
+        const { user } = setup()
+        render(
+          <SearchField
+            searchValue=""
+            setSearchValue={setSearchValue}
+            placeholder="Search"
+            dataMarketing="marketing"
+          />
+        )
 
-      it('calls setSearchValue', () => {
-        expect(props.setSearchValue).toHaveBeenCalled()
+        const searchField = screen.getByRole('textbox', {
+          name: 'Search',
+        })
+
+        await user.click(searchField)
+        await user.keyboard('file.js')
+
+        await waitFor(() => expect(setSearchValue).toHaveBeenCalled())
       })
     })
   })
 
   describe('custom onChange', () => {
-    let onChangeMock = jest.fn()
-    beforeEach(() => {
-      jest.useFakeTimers()
-      setup({ onChange: onChangeMock })
+    it('fired the custom onChange', async () => {
+      const onChange = jest.fn()
+      const setSearchValue = jest.fn()
+      const { user } = setup()
+      render(
+        <SearchField
+          searchValue=""
+          setSearchValue={setSearchValue}
+          onChange={onChange}
+          placeholder="Search"
+          dataMarketing="marketing"
+        />
+      )
+
       const searchField = screen.getByRole('textbox', {
         name: 'Search',
       })
-      userEvent.type(searchField, 'file.js')
-    })
 
-    it('fired the custom onChangehandler', () => {
-      expect(onChangeMock).toHaveBeenCalled()
+      await user.click(searchField)
+      await user.keyboard('file.js')
+
+      expect(onChange).toHaveBeenCalled()
     })
   })
 })

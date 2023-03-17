@@ -136,13 +136,14 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays extended list after button click', async () => {
+      const user = userEvent.setup()
       render(<AdminAccessTable />, { wrapper: wrapper() })
 
       const user1 = await screen.findByText('User 1')
       expect(user1).toBeInTheDocument()
 
       const button = await screen.findByText('Load More')
-      userEvent.click(button)
+      await user.click(button)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)

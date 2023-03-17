@@ -3,7 +3,6 @@ import { MemoryRouter } from 'react-router-dom'
 
 import BaseLayout from './BaseLayout'
 
-jest.mock('layouts/UserOnboarding', () => () => null)
 jest.mock('layouts/Footer', () => () => 'Footer')
 jest.mock('shared/GlobalBanners', () => () => 'GlobalBanners')
 jest.mock('services/user', () => ({

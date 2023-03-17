@@ -1,4 +1,4 @@
-import { act, render, screen } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
@@ -20,11 +20,25 @@ jest.mock('services/toastNotification')
 
 const queryClient = new QueryClient()
 
-describe('ImpactAnalysisToken', () => {
-  const mutate = jest.fn()
-  const addNotification = jest.fn()
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
+    <QueryClientProvider client={queryClient}>
+      <Route path="/:provider/:owner/:repo/settings">){children}</Route>
+    </QueryClientProvider>
+  </MemoryRouter>
+)
 
-  function setup({ profilingToken = undefined, error = null }) {
+describe('ImpactAnalysisToken', () => {
+  function setup(
+    { profilingToken = undefined, error = null } = {
+      profilingToken: undefined,
+      error: null,
+    }
+  ) {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+    const addNotification = jest.fn()
+
     useAddNotification.mockReturnValue(addNotification)
     useUser.mockReturnValue({
       data: {
@@ -45,27 +59,20 @@ describe('ImpactAnalysisToken', () => {
         },
       },
     })
-
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
-        <QueryClientProvider client={queryClient}>
-          <Route path="/:provider/:owner/:repo/settings">
-            <ImpactAnalysisToken profilingToken="old token" />
-          </Route>
-        </QueryClientProvider>
-      </MemoryRouter>
-    )
+    return { mutate, addNotification, user }
   }
 
-  describe('renders ImpactAnalysisToken componenet', () => {
-    beforeEach(() => {
-      setup({})
-    })
+  describe('renders ImpactAnalysisToken component', () => {
+    beforeEach(() => setup())
     it('renders title', () => {
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
       const title = screen.getByText(/Impact analysis token/)
       expect(title).toBeInTheDocument()
     })
     it('renders body', () => {
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
       const p = screen.getByText(
         'Token is used for impact analysis feature only'
       )
@@ -74,10 +81,14 @@ describe('ImpactAnalysisToken', () => {
       expect(badge).toBeInTheDocument()
     })
     it('renders profiling token', () => {
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
       const token = screen.getByText(/old token/)
       expect(token).toBeInTheDocument()
     })
     it('renders regenerate button', () => {
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
       expect(
         screen.getByRole('button', { name: 'Regenerate' })
       ).toBeInTheDocument()
@@ -85,12 +96,11 @@ describe('ImpactAnalysisToken', () => {
   })
 
   describe('when the user clicks on regenerate button', () => {
-    beforeEach(() => {
-      setup({})
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-    })
+    it('displays the regenerate profiling token modal', async () => {
+      const { user } = setup()
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+      await user.click(screen.getByRole('button', { name: 'Regenerate' }))
 
-    it('displays the regenerate profiling token modal', () => {
       expect(screen.getByText('New impact analysis token')).toBeInTheDocument()
       expect(
         screen.getByText(
@@ -104,30 +114,35 @@ describe('ImpactAnalysisToken', () => {
     })
 
     describe('when user clicks on Cancel button', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-      })
-      it('does not call the mutation', () => {
+      it('does not call the mutation', async () => {
+        const { user, mutate } = setup()
+        render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
+        await user.click(screen.getByRole('button', { name: 'Regenerate' }))
+
         expect(mutate).not.toHaveBeenCalled()
       })
 
       it('renders the old token', () => {
+        setup()
+        render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
         expect(screen.getByText('old token')).toBeInTheDocument()
       })
     })
   })
 
   describe('when the user clicks on the copy button', () => {
-    beforeEach(() => {
-      setup({})
-      userEvent.click(
+    it('calls the trackSegmentEvent', async () => {
+      const { user } = setup()
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
+      await user.click(
         screen.getByRole('button', {
           name: /copy/i,
         })
       )
-    })
 
-    it('calls the trackSegmentEvent', () => {
       expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
       expect(trackSegmentSpy).toHaveBeenCalledWith({
         event: 'Impact Analysis Profiling Token Copied',
@@ -142,36 +157,67 @@ describe('ImpactAnalysisToken', () => {
   })
 
   describe('when user clicks on Generate New Token button', () => {
-    beforeEach(async () => {
-      setup({ profilingToken: 'new token' })
-      await act(async () => {
-        await screen.getByRole('button', { name: 'Regenerate' }).click()
-        screen.getByRole('button', { name: 'Generate New Token' }).click()
+    it('calls the mutation', async () => {
+      const { user, mutate } = setup({ profilingToken: 'new token' })
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+      const generate = screen.getByRole('button', {
+        name: 'Generate New Token',
       })
-    })
-    it('calls the mutation', () => {
+      await user.click(generate)
+
       expect(mutate).toHaveBeenCalled()
     })
 
-    it('renders the new token', () => {
+    it('renders the new token', async () => {
+      const { user } = setup({ profilingToken: 'new token' })
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+      const generate = screen.getByRole('button', {
+        name: 'Generate New Token',
+      })
+      await user.click(generate)
+
       expect(screen.getByText('new token')).toBeInTheDocument()
     })
   })
 
   describe('when mutation is not successful', () => {
-    beforeEach(async () => {
-      setup({ profilingToken: 'new token', error: 'Authentication Error' })
-      await act(async () => {
-        await screen.getByRole('button', { name: 'Regenerate' }).click()
-        screen.getByRole('button', { name: 'Generate New Token' }).click()
-      })
-    })
-
     it('calls the mutation', async () => {
+      const { user, mutate } = setup({
+        profilingToken: 'new token',
+        error: 'Authentication Error',
+      })
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+      const generate = screen.getByRole('button', {
+        name: 'Generate New Token',
+      })
+      await user.click(generate)
+
       expect(mutate).toHaveBeenCalled()
     })
 
-    it('adds an error notification', () => {
+    it('adds an error notification', async () => {
+      const { user, addNotification } = setup({
+        profilingToken: 'new token',
+        error: 'Authentication Error',
+      })
+      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+      const generate = screen.getByRole('button', {
+        name: 'Generate New Token',
+      })
+      await user.click(generate)
+
       expect(addNotification).toHaveBeenCalledWith({
         type: 'error',
         text: 'Authentication Error',

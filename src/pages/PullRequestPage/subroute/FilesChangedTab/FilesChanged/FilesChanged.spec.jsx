@@ -330,6 +330,7 @@ describe('ImpactedFiles', () => {
     })
 
     it('renders the FileDiff component', async () => {
+      const user = userEvent.setup()
       render(<ImpactedFiles />, { wrapper: wrapper() })
 
       await waitFor(() =>
@@ -337,7 +338,7 @@ describe('ImpactedFiles', () => {
       )
 
       const nameExpander = await screen.findByTestId('name-expand')
-      userEvent.click(nameExpander)
+      await user.click(nameExpander)
 
       const fileDiff = await screen.findByText('FileDiff Component')
       expect(fileDiff).toBeInTheDocument()
