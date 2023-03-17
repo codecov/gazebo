@@ -1,7 +1,7 @@
-import { useParams } from 'react-router-dom'
-
 import codecovReport from 'assets/repoConfig/codecov-report.png'
 import patchAndProject from 'assets/repoConfig/patch-and-project.png'
+import { useParams } from 'react-router-dom'
+
 import { useRepo } from 'services/repo'
 import { useOnboardingTracking } from 'services/user'
 import A from 'ui/A'
@@ -53,7 +53,7 @@ function OtherCI() {
           </p>
         </div>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         <div>
           <h2 className="pt-6 text-base font-semibold">
             Step 3: get coverage analysis from Codecov
@@ -66,12 +66,13 @@ function OtherCI() {
         <img
           alt="codecov patch and project"
           src={patchAndProject}
-          className="mt-2 self-center xl:w-2/3"
+          className="my-3 md:px-5"
+          loading="lazy"
         />
         <p className="text-base">
           and a comment with coverage report in the pull request:
         </p>
-        <img alt="codecov report" src={codecovReport} />
+        <img alt="codecov report" src={codecovReport} loading="lazy" />
         <p>
           Learn more about the comment report and customizing{' '}
           <A to={{ pageName: 'prCommentLayout' }}>here</A>
