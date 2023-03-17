@@ -27,11 +27,9 @@ module.exports = {
     },
     plugins: [
       new SentryWebpackPlugin({
-        org: 'example-org',
-        project: 'example-project',
+        org: 'codecov',
+        project: 'gazebo',
         include: './dist',
-        // Auth tokens can be obtained from https://sentry.io/settings/account/api/auth-tokens/
-        // and needs the `project:releases` and `org:read` scopes
         authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
     ],
