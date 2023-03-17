@@ -9,6 +9,8 @@ import { BrowserRouter } from 'react-router-dom'
 
 import config from 'config'
 
+import { useFlags } from 'shared/featureFlags'
+
 import App from './App'
 
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
@@ -21,10 +23,11 @@ jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
 jest.mock('./pages/HomePage', () => () => 'HomePage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
 jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
-jest.mock('./pages/MembersPage/MembersPage', () => () => 'MembersPage')
+jest.mock('./pages/MembersPage', () => () => 'MembersPage')
 jest.mock('./pages/PlanPage/PlanPage', () => () => 'PlanPage')
 jest.mock('./pages/PullRequestPage', () => () => 'PullRequestPage')
-jest.mock('./pages/RepoPage/RepoPage', () => () => 'RepoPage')
+jest.mock('./pages/RepoPage', () => () => 'RepoPage')
+jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
 
 jest.mock('./shared/GlobalBanners', () => () => '')
 
@@ -33,6 +36,7 @@ jest.mock('@tanstack/react-query-devtools', () => ({
 }))
 
 jest.mock('config')
+jest.mock('shared/featureFlags')
 
 const user = {
   username: 'CodecovUser',
@@ -57,7 +61,13 @@ afterAll(() => server.close())
 const wrapper = ({ children }) => <BrowserRouter>{children}</BrowserRouter>
 
 describe('App', () => {
-  function setup() {
+  function setup(
+    { termsOfServicePage = false } = { termsOfServicePage: false }
+  ) {
+    useFlags.mockReturnValue({
+      termsOfServicePage,
+    })
+
     server.use(
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
@@ -188,7 +198,6 @@ describe('App', () => {
 
   describe('rendering feedback page', () => {
     beforeEach(() => {
-      window.history.pushState({}, 'Test Feedback Page', '/gh/feedback')
       setup()
     })
 
@@ -453,6 +462,21 @@ describe('App', () => {
       render(<App />, { wrapper })
 
       const page = screen.getByText(/RepoPage/i)
+      expect(page).toBeInTheDocument()
+    })
+  })
+
+  describe('rendering terms of service page', () => {
+    beforeEach(() => {
+      setup({
+        termsOfServicePage: true,
+      })
+    })
+
+    it('renders the terms of service page', () => {
+      render(<App />, { wrapper })
+
+      const page = screen.getByText(/TermsOfService/i)
       expect(page).toBeInTheDocument()
     })
   })
