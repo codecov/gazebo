@@ -14,6 +14,7 @@ import { useAddNotification } from 'services/toastNotification'
 import {
   formatNumberToUSD,
   getNextBillingDate,
+  isSentryPlan,
   Plans,
 } from 'shared/utils/billing'
 import Button from 'ui/Button'
@@ -24,9 +25,11 @@ import TextInput from 'ui/TextInput'
 const MIN_NB_SEATS = 5
 
 function getInitialDataForm(sentryPlanYear, accountDetails) {
-  const currentNbSeats = accountDetails?.plan?.quantity ?? MIN_NB_SEATS
+  const plan = accountDetails?.plan
+  const currentNbSeats = plan?.quantity ?? MIN_NB_SEATS
+
   return {
-    newPlan: sentryPlanYear?.value,
+    newPlan: isSentryPlan(plan?.value) ? plan?.value : sentryPlanYear?.value,
     // get the number of seats of the current plan, but minimum 5 seats
     seats: Math.max(currentNbSeats, MIN_NB_SEATS),
   }

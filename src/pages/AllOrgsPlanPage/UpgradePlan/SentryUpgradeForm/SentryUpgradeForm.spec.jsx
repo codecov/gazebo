@@ -481,6 +481,7 @@ describe('SentryUpgradeForm', () => {
         const switchAnnual = await screen.findByRole('button', {
           name: 'switch to annual',
         })
+
         await user.click(switchAnnual)
 
         const annualRadio = await screen.findByRole('radio', {
@@ -668,6 +669,7 @@ describe('SentryUpgradeForm', () => {
 
       let input = await screen.findByRole('spinbutton')
       await user.type(input, '{backspace}{backspace}{backspace}')
+
       input = await screen.findByRole('spinbutton')
       await user.type(input, '1')
 
