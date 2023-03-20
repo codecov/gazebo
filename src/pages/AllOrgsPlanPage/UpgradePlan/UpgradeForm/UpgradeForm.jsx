@@ -213,12 +213,12 @@ function TotalBanner({ isPerYear, perYearPrice, perMonthPrice, setValue }) {
             {formatNumberToUSD(perMonthPrice - perYearPrice)}
           </span>{' '}
           a year with the annual plan,{' '}
-          <span
+          <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
             onClick={() => setValue('newPlan', Plans.USERS_PR_INAPPY)}
           >
             switch to annual
-          </span>
+          </button>
         </p>
       </div>
     </div>
