@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
 
-import UpgradePlanForm from './UpgradePlanForm'
+import UpgradePlanForm from './UpgradeForm'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
