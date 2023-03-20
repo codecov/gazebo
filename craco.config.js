@@ -31,6 +31,7 @@ module.exports = {
         project: 'gazebo',
         include: './build/static/js',
         authToken: process.env.SENTRY_AUTH_TOKEN,
+        urlPrefix: '~/static/js',
       }),
     ],
   },
