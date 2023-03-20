@@ -72,11 +72,11 @@ const freePlan = {
 }
 
 const wrapper =
-  (initialEntries = '/plan/gh') =>
+  (initialEntries = '/plan/gh/codecov/upgrade') =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/plan/:provider">{children}</Route>
+        <Route path="/plan/:provider/:owner/upgrade">{children}</Route>
       </MemoryRouter>
     )
 
@@ -84,7 +84,6 @@ describe('UpgradeDetails', () => {
   describe('users can apply sentry plan', () => {
     const plan = sentryPlanMonth
     const plans = [plan]
-    const organizationName = 'codecov'
     const accountDetails = {
       activatedUserCount: 5,
       subscriptionDetail: { cancelAtPeriodEnd: false },
@@ -96,7 +95,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -115,7 +113,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -136,7 +133,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -155,7 +151,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -176,7 +171,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -204,7 +198,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -222,7 +215,6 @@ describe('UpgradeDetails', () => {
   describe('user can not apply sentry plan', () => {
     const plan = proPlanMonth
     const plans = [plan]
-    const organizationName = 'codecov'
     const accountDetails = {
       activatedUserCount: 5,
       subscriptionDetail: { cancelAtPeriodEnd: false },
@@ -234,7 +226,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -253,7 +244,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -274,7 +264,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -293,7 +282,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -314,7 +302,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -342,7 +329,6 @@ describe('UpgradeDetails', () => {
           accountDetails={accountDetails}
           plan={plan}
           plans={plans}
-          organizationName={organizationName}
           proPlanMonth={proPlanMonth}
           proPlanYear={proPlanYear}
           sentryPlanMonth={sentryPlanMonth}
@@ -358,33 +344,6 @@ describe('UpgradeDetails', () => {
   })
 
   describe('not rendering cancellation link', () => {
-    describe('organization name is not provided', () => {
-      it('does not render cancel link', () => {
-        const plan = proPlanMonth
-        const plans = [plan]
-        const accountDetails = {
-          activatedUserCount: 5,
-          subscriptionDetail: { cancelAtPeriodEnd: false },
-        }
-
-        render(
-          <UpgradeDetails
-            accountDetails={accountDetails}
-            plan={plan}
-            plans={plans}
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            sentryPlanMonth={sentryPlanMonth}
-            sentryPlanYear={sentryPlanYear}
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const link = screen.queryByRole('link', { name: /Cancel plan/ })
-        expect(link).not.toBeInTheDocument()
-      })
-    })
-
     describe('user is on a free plan', () => {
       it('does not render cancel link', () => {
         const plan = freePlan
@@ -416,7 +375,7 @@ describe('UpgradeDetails', () => {
       it('does not render cancel link', () => {
         const plan = proPlanMonth
         const plans = [plan]
-        const organizationName = 'codecov'
+
         const accountDetails = {
           activatedUserCount: 5,
           subscriptionDetail: { cancelAtPeriodEnd: true },
@@ -427,7 +386,6 @@ describe('UpgradeDetails', () => {
             accountDetails={accountDetails}
             plan={plan}
             plans={plans}
-            organizationName={organizationName}
             proPlanMonth={proPlanMonth}
             proPlanYear={proPlanYear}
             sentryPlanMonth={sentryPlanMonth}
