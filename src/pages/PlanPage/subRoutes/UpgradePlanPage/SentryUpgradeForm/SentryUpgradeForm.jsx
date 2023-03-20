@@ -13,6 +13,7 @@ import { useAddNotification } from 'services/toastNotification'
 import {
   formatNumberToUSD,
   getNextBillingDate,
+  isSentryPlan,
   Plans,
 } from 'shared/utils/billing'
 import Button from 'ui/Button'
@@ -23,9 +24,11 @@ import TextInput from 'ui/TextInput'
 const MIN_NB_SEATS = 5
 
 function getInitialDataForm(sentryPlanYear, accountDetails) {
-  const currentNbSeats = accountDetails?.plan?.quantity ?? MIN_NB_SEATS
+  const plan = accountDetails?.plan
+  const currentNbSeats = plan?.quantity ?? MIN_NB_SEATS
+
   return {
-    newPlan: sentryPlanYear?.value,
+    newPlan: isSentryPlan(plan?.value) ? plan?.value : sentryPlanYear?.value,
     // get the number of seats of the current plan, but minimum 5 seats
     seats: Math.max(currentNbSeats, MIN_NB_SEATS),
   }
@@ -58,6 +61,8 @@ function useUpgradeForm({ sentryPlanMonth, sentryPlanYear, accountDetails }) {
   const planOptions = [sentryPlanYear, sentryPlanMonth]
 
   const values = getInitialDataForm(sentryPlanYear, accountDetails)
+
+  console.debug(values)
 
   const {
     register,
@@ -213,12 +218,12 @@ function TotalBanner({ isPerYear, perYearPrice, perMonthPrice, setValue }) {
             {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
           </span>{' '}
           a year with the annual plan,{' '}
-          <span
+          <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
             onClick={() => setValue('newPlan', Plans.USERS_SENTRYY)}
           >
             switch to annual
-          </span>
+          </button>
         </p>
       </div>
     </div>
@@ -260,8 +265,10 @@ function SentryUpgradeForm({
       <div>
         <h2 className="text-lg font-semibold">Plan Details</h2>
         <p>
-          <span className="font-semibold">14 day free trial</span>, then $29.99
-          monthly includes 5 seats.
+          <span className="font-semibold">
+            {sentryPlanYear?.trialDays} day free trial
+          </span>
+          , then $29.99 monthly includes 5 seats.
         </p>
       </div>
       <div>
