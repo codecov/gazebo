@@ -9,6 +9,7 @@ const SentryPlugin = new SentryWebpackPlugin({
   project: 'gazebo',
   include: './build/static/js',
   authToken: process.env.SENTRY_AUTH_TOKEN,
+  urlPrefix: '~/static/js',
 })
 
 module.exports = {
