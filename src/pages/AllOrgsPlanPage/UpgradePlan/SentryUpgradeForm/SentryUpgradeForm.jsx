@@ -214,12 +214,12 @@ function TotalBanner({ isPerYear, perYearPrice, perMonthPrice, setValue }) {
             {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
           </span>{' '}
           a year with the annual plan,{' '}
-          <span
+          <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
             onClick={() => setValue('newPlan', Plans.USERS_SENTRYY)}
           >
             switch to annual
-          </span>
+          </button>
         </p>
       </div>
     </div>
@@ -275,8 +275,10 @@ function SentryUpgradeForm({
       <div>
         <h2 className="text-lg font-semibold">Plan Details</h2>
         <p>
-          <span className="font-semibold">14 day free trial</span>, then $29.99
-          monthly includes 5 seats.
+          <span className="font-semibold">
+            {sentryPlanYear?.trialDays} day free trial
+          </span>
+          , then $29.99 monthly includes 5 seats.
         </p>
       </div>
       <div>
