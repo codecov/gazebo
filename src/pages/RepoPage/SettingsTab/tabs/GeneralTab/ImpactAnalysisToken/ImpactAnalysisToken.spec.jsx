@@ -6,17 +6,16 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRegenerateProfilingToken } from 'services/profilingToken'
 import { useAddNotification } from 'services/toastNotification'
-import * as Segment from 'services/tracking/segment'
+import { trackSegmentEvent } from 'services/tracking/segment'
 import { useUser } from 'services/user'
 
 import ImpactAnalysisToken from './ImpactAnalysisToken'
-
-const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
 
 jest.mock('services/user')
 jest.mock('copy-to-clipboard', () => () => true)
 jest.mock('services/profilingToken')
 jest.mock('services/toastNotification')
+jest.mock('services/tracking/segment')
 
 const queryClient = new QueryClient()
 
@@ -38,7 +37,9 @@ describe('ImpactAnalysisToken', () => {
     const user = userEvent.setup()
     const mutate = jest.fn()
     const addNotification = jest.fn()
+    const trackSegmentMock = jest.fn()
 
+    trackSegmentEvent.mockImplementation(trackSegmentMock)
     useAddNotification.mockReturnValue(addNotification)
     useUser.mockReturnValue({
       data: {
@@ -59,7 +60,7 @@ describe('ImpactAnalysisToken', () => {
         },
       },
     })
-    return { mutate, addNotification, user }
+    return { mutate, addNotification, user, trackSegmentMock }
   }
 
   describe('renders ImpactAnalysisToken component', () => {
@@ -134,7 +135,7 @@ describe('ImpactAnalysisToken', () => {
 
   describe('when the user clicks on the copy button', () => {
     it('calls the trackSegmentEvent', async () => {
-      const { user } = setup()
+      const { user, trackSegmentMock } = setup()
       render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
 
       await user.click(
@@ -143,8 +144,8 @@ describe('ImpactAnalysisToken', () => {
         })
       )
 
-      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
-      expect(trackSegmentSpy).toHaveBeenCalledWith({
+      expect(trackSegmentMock).toHaveBeenCalledTimes(1)
+      expect(trackSegmentMock).toHaveBeenCalledWith({
         event: 'Impact Analysis Profiling Token Copied',
         data: {
           owner_slug: 'codecov',

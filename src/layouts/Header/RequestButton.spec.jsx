@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import * as Segment from 'services/tracking/segment'
+import { trackSegmentEvent } from 'services/tracking/segment'
 
 import RequestButton from './RequestButton'
 
@@ -21,9 +21,8 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
-
 jest.mock('config')
+jest.mock('services/tracking/segment')
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -46,6 +45,11 @@ afterAll(() => {
 
 describe('RequestButton', () => {
   function setup(accountDetails) {
+    const user = userEvent.setup()
+    const trackSegmentMock = jest.fn()
+
+    trackSegmentEvent.mockImplementation(trackSegmentMock)
+
     server.use(
       graphql.mutation('Seats', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
@@ -62,7 +66,8 @@ describe('RequestButton', () => {
     )
 
     return {
-      user: userEvent.setup(),
+      user,
+      trackSegmentMock,
     }
   }
 
@@ -104,7 +109,7 @@ describe('RequestButton', () => {
     })
 
     it('sends a tracking event when clicked and users are free', async () => {
-      const { user } = setup({
+      const { user, trackSegmentMock } = setup({
         plan: {
           value: 'users-free',
         },
@@ -114,7 +119,7 @@ describe('RequestButton', () => {
 
       const button = await screen.findByTestId('request-demo')
       await user.click(button)
-      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
+      expect(trackSegmentMock).toHaveBeenCalledTimes(1)
     })
 
     it('does not render request demo button when owner without free plan is logged in', () => {
