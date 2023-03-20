@@ -461,6 +461,8 @@ describe('App', () => {
 
   describe('rendering terms of service page', () => {
     beforeEach(() => {
+      window.history.pushState({}, 'Test Home Page', '/')
+
       setup({
         termsOfServicePage: true,
       })
@@ -469,8 +471,31 @@ describe('App', () => {
     it('renders the terms of service page', async () => {
       render(<App />, { wrapper })
 
-      const page = await screen.findByText(/TermsOfService/i)
-      expect(page).toBeInTheDocument()
+      const tos = await screen.findByText(/TermsOfService/i)
+      expect(tos).toBeInTheDocument()
+
+      const HomePage = screen.queryByText('HomePage')
+      expect(HomePage).not.toBeInTheDocument()
+    })
+  })
+
+  describe('rendering terms of service page when flag is off', () => {
+    beforeEach(() => {
+      window.history.pushState({}, 'Test Home Page', '/')
+
+      setup({
+        termsOfServicePage: false,
+      })
+    })
+
+    it('renders the terms of service page', async () => {
+      render(<App />, { wrapper })
+
+      const tos = screen.queryByText(/TermsOfService/i)
+      expect(tos).not.toBeInTheDocument()
+
+      const HomePage = await screen.findByText('HomePage')
+      expect(HomePage).toBeInTheDocument()
     })
   })
 })

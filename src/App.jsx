@@ -48,12 +48,12 @@ function App() {
     <ToastNotificationProvider>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
-        {/* 
-          TODO: Make this take over only if a user has not signed TOS,
-          needs api to finish routing logic, will also keep it flagged for release
-        */}
         {termsOfServicePage ? (
           <BaseLayout>
+            {/* 
+            TODO: Make this take over only if a user has not signed TOS,
+            needs api to finish routing logic, will also keep it flagged for release
+          */}
             <TermsOfService />
           </BaseLayout>
         ) : (
