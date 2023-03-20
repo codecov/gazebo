@@ -203,7 +203,7 @@ function SunburstChart({
       // Because you can move two layers at a time previous !== parent
       previous = p
 
-      const t = g.transition().duration(750)
+      const t = transition(g).duration(750)
 
       handleArcsUpdate({
         current: p,
