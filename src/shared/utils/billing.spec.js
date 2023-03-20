@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { useFlags } from 'shared/featureFlags'
 
 import {
+  canApplySentryUpgrade,
   EnterprisePlans,
   findSentryPlans,
   formatNumberToUSD,
@@ -370,5 +371,31 @@ describe('findSentryPlans', () => {
     }
 
     expect(sentryPlanYear).toStrictEqual(expectedResult)
+  })
+})
+
+describe('canApplySentryUpgrade', () => {
+  it('returns true when list contains monthly plan', () => {
+    const result = canApplySentryUpgrade({
+      plans: [{ value: 'users-sentrym' }],
+    })
+
+    expect(result).toBeTruthy()
+  })
+
+  it('returns true when list contains annual plan', () => {
+    const result = canApplySentryUpgrade({
+      plans: [{ value: 'users-sentryy' }],
+    })
+
+    expect(result).toBeTruthy()
+  })
+
+  it('returns false when plans are not in list', () => {
+    const result = canApplySentryUpgrade({
+      plans: [{ value: 'users-free' }],
+    })
+
+    expect(result).toBeFalsy()
   })
 })
