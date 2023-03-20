@@ -4,6 +4,13 @@ const CracoSwcPlugin = require('craco-swc')
 
 const { resolve } = require('path')
 
+const SentryPlugin = new SentryWebpackPlugin({
+  org: 'codecov',
+  project: 'gazebo',
+  include: './build/static/js',
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+})
+
 module.exports = {
   plugins: [
     {
@@ -31,14 +38,7 @@ module.exports = {
       config: resolve(__dirname, 'src/config'),
       sentry: resolve(__dirname, 'src/sentry'),
     },
-    plugins: [
-      new SentryWebpackPlugin({
-        org: 'codecov',
-        project: 'gazebo',
-        include: './build/static/js',
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-      }),
-    ],
+    plugins: [...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : [])],
   },
   jest: {
     configure: {
