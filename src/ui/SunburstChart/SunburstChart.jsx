@@ -3,7 +3,6 @@ import { interpolate } from 'd3-interpolate'
 import { scaleSequential } from 'd3-scale'
 import { select } from 'd3-selection'
 import { arc } from 'd3-shape'
-// eslint-disable-next-line no-unused-vars
 import { transition } from 'd3-transition' // Kinda odd d3 behavior seems to need to imported but not directly referenced.
 import PropTypes from 'prop-types'
 import { useLayoutEffect, useRef } from 'react'
