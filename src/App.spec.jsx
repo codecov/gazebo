@@ -1,8 +1,4 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { BrowserRouter } from 'react-router-dom'
@@ -198,6 +194,7 @@ describe('App', () => {
 
   describe('rendering feedback page', () => {
     beforeEach(() => {
+      window.history.pushState({}, 'Test Feedback Page', '/gh/feedback')
       setup()
     })
 
@@ -221,11 +218,7 @@ describe('App', () => {
         it('redirects to /gh', async () => {
           render(<App />, { wrapper })
 
-          await waitForElementToBeRemoved(() =>
-            screen.queryByTestId('logo-spinner')
-          )
-
-          const page = screen.getByText('HomePage')
+          const page = await screen.findByText('HomePage')
           expect(page).toBeInTheDocument()
         })
       })
@@ -473,10 +466,10 @@ describe('App', () => {
       })
     })
 
-    it('renders the terms of service page', () => {
+    it('renders the terms of service page', async () => {
       render(<App />, { wrapper })
 
-      const page = screen.getByText(/TermsOfService/i)
+      const page = await screen.findByText(/TermsOfService/i)
       expect(page).toBeInTheDocument()
     })
   })
