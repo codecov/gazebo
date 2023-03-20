@@ -35,7 +35,7 @@ export function isMonthlyPlan(plan) {
   if (typeof plan !== 'string') return false
 
   return (
-    plan === Plans.USERS_INAPPM ||
+    plan === Plans.USERS_INAPP ||
     plan === Plans.USERS_PR_INAPPM ||
     plan === Plans.USERS_SENTRYM ||
     plan === Plans.USERS_ENTERPRISEM
