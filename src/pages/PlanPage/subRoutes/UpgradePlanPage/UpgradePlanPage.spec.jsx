@@ -9,7 +9,8 @@ import { Plans } from 'shared/utils/billing'
 
 import UpgradePlanPage from './UpgradePlanPage'
 
-jest.mock('./UpgradePlanForm', () => () => 'UpgradePlanForm')
+jest.mock('./UpgradeForm', () => () => 'UpgradeForm')
+jest.mock('./SentryUpgradeForm', () => () => 'SentryUpgradeForm')
 
 const plans = [
   {
@@ -73,6 +74,34 @@ const plans = [
   },
 ]
 
+const sentryPlanMonth = {
+  marketingName: 'Sentry Pro Team',
+  value: 'users-sentrym',
+  billingRate: 'monthly',
+  baseUnitPrice: 12,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  trialDays: 14,
+}
+
+const sentryPlanYear = {
+  marketingName: 'Sentry Pro Team',
+  value: 'users-sentryy',
+  billingRate: 'annually',
+  baseUnitPrice: 10,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  trialDays: 14,
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -114,21 +143,47 @@ afterAll(() => {
 
 describe('UpgradePlanPage', () => {
   function setup(
-    { planValue = Plans.USERS_INAPPY, periodEnd = undefined } = {
+    {
+      planValue = Plans.USERS_INAPPY,
+      periodEnd = undefined,
+      includeSentryPlans = false,
+    } = {
       planValue: Plans.USERS_INAPPY,
       periodEnd: undefined,
+      includeSentryPlans: false,
     }
   ) {
     server.use(
       rest.get('/internal/plans', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(plans))
-      ),
-      rest.get('/internal/gh/codecov/account-details', (req, res, ctx) =>
         res(
+          ctx.status(200),
+          ctx.json([
+            ...plans,
+            ...(!!includeSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
+          ])
+        )
+      ),
+      rest.get('/internal/gh/codecov/account-details', (req, res, ctx) => {
+        if (planValue === Plans.USERS_SENTRYY) {
+          return res(
+            ctx.status(200),
+            ctx.json({
+              plan: sentryPlanYear,
+              subscriptionDetail: {
+                cancelAtPeriodEnd: periodEnd,
+              },
+              activatedUserCount: 10,
+            })
+          )
+        }
+
+        return res(
           ctx.status(200),
           ctx.json({
             plan: {
+              marketingName: 'Pro Team',
               value: planValue,
+              baseUnitPrice: 12,
               benefits: [
                 'Configureable # of users',
                 'Unlimited public repositories',
@@ -139,9 +194,10 @@ describe('UpgradePlanPage', () => {
             subscriptionDetail: {
               cancelAtPeriodEnd: periodEnd,
             },
+            activatedUserCount: 10,
           })
         )
-      )
+      })
     )
   }
 
@@ -215,6 +271,19 @@ describe('UpgradePlanPage', () => {
 
       const cancelLink = screen.queryByText('Cancel plan')
       expect(cancelLink).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered when a sentry plan', () => {
+    beforeEach(() =>
+      setup({ planValue: Plans.USERS_SENTRYY, includeSentryPlans: true })
+    )
+
+    it('renders the sentry plan title', async () => {
+      render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+      const title = await screen.findByText(/Sentry Pro Team/)
+      expect(title).toBeInTheDocument()
     })
   })
 })
