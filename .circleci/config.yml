@@ -109,7 +109,7 @@ workflows:
       - test:
           requires:
             - install
-  build:
+  storybook-and-fossa:
     jobs:
       - install
       - storybook:
