@@ -7,12 +7,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
 
-import UpgradePlanForm from './UpgradePlanForm'
+import SentryUpgradeForm from './SentryUpgradeForm'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
 
-const freePlan = {
+const basicPlan = {
   marketingName: 'Basic',
   value: 'users-basic',
   billingRate: null,
@@ -25,31 +25,33 @@ const freePlan = {
   quantity: 1,
 }
 
-const proPlanMonth = {
-  marketingName: 'Pro Team',
-  value: 'users-pr-inappm',
+const sentryPlanMonth = {
+  marketingName: 'Sentry Pro Team',
+  value: 'users-sentrym',
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
-    'Configurable # of users',
+    'Includes 5 seats',
     'Unlimited public repositories',
     'Unlimited private repositories',
     'Priority Support',
   ],
+  trialDays: 14,
   quantity: 10,
 }
 
-const proPlanYear = {
-  marketingName: 'Pro Team',
-  value: 'users-pr-inappy',
+const sentryPlanYear = {
+  marketingName: 'Sentry Pro Team',
+  value: 'users-sentryy',
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
-    'Configurable # of users',
+    'Includes 5 seats',
     'Unlimited public repositories',
     'Unlimited private repositories',
     'Priority Support',
   ],
+  trialDays: 14,
   quantity: 10,
 }
 
@@ -60,6 +62,22 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
+let testLocation
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/plan/gh']}>
+      <Route path="/plan/:provider">{children}</Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
 beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
@@ -67,19 +85,10 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-const wrapper =
-  (initialEntries = ['/my/initial/route']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
-      </QueryClientProvider>
-    )
-
-describe('UpgradePlanForm', () => {
+describe('SentryUpgradeForm', () => {
   function setup(successfulRequest = true, errorDetails = undefined) {
-    const addNotification = jest.fn()
     const user = userEvent.setup()
+    const addNotification = jest.fn()
 
     useAddNotification.mockReturnValue(addNotification)
 
@@ -95,7 +104,7 @@ describe('UpgradePlanForm', () => {
       })
     )
 
-    return { addNotification, user }
+    return { user, addNotification }
   }
 
   describe('when the user does not have any plan', () => {
@@ -103,13 +112,12 @@ describe('UpgradePlanForm', () => {
       setup()
     })
 
-    it('renders monthly radio button', async () => {
+    it('renders plan details section', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
@@ -117,20 +125,50 @@ describe('UpgradePlanForm', () => {
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
-      const radio = await screen.findByLabelText(/\$12/i)
+      const header = await screen.findByRole('heading', {
+        name: 'Plan Details',
+      })
+      expect(header).toBeInTheDocument()
+
+      const duration = await screen.findByText(/14 day free trial/)
+      expect(duration).toBeInTheDocument()
+
+      const pricingInfo = await screen.findByText(
+        /then \$29.99 monthly includes 5 seats./
+      )
+      expect(pricingInfo).toBeInTheDocument()
+    })
+
+    it('renders monthly radio button', async () => {
+      render(
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
+
+      const radio = await screen.findByRole('radio', { name: /\$12/i })
       expect(radio).toBeInTheDocument()
+      expect(radio).not.toBeDisabled()
     })
 
     it('renders annual radio button', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
@@ -138,20 +176,20 @@ describe('UpgradePlanForm', () => {
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
-      const radio = await screen.findByLabelText(/\$10/i)
+      const radio = await screen.findByRole('radio', { name: /\$10/i })
       expect(radio).toBeInTheDocument()
+      expect(radio).not.toBeDisabled()
     })
 
-    it('renders the seat input with 2 seats', async () => {
+    it('renders the seat input with 5 seats', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
@@ -159,12 +197,101 @@ describe('UpgradePlanForm', () => {
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toBeInTheDocument()
-      expect(numberInput).toHaveValue(2)
+      expect(numberInput).toHaveValue(5)
+      expect(numberInput).not.toBeDisabled()
+    })
+  })
+
+  describe('when no organization name or account details are not provided', () => {
+    it('renders plan details section', async () => {
+      render(
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
+
+      const header = await screen.findByRole('heading', {
+        name: 'Plan Details',
+      })
+      expect(header).toBeInTheDocument()
+
+      const duration = await screen.findByText(/14 day free trial/)
+      expect(duration).toBeInTheDocument()
+
+      const pricingInfo = await screen.findByText(
+        /then \$29.99 monthly includes 5 seats./
+      )
+      expect(pricingInfo).toBeInTheDocument()
+    })
+
+    it('renders monthly radio button', async () => {
+      render(
+        <SentryUpgradeForm
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
+        />,
+        { wrapper }
+      )
+
+      const radio = await screen.findByRole('radio', { name: /\$12/i })
+      expect(radio).toBeInTheDocument()
+      expect(radio).toBeDisabled()
+    })
+
+    it('renders annual radio button', async () => {
+      render(
+        <SentryUpgradeForm
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
+        />,
+        { wrapper }
+      )
+
+      const radio = await screen.findByRole('radio', { name: /\$10/i })
+      expect(radio).toBeInTheDocument()
+      expect(radio).toBeDisabled()
+    })
+
+    it('renders the seat input with 5 seats', async () => {
+      render(
+        <SentryUpgradeForm
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
+        />,
+        { wrapper }
+      )
+
+      const numberInput = await screen.findByRole('spinbutton')
+      expect(numberInput).toBeInTheDocument()
+      expect(numberInput).toHaveValue(5)
+      expect(numberInput).toBeDisabled()
+    })
+
+    it('has the update button disabled', async () => {
+      render(
+        <SentryUpgradeForm
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
+        />,
+        { wrapper }
+      )
+
+      const update = await screen.findByText(/Update/)
+      expect(update).toBeDisabled()
     })
   })
 
@@ -175,19 +302,18 @@ describe('UpgradePlanForm', () => {
 
     it('renders annual', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
-            plan: freePlan,
+            plan: basicPlan,
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const radio = await screen.findByRole('radio', { name: /\$10/ })
@@ -195,46 +321,46 @@ describe('UpgradePlanForm', () => {
       expect(radio).toBeChecked()
     })
 
-    it('renders the seat input with 2 seats', async () => {
+    it('renders the seat input with 5 seats', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
-            plan: freePlan,
+            plan: basicPlan,
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const numberInput = await screen.findByRole('spinbutton')
-      expect(numberInput).toHaveValue(2)
+      expect(numberInput).toHaveValue(5)
     })
   })
 
-  describe('when the user have a pro year plan', () => {
-    beforeEach(() => setup())
+  describe('when the user have a sentry year plan', () => {
+    beforeEach(() => {
+      setup()
+    })
 
     it('renders annual radio to be checked', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
-            activatedUserCount: 9,
+            activatedUserCount: 10,
             inactiveUserCount: 0,
-            plan: proPlanYear,
+            plan: sentryPlanYear,
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const radio = await screen.findByRole('radio', { name: /10/i })
@@ -243,19 +369,18 @@ describe('UpgradePlanForm', () => {
 
     it('renders the seat input with 10 seats (existing subscription)', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
-            plan: proPlanYear,
+            plan: sentryPlanYear,
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const seatCount = await screen.findByRole('spinbutton')
@@ -264,40 +389,43 @@ describe('UpgradePlanForm', () => {
 
     it('has the price for the year', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
-            plan: proPlanYear,
+            plan: sentryPlanYear,
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
-      const price = await screen.findByText(/\$1,200/)
+      const price = await screen.findByText(/\$79.99/)
       expect(price).toBeInTheDocument()
+
+      const priceBreakdown = await screen.findByText(
+        /\/per month billed annually at \$959.88/
+      )
+      expect(priceBreakdown).toBeInTheDocument()
     })
 
     it('has the update button disabled', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
-            plan: proPlanYear,
+            plan: sentryPlanYear,
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const update = await screen.findByText(/Update/)
@@ -308,54 +436,57 @@ describe('UpgradePlanForm', () => {
       it('has the price for the month', async () => {
         const { user } = setup()
         render(
-          <UpgradePlanForm
-            owner="codecov"
-            provider="gh"
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
+          <SentryUpgradeForm
+            organizationName="codecov"
+            sentryPlanMonth={sentryPlanMonth}
+            sentryPlanYear={sentryPlanYear}
             accountDetails={{
               activatedUserCount: 9,
               inactiveUserCount: 0,
-              plan: proPlanYear,
+              plan: sentryPlanYear,
               latestInvoice: null,
             }}
           />,
-          { wrapper: wrapper() }
+          { wrapper }
         )
 
         const monthRadio = await screen.findByRole('radio', { name: /12/i })
         await user.click(monthRadio)
 
-        const price = screen.getByText(/\$120/)
+        const price = screen.getByText(/\$89.99/)
         expect(price).toBeInTheDocument()
       })
     })
   })
 
-  describe('when the user have a pro year monthly', () => {
+  describe('when the user have a sentry monthly plan', () => {
     describe('user clicks select annual', () => {
       it('renders annual radio to be checked', async () => {
         const { user } = setup()
         render(
-          <UpgradePlanForm
-            owner="codecov"
-            provider="gh"
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
+          <SentryUpgradeForm
+            organizationName="codecov"
+            sentryPlanMonth={sentryPlanMonth}
+            sentryPlanYear={sentryPlanYear}
             accountDetails={{
               activatedUserCount: 9,
               inactiveUserCount: 0,
-              plan: proPlanMonth,
+              plan: sentryPlanMonth,
               latestInvoice: null,
             }}
           />,
-          { wrapper: wrapper() }
+          { wrapper }
         )
 
-        const switchAnnual = await screen.findByText('switch to annual')
+        const switchAnnual = await screen.findByRole('button', {
+          name: 'switch to annual',
+        })
+
         await user.click(switchAnnual)
 
-        const annualRadio = await screen.findByRole('radio', { name: /10/i })
+        const annualRadio = await screen.findByRole('radio', {
+          name: /10/i,
+        })
         expect(annualRadio).toBeChecked()
       })
     })
@@ -367,29 +498,28 @@ describe('UpgradePlanForm', () => {
 
       it('renders text for 1 student not taking active seats', async () => {
         render(
-          <UpgradePlanForm
-            owner="codecov"
-            provider="gh"
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
+          <SentryUpgradeForm
+            organizationName="codecov"
+            sentryPlanMonth={sentryPlanMonth}
+            sentryPlanYear={sentryPlanYear}
             accountDetails={{
               activatedUserCount: 9,
               inactiveUserCount: 0,
-              plan: freePlan,
+              plan: sentryPlanMonth,
               latestInvoice: null,
               activatedStudentCount: 0,
             }}
           />,
-          { wrapper: wrapper() }
+          { wrapper }
         )
 
         const singleStudentText = screen.queryByText(
-          /\*You have 1 active student that does not count towards the number of active users./
+          /\*You have 1 active student that does not count towards the number of active seats./
         )
         expect(singleStudentText).not.toBeInTheDocument()
 
         const multiStudentText = screen.queryByText(
-          /\*You have 3 active students that do not count towards the number of active users./
+          /\*You have 3 active students that do not count towards the number of active seats./
         )
         expect(multiStudentText).not.toBeInTheDocument()
       })
@@ -400,20 +530,19 @@ describe('UpgradePlanForm', () => {
 
       it('renders text for 1 student not taking active seats', async () => {
         render(
-          <UpgradePlanForm
-            owner="codecov"
-            provider="gh"
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
+          <SentryUpgradeForm
+            organizationName="codecov"
+            sentryPlanMonth={sentryPlanMonth}
+            sentryPlanYear={sentryPlanYear}
             accountDetails={{
               activatedUserCount: 9,
               inactiveUserCount: 0,
-              plan: freePlan,
+              plan: sentryPlanMonth,
               latestInvoice: null,
               activatedStudentCount: 1,
             }}
           />,
-          { wrapper: wrapper() }
+          { wrapper }
         )
 
         const studentText = await screen.findByText(
@@ -428,20 +557,19 @@ describe('UpgradePlanForm', () => {
 
       it('renders text for two or more student not taking active seats', async () => {
         render(
-          <UpgradePlanForm
-            owner="codecov"
-            provider="gh"
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
+          <SentryUpgradeForm
+            organizationName="codecov"
+            sentryPlanMonth={sentryPlanMonth}
+            sentryPlanYear={sentryPlanYear}
             accountDetails={{
               activatedUserCount: 9,
               inactiveUserCount: 0,
-              plan: freePlan,
+              plan: sentryPlanMonth,
               latestInvoice: null,
               activatedStudentCount: 3,
             }}
           />,
-          { wrapper: wrapper() }
+          { wrapper }
         )
 
         const studentText = await screen.findByText(
@@ -453,19 +581,20 @@ describe('UpgradePlanForm', () => {
   })
 
   describe('if there is an invoice', () => {
-    beforeEach(() => setup())
+    beforeEach(() => {
+      setup()
+    })
 
     it('renders the next billing period', async () => {
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
-            plan: null,
+            plan: sentryPlanMonth,
             latestInvoice: {
               periodStart: 1595270468,
               periodEnd: 1597948868,
@@ -480,7 +609,7 @@ describe('UpgradePlanForm', () => {
             },
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const nextBillingData = await screen.findByText(/Next Billing Date/)
@@ -495,11 +624,10 @@ describe('UpgradePlanForm', () => {
     it('displays an error', async () => {
       const { user } = setup()
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
@@ -507,7 +635,7 @@ describe('UpgradePlanForm', () => {
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const input = await screen.findByRole('spinbutton')
@@ -521,15 +649,14 @@ describe('UpgradePlanForm', () => {
     })
   })
 
-  describe('when the user chooses less than 2 seats', () => {
+  describe('when the user chooses less than 5 seats', () => {
     it('displays an error', async () => {
       const { user } = setup()
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
@@ -537,18 +664,20 @@ describe('UpgradePlanForm', () => {
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
-      const input = await screen.findByRole('spinbutton')
+      let input = await screen.findByRole('spinbutton')
       await user.type(input, '{backspace}{backspace}{backspace}')
+
+      input = await screen.findByRole('spinbutton')
       await user.type(input, '1')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
       await user.click(updateButton)
 
       const error = screen.getByText(
-        /You cannot purchase a per user plan for less than 2 users/
+        /You cannot purchase a per user plan for less than 5 users/
       )
       expect(error).toBeInTheDocument()
     })
@@ -558,11 +687,10 @@ describe('UpgradePlanForm', () => {
     it('displays an error', async () => {
       const { user } = setup()
       render(
-        <UpgradePlanForm
-          owner="codecov"
-          provider="gh"
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
+        <SentryUpgradeForm
+          organizationName="codecov"
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
           accountDetails={{
             activatedUserCount: 9,
             inactiveUserCount: 0,
@@ -570,11 +698,12 @@ describe('UpgradePlanForm', () => {
             latestInvoice: null,
           }}
         />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
-      const input = await screen.findByRole('spinbutton')
+      let input = await screen.findByRole('spinbutton')
       await user.type(input, '{backspace}{backspace}{backspace}')
+      input = await screen.findByRole('spinbutton')
       await user.type(input, '8')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
@@ -590,13 +719,12 @@ describe('UpgradePlanForm', () => {
   describe('when clicking on the button to upgrade', () => {
     describe('when mutation is successful', () => {
       it('adds a success notification', async () => {
-        const { addNotification, user } = setup()
+        const { user, addNotification } = setup()
         render(
-          <UpgradePlanForm
-            owner="codecov"
-            provider="gh"
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
+          <SentryUpgradeForm
+            organizationName="codecov"
+            sentryPlanMonth={sentryPlanMonth}
+            sentryPlanYear={sentryPlanYear}
             accountDetails={{
               activatedUserCount: 9,
               inactiveUserCount: 0,
@@ -604,22 +732,18 @@ describe('UpgradePlanForm', () => {
               latestInvoice: null,
             }}
           />,
-          { wrapper: wrapper() }
+          { wrapper }
         )
 
-        const input = await screen.findByRole('spinbutton')
+        let input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
+        input = await screen.findByRole('spinbutton')
         await user.type(input, '20')
 
         const updateButton = await screen.findByRole('button', {
           name: 'Update',
         })
         await user.click(updateButton)
-
-        await waitFor(() => queryClient.isMutating())
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isMutating())
-        await waitFor(() => !queryClient.isFetching())
 
         await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
@@ -631,30 +755,19 @@ describe('UpgradePlanForm', () => {
 
       it('redirects the user to the plan page', async () => {
         const { user } = setup()
-        let testLocation
         render(
-          <>
-            <UpgradePlanForm
-              owner="codecov"
-              provider="gh"
-              proPlanMonth={proPlanMonth}
-              proPlanYear={proPlanYear}
-              accountDetails={{
-                activatedUserCount: 9,
-                inactiveUserCount: 0,
-                plan: null,
-                latestInvoice: null,
-              }}
-            />
-            <Route
-              path="*"
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
-          </>,
-          { wrapper: wrapper(['/plan/gh/codecov']) }
+          <SentryUpgradeForm
+            organizationName="codecov"
+            sentryPlanMonth={sentryPlanMonth}
+            sentryPlanYear={sentryPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: null,
+              latestInvoice: null,
+            }}
+          />,
+          { wrapper }
         )
 
         const input = await screen.findByRole('spinbutton')
@@ -666,26 +779,21 @@ describe('UpgradePlanForm', () => {
         })
         await user.click(updateButton)
 
-        await waitFor(() => queryClient.isMutating())
-        await waitFor(() => !queryClient.isMutating())
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
-        expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+        await waitFor(() =>
+          expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+        )
       })
     })
 
     describe('when mutation is not successful', () => {
       describe('an error message is provided', () => {
         it('adds an error notification with detail message', async () => {
-          const { addNotification, user } = setup(false, 'Insufficient funds.')
-
+          const { user, addNotification } = setup(false, 'Insufficient funds.')
           render(
-            <UpgradePlanForm
-              owner="codecov"
-              provider="gh"
-              proPlanMonth={proPlanMonth}
-              proPlanYear={proPlanYear}
+            <SentryUpgradeForm
+              organizationName="codecov"
+              sentryPlanMonth={sentryPlanMonth}
+              sentryPlanYear={sentryPlanYear}
               accountDetails={{
                 activatedUserCount: 9,
                 inactiveUserCount: 0,
@@ -693,22 +801,18 @@ describe('UpgradePlanForm', () => {
                 latestInvoice: null,
               }}
             />,
-            { wrapper: wrapper() }
+            { wrapper }
           )
 
-          const input = await screen.findByRole('spinbutton')
+          let input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
+          input = await screen.findByRole('spinbutton')
           await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
             name: 'Update',
           })
           await user.click(updateButton)
-
-          await waitFor(() => queryClient.isMutating())
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isMutating())
-          await waitFor(() => !queryClient.isFetching())
 
           await waitFor(() =>
             expect(addNotification).toHaveBeenCalledWith({
@@ -721,14 +825,13 @@ describe('UpgradePlanForm', () => {
 
       describe('no error message is provided', () => {
         it('adds an error notification with a default message', async () => {
-          const { addNotification, user } = setup(false)
+          const { user, addNotification } = setup(false)
 
           render(
-            <UpgradePlanForm
-              owner="codecov"
-              provider="gh"
-              proPlanMonth={proPlanMonth}
-              proPlanYear={proPlanYear}
+            <SentryUpgradeForm
+              organizationName="codecov"
+              sentryPlanMonth={sentryPlanMonth}
+              sentryPlanYear={sentryPlanYear}
               accountDetails={{
                 activatedUserCount: 9,
                 inactiveUserCount: 0,
@@ -736,22 +839,18 @@ describe('UpgradePlanForm', () => {
                 latestInvoice: null,
               }}
             />,
-            { wrapper: wrapper() }
+            { wrapper }
           )
 
-          const input = await screen.findByRole('spinbutton')
+          let input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
+          input = await screen.findByRole('spinbutton')
           await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
             name: 'Update',
           })
           await user.click(updateButton)
-
-          await waitFor(() => queryClient.isMutating())
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isMutating())
-          await waitFor(() => !queryClient.isFetching())
 
           await waitFor(() =>
             expect(addNotification).toHaveBeenCalledWith({
