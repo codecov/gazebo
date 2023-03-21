@@ -1,8 +1,25 @@
 /* eslint-disable camelcase */
+const SentryWebpackPlugin = require('@sentry/webpack-plugin')
+const CracoSwcPlugin = require('craco-swc')
+
 const { resolve } = require('path')
 
+const SentryPlugin = new SentryWebpackPlugin({
+  org: 'codecov',
+  project: 'gazebo',
+  include: './build/static/js',
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  urlPrefix: '~/static/js',
+})
+
 module.exports = {
+  plugins: [
+    {
+      plugin: CracoSwcPlugin,
+    },
+  ],
   webpack: {
+    devtool: 'source-map',
     configure: {
       entry: './src/index.js',
     },
@@ -22,6 +39,7 @@ module.exports = {
       config: resolve(__dirname, 'src/config'),
       sentry: resolve(__dirname, 'src/sentry'),
     },
+    plugins: [...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : [])],
   },
   jest: {
     configure: {
@@ -39,8 +57,5 @@ module.exports = {
         '^sentry': '<rootDir>/src/sentry',
       },
     },
-  },
-  babel: {
-    presets: ['@babel/preset-typescript'],
   },
 }

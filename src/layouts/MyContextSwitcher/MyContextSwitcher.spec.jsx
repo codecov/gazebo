@@ -1,5 +1,6 @@
+import { render, screen, waitFor } from 'custom-testing-library'
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -50,6 +51,8 @@ afterAll(() => server.close())
 
 describe('MyContextSwitcher', () => {
   function setup(noData = false) {
+    const user = userEvent.setup()
+
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     server.use(
       graphql.query('MyContexts', (req, res, ctx) => {
@@ -80,6 +83,8 @@ describe('MyContextSwitcher', () => {
         return res(ctx.status(200), ctx.data(queryData))
       })
     )
+
+    return { user }
   }
 
   describe('when there are no contexts (user not logged in)', () => {
@@ -100,11 +105,8 @@ describe('MyContextSwitcher', () => {
   })
 
   describe('when the user has some contexts and activeContext is passed to an organization', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the button with the organization', async () => {
+      setup()
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
         wrapper: wrapper(),
       })
@@ -116,13 +118,14 @@ describe('MyContextSwitcher', () => {
     })
 
     it('renders the default org modal', async () => {
+      const { user } = setup()
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
         wrapper: wrapper(),
       })
 
       const editDefaultButton = await screen.findByText(/Edit default/i)
       expect(editDefaultButton).toBeInTheDocument()
-      userEvent.click(editDefaultButton)
+      await user.click(editDefaultButton)
 
       const title = await screen.findByText(/Select default organization/)
       expect(title).toBeInTheDocument()

@@ -15,38 +15,6 @@ const ModalComponent = ({ closeFn }) => <div onClick={closeFn}>component</div>
 // eslint-disable-next-line react/prop-types
 const ModalControl = ({ onClick }) => <button onClick={onClick}>display</button>
 
-const defaultProps = {
-  activeContext: 'dorianamouroux',
-  contexts: [
-    {
-      owner: {
-        username: 'dorianamouroux',
-        avatarUrl: 'https://github.com/dorianamouroux.png?size=40',
-      },
-      pageName: 'provider',
-    },
-    {
-      owner: {
-        username: 'spotify',
-        avatarUrl: 'https://github.com/spotify.png?size=40',
-      },
-      pageName: 'owner',
-    },
-    {
-      owner: {
-        username: 'codecov',
-        avatarUrl: 'https://github.com/codecov.png?size=40',
-      },
-      pageName: 'owner',
-    },
-  ],
-  currentUser: {
-    defaultOrgUsername: 'spotify',
-  },
-  ModalComponent,
-  ModalControl,
-}
-
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) =>
@@ -61,56 +29,162 @@ const wrapper =
     )
 
 describe('ContextSwitcher', () => {
-  let props
-  function setup(over = {}) {
+  function setup() {
+    const user = userEvent.setup()
+
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
-    props = {
-      ...defaultProps,
-      ...over,
-    }
+
+    return { user }
   }
 
-  afterEach(() => jest.resetAllMocks())
-
   describe('when rendered', () => {
-    beforeEach(setup)
+    beforeEach(() => setup())
+    afterEach(() => jest.restoreAllMocks())
 
     it('does not render any link', () => {
-      render(<ContextSwitcher {...props} />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <ContextSwitcher
+          activeContext="laudna"
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'provider',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          ModalComponent={ModalComponent}
+          ModalControl={ModalControl}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       expect(screen.queryAllByRole('link')).toHaveLength(0)
     })
   })
 
   describe('when the button is clicked', () => {
-    beforeEach(() => {
-      setup()
-    })
+    afterEach(() => jest.restoreAllMocks())
 
     it('renders the menu', async () => {
-      render(<ContextSwitcher {...props} />, {
-        wrapper: wrapper(),
-      })
+      const { user } = setup()
+      render(
+        <ContextSwitcher
+          activeContext="laudna"
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'provider',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          ModalComponent={ModalComponent}
+          ModalControl={ModalControl}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const button = await screen.findByRole('button')
-      userEvent.click(button)
+      await user.click(button)
 
       const popover = await screen.findByRole('menu')
       expect(popover).toBeVisible()
     })
 
     it('renders the orgs', async () => {
-      render(<ContextSwitcher {...props} />, {
-        wrapper: wrapper(),
-      })
+      const { user } = setup()
+      render(
+        <ContextSwitcher
+          activeContext="laudna"
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'provider',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          ModalComponent={ModalComponent}
+          ModalControl={ModalControl}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const button = await screen.findByRole('button')
-      userEvent.click(button)
+      await user.click(button)
 
-      const dorianUsers = await screen.findAllByText('dorianamouroux')
-      expect(dorianUsers.length).toBe(2)
+      const laudnaUsers = await screen.findAllByText('laudna')
+      expect(laudnaUsers.length).toBe(2)
 
       const codecovOwner = await screen.findByText('codecov')
       expect(codecovOwner).toBeInTheDocument()
@@ -124,25 +198,94 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when rendered with no active context', () => {
-    beforeEach(() => {
-      setup({
-        activeContext: null,
-      })
-    })
+    beforeEach(() => setup())
+    afterEach(() => jest.restoreAllMocks())
 
     it('renders all orgs and repos', async () => {
-      render(<ContextSwitcher {...props} />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <ContextSwitcher
+          activeContext={null}
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'provider',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          ModalComponent={ModalComponent}
+          ModalControl={ModalControl}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const allOrgsAndRepos = await /all my orgs and repos/i
       expect(screen.getByText(allOrgsAndRepos)).toBeInTheDocument()
     })
 
     it('renders manage access restrictions', async () => {
-      render(<ContextSwitcher {...props} />, {
-        wrapper: wrapper(),
-      })
+      render(
+        <ContextSwitcher
+          activeContext="laudna"
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'provider',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          ModalComponent={ModalComponent}
+          ModalControl={ModalControl}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const manageAccess = await screen.findByText(
         /Manage access restrictions/i
@@ -153,28 +296,104 @@ describe('ContextSwitcher', () => {
 
   describe('when isLoading is passed', () => {
     describe('isLoading set to true', () => {
-      beforeEach(() => setup({ isLoading: true }))
+      afterEach(() => jest.restoreAllMocks())
+
       it('renders spinner', async () => {
-        render(<ContextSwitcher {...props} />, {
-          wrapper: wrapper(),
-        })
+        const { user } = setup()
+        render(
+          <ContextSwitcher
+            activeContext="laudna"
+            contexts={[
+              {
+                owner: {
+                  username: 'laudna',
+                  avatarUrl: 'https://github.com/laudna.png?size=40',
+                },
+                pageName: 'provider',
+              },
+              {
+                owner: {
+                  username: 'spotify',
+                  avatarUrl: 'https://github.com/spotify.png?size=40',
+                },
+                pageName: 'owner',
+              },
+              {
+                owner: {
+                  username: 'codecov',
+                  avatarUrl: 'https://github.com/codecov.png?size=40',
+                },
+                pageName: 'owner',
+              },
+            ]}
+            currentUser={{
+              defaultOrgUsername: 'spotify',
+            }}
+            ModalComponent={ModalComponent}
+            ModalControl={ModalControl}
+            src="imageUrl"
+            isLoading={true}
+            error={null}
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
 
         const button = await screen.findByRole('button')
-        userEvent.click(button)
+        await user.click(button)
 
         const spinner = await screen.findByTestId('spinner')
         expect(spinner).toBeInTheDocument()
       })
     })
     describe('isLoading set to false', () => {
-      beforeEach(() => setup({ isLoading: false }))
+      afterEach(() => jest.restoreAllMocks())
+
       it('does not render spinner', async () => {
-        render(<ContextSwitcher {...props} />, {
-          wrapper: wrapper(),
-        })
+        const { user } = setup()
+        render(
+          <ContextSwitcher
+            activeContext="laudna"
+            contexts={[
+              {
+                owner: {
+                  username: 'laudna',
+                  avatarUrl: 'https://github.com/laudna.png?size=40',
+                },
+                pageName: 'provider',
+              },
+              {
+                owner: {
+                  username: 'spotify',
+                  avatarUrl: 'https://github.com/spotify.png?size=40',
+                },
+                pageName: 'owner',
+              },
+              {
+                owner: {
+                  username: 'codecov',
+                  avatarUrl: 'https://github.com/codecov.png?size=40',
+                },
+                pageName: 'owner',
+              },
+            ]}
+            currentUser={{
+              defaultOrgUsername: 'spotify',
+            }}
+            ModalComponent={ModalComponent}
+            ModalControl={ModalControl}
+            src="imageUrl"
+            isLoading={false}
+            error={null}
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
 
         const button = await screen.findByRole('button')
-        userEvent.click(button)
+        await user.click(button)
 
         const spinner = screen.queryByTestId('spinner')
         expect(spinner).not.toBeInTheDocument()
@@ -183,44 +402,114 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when onLoadMore is passed and is intersecting', () => {
-    const onLoadMoreFunc = jest.fn()
-
     beforeEach(() => {
-      setup({ onLoadMore: onLoadMoreFunc })
       useIntersection.mockReturnValue({ isIntersecting: true })
     })
     afterEach(() => jest.restoreAllMocks())
 
     it('calls onLoadMore', async () => {
-      render(<ContextSwitcher {...props} />, {
-        wrapper: wrapper(),
-      })
+      const { user } = setup()
+      const onLoadMoreFunc = jest.fn()
+      render(
+        <ContextSwitcher
+          activeContext="laudna"
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'provider',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          ModalComponent={ModalComponent}
+          ModalControl={ModalControl}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+          onLoadMore={onLoadMoreFunc}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const button = await screen.findByRole('button')
-      userEvent.click(button)
+      await user.click(button)
 
-      await waitFor(() => expect(onLoadMoreFunc).toHaveBeenCalled())
+      expect(onLoadMoreFunc).toHaveBeenCalled()
     })
   })
 
   describe('when custom component is passed', () => {
-    beforeEach(() => {
-      setup()
-    })
     afterEach(() => jest.restoreAllMocks())
 
     it('renders the custom component', async () => {
-      render(<ContextSwitcher {...props} />, {
-        wrapper: wrapper(),
-      })
+      const { user } = setup()
+      render(
+        <ContextSwitcher
+          activeContext="laudna"
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://github.com/laudna.png?size=40',
+              },
+              pageName: 'provider',
+            },
+            {
+              owner: {
+                username: 'spotify',
+                avatarUrl: 'https://github.com/spotify.png?size=40',
+              },
+              pageName: 'owner',
+            },
+            {
+              owner: {
+                username: 'codecov',
+                avatarUrl: 'https://github.com/codecov.png?size=40',
+              },
+              pageName: 'owner',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          ModalComponent={ModalComponent}
+          ModalControl={ModalControl}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       const modalControlButton = await screen.findByText('display')
       expect(modalControlButton).toBeInTheDocument()
-      userEvent.click(modalControlButton)
+      await user.click(modalControlButton)
 
       const modalComponentText = await screen.findByText('component')
       expect(modalComponentText).toBeInTheDocument()
-      userEvent.click(modalComponentText)
+      await user.click(modalComponentText)
 
       await waitFor(() => expect(modalComponentText).not.toBeInTheDocument())
     })

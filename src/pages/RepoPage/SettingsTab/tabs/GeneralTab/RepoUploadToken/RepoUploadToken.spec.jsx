@@ -40,10 +40,16 @@ afterAll(() => {
 })
 
 describe('RepoUploadToken', () => {
-  const mutate = jest.fn()
-  const addNotification = jest.fn()
+  function setup(
+    { uploadToken = undefined, triggerError = false } = {
+      uploadToken: undefined,
+      triggerError: false,
+    }
+  ) {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+    const addNotification = jest.fn()
 
-  function setup(uploadToken = undefined, triggererror = false) {
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
@@ -51,7 +57,7 @@ describe('RepoUploadToken', () => {
         `/internal/github/codecov/repos/codecov-client/regenerate-upload-token/`,
         (req, res, ctx) => {
           mutate(req)
-          if (triggererror) {
+          if (triggerError) {
             return res(ctx.status(500))
           } else {
             return res(
@@ -64,31 +70,38 @@ describe('RepoUploadToken', () => {
         }
       )
     )
+
+    return { mutate, addNotification, user }
   }
 
-  describe('renders RepoUploadToken componenet', () => {
-    beforeEach(() => {
-      setup()
-    })
+  describe('renders RepoUploadToken component', () => {
+    beforeEach(() => setup())
+    afterEach(() => jest.resetAllMocks())
+
     it('renders title', () => {
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
+
       const title = screen.getByText(/Repository upload token/)
       expect(title).toBeInTheDocument()
     })
+
     it('renders body', () => {
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
+
       const p = screen.getByText('Token is used for uploading coverage reports')
       expect(p).toBeInTheDocument()
       const note = screen.getByText('Note:')
       expect(note).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'If you’d like to add the token directly to your CI/CD Environment:'
-        )
-      ).toBeInTheDocument()
+
+      const addTokenToCICD = screen.getByText(
+        'If you’d like to add the token directly to your CI/CD Environment:'
+      )
+      expect(addTokenToCICD).toBeInTheDocument()
     })
+
     it('renders two formats of token', () => {
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
+
       const firstFormat = screen.getByText(/CODECOV_TOKEN=old token/)
       expect(firstFormat).toBeInTheDocument()
       const secondFormat = screen.getByText(/token: old token/)
@@ -97,94 +110,119 @@ describe('RepoUploadToken', () => {
 
     it('renders regenerate button', () => {
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
-      expect(
-        screen.getByRole('button', { name: 'Regenerate' })
-      ).toBeInTheDocument()
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      expect(regenerate).toBeInTheDocument()
     })
   })
 
   describe('when the user clicks on regenerate button', () => {
-    beforeEach(() => {
-      setup()
-    })
+    afterEach(() => jest.resetAllMocks())
 
-    it('displays the regenerate upload token modal', () => {
+    it('displays the regenerate upload token modal', async () => {
+      const { user } = setup()
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      expect(
-        screen.getByText('New repository upload token')
-      ).toBeInTheDocument()
-      expect(screen.getByText('Repository API token')).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'If you save the new token, make sure to update your CI yml'
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('button', { name: 'Generate New Token' })
-      ).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+
+      const newToken = screen.getByText('New repository upload token')
+      expect(newToken).toBeInTheDocument()
+      const repositoryAPIToken = screen.getByText('Repository API token')
+      expect(repositoryAPIToken).toBeInTheDocument()
+      const ifYouSaveTheNewToken = screen.getByText(
+        'If you save the new token, make sure to update your CI yml'
+      )
+      expect(ifYouSaveTheNewToken).toBeInTheDocument()
+      const generateNewToken = screen.getByRole('button', {
+        name: 'Generate New Token',
+      })
+      expect(generateNewToken).toBeInTheDocument()
+
+      const cancel = screen.getByRole('button', { name: 'Cancel' })
+      expect(cancel).toBeInTheDocument()
     })
   })
 
   describe('when user clicks on Cancel button', () => {
-    beforeEach(() => {
-      setup()
-    })
+    afterEach(() => jest.resetAllMocks())
 
-    it('does not call the mutation', () => {
+    it('does not call the mutation', async () => {
+      const { mutate, user } = setup()
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+      const cancel = screen.getByRole('button', { name: 'Cancel' })
+      await user.click(cancel)
       expect(mutate).not.toHaveBeenCalled()
     })
 
-    it('renders the old token', () => {
+    it('renders the old token', async () => {
+      const { user } = setup()
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+      const cancel = screen.getByRole('button', { name: 'Cancel' })
+      await user.click(cancel)
       expect(screen.getByText('CODECOV_TOKEN=old token')).toBeInTheDocument()
     })
   })
 
   describe('when user clicks on Generate New Token button', () => {
-    const tokenName = 'new token'
-    beforeEach(() => {
-      setup(tokenName)
-    })
+    afterEach(() => jest.resetAllMocks())
+
     it('calls the mutation', async () => {
+      const tokenName = 'new token'
+      const { mutate, user } = setup({ uploadToken: tokenName })
       render(<RepoUploadToken uploadToken={tokenName} />, { wrapper })
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
       const generateNewTokenButton = await screen.findByRole('button', {
         name: 'Generate New Token',
       })
-      userEvent.click(generateNewTokenButton)
+      await user.click(generateNewTokenButton)
+
       await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
-    it('renders the new token', () => {
+    it('renders the new token', async () => {
+      const tokenName = 'new token'
+      const { user } = setup({ uploadToken: tokenName })
       render(<RepoUploadToken uploadToken={tokenName} />, { wrapper })
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      userEvent.click(
-        screen.getByRole('button', { name: 'Generate New Token' })
-      )
-      expect(screen.getByText('CODECOV_TOKEN=new token')).toBeInTheDocument()
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+      const generateNewToken = screen.getByRole('button', {
+        name: 'Generate New Token',
+      })
+      await user.click(generateNewToken)
+
+      const newToken = screen.getByText('CODECOV_TOKEN=new token')
+      expect(newToken).toBeInTheDocument()
     })
   })
 
   describe('when mutation is not successful', () => {
-    const tokenName = 'new token'
-    beforeEach(() => {
-      const triggerError = true
-      setup(tokenName, triggerError)
-    })
+    afterEach(() => jest.resetAllMocks())
 
     it('adds an error notification', async () => {
+      const tokenName = 'new token'
+      const { addNotification, user } = setup({
+        uploadToken: tokenName,
+        triggerError: true,
+      })
       render(<RepoUploadToken uploadToken={tokenName} />, { wrapper })
-      userEvent.click(screen.getByRole('button', { name: 'Regenerate' }))
-      userEvent.click(
-        screen.getByRole('button', { name: 'Generate New Token' })
-      )
+
+      const regenerate = screen.getByRole('button', { name: 'Regenerate' })
+      await user.click(regenerate)
+      const generateNewToken = screen.getByRole('button', {
+        name: 'Generate New Token',
+      })
+      await user.click(generateNewToken)
+
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',

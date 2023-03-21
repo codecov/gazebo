@@ -86,11 +86,11 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('NewRepoTab', () => {
-  const hardRedirect = jest.fn()
-
   function setup(
     { hasCommits, noUploadToken } = { hasCommits: false, noUploadToken: false }
   ) {
+    const user = userEvent.setup()
+    const hardRedirect = jest.fn()
     useRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
@@ -103,6 +103,8 @@ describe('NewRepoTab', () => {
         res(ctx.status(200), ctx.data(mockCurrentUser))
       )
     )
+
+    return { hardRedirect, user }
   }
 
   describe('rendering component', () => {
@@ -185,15 +187,15 @@ describe('NewRepoTab', () => {
     })
 
     describe('repo does not have an upload token', () => {
-      beforeEach(() => setup({ noUploadToken: true }))
-
       it('redirects to provider', async () => {
+        const { hardRedirect } = setup({ noUploadToken: true })
         render(<NewRepoTab />, { wrapper: wrapper() })
 
         await waitFor(() => expect(hardRedirect).toBeCalled())
       })
 
       it('displays 404', async () => {
+        setup({ noUploadToken: true })
         render(<NewRepoTab />, { wrapper: wrapper() })
 
         const fourOhFour = await screen.findByText('Not found')
@@ -205,9 +207,8 @@ describe('NewRepoTab', () => {
   describe('users provider is github', () => {
     describe('testing tab navigation', () => {
       describe('clicking on other ci', () => {
-        beforeEach(() => setup())
-
         it('navigates to /other-ci', async () => {
+          const { user } = setup()
           render(<NewRepoTab />, { wrapper: wrapper() })
 
           const tab = await screen.findByRole('link', { name: 'Other CI' })
@@ -217,12 +218,10 @@ describe('NewRepoTab', () => {
             '/gh/codecov/cool-repo/new/other-ci'
           )
 
-          userEvent.click(tab)
+          await user.click(tab)
 
-          await waitFor(() =>
-            expect(testLocation.pathname).toBe(
-              '/gh/codecov/cool-repo/new/other-ci'
-            )
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/new/other-ci'
           )
 
           const content = await screen.findByText('OtherCI')
@@ -231,9 +230,8 @@ describe('NewRepoTab', () => {
       })
 
       describe('clicking on github actions', () => {
-        beforeEach(() => setup())
-
         it('navigates to /new', async () => {
+          const { user } = setup()
           render(<NewRepoTab />, {
             wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
           })
@@ -244,11 +242,9 @@ describe('NewRepoTab', () => {
           expect(tab).toBeInTheDocument()
           expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
 
-          userEvent.click(tab)
+          await user.click(tab)
 
-          await waitFor(() =>
-            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
-          )
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
 
           const content = await screen.findByText('GitHubActions')
           expect(content).toBeInTheDocument()

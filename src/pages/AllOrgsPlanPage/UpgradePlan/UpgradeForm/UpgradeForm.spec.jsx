@@ -61,23 +61,20 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 let testLocation
-const wrapper =
-  (initialEntries = '/plan/gh') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/plan/:provider">{children}</Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/plan/gh']}>
+      <Route path="/plan/:provider">{children}</Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -87,37 +84,10 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('UpgradeForm', () => {
-  let addNotification
-  let props
+  function setup(successfulRequest = true, errorDetails = undefined) {
+    const user = userEvent.setup()
+    const addNotification = jest.fn()
 
-  const defaultProps = {
-    organizationName: 'codecov',
-    proPlanMonth,
-    proPlanYear,
-    accountDetails: {
-      activatedUserCount: 9,
-      inactiveUserCount: 0,
-      plan: null,
-      latestInvoice: null,
-    },
-  }
-
-  function setup(
-    selectedPlan = null,
-    invoice = null,
-    accountDetails = defaultProps.accountDetails,
-    successfulRequest = true,
-    errorDetails = undefined
-  ) {
-    addNotification = jest.fn()
-    props = {
-      ...defaultProps,
-      accountDetails: {
-        ...accountDetails,
-        plan: selectedPlan,
-        latestInvoice: invoice,
-      },
-    }
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
@@ -131,6 +101,8 @@ describe('UpgradeForm', () => {
         return res(ctx.status(200), ctx.json({ success: true }))
       })
     )
+
+    return { user, addNotification }
   }
 
   describe('when the user does not have any plan', () => {
@@ -139,7 +111,20 @@ describe('UpgradeForm', () => {
     })
 
     it('renders monthly radio button', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const radio = await screen.findByRole('radio', { name: /\$12/i })
       expect(radio).toBeInTheDocument()
@@ -147,7 +132,20 @@ describe('UpgradeForm', () => {
     })
 
     it('renders annual radio button', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const radio = await screen.findByRole('radio', { name: /\$10/i })
       expect(radio).toBeInTheDocument()
@@ -155,7 +153,20 @@ describe('UpgradeForm', () => {
     })
 
     it('renders the seat input with 2 seats', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toBeInTheDocument()
@@ -168,7 +179,7 @@ describe('UpgradeForm', () => {
     it('renders monthly radio button', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const radio = await screen.findByRole('radio', { name: /\$12/i })
@@ -179,7 +190,7 @@ describe('UpgradeForm', () => {
     it('renders annual radio button', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const radio = await screen.findByRole('radio', { name: /\$10/i })
@@ -190,7 +201,7 @@ describe('UpgradeForm', () => {
     it('renders the seat input with 2 seats', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const numberInput = await screen.findByRole('spinbutton')
@@ -202,7 +213,7 @@ describe('UpgradeForm', () => {
     it('has the update button disabled', async () => {
       render(
         <UpgradeForm proPlanMonth={proPlanMonth} proPlanYear={proPlanYear} />,
-        { wrapper: wrapper() }
+        { wrapper }
       )
 
       const update = await screen.findByText(/Update/)
@@ -216,7 +227,20 @@ describe('UpgradeForm', () => {
     })
 
     it('renders annual', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const radio = await screen.findByRole('radio', { name: /\$10/ })
       expect(radio).toBeInTheDocument()
@@ -224,7 +248,20 @@ describe('UpgradeForm', () => {
     })
 
     it('renders the seat input with 2 seats', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const numberInput = await screen.findByRole('spinbutton')
       expect(numberInput).toHaveValue(2)
@@ -237,28 +274,80 @@ describe('UpgradeForm', () => {
     })
 
     it('renders annual radio to be checked', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanYear,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const radio = await screen.findByRole('radio', { name: /10/i })
       expect(radio).toBeChecked()
     })
 
     it('renders the seat input with 10 seats (existing subscription)', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanYear,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const seatCount = await screen.findByRole('spinbutton')
       expect(seatCount).toHaveValue(10)
     })
 
     it('has the price for the year', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanYear,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const price = await screen.findByText(/\$1,200/)
       expect(price).toBeInTheDocument()
     })
 
     it('has the update button disabled', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanYear,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const update = await screen.findByText(/Update/)
       expect(update).toBeDisabled()
@@ -266,10 +355,24 @@ describe('UpgradeForm', () => {
 
     describe('when updating to a month plan', () => {
       it('has the price for the month', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(
+          <UpgradeForm
+            organizationName="codecov"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: proPlanYear,
+              latestInvoice: null,
+            }}
+          />,
+          { wrapper }
+        )
 
         const monthRadio = await screen.findByRole('radio', { name: /12/i })
-        userEvent.click(monthRadio)
+        await user.click(monthRadio)
 
         const price = screen.getByText(/\$120/)
         expect(price).toBeInTheDocument()
@@ -278,16 +381,26 @@ describe('UpgradeForm', () => {
   })
 
   describe('when the user have a pro year monthly', () => {
-    beforeEach(() => {
-      setup(proPlanMonth)
-    })
-
     describe('user clicks select annual', () => {
       it('renders annual radio to be checked', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(
+          <UpgradeForm
+            organizationName="codecov"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: proPlanMonth,
+              latestInvoice: null,
+            }}
+          />,
+          { wrapper }
+        )
 
         const switchAnnual = await screen.findByText('switch to annual')
-        userEvent.click(switchAnnual)
+        await user.click(switchAnnual)
 
         const annualRadio = await screen.findByRole('radio', { name: /10/i })
         expect(annualRadio).toBeChecked()
@@ -297,19 +410,24 @@ describe('UpgradeForm', () => {
 
   describe('display student info', () => {
     describe('when there are no students', () => {
-      beforeEach(() => {
-        const accountDetails = {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-          activatedStudentCount: 0,
-        }
-        setup(basicPlan, null, accountDetails)
-      })
+      beforeEach(() => setup())
 
       it('renders text for 1 student not taking active seats', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        render(
+          <UpgradeForm
+            organizationName="codecov"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: basicPlan,
+              latestInvoice: null,
+              activatedStudentCount: 0,
+            }}
+          />,
+          { wrapper }
+        )
 
         const singleStudentText = screen.queryByText(
           /\*You have 1 active student that does not count towards the number of active users./
@@ -324,19 +442,24 @@ describe('UpgradeForm', () => {
     })
 
     describe('when there is a single student', () => {
-      beforeEach(() => {
-        const accountDetails = {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-          activatedStudentCount: 1,
-        }
-        setup(basicPlan, null, accountDetails)
-      })
+      beforeEach(() => setup())
 
       it('renders text for 1 student not taking active seats', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        render(
+          <UpgradeForm
+            organizationName="codecov"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: basicPlan,
+              latestInvoice: null,
+              activatedStudentCount: 1,
+            }}
+          />,
+          { wrapper }
+        )
 
         const studentText = await screen.findByText(
           /\*You have 1 active student that does not count towards the number of active users./
@@ -346,19 +469,24 @@ describe('UpgradeForm', () => {
     })
 
     describe('when there are two or more students', () => {
-      beforeEach(() => {
-        const accountDetails = {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-          activatedStudentCount: 3,
-        }
-        setup(basicPlan, null, accountDetails)
-      })
+      beforeEach(() => setup())
 
       it('renders text for two or more student not taking active seats', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        render(
+          <UpgradeForm
+            organizationName="codecov"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: basicPlan,
+              latestInvoice: null,
+              activatedStudentCount: 3,
+            }}
+          />,
+          { wrapper }
+        )
 
         const studentText = await screen.findByText(
           /\*You have 3 active students that do not count towards the number of active users./
@@ -370,23 +498,35 @@ describe('UpgradeForm', () => {
 
   describe('if there is an invoice', () => {
     beforeEach(() => {
-      const invoice = {
-        periodStart: 1595270468,
-        periodEnd: 1597948868,
-        dueDate: '1600544863',
-        amountPaid: 9600.0,
-        amountDue: 9600.0,
-        amountRemaining: 0.0,
-        total: 9600.0,
-        subtotal: 9600.0,
-        invoicePdf:
-          'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
-      }
-      setup(proPlanMonth, invoice)
+      setup()
     })
 
     it('renders the next billing period', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: proPlanMonth,
+            latestInvoice: {
+              periodStart: 1595270468,
+              periodEnd: 1597948868,
+              dueDate: '1600544863',
+              amountPaid: 9600.0,
+              amountDue: 9600.0,
+              amountRemaining: 0.0,
+              total: 9600.0,
+              subtotal: 9600.0,
+              invoicePdf:
+                'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+            },
+          }}
+        />,
+        { wrapper }
+      )
 
       const nextBillingData = await screen.findByText(/Next Billing Date/)
       expect(nextBillingData).toBeInTheDocument()
@@ -397,18 +537,28 @@ describe('UpgradeForm', () => {
   })
 
   describe('when the user leave the nb of seats blank', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays an error', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      const { user } = setup()
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
       const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
+      await user.type(input, '{backspace}{backspace}{backspace}')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = await screen.findByText(/Number of seats is required/)
       expect(error).toBeInTheDocument()
@@ -416,19 +566,30 @@ describe('UpgradeForm', () => {
   })
 
   describe('when the user chooses less than 2 seats', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays an error', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      const { user } = setup()
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
-      const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
-      userEvent.type(input, '1')
+      let input = await screen.findByRole('spinbutton')
+      await user.type(input, '{backspace}{backspace}{backspace}')
+      input = await screen.findByRole('spinbutton')
+      await user.type(input, '1')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = screen.getByText(
         /You cannot purchase a per user plan for less than 2 users/
@@ -438,19 +599,30 @@ describe('UpgradeForm', () => {
   })
 
   describe('when the user chooses less than the number of active users', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('displays an error', async () => {
-      render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+      const { user } = setup()
+      render(
+        <UpgradeForm
+          organizationName="codecov"
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          accountDetails={{
+            activatedUserCount: 9,
+            inactiveUserCount: 0,
+            plan: null,
+            latestInvoice: null,
+          }}
+        />,
+        { wrapper }
+      )
 
-      const input = await screen.findByRole('spinbutton')
-      userEvent.type(input, '{backspace}{backspace}{backspace}')
-      userEvent.type(input, '8')
+      let input = await screen.findByRole('spinbutton')
+      await user.type(input, '{backspace}{backspace}{backspace}')
+      input = await screen.findByRole('spinbutton')
+      await user.type(input, '8')
 
       const updateButton = await screen.findByRole('button', { name: 'Update' })
-      userEvent.click(updateButton)
+      await user.click(updateButton)
 
       const error = await screen.findByText(
         /deactivate more users before downgrading plans/i
@@ -461,21 +633,32 @@ describe('UpgradeForm', () => {
 
   describe('when clicking on the button to upgrade', () => {
     describe('when mutation is successful', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('adds a success notification', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        const { user, addNotification } = setup()
+        render(
+          <UpgradeForm
+            organizationName="codecov"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: null,
+              latestInvoice: null,
+            }}
+          />,
+          { wrapper }
+        )
 
-        const input = await screen.findByRole('spinbutton')
-        userEvent.type(input, '{backspace}{backspace}{backspace}')
-        userEvent.type(input, '20')
+        let input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        input = await screen.findByRole('spinbutton')
+        await user.type(input, '20')
 
         const updateButton = await screen.findByRole('button', {
           name: 'Update',
         })
-        userEvent.click(updateButton)
+        await user.click(updateButton)
 
         await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
@@ -486,16 +669,30 @@ describe('UpgradeForm', () => {
       })
 
       it('redirects the user to the plan page', async () => {
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(
+          <UpgradeForm
+            organizationName="codecov"
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            accountDetails={{
+              activatedUserCount: 9,
+              inactiveUserCount: 0,
+              plan: null,
+              latestInvoice: null,
+            }}
+          />,
+          { wrapper }
+        )
 
         const input = await screen.findByRole('spinbutton')
-        userEvent.type(input, '{backspace}{backspace}{backspace}')
-        userEvent.type(input, '20')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '20')
 
         const updateButton = await screen.findByRole('button', {
           name: 'Update',
         })
-        userEvent.click(updateButton)
+        await user.click(updateButton)
 
         await waitFor(() =>
           expect(testLocation.pathname).toEqual('/plan/gh/codecov')
@@ -505,27 +702,32 @@ describe('UpgradeForm', () => {
 
     describe('when mutation is not successful', () => {
       describe('an error message is provided', () => {
-        beforeEach(() => {
-          setup(
-            null,
-            null,
-            defaultProps.accountDetails,
-            false,
-            'Insufficient funds.'
-          )
-        })
-
         it('adds an error notification with detail message', async () => {
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+          const { user, addNotification } = setup(false, 'Insufficient funds.')
+          render(
+            <UpgradeForm
+              organizationName="codecov"
+              proPlanMonth={proPlanMonth}
+              proPlanYear={proPlanYear}
+              accountDetails={{
+                activatedUserCount: 9,
+                inactiveUserCount: 0,
+                plan: null,
+                latestInvoice: null,
+              }}
+            />,
+            { wrapper }
+          )
 
-          const input = await screen.findByRole('spinbutton')
-          userEvent.type(input, '{backspace}{backspace}{backspace}')
-          userEvent.type(input, '20')
+          let input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          input = await screen.findByRole('spinbutton')
+          await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
             name: 'Update',
           })
-          userEvent.click(updateButton)
+          await user.click(updateButton)
 
           await waitFor(() =>
             expect(addNotification).toHaveBeenCalledWith({
@@ -537,21 +739,33 @@ describe('UpgradeForm', () => {
       })
 
       describe('no error message is provided', () => {
-        beforeEach(() => {
-          setup(null, null, defaultProps.accountDetails, false)
-        })
-
         it('adds an error notification with a default message', async () => {
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+          const { user, addNotification } = setup(false)
 
-          const input = await screen.findByRole('spinbutton')
-          userEvent.type(input, '{backspace}{backspace}{backspace}')
-          userEvent.type(input, '20')
+          render(
+            <UpgradeForm
+              organizationName="codecov"
+              proPlanMonth={proPlanMonth}
+              proPlanYear={proPlanYear}
+              accountDetails={{
+                activatedUserCount: 9,
+                inactiveUserCount: 0,
+                plan: null,
+                latestInvoice: null,
+              }}
+            />,
+            { wrapper }
+          )
+
+          let input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          input = await screen.findByRole('spinbutton')
+          await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
             name: 'Update',
           })
-          userEvent.click(updateButton)
+          await user.click(updateButton)
 
           await waitFor(() =>
             expect(addNotification).toHaveBeenCalledWith({

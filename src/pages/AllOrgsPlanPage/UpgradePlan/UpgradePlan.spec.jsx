@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import UpgradePlan from './UpgradePlan'
@@ -95,30 +94,44 @@ const enterprisePlan = {
   ],
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-    },
-  },
-  logger: {
-    error: () => {},
-  },
-})
+const sentryProMonth = {
+  marketingName: 'Sentry Pro Team',
+  value: 'users-sentrym',
+  billingRate: 'monthly',
+  baseUnitPrice: 12,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  trialDays: 14,
+}
+
+const sentryProYear = {
+  marketingName: 'Sentry Pro Team',
+  value: 'users-sentryy',
+  billingRate: 'annually',
+  baseUnitPrice: 10,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  trialDays: 14,
+}
+
+const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper =
-  (initialEntries = '/plan/gh') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/plan/:provider">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/plan/gh']}>
+      <Route path="/plan/:provider">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -133,12 +146,18 @@ describe('UpgradePlan', () => {
       isFreePlan = false,
       isCancelledPlan = false,
       isEnterprisePlan = false,
+      isSentryPlan = false,
+      includeSentryPlans = false,
     } = {
       isFreePlan: false,
       isCancelledPlan: false,
       isEnterprisePlan: false,
+      isSentryPlan: false,
+      includeSentryPlans: false,
     }
   ) {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('MyContexts', (req, res, ctx) =>
         res(
@@ -166,7 +185,13 @@ describe('UpgradePlan', () => {
       rest.get('/internal/plans', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.json([freePlan, basicPlan, proPlanMonth, proPlanYear])
+          ctx.json([
+            freePlan,
+            basicPlan,
+            proPlanMonth,
+            proPlanYear,
+            ...(includeSentryPlans ? [sentryProMonth, sentryProYear] : []),
+          ])
         )
       }),
       rest.get('/internal/gh/org1/account-details/', (req, res, ctx) => {
@@ -186,6 +211,16 @@ describe('UpgradePlan', () => {
             ctx.json({
               ...accountOne,
               plan: enterprisePlan,
+            })
+          )
+        }
+
+        if (isSentryPlan) {
+          return res(
+            ctx.status(200),
+            ctx.json({
+              ...accountOne,
+              plan: sentryProYear,
             })
           )
         }
@@ -212,6 +247,8 @@ describe('UpgradePlan', () => {
         )
       })
     )
+
+    return { user }
   }
 
   describe('no org selected', () => {
@@ -219,7 +256,7 @@ describe('UpgradePlan', () => {
 
     describe('renders plan card', () => {
       it('has plan name', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        render(<UpgradePlan />, { wrapper })
 
         const planName = await screen.findByRole('heading', {
           name: 'Pro Team',
@@ -228,14 +265,14 @@ describe('UpgradePlan', () => {
       })
 
       it('has plan price', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        render(<UpgradePlan />, { wrapper })
 
         const price = await screen.findByText('$10*')
         expect(price).toBeInTheDocument()
       })
 
       it('has list of benefits', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        render(<UpgradePlan />, { wrapper })
 
         const configurableUsers = await screen.findByText(
           'Configurable # of users'
@@ -257,19 +294,17 @@ describe('UpgradePlan', () => {
       })
 
       it('has note about monthly payments', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        render(<UpgradePlan />, { wrapper })
 
         const note = await screen.findByText(
           '*$12 per user / month if paid monthly'
         )
-        expect(note).toBeInTheDocument()
+
+        await waitFor(() => expect(note).toBeInTheDocument())
       })
 
       it('does not render cancel plan link', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        render(<UpgradePlan />, { wrapper })
 
         const cancelLink = screen.queryByRole('link', { name: /Cancel plan/i })
         expect(cancelLink).not.toBeInTheDocument()
@@ -278,7 +313,7 @@ describe('UpgradePlan', () => {
 
     describe('renders form card', () => {
       it('renders select', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        render(<UpgradePlan />, { wrapper })
 
         const orgHeader = await screen.findByRole('heading', {
           name: 'Organization',
@@ -292,21 +327,21 @@ describe('UpgradePlan', () => {
       })
 
       it('renders billing', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        render(<UpgradePlan />, { wrapper })
 
         const billing = await screen.findByRole('heading', { name: 'Billing' })
         expect(billing).toBeInTheDocument()
       })
 
       it('renders user seats', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        render(<UpgradePlan />, { wrapper })
 
         const userSeats = await screen.findByRole('spinbutton')
         expect(userSeats).toBeInTheDocument()
       })
 
       it('renders update button', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        render(<UpgradePlan />, { wrapper })
 
         const update = await screen.findByText(/Update/)
         expect(update).toBeDisabled()
@@ -315,19 +350,18 @@ describe('UpgradePlan', () => {
   })
 
   describe('user selects an org on a pro plan', () => {
-    beforeEach(() => setup())
-
     describe('renders plan card', () => {
       it('has plan name', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const planName = await screen.findByRole('heading', {
           name: 'Pro Team',
@@ -336,30 +370,32 @@ describe('UpgradePlan', () => {
       })
 
       it('has plan price', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const price = await screen.findByText('$10*')
         expect(price).toBeInTheDocument()
       })
 
       it('has list of benefits', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const configurableUsers = await screen.findByText(
           'Configurable # of users'
@@ -381,15 +417,16 @@ describe('UpgradePlan', () => {
       })
 
       it('has note about monthly payments', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const note = await screen.findByText(
           '*$12 per user / month if paid monthly'
@@ -398,15 +435,16 @@ describe('UpgradePlan', () => {
       })
 
       it('renders cancel plan link', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const cancelLink = await screen.findByRole('link', {
           name: /Cancel plan/i,
@@ -417,7 +455,8 @@ describe('UpgradePlan', () => {
 
     describe('renders form card', () => {
       it('renders select', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const orgHeader = await screen.findByRole('heading', {
           name: 'Organization',
@@ -429,55 +468,58 @@ describe('UpgradePlan', () => {
         })
         expect(select).toBeInTheDocument()
 
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const selectOrgOne = await screen.findByText('org1')
         expect(selectOrgOne).toBeInTheDocument()
       })
 
       it('renders billing', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const billing = await screen.findByRole('heading', { name: 'Billing' })
         expect(billing).toBeInTheDocument()
       })
 
       it('renders user seats', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const userSeats = await screen.findByRole('spinbutton')
         expect(userSeats).toBeInTheDocument()
       })
 
       it('renders update button', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
+        await user.click(org1)
 
         const update = await screen.findByText(/Update/)
         expect(update).toBeDisabled()
@@ -486,18 +528,17 @@ describe('UpgradePlan', () => {
   })
 
   describe('user has a free plan', () => {
-    beforeEach(() => setup({ isFreePlan: true }))
-
     it('does not render cancel plan link', async () => {
-      render(<UpgradePlan />, { wrapper: wrapper() })
+      const { user } = setup({ isFreePlan: true })
+      render(<UpgradePlan />, { wrapper })
 
       const select = await screen.findByRole('button', {
         name: /Select organization/i,
       })
-      userEvent.click(select)
+      await user.click(select)
 
       const org1 = await screen.findByText('org1')
-      userEvent.click(org1)
+      await user.click(org1)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -508,22 +549,18 @@ describe('UpgradePlan', () => {
   })
 
   describe('user has an enterprise plan', () => {
-    beforeEach(() => setup({ isEnterprisePlan: true }))
-
     describe('renders plan card', () => {
       it('has plan name', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup({ isEnterprisePlan: true })
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await user.click(org1)
 
         const planName = await screen.findByRole('heading', {
           name: 'Enterprise Cloud',
@@ -532,36 +569,32 @@ describe('UpgradePlan', () => {
       })
 
       it('has plan price', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup({ isEnterprisePlan: true })
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await user.click(org1)
 
         const price = await screen.findByText('Custom Pricing')
         expect(price).toBeInTheDocument()
       })
 
       it('has list of benefits', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup({ isEnterprisePlan: true })
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await user.click(org1)
 
         const configurableUsers = await screen.findByText(
           'Configurable # of users'
@@ -583,28 +616,24 @@ describe('UpgradePlan', () => {
       })
 
       it('does not have a note about monthly payments', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup({ isEnterprisePlan: true })
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await user.click(org1)
 
         const note = screen.queryByText('*$12 per user / month if paid monthly')
         expect(note).toBeInTheDocument()
       })
 
       it('does not render cancel plan link', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        setup({ isEnterprisePlan: true })
+        render(<UpgradePlan />, { wrapper })
 
         const cancelLink = screen.queryByRole('link', { name: /Cancel plan/i })
         expect(cancelLink).not.toBeInTheDocument()
@@ -613,7 +642,8 @@ describe('UpgradePlan', () => {
 
     describe('renders form card', () => {
       it('renders select', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        setup({ isEnterprisePlan: true })
+        render(<UpgradePlan />, { wrapper })
 
         const orgHeader = await screen.findByRole('heading', {
           name: 'Organization',
@@ -627,18 +657,16 @@ describe('UpgradePlan', () => {
       })
 
       it('renders enterprise message', async () => {
-        render(<UpgradePlan />, { wrapper: wrapper() })
+        const { user } = setup({ isEnterprisePlan: true })
+        render(<UpgradePlan />, { wrapper })
 
         const select = await screen.findByRole('button', {
           name: /Select organization/i,
         })
-        userEvent.click(select)
+        await user.click(select)
 
         const org1 = await screen.findByText('org1')
-        userEvent.click(org1)
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await user.click(org1)
 
         const message = await screen.findByText(
           /This organization is on an enterprise plan, to change or cancel your plan please contact/
@@ -653,19 +681,147 @@ describe('UpgradePlan', () => {
     })
   })
 
-  describe('user has already cancelled their plan', () => {
-    beforeEach(() => setup({ isCancelledPlan: true }))
+  describe('user has a sentry plan', () => {
+    describe('renders plan card', () => {
+      it('has plan name', async () => {
+        const { user } = setup({ isSentryPlan: true, includeSentryPlans: true })
+        render(<UpgradePlan />, { wrapper })
 
+        const select = await screen.findByRole('button', {
+          name: /Select organization/i,
+        })
+        await user.click(select)
+
+        const org1 = await screen.findByText('org1')
+        await user.click(org1)
+
+        const planName = await screen.findByRole('heading', {
+          name: 'Sentry Pro Team',
+        })
+        expect(planName).toBeInTheDocument()
+      })
+
+      it('has plan price', async () => {
+        const { user } = setup({ isSentryPlan: true, includeSentryPlans: true })
+        render(<UpgradePlan />, { wrapper })
+
+        const select = await screen.findByRole('button', {
+          name: /Select organization/i,
+        })
+        await user.click(select)
+
+        const org1 = await screen.findByText('org1')
+        await user.click(org1)
+
+        const price = await screen.findByText('$29.99')
+        expect(price).toBeInTheDocument()
+      })
+
+      it('has list of benefits', async () => {
+        const { user } = setup({ isSentryPlan: true, includeSentryPlans: true })
+        render(<UpgradePlan />, { wrapper })
+
+        const select = await screen.findByRole('button', {
+          name: /Select organization/i,
+        })
+        await user.click(select)
+
+        const org1 = await screen.findByText('org1')
+        await user.click(org1)
+
+        const base5Seats = await screen.findByText('Includes 5 seats')
+        expect(base5Seats).toBeInTheDocument()
+
+        const unlimitedPubRepos = await screen.findByText(
+          'Unlimited public repositories'
+        )
+        expect(unlimitedPubRepos).toBeInTheDocument()
+
+        const unlimitedPrivRepos = await screen.findByText(
+          'Unlimited private repositories'
+        )
+        expect(unlimitedPrivRepos).toBeInTheDocument()
+
+        const prioritySupport = await screen.findByText('Priority Support')
+        expect(prioritySupport).toBeInTheDocument()
+      })
+
+      it('does not have a note about monthly payments', async () => {
+        const { user } = setup({ isSentryPlan: true, includeSentryPlans: true })
+        render(<UpgradePlan />, { wrapper })
+
+        const select = await screen.findByRole('button', {
+          name: /Select organization/i,
+        })
+        await user.click(select)
+
+        const org1 = await screen.findByText('org1')
+        await user.click(org1)
+
+        const note = screen.queryByText('*$12 per user / month if paid monthly')
+        expect(note).toBeInTheDocument()
+      })
+
+      it('does not render cancel plan link', async () => {
+        setup({ isSentryPlan: true, includeSentryPlans: true })
+        render(<UpgradePlan />, { wrapper })
+
+        const cancelLink = screen.queryByRole('link', { name: /Cancel plan/i })
+        expect(cancelLink).not.toBeInTheDocument()
+      })
+    })
+
+    describe('renders form card', () => {
+      it('renders select', async () => {
+        setup({ isSentryPlan: true, includeSentryPlans: true })
+        render(<UpgradePlan />, { wrapper })
+
+        const orgHeader = await screen.findByRole('heading', {
+          name: 'Organization',
+        })
+        expect(orgHeader).toBeInTheDocument()
+
+        const select = await screen.findByRole('button', {
+          name: /Select organization/i,
+        })
+        expect(select).toBeInTheDocument()
+      })
+
+      it('renders plan details', async () => {
+        const { user } = setup({ isSentryPlan: true, includeSentryPlans: true })
+        render(<UpgradePlan />, { wrapper })
+
+        const select = await screen.findByRole('button', {
+          name: /Select organization/i,
+        })
+        await user.click(select)
+
+        const org1 = await screen.findByText('org1')
+        await user.click(org1)
+
+        const planDetails = await screen.findByRole('heading', {
+          name: 'Plan Details',
+        })
+        expect(planDetails).toBeInTheDocument()
+
+        const trial = await screen.findByText('14 day free trial')
+        expect(trial).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('user has already cancelled their plan', () => {
     it('does not render cancel plan link', async () => {
-      render(<UpgradePlan />, { wrapper: wrapper() })
+      const { user } = setup({ isCancelledPlan: true })
+      render(<UpgradePlan />, { wrapper })
 
       const select = await screen.findByRole('button', {
         name: /Select organization/i,
       })
-      userEvent.click(select)
+      await user.click(select)
 
       const org1 = await screen.findByText('org1')
-      userEvent.click(org1)
+      await user.click(org1)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)

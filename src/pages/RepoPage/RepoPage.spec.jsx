@@ -116,6 +116,8 @@ describe('RepoPage', () => {
       isRepoActive: true,
     }
   ) {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('GetRepo', (req, res, ctx) => {
         if (hasRepoData) {
@@ -136,6 +138,8 @@ describe('RepoPage', () => {
         return res(ctx.status(200), ctx.data({ owner: {} }))
       })
     )
+
+    return { user }
   }
 
   describe('there is no repo data', () => {
@@ -166,9 +170,8 @@ describe('RepoPage', () => {
 
   describe('testing tabs', () => {
     describe('user is part of org', () => {
-      beforeEach(() => setup())
-
       it('has a coverage tab', async () => {
+        const { user } = setup()
         render(<RepoPage />, {
           wrapper: wrapper('/gh/codecov/cool-repo/flags'),
         })
@@ -177,7 +180,7 @@ describe('RepoPage', () => {
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
 
-        userEvent.click(tab)
+        await user.click(tab)
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
@@ -185,13 +188,14 @@ describe('RepoPage', () => {
       })
 
       it('has a flags tab', async () => {
+        const { user } = setup()
         render(<RepoPage />, { wrapper: wrapper() })
 
         const tab = await screen.findByRole('link', { name: 'Flags' })
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/flags')
 
-        userEvent.click(tab)
+        await user.click(tab)
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/flags')
@@ -199,13 +203,14 @@ describe('RepoPage', () => {
       })
 
       it('has a commits tab', async () => {
+        const { user } = setup()
         render(<RepoPage />, { wrapper: wrapper() })
 
         const tab = await screen.findByRole('link', { name: 'Commits' })
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/commits')
 
-        userEvent.click(tab)
+        await user.click(tab)
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/commits')
@@ -213,13 +218,14 @@ describe('RepoPage', () => {
       })
 
       it('has a pulls tab', async () => {
+        const { user } = setup()
         render(<RepoPage />, { wrapper: wrapper() })
 
         const tab = await screen.findByRole('link', { name: 'Pulls' })
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/pulls')
 
-        userEvent.click(tab)
+        await user.click(tab)
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/pulls')
@@ -227,13 +233,14 @@ describe('RepoPage', () => {
       })
 
       it('has a settings tab', async () => {
+        const { user } = setup()
         render(<RepoPage />, { wrapper: wrapper() })
 
         const tab = await screen.findByRole('link', { name: 'Settings' })
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
 
-        userEvent.click(tab)
+        await user.click(tab)
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')

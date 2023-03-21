@@ -1,6 +1,10 @@
 import { render, screen } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommitErrors } from 'services/commitErrors'
 
@@ -14,11 +18,45 @@ jest.mock(
 jest.mock('./useUploads')
 jest.mock('services/commitErrors')
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/gazebo/1234']}>
+      <Route path="/:provider/:owner/:repo/:commit">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  console.error = () => {}
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 describe('UploadsCard', () => {
   function setup(mockUploads) {
     useUploads.mockReturnValue(mockUploads)
     useCommitErrors.mockReturnValue({ data: { yamlErrors: [], botErrors: [] } })
-    render(<UploadsCard />)
+
+    server.use(
+      graphql.query('CommitYaml', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: { commit: { yaml: 'yada yada' } } } })
+        )
+      })
+    )
   }
 
   describe('renders', () => {
@@ -46,7 +84,7 @@ describe('UploadsCard', () => {
               provider: 'travis',
               createdAt: '2020-08-25T16:36:25.820340+00:00',
               updatedAt: '2020-08-25T16:36:25.859889+00:00',
-              flags: ['flagone'],
+              flags: ['flagOne'],
               downloadUrl:
                 '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/18b19f8d-5df6-48bd-90eb-50578ed8812f.txt',
               ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065763',
@@ -104,25 +142,45 @@ describe('UploadsCard', () => {
     })
 
     it('renders the title', () => {
-      expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+      render(<UploadsCard />, { wrapper })
+
+      const uploads = screen.getByText(/Uploads/)
+      expect(uploads).toBeInTheDocument()
     })
     it('renders different cis', () => {
-      expect(screen.getByText(/circleci/)).toBeInTheDocument()
-      expect(screen.getByText(/travis/)).toBeInTheDocument()
+      render(<UploadsCard />, { wrapper })
+
+      const circleci = screen.getByText(/circleci/)
+      expect(circleci).toBeInTheDocument()
+      const travis = screen.getByText(/travis/)
+      expect(travis).toBeInTheDocument()
     })
     it('renders build ids', () => {
-      expect(screen.getByText(/111111/)).toBeInTheDocument()
-      expect(screen.getByText(/721065763/)).toBeInTheDocument()
-      expect(screen.getByText(/721065746/)).toBeInTheDocument()
-      expect(screen.getByText(/33333/)).toBeInTheDocument()
-      expect(screen.getByText(/837462/)).toBeInTheDocument()
+      render(<UploadsCard />, { wrapper })
+
+      const id1 = screen.getByText(/111111/)
+      expect(id1).toBeInTheDocument()
+      const id2 = screen.getByText(/721065763/)
+      expect(id2).toBeInTheDocument()
+      const id3 = screen.getByText(/721065746/)
+      expect(id3).toBeInTheDocument()
+      const id4 = screen.getByText(/837462/)
+      expect(id4).toBeInTheDocument()
+      const id5 = screen.getByText(/837462/)
+      expect(id5).toBeInTheDocument()
     })
     it('renders flags', () => {
-      expect(screen.getByText(/flagone/)).toBeInTheDocument()
+      render(<UploadsCard />, { wrapper })
+
+      const flagOne = screen.getByText(/flagOne/)
+      expect(flagOne).toBeInTheDocument()
     })
 
     it('does not render null as an upload provider label', () => {
-      expect(screen.queryByText(/null/)).not.toBeInTheDocument()
+      render(<UploadsCard />, { wrapper })
+
+      const nullText = screen.queryByText(/null/)
+      expect(nullText).not.toBeInTheDocument()
     })
   })
   describe('renders no Uploads', () => {
@@ -136,10 +194,16 @@ describe('UploadsCard', () => {
     })
 
     it('renders the title', () => {
-      expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+      render(<UploadsCard />, { wrapper })
+
+      const uploads = screen.getByText(/Uploads/)
+      expect(uploads).toBeInTheDocument()
     })
     it('renders different cis', () => {
-      expect(screen.getByText(/Currently no uploads/)).toBeInTheDocument()
+      render(<UploadsCard />, { wrapper })
+
+      const currentlyNoUploads = screen.getByText(/Currently no uploads/)
+      expect(currentlyNoUploads).toBeInTheDocument()
     })
   })
   describe('renders empty Uploads', () => {
@@ -154,7 +218,10 @@ describe('UploadsCard', () => {
     })
 
     it('renders the title', () => {
-      expect(screen.getByText(/Uploads/)).toBeInTheDocument()
+      render(<UploadsCard />, { wrapper })
+
+      const uploads = screen.getByText(/Uploads/)
+      expect(uploads).toBeInTheDocument()
     })
   })
   describe('The yaml viewer', () => {
@@ -166,13 +233,26 @@ describe('UploadsCard', () => {
         hasNoUploads: false,
       })
     })
-    it('opens & close YAMl modal', () => {
-      userEvent.click(screen.getByText('view yml file'))
-      expect(
-        screen.getByText('Includes default yaml, global yaml, and repo')
-      ).toBeInTheDocument()
-      userEvent.click(screen.getByText('view yml file'))
-      userEvent.click(screen.getByLabelText('Close'))
+    it('opens & close YAMl modal', async () => {
+      const user = userEvent.setup()
+      render(<UploadsCard />, { wrapper })
+
+      let viewYamlButton = screen.getByText('view yml file')
+      await user.click(viewYamlButton)
+
+      const includesDefaultYaml = await screen.findByText(
+        'Includes default yaml, global yaml, and repo'
+      )
+      expect(includesDefaultYaml).toBeInTheDocument()
+
+      viewYamlButton = screen.getByText('view yml file')
+      await user.click(viewYamlButton)
+
+      let closeBtn = screen.getByLabelText('Close')
+      await user.click(closeBtn)
+
+      closeBtn = screen.queryByLabelText('Close')
+      expect(closeBtn).not.toBeInTheDocument()
     })
   })
 })

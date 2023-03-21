@@ -197,6 +197,7 @@ describe('BranchFileEntry', () => {
     })
 
     it('fires the prefetch function on hover', async () => {
+      const user = userEvent.setup()
       render(
         <BranchFileEntry
           branch="main"
@@ -210,7 +211,7 @@ describe('BranchFileEntry', () => {
       )
 
       const file = await screen.findByText('file.js')
-      userEvent.hover(file)
+      await user.hover(file)
 
       await waitFor(() => queryClient.getQueryState().isFetching)
       await waitFor(() => !queryClient.getQueryState().isFetching)

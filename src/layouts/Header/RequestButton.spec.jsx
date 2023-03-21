@@ -1,35 +1,74 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql, rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
-import * as Segment from 'services/tracking/segment'
+import { trackSegmentEvent } from 'services/tracking/segment'
 
 import RequestButton from './RequestButton'
 
-const trackSegmentSpy = jest.spyOn(Segment, 'trackSegmentEvent')
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      suspense: false,
+    },
+  },
+})
+const server = setupServer()
 
-jest.mock('services/account')
-jest.mock('services/user')
 jest.mock('config')
+jest.mock('services/tracking/segment')
+
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov']}>
+    <QueryClientProvider client={queryClient}>
+      <Route path="/:provider/:owner">{children}</Route>
+    </QueryClientProvider>
+  </MemoryRouter>
+)
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
 
 describe('RequestButton', () => {
-  let container
-
   function setup(accountDetails) {
-    useAccountDetails.mockReturnValue({
-      data: accountDetails,
-    })(
-      ({ container } = render(
-        <MemoryRouter initialEntries={['/gh/codecov']}>
-          <Route path="/:provider/:owner">
-            <RequestButton owner="beauregard" provider="gh" />
-          </Route>
-        </MemoryRouter>
-      ))
+    const user = userEvent.setup()
+    const trackSegmentMock = jest.fn()
+
+    trackSegmentEvent.mockImplementation(trackSegmentMock)
+
+    server.use(
+      graphql.mutation('Seats', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      ),
+      rest.get(
+        '/internal/:provider/:owner/account-details/',
+        (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(accountDetails))
+        }
+      ),
+      rest.get('/internal/users/current', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json({ data: {} }))
+      })
     )
+
+    return {
+      user,
+      trackSegmentMock,
+    }
   }
 
   describe('when the owner is not part of the org', () => {
@@ -38,23 +77,30 @@ describe('RequestButton', () => {
     })
 
     it('does not render the request button', () => {
+      render(<RequestButton owner="beauregard" provider="gh" />, { wrapper })
       expect(screen.queryByText(/Request Button/)).toBeNull()
     })
 
-    it('renders null when there isnt data', () => {
+    it(`renders null when there isn't data`, () => {
+      const { container } = render(
+        <RequestButton owner="beauregard" provider="gh" />,
+        { wrapper }
+      )
       expect(container).toBeEmptyDOMElement()
     })
   })
 
   describe('when the owner is part of the org', () => {
-    it('renders request demo button if org has a free plan', () => {
+    it('renders request demo button if org has a free plan', async () => {
       setup({
         plan: {
           value: 'users-free',
         },
       })
 
-      const requestDemoButton = screen.getByTestId('request-demo')
+      render(<RequestButton owner="beauregard" provider="gh" />, { wrapper })
+
+      const requestDemoButton = await screen.findByTestId('request-demo')
       expect(requestDemoButton).toBeInTheDocument()
       expect(requestDemoButton).toHaveAttribute(
         'href',
@@ -62,16 +108,18 @@ describe('RequestButton', () => {
       )
     })
 
-    it('sends a tracking event when clicked and users are free', () => {
-      setup({
+    it('sends a tracking event when clicked and users are free', async () => {
+      const { user, trackSegmentMock } = setup({
         plan: {
           value: 'users-free',
         },
       })
 
-      const button = screen.getByTestId('request-demo')
-      userEvent.click(button)
-      expect(trackSegmentSpy).toHaveBeenCalledTimes(1)
+      render(<RequestButton owner="beauregard" provider="gh" />, { wrapper })
+
+      const button = await screen.findByTestId('request-demo')
+      await user.click(button)
+      expect(trackSegmentMock).toHaveBeenCalledTimes(1)
     })
 
     it('does not render request demo button when owner without free plan is logged in', () => {
@@ -80,6 +128,9 @@ describe('RequestButton', () => {
           value: 'not-users-free',
         },
       })
+
+      render(<RequestButton owner="beauregard" provider="gh" />, { wrapper })
+
       expect(screen.queryByText(/Request demo/)).toBeNull()
     })
   })
@@ -93,10 +144,16 @@ describe('RequestButton', () => {
     afterEach(() => jest.resetAllMocks())
 
     it('does not render the request button', () => {
+      render(<RequestButton owner="beauregard" provider="gh" />, { wrapper })
+
       expect(screen.queryByText(/Request Button/)).toBeNull()
     })
 
-    it('renders null when there isnt data', () => {
+    it(`renders null when there isn't data`, () => {
+      const { container } = render(
+        <RequestButton owner="beauregard" provider="gh" />,
+        { wrapper }
+      )
       expect(container).toBeEmptyDOMElement()
     })
   })

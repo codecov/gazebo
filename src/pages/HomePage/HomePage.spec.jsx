@@ -1,77 +1,149 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Switch } from 'react-router-dom'
-
-import { useUser } from 'services/user'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import HomePage from './HomePage'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
-jest.mock('services/user')
 
-beforeEach(() => {
-  useUser.mockClear()
+const user = {
+  username: 'CodecovUser',
+  email: 'codecov@codecov.io',
+  name: 'codecov',
+  avatarUrl: 'photo',
+  onboardingCompleted: false,
+}
+
+console.error = () => {}
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+  logger: {
+    error: () => {},
+  },
 })
+const server = setupServer()
+
+let testLocation
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path="/:provider" exact>
+        {children}
+      </Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 
 describe('HomePage', () => {
-  function setup() {
-    render(
-      <MemoryRouter initialEntries={['/gh']}>
-        <Switch>
-          <Route path="/login">LoginPage</Route>
-          <Route path="/:provider">
-            <HomePage />
-          </Route>
-        </Switch>
-      </MemoryRouter>
+  function setup(
+    { successfulUser = true, successfulMutation = true } = {
+      successfulUser: true,
+      successfulMutation: true,
+    }
+  ) {
+    server.use(
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        if (successfulUser) {
+          return res(ctx.status(200), ctx.data({ me: { user } }))
+        }
+        return res(ctx.status(200), ctx.data())
+      }),
+      graphql.mutation('SendSentryToken', (req, res, ctx) => {
+        if (!successfulMutation) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              saveSentryState: {
+                error: {
+                  __typename: 'ValidationError',
+                  message: 'validation error',
+                },
+              },
+            })
+          )
+        }
+
+        return res(ctx.status(200), ctx.data({ saveSentryState: null }))
+      })
     )
   }
 
+  afterEach(() => jest.resetAllMocks())
+
   describe('when user is authenticated', () => {
-    beforeEach(() => {
-      useUser.mockReturnValue({
-        data: {
-          user: {
-            username: 'hamilton',
-          },
-        },
+    describe('when user does not have sentry token set', () => {
+      it('renders the ListRepo', async () => {
+        setup()
+        render(<HomePage />, { wrapper })
+
+        const listRepo = await screen.findByText(/ListRepo/)
+        expect(listRepo).toBeInTheDocument()
       })
-      setup()
+
+      it('renders the context switcher', async () => {
+        setup()
+        render(<HomePage />, { wrapper })
+
+        const contextSwitcher = await screen.findByText(/MyContextSwitcher/)
+        expect(contextSwitcher).toBeInTheDocument()
+      })
     })
 
-    it('renders the ListRepo', () => {
-      expect(screen.getByText(/ListRepo/)).toBeInTheDocument()
-    })
+    describe('when user has sentry token set', () => {
+      describe('when token is successfully validated', () => {
+        it('redirects them to plan page', async () => {
+          setup()
 
-    it('renders the context switcher', () => {
-      expect(screen.getByText(/MyContextSwitcher/)).toBeInTheDocument()
+          localStorage.setItem('sentry-token', 'super-cool-token')
+
+          render(<HomePage />, { wrapper })
+
+          await waitFor(() => expect(testLocation.pathname).toBe('/plan/gh'))
+        })
+      })
+
+      describe('when token is not successfully validated', () => {
+        it('does not redirect them', async () => {
+          setup({ successfulMutation: false })
+
+          localStorage.setItem('sentry-token', 'super-cool-token')
+
+          render(<HomePage />, { wrapper })
+
+          await waitFor(() => expect(testLocation.pathname).toBe('/gh'))
+        })
+      })
     })
   })
 
-  describe('when the data is loading', () => {
-    beforeEach(() => {
-      useUser.mockReturnValue({
-        isLoading: true,
-      })
-      setup()
-    })
+  describe('when user is not authenticated', () => {
+    it('redirects user to login page', async () => {
+      setup({ successfulUser: false })
 
-    it('renders the Spinner', () => {
-      expect(screen.getByTestId('logo-spinner')).toBeInTheDocument()
-    })
-  })
+      render(<HomePage />, { wrapper })
 
-  describe('when fetching the data failed', () => {
-    beforeEach(() => {
-      useUser.mockReturnValue({
-        isLoading: true,
-      })
-      setup()
-      useUser.mock.calls[0][0].onSuccess()
-    })
-
-    it('redirects to login', () => {
-      expect(screen.getByText('LoginPage')).toBeInTheDocument()
+      await waitFor(() => expect(testLocation.pathname).toBe('/login/gh'))
     })
   })
 })

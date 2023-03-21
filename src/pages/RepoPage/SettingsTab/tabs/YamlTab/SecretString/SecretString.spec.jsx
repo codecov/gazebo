@@ -1,4 +1,4 @@
-import { act, render, screen } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
@@ -14,11 +14,20 @@ jest.mock('services/repo')
 
 const queryClient = new QueryClient()
 
-describe('SecretString', () => {
-  const mutate = jest.fn()
-  const addNotification = jest.fn()
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings/yaml']}>
+    <QueryClientProvider client={queryClient}>
+      <Route path="/:provider/:owner/:repo/settings/yaml">{children}</Route>
+    </QueryClientProvider>
+  </MemoryRouter>
+)
 
+describe('SecretString', () => {
   function setup(value = '') {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+    const addNotification = jest.fn()
+
     useAddNotification.mockReturnValue(addNotification)
     useEncodeString.mockReturnValue({
       isLoading: false,
@@ -28,28 +37,20 @@ describe('SecretString', () => {
       },
     })
 
-    render(
-      <MemoryRouter
-        initialEntries={['/gh/codecov/codecov-client/settings/yaml']}
-      >
-        <QueryClientProvider client={queryClient}>
-          <Route path="/:provider/:owner/:repo/settings/yaml">
-            <SecretString />
-          </Route>
-        </QueryClientProvider>
-      </MemoryRouter>
-    )
+    return { mutate, addNotification, user }
   }
 
-  describe('renders SecretString componenet', () => {
-    beforeEach(() => {
-      setup('')
-    })
+  describe('renders SecretString component', () => {
+    beforeEach(() => setup(''))
     it('renders title', () => {
+      render(<SecretString />, { wrapper })
+
       const title = screen.getByText('Secret string')
       expect(title).toBeInTheDocument()
     })
     it('renders body', () => {
+      render(<SecretString />, { wrapper })
+
       const p = screen.getByText(
         /Secret strings are encrypted values used instead of plain text data that may be sensitive to eyes. The resulting string can be made public and used in your codecov yaml./
       )
@@ -57,85 +58,141 @@ describe('SecretString', () => {
     })
 
     it('renders generate button', () => {
-      expect(
-        screen.getByRole('button', { name: 'Create New Secret String' })
-      ).toBeInTheDocument()
+      render(<SecretString />, { wrapper })
+
+      const createNewSecret = screen.getByRole('button', {
+        name: 'Create New Secret String',
+      })
+      expect(createNewSecret).toBeInTheDocument()
     })
   })
 
   describe('when the user clicks on Create New Secret String button', () => {
-    beforeEach(() => {
-      setup('test')
-      userEvent.click(
-        screen.getByRole('button', { name: 'Create New Secret String' })
-      )
-    })
+    it('displays the generate secret string modal', async () => {
+      const { user } = setup('test')
+      render(<SecretString />, { wrapper })
 
-    it('displays the generate secret string modal', () => {
-      expect(screen.getByText('Create Secret String')).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Please type the information you would like encrypted:'
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('button', { name: 'Generate' })
-      ).toBeInTheDocument()
+      const createNewSecret = screen.getByRole('button', {
+        name: 'Create New Secret String',
+      })
+      await user.click(createNewSecret)
+
+      const createSecretString = screen.getByText('Create Secret String')
+      expect(createSecretString).toBeInTheDocument()
+      const encryptedPrompt = screen.getByText(
+        'Please type the information you would like encrypted:'
+      )
+      expect(encryptedPrompt).toBeInTheDocument()
+      const generate = screen.getByRole('button', { name: 'Generate' })
+      expect(generate).toBeInTheDocument()
     })
 
     describe('when user clicks on Generate button', () => {
-      beforeEach(async () => {
-        await userEvent.type(
-          screen.getByRole('textbox', { name: 'Secret String' }),
-          'test'
-        )
-        await act(
-          async () =>
-            await userEvent.click(
-              screen.getByRole('button', { name: 'Generate' })
-            )
-        )
-      })
-      it('calls the mutation', () => {
+      it('calls the mutation', async () => {
+        const { user, mutate } = setup('test')
+        render(<SecretString />, { wrapper })
+
+        const createNewSecret = screen.getByRole('button', {
+          name: 'Create New Secret String',
+        })
+        await user.click(createNewSecret)
+        const secretString = screen.getByRole('textbox', {
+          name: 'Secret String',
+        })
+        await userEvent.type(secretString, 'test')
+
+        const generate = screen.getByRole('button', { name: 'Generate' })
+        await user.click(generate)
+
         expect(mutate).toHaveBeenCalled()
       })
 
-      it('renders the new token', () => {
-        expect(screen.getByText('New secret string')).toBeInTheDocument()
+      it('renders the new token', async () => {
+        const { user } = setup('test')
+        render(<SecretString />, { wrapper })
+
+        const createNewSecret = screen.getByRole('button', {
+          name: 'Create New Secret String',
+        })
+        await user.click(createNewSecret)
+        const secretString = screen.getByRole('textbox', {
+          name: 'Secret String',
+        })
+        await userEvent.type(secretString, 'test')
+        const generate = screen.getByRole('button', { name: 'Generate' })
+        await user.click(generate)
+
+        const newSecret = screen.getByText('New secret string')
+        expect(newSecret).toBeInTheDocument()
       })
 
       describe('when user clicks on Close button', () => {
-        beforeEach(() => {
-          userEvent.click(screen.getByRole('button', { name: 'Close' }))
-        })
+        beforeEach(() => {})
 
-        it('closes the modal', () => {
-          expect(
-            screen.getByText('Create New Secret String')
-          ).toBeInTheDocument()
+        it('closes the modal', async () => {
+          const { user } = setup('test')
+          render(<SecretString />, { wrapper })
+
+          let createNewSecret = screen.getByRole('button', {
+            name: 'Create New Secret String',
+          })
+          await user.click(createNewSecret)
+          const secretString = screen.getByRole('textbox', {
+            name: 'Secret String',
+          })
+          await userEvent.type(secretString, 'test')
+          const generate = screen.getByRole('button', { name: 'Generate' })
+          await user.click(generate)
+
+          const close = screen.getByRole('button', { name: 'Close' })
+          await user.click(close)
+
+          createNewSecret = screen.getByRole('button', {
+            name: 'Create New Secret String',
+          })
+          expect(createNewSecret).toBeInTheDocument()
         })
       })
     })
 
     describe('when mutation is not successful', () => {
-      beforeEach(async () => {
-        await userEvent.type(
-          screen.getByRole('textbox', { name: 'Secret String' }),
-          'test'
-        )
-        await act(
-          async () =>
-            await userEvent.click(
-              screen.getByRole('button', { name: 'Generate' })
-            )
-        )
+      it('calls the mutation', async () => {
+        const { user, mutate } = setup('test')
+        render(<SecretString />, { wrapper })
+
+        const createNewSecret = screen.getByRole('button', {
+          name: 'Create New Secret String',
+        })
+        await user.click(createNewSecret)
+        const secretString = screen.getByRole('textbox', {
+          name: 'Secret String',
+        })
+        await userEvent.type(secretString, 'test')
+        const generate = screen.getByRole('button', { name: 'Generate' })
+        await user.click(generate)
+
         mutate.mock.calls[0][1].onError()
-      })
-      it('calls the mutation', () => {
+
         expect(mutate).toHaveBeenCalled()
       })
 
-      it('adds an error notification', () => {
+      it('adds an error notification', async () => {
+        const { user, mutate, addNotification } = setup('test')
+        render(<SecretString />, { wrapper })
+
+        const createNewSecret = screen.getByRole('button', {
+          name: 'Create New Secret String',
+        })
+        await user.click(createNewSecret)
+        const secretString = screen.getByRole('textbox', {
+          name: 'Secret String',
+        })
+        await userEvent.type(secretString, 'test')
+        const generate = screen.getByRole('button', { name: 'Generate' })
+        await user.click(generate)
+
+        mutate.mock.calls[0][1].onError()
+
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
           text: 'We were unable to generate the secret string',

@@ -21,6 +21,10 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+)
+
 describe('AutoActivateMembers', () => {
   function setup() {
     server.use(
@@ -35,23 +39,20 @@ describe('AutoActivateMembers', () => {
         return res(ctx.status(200), ctx.json({}))
       })
     )
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <AutoActivateMembers autoActivate={mockResponse.planAutoActivate} />
-      </QueryClientProvider>
-    )
   }
 
   describe('it renders the component', () => {
-    beforeEach(async () => {
-      setup()
+    beforeEach(async () => setup())
+
+    it('displays activated toggle', async () => {
+      render(
+        <AutoActivateMembers autoActivate={mockResponse.planAutoActivate} />,
+        { wrapper }
+      )
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
-    })
 
-    it('displays activated toggle', async () => {
       const toggle = await screen.findByRole('button', {
         name: 'On',
       })
@@ -61,17 +62,23 @@ describe('AutoActivateMembers', () => {
   })
 
   describe('user clicks on toggle', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       setup()
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
     })
 
     it('changes to off', async () => {
+      const user = userEvent.setup()
+      render(
+        <AutoActivateMembers autoActivate={mockResponse.planAutoActivate} />,
+        { wrapper }
+      )
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
       let toggle = await screen.findByRole('button', { name: 'On' })
 
-      userEvent.click(toggle)
+      await user.click(toggle)
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)

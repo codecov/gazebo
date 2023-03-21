@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
 import { Route, Router } from 'react-router-dom'
@@ -26,15 +26,16 @@ const wrapper =
 
 describe('TrendDropdown', () => {
   it('updates the search params on select', async () => {
+    const user = userEvent.setup()
     render(<TrendDropdown />, { wrapper: wrapper() })
 
     const button = screen.getByRole('button', {
       name: /select coverage over time range/,
     })
 
-    userEvent.click(button)
-    userEvent.click(screen.getAllByRole('option')[1])
+    await user.click(button)
+    await user.click(screen.getAllByRole('option')[1])
 
-    await waitFor(() => expect(testLocation.search).toBe('?trend=30%20days'))
+    expect(testLocation.search).toBe('?trend=30%20days')
   })
 })
