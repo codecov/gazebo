@@ -63,7 +63,7 @@ const determineDetails = ({
       baseUnitPrice: 'Custom Pricing',
       benefits: proPlanYear?.benefits,
     }
-  } else if (canApplySentryUpgrade({ plans })) {
+  } else if (canApplySentryUpgrade({ plan, plans })) {
     details = {
       img: (
         <div>
