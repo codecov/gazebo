@@ -29,7 +29,7 @@ const curUser = {
 }
 
 const ownerData = {
-  hashOwnerid: 'hash ownerid',
+  ownerid: 123,
   username: 'codecov',
   isCurrentUserPartOfOrg: true,
 }

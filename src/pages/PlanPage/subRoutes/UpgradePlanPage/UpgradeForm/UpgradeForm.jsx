@@ -193,7 +193,6 @@ function UpgradePlanForm({
         <h3 className="font-semibold">Organization</h3>
         <span>{owner}</span>
       </div>
-
       <div className="flex flex-col gap-4">
         <h3 className="font-semibold">Billing</h3>
         <RadioInput
@@ -238,7 +237,7 @@ function UpgradePlanForm({
           size="20"
           className="w-full rounded border bg-ds-gray-secondary p-2"
           type="number"
-          label="User Seats"
+          label="Seat count"
         />
         <div className="border-l-2 pl-2">
           <p>
@@ -283,12 +282,12 @@ function UpgradePlanForm({
                   {formatNumberToUSD(perMonthPrice - perYearPrice)}
                 </span>{' '}
                 a year with the annual plan,{' '}
-                <span
+                <button
                   className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
                   onClick={() => setValue('newPlan', Plans.USERS_PR_INAPPY)}
                 >
                   switch to annual
-                </span>
+                </button>
               </p>
             </div>
           </div>
