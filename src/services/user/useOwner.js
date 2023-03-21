@@ -12,7 +12,7 @@ export function useOwner({
       query DetailOwner($username: String!) {
         owner(username: $username) {
           orgUploadToken
-          hashOwnerid
+          ownerid
           username
           avatarUrl
           isCurrentUserPartOfOrg
