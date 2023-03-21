@@ -62,8 +62,6 @@ function useUpgradeForm({ sentryPlanMonth, sentryPlanYear, accountDetails }) {
 
   const values = getInitialDataForm(sentryPlanYear, accountDetails)
 
-  console.debug(values)
-
   const {
     register,
     handleSubmit,

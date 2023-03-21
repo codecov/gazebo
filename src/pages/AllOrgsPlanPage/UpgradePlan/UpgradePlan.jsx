@@ -86,7 +86,6 @@ FormDetails.propTypes = {
   sentryPlanYear: planPropType,
 }
 
-// eslint-disable-next-line max-statements, complexity
 function UpgradePlan() {
   const { provider } = useParams()
   const [organizationName, setOrganizationName] = useState()
