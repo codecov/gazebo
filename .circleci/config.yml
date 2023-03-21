@@ -100,19 +100,22 @@ jobs:
 
 workflows:
   version: 2
-  test-and-build:
+  test:
     jobs:
       - install
       - eslint:
           requires:
             - install
+      - test:
+          requires:
+            - install
+  build:
+    jobs:
+      - install
       - storybook:
           filters:
             branches:
               ignore: /^dependabot.*/
-          requires:
-            - install
-      - test:
           requires:
             - install
       - fossa:
