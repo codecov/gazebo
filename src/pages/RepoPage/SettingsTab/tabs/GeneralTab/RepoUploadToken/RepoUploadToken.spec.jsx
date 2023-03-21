@@ -223,10 +223,12 @@ describe('RepoUploadToken', () => {
       })
       await user.click(generateNewToken)
 
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'error',
-        text: 'Something went wrong',
-      })
+      await waitFor(() =>
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: 'Something went wrong',
+        })
+      )
     })
   })
 })

@@ -1,39 +1,68 @@
 import { render, screen } from '@testing-library/react'
 
-import * as hooks from 'services/image/useImage'
+import { useImage } from 'services/image'
 
 import Avatar from '.'
 
+jest.mock('services/image')
+
 describe('Avatar', () => {
-  const args = {
-    user: {
-      username: 'andrewyaeger',
-      avatarUrl: 'https://avatars0.githubusercontent.com/u/1060902?v=3&s=55',
-    },
+  function setup({ useImageReturn }) {
+    const useImageMock = jest.fn(() => useImageReturn)
+    useImage.mockImplementation(useImageMock)
+    return {
+      useImageMock,
+    }
   }
 
   it('renders an image with the correct attributes', () => {
-    jest.spyOn(hooks, 'useImage').mockImplementation(() => ({
-      src: args.user.avatarUrl,
-      isError: false,
-    }))
+    setup({
+      useImageReturn: {
+        src: 'https://avatars0.githubusercontent.com/u/1060902?v=3&s=55',
+        isError: false,
+      },
+    })
 
-    render(<Avatar user={args.user} />)
+    render(
+      <Avatar
+        user={{
+          user: {
+            username: 'laudna',
+            avatarUrl:
+              'https://avatars0.githubusercontent.com/u/1060902?v=3&s=55',
+          },
+        }}
+      />
+    )
 
     const img = screen.getByRole('img')
-
     expect(img).toBeInTheDocument()
-    expect(img).toHaveAttribute('src', args.user.avatarUrl)
-    expect(img).toHaveAttribute('alt', args.user.alt)
+    expect(img).toHaveAttribute(
+      'src',
+      'https://avatars0.githubusercontent.com/u/1060902?v=3&s=55'
+    )
+    expect(img).toHaveAttribute('alt', 'avatar')
   })
 
   it('renders the avatar SVG if theres an error', () => {
-    jest.spyOn(hooks, 'useImage').mockImplementation(() => ({
-      src: null,
-      error: true,
-    }))
+    setup({
+      useImageReturn: {
+        src: null,
+        error: true,
+      },
+    })
 
-    render(<Avatar user={args.user} />)
+    render(
+      <Avatar
+        user={{
+          user: {
+            username: 'laudna',
+            avatarUrl:
+              'https://avatars0.githubusercontent.com/u/1060902?v=3&s=55',
+          },
+        }}
+      />
+    )
 
     const avatarSVG = screen.getByTestId('svg-avatar')
     expect(avatarSVG).toBeInTheDocument()
