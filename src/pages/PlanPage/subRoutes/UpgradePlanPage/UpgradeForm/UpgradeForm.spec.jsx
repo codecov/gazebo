@@ -68,11 +68,13 @@ afterEach(() => {
 afterAll(() => server.close())
 
 const wrapper =
-  (initialEntries = ['/my/initial/route']) =>
+  (initialEntries = ['/gh/codecov']) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner">{children}</Route>
+        </MemoryRouter>
       </QueryClientProvider>
     )
 
