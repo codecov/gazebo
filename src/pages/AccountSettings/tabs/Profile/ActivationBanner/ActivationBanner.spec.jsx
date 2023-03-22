@@ -65,29 +65,21 @@ describe('ActivationBanner', () => {
       graphql.query('Seats', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(querySeats))
       }),
+      rest.patch('/internal/users/current', async (req, res, ctx) => {
+        const { activated } = await req.json()
 
-      rest.patch('/internal/users/current', (req, res, ctx) => {
-        const { activated } = req.json()
         restUsersCurrent = {
           ...mockUserData,
           activated,
         }
 
-        return res(ctx.status(200))
+        return res(ctx.status(200), ctx.json({}))
       })
     )
 
-    // let getUserCurrentData = { ...mockUserData, activated: true }
-    // server.use(
-    //   rest.patch('/internal/users/current', (req, res, ctx) => {
-    //     const { activated } = req.json()
-    //     getUserCurrentData = { ...mockUserData, activated }
-    //     return res(ctx.status(200))
-    //   })
-    // )
-
     return { user }
   }
+
   describe('rendering banner header', () => {
     beforeEach(() => setup())
 
