@@ -46,7 +46,7 @@ export default function TermsOfService() {
                   onChange={(value) => setValue('select', value)}
                   ariaName="Select an organization"
                   dataMarketing="Select an organization"
-                ></Select>
+                />
               )}
             />
           </div>

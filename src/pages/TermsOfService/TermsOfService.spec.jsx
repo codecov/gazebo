@@ -18,9 +18,7 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo">
-            <Suspense fallback={null}>
-              <TermsOfService>{children}</TermsOfService>
-            </Suspense>
+            <Suspense fallback={null}>{children}</Suspense>
           </Route>
         </MemoryRouter>
       </QueryClientProvider>

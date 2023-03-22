@@ -119,7 +119,7 @@ function App() {
             <Redirect
               from="/:provider/+"
               exact
-              to="/:provider\?repoDisplay=Inactive"
+              to="/:provider/?repoDisplay=Inactive"
             />
             <SentryRoute path="/:provider/:owner/" exact>
               <BaseLayout>
@@ -129,7 +129,7 @@ function App() {
             <Redirect
               from="/:provider/:owner/+"
               exact
-              to="/:provider/:owner\?repoDisplay=Inactive"
+              to="/:provider/:owner/?repoDisplay=Inactive"
             />
             <Redirect
               from="/:provider/:owner/:repo/compare/*"
