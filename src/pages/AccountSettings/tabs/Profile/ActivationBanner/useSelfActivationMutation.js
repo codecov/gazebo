@@ -31,7 +31,7 @@ export const useSelfActivationMutation = ({ queryClient, canChange }) =>
           return {
             data: {
               config: {
-                ...seats.data.config,
+                ...seats?.data?.config,
                 seatsUsed: activated ? seatsUsed + 1 : seatsUsed - 1,
               },
             },
