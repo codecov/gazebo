@@ -6,6 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
+
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
 
@@ -55,31 +57,33 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/blob/:ref/:path+',
-              '/:provider/:owner/:repo/commits',
-              '/:provider/:owner/:repo/compare',
-              '/:provider/:owner/:repo/flags',
-              '/:provider/:owner/:repo/new',
-              '/:provider/:owner/:repo/pulls',
-              '/:provider/:owner/:repo/settings',
-              '/:provider/:owner/:repo/tree/:branch',
-              '/:provider/:owner/:repo/tree/:branch/:path+',
-              '/:provider/:owner/:repo',
-            ]}
-          >
-            <Suspense fallback={null}>
-              <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
-            </Suspense>
-          </Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
+          <NetworkErrorBoundary>
+            <Route
+              path={[
+                '/:provider/:owner/:repo/blob/:ref/:path+',
+                '/:provider/:owner/:repo/commits',
+                '/:provider/:owner/:repo/compare',
+                '/:provider/:owner/:repo/flags',
+                '/:provider/:owner/:repo/new',
+                '/:provider/:owner/:repo/pulls',
+                '/:provider/:owner/:repo/settings',
+                '/:provider/:owner/:repo/tree/:branch',
+                '/:provider/:owner/:repo/tree/:branch/:path+',
+                '/:provider/:owner/:repo',
+              ]}
+            >
+              <Suspense fallback={null}>
+                <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
+              </Suspense>
+            </Route>
+            <Route
+              path="*"
+              render={({ location }) => {
+                testLocation = location
+                return null
+              }}
+            />
+          </NetworkErrorBoundary>
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -434,6 +438,23 @@ describe('RepoPage', () => {
 
       const repoCrumb = await screen.findByText('cool-repo')
       expect(repoCrumb).toBeInTheDocument()
+    })
+  })
+
+  describe('user is not activated and repo is private', () => {
+    beforeEach(() =>
+      setup({
+        hasRepoData: true,
+        isCurrentUserActivated: false,
+        isRepoPrivate: true,
+      })
+    )
+
+    it('renders unauthorized access error', async () => {
+      render(<RepoPage />, { wrapper: wrapper() })
+
+      const error = await screen.findByText('Unauthorized')
+      expect(error).toBeInTheDocument()
     })
   })
 })

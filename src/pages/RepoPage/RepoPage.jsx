@@ -6,6 +6,8 @@ import { SentryRoute } from 'sentry'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import NotFound from 'pages/NotFound'
 import { useRepo } from 'services/repo'
+import CustomError from 'shared/CustomError'
+import A from 'ui/A'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
@@ -72,18 +74,23 @@ function RepoPage() {
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
+  const isCurrentUserActivated = repoData?.isCurrentUserActivated
   const isRepoPrivate = !!repoData?.repository?.private
 
-  // if there is no repo data
-  if (!repoData?.repository) {
+  if (!repoData?.repository || (isRepoPrivate && !isCurrentUserPartOfOrg))
     return <NotFound />
-  }
 
-  // if the repo is private and the user is not associated
-  // then hard redirect to provider
-  else if (isRepoPrivate && !isCurrentUserPartOfOrg) {
-    return <NotFound />
-  }
+  if (!isCurrentUserActivated && isRepoPrivate)
+    throw new CustomError({
+      status: 403,
+      detail: (
+        <p>
+          Activation is required to view this repo, please{' '}
+          <A to={{ pageName: 'membersTab' }}>click here </A> to activate your
+          account.
+        </p>
+      ),
+    })
 
   return (
     <RepoBreadcrumbProvider>
