@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import ActivationCount from './ActivationCount'
 
@@ -16,7 +17,13 @@ const mockResponse = {
 const wrapper =
   () =>
   ({ children }) =>
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => server.listen())
 beforeEach(() => {
