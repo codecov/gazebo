@@ -8,6 +8,7 @@ import HomePage from './HomePage'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
+jest.mock('./Banners', () => () => 'Banners')
 
 const user = {
   username: 'CodecovUser',
@@ -107,6 +108,14 @@ describe('HomePage', () => {
 
         const contextSwitcher = await screen.findByText(/MyContextSwitcher/)
         expect(contextSwitcher).toBeInTheDocument()
+      })
+
+      it('renders banners component', async () => {
+        setup()
+        render(<HomePage />, { wrapper })
+
+        const banners = await screen.findByText(/Banners/)
+        expect(banners).toBeInTheDocument()
       })
     })
 

@@ -9,6 +9,7 @@ import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
+import Banners from './Banners'
 import Tabs from './Tabs'
 
 const useUserRedirect = () => {
@@ -64,6 +65,7 @@ function HomePage() {
   return (
     // mt-2 until we sticky this view
     <div className="mt-2 flex flex-col gap-4">
+      <Banners />
       <MyContextSwitcher pageName="owner" activeContext={null} />
       <div>
         <ActiveContext.Provider value={params.repoDisplay}>
