@@ -29,7 +29,7 @@ export function useUpdatePendoWithOwner(user) {
       window?.pendo?.updateOptions({
         visitor: getCurUserInfo(currentUser),
         account: snakeifyKeys({
-          id: ownerData?.hashOwnerid,
+          id: ownerData?.ownerid,
           name: ownerData?.username,
           isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
           isAdmin: ownerData?.isAdmin,

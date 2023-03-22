@@ -13,20 +13,16 @@ const wrapper = ({ children }) => (
 )
 
 describe('FileEntry', () => {
-  let commonProps = {
-    linkRef: 'main',
-    path: 'dir/file.js',
-    name: 'file.js',
-    urlPath: 'dir',
-    isCriticalFile: false,
-  }
-  const runPrefetchMock = jest.fn()
-
   describe('checking properties on list display', () => {
     it('displays the file path', () => {
+      const runPrefetchMock = jest.fn()
       render(
         <FileEntry
-          {...commonProps}
+          linkRef="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
         />,
@@ -39,9 +35,14 @@ describe('FileEntry', () => {
 
   describe('checking properties on tree display', () => {
     it('displays the file name', () => {
+      const runPrefetchMock = jest.fn()
       render(
         <FileEntry
-          {...commonProps}
+          linkRef="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
@@ -52,9 +53,14 @@ describe('FileEntry', () => {
     })
 
     it('does not display the file name', () => {
+      const runPrefetchMock = jest.fn()
       render(
         <FileEntry
-          {...commonProps}
+          linkRef="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
@@ -67,9 +73,13 @@ describe('FileEntry', () => {
 
   describe('file is a critical file', () => {
     it('displays critical file label', () => {
+      const runPrefetchMock = jest.fn()
       render(
         <FileEntry
-          {...commonProps}
+          linkRef="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
           isCriticalFile={true}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
@@ -83,9 +93,14 @@ describe('FileEntry', () => {
 
   describe('is displaying a list', () => {
     it('displays the file path label', () => {
+      const runPrefetchMock = jest.fn()
       render(
         <FileEntry
-          {...commonProps}
+          linkRef="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
           displayType={displayTypeParameter.list}
           runPrefetch={runPrefetchMock}
         />,
@@ -98,26 +113,37 @@ describe('FileEntry', () => {
 
   describe('prefetches data', () => {
     it('fires the prefetch function on hover', async () => {
+      const runPrefetchMock = jest.fn()
+      const user = userEvent.setup()
       render(
         <FileEntry
-          {...commonProps}
+          linkRef="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
         />,
         { wrapper }
       )
 
-      userEvent.hover(screen.getByText('file.js'))
+      await user.hover(screen.getByText('file.js'))
 
       await waitFor(() => expect(runPrefetchMock).toHaveBeenCalled())
     })
   })
 
   describe('passed pageName and commit props', () => {
+    const runPrefetchMock = jest.fn()
     it('sets the correct href', () => {
       render(
         <FileEntry
-          {...commonProps}
+          linkRef="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
           commitSha="coolCommitSha"
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}

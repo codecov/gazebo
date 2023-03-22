@@ -43,52 +43,55 @@ jest.mock('@stripe/react-stripe-js', () => {
 })
 
 describe('PaymentCard', () => {
-  let wrapper
-  function setup(subscriptionDetail) {
-    wrapper = render(
-      <PaymentCard
-        subscriptionDetail={subscriptionDetail}
-        provider="gh"
-        owner="codecov"
-      />
-    )
+  function setup() {
+    const user = userEvent.setup()
+
+    return { user }
   }
 
-  describe('when the user doesnt have any subscriptionDetail', () => {
-    beforeEach(() => {
-      setup(null)
-    })
-
+  describe(`when the user doesn't have any subscriptionDetail`, () => {
     it('renders nothing', () => {
-      expect(wrapper.container).toBeEmptyDOMElement()
+      const { container } = render(
+        <PaymentCard subscriptionDetail={null} provider="gh" owner="codecov" />
+      )
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 
-  describe('when the user doesnt have a card but is on a free plan', () => {
-    beforeEach(() => {
-      setup({
-        ...subscriptionDetail,
-        defaultPaymentMethod: null,
-        plan: {
-          value: 'users-free',
-        },
-      })
-    })
-
+  describe(`when the user doesn't have a card but is on a free plan`, () => {
     it('renders nothing', () => {
-      expect(wrapper.container).toBeEmptyDOMElement()
+      const { container } = render(
+        <PaymentCard
+          subscriptionDetail={{
+            ...subscriptionDetail,
+            defaultPaymentMethod: null,
+            plan: {
+              value: 'users-free',
+            },
+          }}
+          provider="gh"
+          owner="codecov"
+        />
+      )
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 
-  describe('when the user doesnt have any cards but has a paid plan', () => {
-    beforeEach(() => {
-      setup({
-        ...subscriptionDetail,
-        defaultPaymentMethod: null,
-      })
-    })
-
+  describe(`when the user doesn't have any cards but has a paid plan`, () => {
     it('renders an error message', () => {
+      render(
+        <PaymentCard
+          subscriptionDetail={{
+            ...subscriptionDetail,
+            defaultPaymentMethod: null,
+          }}
+          provider="gh"
+          owner="codecov"
+        />
+      )
+
       expect(
         screen.getByText(
           /No credit card set. Please contact support if you think it’s an error or set it yourself./
@@ -97,19 +100,47 @@ describe('PaymentCard', () => {
     })
 
     describe('when the user clicks on Set card', () => {
-      beforeEach(() => {
+      it(`doesn't render the card anymore`, async () => {
+        const { user } = setup()
+        render(
+          <PaymentCard
+            subscriptionDetail={{
+              ...subscriptionDetail,
+              defaultPaymentMethod: null,
+            }}
+            provider="gh"
+            owner="codecov"
+          />
+        )
+
         useUpdateCard.mockReturnValue({
           mutate: () => null,
           isLoading: false,
         })
-        userEvent.click(screen.getByTestId('open-modal'))
-      })
+        await user.click(screen.getByTestId('open-modal'))
 
-      it('doesnt render the card anymore', () => {
         expect(screen.queryByText(/Visa/)).not.toBeInTheDocument()
       })
 
-      it('renders the form', () => {
+      it('renders the form', async () => {
+        const { user } = setup()
+        render(
+          <PaymentCard
+            subscriptionDetail={{
+              ...subscriptionDetail,
+              defaultPaymentMethod: null,
+            }}
+            provider="gh"
+            owner="codecov"
+          />
+        )
+
+        useUpdateCard.mockReturnValue({
+          mutate: () => null,
+          isLoading: false,
+        })
+        await user.click(screen.getByTestId('open-modal'))
+
         expect(
           screen.getByRole('button', { name: /update/i })
         ).toBeInTheDocument()
@@ -118,11 +149,15 @@ describe('PaymentCard', () => {
   })
 
   describe('when the user have a card', () => {
-    beforeEach(() => {
-      setup(subscriptionDetail)
-    })
-
     it('renders the card', () => {
+      render(
+        <PaymentCard
+          subscriptionDetail={subscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />
+      )
+
       expect(screen.getByText(/Visa/)).toBeInTheDocument()
       expect(
         screen.getByText(/\*\*\*\* \*\*\*\* \*\*\*\* 1234/)
@@ -131,61 +166,117 @@ describe('PaymentCard', () => {
     })
 
     it('renders the next billing', () => {
+      render(
+        <PaymentCard
+          subscriptionDetail={subscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />
+      )
+
       expect(screen.getByText(/1st December, 2020/)).toBeInTheDocument()
     })
   })
 
   describe('when the subscription is set to expire', () => {
-    beforeEach(() => {
-      setup({
-        ...subscriptionDetail,
-        cancelAtPeriodEnd: true,
-      })
-    })
+    it(`doesn't render the next billing`, () => {
+      render(
+        <PaymentCard
+          subscriptionDetail={{
+            ...subscriptionDetail,
+            cancelAtPeriodEnd: true,
+          }}
+          provider="gh"
+          owner="codecov"
+        />
+      )
 
-    it('doesnt render the next billing', () => {
       expect(screen.queryByText(/1st December, 2020/)).not.toBeInTheDocument()
     })
   })
 
   describe('when the user clicks on Edit card', () => {
-    const updateCard = jest.fn()
-
-    beforeEach(() => {
+    it(`doesn't render the card anymore`, async () => {
+      const { user } = setup()
+      const updateCard = jest.fn()
       useUpdateCard.mockReturnValue({
         mutate: updateCard,
         isLoading: false,
       })
-      setup(subscriptionDetail)
-      userEvent.click(screen.getByTestId('edit-card'))
-    })
 
-    it('doesnt render the card anymore', () => {
+      render(
+        <PaymentCard
+          subscriptionDetail={subscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />
+      )
+      await user.click(screen.getByTestId('edit-card'))
+
       expect(screen.queryByText(/Visa/)).not.toBeInTheDocument()
     })
 
-    it('renders the form', () => {
+    it('renders the form', async () => {
+      const { user } = setup()
+      const updateCard = jest.fn()
+      useUpdateCard.mockReturnValue({
+        mutate: updateCard,
+        isLoading: false,
+      })
+      render(
+        <PaymentCard
+          subscriptionDetail={subscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />
+      )
+      await user.click(screen.getByTestId('edit-card'))
+
       expect(
         screen.getByRole('button', { name: /update/i })
       ).toBeInTheDocument()
     })
 
     describe('when submitting', () => {
-      beforeEach(() => {
-        userEvent.click(screen.queryByRole('button', { name: /update/i }))
-      })
+      it('calls the service to update the card', async () => {
+        const { user } = setup()
+        const updateCard = jest.fn()
+        useUpdateCard.mockReturnValue({
+          mutate: updateCard,
+          isLoading: false,
+        })
+        render(
+          <PaymentCard
+            subscriptionDetail={subscriptionDetail}
+            provider="gh"
+            owner="codecov"
+          />
+        )
+        await user.click(screen.getByTestId('edit-card'))
+        await user.click(screen.queryByRole('button', { name: /update/i }))
 
-      it('calls the service to update the card', () => {
         expect(updateCard).toHaveBeenCalled()
       })
     })
 
     describe('when the user clicks on cancel', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByRole('button', { name: /Cancel/ }))
-      })
+      it(`doesn't render the form anymore`, async () => {
+        const { user } = setup()
+        useUpdateCard.mockReturnValue({
+          mutate: jest.fn(),
+          isLoading: false,
+        })
+        render(
+          <PaymentCard
+            subscriptionDetail={subscriptionDetail}
+            provider="gh"
+            owner="codecov"
+          />
+        )
 
-      it('doesnt render the form anymore', () => {
+        await user.click(screen.getByTestId('edit-card'))
+        await user.click(screen.getByRole('button', { name: /Cancel/ }))
+
         expect(
           screen.queryByRole('button', { name: /save/i })
         ).not.toBeInTheDocument()
@@ -194,30 +285,40 @@ describe('PaymentCard', () => {
   })
 
   describe('when there is an error in the form', () => {
-    const randomError = 'not rich enough'
-
-    beforeEach(() => {
+    it('renders the error', async () => {
+      const { user } = setup()
+      const randomError = 'not rich enough'
       useUpdateCard.mockReturnValue({
         mutate: jest.fn(),
         error: { data: { detail: randomError } },
       })
-      setup(subscriptionDetail)
-      userEvent.click(screen.getByTestId('edit-card'))
-    })
+      render(
+        <PaymentCard
+          subscriptionDetail={subscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />
+      )
 
-    it('renders the error', () => {
+      await user.click(screen.getByTestId('edit-card'))
+
       expect(screen.getByText(randomError)).toBeInTheDocument()
     })
   })
 
   describe('when the form is loading', () => {
-    beforeEach(() => {
+    it('has the error and save button disabled', async () => {
+      const { user } = setup()
       useUpdateCard.mockReturnValue({ mutate: jest.fn(), isLoading: true })
-      setup(subscriptionDetail)
-      userEvent.click(screen.getByTestId('edit-card'))
-    })
+      render(
+        <PaymentCard
+          subscriptionDetail={subscriptionDetail}
+          provider="gh"
+          owner="codecov"
+        />
+      )
+      await user.click(screen.getByTestId('edit-card'))
 
-    it('has the error and save button disabled', () => {
       expect(screen.queryByRole('button', { name: /update/i })).toBeDisabled()
       expect(screen.queryByRole('button', { name: /cancel/i })).toBeDisabled()
     })

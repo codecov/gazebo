@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSelfHostedCurrentUser } from './useSelfHostedCurrentUser'
 
@@ -16,7 +17,11 @@ const user = {
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path="/:provider">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 const server = setupServer()

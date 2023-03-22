@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -19,30 +19,16 @@ const user = {
 }
 
 const queryClient = new QueryClient()
-
 const server = setupServer()
-beforeAll(() => server.listen())
-beforeEach(() => {
-  server.resetHandlers()
-  queryClient.clear()
-})
-afterAll(() => server.close())
 
-describe('AdminSettings', () => {
-  let testLocation
-  function setup({ initialEntries = [], path = '', data = {} }) {
-    server.use(
-      rest.get('/internal/users/current', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ ...user, ...data }))
-      )
-    )
-
-    render(
+let testLocation
+const wrapper =
+  ({ initialEntries, path }) =>
+  ({ children }) =>
+    (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <Route path={path}>
-            <AdminSettings />
-          </Route>
+          <Route path={path}>{children}</Route>
           <Route
             path="*"
             render={({ location }) => {
@@ -53,18 +39,38 @@ describe('AdminSettings', () => {
         </MemoryRouter>
       </QueryClientProvider>
     )
+
+beforeAll(() => server.listen())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+afterAll(() => server.close())
+
+describe('AdminSettings', () => {
+  function setup({ data = {} }) {
+    server.use(
+      rest.get('/internal/users/current', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json({ ...user, ...data }))
+      )
+    )
   }
 
   describe('renders access page', () => {
     beforeEach(() => {
       setup({
-        initialEntries: ['/admin/gh/access'],
-        path: '/admin/:provider/access',
         data: { isAdmin: true },
       })
     })
 
     it('renders access page', async () => {
+      render(<AdminSettings />, {
+        wrapper: wrapper({
+          path: '/admin/:provider/access',
+          initialEntries: ['/admin/gh/access'],
+        }),
+      })
+
       const text = await screen.findByText('AdminAccess')
       expect(text).toBeInTheDocument()
     })
@@ -73,13 +79,18 @@ describe('AdminSettings', () => {
   describe('renders users page', () => {
     beforeEach(() => {
       setup({
-        initialEntries: ['/admin/gh/users'],
-        path: '/admin/:provider/users',
         data: { isAdmin: true },
       })
     })
 
     it('renders users page', async () => {
+      render(<AdminSettings />, {
+        wrapper: wrapper({
+          initialEntries: ['/admin/gh/users'],
+          path: '/admin/:provider/users',
+        }),
+      })
+
       const text = await screen.findByText('AdminMembers')
       expect(text).toBeInTheDocument()
     })
@@ -87,23 +98,20 @@ describe('AdminSettings', () => {
 
   describe('user is not an admin', () => {
     beforeEach(async () => {
-      queryClient.setQueryData(['SelfHostedCurrentUser'], {
-        activated: false,
-        email: 'codecov@codecov.io',
-        isAdmin: false,
-        name: 'Codecov',
-        ownerid: 2,
-        username: 'codecov',
-      })
       setup({
-        initialEntries: ['/admin/gh/users'],
-        path: '/admin/:provider/users',
         data: { isAdmin: false },
       })
     })
 
     it('redirects the user', async () => {
-      expect(testLocation.pathname).toBe('/gh')
+      render(<AdminSettings />, {
+        wrapper: wrapper({
+          initialEntries: ['/admin/gh/users'],
+          path: '/admin/:provider/users',
+        }),
+      })
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh'))
     })
   })
 })

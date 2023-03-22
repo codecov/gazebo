@@ -25,6 +25,7 @@ jobs:
           name: Run linter
           command: npm run lint
   test:
+    resource_class: medium+
     docker:
       - image: cimg/node:18.8.0
     parallelism: 6
@@ -56,19 +57,6 @@ jobs:
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
             ./codecov -t $CODECOV_TOKEN_STAGING -u https://stage-web.codecov.dev -Z
-
-  sentry:
-    docker:
-      - image: cimg/node:18.8.0
-    resource_class: medium+
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - npm-deps-{{ checksum "package-lock.json" }}
-      - run:
-          name: Sentry Release
-          command: npm run sentry
 
   build:
     docker:
@@ -105,32 +93,29 @@ jobs:
           command: |
             curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
       - run:
-          name: Analze and upload dependency reports
+          name: Analyze and upload dependency reports
           command: fossa analyze
           env:
             FOSSA_API_KEY: ${FOSSA_API_KEY}
 
 workflows:
   version: 2
-  test-and-build:
+  test:
     jobs:
       - install
       - eslint:
           requires:
             - install
+      - test:
+          requires:
+            - install
+  storybook-and-fossa:
+    jobs:
+      - install
       - storybook:
           filters:
             branches:
               ignore: /^dependabot.*/
-          requires:
-            - install
-      - test:
-          requires:
-            - install
-      - sentry:
-          filters:
-            branches:
-              only: /main/
           requires:
             - install
       - fossa:

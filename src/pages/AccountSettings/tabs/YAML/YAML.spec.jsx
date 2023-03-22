@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
@@ -55,7 +55,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('YAMLTab', () => {
+  afterEach(() => jest.resetAllMocks())
+
   function setup(dataReturned) {
+    const user = userEvent.setup()
+    useIsCurrentUserAnAdmin.mockReturnValue(true)
+
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
         if (req.body.query.includes('UpdateYamlConfig')) {
@@ -67,19 +72,18 @@ describe('YAMLTab', () => {
       })
     )
 
-    render(<YAML owner="doggo" />, { wrapper })
+    return { user }
   }
   describe('basic tests for admin users', () => {
-    beforeEach(() => {
-      useIsCurrentUserAnAdmin.mockReturnValue(true)
+    afterEach(() => jest.resetAllMocks())
 
+    it('renders the description text', () => {
       setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: updateYamlConfig(''),
       })
-    })
+      render(<YAML owner="doggo" />, { wrapper })
 
-    it('renders the description text', () => {
       const tab = screen.getByText(
         /Changes made to the Global yaml are applied to all repositories in the org if they do not have a repo level yaml./
       )
@@ -87,91 +91,131 @@ describe('YAMLTab', () => {
     })
 
     it('The save button is disabled initially', () => {
+      setup({
+        YamlConfig: basicYamlConfig,
+        UpdateYamlConfig: updateYamlConfig(''),
+      })
+      render(<YAML owner="doggo" />, { wrapper })
       const save = screen.getByRole('button', { name: /Save Changes/ })
       expect(save).toBeDisabled()
     })
 
     it('The save button is enabled after editor input', async () => {
+      const { user } = setup({
+        YamlConfig: basicYamlConfig,
+        UpdateYamlConfig: updateYamlConfig(''),
+      })
+      render(<YAML owner="doggo" />, { wrapper })
+
       const editor = screen.getByRole('textbox')
-      userEvent.paste(editor, 'test: test')
-      await waitFor(() => expect(editor).toHaveValue('test: test'))
+      await user.click(editor)
+      await user.paste('test: test')
+      expect(editor).toHaveValue('test: test')
       const save = screen.getByRole('button', { name: /Save Changes/ })
       expect(save).not.toBeDisabled()
     })
   })
 
   describe('saves a valid yaml file', () => {
-    beforeEach(async () => {
-      useIsCurrentUserAnAdmin.mockReturnValue(true)
+    afterEach(() => jest.resetAllMocks())
 
-      setup({
+    it('You can close the modal by clicking done', async () => {
+      const { user } = setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: updateYamlConfig(''),
       })
+      render(<YAML owner="doggo" />, { wrapper })
 
       const editor = screen.getByRole('textbox')
-      userEvent.paste(editor, 'test: test')
-      await waitFor(() => expect(editor).toHaveValue('test: test'))
-      const save = screen.getByRole('button', { name: /Save Changes/ })
-      userEvent.click(save)
-      await screen.findByText(/Yaml configuration updated/)
-    })
+      await user.click(editor)
+      await user.paste('test: test')
+      expect(editor).toHaveValue('test: test')
 
-    it('You can close the modal by clicking done', async () => {
-      userEvent.click(screen.getByRole('button', { text: /Done/ }))
+      const save = screen.getByRole('button', { name: /Save Changes/ })
+      await user.click(save)
+      expect(
+        await screen.findByText(/Yaml configuration updated/)
+      ).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { text: /Done/ }))
       expect(
         screen.queryByText(/Yaml configuration updated/)
       ).not.toBeInTheDocument()
     })
 
     it('You can close the modal', async () => {
-      userEvent.click(screen.getByText(/x.svg/))
-      expect(
-        screen.queryByText(/Yaml configuration updated/)
-      ).not.toBeInTheDocument()
+      const { user } = setup({
+        YamlConfig: basicYamlConfig,
+        UpdateYamlConfig: updateYamlConfig(''),
+      })
+      render(<YAML owner="doggo" />, { wrapper })
+
+      const editor = screen.getByRole('textbox')
+      await user.click(editor)
+      await user.paste('test: test')
+      expect(editor).toHaveValue('test: test')
+
+      const save = screen.getByRole('button', { name: /Save Changes/ })
+      await user.click(save)
+
+      let yamlConfigurationUpdated = await screen.findByText(
+        /Yaml configuration updated/
+      )
+      expect(yamlConfigurationUpdated).toBeInTheDocument()
+
+      const xSvg = screen.getByText(/x.svg/)
+      await user.click(xSvg)
+
+      yamlConfigurationUpdated = screen.queryByText(
+        /Yaml configuration updated/
+      )
+      expect(yamlConfigurationUpdated).not.toBeInTheDocument()
     })
   })
 
   describe('fails and displays linting error', () => {
-    beforeEach(async () => {
-      useIsCurrentUserAnAdmin.mockReturnValue(true)
+    afterEach(() => jest.resetAllMocks())
 
-      setup({
+    it('The save button becomes unsaved changes and an error is displayed', async () => {
+      const { user } = setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: updateYamlConfigError('bad config'),
       })
+      render(<YAML owner="doggo" />, { wrapper })
 
       const editor = screen.getByRole('textbox')
-      userEvent.paste(editor, 'test: test')
-      await waitFor(() => expect(editor).toHaveValue('test: test'))
-    })
+      await user.click(editor)
+      await user.paste('test: test')
+      expect(editor).toHaveValue('test: test')
 
-    it('The save button becomes unsaved changes and an error is displayed', async () => {
       const save = screen.getByRole('button', { name: /Save Changes/ })
-      userEvent.click(save)
-      await screen.findByText(/bad config/)
+      await user.click(save)
+
+      const badConfig = await screen.findByText(/bad config/)
+      expect(badConfig).toBeInTheDocument()
     })
   })
 
   describe('The api fails', () => {
-    beforeEach(async () => {
-      useIsCurrentUserAnAdmin.mockReturnValue(true)
+    afterEach(() => jest.resetAllMocks())
 
-      setup({
+    it('The save button becomes unsaved changes and an error is displayed', async () => {
+      const { user } = setup({
         YamlConfig: basicYamlConfig,
         UpdateYamlConfig: { errors: [{ message: 'something' }] },
       })
+      render(<YAML owner="doggo" />, { wrapper })
 
       const editor = screen.getByRole('textbox')
-      userEvent.paste(editor, 'test: test')
-      await waitFor(() => expect(editor).toHaveValue('test: test'))
-    })
+      await user.click(editor)
+      await user.paste('test: test')
+      expect(editor).toHaveValue('test: test')
 
-    it('The save button becomes unsaved changes and an error is displayed', async () => {
       const save = screen.getByRole('button', { name: /Save Changes/ })
-      userEvent.click(save)
+      await user.click(save)
 
-      await screen.findByText(/Something went wrong/)
+      const somethingWentWrong = await screen.findByText(/Something went wrong/)
+      expect(somethingWentWrong).toBeInTheDocument()
     })
   })
 })

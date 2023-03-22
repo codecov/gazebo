@@ -28,20 +28,29 @@ const queryClient = new QueryClient({
   },
 })
 
-const defaultProps = {
-  customerId: 'cus_1n4o328hn4',
-  planCost: 'users-pr-inappy',
-  upComingCancelation: false,
-  currentPeriodEnd: 1675361466,
-}
+let testLocation
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/plan/gh/codecov/cancel']}>
+      {children}
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 describe('CancelButton', () => {
-  let mutate
-  let testLocation
-  const addNotification = jest.fn()
+  function setup(baremetricsBlocked = false) {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+    const addNotification = jest.fn()
 
-  function setup(props = defaultProps, baremetricsBlocked = false) {
-    mutate = jest.fn()
     useAddNotification.mockReturnValue(addNotification)
     useParams.mockReturnValue({ owner: 'Ollie', provider: 'gh' })
     useCancelPlan.mockReturnValue({
@@ -51,30 +60,23 @@ describe('CancelButton', () => {
     })
     useBarecancel.mockReturnValue({ baremetricsBlocked })
 
-    const { unmount } = render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/plan/gh/codecov/cancel']}>
-          <CancelButton {...props} />
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-
-    return { unmount }
+    return { mutate, addNotification, user }
   }
 
   describe('when button is rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     it('renders button text', () => {
+      render(
+        <CancelButton
+          customerId="cus_1n4o328hn4"
+          planCost="users-pr-inappy"
+          upComingCancelation={false}
+          currentPeriodEnd={1675361466}
+        />,
+        { wrapper }
+      )
+
       const downgradeButton = screen.getByTestId('downgrade-button')
       expect(downgradeButton).toBeInTheDocument()
       expect(downgradeButton).toHaveTextContent('Downgrade to basic')
@@ -82,23 +84,41 @@ describe('CancelButton', () => {
   })
 
   describe('when clicking on the button to downgrade', () => {
-    beforeEach(() => {
-      setup()
-      userEvent.click(screen.getByTestId('downgrade-button'))
-    })
+    it('opens the modal with warning', async () => {
+      const { user } = setup()
+      render(
+        <CancelButton
+          customerId="cus_1n4o328hn4"
+          planCost="users-pr-inappy"
+          upComingCancelation={false}
+          currentPeriodEnd={1675361466}
+        />,
+        { wrapper }
+      )
 
-    it('opens the modal with warning', () => {
+      await user.click(screen.getByTestId('downgrade-button'))
+
       expect(
         screen.getByText(/Are you sure you want to cancel your plan?/)
       ).toBeInTheDocument()
     })
 
     describe('when clicking cancel', () => {
-      beforeEach(() => {
-        userEvent.click(screen.getByTestId('close-button'))
-      })
+      it('closes the modal', async () => {
+        const { user } = setup()
+        render(
+          <CancelButton
+            customerId="cus_1n4o328hn4"
+            planCost="users-pr-inappy"
+            upComingCancelation={false}
+            currentPeriodEnd={1675361466}
+          />,
+          { wrapper }
+        )
 
-      it('closes the modal', () => {
+        await user.click(screen.getByTestId('downgrade-button'))
+        await user.click(screen.getByTestId('close-button'))
+
         expect(
           screen.queryByText(/Are you sure you want to cancel your plan?/)
         ).not.toBeInTheDocument()
@@ -106,11 +126,21 @@ describe('CancelButton', () => {
     })
 
     describe('when clicking the X icon', () => {
-      beforeEach(() => {
-        userEvent.click(screen.queryAllByRole('button', { name: /Close/ })[0])
-      })
+      it('closes the modal', async () => {
+        const { user } = setup()
+        render(
+          <CancelButton
+            customerId="cus_1n4o328hn4"
+            planCost="users-pr-inappy"
+            upComingCancelation={false}
+            currentPeriodEnd={1675361466}
+          />,
+          { wrapper }
+        )
 
-      it('closes the modal', () => {
+        await user.click(screen.getByTestId('downgrade-button'))
+        await user.click(screen.queryAllByRole('button', { name: /Close/ })[0])
+
         expect(
           screen.queryByText(/Are you sure you want to cancel your plan?/)
         ).not.toBeInTheDocument()
@@ -118,12 +148,22 @@ describe('CancelButton', () => {
     })
 
     describe('when unmounted', () => {
-      beforeEach(() => {
-        const { unmount } = setup()
-        unmount()
-      })
+      it('removes the baremetrics script', async () => {
+        const { user } = setup()
+        const { unmount } = render(
+          <CancelButton
+            customerId="cus_1n4o328hn4"
+            planCost="users-pr-inappy"
+            upComingCancelation={false}
+            currentPeriodEnd={1675361466}
+          />,
+          { wrapper }
+        )
 
-      it('removes the baremetrics script', () => {
+        await user.click(screen.getByTestId('downgrade-button'))
+
+        unmount()
+
         expect(
           screen.queryByTestId('baremetrics-script')
         ).not.toBeInTheDocument()
@@ -132,22 +172,42 @@ describe('CancelButton', () => {
   })
 
   describe('when clicking submit', () => {
-    beforeEach(() => {
-      setup(defaultProps, true)
-      userEvent.click(screen.getByTestId('downgrade-button'))
-      userEvent.click(screen.getByTestId('continue-cancellation-button'))
-    })
+    it('calls the cancelPlan/mutate function', async () => {
+      const { mutate, user } = setup(true)
+      render(
+        <CancelButton
+          customerId="cus_1n4o328hn4"
+          planCost="users-pr-inappy"
+          upComingCancelation={false}
+          currentPeriodEnd={1675361466}
+        />,
+        { wrapper }
+      )
 
-    it('calls the cancelPlan/mutate function', () => {
+      await user.click(screen.getByTestId('downgrade-button'))
+      await user.click(screen.getByTestId('continue-cancellation-button'))
+
       expect(mutate).toHaveBeenCalled()
     })
 
     describe('on a failure', () => {
-      beforeEach(() => {
-        mutate.mock.calls[0][1].onError()
-      })
+      it('calls the cancelPlan function', async () => {
+        const { mutate, addNotification, user } = setup(true)
+        render(
+          <CancelButton
+            customerId="cus_1n4o328hn4"
+            planCost="users-pr-inappy"
+            upComingCancelation={false}
+            currentPeriodEnd={1675361466}
+          />,
+          { wrapper }
+        )
 
-      it('calls the cancelPlan function', () => {
+        await user.click(screen.getByTestId('downgrade-button'))
+        await user.click(screen.getByTestId('continue-cancellation-button'))
+
+        mutate.mock.calls[0][1].onError()
+
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
           text: 'Something went wrong, we were unable to cancel your plan. Please reach out to support.',
@@ -156,11 +216,23 @@ describe('CancelButton', () => {
     })
 
     describe('on a submit', () => {
-      beforeEach(() => {
-        mutate.mock.calls[0][1].onSuccess()
-      })
+      it('redirects the user to the billing page', async () => {
+        const { mutate, user } = setup(true)
+        render(
+          <CancelButton
+            customerId="cus_1n4o328hn4"
+            planCost="users-pr-inappy"
+            upComingCancelation={false}
+            currentPeriodEnd={1675361466}
+          />,
+          { wrapper }
+        )
 
-      it('redirects the user to the billing page', () => {
+        await user.click(screen.getByTestId('downgrade-button'))
+        await user.click(screen.getByTestId('continue-cancellation-button'))
+
+        mutate.mock.calls[0][1].onSuccess()
+
         expect(testLocation.pathname).toEqual('/plan/gh/Ollie')
       })
     })

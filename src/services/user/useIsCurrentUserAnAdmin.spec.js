@@ -38,7 +38,7 @@ describe('useIsCurrentUserAnAdmin', () => {
           ctx.data({
             owner: {
               orgUploadToken: 'token',
-              hashOwnerid: true,
+              ownerid: 123,
               username: 'cool-user',
               avatarUrl: 'url',
               isCurrentUserPartOfOrg: true,

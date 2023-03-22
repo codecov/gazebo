@@ -213,12 +213,12 @@ function TotalBanner({ isPerYear, perYearPrice, perMonthPrice, setValue }) {
             {formatNumberToUSD(perMonthPrice - perYearPrice)}
           </span>{' '}
           a year with the annual plan,{' '}
-          <span
+          <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
             onClick={() => setValue('newPlan', Plans.USERS_PR_INAPPY)}
           >
             switch to annual
-          </span>
+          </button>
         </p>
       </div>
     </div>
@@ -280,7 +280,7 @@ function UpgradeForm({
                 <span className="font-semibold">
                   ${proPlanYear?.baseUnitPrice}
                 </span>
-                /month, billed {proPlanYear?.billingRate}
+                /per seat, billed {proPlanYear?.billingRate}
               </>
             }
             name="billing-options"
@@ -297,7 +297,7 @@ function UpgradeForm({
                 <span className="font-semibold">
                   ${proPlanMonth?.baseUnitPrice}
                 </span>
-                /month, billed {proPlanMonth?.billingRate}
+                /per seat, billed {proPlanMonth?.billingRate}
               </>
             }
             name="billing-options"
@@ -317,7 +317,7 @@ function UpgradeForm({
             size="20"
             className="w-full rounded border bg-ds-gray-secondary p-2"
             type="number"
-            label="User Seats"
+            label="Seat count"
             disabled={!organizationName}
           />
         </div>

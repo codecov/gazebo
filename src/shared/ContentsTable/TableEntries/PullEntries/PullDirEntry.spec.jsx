@@ -106,13 +106,14 @@ describe('PullDirEntry', () => {
   })
 
   it('fires the prefetch function on hover', async () => {
+    const user = userEvent.setup()
     render(
       <PullDirEntry pullId="123" name="dir" urlPath="path/to/directory" />,
       { wrapper }
     )
 
     const dir = screen.getByText('dir')
-    userEvent.hover(dir)
+    await user.hover(dir)
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({

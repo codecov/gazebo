@@ -10,7 +10,7 @@ import { useUser } from 'services/user'
 
 export function useOnboardingTracking() {
   const { path, url } = useOnboardingLocation()
-  // TODO: create an app context where trackingmetadata is shared within the app
+  // TODO: create an app context where tracking meta data is shared within the app
   const { data: user } = useUser()
 
   return {

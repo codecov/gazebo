@@ -11,9 +11,8 @@ const wrapper = ({ children }) => (
 )
 
 describe('DirEntry', () => {
-  const runPrefetchMock = jest.fn()
-
   it('displays the directory name', () => {
+    const runPrefetchMock = jest.fn()
     render(
       <DirEntry
         linkRef="branch"
@@ -30,6 +29,7 @@ describe('DirEntry', () => {
 
   describe('path is given', () => {
     it('sets the correct href', () => {
+      const runPrefetchMock = jest.fn()
       render(
         <DirEntry
           linkRef="branch"
@@ -50,6 +50,7 @@ describe('DirEntry', () => {
 
   describe('no path is given', () => {
     it('sets the correct href', () => {
+      const runPrefetchMock = jest.fn()
       render(
         <DirEntry linkRef="branch" name="dir" runPrefetch={runPrefetchMock} />,
         { wrapper }
@@ -61,6 +62,8 @@ describe('DirEntry', () => {
   })
 
   it('fires the prefetch function on hover', async () => {
+    const user = userEvent.setup()
+    const runPrefetchMock = jest.fn()
     render(
       <DirEntry
         linkRef="branch"
@@ -71,13 +74,14 @@ describe('DirEntry', () => {
       { wrapper }
     )
 
-    userEvent.hover(screen.getByText('dir'))
+    await user.hover(screen.getByText('dir'))
 
     await waitFor(() => expect(runPrefetchMock).toHaveBeenCalled())
   })
 
   describe('pageName prop is passed', () => {
     it('sets the correct href', () => {
+      const runPrefetchMock = jest.fn()
       render(
         <DirEntry
           commitSha="coolCommitSha"
