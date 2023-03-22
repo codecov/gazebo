@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import AutoActivateMembers from './AutoActivateMembers'
 
@@ -22,7 +23,11 @@ afterEach(() => {
 afterAll(() => server.close())
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path="/:provider">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 describe('AutoActivateMembers', () => {
