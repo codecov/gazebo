@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 const SentryWebpackPlugin = require('@sentry/webpack-plugin')
-const CracoSwcPlugin = require('craco-swc')
+// const CracoSwcPlugin = require('craco-swc')
 
 const { resolve } = require('path')
 
@@ -13,11 +13,11 @@ const SentryPlugin = new SentryWebpackPlugin({
 })
 
 module.exports = {
-  plugins: [
-    {
-      plugin: CracoSwcPlugin,
-    },
-  ],
+  // plugins: [
+  //   {
+  //     plugin: CracoSwcPlugin,
+  //   },
+  // ],
   webpack: {
     devtool: 'source-map',
     configure: {
