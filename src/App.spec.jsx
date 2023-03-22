@@ -1,13 +1,11 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { BrowserRouter } from 'react-router-dom'
 
 import config from 'config'
+
+import { useFlags } from 'shared/featureFlags'
 
 import App from './App'
 
@@ -21,10 +19,11 @@ jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
 jest.mock('./pages/HomePage', () => () => 'HomePage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
 jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
-jest.mock('./pages/MembersPage/MembersPage', () => () => 'MembersPage')
+jest.mock('./pages/MembersPage', () => () => 'MembersPage')
 jest.mock('./pages/PlanPage/PlanPage', () => () => 'PlanPage')
 jest.mock('./pages/PullRequestPage', () => () => 'PullRequestPage')
-jest.mock('./pages/RepoPage/RepoPage', () => () => 'RepoPage')
+jest.mock('./pages/RepoPage', () => () => 'RepoPage')
+jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
 
 jest.mock('./shared/GlobalBanners', () => () => '')
 
@@ -33,6 +32,7 @@ jest.mock('@tanstack/react-query-devtools', () => ({
 }))
 
 jest.mock('config')
+jest.mock('shared/featureFlags')
 
 const user = {
   username: 'CodecovUser',
@@ -57,7 +57,13 @@ afterAll(() => server.close())
 const wrapper = ({ children }) => <BrowserRouter>{children}</BrowserRouter>
 
 describe('App', () => {
-  function setup() {
+  function setup(
+    { termsOfServicePage = false } = { termsOfServicePage: false }
+  ) {
+    useFlags.mockReturnValue({
+      termsOfServicePage,
+    })
+
     server.use(
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
@@ -212,11 +218,7 @@ describe('App', () => {
         it('redirects to /gh', async () => {
           render(<App />, { wrapper })
 
-          await waitForElementToBeRemoved(() =>
-            screen.queryByTestId('logo-spinner')
-          )
-
-          const page = screen.getByText('HomePage')
+          const page = await screen.findByText('HomePage')
           expect(page).toBeInTheDocument()
         })
       })
@@ -454,6 +456,46 @@ describe('App', () => {
 
       const page = screen.getByText(/RepoPage/i)
       expect(page).toBeInTheDocument()
+    })
+  })
+
+  describe('rendering terms of service page', () => {
+    beforeEach(() => {
+      window.history.pushState({}, 'Test Home Page', '/')
+
+      setup({
+        termsOfServicePage: true,
+      })
+    })
+
+    it('renders the terms of service page', async () => {
+      render(<App />, { wrapper })
+
+      const tos = await screen.findByText(/TermsOfService/i)
+      expect(tos).toBeInTheDocument()
+
+      const HomePage = screen.queryByText('HomePage')
+      expect(HomePage).not.toBeInTheDocument()
+    })
+  })
+
+  describe('rendering terms of service page when flag is off', () => {
+    beforeEach(() => {
+      window.history.pushState({}, 'Test Home Page', '/')
+
+      setup({
+        termsOfServicePage: false,
+      })
+    })
+
+    it('renders the terms of service page', async () => {
+      render(<App />, { wrapper })
+
+      const tos = screen.queryByText(/TermsOfService/i)
+      expect(tos).not.toBeInTheDocument()
+
+      const HomePage = await screen.findByText('HomePage')
+      expect(HomePage).toBeInTheDocument()
     })
   })
 })
