@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import PropType from 'prop-types'
 import { useForm } from 'react-hook-form'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import * as yup from 'yup'
 
 import {
@@ -162,13 +162,8 @@ UpdateButton.propTypes = {
   accountDetails: PropType.object,
 }
 
-function UpgradePlanForm({
-  proPlanYear,
-  proPlanMonth,
-  accountDetails,
-  provider,
-  owner,
-}) {
+function UpgradePlanForm({ proPlanYear, proPlanMonth, accountDetails }) {
+  const { provider, owner } = useParams()
   const nextBillingDate = getNextBillingDate(accountDetails)
 
   const {
@@ -319,8 +314,6 @@ UpgradePlanForm.propTypes = {
   proPlanYear: planPropType.isRequired,
   proPlanMonth: planPropType.isRequired,
   accountDetails: accountDetailsPropType,
-  provider: PropType.string.isRequired,
-  owner: PropType.string.isRequired,
 }
 
 export default UpgradePlanForm
