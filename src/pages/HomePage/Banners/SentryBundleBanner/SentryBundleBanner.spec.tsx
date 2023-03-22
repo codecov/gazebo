@@ -12,7 +12,7 @@ import SentryBundleBanner from './SentryBundleBanner'
 
 type PlansType = (typeof Plans)[keyof typeof Plans]
 
-const accountDetails = (planName = Plans.USERS_SENTRYM) => ({
+const accountDetails = (planName: PlansType = Plans.USERS_SENTRYM) => ({
   plan: {
     marketingName: planName,
     baseUnitPrice: 12,
@@ -94,7 +94,7 @@ describe('SentryBundleBanner', () => {
       rest.get(
         `/internal/:provider/:owner/account-details/`,
         (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(accountDetails()))
+          return res(ctx.status(200), ctx.json(accountDetails(planName)))
         }
       )
     )
