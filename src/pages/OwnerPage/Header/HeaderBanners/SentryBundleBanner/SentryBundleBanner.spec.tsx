@@ -159,7 +159,7 @@ describe('SentryBundleBanner', () => {
     })
   })
 
-  describe('when the user cannot apply sentry upgrade', () => {
+  describe('when the user is on an enterprise plan', () => {
     it('renders null', async () => {
       setup()
 
