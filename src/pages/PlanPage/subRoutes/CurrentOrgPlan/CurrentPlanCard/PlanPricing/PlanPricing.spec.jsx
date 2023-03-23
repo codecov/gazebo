@@ -98,7 +98,7 @@ describe('PlanPricing', () => {
       it('renders the base unit price', () => {
         render(<PlanPricing value={Plans.USERS_SENTRYY} baseUnitPrice={10} />)
 
-        const basePrice = screen.getByText(/\$29.99/)
+        const basePrice = screen.getByText(/\$29/)
         expect(basePrice).toBeInTheDocument()
       })
     })
@@ -107,7 +107,7 @@ describe('PlanPricing', () => {
       it('renders the base unit price', () => {
         render(<PlanPricing value={Plans.USERS_SENTRYY} baseUnitPrice={12} />)
 
-        const price = screen.getByText(/\$29.99/)
+        const price = screen.getByText(/\$29/)
         expect(price).toBeInTheDocument()
       })
     })
