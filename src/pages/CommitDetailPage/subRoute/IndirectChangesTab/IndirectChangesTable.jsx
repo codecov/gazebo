@@ -161,7 +161,7 @@ function IndirectChangesTable() {
 
   if (isLoading || commit?.state === 'pending') return <Loader />
 
-  if (indirectChangedFiles?.length === 0)
+  if (!indirectChangedFiles?.length)
     return <p className="m-4">No files covered by tests were changed</p>
 
   return (
