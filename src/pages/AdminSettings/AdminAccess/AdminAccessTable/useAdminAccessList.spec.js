@@ -44,13 +44,11 @@ const wrapper =
   (initialEntries = '/admin/gh/access') =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/admin/:provider/access">
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/admin/:provider/access">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
 const server = setupServer()

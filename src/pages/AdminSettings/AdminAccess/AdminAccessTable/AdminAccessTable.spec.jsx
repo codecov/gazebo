@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import AdminAccessTable from './AdminAccessTable'
 
@@ -46,7 +47,11 @@ const wrapper =
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={null}>{children}</Suspense>
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
       </QueryClientProvider>
     )
 const queryClient = new QueryClient({
