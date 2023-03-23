@@ -1,12 +1,19 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
 export const useAdminAccessList = () => {
-  const fetchResponse = useInfiniteQuery(
+  const { provider } = useParams()
+
+  return useInfiniteQuery(
     ['AdminAccessList'],
     ({ pageParam = 1, signal }) =>
-      Api.get({ path: `/users?is_admin=true&page=${pageParam}`, signal }),
+      Api.get({
+        path: `/users?is_admin=true&page=${pageParam}`,
+        signal,
+        provider,
+      }),
     {
       select: ({ pages }) => pages.map(({ results }) => results).flat(),
       getNextPageParam: (data) => {
@@ -18,8 +25,4 @@ export const useAdminAccessList = () => {
       },
     }
   )
-
-  return {
-    ...fetchResponse,
-  }
 }

@@ -23,7 +23,7 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route>{children}</Route>
+          <Route path="/:provider">{children}</Route>
         </MemoryRouter>
       </QueryClientProvider>
     )
