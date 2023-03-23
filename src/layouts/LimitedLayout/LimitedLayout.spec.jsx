@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import FullLayout from './FullLayout'
+import LimitedLayout from './LimitedLayout'
 
 jest.mock('../shared/ErrorBoundary', () => ({ children }) => <>{children}</>)
 
 const batmanQuote =
   'Why do we fall? So that we can learn to pick ourselves back up.'
 
-describe('FullLayout', () => {
+describe('LimitedLayout', () => {
   function setup(content) {
-    render(<FullLayout>{content}</FullLayout>, {
+    render(<LimitedLayout>{content}</LimitedLayout>, {
       wrapper: MemoryRouter,
     })
   }
