@@ -51,7 +51,7 @@ export function reducer(state, action) {
     case 'setHasNoUploads':
       return {
         ...state,
-        hasNoUploads: !uploads || uploads?.length === 0,
+        hasNoUploads: !uploads || uploads.length === 0,
       }
     default:
       return state
