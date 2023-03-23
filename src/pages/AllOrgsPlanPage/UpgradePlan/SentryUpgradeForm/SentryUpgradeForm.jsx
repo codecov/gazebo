@@ -23,6 +23,7 @@ import RadioInput from 'ui/RadioInput/RadioInput'
 import TextInput from 'ui/TextInput'
 
 const MIN_NB_SEATS = 5
+const SENTRY_PRICE = 29
 
 function getInitialDataForm(sentryPlanYear, accountDetails) {
   const plan = accountDetails?.plan
@@ -80,12 +81,12 @@ function useUpgradeForm({ sentryPlanMonth, sentryPlanYear, accountDetails }) {
   const seats = watch('seats')
   const newPlan = watch('newPlan')
 
-  let perYearPrice = 29.99
+  let perYearPrice = SENTRY_PRICE
   if (seats > 5) {
     perYearPrice += Math.floor(seats - 5) * sentryPlanYear?.baseUnitPrice
   }
 
-  let perMonthPrice = 29.99
+  let perMonthPrice = SENTRY_PRICE
   if (seats > 5) {
     perMonthPrice += Math.floor(seats - 5) * sentryPlanMonth?.baseUnitPrice
   }
@@ -281,7 +282,7 @@ function SentryUpgradeForm({
           <span className="font-semibold">
             {sentryPlanYear?.trialDays} day free trial
           </span>
-          , then $29.99 monthly includes 5 seats.
+          , then ${SENTRY_PRICE} monthly includes 5 seats.
         </p>
       </div>
       <div>
