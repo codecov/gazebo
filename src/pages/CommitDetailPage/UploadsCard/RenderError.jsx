@@ -121,7 +121,7 @@ const RenderError = ({ errors = [], state }) => {
           {readableError}
         </span>
       ))}
-      {filteredErrors.length === 0 &&
+      {filteredErrors?.length === 0 &&
         typeof state === 'string' &&
         state?.toUpperCase() === UploadStateEnum.error && (
           <span className="flex items-center gap-1 text-ds-primary-red">
