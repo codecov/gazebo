@@ -13,12 +13,28 @@ jest.mock('config')
 const server = setupServer()
 const queryClient = new QueryClient()
 
+const plans = [
+  {
+    marketingName: 'Sentry Pro Team',
+    value: 'users-sentrym',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Includes 5 seats',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    trialDays: 14,
+  },
+]
+
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov']}>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov']}>
       <Route path="/:provider/:owner">{children}</Route>
-    </QueryClientProvider>
-  </MemoryRouter>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 beforeAll(() => {
@@ -68,6 +84,9 @@ describe('HeaderBanners', () => {
       }),
       rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json({ integrationId }))
+      ),
+      rest.get('/internal/plans', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(plans))
       )
     )
   }
@@ -178,6 +197,26 @@ describe('HeaderBanners', () => {
 
       const banner = screen.getByText(/Codecov's GitHub app/)
       expect(banner).toBeInTheDocument()
+    })
+  })
+
+  describe('user is running in self hosted mode', () => {
+    beforeEach(() => {
+      setup({
+        isSelfHosted: true,
+      })
+    })
+
+    it('renders an empty dom', () => {
+      const { container } = render(
+        <HeaderBanners
+          provider="gh"
+          owner={{ username: 'codecov', isCurrentUserPartOfOrg: true }}
+        />,
+        { wrapper }
+      )
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 })

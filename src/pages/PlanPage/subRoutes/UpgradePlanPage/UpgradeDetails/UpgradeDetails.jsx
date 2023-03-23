@@ -49,7 +49,7 @@ const determineDetails = ({
     benefits: proPlanYear?.benefits,
   }
 
-  if (canApplySentryUpgrade({ plans })) {
+  if (canApplySentryUpgrade({ plan, plans })) {
     details = {
       img: (
         <div>
