@@ -713,7 +713,7 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        const price = await screen.findByText('$29.99')
+        const price = await screen.findByText('$29')
         expect(price).toBeInTheDocument()
       })
 

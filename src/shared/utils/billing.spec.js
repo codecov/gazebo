@@ -377,6 +377,7 @@ describe('findSentryPlans', () => {
 describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
+      plan: Plans.USERS_PR_INAPPM,
       plans: [{ value: 'users-sentrym' }],
     })
 
@@ -385,6 +386,7 @@ describe('canApplySentryUpgrade', () => {
 
   it('returns true when list contains annual plan', () => {
     const result = canApplySentryUpgrade({
+      plan: Plans.USERS_PR_INAPPM,
       plans: [{ value: 'users-sentryy' }],
     })
 
@@ -393,7 +395,17 @@ describe('canApplySentryUpgrade', () => {
 
   it('returns false when plans are not in list', () => {
     const result = canApplySentryUpgrade({
+      plan: Plans.USERS_PR_INAPPM,
       plans: [{ value: 'users-free' }],
+    })
+
+    expect(result).toBeFalsy()
+  })
+
+  it('returns false when user has enterprise plan', () => {
+    const result = canApplySentryUpgrade({
+      plan: Plans.USERS_ENTERPRISEM,
+      plans: [{ value: 'users-sentryy' }],
     })
 
     expect(result).toBeFalsy()

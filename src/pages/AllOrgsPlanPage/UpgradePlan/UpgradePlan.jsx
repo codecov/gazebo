@@ -52,7 +52,7 @@ const FormDetails = ({
     )
   }
 
-  if (canApplySentryUpgrade({ plans })) {
+  if (canApplySentryUpgrade({ plan, plans })) {
     return (
       <SentryUpgradeForm
         accountDetails={accountDetails}

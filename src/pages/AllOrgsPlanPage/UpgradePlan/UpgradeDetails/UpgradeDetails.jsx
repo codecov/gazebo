@@ -22,6 +22,8 @@ function shouldRenderCancelLink(accountDetails, plan) {
   return true
 }
 
+const SENTRY_PRICE = 29
+
 // eslint-disable-next-line complexity
 const determineDetails = ({
   plan,
@@ -63,7 +65,7 @@ const determineDetails = ({
       baseUnitPrice: 'Custom Pricing',
       benefits: proPlanYear?.benefits,
     }
-  } else if (canApplySentryUpgrade({ plans })) {
+  } else if (canApplySentryUpgrade({ plan, plans })) {
     details = {
       img: (
         <div>
@@ -73,7 +75,8 @@ const determineDetails = ({
       marketingName: sentryPlanYear?.marketingName,
       baseUnitPrice: (
         <>
-          $29.99<span className="text-base">/monthly</span>
+          ${SENTRY_PRICE}
+          <span className="text-base">/monthly</span>
         </>
       ),
       priceDisclaimer: (
