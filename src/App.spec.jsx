@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { BrowserRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
@@ -9,7 +10,6 @@ import { useFlags } from 'shared/featureFlags'
 
 import App from './App'
 
-jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
 jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
 jest.mock('./pages/AllOrgsPlanPage', () => () => 'AllOrgsPlanPage')
@@ -20,12 +20,16 @@ jest.mock('./pages/HomePage', () => () => 'HomePage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
 jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
 jest.mock('./pages/MembersPage', () => () => 'MembersPage')
-jest.mock('./pages/PlanPage/PlanPage', () => () => 'PlanPage')
+jest.mock('./pages/PlanPage', () => () => 'PlanPage')
 jest.mock('./pages/PullRequestPage', () => () => 'PullRequestPage')
 jest.mock('./pages/RepoPage', () => () => 'RepoPage')
 jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
+jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 
 jest.mock('./shared/GlobalBanners', () => () => '')
+
+jest.mock('./layouts/Header', () => () => '')
+jest.mock('./layouts/Footer', () => () => '')
 
 jest.mock('@tanstack/react-query-devtools', () => ({
   ReactQueryDevtools: () => 'ReactQueryDevtools',
@@ -42,19 +46,42 @@ const user = {
   onboardingCompleted: false,
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 const server = setupServer()
+let testLocation
+const wrapper =
+  (initialEntries = []) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          {children}
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
 beforeAll(() => {
-  // silence Error at useUser: Aborted
-  console.error = () => {}
-  server.listen()
+  server.listen({ onUnhandledRequest: 'warn' })
 })
 afterEach(() => {
   config.IS_SELF_HOSTED = false
+  queryClient.clear()
   server.resetHandlers()
 })
 afterAll(() => server.close())
-
-const wrapper = ({ children }) => <BrowserRouter>{children}</BrowserRouter>
 
 describe('App', () => {
   function setup(
@@ -90,412 +117,465 @@ describe('App', () => {
     )
   }
 
-  describe('rendering account settings page', () => {
-    beforeEach(() => {
-      window.history.pushState(
-        {},
-        'Test Account Settings Page',
-        '/account/gh/codecov/'
-      )
-      setup()
-    })
+  const cloudFullRouterCases = [
+    [
+      {
+        testLabel: 'LoginPage',
+        pathname: '/login',
+        expected: {
+          page: /LoginPage/i,
+          location: '/login',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'LoginPage',
+        pathname: '/login/bb',
+        expected: {
+          page: /LoginPage/i,
+          location: '/login/bb',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'AccountSettings',
+        pathname: '/account/gh/codecov',
+        expected: {
+          page: /AccountSettings/i,
+          location: '/account/gh/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'AdminSettingsPage',
+        pathname: '/admin/gh/access',
+        expected: {
+          page: /RepoPage/i,
+          location: '/admin/gh/access', // Should probably redirect this but I'm trying to keep existing behavior.
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'PlanPage',
+        pathname: '/plan/gh/codecov',
+        expected: {
+          page: /PlanPage/i,
+          location: '/plan/gh/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'AllOrgsPlanPage',
+        pathname: '/plan/gh',
+        expected: {
+          page: /AllOrgsPlanPage/i,
+          location: '/plan/gh',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'MembersPage',
+        pathname: '/members/gh/codecov',
+        expected: {
+          page: /MembersPage/i,
+          location: '/members/gh/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'AnalyticsPage',
+        pathname: '/analytics/gh/codecov',
+        expected: {
+          page: /AnalyticsPage/i,
+          location: '/analytics/gh/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'FeedbackPage',
+        pathname: '/bb/feedback',
+        expected: {
+          page: /FeedbackPage/i,
+          location: '/bb/feedback',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'HomePage',
+        pathname: '/gh',
+        expected: {
+          page: /HomePage/i,
+          location: '/gh',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'OwnerPage',
+        pathname: '/gh/codecov',
+        expected: {
+          page: /OwnerPage/i,
+          location: '/gh/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'compare to pull redirect',
+        pathname: '/gh/codecov/codecov/compare/123...456',
+        expected: {
+          page: /PullRequestPage/i,
+          location: '/gh/codecov/codecov/pull/123...456',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'PullRequestPage',
+        pathname: '/gh/codecov/codecov/pull/123',
+        expected: {
+          page: /PullRequestPage/i,
+          location: '/gh/codecov/codecov/pull/123',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'CommitDetailPage',
+        pathname: '/gh/codecov/codecov/commit/123',
+        expected: {
+          page: /CommitDetailPage/i,
+          location: '/gh/codecov/codecov/commit/123',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'CommitDetailPage',
+        pathname: '/gh/codecov/codecov/commit/123/tree/main.ts',
+        expected: {
+          page: /CommitDetailPage/i,
+          location: '/gh/codecov/codecov/commit/123/tree/main.ts',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'RepoPage',
+        pathname: '/gh/codecov/codecov',
+        expected: {
+          page: /RepoPage/i,
+          location: '/gh/codecov/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'EnterpriseLandingPage',
+        pathname: '/',
+        expected: {
+          page: /HomePage/i,
+          location: '/gh',
+        },
+      },
+    ],
+  ]
 
-    it('renders the AccountSettings page', async () => {
-      render(<App />, { wrapper })
-
-      const page = await screen.findByText(/AccountSettings/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering admin settings page', () => {
-    describe('IS_SELF_HOSTED is true', () => {
+  describe.each(cloudFullRouterCases)(
+    'self hosted routing',
+    ({ testLabel, pathname, expected }) => {
       beforeEach(() => {
-        config.IS_SELF_HOSTED = true
-      })
-
-      describe('/admin/gh/access', () => {
-        beforeEach(() => {
-          window.history.pushState(
-            {},
-            'Test Admin Settings Page',
-            '/admin/gh/access'
-          )
-          setup()
-        })
-
-        it('renders admin settings page', async () => {
-          render(<App />, { wrapper })
-
-          const page = await screen.findByText('AdminSettingsPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-    })
-  })
-
-  describe('rendering analytics page', () => {
-    beforeEach(() => {
-      window.history.pushState(
-        {},
-        'Test Analytics Page',
-        '/analytics/gh/codecov/'
-      )
-      setup()
-    })
-
-    it('renders the Analytics page', async () => {
-      render(<App />, { wrapper })
-
-      const page = await screen.findByText(/AnalyticsPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering commit page', () => {
-    beforeEach(() => {
-      window.history.pushState(
-        {},
-        'Test Commit Page',
-        '/gh/codecov/repo/commit/commit/file.js'
-      )
-      setup()
-    })
-
-    it('renders the commit page', async () => {
-      render(<App />, { wrapper })
-
-      const page = await screen.findByText(/CommitDetailPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering enterprise landing page', () => {
-    describe('IS_SELF_HOSTED is true', () => {
-      beforeEach(() => {
-        config.IS_SELF_HOSTED = true
-      })
-
-      describe('/', () => {
-        beforeEach(() => {
-          window.history.pushState({}, 'Test Landing Page Render', '/')
-          setup()
-        })
-
-        it('renders landing page', async () => {
-          render(<App />, { wrapper })
-
-          const page = await screen.findByText('EnterpriseLandingPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-    })
-  })
-
-  describe('rendering feedback page', () => {
-    beforeEach(() => {
-      window.history.pushState({}, 'Test Feedback Page', '/gh/feedback')
-      setup()
-    })
-
-    it('renders the feedback page', async () => {
-      render(<App />, { wrapper })
-
-      const page = await screen.findByText(/FeedbackPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering home page', () => {
-    describe('IS_SELF_HOSTED is false', () => {
-      beforeEach(() => {
-        config.IS_SELF_HOSTED = false
-        window.history.pushState({}, 'Test Landing Page Redirect', '/')
-        setup()
-      })
-
-      describe('/', () => {
-        it('redirects to /gh', async () => {
-          render(<App />, { wrapper })
-
-          const page = await screen.findByText('HomePage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-    })
-  })
-
-  describe('rendering login page', () => {
-    describe('IS_SELF_HOSTED is true', () => {
-      beforeEach(() => {
-        config.IS_SELF_HOSTED = true
-      })
-
-      describe('/login/:provider', () => {
-        beforeEach(() => {
-          window.history.pushState(
-            {},
-            'Test Landing Page Redirect',
-            '/login/gh'
-          )
-          setup()
-        })
-
-        it('redirects to landing page', () => {
-          render(<App />, { wrapper })
-
-          const page = screen.getByText('EnterpriseLandingPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-
-      describe('/login', () => {
-        beforeEach(() => {
-          window.history.pushState({}, 'Test Landing Page Redirect', '/login')
-          setup()
-        })
-
-        it('redirects to landing page', () => {
-          render(<App />, { wrapper })
-
-          const page = screen.getByText('EnterpriseLandingPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-    })
-
-    describe('IS_SELF_HOSTED is false', () => {
-      beforeAll(() => {
-        config.IS_SELF_HOSTED = false
-      })
-
-      describe('/login/:provider', () => {
-        beforeEach(() => {
-          window.history.pushState(
-            {},
-            'Test Landing Page Redirect',
-            '/login/gh'
-          )
-          setup()
-        })
-
-        it('renders login page', async () => {
-          render(<App />, { wrapper })
-
-          const page = await screen.findByText('LoginPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-
-      describe('/login', () => {
-        beforeEach(() => {
-          window.history.pushState({}, 'Test Landing Page Redirect', '/login')
-          setup()
-        })
-
-        it('renders login page', () => {
-          render(<App />, { wrapper })
-
-          const page = screen.getByText('LoginPage')
-          expect(page).toBeInTheDocument()
-        })
-      })
-    })
-  })
-
-  describe('rendering owner page', () => {
-    beforeEach(() => {
-      window.history.pushState({}, 'Test Owner Page', '/gh/codecov')
-      setup()
-    })
-
-    it('renders the owner page', async () => {
-      render(<App />, { wrapper })
-
-      const page = await screen.findByText(/OwnerPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering plan page', () => {
-    describe('cloud', () => {
-      beforeEach(() => {
-        window.history.pushState({}, 'Test Plan Page', '/plan/gh/codecov/')
-        config.IS_SELF_HOSTED = false
-        setup()
-      })
-      afterEach(() => (config.IS_SELF_HOSTED = false))
-
-      it('renders plan page', async () => {
-        render(<App />, { wrapper })
-
-        const page = await screen.findByText(/PlanPage/i)
-        expect(page).toBeInTheDocument()
-      })
-    })
-    describe('self hosted', () => {
-      beforeEach(() => {
-        window.history.pushState({}, 'Test Plan Page', '/plan/gh/codecov/')
-        config.IS_SELF_HOSTED = true
-        setup()
-      })
-      afterEach(() => (config.IS_SELF_HOSTED = false))
-
-      it('renders plan page', async () => {
-        render(<App />, { wrapper })
-
-        const page = screen.queryByText(/PlanPage/i)
-        expect(page).not.toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('rendering all orgs plan page', () => {
-    describe('cloud', () => {
-      beforeEach(() => {
-        window.history.pushState({}, 'Test Plan Page', '/plan/gh')
         config.IS_SELF_HOSTED = false
         setup()
       })
 
-      afterEach(() => (config.IS_SELF_HOSTED = false))
+      it(`renders the ${testLabel} page`, async () => {
+        render(<App />, { wrapper: wrapper([pathname]) })
 
-      it('renders plan page', async () => {
-        render(<App />, { wrapper })
-
-        const page = await screen.findByText(/AllOrgsPlanPage/i)
-        expect(page).toBeInTheDocument()
-      })
-    })
-
-    describe('self hosted', () => {
-      beforeEach(() => {
-        window.history.pushState({}, 'Test Plan Page', '/plan/gh/')
-        config.IS_SELF_HOSTED = true
-        setup()
-      })
-
-      afterEach(() => (config.IS_SELF_HOSTED = false))
-
-      it('renders plan page', async () => {
-        render(<App />, { wrapper })
-
-        const page = screen.queryByText(/AllOrgsPlanPage/i)
-        expect(page).not.toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('rendering members page', () => {
-    describe('cloud', () => {
-      beforeEach(() => {
-        config.IS_SELF_HOSTED = false
-        window.history.pushState(
-          {},
-          'Test Members Page',
-          '/members/gh/codecov/'
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(expected.location)
         )
-        setup()
-      })
-      afterEach(() => jest.resetAllMocks())
-
-      it('renders members page', async () => {
-        render(<App />, { wrapper })
-
-        const page = await screen.findByText(/MembersPage/i)
+        const page = await screen.findByText(expected.page)
         expect(page).toBeInTheDocument()
       })
-    })
-    describe('self hosted', () => {
+    }
+  )
+
+  const cloudLimitedRouterCases = [
+    [
+      {
+        testLabel: 'HomePage',
+        pathname: '/gh',
+        expected: {
+          page: /TermsOfService/i,
+          originalPage: /HomePage/i,
+          location: '/gh',
+        },
+      },
+    ],
+  ]
+
+  describe.each(cloudLimitedRouterCases)(
+    'cloud limited routing',
+    ({ testLabel, pathname, expected }) => {
+      beforeEach(() => (config.IS_SELF_HOSTED = false))
+
+      it(`terms of service overrides the ${testLabel} page`, async () => {
+        setup({ termsOfServicePage: true })
+        render(<App />, { wrapper: wrapper([pathname]) })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(expected.location)
+        )
+        const page = await screen.findByText(expected.page)
+        expect(page).toBeInTheDocument()
+      })
+
+      it(`terms of service isn't active, renders  ${testLabel} page`, async () => {
+        setup({ termsOfServicePage: false })
+        render(<App />, { wrapper: wrapper([pathname]) })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(expected.location)
+        )
+        const page = await screen.findByText(expected.originalPage)
+        expect(page).toBeInTheDocument()
+      })
+    }
+  )
+
+  const selfHostedFullRouterCases = [
+    [
+      {
+        testLabel: 'LoginPage',
+        pathname: '/login',
+        expected: {
+          page: /EnterpriseLandingPage/i,
+          location: '/',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'LoginPage',
+        pathname: '/login/bb',
+        expected: {
+          page: /EnterpriseLandingPage/i,
+          location: '/',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'AccountSettings',
+        pathname: '/account/gh/codecov',
+        expected: {
+          page: /AccountSettings/i,
+          location: '/account/gh/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'AdminSettingsPage',
+        pathname: '/admin/gh/access',
+        expected: {
+          page: /AdminSettings/i,
+          location: '/admin/gh/access',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'PlanPage',
+        pathname: '/plan/gh/codecov',
+        expected: {
+          page: /RepoPage/i,
+          location: '/plan/gh/codecov', // Should probably redirect this but I'm trying to keep existing behavior.
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'AllOrgsPlanPage',
+        pathname: '/plan/gh',
+        expected: {
+          page: /OwnerPage/i,
+          location: '/plan/gh', // We should probably redirect this but I'm trying to keep existing behavior.
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'MembersPage',
+        pathname: '/members/gh/codecov',
+        expected: {
+          page: /RepoPage/i,
+          location: '/members/gh/codecov', // Should probably redirect this but I'm trying to keep existing behavior.
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'AnalyticsPage',
+        pathname: '/analytics/gh/codecov',
+        expected: {
+          page: /AnalyticsPage/i,
+          location: '/analytics/gh/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'FeedbackPage',
+        pathname: '/bb/feedback',
+        expected: {
+          page: /FeedbackPage/i,
+          location: '/bb/feedback',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'HomePage',
+        pathname: '/gh',
+        expected: {
+          page: /HomePage/i,
+          location: '/gh',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'OwnerPage',
+        pathname: '/gh/codecov',
+        expected: {
+          page: /OwnerPage/i,
+          location: '/gh/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'compare to pull redirect',
+        pathname: '/gh/codecov/codecov/compare/123...456',
+        expected: {
+          page: /PullRequestPage/i,
+          location: '/gh/codecov/codecov/pull/123...456',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'PullRequestPage',
+        pathname: '/gh/codecov/codecov/pull/123',
+        expected: {
+          page: /PullRequestPage/i,
+          location: '/gh/codecov/codecov/pull/123',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'CommitDetailPage',
+        pathname: '/gh/codecov/codecov/commit/123',
+        expected: {
+          page: /CommitDetailPage/i,
+          location: '/gh/codecov/codecov/commit/123',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'CommitDetailPage',
+        pathname: '/gh/codecov/codecov/commit/123/tree/main.ts',
+        expected: {
+          page: /CommitDetailPage/i,
+          location: '/gh/codecov/codecov/commit/123/tree/main.ts',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'RepoPage',
+        pathname: '/gh/codecov/codecov',
+        expected: {
+          page: /RepoPage/i,
+          location: '/gh/codecov/codecov',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'EnterpriseLandingPage',
+        pathname: '/',
+        expected: {
+          page: /EnterpriseLandingPage/i,
+          location: '/',
+        },
+      },
+    ],
+  ]
+
+  describe.each(selfHostedFullRouterCases)(
+    'self hosted routing',
+    ({ testLabel, pathname, expected }) => {
       beforeEach(() => {
         config.IS_SELF_HOSTED = true
-        window.history.pushState(
-          {},
-          'Test Members Page',
-          '/members/gh/codecov/'
-        )
         setup()
       })
-      afterEach(() => jest.resetAllMocks())
 
-      it('renders members page', () => {
-        render(<App />, { wrapper })
+      it(`renders the ${testLabel} page`, async () => {
+        render(<App />, { wrapper: wrapper([pathname]) })
 
-        const page = screen.queryByText(/MembersPage/i)
-        expect(page).not.toBeInTheDocument()
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(expected.location)
+        )
+        const page = await screen.findByText(expected.page)
+        expect(page).toBeInTheDocument()
       })
-    })
-  })
+    }
+  )
 
-  describe('rendering pull request page', () => {
-    beforeEach(() => {
-      window.history.pushState(
-        {},
-        'Test Pull Request Page',
-        '/gh/codecov/repo/pull/pullId'
-      )
-      setup()
-    })
+  const selfHostedLimitedRouterCases = [
+    [
+      {
+        testLabel: 'HomePage',
+        pathname: '/gh',
+        expected: {
+          page: /HomePage/i,
+          location: '/gh',
+        },
+      },
+    ],
+  ]
 
-    it('renders the pull request page', async () => {
-      render(<App />, { wrapper })
-
-      const page = await screen.findByText(/PullRequestPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering Repo page', () => {
-    beforeEach(() => {
-      window.history.pushState({}, 'Test Owner Page', '/gh/codecov/repo')
-      setup()
-    })
-
-    it('renders the repo page', async () => {
-      render(<App />, { wrapper })
-
-      const page = screen.getByText(/RepoPage/i)
-      expect(page).toBeInTheDocument()
-    })
-  })
-
-  describe('rendering terms of service page', () => {
-    beforeEach(() => {
-      window.history.pushState({}, 'Test Home Page', '/')
-
-      setup({
-        termsOfServicePage: true,
+  describe.each(selfHostedLimitedRouterCases)(
+    'self hosted limited routing',
+    ({ testLabel, pathname, expected }) => {
+      beforeEach(() => {
+        config.IS_SELF_HOSTED = true
+        setup()
       })
-    })
 
-    it('renders the terms of service page', async () => {
-      render(<App />, { wrapper })
+      it(`renders the normal ${testLabel} page`, async () => {
+        render(<App />, { wrapper: wrapper([pathname]) })
 
-      const tos = await screen.findByText(/TermsOfService/i)
-      expect(tos).toBeInTheDocument()
-
-      const HomePage = screen.queryByText('HomePage')
-      expect(HomePage).not.toBeInTheDocument()
-    })
-  })
-
-  describe('rendering terms of service page when flag is off', () => {
-    beforeEach(() => {
-      window.history.pushState({}, 'Test Home Page', '/')
-
-      setup({
-        termsOfServicePage: false,
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(expected.location)
+        )
+        const page = await screen.findByText(expected.page)
+        expect(page).toBeInTheDocument()
       })
-    })
-
-    it('renders the terms of service page', async () => {
-      render(<App />, { wrapper })
-
-      const tos = screen.queryByText(/TermsOfService/i)
-      expect(tos).not.toBeInTheDocument()
-
-      const HomePage = await screen.findByText('HomePage')
-      expect(HomePage).toBeInTheDocument()
-    })
-  })
+    }
+  )
 })

@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -10,7 +11,6 @@ import { withFeatureFlagProvider } from 'shared/featureFlags'
 
 import App from './App'
 import './globals.css'
-// TODO do not initialize 10 to 12 if enterprise.
 import reportWebVitals from './reportWebVitals'
 import { setupSentry } from './sentry.js'
 
@@ -33,12 +33,24 @@ const history = createBrowserHistory()
 
 setupSentry({ history })
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
+
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <Router history={history}>
-        <ProfiledApp />
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router history={history}>
+          <ProfiledApp />
+        </Router>
+      </QueryClientProvider>
     </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById('root')
