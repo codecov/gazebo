@@ -12,6 +12,7 @@ import {
   isEnterprisePlan,
   isFreePlan,
   isMonthlyPlan,
+  isPaidPlan,
   isSentryPlan,
   Plans,
   useProPlans,
@@ -327,6 +328,34 @@ describe('isSentryPlan', () => {
     expect(isSentryPlan(undefined)).toBe(false)
     expect(isSentryPlan(12345)).toBe(false)
     expect(isSentryPlan({})).toBe(false)
+  })
+})
+
+describe('isPaidPlan', () => {
+  it('supports monthly plans', () => {
+    expect(isPaidPlan(Plans.USERS_INAPP)).toBe(true)
+    expect(isPaidPlan(Plans.USERS_PR_INAPPM)).toBe(true)
+    expect(isPaidPlan(Plans.USERS_ENTERPRISEM)).toBe(true)
+    expect(isPaidPlan(Plans.USERS_SENTRYM)).toBe(true)
+  })
+
+  it('supports annual plans', () => {
+    expect(isPaidPlan(Plans.USERS_INAPPY)).toBe(true)
+    expect(isPaidPlan(Plans.USERS_PR_INAPPY)).toBe(true)
+    expect(isPaidPlan(Plans.USERS_ENTERPRISEY)).toBe(true)
+    expect(isPaidPlan(Plans.USERS_SENTRYY)).toBe(true)
+  })
+
+  it('false for free plans', () => {
+    expect(isPaidPlan(Plans.USERS_BASIC)).toBe(false)
+    expect(isPaidPlan(Plans.USERS_FREE)).toBe(false)
+  })
+
+  it('defaults to false otherwise', () => {
+    expect(isPaidPlan('rable rable')).toBe(false)
+    expect(isPaidPlan(undefined)).toBe(false)
+    expect(isPaidPlan(12345)).toBe(false)
+    expect(isPaidPlan({})).toBe(false)
   })
 })
 

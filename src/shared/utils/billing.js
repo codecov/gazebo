@@ -31,6 +31,11 @@ export function isFreePlan(plan) {
   return false
 }
 
+export function isPaidPlan(plan) {
+  if (typeof plan !== 'string') return false
+  return isAnnualPlan(plan) || isMonthlyPlan(plan)
+}
+
 export function isMonthlyPlan(plan) {
   if (typeof plan !== 'string') return false
 
