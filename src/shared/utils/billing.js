@@ -104,7 +104,11 @@ export const findSentryPlans = ({ plans }) => {
   }
 }
 
-export const canApplySentryUpgrade = ({ plans }) => {
+export const canApplySentryUpgrade = ({ plan, plans }) => {
+  if (isEnterprisePlan(plan)) {
+    return false
+  }
+
   return plans?.some(
     (plan) =>
       plan?.value === Plans.USERS_SENTRYM || plan?.value === Plans.USERS_SENTRYY

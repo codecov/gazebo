@@ -13,7 +13,7 @@ const GithubConfigBanner = () => {
   if (!isGh) return null
 
   return (
-    <div className="mt-8">
+    <div>
       <Banner>
         <BannerHeading>
           <h2 className="flex justify-center gap-2 font-semibold">
