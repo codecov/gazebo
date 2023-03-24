@@ -24,6 +24,7 @@ function LimitedLayout({ children }) {
   return (
     <Suspense fallback={<FullPageLoader />}>
       <header
+        data-testid="header"
         className={cs('text-white', {
           'bg-ds-gray-octonary': !isImpersonating,
           'bg-ds-pink-tertiary': isImpersonating,
@@ -39,18 +40,16 @@ function LimitedLayout({ children }) {
 
           {!isLoading && (
             <div className="mx-2 flex items-center gap-4 md:mx-4">
-              <Avatar user={currentUser.user} bordered />
+              <Avatar user={currentUser?.user} bordered />
             </div>
           )}
         </nav>
       </header>
-      <Suspense fallback={<FullPageLoader />}>
-        <div className="container py-10 px-4 sm:px-0">
-          <ErrorBoundary sentryScopes={[['layout', 'limited']]}>
-            <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
-          </ErrorBoundary>
-        </div>
-      </Suspense>
+      <div className="container py-10 px-4 sm:px-0">
+        <ErrorBoundary sentryScopes={[['layout', 'limited']]}>
+          <NetworkErrorBoundary>{children}</NetworkErrorBoundary>
+        </ErrorBoundary>
+      </div>
     </Suspense>
   )
 }

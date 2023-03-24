@@ -1,39 +1,113 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useImage } from 'services/image'
+import { useImpersonate } from 'services/impersonate'
 
 import LimitedLayout from './LimitedLayout'
 
-jest.mock('../shared/ErrorBoundary', () => ({ children }) => <>{children}</>)
+jest.mock('services/image')
+jest.mock('services/impersonate')
 
-const batmanQuote =
-  'Why do we fall? So that we can learn to pick ourselves back up.'
+const user = {
+  username: 'CodecovUser',
+  email: 'codecov@codecov.io',
+  name: 'codecov',
+  avatarUrl: 'photo',
+  onboardingCompleted: false,
+}
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
+const server = setupServer()
+
+const wrapper =
+  (initialEntries = ['/bb/batman/batcave']) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 describe('LimitedLayout', () => {
-  function setup(content) {
-    render(<LimitedLayout>{content}</LimitedLayout>, {
-      wrapper: MemoryRouter,
-    })
+  afterEach(() => jest.resetAllMocks())
+
+  function setup({ isImpersonating = false } = { isImpersonating: false }) {
+    useImage.mockReturnValue({ src: 'photo', isLoading: false, error: null })
+    useImpersonate.mockReturnValue({ isImpersonating })
+
+    server.use(
+      graphql.query('CurrentUser', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            me: { user: user, trackingMetadata: { ownerid: 123 }, ...user },
+          })
+        )
+      )
+    )
   }
 
-  describe('it renders with no children', () => {
-    beforeEach(() => {
-      setup()
+  describe('renders', () => {
+    beforeEach(() => setup())
+
+    it('a regular header', () => {
+      render(<LimitedLayout>Why do we fall?</LimitedLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const regularHeader = screen.getByTestId('header')
+      expect(regularHeader).toHaveClass('bg-ds-gray-octonary')
     })
 
-    it('renders the scaffolding but no content', () => {
-      const layout = screen.getByTestId('full-layout')
-      expect(layout).toBeEmptyDOMElement()
+    it('children', async () => {
+      render(<LimitedLayout>Why do we fall?</LimitedLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const content = await screen.findByText('Why do we fall?')
+      expect(content).toBeInTheDocument()
+    })
+
+    it('a user avatar', async () => {
+      render(<LimitedLayout>Why do we fall?</LimitedLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const avatar = await screen.findByRole('img', { name: 'avatar' })
+      expect(avatar).toBeInTheDocument()
     })
   })
 
-  describe('it renders with children', () => {
-    beforeEach(() => {
-      setup(<p>{batmanQuote}</p>)
-    })
+  describe('renders while impersonated', () => {
+    beforeEach(() => setup({ isImpersonating: true }))
 
-    it('renders the content of the page (children)', () => {
-      const content = screen.getByText(batmanQuote)
-      expect(content).toBeInTheDocument()
+    it('a pink header', () => {
+      render(<LimitedLayout>Why do we fall?</LimitedLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const pinkHeader = screen.getByTestId('header')
+      expect(pinkHeader).toHaveClass('bg-ds-pink-tertiary')
     })
   })
 })
