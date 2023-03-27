@@ -10,7 +10,6 @@ import { useFlags } from 'shared/featureFlags'
 
 import { useUserAccessGate } from './useUserAccessGate'
 
-jest.mock('services/toastNotification')
 jest.mock('shared/featureFlags')
 jest.spyOn(console, 'error')
 
@@ -276,7 +275,7 @@ describe('useUserAccessGate', () => {
           config.IS_SELF_HOSTED = isSelfHosted
           setup({ termsOfServicePage, user })
         })
-        it(`does not call addNotification`, async () => {
+        it(`return values are expect while useUser resolves`, async () => {
           const { result, waitFor } = renderHook(() => useUserAccessGate(), {
             wrapper: wrapper(['/gh']),
           })

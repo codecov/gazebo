@@ -6,10 +6,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useImage } from 'services/image'
 import { useFlags } from 'shared/featureFlags'
 
 import BaseLayout from './BaseLayout'
 
+jest.mock('services/image')
 jest.mock('shared/featureFlags')
 jest.spyOn(console, 'error') // Suppress unauthorized error
 
@@ -101,6 +103,7 @@ describe('BaseLayout', () => {
       currentUser: loggedInUser,
     }
   ) {
+    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     useFlags.mockReturnValue({
       termsOfServicePage,
     })

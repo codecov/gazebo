@@ -42,7 +42,7 @@ const user = {
   email: 'codecov@codecov.io',
   name: 'codecov',
   avatarUrl: 'photo',
-  onboardingCompleted: false,
+  termsAgreement: true,
 }
 
 const queryClient = new QueryClient({
@@ -279,7 +279,7 @@ describe('App', () => {
   ]
 
   describe.each(cloudFullRouterCases)(
-    'self hosted routing',
+    'cloud routing',
     ({ testLabel, pathname, expected }) => {
       beforeEach(() => {
         config.IS_SELF_HOSTED = false
