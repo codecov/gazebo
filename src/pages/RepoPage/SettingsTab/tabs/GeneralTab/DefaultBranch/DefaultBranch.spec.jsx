@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -52,6 +52,29 @@ const mockBranches = (hasNextPage) => ({
   },
 })
 
+const mockNextBranches = (hasNextPage) => ({
+  owner: {
+    repository: {
+      branches: {
+        edges: [
+          {
+            node: {
+              name: 'second',
+              head: {
+                commitid: '1',
+              },
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage,
+          endCursor: 'someEndCursor',
+        },
+      },
+    },
+  },
+})
+
 const queryClient = new QueryClient({
   logger: {
     error: () => {},
@@ -59,13 +82,16 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
-    <QueryClientProvider client={queryClient}>
-      <Route path="/:provider/:owner/:repo/settings">{children}</Route>
-    </QueryClientProvider>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = '/gh/codecov/codecov-client/settings') =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <QueryClientProvider client={queryClient}>
+          <Route path="/:provider/:owner/:repo/settings">{children}</Route>
+        </QueryClientProvider>
+      </MemoryRouter>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -79,11 +105,6 @@ afterAll(() => {
 })
 
 describe('DefaultBranch', () => {
-  const mutate = jest.fn()
-  const addNotification = jest.fn()
-  const fetchesNextPage = jest.fn()
-  const fetchFilters = jest.fn()
-
   function setup(
     { hasNextPage, isIntersecting, failMutation } = {
       hasNextPage: false,
@@ -91,16 +112,24 @@ describe('DefaultBranch', () => {
       failMutation: false,
     }
   ) {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+    const addNotification = jest.fn()
+    const fetchesNextPage = jest.fn()
+    const fetchFilters = jest.fn()
+
     server.use(
       graphql.query('GetBranches', (req, res, ctx) => {
         const afterCursorPassed = !!req.variables?.after
         if (afterCursorPassed) {
           fetchesNextPage()
+          const data = mockNextBranches(false)
+          return res(ctx.status(200), ctx.data(data))
         }
 
         fetchFilters(req.variables?.filters)
-
         const data = mockBranches(hasNextPage)
+
         return res(ctx.status(200), ctx.data(data))
       }),
 
@@ -124,22 +153,22 @@ describe('DefaultBranch', () => {
     useIntersection.mockReturnValue({
       isIntersecting: isIntersecting,
     })
+
+    return { mutate, addNotification, fetchesNextPage, fetchFilters, user }
   }
 
   describe('renders Default Branch component', () => {
-    beforeEach(() => {
-      setup()
-    })
+    beforeEach(() => setup())
 
     it('renders title', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const title = await screen.findByText(/Default Branch/)
       expect(title).toBeInTheDocument()
     })
 
     it('renders body', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const p = await screen.findByText(
         'Selection for branch context of data in coverage dashboard'
@@ -148,7 +177,7 @@ describe('DefaultBranch', () => {
     })
 
     it('renders branch context', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const label = screen.getByText(/Branch Context/)
       expect(label).toBeInTheDocument()
@@ -161,20 +190,14 @@ describe('DefaultBranch', () => {
   })
 
   describe('when clicking on select btn', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders all branches of repo', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      const { user } = setup()
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const branchSelector = await screen.findByRole('button', {
         name: 'Branch selector',
       })
-      userEvent.click(branchSelector)
+      await user.click(branchSelector)
 
       const branch1 = await screen.findByText('dummy')
       expect(branch1).toBeInTheDocument()
@@ -185,18 +208,17 @@ describe('DefaultBranch', () => {
 
     describe('when user selects a branch', () => {
       it('calls the mutation', async () => {
-        render(<DefaultBranch defaultBranch="main" />, { wrapper })
+        const { mutate, user } = setup()
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
         const branchSelector = await screen.findByRole('button', {
           name: 'Branch selector',
         })
-        userEvent.click(branchSelector)
+        await user.click(branchSelector)
 
         const dummyBranch = await screen.findByText('dummy')
-        userEvent.click(dummyBranch)
+        await user.click(dummyBranch)
 
         await waitFor(() => expect(mutate).toHaveBeenCalled())
       })
@@ -204,26 +226,17 @@ describe('DefaultBranch', () => {
   })
 
   describe('when mutation returns new default', () => {
-    beforeEach(() => {
-      setup('dummy')
-    })
-
     it('renders new default branch', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      const { user } = setup('dummy')
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const branchSelector = await screen.findByRole('button', {
         name: 'Branch selector',
       })
-      userEvent.click(branchSelector)
+      await user.click(branchSelector)
 
       const dummyBranch = await screen.findByText('dummy')
-      userEvent.click(dummyBranch)
-
-      await waitFor(() => queryClient.isMutating)
-      await waitFor(() => !queryClient.isMutating)
+      await user.click(dummyBranch)
 
       const updatedSelector = await screen.findByRole('button', {
         name: 'Branch selector',
@@ -234,43 +247,32 @@ describe('DefaultBranch', () => {
   })
 
   describe('when mutation is not successful', () => {
-    beforeEach(() => {
-      setup({ failMutation: true })
-    })
-
     it('calls the mutation', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      const { mutate, user } = setup({ failMutation: true })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const branchSelector = await screen.findByRole('button', {
         name: 'Branch selector',
       })
-      userEvent.click(branchSelector)
+      await user.click(branchSelector)
 
       const dummyBranch = await screen.findByText('dummy')
-      userEvent.click(dummyBranch)
-
-      await waitFor(() => queryClient.isMutating)
-      await waitFor(() => !queryClient.isMutating)
+      await user.click(dummyBranch)
 
       await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
     it('adds an error notification', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      const { addNotification, user } = setup({ failMutation: true })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const branchSelector = await screen.findByRole('button', {
         name: 'Branch selector',
       })
-      userEvent.click(branchSelector)
+      await user.click(branchSelector)
 
       const dummyBranch = await screen.findByText('dummy')
-      userEvent.click(dummyBranch)
+      await user.click(dummyBranch)
 
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
@@ -283,36 +285,29 @@ describe('DefaultBranch', () => {
 
   describe('when onLoadMore is triggered', () => {
     describe('when there is a next page', () => {
-      beforeEach(() => {
-        setup({ hasNextPage: true, isIntersecting: true })
-      })
-
       it('calls fetchNextPage', async () => {
-        render(<DefaultBranch defaultBranch="main" />, { wrapper })
+        const { fetchesNextPage, user } = setup({
+          hasNextPage: true,
+          isIntersecting: true,
+        })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
         const select = screen.getByText('main')
-        userEvent.click(select)
+        await user.click(select)
 
         await waitFor(() => expect(fetchesNextPage).toBeCalled())
       })
     })
 
     describe('when there is not a next page', () => {
-      beforeEach(() => {
-        setup({ isIntersecting: true })
-      })
-
       it('does not call fetchNextPage', async () => {
-        render(<DefaultBranch defaultBranch="main" />, { wrapper })
+        const { fetchesNextPage, user } = setup({ isIntersecting: true })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
         const select = await screen.findByText('main')
-        userEvent.click(select)
+        await user.click(select)
 
         await waitFor(() => expect(fetchesNextPage).not.toBeCalled())
       })
@@ -320,35 +315,24 @@ describe('DefaultBranch', () => {
   })
 
   describe('when onSearch is triggered', () => {
-    beforeEach(() => {
-      setup({ hasNextPage: true, isIntersecting: true })
-      jest.useFakeTimers()
-    })
-
-    afterEach(() => {
-      jest.useRealTimers()
-    })
-
     it('fetches with search value', async () => {
-      render(<DefaultBranch defaultBranch="main" />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      const { fetchFilters, user } = setup({
+        hasNextPage: true,
+        isIntersecting: true,
+      })
+      render(<DefaultBranch defaultBranch="main" />, { wrapper: wrapper() })
 
       const select = await screen.findByText('main')
-      userEvent.click(select)
+      await user.click(select)
 
-      const searchInput = await screen.findByText('Search')
-      userEvent.type(searchInput, 'cool branch name')
+      const searchInput = screen.getByRole('textbox')
+      await user.click(searchInput)
+      await user.keyboard('cool branch name')
 
-      act(() => jest.runOnlyPendingTimers())
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      await waitFor(() => expect(fetchFilters).toBeCalled())
       await waitFor(() =>
-        expect(fetchFilters).toBeCalledWith({ searchValue: 'cool branch name' })
+        expect(fetchFilters).toBeCalledWith({
+          searchValue: 'cool branch name',
+        })
       )
     })
   })

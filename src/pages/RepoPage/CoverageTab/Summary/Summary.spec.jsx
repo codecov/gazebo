@@ -105,16 +105,19 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/test/critical-role']}>
-      <Route path="/:provider/:owner/:repo">
-        <Suspense fallback={<div>loading</div>}>{children}</Suspense>
-      </Route>
-      <Route path="*" render={({ location }) => location.pathname} />
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (initialEntries = '/gh/test/critical-role') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo">
+            <Suspense fallback={<div>loading</div>}>{children}</Suspense>
+          </Route>
+          <Route path="*" render={({ location }) => location.pathname} />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -128,23 +131,31 @@ afterAll(() => {
 })
 
 describe('Summary', () => {
-  const fetchNextPage = jest.fn()
-  const mockSearching = jest.fn()
-  const mockSetNewPath = jest.fn()
-  const mockUseCoverageRedirectData = {
-    redirectState: {
-      isRedirectionEnabled: false,
-      newPath: undefined,
-    },
-    setNewPath: mockSetNewPath,
-  }
-
   function setup(
-    { hasNextPage, coverageRedirectData } = {
+    {
+      hasNextPage,
+      coverageRedirectData = {
+        redirectState: {
+          isRedirectionEnabled: false,
+          newPath: undefined,
+        },
+        setNewPath: jest.fn(),
+      },
+    } = {
       hasNextPage: false,
-      coverageRedirectData: mockUseCoverageRedirectData,
+      coverageRedirectData: {
+        redirectState: {
+          isRedirectionEnabled: false,
+          newPath: undefined,
+        },
+        setNewPath: jest.fn(),
+      },
     }
   ) {
+    const user = userEvent.setup()
+    const fetchNextPage = jest.fn()
+    const mockSearching = jest.fn()
+
     useCoverageRedirect.mockReturnValue(coverageRedirectData)
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) =>
@@ -190,6 +201,8 @@ describe('Summary', () => {
         )
       )
     )
+
+    return { fetchNextPage, mockSearching, user }
   }
 
   describe('with populated data', () => {
@@ -198,21 +211,21 @@ describe('Summary', () => {
     })
 
     it('renders the branch selector', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const branchContext = await screen.findByText(/Branch Context/)
       expect(branchContext).toBeInTheDocument()
     })
 
     it('renders default branch as selected branch', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const dropDownBtn = await screen.findByText('main')
       expect(dropDownBtn).toBeInTheDocument()
     })
 
     it('renders the source commit short sha', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const shortSha = await screen.findByText(/321fdsa/)
       expect(shortSha).toBeInTheDocument()
@@ -225,61 +238,66 @@ describe('Summary', () => {
     })
 
     it('renders the branch coverage', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const percentage = await screen.findByText('95.00%')
       expect(percentage).toBeInTheDocument()
     })
     it('renders the lines covered', async () => {
-      render(<Summary />, { wrapper })
+      render(<Summary />, { wrapper: wrapper() })
 
       const lineCoverage = await screen.findByText('100 of 100 lines covered')
       expect(lineCoverage).toBeInTheDocument()
     })
   })
-  /*
-    I don't love this test but I couldn't think of a good way to test
-    the select user interaction and the location change correctly.
-  */
-  describe('uses a conditional Redirect', () => {
-    beforeEach(() => {
-      setup({
-        coverageRedirectData: {
-          redirectState: {
-            newPath: '/some/new/location',
-            isRedirectionEnabled: true,
-          },
-          setNewPath: mockSetNewPath,
-        },
-      })
-    })
 
+  describe('uses a conditional Redirect', () => {
     it('updates the location', async () => {
-      render(<Summary />, { wrapper })
+      const mockSetNewPath = jest.fn()
+      const coverageRedirectData = {
+        redirectState: {
+          newPath: '/some/new/location',
+          isRedirectionEnabled: true,
+        },
+        setNewPath: mockSetNewPath,
+      }
+
+      const { user } = setup({
+        coverageRedirectData: coverageRedirectData,
+      })
+      render(<Summary />, { wrapper: wrapper() })
 
       const button = await screen.findByText('main')
-      userEvent.click(button)
+      await user.click(button)
 
       const branch1 = await screen.findByText('branch-1')
-      userEvent.click(branch1)
+      await user.click(branch1)
 
       expect(mockSetNewPath).toHaveBeenCalled()
     })
   })
 
   describe('fires the setNewPath on branch selection', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('updates the location', async () => {
-      render(<Summary />, { wrapper })
+      const mockSetNewPath = jest.fn()
+      const coverageRedirectData = {
+        redirectState: {
+          newPath: '/some/new/location',
+          isRedirectionEnabled: true,
+        },
+        setNewPath: mockSetNewPath,
+      }
+
+      const { user } = setup({
+        coverageRedirectData: coverageRedirectData,
+      })
+      render(<Summary />, { wrapper: wrapper() })
 
       const main = await screen.findByText('main')
-      userEvent.click(main)
+      await user.click(main)
 
       const branch1 = await screen.findByText('branch-1')
-      userEvent.click(branch1)
+      await user.click(branch1)
 
       expect(mockSetNewPath).toHaveBeenCalled()
       expect(mockSetNewPath).toHaveBeenCalledWith('branch-1')
@@ -288,8 +306,9 @@ describe('Summary', () => {
 
   describe('when onLoadMore is triggered', () => {
     describe('there is a next page', () => {
-      beforeEach(() => {
-        setup({
+      it('calls fetchNextPage', async () => {
+        const mockSetNewPath = jest.fn()
+        const { fetchNextPage, user } = setup({
           hasNextPage: true,
           coverageRedirectData: {
             redirectState: {
@@ -299,28 +318,30 @@ describe('Summary', () => {
             setNewPath: mockSetNewPath,
           },
         })
-
         useIntersection.mockReturnValue({
           isIntersecting: true,
         })
-      })
-
-      it('calls fetchNextPage', async () => {
-        render(<Summary />, { wrapper })
+        render(<Summary />, { wrapper: wrapper() })
 
         const select = await screen.findByRole('button', {
           name: 'select branch',
         })
-        userEvent.click(select)
+        await user.click(select)
 
         await waitFor(() => expect(fetchNextPage).toBeCalled())
       })
     })
 
     describe('when there is not a next page', () => {
+      /*  TODO: this is a false positive test. The component is
+          actually calling it but because of scoping it was
+          always falsy
+      */
       const fetchNextPage = jest.fn()
-      beforeEach(() => {
-        setup({
+      it('does not call fetchNextPage', async () => {
+        const mockSetNewPath = jest.fn()
+
+        const { user } = setup({
           hasNextPage: false,
           coverageRedirectData: {
             redirectState: {
@@ -334,33 +355,29 @@ describe('Summary', () => {
         useIntersection.mockReturnValue({
           isIntersecting: true,
         })
-      })
-      it('does not call fetchNextPage', async () => {
-        render(<Summary />, { wrapper })
+
+        render(<Summary />, { wrapper: wrapper() })
 
         const select = await screen.findByRole('button', {
           name: 'select branch',
         })
-        userEvent.click(select)
+        await user.click(select)
 
-        await waitFor(() => expect(fetchNextPage).not.toBeCalled())
+        expect(fetchNextPage).not.toBeCalled()
       })
     })
   })
 
   describe('user searches for branch', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('calls the api with the search value', async () => {
-      render(<Summary />, { wrapper })
+      const { mockSearching, user } = setup()
+      render(<Summary />, { wrapper: wrapper() })
 
       const select = await screen.findByText('main')
-      userEvent.click(select)
+      await user.click(select)
 
       const input = await screen.findByRole('textbox')
-      userEvent.type(input, 'searching for branch')
+      await user.type(input, 'searching for branch')
 
       await waitFor(() =>
         expect(mockSearching).toHaveBeenCalledWith('searching for branch')

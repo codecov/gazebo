@@ -17,7 +17,6 @@ const SearchField = forwardRef(
     ref
   ) => {
     const [search, setSearch] = useState(searchValue)
-    // eslint-disable-next-line no-unused-vars
     const { className, value, onChange, icon, ...newProps } = rest
 
     useDebounce(

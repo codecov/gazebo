@@ -36,6 +36,7 @@ const enabledIcons = [
   'printer',
   'cog',
   'light-bulb',
+  'no-symbol',
 ]
 
 console.log('Generating Icons import')

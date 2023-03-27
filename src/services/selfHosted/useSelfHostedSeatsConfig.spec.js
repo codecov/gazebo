@@ -15,11 +15,11 @@ const mockData = {
 
 const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh']}>
-    <Route path="/:provider">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path="/:provider">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 const server = setupServer()

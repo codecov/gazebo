@@ -40,7 +40,7 @@ function CreateTokenModal({ closeModal, provider }) {
         <TextInput
           dataMarketing="access-token-name"
           label="Token Name"
-          id="token-name"
+          aria-label="token name"
           name="name"
           placeholder="Name"
           {...register('name', { required: true })}

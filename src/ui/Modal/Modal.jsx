@@ -46,12 +46,9 @@ Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   hasCloseButton: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
-  title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string,
-  body: PropTypes.oneOfType([
-    PropTypes.element.isRequired,
-    PropTypes.string.isRequired,
-  ]),
+  title: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
+  subtitle: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
+  body: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
   footer: PropTypes.element,
   size: PropTypes.string,
 }

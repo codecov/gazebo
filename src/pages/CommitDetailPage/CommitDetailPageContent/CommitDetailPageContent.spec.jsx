@@ -99,6 +99,8 @@ afterAll(() => server.close())
 
 describe('CommitDetailPageContent', () => {
   function setup(erroredUploads = false) {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('Commit', (req, res, ctx) => {
         if (erroredUploads) {
@@ -108,6 +110,8 @@ describe('CommitDetailPageContent', () => {
         return res(ctx.status(200), ctx.data(mockCommitData))
       })
     )
+
+    return { user }
   }
 
   describe('rendering component', () => {
@@ -225,16 +229,15 @@ describe('CommitDetailPageContent', () => {
   })
 
   describe('test tab navigation', () => {
-    beforeEach(() => setup())
-
     describe('user clicks files tab', () => {
       it('navigates to files url', async () => {
+        const { user } = setup()
         render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
         })
 
         const link = await screen.findByRole('link', { name: 'File explorer' })
-        userEvent.click(link)
+        await user.click(link)
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe(
@@ -246,12 +249,13 @@ describe('CommitDetailPageContent', () => {
 
     describe('user clicks files changed tab', () => {
       it('navigates to base url', async () => {
+        const { user } = setup()
         render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
         })
 
         const link = await screen.findByRole('link', { name: /Files changed/ })
-        userEvent.click(link)
+        await user.click(link)
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe(
@@ -263,6 +267,7 @@ describe('CommitDetailPageContent', () => {
 
     describe('user clicks indirect changes tab', () => {
       it('navigates to base url', async () => {
+        const { user } = setup()
         render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
         })
@@ -270,7 +275,7 @@ describe('CommitDetailPageContent', () => {
         const link = await screen.findByRole('link', {
           name: /Indirect changes/,
         })
-        userEvent.click(link)
+        await user.click(link)
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe(
@@ -281,6 +286,8 @@ describe('CommitDetailPageContent', () => {
     })
 
     describe('rendering tabs count', () => {
+      beforeEach(() => setup())
+
       it('renders files changed tab count', async () => {
         render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),

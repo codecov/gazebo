@@ -117,27 +117,26 @@ describe('useInfiniteUser', () => {
 
       result.current.fetchNextPage()
 
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
-
-      expect(result.current.data).toStrictEqual([
-        {
-          ownerid: 1,
-          username: 'user1-codecov',
-          email: 'user1@codecov.io',
-          name: 'User 1',
-          isAdmin: true,
-          activated: true,
-        },
-        {
-          ownerid: 2,
-          username: 'user2-codecov',
-          email: 'user2@codecov.io',
-          name: 'User 2',
-          isAdmin: true,
-          activated: true,
-        },
-      ])
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual([
+          {
+            ownerid: 1,
+            username: 'user1-codecov',
+            email: 'user1@codecov.io',
+            name: 'User 1',
+            isAdmin: true,
+            activated: true,
+          },
+          {
+            ownerid: 2,
+            username: 'user2-codecov',
+            email: 'user2@codecov.io',
+            name: 'User 2',
+            isAdmin: true,
+            activated: true,
+          },
+        ])
+      )
     })
   })
 })

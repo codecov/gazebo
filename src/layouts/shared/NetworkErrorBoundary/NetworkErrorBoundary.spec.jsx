@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { useState } from 'react'
+import { Component, useState } from 'react'
 import { MemoryRouter, useHistory } from 'react-router-dom'
 
 import config from 'config'
@@ -18,45 +18,66 @@ afterEach(() => {
   queryClient.clear()
 })
 
-describe('NetworkErrorBoundary', () => {
-  // eslint-disable-next-line react/prop-types
-  function ErrorComponent({ status, detail, typename }) {
-    // eslint-disable-next-line no-throw-literal
-    throw {
-      status,
-      data: {
-        detail,
-      },
-      __typename: typename,
+class TestErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      error: null,
     }
-    // eslint-disable-next-line no-unreachable
-    return null
   }
 
-  // eslint-disable-next-line react/prop-types
-  function App({ status, detail, typename }) {
-    const [text, setText] = useState('')
-    const history = useHistory()
+  static getDerivedStateFromError(error) {
+    return { error }
+  }
 
-    function handleChange(e) {
-      setText(e.target.value)
+  render() {
+    if (this.state.error) {
+      return <p>Custom Error has been thrown</p>
     }
 
-    return (
+    return <>{this.props.children}</>
+  }
+}
+
+// eslint-disable-next-line react/prop-types
+function ErrorComponent({ status, detail, typename }) {
+  // eslint-disable-next-line no-throw-literal
+  throw {
+    status,
+    data: {
+      detail,
+    },
+    __typename: typename,
+  }
+  // eslint-disable-next-line no-unreachable
+  return null
+}
+
+// eslint-disable-next-line react/prop-types
+function App({ status, detail, typename }) {
+  const [text, setText] = useState('')
+  const history = useHistory()
+
+  function handleChange(e) {
+    setText(e.target.value)
+  }
+
+  return (
+    <div>
       <div>
-        <div>
-          <label htmlFor="text">Text</label>
-          <input type="text" id="text" onChange={handleChange} />
-        </div>
-        <div>{text === 'fail' ? 'Oh no' : 'things are good'}</div>
-        <button
-          onClick={() => {
-            history.goBack()
-          }}
-        >
-          Go back
-        </button>
-        <div>
+        <label htmlFor="text">Text</label>
+        <input type="text" id="text" onChange={handleChange} />
+      </div>
+      <div>{text === 'fail' ? 'Oh no' : 'things are good'}</div>
+      <button
+        onClick={() => {
+          history.goBack()
+        }}
+      >
+        Go back
+      </button>
+      <div>
+        <TestErrorBoundary>
           <NetworkErrorBoundary>
             {text === 'fail' ? (
               <ErrorComponent
@@ -68,82 +89,91 @@ describe('NetworkErrorBoundary', () => {
               'type "fail"'
             )}
           </NetworkErrorBoundary>
-        </div>
+        </TestErrorBoundary>
       </div>
-    )
-  }
+    </div>
+  )
+}
 
-  function setup({
-    isSelfHosted = false,
-    status = 200,
-    detail,
-    typename,
-    randomError,
-  }) {
-    config.IS_SELF_HOSTED = isSelfHosted
-
-    render(
+const wrapper =
+  (initialEntries = ['/gh/codecov', '/gh']) =>
+  ({ children }) =>
+    (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh/codecov', '/gh']}>
-          <App
-            status={status}
-            detail={detail}
-            typename={typename}
-            randomError={randomError}
-          />
-        </MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
       </QueryClientProvider>
     )
+
+describe('NetworkErrorBoundary', () => {
+  function setup({ isSelfHosted = false } = { isSelfHosted: false }) {
+    config.IS_SELF_HOSTED = isSelfHosted
+
+    return { user: userEvent.setup() }
   }
 
   describe('when rendered with children', () => {
     beforeEach(() => {
-      setup({})
+      setup()
     })
 
     it('renders the children', () => {
+      render(<App status={200} />, { wrapper: wrapper() })
+
       expect(screen.getByText(/things are good/)).toBeInTheDocument()
     })
   })
 
   describe('when the children component crashes', () => {
-    beforeEach(() => {
-      setup({ status: 100 })
-    })
-
     it('propagate the error as its not a network error', async () => {
-      const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      const { user } = setup()
+      render(<App status={100} />, { wrapper: wrapper() })
+
+      const textBox = screen.getByRole('textbox')
+      await user.type(textBox, 'fail')
 
       const temp = screen.queryByText('things are good')
       expect(temp).not.toBeInTheDocument()
+
+      const errorMessage = screen.getByText('Custom Error has been thrown')
+      expect(errorMessage).toBeInTheDocument()
     })
   })
 
   describe('when the children component has a 401 error', () => {
-    beforeEach(() => {
-      setup({ status: 401, detail: 'not authenticated' })
-    })
-
     it('renders a please login', async () => {
+      const { user } = setup()
+      render(<App status={401} detail="not authenticated" />, {
+        wrapper: wrapper(),
+      })
+
       const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      await user.type(textBox, 'fail')
 
       const logInText = await screen.findByText(/Please log in/)
       expect(logInText).toBeInTheDocument()
     })
 
     it('renders the detail from data', async () => {
+      const { user } = setup()
+      render(<App status={401} detail="not authenticated" />, {
+        wrapper: wrapper(),
+      })
+
       const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      await user.type(textBox, 'fail')
 
       const notAuthenticated = await screen.findByText(/not authenticated/)
       expect(notAuthenticated).toBeInTheDocument()
     })
 
     it('renders return to previous page button', async () => {
+      const { user } = setup()
+      render(<App status={401} detail="not authenticated" />, {
+        wrapper: wrapper(),
+      })
+
       const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      await user.type(textBox, 'fail')
 
       const returnButton = await screen.findByText('Return to previous page')
       expect(returnButton).toBeInTheDocument()
@@ -151,29 +181,40 @@ describe('NetworkErrorBoundary', () => {
   })
 
   describe('when the children component has a 403 error', () => {
-    beforeEach(() => {
-      setup({ status: 403, detail: 'you not admin' })
-    })
-
     it('renders a Unauthorized', async () => {
+      const { user } = setup()
+      render(<App status={403} detail="you not admin" />, {
+        wrapper: wrapper(),
+      })
+
       const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      await user.type(textBox, 'fail')
 
       const unauthorized = await screen.findByText(/Unauthorized/)
       expect(unauthorized).toBeInTheDocument()
     })
 
     it('renders the detail from data', async () => {
+      const { user } = setup()
+      render(<App status={403} detail="you not admin" />, {
+        wrapper: wrapper(),
+      })
+
       const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      await user.type(textBox, 'fail')
 
       const detail = await screen.findByText(/you not admin/)
       expect(detail).toBeInTheDocument()
     })
 
     it('renders return to previous page button', async () => {
+      const { user } = setup()
+      render(<App status={403} detail="you not admin" />, {
+        wrapper: wrapper(),
+      })
+
       const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      await user.type(textBox, 'fail')
 
       const button = await screen.findByText('Return to previous page')
       expect(button).toBeInTheDocument()
@@ -182,21 +223,27 @@ describe('NetworkErrorBoundary', () => {
 
   describe('when the children component has a 404 error', () => {
     describe('when not running in self-hosted mode', () => {
-      beforeEach(() => {
-        setup({ status: 404 })
-      })
-
       it('renders a Not found', async () => {
+        const { user } = setup()
+        render(<App status={404} />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const notFound = await screen.findByText(/Not found/)
         expect(notFound).toBeInTheDocument()
       })
 
       it('renders return to previous page button', async () => {
+        const { user } = setup()
+        render(<App status={404} />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
@@ -204,21 +251,27 @@ describe('NetworkErrorBoundary', () => {
     })
 
     describe('when running in self hosted mode', () => {
-      beforeEach(() => {
-        setup({ status: 404, isSelfHosted: true })
-      })
-
       it('renders a Not found', async () => {
+        const { user } = setup({ isSelfHosted: true })
+        render(<App status={404} />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const pleaseSee = await screen.findByText(/Please see/)
         expect(pleaseSee).toBeInTheDocument()
       })
 
       it('renders return to previous page button', async () => {
+        const { user } = setup({ isSelfHosted: true })
+        render(<App status={404} />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
@@ -228,21 +281,27 @@ describe('NetworkErrorBoundary', () => {
 
   describe('when the children component has a 500 error', () => {
     describe('when not running in self-hosted mode', () => {
-      beforeEach(() => {
-        setup({ status: 500 })
-      })
-
       it('renders a Server error', async () => {
+        const { user } = setup()
+        render(<App status={500} />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const serverError = await screen.findByText(/Server error/)
         expect(serverError).toBeInTheDocument()
       })
 
       it('renders return to previous page button', async () => {
+        const { user } = setup()
+        render(<App status={500} />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
@@ -250,21 +309,27 @@ describe('NetworkErrorBoundary', () => {
     })
 
     describe('when running in self-hosted mode', () => {
-      beforeEach(() => {
-        setup({ status: 500, isSelfHosted: true })
-      })
-
       it('renders a Server error', async () => {
+        const { user } = setup({ isSelfHosted: true })
+        render(<App status={500} />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const pleaseSee = await screen.findByText(/Please see/)
         expect(pleaseSee).toBeInTheDocument()
       })
 
       it('renders return to previous page button', async () => {
+        const { user } = setup({ isSelfHosted: true })
+        render(<App status={500} />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const button = await screen.findByText('Return to previous page')
         expect(button).toBeInTheDocument()
@@ -273,21 +338,27 @@ describe('NetworkErrorBoundary', () => {
   })
 
   describe('when the children component has an UnauthenticatedError GraphQL error', () => {
-    beforeEach(() => {
-      setup({ typename: 'UnauthenticatedError' })
-    })
-
     it('renders a Not found', async () => {
+      const { user } = setup()
+      render(<App typename="UnauthenticatedError" />, {
+        wrapper: wrapper(),
+      })
+
       const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      await user.type(textBox, 'fail')
 
       const logIn = await screen.findByText(/Please log in/)
       expect(logIn).toBeInTheDocument()
     })
 
     it('renders return to previous page button', async () => {
+      const { user } = setup()
+      render(<App typename="UnauthenticatedError" />, {
+        wrapper: wrapper(),
+      })
+
       const textBox = await screen.findByRole('textbox')
-      userEvent.type(textBox, 'fail')
+      await user.type(textBox, 'fail')
 
       const button = await screen.findByText('Return to previous page')
       expect(button).toBeInTheDocument()
@@ -295,19 +366,20 @@ describe('NetworkErrorBoundary', () => {
   })
 
   describe('user is able to recover from error', () => {
-    beforeEach(() => {
-      setup({ status: 403, detail: 'you not admin' })
-    })
-
     describe('user clicks on reset button', () => {
       it('renders a things are good', async () => {
+        const { user } = setup()
+        render(<App status={403} detail="you not admin" />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const button = await screen.findByText('Return to previous page')
-        userEvent.click(button)
+        await user.click(button)
 
-        userEvent.type(textBox, 'pass')
+        await user.type(textBox, 'pass')
 
         const thingsAreGood = await screen.findByText(/things are good/)
         expect(thingsAreGood).toBeInTheDocument()
@@ -316,13 +388,18 @@ describe('NetworkErrorBoundary', () => {
 
     describe('user navigates back', () => {
       it('renders a things are good', async () => {
+        const { user } = setup()
+        render(<App status={403} detail="you not admin" />, {
+          wrapper: wrapper(),
+        })
+
         const textBox = await screen.findByRole('textbox')
-        userEvent.type(textBox, 'fail')
+        await user.type(textBox, 'fail')
 
         const button = await screen.findByText('Go back')
-        userEvent.click(button)
+        await user.click(button)
 
-        userEvent.type(textBox, 'pass')
+        await user.type(textBox, 'pass')
 
         const thingsAreGood = await screen.findByText(/things are good/)
         expect(thingsAreGood).toBeInTheDocument()

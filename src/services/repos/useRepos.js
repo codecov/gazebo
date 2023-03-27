@@ -57,7 +57,7 @@ function fetchMyRepos({ provider, variables, after, signal }) {
   }).then((res) => {
     const me = res?.data?.me
     return {
-      repos: mapEdges(me.viewableRepositories),
+      repos: mapEdges(me?.viewableRepositories),
       pageInfo: me?.viewableRepositories.pageInfo,
     }
   })

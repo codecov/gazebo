@@ -1,67 +1,86 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { usePlanPageData } from 'pages/PlanPage/hooks'
-
 import PlanPage from './PlanPage'
 
-jest.mock('./Header', () => () => 'Header')
-jest.mock('pages/PlanPage/hooks')
 jest.mock('config')
 
+jest.mock('./Header', () => () => 'Header')
 jest.mock('./Tabs', () => () => 'Tabs')
+jest.mock('./subRoutes/CancelPlanPage', () => () => 'CancelPlanPage')
+jest.mock('./subRoutes/CurrentOrgPlan', () => () => 'CurrentOrgPlan')
+jest.mock('./subRoutes/InvoicesPage', () => () => 'InvoicesPage')
+jest.mock('./subRoutes/InvoiceDetailsPage', () => () => 'InvoiceDetailsPage')
+jest.mock('./subRoutes/UpgradePlanPage', () => () => 'UpgradePlanPage')
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
+      suspense: true,
     },
   },
 })
 
+let testLocation
+const wrapper =
+  (initialEntries = '') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/plan/:provider/:owner">
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+  jest.resetAllMocks()
+})
+afterAll(() => {
+  server.close()
+})
+
 describe('PlanPage', () => {
-  let testLocation
-  function setup({ owner = null, isSelfHosted = false }) {
+  function setup(
+    { owner, isSelfHosted = false } = {
+      owner: {
+        username: 'codecov',
+        isCurrentUserPartOfOrg: true,
+        numberOfUploads: 10,
+      },
+      isSelfHosted: false,
+    }
+  ) {
     config.IS_SELF_HOSTED = isSelfHosted
 
-    usePlanPageData.mockReturnValue({
-      data: owner,
-    })
-    render(
-      <MemoryRouter initialEntries={['/plan/gh/codecov']}>
-        <Route path="/plan/:provider/:owner">
-          <QueryClientProvider client={queryClient}>
-            <PlanPage />
-          </QueryClientProvider>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
+    server.use(
+      graphql.query('PlanPageData', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner }))
+      )
     )
   }
-
-  describe('when the owner is part of org', () => {
-    beforeEach(() => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-        },
-      })
-    })
-
-    it('renders tabs associated with the page', () => {
-      expect(screen.getByText(/Tabs/)).toBeInTheDocument()
-    })
-  })
 
   describe('when user is not part of the org', () => {
     beforeEach(() => {
@@ -75,8 +94,10 @@ describe('PlanPage', () => {
       })
     })
 
-    it('doesnt render Tabs', () => {
-      expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+    it('redirects the user to the org page', async () => {
+      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
     })
   })
 
@@ -93,9 +114,105 @@ describe('PlanPage', () => {
       })
     })
 
-    it('doesnt render tabs', () => {
-      expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
-      expect(testLocation.pathname).toBe('/gh/codecov')
+    it('redirects the user to the org page', async () => {
+      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
+    })
+  })
+
+  describe('when the owner is part of org', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+      })
+    })
+
+    it('renders header component', async () => {
+      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
+
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders tabs component', async () => {
+      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
+
+      const tabs = await screen.findByText(/Tabs/)
+      expect(tabs).toBeInTheDocument()
+    })
+  })
+
+  describe('testing routes', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+      })
+    })
+
+    describe('on root route', () => {
+      it('renders current org plan page', async () => {
+        render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
+
+        const currentPlanPage = await screen.findByText(/CurrentOrgPlan/)
+        expect(currentPlanPage).toBeInTheDocument()
+      })
+    })
+
+    describe('on upgrade path', () => {
+      it('renders upgrade plan page', async () => {
+        render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov/upgrade') })
+
+        const upgradePlanPage = await screen.findByText(/UpgradePlanPage/)
+        expect(upgradePlanPage).toBeInTheDocument()
+      })
+    })
+
+    describe('on invoices path', () => {
+      it('renders invoices page', async () => {
+        render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov/invoices') })
+
+        const invoicesPage = await screen.findByText(/InvoicesPage/)
+        expect(invoicesPage).toBeInTheDocument()
+      })
+    })
+
+    describe('on invoices id path', () => {
+      it('renders invoices details page', async () => {
+        render(<PlanPage />, {
+          wrapper: wrapper('/plan/gh/codecov/invoices/1'),
+        })
+
+        const invoicesDetailsPage = await screen.findByText(
+          /InvoiceDetailsPage/
+        )
+        expect(invoicesDetailsPage).toBeInTheDocument()
+      })
+    })
+
+    describe('on cancel path', () => {
+      it('renders cancel plan page', async () => {
+        render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov/cancel') })
+
+        const cancelPlanPage = await screen.findByText(/CancelPlanPage/)
+        expect(cancelPlanPage).toBeInTheDocument()
+      })
+    })
+
+    describe('on random path', () => {
+      it('redirects the user to the current plan page', async () => {
+        render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov/blah') })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/plan/gh/codecov')
+        )
+      })
     })
   })
 })

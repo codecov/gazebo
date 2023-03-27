@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash'
+import isEqual from 'lodash/isEqual'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 

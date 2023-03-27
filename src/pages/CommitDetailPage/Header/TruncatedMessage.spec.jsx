@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
 
 import TruncatedMessage from './TruncatedMessage'
 
@@ -8,9 +7,14 @@ const longMessage =
   'In id magna dolor reprehenderit Lorem anim incididunt excepteur occaecat. Enim elit exercitation labore ut qui ad deserunt irure irure. Non magna et deserunt quis tempor cillum velit cupidatat irure irure. Non magna et deserunt quis tempor cillum velit else.'
 
 describe('TruncatedMessage', () => {
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
+  }
+
   describe('When commit message is less than a line', () => {
     it('renders the the full message', () => {
-      render(<TruncatedMessage message={'This is a short message'} />)
+      render(<TruncatedMessage message="This is a short message" />)
 
       const msg = screen.getByText(/This is a short message/)
       expect(msg).toBeInTheDocument()
@@ -60,24 +64,26 @@ describe('TruncatedMessage', () => {
       })
     })
 
-    it('renders the collapse button', () => {
+    it('renders the collapse button', async () => {
+      const { user } = setup()
       render(<TruncatedMessage message={longMessage} />)
 
       const btn = screen.getByText('see more')
-      userEvent.click(btn)
+      await user.click(btn)
 
       const seeLessBtn = screen.getByText(/see less/)
       expect(seeLessBtn).toBeInTheDocument()
     })
 
-    it('renders the expand button', () => {
+    it('renders the expand button', async () => {
+      const { user } = setup()
       render(<TruncatedMessage message={longMessage} />)
 
       const seeMoreBtn = screen.getByText('see more')
-      userEvent.click(seeMoreBtn)
+      await user.click(seeMoreBtn)
 
       const seeLessBtn = screen.getByText('see less')
-      userEvent.click(seeLessBtn)
+      await user.click(seeLessBtn)
 
       const seeMoreBtn2 = screen.getByText(/see more/)
       expect(seeMoreBtn2).toBeInTheDocument()

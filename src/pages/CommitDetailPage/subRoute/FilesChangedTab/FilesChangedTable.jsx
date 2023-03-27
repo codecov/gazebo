@@ -1,4 +1,5 @@
 import cs from 'classnames'
+import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 import { Suspense, useMemo } from 'react'
@@ -88,7 +89,7 @@ const table = [
 ]
 
 function createTable({ tableData }) {
-  if (tableData.length <= 0) {
+  if (tableData?.length <= 0) {
     return [{ name: null, coverage: null, patch: null, change: null }]
   }
 
@@ -170,7 +171,7 @@ function FilesChangedTable() {
 
   if (isLoading || commit?.state === 'pending') return <Loader />
 
-  if (!filesChanged?.length)
+  if (isEmpty(filesChanged))
     return <p className="m-4">No files covered by tests were changed</p>
 
   return (

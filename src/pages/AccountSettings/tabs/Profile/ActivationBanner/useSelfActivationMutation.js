@@ -1,14 +1,18 @@
 import { useMutation } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
-export const useSelfActivationMutation = ({ queryClient, canChange }) =>
-  useMutation({
+export const useSelfActivationMutation = ({ queryClient, canChange }) => {
+  const { provider } = useParams()
+
+  return useMutation({
     mutationFn: (activated) => {
       if (canChange) {
         return Api.patch({
           path: '/users/current',
           body: { activated },
+          provider,
         })
       }
     },
@@ -31,7 +35,7 @@ export const useSelfActivationMutation = ({ queryClient, canChange }) =>
           return {
             data: {
               config: {
-                ...seats.data.config,
+                ...seats?.data?.config,
                 seatsUsed: activated ? seatsUsed + 1 : seatsUsed - 1,
               },
             },
@@ -53,3 +57,4 @@ export const useSelfActivationMutation = ({ queryClient, canChange }) =>
       queryClient.invalidateQueries(['Seats'])
     },
   })
+}

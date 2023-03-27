@@ -42,6 +42,7 @@ module.exports = {
             medium: withOpacity('--color-ds-blue-medium'),
             darker: withOpacity('--color-ds-blue-darker'),
             quinary: withOpacity('--color-ds-blue-quinary'),
+            septenary: withOpacity('--color-ds-blue-septenary'),
             senary: withOpacity('--color-ds-blue-senary'),
             selected: withOpacity('--color-ds-blue-selected'),
           },

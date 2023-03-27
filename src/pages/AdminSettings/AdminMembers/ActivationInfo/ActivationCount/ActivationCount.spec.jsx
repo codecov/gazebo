@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import ActivationCount from './ActivationCount'
 
@@ -12,6 +13,17 @@ const mockResponse = {
   seatsUsed: 5,
   seatsLimit: 10,
 }
+
+const wrapper =
+  () =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/gh']}>
+          <Route path="/:provider">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => server.listen())
 beforeEach(() => {
@@ -27,27 +39,24 @@ describe('ActivationCount', () => {
         res(ctx.status(200), ctx.json(mockResponse))
       )
     )
-    render(
-      <QueryClientProvider client={queryClient}>
-        <ActivationCount />
-      </QueryClientProvider>
-    )
   }
 
   describe('it renders component', () => {
     describe('seat limit is not reached', () => {
       beforeEach(async () => {
         setup()
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
       })
+
       it('displays seat count', async () => {
+        render(<ActivationCount />, { wrapper: wrapper() })
+
         const element = await screen.findByText('5')
         expect(element).toBeInTheDocument()
       })
 
       it('displays seat limit', async () => {
+        render(<ActivationCount />, { wrapper: wrapper() })
+
         const element = await screen.findByText('10')
         expect(element).toBeInTheDocument()
       })
@@ -56,12 +65,11 @@ describe('ActivationCount', () => {
     describe('seat limit is reached', () => {
       beforeEach(async () => {
         setup({ seatsLimit: 10, seatsUsed: 10 })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
       })
 
       it('displays info message', async () => {
+        render(<ActivationCount />, { wrapper: wrapper() })
+
         const link = await screen.findByText('success@codecov.io')
 
         expect(link).toBeInTheDocument()

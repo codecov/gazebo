@@ -58,7 +58,6 @@ afterAll(() => server.close())
 
 describe('MembersList', () => {
   let testLocation
-  let sendActivatedUser = false
 
   const wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
@@ -75,7 +74,11 @@ describe('MembersList', () => {
     </QueryClientProvider>
   )
 
-  function setup({ accountDetails = {} }) {
+  function setup({ accountDetails = {} } = { accountDetails: {} }) {
+    const user = userEvent.setup()
+
+    let sendActivatedUser = false
+
     server.use(
       rest.get('/internal/gh/codecov/account-details', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(accountDetails))
@@ -92,10 +95,12 @@ describe('MembersList', () => {
         return res(ctx.status(200))
       })
     )
+
+    return { user }
   }
 
   describe('rendering MembersList', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() => setup())
 
     it('does not render UpgradeModal', () => {
       render(<MembersList />, { wrapper })
@@ -128,9 +133,6 @@ describe('MembersList', () => {
     it('renders MembersTable', async () => {
       render(<MembersList />, { wrapper })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
       await waitFor(() =>
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
@@ -144,79 +146,83 @@ describe('MembersList', () => {
   })
 
   describe('interacting with the status selector', () => {
-    beforeEach(() => setup({}))
     describe('selecting Active Users', () => {
-      it('updates select text', () => {
+      it('updates select text', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('All users')
-        userEvent.click(select)
+        const select = await screen.findByText('All users')
+        await user.click(select)
 
-        const selectActive = screen.getByText('Active users')
-        userEvent.click(selectActive)
+        const selectActive = await screen.findByRole('option', {
+          name: 'Active users',
+        })
+        await user.click(selectActive)
 
-        const activeUsers = screen.getByText('Active users')
+        const activeUsers = await screen.findByText('Active users')
         expect(activeUsers).toBeInTheDocument()
       })
 
-      it('updates query params', () => {
+      it('updates query params', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('All users')
-        userEvent.click(select)
+        const select = await screen.findByText('All users')
+        await user.click(select)
 
-        const selectActive = screen.getByText('Active users')
-        userEvent.click(selectActive)
+        const selectActive = await screen.findByRole('option', {
+          name: 'Active users',
+        })
+        await user.click(selectActive)
 
-        expect(testLocation.search).toBe('?activated=True')
+        await waitFor(() => expect(testLocation.search).toBe('?activated=True'))
       })
     })
 
     describe('selecting Inactive Users', () => {
-      it('updates select text', () => {
+      it('updates select text', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('All users')
-        userEvent.click(select)
+        const select = await screen.findByText('All users')
+        await user.click(select)
 
-        const selectActive = screen.getByText('Inactive users')
-        userEvent.click(selectActive)
+        const selectActive = await screen.findByRole('option', {
+          name: 'Inactive users',
+        })
+        await user.click(selectActive)
 
-        const inactiveUsers = screen.getByText('Inactive users')
+        const inactiveUsers = await screen.findByText('Inactive users')
         expect(inactiveUsers).toBeInTheDocument()
       })
 
-      it('updates query params', () => {
+      it('updates query params', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('All users')
-        userEvent.click(select)
+        const select = await screen.findByText('All users')
+        await user.click(select)
 
-        const selectInactive = screen.getByText('Inactive users')
-        userEvent.click(selectInactive)
+        const selectInactive = await screen.findByRole('option', {
+          name: 'Inactive users',
+        })
+        await user.click(selectInactive)
 
-        expect(testLocation.search).toBe('?activated=False')
+        await waitFor(() =>
+          expect(testLocation.search).toBe('?activated=False')
+        )
       })
     })
   })
 
   describe('interacting with the search field', () => {
     describe('user types into search field', () => {
-      beforeEach(() => {
-        setup({})
-        jest.useFakeTimers()
-      })
-      afterEach(() => jest.useRealTimers())
-
       it('updates url params', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const searchField = await screen.findByTestId('search-input-members')
-        expect(searchField).toBeInTheDocument()
-
-        userEvent.type(searchField, 'codecov')
-
-        jest.runAllTimers()
+        await user.type(searchField, 'codecov')
 
         await waitFor(() => expect(testLocation.search).toBe('?search=codecov'))
       })
@@ -224,78 +230,77 @@ describe('MembersList', () => {
   })
 
   describe('interacting with the role selector', () => {
-    beforeEach(() => setup({}))
     describe('selecting Admins Users', () => {
-      it('updates select text', () => {
+      it('updates select text', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('Everyone')
-        userEvent.click(select)
+        const select = await screen.findByText('Everyone')
+        await user.click(select)
 
-        const selectAdmins = screen.getByText('Admins')
-        userEvent.click(selectAdmins)
+        const selectAdmins = await screen.findByRole('option', {
+          name: 'Admins',
+        })
+        await user.click(selectAdmins)
 
-        const admins = screen.getByText('Admins')
+        const admins = await screen.findByText('Admins')
         expect(admins).toBeInTheDocument()
       })
 
-      it('updates query params', () => {
+      it('updates query params', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
-        userEvent.click(select)
+        await user.click(select)
 
         const selectAdmins = screen.getByText('Admins')
-        userEvent.click(selectAdmins)
+        await user.click(selectAdmins)
 
-        expect(testLocation.search).toBe('?isAdmin=True')
+        await waitFor(() => expect(testLocation.search).toBe('?isAdmin=True'))
       })
     })
 
     describe('selecting Developers', () => {
-      it('updates select text', () => {
+      it('updates select text', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
-        const select = screen.getByText('Everyone')
-        userEvent.click(select)
+        const select = await screen.findByText('Everyone')
+        await user.click(select)
 
-        const selectDevelopers = screen.getByText('Developers')
-        userEvent.click(selectDevelopers)
+        const selectDevelopers = await screen.findByText('Developers')
+        await user.click(selectDevelopers)
 
-        const developers = screen.getByText('Developers')
+        const developers = await screen.findByText('Developers')
         expect(developers).toBeInTheDocument()
       })
 
-      it('updates query params', () => {
+      it('updates query params', async () => {
+        const { user } = setup()
         render(<MembersList />, { wrapper })
 
         const select = screen.getByText('Everyone')
-        userEvent.click(select)
+        await user.click(select)
 
         const selectDevelopers = screen.getByText('Developers')
-        userEvent.click(selectDevelopers)
+        await user.click(selectDevelopers)
 
-        expect(testLocation.search).toBe('?isAdmin=False')
+        await waitFor(() => expect(testLocation.search).toBe('?isAdmin=False'))
       })
     })
   })
 
   describe('interacting with user toggles', () => {
     describe('user has reached max seats, and on a free plan', () => {
-      beforeEach(() => {
-        setup({
+      it('opens up upgrade modal', async () => {
+        const { user } = setup({
           accountDetails: {
             activatedUserCount: 100,
             plan: { value: 'users-free' },
           },
         })
-      })
-
-      it('opens up upgrade modal', async () => {
         render(<MembersList />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -306,7 +311,7 @@ describe('MembersList', () => {
 
         const toggle = await screen.findByLabelText('Non-Active')
         expect(toggle).toBeInTheDocument()
-        userEvent.click(toggle)
+        await user.click(toggle)
 
         const modalHeader = await screen.findByText('Upgrade to Pro')
         expect(modalHeader).toBeInTheDocument()
@@ -314,20 +319,14 @@ describe('MembersList', () => {
     })
 
     describe('user has not reached max seats', () => {
-      beforeEach(() => {
-        setup({
+      it('opens up upgrade modal', async () => {
+        const { user } = setup({
           accountDetails: {
             activatedUserCount: 0,
             plan: { value: 'users-free' },
           },
         })
-      })
-
-      it('opens up upgrade modal', async () => {
         render(<MembersList />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
 
         await waitFor(() =>
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
@@ -338,12 +337,7 @@ describe('MembersList', () => {
 
         const toggle = await screen.findByLabelText('Non-Active')
         expect(toggle).toBeInTheDocument()
-        userEvent.click(toggle)
-
-        await waitFor(() => queryClient.isMutating)
-        await waitFor(() => !queryClient.isMutating)
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        await user.click(toggle)
 
         const activeToggle = await screen.findByText('Activated')
         expect(activeToggle).toBeInTheDocument()

@@ -7,6 +7,7 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
     query GetRepo($name: String!, $repo: String!){
       owner(username:$name){
         isCurrentUserPartOfOrg
+        isCurrentUserActivated
         repository(name:$repo){
           private
           uploadToken
@@ -32,6 +33,7 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
     return {
       repository: res?.data?.owner?.repository,
       isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
+      isCurrentUserActivated: res?.data?.owner?.isCurrentUserActivated,
     }
   })
 }

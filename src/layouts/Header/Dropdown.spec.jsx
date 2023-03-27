@@ -35,6 +35,10 @@ describe('Dropdown', () => {
   function setup({ selfHosted } = { selfHosted: false }) {
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     config.IS_SELF_HOSTED = selfHosted
+
+    return {
+      user: userEvent.setup(),
+    }
   }
 
   describe('when rendered', () => {
@@ -52,44 +56,45 @@ describe('Dropdown', () => {
 
   describe('when on GitHub', () => {
     describe('when the avatar is clicked', () => {
-      beforeEach(() => setup())
-
-      it('shows settings link', () => {
+      it('shows settings link', async () => {
+        const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gh' }),
         })
 
         expect(screen.queryByText('Settings')).not.toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
         expect(link).toHaveAttribute('href', '/account/gh/chetney')
       })
 
-      it('shows organizations link', () => {
+      it('shows organizations link', async () => {
+        const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gh' }),
         })
 
         expect(screen.queryByText('Organizations')).not.toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         const link = screen.getByText('Organizations')
         expect(link).toBeVisible()
         expect(link).toHaveAttribute('href', '/gh')
       })
 
-      it('shows sign out link', () => {
+      it('shows sign out link', async () => {
+        const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gh' }),
         })
 
         expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
@@ -99,7 +104,8 @@ describe('Dropdown', () => {
         )
       })
 
-      it('shows manage app access link', () => {
+      it('shows manage app access link', async () => {
+        const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gh' }),
         })
@@ -108,7 +114,7 @@ describe('Dropdown', () => {
           screen.queryByText('Manage GitHub org access')
         ).not.toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         const link = screen.getByText('Manage GitHub org access')
         expect(link).toBeVisible()
@@ -121,44 +127,45 @@ describe('Dropdown', () => {
   })
   describe('when not on GitHub', () => {
     describe('when the avatar is clicked', () => {
-      beforeEach(() => setup())
-
-      it('shows settings link', () => {
+      it('shows settings link', async () => {
+        const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gl' }),
         })
 
         expect(screen.queryByText('Settings')).not.toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
         expect(link).toHaveAttribute('href', '/account/gl/chetney')
       })
 
-      it('shows organizations link', () => {
+      it('shows organizations link', async () => {
+        const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gl' }),
         })
 
         expect(screen.queryByText('Organizations')).not.toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         const link = screen.getByText('Organizations')
         expect(link).toBeVisible()
         expect(link).toHaveAttribute('href', '/gl')
       })
 
-      it('shows sign out link', () => {
+      it('shows sign out link', async () => {
+        const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gl' }),
         })
 
         expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
@@ -168,7 +175,8 @@ describe('Dropdown', () => {
         )
       })
 
-      it('does not show manage app access link', () => {
+      it('does not show manage app access link', async () => {
+        const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gl' }),
         })
@@ -177,7 +185,7 @@ describe('Dropdown', () => {
           screen.queryByText('Manage GitHub org access')
         ).not.toBeInTheDocument()
 
-        userEvent.click(screen.getByRole('button'))
+        await user.click(screen.getByRole('button'))
 
         expect(
           screen.queryByText('Manage GitHub org access')

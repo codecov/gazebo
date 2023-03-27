@@ -1,12 +1,16 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
-export const useSelfHostedUserList = ({ activated, search, isAdmin }) =>
-  useInfiniteQuery(
+export const useSelfHostedUserList = ({ activated, search, isAdmin }) => {
+  const { provider } = useParams()
+
+  return useInfiniteQuery(
     ['SelfHostedUserList', activated, search, isAdmin],
     ({ pageParam = 1, signal }) => {
       return Api.get({
+        provider,
         path: '/users',
         signal,
         query: {
@@ -28,3 +32,4 @@ export const useSelfHostedUserList = ({ activated, search, isAdmin }) =>
       },
     }
   )
+}

@@ -1,3 +1,4 @@
+import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
 import { useContext } from 'react'
 
@@ -68,19 +69,12 @@ const tableInactive = [
 ]
 
 // eslint-disable-next-line complexity
-function transformRepoToTable({
-  repos,
-  owner,
-  searchValue,
-  isCurrentUserPartOfOrg,
-}) {
+function transformRepoToTable({ repos, owner, isCurrentUserPartOfOrg }) {
   // if there are no repos show empty message
   if (!repos?.length || repos?.length <= 0) {
     return [
       {
-        title: (
-          <span className="text-sm">{searchValue && 'no results found'}</span>
-        ),
+        title: null,
         lastUpdated: null,
         coverage: null,
         notEnabled: null,
@@ -129,17 +123,14 @@ function transformRepoToTable({
   })
 }
 
-// eslint-disable-next-line complexity
 function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
-  const repoDisplay = useContext(ActiveContext)
-  const option = Object.keys(repoDisplayOptions).find((key) => {
-    return repoDisplayOptions[key].text === repoDisplay
-  })
-  const activated = repoDisplayOptions[option].status
   const { data: userData } = useUser()
   const { data: ownerData } = useOwner({
     username: owner || userData?.user?.username,
   })
+
+  const repoDisplay = useContext(ActiveContext)
+  const activated = repoDisplayOptions[repoDisplay.toUpperCase()].status
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
     activated,
@@ -152,9 +143,17 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const dataTable = transformRepoToTable({
     repos: data.repos,
     owner,
-    searchValue,
     isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
   })
+
+  if (isEmpty(data?.repos)) {
+    return (
+      <NoReposBlock
+        searchValue={searchValue}
+        privateAccess={userData?.privateAccess}
+      />
+    )
+  }
 
   return (
     <>
@@ -166,19 +165,17 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
             : tableActive
         }
       />
-      {data?.repos?.length
-        ? hasNextPage && (
-            <div className="mt-4 flex w-full justify-center">
-              <Button
-                hook="load-more"
-                isLoading={isFetchingNextPage}
-                onClick={fetchNextPage}
-              >
-                Load More
-              </Button>
-            </div>
-          )
-        : !searchValue && <NoReposBlock owner={owner} />}
+      {hasNextPage && (
+        <div className="mt-4 flex w-full justify-center">
+          <Button
+            hook="load-more"
+            isLoading={isFetchingNextPage}
+            onClick={fetchNextPage}
+          >
+            Load More
+          </Button>
+        </div>
+      )}
     </>
   )
 }

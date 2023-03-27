@@ -1,5 +1,6 @@
+import { render, screen, waitFor } from 'custom-testing-library'
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -26,15 +27,18 @@ const org2 = {
   avatarUrl: 'https://github.com/spotify.png?size=40',
 }
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gl']}>
-      <Route path="/:provider" exact>
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (initialEntries = '/gl') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider" exact>
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => server.listen())
 
@@ -47,6 +51,8 @@ afterAll(() => server.close())
 
 describe('MyContextSwitcher', () => {
   function setup(noData = false) {
+    const user = userEvent.setup()
+
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     server.use(
       graphql.query('MyContexts', (req, res, ctx) => {
@@ -77,6 +83,8 @@ describe('MyContextSwitcher', () => {
         return res(ctx.status(200), ctx.data(queryData))
       })
     )
+
+    return { user }
   }
 
   describe('when there are no contexts (user not logged in)', () => {
@@ -88,7 +96,7 @@ describe('MyContextSwitcher', () => {
       const { container } = render(
         <MyContextSwitcher activeContext={null} pageName="accountPage" />,
         {
-          wrapper,
+          wrapper: wrapper(),
         }
       )
 
@@ -97,13 +105,10 @@ describe('MyContextSwitcher', () => {
   })
 
   describe('when the user has some contexts and activeContext is passed to an organization', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the button with the organization', async () => {
+      setup()
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const button = await screen.findByRole('button', {
@@ -113,13 +118,14 @@ describe('MyContextSwitcher', () => {
     })
 
     it('renders the default org modal', async () => {
+      const { user } = setup()
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const editDefaultButton = await screen.findByText(/Edit default/i)
       expect(editDefaultButton).toBeInTheDocument()
-      userEvent.click(editDefaultButton)
+      await user.click(editDefaultButton)
 
       const title = await screen.findByText(/Select default organization/)
       expect(title).toBeInTheDocument()
@@ -144,7 +150,7 @@ describe('MyContextSwitcher', () => {
 
     it('loads second item', async () => {
       render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       const button = await screen.findByRole('button', {

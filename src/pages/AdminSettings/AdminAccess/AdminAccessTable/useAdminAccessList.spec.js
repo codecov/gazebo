@@ -40,13 +40,16 @@ const mockSecondResponse = {
 }
 
 const queryClient = new QueryClient()
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/admin/gh/access']}>
-    <Route path="/admin/:provider/access">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = '/admin/gh/access') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/admin/:provider/access">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 const server = setupServer()
 beforeAll(() => server.listen())
@@ -57,8 +60,6 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useAdminAccessList', () => {
-  let hookData
-
   function setup() {
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
@@ -75,60 +76,67 @@ describe('useAdminAccessList', () => {
         return res(ctx.status(200), ctx.json(mockFirstResponse))
       })
     )
-
-    hookData = renderHook(() => useAdminAccessList(), { wrapper })
   }
 
   describe('hook queries first dataset', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       setup()
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('returns the data', () => {
-      expect(hookData.result.current.data).toStrictEqual([
-        {
-          activated: true,
-          email: 'user1@codecov.io',
-          isAdmin: true,
-          name: 'User 1',
-          ownerid: 1,
-          username: 'user1-codecov',
-        },
-      ])
+    it('returns the data', async () => {
+      const { result, waitFor } = renderHook(() => useAdminAccessList(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual([
+          {
+            activated: true,
+            email: 'user1@codecov.io',
+            isAdmin: true,
+            name: 'User 1',
+            ownerid: 1,
+            username: 'user1-codecov',
+          },
+        ])
+      )
     })
   })
 
   describe('hook fetches the next dataset', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       setup()
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
-
-      hookData.result.current.fetchNextPage()
-
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('returns the data', () => {
-      expect(hookData.result.current.data).toStrictEqual([
-        {
-          activated: true,
-          email: 'user1@codecov.io',
-          isAdmin: true,
-          name: 'User 1',
-          ownerid: 1,
-          username: 'user1-codecov',
-        },
-        {
-          ownerid: 2,
-          username: 'user2-codecov',
-          email: 'user2@codecov.io',
-          name: 'User 2',
-          isAdmin: true,
-          activated: true,
-        },
-      ])
+    it('returns the data', async () => {
+      const { result, waitFor } = renderHook(() => useAdminAccessList(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => !result.current.isFetching)
+
+      result.current.fetchNextPage()
+
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual([
+          {
+            activated: true,
+            email: 'user1@codecov.io',
+            isAdmin: true,
+            name: 'User 1',
+            ownerid: 1,
+            username: 'user1-codecov',
+          },
+          {
+            ownerid: 2,
+            username: 'user2-codecov',
+            email: 'user2@codecov.io',
+            name: 'User 2',
+            isAdmin: true,
+            activated: true,
+          },
+        ])
+      )
     })
   })
 })

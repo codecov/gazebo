@@ -17,13 +17,16 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh']}>
-      <Route>{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (initialEntries = '/gh') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -74,21 +77,22 @@ describe('useSelfActivationMutation', () => {
       it('updates query data', async () => {
         const { result, waitFor } = renderHook(
           () => useSelfActivationMutation({ queryClient, canChange: true }),
-          { wrapper }
+          { wrapper: wrapper() }
         )
 
-        const { mutate } = result.current
-        mutate(true)
+        act(() => result.current.mutate(true))
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
+        await waitFor(() =>
+          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+            data: { config: { seatsUsed: 1, seatsLimit: 10 } },
+          })
+        )
 
-        expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
-          data: { config: { seatsUsed: 1, seatsLimit: 10 } },
-        })
-        expect(
-          queryClient.getQueryData(['SelfHostedCurrentUser'])
-        ).toStrictEqual({ activated: true })
+        await waitFor(() =>
+          expect(
+            queryClient.getQueryData(['SelfHostedCurrentUser'])
+          ).toStrictEqual({ activated: true })
+        )
       })
     })
 
@@ -128,21 +132,22 @@ describe('useSelfActivationMutation', () => {
       it('updates query data', async () => {
         const { result, waitFor } = renderHook(
           () => useSelfActivationMutation({ queryClient, canChange: true }),
-          { wrapper }
+          { wrapper: wrapper() }
         )
 
-        const { mutate } = result.current
-        mutate(false)
+        act(() => result.current.mutate(false))
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
+        await waitFor(() =>
+          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+            data: { config: { seatsUsed: 0, seatsLimit: 10 } },
+          })
+        )
 
-        expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
-          data: { config: { seatsUsed: 0, seatsLimit: 10 } },
-        })
-        expect(
-          queryClient.getQueryData(['SelfHostedCurrentUser'])
-        ).toStrictEqual({ activated: false })
+        await waitFor(() =>
+          expect(
+            queryClient.getQueryData(['SelfHostedCurrentUser'])
+          ).toStrictEqual({ activated: false })
+        )
       })
     })
 
@@ -178,24 +183,26 @@ describe('useSelfActivationMutation', () => {
           })
         )
       })
+
       it('does not change the query data', async () => {
         const { result, waitFor } = renderHook(
           () => useSelfActivationMutation({ queryClient, canChange: false }),
-          { wrapper }
+          { wrapper: wrapper() }
         )
 
-        const { mutate } = result.current
+        act(() => result.current.mutate(false))
 
-        act(() => mutate(false))
+        await waitFor(() =>
+          expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+            data: { config: { seatsUsed: 10, seatsLimit: 10 } },
+          })
+        )
 
-        await waitFor(() => result.current.isSuccess)
-
-        expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
-          data: { config: { seatsUsed: 10, seatsLimit: 10 } },
-        })
-        expect(
-          queryClient.getQueryData(['SelfHostedCurrentUser'])
-        ).toStrictEqual({ activated: false })
+        await waitFor(() =>
+          expect(
+            queryClient.getQueryData(['SelfHostedCurrentUser'])
+          ).toStrictEqual({ activated: false })
+        )
       })
     })
   })
@@ -228,23 +235,26 @@ describe('useSelfActivationMutation', () => {
         })
       )
     })
+
     it('reverts to old query data', async () => {
       const { result, waitFor } = renderHook(
         () => useSelfActivationMutation({ queryClient, canChange: true }),
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
-      const { mutate } = result.current
-      mutate(true)
+      act(() => result.current.mutate(false))
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
+      await waitFor(() =>
+        expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
+          data: { config: { seatsUsed: 1, seatsLimit: 10 } },
+        })
+      )
 
-      expect(queryClient.getQueryData(['Seats'])).toStrictEqual({
-        data: { config: { seatsUsed: 1, seatsLimit: 10 } },
-      })
-      expect(queryClient.getQueryData(['SelfHostedCurrentUser'])).toStrictEqual(
-        { activated: true }
+      await waitFor(() => result.current.isError)
+      await waitFor(() =>
+        expect(
+          queryClient.getQueryData(['SelfHostedCurrentUser'])
+        ).toStrictEqual({ activated: true })
       )
     })
   })

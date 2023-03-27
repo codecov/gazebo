@@ -181,6 +181,21 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('All orgs an repo plans', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.allOrgsPlanPage.path()).toBe(`/plan/gl`)
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.allOrgsPlanPage.path({ provider: 'bb' })
+      ).toBe(`/plan/bb`)
+    })
+  })
+
   describe('Members', () => {
     beforeAll(() => {
       setup(['/gh/critical-role/calloway'])
@@ -278,6 +293,26 @@ describe('useNavLinks', () => {
       expect(
         hookData.result.current.invoiceDetailsPage.path({ owner: 'cat' })
       ).toBe(`/plan/gl/cat/invoices/9`)
+    })
+  })
+
+  describe('downgradePlanPage', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/9'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.downgradePlanPage.path()).toBe(
+        `/plan/gl/doggo/cancel/downgrade`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.downgradePlanPage.path({ provider: 'bb' })
+      ).toBe(`/plan/bb/doggo/cancel/downgrade`)
+      expect(
+        hookData.result.current.downgradePlanPage.path({ owner: 'cat' })
+      ).toBe(`/plan/gl/cat/cancel/downgrade`)
     })
   })
 

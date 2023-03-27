@@ -8,31 +8,38 @@ import MultiSelect from './MultiSelect'
 jest.mock('react-use/lib/useIntersection')
 
 describe('MultiSelect', () => {
-  let multiSelectRef
-  const onChange = jest.fn()
+  function setup() {
+    const user = userEvent.setup()
 
-  let props = {}
-  const defaultProps = {
-    ariaName: 'multi-select test',
-    dataMarketing: 'multi-select test',
-    items: ['item1', 'item2', 'item3'],
-    onChange,
+    return { user }
   }
-
-  beforeEach(() => {
-    props = { ...defaultProps }
-  })
 
   describe('when rendered', () => {
     it('renders the default placeholder', () => {
-      render(<MultiSelect {...props} />)
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing="multi-select test"
+          onChange={onChange}
+          items={['item1', 'item2', 'item3']}
+        />
+      )
 
       const button = screen.getByText(/All/)
       expect(button).toBeInTheDocument()
     })
 
     it('does not render the dropdown and its items', () => {
-      render(<MultiSelect {...props} />)
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing="multi-select test"
+          onChange={onChange}
+          items={['item1', 'item2', 'item3']}
+        />
+      )
 
       const listbox = screen.getByRole('listbox')
       expect(listbox).toBeEmptyDOMElement()
@@ -40,10 +47,11 @@ describe('MultiSelect', () => {
 
     describe('when no items are passed', () => {
       it('uses default items value', () => {
+        const onChange = jest.fn()
         render(
           <MultiSelect
             ariaName="multi-select test"
-            dataMarketing={'multi-select test'}
+            dataMarketing="multi-select test"
             onChange={onChange}
           />
         )
@@ -55,15 +63,16 @@ describe('MultiSelect', () => {
   })
 
   describe('when rendering with a resourceName', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        resourceName: 'item',
-      }
-    })
-
     it('renders the correct placeholder', () => {
-      render(<MultiSelect {...props} />)
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing={'multi-select test'}
+          onChange={onChange}
+          resourceName="item"
+        />
+      )
 
       const allItems = screen.getByText('All items')
       expect(allItems).toBeInTheDocument()
@@ -71,16 +80,17 @@ describe('MultiSelect', () => {
   })
 
   describe('when rendering with a value', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        value: ['item1'],
-        resourceName: 'item',
-      }
-    })
-
     it('renders the default selected items count', () => {
-      render(<MultiSelect {...props} />)
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing={'multi-select test'}
+          onChange={onChange}
+          value={['item1']}
+          resourceName="item"
+        />
+      )
 
       const itemSelected = screen.getByText('1 item selected')
       expect(itemSelected).toBeInTheDocument()
@@ -89,11 +99,20 @@ describe('MultiSelect', () => {
 
   describe('when select button is triggered', () => {
     describe('when triggered with a click', () => {
-      it('renders the items', () => {
-        render(<MultiSelect {...props} />)
+      it('renders the items', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            items={['item1', 'item2', 'item3']}
+            onChange={onChange}
+          />
+        )
 
         const button = screen.getByText('All')
-        userEvent.click(button)
+        await user.click(button)
 
         const listbox = screen.getByRole('listbox')
         expect(listbox).not.toBeEmptyDOMElement()
@@ -110,11 +129,18 @@ describe('MultiSelect', () => {
     })
 
     describe('when triggered enter', () => {
-      it('renders the items', () => {
-        render(<MultiSelect {...props} />)
-
+      it('renders the items', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+          />
+        )
         const button = screen.getByText('All')
-        userEvent.type(button, '{enter}')
+        await user.type(button, '{enter}')
 
         const listbox = screen.getByRole('listbox')
         expect(listbox).not.toBeEmptyDOMElement()
@@ -124,54 +150,89 @@ describe('MultiSelect', () => {
 
   describe('when selecting an item from the list', () => {
     describe('when selected with a click', () => {
-      it('highlights the selected item', () => {
-        render(<MultiSelect {...props} />)
+      it('highlights the selected item', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            items={['item1', 'item2', 'item3']}
+          />
+        )
 
         const button = screen.getByText('All')
-        userEvent.click(button)
+        await user.click(button)
 
         const item1Click = screen.getByText('item1')
-        userEvent.click(item1Click)
+        await user.click(item1Click)
 
         const item1 = screen.getByText('item1')
-        expect(item1).toHaveClass('font-bold')
+        await waitFor(() => expect(item1).toHaveClass('font-bold'))
       })
 
-      it('calls onChange with the item', () => {
-        render(<MultiSelect {...props} />)
+      it('calls onChange with the item', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            items={['item1', 'item2', 'item3']}
+          />
+        )
 
         const button = screen.getByText('All')
-        userEvent.click(button)
+        await user.click(button)
 
         const item1Click = screen.getByText('item1')
-        userEvent.click(item1Click)
+        await user.click(item1Click)
 
-        expect(onChange).toHaveBeenCalledWith(['item1'])
+        await waitFor(() => expect(onChange).toHaveBeenCalledWith(['item1']))
       })
 
-      it('renders the all button', () => {
-        render(<MultiSelect {...props} />)
-
+      it('renders the all button', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            items={['item1', 'item2', 'item3']}
+            onChange={onChange}
+          />
+        )
         const button = screen.getByText('All')
-        userEvent.click(button)
+        await user.click(button)
 
-        const item1Click = screen.getByText('item1')
-        userEvent.click(item1Click)
+        const item1Click = screen.getByRole('option', { name: 'item1' })
+        await user.click(item1Click)
 
-        const all = screen.getByText('All')
+        const all = screen.getByRole('option', { name: 'All' })
         expect(all).toBeInTheDocument()
       })
     })
 
     describe('when selected with enter key', () => {
-      it('calls onChange with the item', () => {
-        render(<MultiSelect {...props} />)
+      it('calls onChange with the item', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            items={['item1', 'item2', 'item3']}
+          />
+        )
 
         const button = screen.getByText('All')
-        userEvent.click(button)
+        await user.click(button)
 
         const item = screen.getByText(/item1/)
-        userEvent.type(item, '{enter}')
+        await user.type(item, '{enter}')
 
         expect(onChange).toHaveBeenCalledWith(['item1'])
       })
@@ -179,33 +240,46 @@ describe('MultiSelect', () => {
   })
 
   describe('when rendered with complex items and custom item rendered', () => {
-    beforeEach(() => {
+    it('renders the default selected items count', () => {
       const items = [{ name: 'item1' }, { name: 'item2' }, { name: 'item3' }]
       const value = [items[0]]
-      const renderItem = ({ name }) => <p>{name}</p>
-
-      props = {
-        ...defaultProps,
-        items,
-        value,
-        renderItem,
-        resourceName: 'item',
-      }
-    })
-
-    it('renders the default selected items count', () => {
-      render(<MultiSelect {...props} />)
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing={'multi-select test'}
+          onChange={onChange}
+          items={items}
+          value={value}
+          renderItem={({ name }) => <p>{name}</p>}
+          resourceName="item"
+        />
+      )
 
       const itemSelected = screen.getByText('1 item selected')
       expect(itemSelected).toBeInTheDocument()
     })
 
     describe('when clicking on the button', () => {
-      it('renders the option user the custom rendered', () => {
-        render(<MultiSelect {...props} />)
+      it('renders the option user the custom rendered', async () => {
+        const { user } = setup()
+        const items = [{ name: 'item1' }, { name: 'item2' }, { name: 'item3' }]
+        const value = [items[0]]
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            items={items}
+            value={value}
+            renderItem={({ name }) => <p>{name}</p>}
+            resourceName="item"
+          />
+        )
 
         const button = screen.getByText('1 item selected')
-        userEvent.click(button)
+        await user.click(button)
 
         const listbox = screen.getByRole('listbox')
         expect(listbox).not.toBeEmptyDOMElement()
@@ -223,19 +297,19 @@ describe('MultiSelect', () => {
   })
 
   describe('when selected item has a custom renderer', () => {
-    beforeEach(() => {
-      const value = ['item1']
-      const renderSelected = (item) => <p>Selected: {item}</p>
-
-      props = {
-        ...defaultProps,
-        value,
-        renderSelected,
-      }
-    })
-
     it('renders the custom selected item', () => {
-      render(<MultiSelect {...props} />)
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing={'multi-select test'}
+          onChange={onChange}
+          items={['item1', 'item2', 'item3']}
+          value={['item1']}
+          renderSelected={(item) => <p>Selected: {item}</p>}
+          resourceName="item"
+        />
+      )
 
       const selectedCount = screen.getByText(/Selected: item1/)
       expect(selectedCount).toBeInTheDocument()
@@ -243,20 +317,23 @@ describe('MultiSelect', () => {
   })
 
   describe('when onSearch function is passed without a resourceName', () => {
-    const onSearch = jest.fn()
-
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        onSearch,
-      }
-    })
-
-    it('renders a search input with the correct placeholder', () => {
-      render(<MultiSelect {...props} />)
+    it('renders a search input with the correct placeholder', async () => {
+      const { user } = setup()
+      const onSearch = jest.fn()
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing={'multi-select test'}
+          onChange={onChange}
+          onSearch={onSearch}
+          items={['item1', 'item2', 'item3']}
+          resourceName="item"
+        />
+      )
 
       const button = screen.getByText(/All/)
-      userEvent.click(button)
+      await user.click(button)
 
       const searchField = screen.getByRole('textbox')
       expect(searchField).toBeInTheDocument()
@@ -264,22 +341,25 @@ describe('MultiSelect', () => {
   })
 
   describe('when onSearch function is passed', () => {
-    const onSearch = jest.fn()
-
     describe('there are items found', () => {
-      beforeEach(() => {
-        props = {
-          ...defaultProps,
-          onSearch,
-          resourceName: 'item',
-        }
-      })
-
-      it('renders a search input', () => {
-        render(<MultiSelect {...props} />)
+      it('renders a search input', async () => {
+        const { user } = setup()
+        const onSearch = jest.fn()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            onSearch={onSearch}
+            items={['item1', 'item2', 'item3']}
+            renderItem={(item) => <p>Selected: {item}</p>}
+            resourceName="item"
+          />
+        )
 
         const button = screen.getByText(/All items/)
-        userEvent.click(button)
+        await user.click(button)
 
         const searchField = screen.getByRole('textbox')
         expect(searchField).toBeInTheDocument()
@@ -287,13 +367,26 @@ describe('MultiSelect', () => {
 
       describe('when typing in the search field', () => {
         it('calls onSearch with the search value', async () => {
-          render(<MultiSelect {...props} />)
+          const { user } = setup()
+          const onSearch = jest.fn()
+          const onChange = jest.fn()
+          render(
+            <MultiSelect
+              ariaName="multi-select test"
+              dataMarketing="multi-select test"
+              onChange={onChange}
+              onSearch={onSearch}
+              items={['item1', 'item2', 'item3']}
+              renderItem={(item) => <p>Selected: {item}</p>}
+              resourceName="item"
+            />
+          )
 
           const button = screen.getByText(/All items/)
-          userEvent.click(button)
+          await user.click(button)
 
           const searchField = screen.getByRole('textbox')
-          userEvent.type(searchField, 'item1')
+          await user.type(searchField, 'item1')
 
           await waitFor(() => expect(onSearch).toHaveBeenCalledWith('item1'))
         })
@@ -301,20 +394,23 @@ describe('MultiSelect', () => {
     })
 
     describe('when there are no items returned', () => {
-      beforeEach(() => {
-        props = {
-          ...defaultProps,
-          onSearch,
-          resourceName: 'item',
-          items: [],
-        }
-      })
-
       it('renders no results found', async () => {
-        render(<MultiSelect {...props} />)
+        const { user } = setup()
+        const onSearch = jest.fn()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            onSearch={onSearch}
+            items={[]}
+            resourceName="item"
+          />
+        )
 
         const button = screen.getByText(/All items/)
-        userEvent.click(button)
+        await user.click(button)
 
         const noResults = await screen.findByText('No results found')
         expect(noResults).toBeInTheDocument()
@@ -323,20 +419,24 @@ describe('MultiSelect', () => {
   })
 
   describe('when onLoadMore function is passed', () => {
-    const onLoadMore = jest.fn()
-
     beforeEach(() => {
-      props = {
-        ...defaultProps,
-        onLoadMore,
-      }
       useIntersection.mockReturnValue({ isIntersecting: true })
     })
+    it('renders an invisible load more trigger', async () => {
+      const { user } = setup()
+      const onLoadMore = jest.fn()
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing={'multi-select test'}
+          onChange={onChange}
+          onLoadMore={onLoadMore}
+        />
+      )
 
-    it('renders an invisible load more trigger', () => {
-      render(<MultiSelect {...props} />)
       const button = screen.getByText('All')
-      userEvent.click(button)
+      await user.click(button)
 
       const loadingMsg = screen.getByText(/Loading more items/)
       expect(loadingMsg).toBeInTheDocument()
@@ -344,10 +444,20 @@ describe('MultiSelect', () => {
 
     describe('when load more trigger span is intersecting', () => {
       it('calls onLoadMore with the search value', async () => {
-        render(<MultiSelect {...props} />)
+        const { user } = setup()
+        const onLoadMore = jest.fn()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            onLoadMore={onLoadMore}
+          />
+        )
 
         const button = screen.getByText('All')
-        userEvent.click(button)
+        await user.click(button)
 
         await waitFor(() => expect(onLoadMore).toHaveBeenCalled())
       })
@@ -355,65 +465,103 @@ describe('MultiSelect', () => {
   })
 
   describe('when selecting a selected item from the list', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        value: ['item1', 'item2', 'item3'],
-        resourceName: 'item',
-      }
-    })
-
     describe('when the item is clicked', () => {
-      it('No longer highlights the selected item', () => {
-        render(<MultiSelect {...props} />)
+      it('No longer highlights the selected item', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            items={['item1', 'item2', 'item3']}
+            value={['item1', 'item2', 'item3']}
+            resourceName="item"
+          />
+        )
 
         const button = screen.getByText(/3 items selected/)
-        userEvent.click(button)
+        await user.click(button)
 
-        const item1Click = screen.getByText('item1')
-        userEvent.click(item1Click)
+        const item1Click = screen.getByRole('option', { name: 'item1' })
+        await user.click(item1Click)
 
-        const item1 = screen.getByText('item1')
-        expect(item1).not.toHaveClass('font-bold')
+        const item1 = screen.getByRole('option', { name: 'item1' })
+        expect(item1).toHaveClass('block cursor-pointer py-1 px-3 text-sm')
       })
 
-      it('calls onChange without the item', () => {
-        render(<MultiSelect {...props} />)
+      it('calls onChange without the item', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            onChange={onChange}
+            items={['item1', 'item2', 'item3']}
+            value={['item1', 'item2', 'item3']}
+            resourceName="item"
+          />
+        )
 
         const button = screen.getByText(/3 items selected/)
-        userEvent.click(button)
+        await user.click(button)
 
         const item1Click = screen.getByText('item1')
-        userEvent.click(item1Click)
+        await user.click(item1Click)
 
-        expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
+        await waitFor(() =>
+          expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
+        )
       })
     })
 
     describe('when the item is selected with enter key', () => {
-      it('No longer highlights the selected item', () => {
-        render(<MultiSelect {...props} />)
+      it('No longer highlights the selected item', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            items={['item1', 'item2', 'item3']}
+            value={['item1', 'item2', 'item3']}
+            resourceName="item"
+            onChange={onChange}
+          />
+        )
 
         const button = screen.getByText(/3 items selected/)
-        userEvent.click(button)
+        await user.click(button)
 
-        userEvent.keyboard('{ArrowDown}')
-        userEvent.keyboard('{ArrowDown}')
-        userEvent.keyboard('{enter}')
+        await user.keyboard('{ArrowDown}')
+        await user.keyboard('{ArrowDown}')
+        await user.keyboard('{enter}')
 
         const item1 = screen.getByText('item1')
         expect(item1).not.toHaveClass('font-bold')
       })
 
-      it('calls onChange without the item', () => {
-        render(<MultiSelect {...props} />)
+      it('calls onChange without the item', async () => {
+        const { user } = setup()
+        const onChange = jest.fn()
+        render(
+          <MultiSelect
+            ariaName="multi-select test"
+            dataMarketing="multi-select test"
+            items={['item1', 'item2', 'item3']}
+            value={['item1', 'item2', 'item3']}
+            resourceName="item"
+            onChange={onChange}
+          />
+        )
 
         const button = screen.getByText(/3 items selected/)
-        userEvent.click(button)
+        await user.click(button)
 
-        userEvent.keyboard('{ArrowDown}')
-        userEvent.keyboard('{ArrowDown}')
-        userEvent.keyboard('{enter}')
+        await user.keyboard('{ArrowDown}')
+        await user.keyboard('{ArrowDown}')
+        await user.keyboard('{enter}')
 
         expect(onChange).toHaveBeenCalledWith(['item2', 'item3'])
       })
@@ -421,41 +569,46 @@ describe('MultiSelect', () => {
   })
 
   describe('when selecting all button', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        value: ['item1', 'item2', 'item3'],
-        resourceName: 'item',
-      }
-    })
-
-    it('calls onChange with an empty array', () => {
-      render(<MultiSelect {...props} />)
+    it('calls onChange with an empty array', async () => {
+      const { user } = setup()
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing="multi-select test"
+          items={['item1', 'item2', 'item3']}
+          value={['item1', 'item2', 'item3']}
+          resourceName="item"
+          onChange={onChange}
+        />
+      )
 
       const button = screen.getByText(/3 items selected/)
-      userEvent.click(button)
+      await user.click(button)
 
       const allButton = screen.getByText(/All items/)
-      userEvent.click(allButton)
+      await user.click(allButton)
 
-      expect(onChange).toHaveBeenCalledWith([])
+      await waitFor(() => expect(onChange).toHaveBeenCalledWith([]))
     })
   })
 
   describe('when isLoading is true', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        items: [],
-        isLoading: true,
-      }
-    })
-
     it('a spinner is rendered', async () => {
-      render(<MultiSelect {...props} />)
+      const { user } = setup()
+      const onChange = jest.fn()
+      render(
+        <MultiSelect
+          ariaName="multi-select test"
+          dataMarketing="multi-select test"
+          onChange={onChange}
+          items={[]}
+          isLoading={true}
+        />
+      )
 
       const button = screen.getByText(/All/)
-      userEvent.click(button)
+      await user.click(button)
 
       const presentation = screen.getByRole('presentation')
       expect(presentation).toBeInTheDocument()
@@ -463,18 +616,18 @@ describe('MultiSelect', () => {
   })
 
   describe('when forward ref is passed', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultProps,
-        value: ['item1', 'item2', 'item3'],
-        resourceName: 'item',
-      }
-    })
-
-    it('reset selected function is defined', () => {
+    it('reset selected function is defined', async () => {
+      const { user } = setup()
+      const onChange = jest.fn()
+      let multiSelectRef
       render(
         <MultiSelect
-          {...props}
+          ariaName="multi-select test"
+          dataMarketing="multi-select test"
+          items={['item1', 'item2', 'item3']}
+          onChange={onChange}
+          value={['item1', 'item2', 'item3']}
+          resourceName="item"
           ref={(ref) => {
             multiSelectRef = ref
           }}
@@ -482,7 +635,7 @@ describe('MultiSelect', () => {
       )
 
       const button = screen.getByText(/3 items selected/)
-      userEvent.click(button)
+      await user.click(button)
 
       act(() => {
         multiSelectRef.resetSelected()

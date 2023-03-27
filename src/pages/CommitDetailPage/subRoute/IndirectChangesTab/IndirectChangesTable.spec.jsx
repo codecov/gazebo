@@ -217,10 +217,11 @@ describe('IndirectChangesTable', () => {
     })
 
     it('renders the CommitFileView component', async () => {
+      const user = userEvent.setup()
       render(<IndirectChangesTable />, { wrapper })
 
       const nameExpander = await screen.findByText('src/index2.py')
-      userEvent.click(nameExpander)
+      await user.click(nameExpander)
 
       const commitFileView = await screen.findByText('CommitFileView')
       expect(commitFileView).toBeInTheDocument()

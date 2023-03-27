@@ -79,6 +79,11 @@ export function useNavLinks() {
         `/plan/${provider}/${owner}`,
       isExternalLink: false,
     },
+    allOrgsPlanPage: {
+      text: 'Plan',
+      path: ({ provider = p } = { provider: p }) => `/plan/${provider}`,
+      isExternalLink: false,
+    },
     membersTab: {
       text: 'Members',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
@@ -108,6 +113,12 @@ export function useNavLinks() {
         { provider = p, owner = o, id = i } = { provider: p, owner: o, id: i }
       ) => `/plan/${provider}/${owner}/invoices/${id}`,
       isExternalLink: false,
+    },
+    downgradePlanPage: {
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
+        `/plan/${provider}/${owner}/cancel/downgrade`,
+      isExternalLink: false,
+      text: 'Downgrade to basic',
     },
     accountAdmin: {
       text: 'Admin',

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { LINE_TYPE } from 'shared/utils/fileviewer'
@@ -31,21 +30,17 @@ const wrapper = ({ children }) => (
 )
 
 describe('SingleLine', () => {
-  const mockHandleClick = jest.fn()
-  const line = [
-    { types: ['plain'], content: '      ' },
-    { types: ['punctuation'], content: '...' },
-    { types: ['plain'], content: 'treePaths' },
-    { types: ['punctuation'], content: ',' },
-    { types: ['plain'], content: '' },
-  ]
-
   function setup(targeted = false) {
+    const user = userEvent.setup()
+    const mockHandleClick = jest.fn()
+
     useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: mockHandleClick,
       targeted,
     }))
+
+    return { mockHandleClick, user }
   }
 
   describe('renders highlighted covered line', () => {
@@ -56,7 +51,13 @@ describe('SingleLine', () => {
     it('render covered line', () => {
       render(
         <SingleLine
-          line={line}
+          line={[
+            { types: ['plain'], content: '      ' },
+            { types: ['punctuation'], content: '...' },
+            { types: ['plain'], content: 'treePaths' },
+            { types: ['punctuation'], content: ',' },
+            { types: ['plain'], content: '' },
+          ]}
           number={1}
           coverage={LINE_TYPE.HIT}
           getTokenProps={() => {}}
@@ -78,7 +79,13 @@ describe('SingleLine', () => {
     it('render uncovered line', () => {
       render(
         <SingleLine
-          line={line}
+          line={[
+            { types: ['plain'], content: '      ' },
+            { types: ['punctuation'], content: '...' },
+            { types: ['plain'], content: 'treePaths' },
+            { types: ['punctuation'], content: ',' },
+            { types: ['plain'], content: '' },
+          ]}
           number={1}
           coverage={LINE_TYPE.MISS}
           getTokenProps={() => {}}
@@ -94,7 +101,13 @@ describe('SingleLine', () => {
     it('render uncovered icon', () => {
       render(
         <SingleLine
-          line={line}
+          line={[
+            { types: ['plain'], content: '      ' },
+            { types: ['punctuation'], content: '...' },
+            { types: ['plain'], content: 'treePaths' },
+            { types: ['punctuation'], content: ',' },
+            { types: ['plain'], content: '' },
+          ]}
           number={1}
           coverage={LINE_TYPE.MISS}
           getTokenProps={() => {}}
@@ -116,7 +129,13 @@ describe('SingleLine', () => {
     it('render partial line', () => {
       render(
         <SingleLine
-          line={line}
+          line={[
+            { types: ['plain'], content: '      ' },
+            { types: ['punctuation'], content: '...' },
+            { types: ['plain'], content: 'treePaths' },
+            { types: ['punctuation'], content: ',' },
+            { types: ['plain'], content: '' },
+          ]}
           number={1}
           coverage={LINE_TYPE.PARTIAL}
           getTokenProps={() => {}}
@@ -132,7 +151,13 @@ describe('SingleLine', () => {
     it('render partial icon', () => {
       render(
         <SingleLine
-          line={line}
+          line={[
+            { types: ['plain'], content: '      ' },
+            { types: ['punctuation'], content: '...' },
+            { types: ['plain'], content: 'treePaths' },
+            { types: ['punctuation'], content: ',' },
+            { types: ['plain'], content: '' },
+          ]}
           number={1}
           coverage={LINE_TYPE.PARTIAL}
           getTokenProps={() => {}}
@@ -147,14 +172,17 @@ describe('SingleLine', () => {
   })
 
   describe('user clicks on a number', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('calls handle click function', () => {
+    it('calls handle click function', async () => {
+      const { mockHandleClick, user } = setup()
       render(
         <SingleLine
-          line={line}
+          line={[
+            { types: ['plain'], content: '      ' },
+            { types: ['punctuation'], content: '...' },
+            { types: ['plain'], content: 'treePaths' },
+            { types: ['punctuation'], content: ',' },
+            { types: ['plain'], content: '' },
+          ]}
           number={1}
           coverage={LINE_TYPE.HIT}
           getTokenProps={() => {}}
@@ -164,7 +192,7 @@ describe('SingleLine', () => {
       )
 
       const button = screen.getByRole('button')
-      userEvent.click(button)
+      await user.click(button)
 
       expect(mockHandleClick).toBeCalled()
     })
@@ -178,7 +206,13 @@ describe('SingleLine', () => {
     it('sets font to bold', () => {
       render(
         <SingleLine
-          line={line}
+          line={[
+            { types: ['plain'], content: '      ' },
+            { types: ['punctuation'], content: '...' },
+            { types: ['plain'], content: 'treePaths' },
+            { types: ['punctuation'], content: ',' },
+            { types: ['plain'], content: '' },
+          ]}
           number={1}
           coverage={LINE_TYPE.HIT}
           getTokenProps={() => {}}

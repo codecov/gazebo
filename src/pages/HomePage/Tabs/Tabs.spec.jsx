@@ -58,10 +58,50 @@ describe('Tabs', () => {
           name: /plan/i,
         })
 
-        expect(planLink).not.toBeInTheDocument()
+        expect(planLink).toBeInTheDocument()
       })
 
       it('renders links to the current user members', () => {
+        const membersLink = screen.queryByRole('link', {
+          name: /members/i,
+        })
+        expect(membersLink).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when rendered with enterprise account', () => {
+      beforeEach(() => {
+        setup({
+          props: {
+            currentUsername: 'lewis',
+          },
+          active: true,
+          isSelfHosted: true,
+        })
+      })
+
+      it('renders link to repos', () => {
+        const reposLink = screen.getByRole('link', { name: 'Repos' })
+        expect(reposLink).toBeInTheDocument()
+      })
+
+      it('does not render link to the current user settings', () => {
+        const userSettingsLink = screen.queryByRole('link', {
+          name: /settings/i,
+        })
+
+        expect(userSettingsLink).not.toBeInTheDocument()
+      })
+
+      it('does not render to the current user plan', () => {
+        const planLink = screen.queryByRole('link', {
+          name: /plan/i,
+        })
+
+        expect(planLink).not.toBeInTheDocument()
+      })
+
+      it('does not render link to the current user members', () => {
         const membersLink = screen.queryByRole('link', {
           name: /members/i,
         })

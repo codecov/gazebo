@@ -1,69 +1,63 @@
-import { render, screen } from 'custom-testing-library'
+import { act, render, screen } from 'custom-testing-library'
 
-import { act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import CopyClipboard from './CopyClipboard'
 
 jest.mock('copy-to-clipboard', () => () => true)
 
-beforeEach(() => {
-  jest.useFakeTimers()
-  window.prompt = jest.fn()
-})
-
 describe('CopyClipboard', () => {
+  beforeAll(() => jest.useFakeTimers())
+  afterAll(() => jest.useRealTimers())
+
   function setup() {
-    render(<CopyClipboard string="to be copied" />)
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+
+    return { user }
   }
 
   describe('when the component is mounted', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the button with clipboard icon', () => {
+      render(<CopyClipboard string="to be copied" />)
+
       const clipboard = screen.getByText(/clipboard-copy/, { exact: true })
       expect(clipboard).toBeInTheDocument()
     })
   })
 
   describe('when the user clicks on the button to copy', () => {
-    beforeEach(() => {
-      setup()
+    it('renders the success icon', async () => {
+      const { user } = setup()
+      render(<CopyClipboard string="to be copied" />)
+
       const button = screen.getByRole('button', {
         name: /copy/i,
       })
-      userEvent.click(button)
-    })
+      await user.click(button)
 
-    it('renders the success icon', () => {
       const success = screen.getByText(/check/, { exact: true })
       expect(success).toBeInTheDocument()
     })
 
-    describe('when 1 seconds elapsed', () => {
-      beforeEach(() => {
-        act(() => {
-          jest.advanceTimersByTime(1000)
-        })
-      })
+    describe('renders clipboard after delay', () => {
+      it('goes back to original state', async () => {
+        const { user } = setup()
+        render(<CopyClipboard string="to be copied" />)
 
-      it('still render the success icon', () => {
-        const success = screen.getByText(/check/, { exact: true })
+        const button = screen.getByRole('button', {
+          name: /copy/i,
+        })
+        await user.click(button)
+
+        const success = await screen.findByText(/check/, { exact: true })
         expect(success).toBeInTheDocument()
-      })
-    })
 
-    describe('when 2 seconds elapsed', () => {
-      beforeEach(() => {
-        act(() => {
-          jest.advanceTimersByTime(2000)
+        act(() => jest.advanceTimersByTime(1500))
+
+        const clipboard = await screen.findByText(/clipboard-copy/, {
+          exact: true,
         })
-      })
 
-      it('goes back to original state', () => {
-        const clipboard = screen.getByText(/clipboard-copy/, { exact: true })
         expect(clipboard).toBeInTheDocument()
       })
     })

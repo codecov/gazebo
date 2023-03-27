@@ -1,7 +1,10 @@
+import isEmpty from 'lodash/isEmpty'
 import { useParams } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
+import { useRepos } from 'services/repos'
 import { useUser } from 'services/user'
+import { repoDisplayOptions } from 'shared/ListRepo/ListRepo'
 import Icon from 'ui/Icon'
 
 function GithubPrivateScopeLogin() {
@@ -10,8 +13,16 @@ function GithubPrivateScopeLogin() {
   const { data: currentUser } = useUser({
     suspense: false,
   })
+  const { data: repoData } = useRepos({
+    activated: repoDisplayOptions.ALL.status,
+  })
 
-  if (!currentUser || provider !== 'gh' || currentUser?.privateAccess) {
+  if (
+    !currentUser ||
+    provider !== 'gh' ||
+    currentUser?.privateAccess ||
+    isEmpty(repoData?.repos)
+  ) {
     return null
   }
 
@@ -22,7 +33,7 @@ function GithubPrivateScopeLogin() {
       </span>
       <span className="mx-1 text-ds-gray-quinary">Public repos only</span>
       <a
-        className="mt-1 text-xs font-semibold text-ds-blue-darker"
+        className="text-xs font-semibold text-ds-blue-darker"
         href={`${signIn.path()}?private=true`}
       >
         add private

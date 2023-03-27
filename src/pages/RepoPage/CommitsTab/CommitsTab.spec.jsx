@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { act } from 'react-test-renderer'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import CommitsTab from './CommitsTab'
@@ -77,10 +76,11 @@ describe('Commits Tab', () => {
     jest.resetAllMocks()
   })
 
-  const fetchNextPage = jest.fn()
-  const searches = jest.fn()
-
   function setup({ hasNextPage }) {
+    const user = userEvent.setup()
+    const fetchNextPage = jest.fn()
+    const searches = jest.fn()
+
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockRepo))
@@ -100,6 +100,8 @@ describe('Commits Tab', () => {
         res(ctx.status(200), ctx.data(mockCommits))
       )
     )
+
+    return { fetchNextPage, searches, user }
   }
 
   describe('when rendered', () => {
@@ -179,11 +181,8 @@ describe('Commits Tab', () => {
   })
 
   describe('when user clicks on the checkbox', () => {
-    beforeEach(() => {
-      setup({ hasNextPage: true })
-    })
-
-    it('changes checked property value to true', () => {
+    it('changes checked property value to true', async () => {
+      const { user } = setup({ hasNextPage: true })
       repoPageRender({
         renderCommits: () => (
           <Wrapper>
@@ -194,7 +193,7 @@ describe('Commits Tab', () => {
       })
 
       const initialCheckBox = screen.getByRole('checkbox')
-      userEvent.click(initialCheckBox)
+      await user.click(initialCheckBox)
 
       const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toBeChecked()
@@ -203,14 +202,12 @@ describe('Commits Tab', () => {
 
   describe('when select onLoadMore is triggered', () => {
     describe('when there is a next page', () => {
-      beforeEach(() => {
-        setup({ hasNextPage: true })
+      it('calls fetchNextPage', async () => {
+        const { fetchNextPage, user } = setup({ hasNextPage: true })
         useIntersection.mockReturnValue({
           isIntersecting: true,
         })
-      })
 
-      it('calls fetchNextPage', async () => {
         repoPageRender({
           renderCommits: () => (
             <Wrapper>
@@ -221,7 +218,7 @@ describe('Commits Tab', () => {
         })
 
         const select = await screen.findByText('Select')
-        userEvent.click(select)
+        await user.click(select)
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
@@ -232,15 +229,20 @@ describe('Commits Tab', () => {
     })
 
     describe('when there is not a next page', () => {
+      /*  TODO: this is a false positive test. The component is
+          actually calling it but because of scoping it was
+          always falsy
+      */
       const fetchNextPage = jest.fn()
+
       beforeEach(() => {
-        setup({ hasNextPage: false })
         useIntersection.mockReturnValue({
           isIntersecting: true,
         })
       })
 
       it('does not call fetchNextPage', async () => {
+        const { user } = setup({ hasNextPage: false })
         repoPageRender({
           renderCommits: () => (
             <Wrapper>
@@ -251,7 +253,7 @@ describe('Commits Tab', () => {
         })
 
         const select = await screen.findByRole('button')
-        userEvent.click(select)
+        await user.click(select)
 
         expect(fetchNextPage).not.toBeCalled()
       })
@@ -259,16 +261,9 @@ describe('Commits Tab', () => {
   })
 
   describe('user searches for branch', () => {
-    beforeEach(() => {
-      setup({ hasNextPage: false })
-      jest.useFakeTimers()
-    })
-
-    afterEach(() => {
-      jest.useRealTimers()
-    })
-
     it('fetches request with search term', async () => {
+      const { searches, user } = setup({ hasNextPage: false })
+
       repoPageRender({
         renderCommits: () => (
           <Wrapper>
@@ -278,21 +273,11 @@ describe('Commits Tab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
       const select = await screen.findByText('Select')
-      userEvent.click(select)
+      await user.click(select)
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      const search = screen.getByRole('textbox')
-      userEvent.type(search, 'searching for a branch')
-
-      act(() => {
-        jest.advanceTimersByTime(5000)
-      })
+      const search = await screen.findByRole('textbox')
+      await user.type(search, 'searching for a branch')
 
       await waitFor(() => expect(searches).toBeCalled())
       await waitFor(() =>

@@ -117,6 +117,7 @@ describe('CommitDirEntry', () => {
   })
 
   it('fires the prefetch function on hover', async () => {
+    const user = userEvent.setup()
     render(
       <CommitDirEntry
         commitSha="1234"
@@ -127,7 +128,7 @@ describe('CommitDirEntry', () => {
     )
 
     const dir = screen.getByText('dir')
-    userEvent.hover(dir)
+    await user.hover(dir)
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
