@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { z } from 'zod'
 
-import { isPaidPlan } from 'shared/utils/billing'
+import { isPaidPlan, isSentryPlan } from 'shared/utils/billing'
 
 export const getInitialDataForm = ({
   accountDetails,
@@ -18,7 +18,7 @@ export const getInitialDataForm = ({
 
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
   let newPlan = proPlanYear?.value
-  if (isSentryUpgrade) {
+  if (isSentryUpgrade && !isSentryPlan(currentPlan?.value)) {
     newPlan = sentryPlanYear?.value
   } else if (isPaidPlan(currentPlan?.value)) {
     newPlan = currentPlan?.value

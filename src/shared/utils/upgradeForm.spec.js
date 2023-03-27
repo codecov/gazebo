@@ -70,6 +70,25 @@ describe('getInitialDataForm', () => {
       })
     })
 
+    it('returns current sentry plan if user is on monthly', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_SENTRYM, quantity: 1 },
+      }
+
+      const data = getInitialDataForm({
+        accountDetails,
+        proPlanYear,
+        sentryPlanYear,
+        isSentryUpgrade,
+        minSeats: 2,
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_SENTRYM,
+        seats: 2,
+      })
+    })
+
     it('returns current plan if the user is on a paid plan', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_PR_INAPPM, quantity: 1 },
