@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import {
@@ -68,6 +69,7 @@ const createTable = ({ tableData, mutate, disableToggle }) =>
     : []
 
 function MemberTable() {
+  const { provider } = useParams()
   const queryClient = useQueryClient()
   const { data: seatData } = useSelfHostedSettings()
   const disableToggle = seatData?.seatsUsed === seatData?.seatsLimit
@@ -82,7 +84,7 @@ function MemberTable() {
 
   const { mutate } = useMutation({
     mutationFn: ({ activated, ownerid }) =>
-      Api.patch({ path: `/users/${ownerid}`, body: { activated } }),
+      Api.patch({ path: `/users/${ownerid}`, provider, body: { activated } }),
     useErrorBoundary: true,
     onSuccess: () => {
       queryClient.invalidateQueries(['SelfHostedSettings'])
