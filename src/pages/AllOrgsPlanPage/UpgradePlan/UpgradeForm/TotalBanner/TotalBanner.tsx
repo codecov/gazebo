@@ -20,8 +20,8 @@ const TotalBanner: React.FC<TotalBannerProps> = ({
 }) => {
   if (isPerYear) {
     return (
-      <div className="flex flex-col gap-3">
-        <p>
+      <div className="bg-ds-gray-primary p-4">
+        <p className="pb-3">
           <span className="font-semibold">
             {formatNumberToUSD(perYearPrice)}
           </span>
@@ -43,8 +43,8 @@ const TotalBanner: React.FC<TotalBannerProps> = ({
     : Plans.USERS_PR_INAPPY
 
   return (
-    <div className="flex flex-col gap-3">
-      <p>
+    <div className="bg-ds-gray-primary p-4">
+      <p className="pb-3">
         <span className="font-semibold">
           {formatNumberToUSD(perMonthPrice)}
         </span>
