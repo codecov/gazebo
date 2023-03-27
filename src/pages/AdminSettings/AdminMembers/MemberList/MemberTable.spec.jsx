@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import MemberTable from './MemberTable'
 
@@ -57,9 +57,11 @@ const mockOpenSeatsTaken = {
 }
 
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/admin/gh/members']}>
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/admin/gh/members']}>
+      <Route path="/admin/:provider/members">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 beforeAll(() => server.listen())
