@@ -1,4 +1,5 @@
 import { format, fromUnixTime } from 'date-fns'
+import isArray from 'lodash/isArray'
 
 import { useFlags } from 'shared/featureFlags'
 
@@ -110,7 +111,7 @@ export const findSentryPlans = ({ plans }) => {
 }
 
 export const canApplySentryUpgrade = ({ plan, plans }) => {
-  if (isEnterprisePlan(plan)) {
+  if (isEnterprisePlan(plan) || !isArray(plans)) {
     return false
   }
 
