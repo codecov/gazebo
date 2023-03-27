@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -27,7 +27,6 @@ jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 
 jest.mock('./shared/GlobalBanners', () => () => '')
-
 jest.mock('./layouts/Header', () => () => '')
 jest.mock('./layouts/Footer', () => () => '')
 
@@ -102,17 +101,6 @@ describe('App', () => {
             me: { user: user, trackingMetadata: { ownerid: 123 }, ...user },
           })
         )
-      ),
-      graphql.query('GetServiceProviders', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            loginProviders: ['GITHUB'],
-          })
-        )
-      ),
-      rest.get('/internal/gh/codecov/account-details/', (_, res, ctx) =>
-        res(ctx.status(200))
       )
     )
   }
@@ -310,49 +298,6 @@ describe('App', () => {
     }
   )
 
-  const cloudLimitedRouterCases = [
-    [
-      {
-        testLabel: 'HomePage',
-        pathname: '/gh',
-        expected: {
-          page: /TermsOfService/i,
-          originalPage: /HomePage/i,
-          location: '/gh',
-        },
-      },
-    ],
-  ]
-
-  describe.each(cloudLimitedRouterCases)(
-    'cloud limited routing',
-    ({ testLabel, pathname, expected }) => {
-      beforeEach(() => (config.IS_SELF_HOSTED = false))
-
-      it(`terms of service overrides the ${testLabel} page`, async () => {
-        setup({ termsOfServicePage: true })
-        render(<App />, { wrapper: wrapper([pathname]) })
-
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe(expected.location)
-        )
-        const page = await screen.findByText(expected.page)
-        expect(page).toBeInTheDocument()
-      })
-
-      it(`terms of service isn't active, renders  ${testLabel} page`, async () => {
-        setup({ termsOfServicePage: false })
-        render(<App />, { wrapper: wrapper([pathname]) })
-
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe(expected.location)
-        )
-        const page = await screen.findByText(expected.originalPage)
-        expect(page).toBeInTheDocument()
-      })
-    }
-  )
-
   const selfHostedFullRouterCases = [
     [
       {
@@ -535,39 +480,6 @@ describe('App', () => {
       })
 
       it(`renders the ${testLabel} page`, async () => {
-        render(<App />, { wrapper: wrapper([pathname]) })
-
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe(expected.location)
-        )
-        const page = await screen.findByText(expected.page)
-        expect(page).toBeInTheDocument()
-      })
-    }
-  )
-
-  const selfHostedLimitedRouterCases = [
-    [
-      {
-        testLabel: 'HomePage',
-        pathname: '/gh',
-        expected: {
-          page: /HomePage/i,
-          location: '/gh',
-        },
-      },
-    ],
-  ]
-
-  describe.each(selfHostedLimitedRouterCases)(
-    'self hosted limited routing',
-    ({ testLabel, pathname, expected }) => {
-      beforeEach(() => {
-        config.IS_SELF_HOSTED = true
-        setup()
-      })
-
-      it(`renders the normal ${testLabel} page`, async () => {
         render(<App />, { wrapper: wrapper([pathname]) })
 
         await waitFor(() =>
