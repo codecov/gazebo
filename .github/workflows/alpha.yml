@@ -1,0 +1,25 @@
+name: Deploy alpha
+
+on:
+  push:
+    branches:
+      - alpha
+
+jobs:
+  release:
+    uses: ./.github/workflows/client-release.yaml
+    with:
+      bucket: ${{ secrets.bucket_alpha }}
+      client_name: ${{ secrets.client_alpha }}
+      api_url: ${{ secrets.api_url_alpha }}
+      base_url: ${{ secrets.base_url_alpha }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      gcp_sa: ${{ secrets.CODECOV_GCP_WIDSA }}
+      gcp_idp: ${{ secrets.CODECOV_GCP_WIDP }}
+    permissions:
+      pull-requests: 'write'
+      contents: 'read'
+      id-token: 'write'
+      actions: 'read'
+      repository-projects: 'read'

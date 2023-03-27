@@ -1,0 +1,52 @@
+name: Client Release
+
+on:
+  workflow_call:
+    inputs:
+      bucket:
+        required: true
+        type: string
+      client_name:
+        required: true
+        type: string
+      api_url:
+        required: true
+        type: string
+      base_url:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+      gcp_sa:
+        required: true
+      gcp_idp:
+        required: true
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '18.8.0'
+      - uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-js-${{ hashFiles('package-log.json') }}
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1.0.0'
+        with:
+          create_credentials_file: 'true'
+          workload_identity_provider: ${{ secrets.gcp_idp }}
+          service_account: ${{ secrets.gcp_sa }}
+
+      - run: make run_build
+        env:
+          REACT_APP_ENV: "enterprise"
+          REACT_APP_API_URL: https://${{ inputs.api_url }}
+          REACT_APP_BASE_URL: https://${{ inputs.base_url }}
+          REACT_APP_CE_CLIENT: ${{ inputs.client_name }}
+
+      - run: gsutil -m rsync -d -c -r build gs://${{ inputs.bucket }}
