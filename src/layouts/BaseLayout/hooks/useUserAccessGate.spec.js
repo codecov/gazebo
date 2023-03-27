@@ -117,6 +117,7 @@ describe('useUserAccessGate', () => {
   describe.each([
     [
       'cloud',
+      'feature flag: ON',
       'signed TOS',
       {
         user: loggedInUser,
@@ -136,6 +137,7 @@ describe('useUserAccessGate', () => {
     ],
     [
       'cloud',
+      'feature flag: ON',
       'guest',
       {
         user: guestUser,
@@ -155,6 +157,7 @@ describe('useUserAccessGate', () => {
     ],
     [
       'cloud',
+      'feature flag: ON',
       'legacy',
       {
         user: loggedInLegacyUser,
@@ -174,6 +177,7 @@ describe('useUserAccessGate', () => {
     ],
     [
       'cloud',
+      'feature flag: ON',
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
@@ -192,7 +196,88 @@ describe('useUserAccessGate', () => {
       },
     ],
     [
+      'cloud',
+      'feature flag: OFF',
+      'signed TOS',
+      {
+        user: loggedInUser,
+        termsOfServicePage: false,
+        isSelfHosted: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'feature flag: OFF',
+      'guest',
+      {
+        user: guestUser,
+        termsOfServicePage: false,
+        isSelfHosted: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'feature flag: OFF',
+      'legacy',
+      {
+        user: loggedInLegacyUser,
+        termsOfServicePage: false,
+        isSelfHosted: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'feature flag: OFF',
+      'unsigned TOS',
+      {
+        user: loggedInUnsignedUser,
+        termsOfServicePage: false,
+        isSelfHosted: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+          },
+        },
+      },
+    ],
+    [
       'self hosted',
+      'feature flag: ON',
       'signed TOS',
       {
         user: loggedInUser,
@@ -212,6 +297,7 @@ describe('useUserAccessGate', () => {
     ],
     [
       'self hosted',
+      'feature flag: ON',
       'guest',
       {
         user: guestUser,
@@ -231,6 +317,7 @@ describe('useUserAccessGate', () => {
     ],
     [
       'self hosted',
+      'feature flag: ON',
       'legacy',
       {
         user: loggedInLegacyUser,
@@ -250,6 +337,7 @@ describe('useUserAccessGate', () => {
     ],
     [
       'self hosted',
+      'feature flag: ON',
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
@@ -267,26 +355,113 @@ describe('useUserAccessGate', () => {
         },
       },
     ],
+    [
+      'self hosted',
+      'feature flag: OFF',
+      'signed TOS',
+      {
+        user: loggedInUser,
+        termsOfServicePage: false,
+        isSelfHosted: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'feature flag: OFF',
+      'guest',
+      {
+        user: guestUser,
+        termsOfServicePage: false,
+        isSelfHosted: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'feature flag: OFF',
+      'legacy',
+      {
+        user: loggedInLegacyUser,
+        termsOfServicePage: false,
+        isSelfHosted: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'feature flag: OFF',
+      'unsigned TOS',
+      {
+        user: loggedInUnsignedUser,
+        termsOfServicePage: false,
+        isSelfHosted: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+          },
+        },
+      },
+    ],
   ])(
     '%s:',
-    (_, userType, { user, termsOfServicePage, isSelfHosted, expected }) => {
-      describe(`when called with ${userType} user`, () => {
-        beforeEach(() => {
-          config.IS_SELF_HOSTED = isSelfHosted
-          setup({ termsOfServicePage, user })
-        })
-        it(`return values are expect while useUser resolves`, async () => {
-          const { result, waitFor } = renderHook(() => useUserAccessGate(), {
-            wrapper: wrapper(['/gh']),
+    (
+      _,
+      termsFlagStatus,
+      userType,
+      { user, termsOfServicePage, isSelfHosted, expected }
+    ) => {
+      describe(`${termsFlagStatus}`, () => {
+        describe(`when called with ${userType} user`, () => {
+          beforeEach(() => {
+            config.IS_SELF_HOSTED = isSelfHosted
+            setup({ termsOfServicePage, user })
           })
+          it(`return values are expect while useUser resolves`, async () => {
+            const { result, waitFor } = renderHook(() => useUserAccessGate(), {
+              wrapper: wrapper(['/gh']),
+            })
 
-          await waitFor(() => result.current.isLoading)
+            await waitFor(() => result.current.isLoading)
 
-          expect(result.current).toStrictEqual(expected.beforeSettled)
+            expect(result.current).toStrictEqual(expected.beforeSettled)
 
-          await waitFor(() => !result.current.isLoading)
+            await waitFor(() => !result.current.isLoading)
 
-          expect(result.current).toStrictEqual(expected.afterSettled)
+            expect(result.current).toStrictEqual(expected.afterSettled)
+          })
         })
       })
     }
