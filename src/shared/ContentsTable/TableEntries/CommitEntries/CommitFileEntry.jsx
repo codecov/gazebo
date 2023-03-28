@@ -27,7 +27,7 @@ function CommitFileEntry({
       displayType={displayType}
       path={path}
       runPrefetch={runPrefetch}
-      pageName="commitFileView"
+      pageName="commitFileDiff"
     />
   )
 }

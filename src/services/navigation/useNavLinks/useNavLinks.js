@@ -228,7 +228,7 @@ export function useNavLinks() {
       isExternalLink: false,
       text: 'Commit Tree View',
     },
-    commitFileView: {
+    commitFileDiff: {
       path: (
         { provider = p, owner = o, repo = r, tree, commit } = {
           provider: p,

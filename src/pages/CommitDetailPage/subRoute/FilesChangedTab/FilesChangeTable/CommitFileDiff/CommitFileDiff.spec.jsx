@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
-import CommitFileView from './CommitFileView'
+import CommitFileView from './CommitFileDiff'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
