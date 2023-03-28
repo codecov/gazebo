@@ -65,7 +65,7 @@ const SentryBundleBanner: React.FC = () => {
           Your Sentry Bundle benefit has been claimed. You can apply it to your
           organization at any time by selecting it from the{' '}
           <A
-            to={{ pageName: 'planTab' }}
+            to={{ pageName: 'allOrgsPlanPage' }}
             hook="sentry-banner-to-plans-tab"
             isExternal={false}
           >
