@@ -23,7 +23,7 @@ const useParamsFilters = (defaultBranch) => {
   const paramCIStatus = hideFailedCI === true || hideFailedCI === 'true'
 
   let branch = selectedBranch
-  if (branch === 'All Commits') {
+  if (branch === 'All commits') {
     branch = ''
   }
 
@@ -51,13 +51,14 @@ function CommitsTab() {
     branchListHasNextPage,
     branchListFetchNextPage,
     setBranchSearchTerm,
+    isSearching,
   } = useCommitsTabBranchSelector({
     passedBranch: branch,
     defaultBranch: overview?.defaultBranch,
-    isAllCommits: selectedBranch === 'All Commits',
+    isAllCommits: selectedBranch === 'All commits',
   })
 
-  const newBranches = ['All Commits', ...branchList]
+  const newBranches = [...(isSearching ? [] : ['All commits']), ...branchList]
 
   useLayoutEffect(() => {
     setCrumbs([

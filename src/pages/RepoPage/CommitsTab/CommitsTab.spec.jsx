@@ -286,7 +286,7 @@ describe('CommitsTab', () => {
         const select = await screen.findByRole('button')
         await user.click(select)
 
-        const allCommits = await screen.findByText('All Commits')
+        const allCommits = await screen.findByText('All commits')
         userEvent.click(allCommits)
 
         await waitFor(() => expect(branchName).toHaveBeenCalled())
@@ -375,6 +375,30 @@ describe('CommitsTab', () => {
       await waitFor(() =>
         expect(searches).toBeCalledWith('searching for a branch')
       )
+    })
+
+    it('hides all commits from list', async () => {
+      const { searches, user } = setup({ hasNextPage: false })
+
+      repoPageRender({
+        renderCommits: () => (
+          <Wrapper>
+            <CommitsTab />
+          </Wrapper>
+        ),
+        initialEntries: ['/gh/codecov/gazebo/commits'],
+      })
+
+      const select = await screen.findByText('Select branch')
+      await user.click(select)
+
+      const search = await screen.findByRole('textbox')
+      await user.type(search, 'searching for a branch')
+
+      await waitFor(() => expect(searches).toBeCalled())
+
+      const allCommits = screen.queryByText('All commits')
+      expect(allCommits).not.toBeInTheDocument()
     })
   })
 })
