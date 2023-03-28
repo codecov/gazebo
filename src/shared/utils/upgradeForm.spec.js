@@ -1,6 +1,49 @@
 import { Plans } from 'shared/utils/billing'
 
-import { getInitialDataForm, getSchema } from './upgradeForm'
+import { calculatePrice, getInitialDataForm, getSchema } from './upgradeForm'
+
+describe('calculatePrice', () => {
+  describe('isSentryUpgrade is true', () => {
+    describe('seat count is at five', () => {
+      it('returns base price', () => {
+        const result = calculatePrice({
+          seats: 5,
+          baseUnitPrice: 10,
+          isSentryUpgrade: true,
+          sentryPrice: 29,
+        })
+
+        expect(result).toBe(29)
+      })
+    })
+
+    describe('seat count is greater then five', () => {
+      it('returns base price plus additional seats', () => {
+        const result = calculatePrice({
+          seats: 6,
+          baseUnitPrice: 10,
+          isSentryUpgrade: true,
+          sentryPrice: 29,
+        })
+
+        expect(result).toBe(39)
+      })
+    })
+  })
+
+  describe('isSentryUpgrade is false', () => {
+    it('returns base price times amount of seats', () => {
+      const result = calculatePrice({
+        seats: 5,
+        baseUnitPrice: 12,
+        isSentryUpgrade: false,
+        sentryPrice: 29,
+      })
+
+      expect(result).toBe(60)
+    })
+  })
+})
 
 describe('getInitialDataForm', () => {
   const proPlanYear = { value: Plans.USERS_PR_INAPPY }

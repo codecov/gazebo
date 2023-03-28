@@ -50,3 +50,21 @@ export const getSchema = ({ accountDetails, minSeats }) =>
         }
       }),
   })
+
+export const calculatePrice = ({
+  seats,
+  baseUnitPrice,
+  isSentryUpgrade,
+  sentryPrice,
+}) => {
+  let price = Math.floor(seats) * baseUnitPrice
+
+  if (isSentryUpgrade) {
+    price = sentryPrice
+    if (seats > 5) {
+      price += Math.floor(seats - 5) * baseUnitPrice
+    }
+  }
+
+  return price
+}
