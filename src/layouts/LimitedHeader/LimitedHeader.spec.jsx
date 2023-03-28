@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useImage } from 'services/image'
 import { useImpersonate } from 'services/impersonate'
 
-import LimitedLayout from './LimitedLayout'
+import LimitedHeader from './LimitedHeader'
 
 jest.mock('services/image')
 jest.mock('services/impersonate')
@@ -48,6 +48,7 @@ afterEach(() => {
   server.resetHandlers()
 })
 afterAll(() => server.close())
+
 describe('LimitedLayout', () => {
   afterEach(() => jest.resetAllMocks())
 
@@ -70,26 +71,17 @@ describe('LimitedLayout', () => {
   describe('renders', () => {
     beforeEach(() => setup())
 
-    it('a regular header', () => {
-      render(<LimitedLayout>Why do we fall?</LimitedLayout>, {
+    it('a regular header', async () => {
+      render(<LimitedHeader />, {
         wrapper: wrapper(),
       })
 
-      const regularHeader = screen.getByTestId('header')
+      const regularHeader = await screen.findByTestId('header')
       expect(regularHeader).toHaveClass('bg-ds-gray-octonary')
     })
 
-    it('children', async () => {
-      render(<LimitedLayout>Why do we fall?</LimitedLayout>, {
-        wrapper: wrapper(),
-      })
-
-      const content = await screen.findByText('Why do we fall?')
-      expect(content).toBeInTheDocument()
-    })
-
     it('a user avatar', async () => {
-      render(<LimitedLayout>Why do we fall?</LimitedLayout>, {
+      render(<LimitedHeader />, {
         wrapper: wrapper(),
       })
 
@@ -101,13 +93,35 @@ describe('LimitedLayout', () => {
   describe('renders while impersonated', () => {
     beforeEach(() => setup({ isImpersonating: true }))
 
-    it('a pink header', () => {
-      render(<LimitedLayout>Why do we fall?</LimitedLayout>, {
+    it('a pink header', async () => {
+      render(<LimitedHeader />, {
         wrapper: wrapper(),
       })
 
-      const pinkHeader = screen.getByTestId('header')
+      const pinkHeader = await screen.findByTestId('header')
       expect(pinkHeader).toHaveClass('bg-ds-pink-tertiary')
+    })
+  })
+
+  describe('Avatar render logic', () => {
+    beforeEach(() => setup())
+
+    it(`isn't rendered on first render`, () => {
+      render(<LimitedHeader />, {
+        wrapper: wrapper(),
+      })
+
+      const avatar = screen.queryByRole('img', { name: 'avatar' })
+      expect(avatar).not.toBeInTheDocument()
+    })
+
+    it('is rendered once useUser settles', async () => {
+      render(<LimitedHeader />, {
+        wrapper: wrapper(),
+      })
+
+      const avatar = await screen.findByRole('img', { name: 'avatar' })
+      expect(avatar).toBeInTheDocument()
     })
   })
 })
