@@ -439,118 +439,6 @@ describe('UpgradeForm', () => {
         expect(error).toBeInTheDocument()
       })
     })
-
-    describe('when clicking on the button to upgrade', () => {
-      const props = {
-        organizationName: 'codecov',
-        proPlanMonth,
-        proPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-        },
-      }
-
-      describe('when mutation is successful', () => {
-        it('adds a success notification', async () => {
-          const { user, addNotification } = setup()
-          render(<UpgradeForm {...props} />, { wrapper })
-
-          let input = await screen.findByRole('spinbutton')
-          await user.type(input, '{backspace}{backspace}{backspace}')
-          input = await screen.findByRole('spinbutton')
-          await user.type(input, '20')
-
-          const updateButton = await screen.findByRole('button', {
-            name: 'Update',
-          })
-          await user.click(updateButton)
-
-          await waitFor(() =>
-            expect(addNotification).toHaveBeenCalledWith({
-              type: 'success',
-              text: 'Plan successfully upgraded',
-            })
-          )
-        })
-
-        it('redirects the user to the plan page', async () => {
-          const { user } = setup()
-          render(<UpgradeForm {...props} />, { wrapper })
-
-          const input = await screen.findByRole('spinbutton')
-          await user.type(input, '{backspace}{backspace}{backspace}')
-          await user.type(input, '20')
-
-          const updateButton = await screen.findByRole('button', {
-            name: 'Update',
-          })
-          await user.click(updateButton)
-
-          await waitFor(() =>
-            expect(testLocation.pathname).toEqual('/plan/gh/codecov')
-          )
-        })
-      })
-
-      describe('when mutation is not successful', () => {
-        describe('an error message is provided', () => {
-          it('adds an error notification with detail message', async () => {
-            const { user, addNotification } = setup({
-              successfulRequest: false,
-              errorDetails: 'Insufficient funds.',
-            })
-            render(<UpgradeForm {...props} />, { wrapper })
-
-            let input = await screen.findByRole('spinbutton')
-            await user.type(input, '{backspace}{backspace}{backspace}')
-            input = await screen.findByRole('spinbutton')
-            await user.type(input, '20')
-
-            const updateButton = await screen.findByRole('button', {
-              name: 'Update',
-            })
-            await user.click(updateButton)
-
-            await waitFor(() =>
-              expect(addNotification).toHaveBeenCalledWith({
-                type: 'error',
-                text: 'Insufficient funds.',
-              })
-            )
-          })
-        })
-
-        describe('no error message is provided', () => {
-          it('adds an error notification with a default message', async () => {
-            const { user, addNotification } = setup({
-              successfulRequest: false,
-            })
-
-            render(<UpgradeForm {...props} />, { wrapper })
-
-            let input = await screen.findByRole('spinbutton')
-            await user.type(input, '{backspace}{backspace}{backspace}')
-            input = await screen.findByRole('spinbutton')
-            await user.type(input, '20')
-
-            const updateButton = await screen.findByRole('button', {
-              name: 'Update',
-            })
-            await user.click(updateButton)
-
-            await waitFor(() =>
-              expect(addNotification).toHaveBeenCalledWith({
-                type: 'error',
-                text: 'Something went wrong',
-              })
-            )
-          })
-        })
-      })
-    })
   })
 
   describe('user has access to sentry upgrade', () => {
@@ -845,25 +733,70 @@ describe('UpgradeForm', () => {
         expect(error).toBeInTheDocument()
       })
     })
+  })
 
-    describe('when clicking on the button to upgrade', () => {
-      const props = {
-        organizationName: 'codecov',
-        proPlanMonth,
-        proPlanYear,
-        sentryPlanMonth,
-        sentryPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-        },
-      }
+  describe('when clicking on the button to upgrade', () => {
+    const props = {
+      organizationName: 'codecov',
+      proPlanMonth,
+      proPlanYear,
+      accountDetails: {
+        activatedUserCount: 9,
+        inactiveUserCount: 0,
+        plan: null,
+        latestInvoice: null,
+      },
+    }
 
-      describe('when mutation is successful', () => {
-        it('adds a success notification', async () => {
-          const { user, addNotification } = setup({ includeSentryPlans: true })
+    describe('when mutation is successful', () => {
+      it('adds a success notification', async () => {
+        const { user, addNotification } = setup()
+        render(<UpgradeForm {...props} />, { wrapper })
+
+        let input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        input = await screen.findByRole('spinbutton')
+        await user.type(input, '20')
+
+        const updateButton = await screen.findByRole('button', {
+          name: 'Update',
+        })
+        await user.click(updateButton)
+
+        await waitFor(() =>
+          expect(addNotification).toHaveBeenCalledWith({
+            type: 'success',
+            text: 'Plan successfully upgraded',
+          })
+        )
+      })
+
+      it('redirects the user to the plan page', async () => {
+        const { user } = setup()
+        render(<UpgradeForm {...props} />, { wrapper })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '20')
+
+        const updateButton = await screen.findByRole('button', {
+          name: 'Update',
+        })
+        await user.click(updateButton)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+        )
+      })
+    })
+
+    describe('when mutation is not successful', () => {
+      describe('an error message is provided', () => {
+        it('adds an error notification with detail message', async () => {
+          const { user, addNotification } = setup({
+            successfulRequest: false,
+            errorDetails: 'Insufficient funds.',
+          })
           render(<UpgradeForm {...props} />, { wrapper })
 
           let input = await screen.findByRole('spinbutton')
@@ -878,18 +811,24 @@ describe('UpgradeForm', () => {
 
           await waitFor(() =>
             expect(addNotification).toHaveBeenCalledWith({
-              type: 'success',
-              text: 'Plan successfully upgraded',
+              type: 'error',
+              text: 'Insufficient funds.',
             })
           )
         })
+      })
 
-        it('redirects the user to the plan page', async () => {
-          const { user } = setup({ includeSentryPlans: true })
+      describe('no error message is provided', () => {
+        it('adds an error notification with a default message', async () => {
+          const { user, addNotification } = setup({
+            successfulRequest: false,
+          })
+
           render(<UpgradeForm {...props} />, { wrapper })
 
-          const input = await screen.findByRole('spinbutton')
+          let input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
+          input = await screen.findByRole('spinbutton')
           await user.type(input, '20')
 
           const updateButton = await screen.findByRole('button', {
@@ -898,66 +837,11 @@ describe('UpgradeForm', () => {
           await user.click(updateButton)
 
           await waitFor(() =>
-            expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Something went wrong',
+            })
           )
-        })
-      })
-
-      describe('when mutation is not successful', () => {
-        describe('an error message is provided', () => {
-          it('adds an error notification with detail message', async () => {
-            const { user, addNotification } = setup({
-              successfulRequest: false,
-              errorDetails: 'Insufficient funds.',
-              includeSentryPlans: true,
-            })
-            render(<UpgradeForm {...props} />, { wrapper })
-
-            let input = await screen.findByRole('spinbutton')
-            await user.type(input, '{backspace}{backspace}{backspace}')
-            input = await screen.findByRole('spinbutton')
-            await user.type(input, '20')
-
-            const updateButton = await screen.findByRole('button', {
-              name: 'Update',
-            })
-            await user.click(updateButton)
-
-            await waitFor(() =>
-              expect(addNotification).toHaveBeenCalledWith({
-                type: 'error',
-                text: 'Insufficient funds.',
-              })
-            )
-          })
-        })
-
-        describe('no error message is provided', () => {
-          it('adds an error notification with a default message', async () => {
-            const { user, addNotification } = setup({
-              successfulRequest: false,
-              includeSentryPlans: true,
-            })
-
-            render(<UpgradeForm {...props} />, { wrapper })
-
-            let input = await screen.findByRole('spinbutton')
-            await user.type(input, '{backspace}{backspace}{backspace}')
-            input = await screen.findByRole('spinbutton')
-            await user.type(input, '20')
-
-            const updateButton = await screen.findByRole('button', {
-              name: 'Update',
-            })
-            await user.click(updateButton)
-
-            await waitFor(() =>
-              expect(addNotification).toHaveBeenCalledWith({
-                type: 'error',
-                text: 'Something went wrong',
-              })
-            )
-          })
         })
       })
     })
