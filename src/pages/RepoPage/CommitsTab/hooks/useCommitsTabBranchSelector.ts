@@ -21,7 +21,7 @@ export const useCommitsTabBranchSelector = ({
   isAllCommits?: boolean
 }) => {
   const { repo, owner, provider } = useParams<URLParams>()
-  const [branchSearchTerm, setBranchSearchTerm] = useState<string>()
+  const [branchSearchTerm, setBranchSearchTerm] = useState('')
 
   const {
     data: branchList,
@@ -87,5 +87,6 @@ export const useCommitsTabBranchSelector = ({
     branchListHasNextPage,
     branchListFetchNextPage,
     setBranchSearchTerm,
+    isSearching: branchSearchTerm !== '',
   }
 }
