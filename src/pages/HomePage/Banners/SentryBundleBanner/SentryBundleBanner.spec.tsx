@@ -59,8 +59,8 @@ const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov']}>
-      <Route path="/:provider/:owner">
+    <MemoryRouter initialEntries={['/gh']}>
+      <Route path="/:provider">
         <Suspense fallback={null}>{children}</Suspense>
       </Route>
     </MemoryRouter>
@@ -112,6 +112,10 @@ describe('SentryBundleBanner', () => {
 
       const heading = await screen.findByText(/Sentry Bundle Benefit/)
       expect(heading).toBeInTheDocument()
+
+      const link = await screen.findByRole('link', { name: 'plans tab' })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/plan/gh')
     })
   })
 
