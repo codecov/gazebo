@@ -71,8 +71,21 @@ const mockOverview = {
   },
 }
 
+const mockBranch = (branchName) => ({
+  owner: {
+    repository: {
+      branch: {
+        name: branchName,
+        head: {
+          commitid: branchName === 'imogen' ? 'commit-123' : 'commit-321',
+        },
+      },
+    },
+  },
+})
+
 describe('CommitsTab', () => {
-  function setup({ hasNextPage, hasBranches }) {
+  function setup({ hasNextPage, hasBranches, returnBranch = true }) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const searches = jest.fn()
@@ -104,6 +117,16 @@ describe('CommitsTab', () => {
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockOverview))
+      ),
+      graphql.query('GetBranch', (req, res, ctx) => {
+        if (returnBranch) {
+          return res(ctx.status(200), ctx.data(mockBranch(branchName)))
+        }
+
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetRepo', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
       )
     )
 
