@@ -20,8 +20,8 @@ export const useCommitsTabBranchSelector = ({
   defaultBranch: string
   isAllCommits?: boolean
 }) => {
-  const [branchSearchTerm, setBranchSearchTerm] = useState()
   const { repo, owner, provider } = useParams<URLParams>()
+  const [branchSearchTerm, setBranchSearchTerm] = useState<string>()
 
   const {
     data: branchList,
