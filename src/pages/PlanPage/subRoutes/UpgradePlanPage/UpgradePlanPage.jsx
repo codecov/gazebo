@@ -1,15 +1,8 @@
-import PropTypes from 'prop-types'
 import { useLayoutEffect } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
+import { useAccountDetails, usePlans } from 'services/account'
 import {
-  accountDetailsPropType,
-  planPropType,
-  useAccountDetails,
-  usePlans,
-} from 'services/account'
-import {
-  canApplySentryUpgrade,
   findSentryPlans,
   isEnterprisePlan,
   isFreePlan,
@@ -17,50 +10,11 @@ import {
 } from 'shared/utils/billing'
 import Card from 'ui/Card'
 
-import SentryUpgradeForm from './SentryUpgradeForm'
 import UpgradeDetails from './UpgradeDetails'
 import UpgradeForm from './UpgradeForm'
 import UpgradeFreePlanBanner from './UpgradeFreePlanBanner'
 
 import { useSetCrumbs } from '../../context'
-
-const FormDetails = ({
-  accountDetails,
-  plan,
-  plans,
-  proPlanMonth,
-  proPlanYear,
-  sentryPlanMonth,
-  sentryPlanYear,
-}) => {
-  if (canApplySentryUpgrade({ plan, plans })) {
-    return (
-      <SentryUpgradeForm
-        accountDetails={accountDetails}
-        sentryPlanYear={sentryPlanYear}
-        sentryPlanMonth={sentryPlanMonth}
-      />
-    )
-  }
-
-  return (
-    <UpgradeForm
-      accountDetails={accountDetails}
-      proPlanYear={proPlanYear}
-      proPlanMonth={proPlanMonth}
-    />
-  )
-}
-
-FormDetails.propTypes = {
-  accountDetails: accountDetailsPropType,
-  plan: planPropType,
-  plans: PropTypes.arrayOf(planPropType),
-  proPlanMonth: planPropType,
-  proPlanYear: planPropType,
-  sentryPlanMonth: planPropType,
-  sentryPlanYear: planPropType,
-}
 
 // eslint-disable-next-line max-statements
 function UpgradePlanPage() {
@@ -87,9 +41,12 @@ function UpgradePlanPage() {
     return <Redirect to={`/plan/${provider}/${owner}`} />
   }
 
+  /*
+   * TODO: Refactor this layout to be it's own reusable component
+   * (also used in CurrentPlanCard and the CancelPlan card)
+   */
   return (
     <>
-      {/* TODO: Refactor this layout to be it's own reusable component (also used in CurrentPlanCard and the CancelPlan card) */}
       <div className="mt-6 flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
         <Card variant="large">
           <UpgradeDetails
@@ -105,12 +62,10 @@ function UpgradePlanPage() {
         <div className="flex flex-col gap-4 md:w-2/3">
           {isFreePlan(plan?.value) && <UpgradeFreePlanBanner owner={owner} />}
           <Card variant="upgradeForm">
-            <FormDetails
+            <UpgradeForm
               accountDetails={accountDetails}
-              plan={plan}
-              plans={plans}
-              proPlanMonth={proPlanMonth}
               proPlanYear={proPlanYear}
+              proPlanMonth={proPlanMonth}
               sentryPlanYear={sentryPlanYear}
               sentryPlanMonth={sentryPlanMonth}
             />
