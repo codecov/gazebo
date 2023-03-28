@@ -42,7 +42,7 @@ const mockBranches = (hasNextPage = false) => ({
         ],
         pageInfo: {
           hasNextPage,
-          endCursor: 'some cursor',
+          endCursor: hasNextPage ? 'some cursor' : undefined,
         },
       },
     },
@@ -234,12 +234,34 @@ describe('CommitsTab', () => {
   })
 
   describe('when select onLoadMore is triggered', () => {
+    beforeEach(() => {
+      useIntersection.mockReturnValue({
+        isIntersecting: true,
+      })
+    })
+
+    describe('when there is not a next page', () => {
+      it('does not call fetchNextPage', async () => {
+        const { user, fetchNextPage } = setup({ hasNextPage: false })
+        repoPageRender({
+          renderCommits: () => (
+            <Wrapper>
+              <CommitsTab />
+            </Wrapper>
+          ),
+          initialEntries: ['/gh/codecov/gazebo/commits'],
+        })
+
+        const select = await screen.findByRole('button')
+        await user.click(select)
+
+        await waitFor(() => expect(fetchNextPage).not.toHaveBeenCalled())
+      })
+    })
+
     describe('when there is a next page', () => {
       it('calls fetchNextPage', async () => {
         const { fetchNextPage, user } = setup({ hasNextPage: true })
-        useIntersection.mockReturnValue({
-          isIntersecting: true,
-        })
 
         repoPageRender({
           renderCommits: () => (
@@ -260,95 +282,30 @@ describe('CommitsTab', () => {
         await waitFor(() => expect(fetchNextPage).toBeCalledWith('some cursor'))
       })
     })
+  })
 
-    describe('when there is not a next page', () => {
-      /*  TODO: this is a false positive test. The component is
-          actually calling it but because of scoping it was
-          always falsy
-      */
-      beforeEach(() => {
-        useIntersection.mockReturnValue({
-          isIntersecting: true,
-        })
+  describe('user selects an item from the list', () => {
+    it('updates the button with the selected branch', async () => {
+      const { user } = setup({})
+      repoPageRender({
+        renderCommits: () => (
+          <Wrapper>
+            <CommitsTab />
+          </Wrapper>
+        ),
+        initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      it('does not call fetchNextPage', async () => {
-        const { user, branchName } = setup({ hasNextPage: false })
-        repoPageRender({
-          renderCommits: () => (
-            <Wrapper>
-              <CommitsTab />
-            </Wrapper>
-          ),
-          initialEntries: ['/gh/codecov/gazebo/commits'],
-        })
+      const select = await screen.findByRole('button')
+      await user.click(select)
 
-        const select = await screen.findByRole('button')
-        await user.click(select)
+      const branch = await screen.findByText('All commits')
+      await user.click(branch)
 
-        const allCommits = await screen.findByText('All commits')
-        userEvent.click(allCommits)
-
-        await waitFor(() => expect(branchName).toHaveBeenCalled())
-        await waitFor(() => expect(branchName).toHaveBeenCalledWith(''))
+      const allCommitsBtn = await screen.findByRole('button', {
+        name: 'All commits',
       })
-    })
-
-    describe('when select onLoadMore is triggered', () => {
-      describe('when there is a next page', () => {
-        it('calls fetchNextPage', async () => {
-          const { fetchNextPage } = setup({ hasNextPage: true })
-          useIntersection.mockReturnValue({
-            isIntersecting: true,
-          })
-
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
-
-          const select = await screen.findByText('Select branch')
-          userEvent.click(select)
-
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          await waitFor(() => expect(fetchNextPage).toBeCalled())
-          await waitFor(() =>
-            expect(fetchNextPage).toBeCalledWith('some cursor')
-          )
-        })
-      })
-
-      describe('when there is not a next page', () => {
-        const fetchNextPage = jest.fn()
-        beforeEach(() => {
-          setup({ hasNextPage: false })
-          useIntersection.mockReturnValue({
-            isIntersecting: true,
-          })
-        })
-
-        it('does not call fetchNextPage', async () => {
-          repoPageRender({
-            renderCommits: () => (
-              <Wrapper>
-                <CommitsTab />
-              </Wrapper>
-            ),
-            initialEntries: ['/gh/codecov/gazebo/commits'],
-          })
-
-          const select = await screen.findByRole('button')
-          userEvent.click(select)
-
-          expect(fetchNextPage).not.toBeCalled()
-        })
-      })
+      expect(allCommitsBtn).toBeInTheDocument()
     })
   })
 
