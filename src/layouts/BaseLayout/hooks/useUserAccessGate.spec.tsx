@@ -30,7 +30,10 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper =
+type WrapperClosure = (
+  initialEntries?: string[]
+) => React.FC<React.PropsWithChildren>
+const wrapper: WrapperClosure =
   (initialEntries = ['/gh']) =>
   ({ children }) =>
     (
@@ -40,6 +43,26 @@ const wrapper =
         </MemoryRouter>
       </QueryClientProvider>
     )
+
+interface UserPartial {
+  me: {
+    user: {
+      username: string
+      email: string
+      name: string
+      avatarUrl: string
+      termsAgreement?: boolean
+    }
+    trackingMetadata: {
+      ownerid: number
+    }
+    username: string
+    email: string
+    name: string
+    avatarUrl: string
+    termsAgreement?: boolean
+  } | null
+}
 
 const userSignedInIdentity = {
   username: 'CodecovUser',
@@ -97,14 +120,18 @@ afterAll(() => {
   server.close()
 })
 
+type Setup = { termsOfServicePage: boolean; user: UserPartial }
+
 describe('useUserAccessGate', () => {
   function setup(
-    { termsOfServicePage = false, user = loggedInUser } = {
+    { termsOfServicePage = false, user = loggedInUser }: Setup = {
       termsOfServicePage: false,
       user: loggedInUser,
     }
   ) {
-    useFlags.mockReturnValue({ termsOfServicePage })
+    const mockedUseFlags = jest.mocked(useFlags)
+    mockedUseFlags.mockReturnValue({ termsOfServicePage })
+
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(user))
