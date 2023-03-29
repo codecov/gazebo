@@ -69,7 +69,7 @@ export const useCommitsTabBranchSelector = ({
 
   let selection = searchBranchValue?.branch?.name
   if (isAllCommits) {
-    selection = 'All Commits'
+    selection = 'All commits'
   } else if (!selection) {
     selection = 'Select branch'
   }

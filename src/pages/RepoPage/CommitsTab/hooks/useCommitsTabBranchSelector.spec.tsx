@@ -262,7 +262,7 @@ describe('useCommitsTabBranchSelector', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.selection).toStrictEqual('All Commits')
+        expect(result.current.selection).toStrictEqual('All commits')
       )
     })
   })
