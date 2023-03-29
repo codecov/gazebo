@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import IndirectChangesTable from '../IndirectChangesTable'
 
-jest.mock('./CommitFileDiff/CommitFileDiff', () => () => 'CommitFileDiff')
+jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 
 const queryClient = new QueryClient({
   defaultOptions: {

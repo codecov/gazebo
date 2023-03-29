@@ -2,9 +2,7 @@ import { lazy, Suspense } from 'react'
 
 import Spinner from 'ui/Spinner'
 
-const IndirectChangesTable = lazy(() =>
-  import('./IndirectChangesTable/IndirectChangesTable')
-)
+const IndirectChangesTable = lazy(() => import('./IndirectChangesTable'))
 
 const Loader = () => (
   <div className="m-4 flex flex-1 justify-center">

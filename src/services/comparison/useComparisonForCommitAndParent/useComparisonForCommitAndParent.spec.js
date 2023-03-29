@@ -74,7 +74,10 @@ const baseMock = {
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
 afterAll(() => server.close())
 
 describe('useComparisonForCommitAndParent', () => {
@@ -106,10 +109,7 @@ describe('useComparisonForCommitAndParent', () => {
         }
       )
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      expect(result.current.data.data).toEqual(baseMock)
+      await waitFor(() => expect(result.current.data.data).toEqual(baseMock))
     })
   })
 })

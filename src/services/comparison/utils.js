@@ -24,6 +24,6 @@ export function transformImpactedFileData(impactedFile) {
     headName: impactedFile?.headName,
     isCriticalFile: impactedFile?.isCriticalFile,
     segments: impactedFile?.segmentsDeprecated,
-    ...(hashedPath && { hashedPath }),
+    ...(!!hashedPath && { hashedPath }),
   }
 }

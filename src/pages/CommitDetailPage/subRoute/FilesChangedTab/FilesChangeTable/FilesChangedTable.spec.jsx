@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FilesChangedTable from './FilesChangedTable'
 
-jest.mock('./CommitFileDiff/CommitFileDiff', () => () => 'CommitFileDiff')
+jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 
 const queryClient = new QueryClient({
   defaultOptions: {
