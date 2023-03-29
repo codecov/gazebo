@@ -6,9 +6,9 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import IndirectChangesTable from './IndirectChangesTable'
+import IndirectChangesTable from '../IndirectChangesTable'
 
-jest.mock('./CommitFileView', () => () => 'CommitFileView')
+jest.mock('./CommitFileDiff/CommitFileDiff', () => () => 'CommitFileDiff')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -216,15 +216,15 @@ describe('IndirectChangesTable', () => {
       ])
     })
 
-    it('renders the CommitFileView component', async () => {
+    it('renders the CommitFileDiff component', async () => {
       const user = userEvent.setup()
       render(<IndirectChangesTable />, { wrapper })
 
       const nameExpander = await screen.findByText('src/index2.py')
       await user.click(nameExpander)
 
-      const commitFileView = await screen.findByText('CommitFileView')
-      expect(commitFileView).toBeInTheDocument()
+      const commitFileDiff = await screen.findByText('CommitFileDiff')
+      expect(commitFileDiff).toBeInTheDocument()
     })
   })
 })

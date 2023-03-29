@@ -12,7 +12,7 @@ import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import CommitFileView from './CommitFileView'
+import CommitFileDiff from './CommitFileDiff'
 
 const getFileData = (row, commit) => {
   const headCov = row?.headCoverage?.coverage
@@ -92,7 +92,7 @@ function createTable({ tableData }) {
         <div className="flex flex-col break-all">
           <A
             to={{
-              pageName: 'commitFileView',
+              pageName: 'commitFileDiff',
               options: { commit: commit?.commitid, tree: headName },
             }}
           >
@@ -129,7 +129,7 @@ const RenderSubComponent = ({ row }) => {
 
   return (
     <Suspense fallback={<Loader />}>
-      <CommitFileView path={path} />
+      <CommitFileDiff path={path} />
     </Suspense>
   )
 }

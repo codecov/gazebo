@@ -2,8 +2,9 @@ import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-import query from './query.gql'
+import { query } from './query'
 
+// TODO: make the a similar hook for the comparison with base, useComparisonForHeadAndBase
 export function useComparisonForCommitAndParent({
   provider,
   owner,
@@ -13,7 +14,6 @@ export function useComparisonForCommitAndParent({
   filters = {},
   opts = {},
 }) {
-  console.log(query)
   return useQuery({
     queryKey: [
       'ImpactedFileComparedWithParent',
