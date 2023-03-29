@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -34,9 +35,11 @@ const mockBranches = (hasNextPage = false) => ({
       branches: {
         edges: [
           {
-            name: 'main',
-            head: {
-              commitid: '1',
+            node: {
+              name: 'main',
+              head: {
+                commitid: '1',
+              },
             },
           },
         ],
@@ -85,7 +88,7 @@ const mockBranch = (branchName) => ({
 })
 
 describe('CommitsTab', () => {
-  function setup({ hasNextPage, hasBranches, returnBranch = true }) {
+  function setup({ hasNextPage, hasBranches, returnBranch = '' }) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const searches = jest.fn()
@@ -120,7 +123,7 @@ describe('CommitsTab', () => {
       ),
       graphql.query('GetBranch', (req, res, ctx) => {
         if (returnBranch) {
-          return res(ctx.status(200), ctx.data(mockBranch(branchName)))
+          return res(ctx.status(200), ctx.data(mockBranch(returnBranch)))
         }
 
         return res(ctx.status(200), ctx.data({}))
@@ -285,27 +288,60 @@ describe('CommitsTab', () => {
   })
 
   describe('user selects an item from the list', () => {
-    it('updates the button with the selected branch', async () => {
-      const { user } = setup({})
-      repoPageRender({
-        renderCommits: () => (
-          <Wrapper>
-            <CommitsTab />
-          </Wrapper>
-        ),
-        initialEntries: ['/gh/codecov/gazebo/commits'],
+    describe('user selects all commits', () => {
+      it('updates the button with the selected branch', async () => {
+        const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
+        repoPageRender({
+          renderCommits: () => (
+            <Wrapper>
+              <CommitsTab />
+            </Wrapper>
+          ),
+          initialEntries: ['/gh/codecov/gazebo/commits'],
+        })
+
+        const select = await screen.findByRole('button')
+        await user.click(select)
+
+        const branch = await screen.findByText('All commits')
+        await user.click(branch)
+
+        const allCommitsBtn = await screen.findByRole('button', {
+          name: 'Select branch',
+        })
+        expect(allCommitsBtn).toBeInTheDocument()
+
+        const selectedBranch = within(allCommitsBtn).getByText(/All commits/)
+        expect(selectedBranch).toBeInTheDocument()
       })
+    })
 
-      const select = await screen.findByRole('button')
-      await user.click(select)
+    describe('user selects a branch', () => {
+      it('updates the button with the selected branch', async () => {
+        const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
+        repoPageRender({
+          renderCommits: () => (
+            <Wrapper>
+              <CommitsTab />
+            </Wrapper>
+          ),
+          initialEntries: ['/gh/codecov/gazebo/commits'],
+        })
 
-      const branch = await screen.findByText('All commits')
-      await user.click(branch)
+        const select = await screen.findByRole('button')
+        await user.click(select)
 
-      const allCommitsBtn = await screen.findByRole('button', {
-        name: 'All commits',
+        const branch = await screen.findByRole('option', { name: 'main' })
+        await user.click(branch)
+
+        const allCommitsBtn = await screen.findByRole('button', {
+          name: 'Select branch',
+        })
+        expect(allCommitsBtn).toBeInTheDocument()
+
+        const selectedBranch = within(allCommitsBtn).getByText(/main/)
+        expect(selectedBranch).toBeInTheDocument()
       })
-      expect(allCommitsBtn).toBeInTheDocument()
     })
   })
 
