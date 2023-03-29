@@ -100,8 +100,6 @@ describe('useComparisonForCommitAndParent', () => {
             repo,
             commitid,
             path: 'someFile.js',
-            filters: {},
-            opts: {},
           }),
         {
           wrapper,
