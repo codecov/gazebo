@@ -56,7 +56,7 @@ const headers = [
 
 const handleOnNull = () => {
   return {
-    title: <span className="text-sm">we can&apos;t find this commit</span>,
+    title: <span className="text-sm">We can&apos;t find this commit</span>,
     ciStatus: null,
     coverage: null,
     patch: null,
@@ -153,6 +153,11 @@ function CommitsTable({ branch, paramCIStatus }) {
             Load More
           </Button>
         </div>
+      )}
+      {dataTable?.length === 0 && !isLoading && (
+        <p className="flex flex-1 justify-center">
+          No commits detected on branch
+        </p>
       )}
     </>
   )

@@ -1,14 +1,14 @@
-import { useLayoutEffect, useState } from 'react'
+import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
-import { useRepo } from 'services/repo'
+import { useRepoOverview } from 'services/repo'
 import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 
 import CommitsTable from './CommitsTable'
+import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
 
@@ -18,40 +18,47 @@ const useParamsFilters = (defaultBranch) => {
     hideFailedCI: false,
   }
   const { params, updateParams } = useLocationParams(defaultParams)
-  const { branch, hideFailedCI } = params
+  const { branch: selectedBranch, hideFailedCI } = params
 
   const paramCIStatus = hideFailedCI === true || hideFailedCI === 'true'
 
-  return { branch, paramCIStatus, updateParams }
+  let branch = selectedBranch
+  if (branch === 'All commits') {
+    branch = ''
+  }
+
+  return { branch, selectedBranch, paramCIStatus, updateParams }
 }
 
 function CommitsTab() {
-  const [branchSearchTerm, setBranchSearchTerm] = useState()
   const setCrumbs = useSetCrumbs()
-  const { provider, owner, repo } = useParams()
-
-  const {
-    data: branchesData,
-    isFetching: branchesIsFetching,
-    fetchNextPage: branchesFetchNextPage,
-    hasNextPage: branchesHasNextPage,
-  } = useBranches({
+  const { repo, owner, provider } = useParams()
+  const { data: overview } = useRepoOverview({
     provider,
-    owner,
     repo,
-    filters: { searchValue: branchSearchTerm },
-    opts: {
-      suspense: false,
-    },
+    owner,
   })
 
-  const { data: repoData } = useRepo({ provider, owner, repo })
-  const branchesNames =
-    branchesData?.branches?.map((branch) => branch?.name) || []
+  const { branch, selectedBranch, paramCIStatus, updateParams } =
+    useParamsFilters(overview?.defaultBranch)
 
-  const { branch, paramCIStatus, updateParams } = useParamsFilters(
-    repoData?.repository?.defaultBranch
-  )
+  const {
+    branchList,
+    branchSelectorProps,
+    currentBranchSelected,
+    branchesFetchNextPage,
+    branchListIsFetching,
+    branchListHasNextPage,
+    branchListFetchNextPage,
+    setBranchSearchTerm,
+    isSearching,
+  } = useCommitsTabBranchSelector({
+    passedBranch: branch,
+    defaultBranch: overview?.defaultBranch,
+    isAllCommits: selectedBranch === 'All commits',
+  })
+
+  const newBranches = [...(isSearching ? [] : ['All commits']), ...branchList]
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -61,12 +68,12 @@ function CommitsTab() {
         children: (
           <span className="inline-flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
-            {branch}
+            {currentBranchSelected?.name}
           </span>
         ),
       },
     ])
-  }, [branch, setCrumbs])
+  }, [currentBranchSelected?.name, setCrumbs])
 
   return (
     <div className="flex flex-1 flex-col gap-4">
@@ -80,23 +87,25 @@ function CommitsTab() {
           </h2>
           <div className="min-w-[16rem]">
             <Select
+              {...branchSelectorProps}
               dataMarketing="branch-selector-commits-page"
               ariaName="Select branch"
               variant="gray"
-              items={branchesNames}
-              isLoading={branchesIsFetching}
+              isLoading={branchListIsFetching}
               onChange={(branch) => {
-                updateParams({ branch })
+                updateParams({ branch: branch })
               }}
               onLoadMore={() => {
-                branchesHasNextPage && branchesFetchNextPage()
+                if (branchListHasNextPage) {
+                  branchesFetchNextPage()
+                  branchListFetchNextPage()
+                }
               }}
-              value={branch}
               onSearch={(term) => setBranchSearchTerm(term)}
+              items={newBranches}
             />
           </div>
         </div>
-
         <Checkbox
           dataMarketing="hide-commits-with-failed-CI"
           label="Hide commits with failed CI"
