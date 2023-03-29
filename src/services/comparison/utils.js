@@ -1,3 +1,5 @@
+import isEmpty from 'lodash/isEmpty'
+
 function _setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
   if (isNewFile) return 'New'
   if (isRenamedFile) return 'Renamed'
@@ -6,6 +8,10 @@ function _setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
 }
 
 export function transformImpactedFileData(impactedFile) {
+  if (isEmpty(impactedFile)) {
+    return null
+  }
+
   const fileLabel = _setFileLabel({
     isNewFile: impactedFile?.isNewFile,
     isRenamedFile: impactedFile?.isRenamedFile,

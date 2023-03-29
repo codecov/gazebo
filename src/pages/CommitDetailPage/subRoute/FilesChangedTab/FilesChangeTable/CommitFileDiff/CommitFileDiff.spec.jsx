@@ -16,7 +16,6 @@ const baseMock = (impactedFile) => ({
       commit: {
         compareWithParent: {
           impactedFile: {
-            ...mockImpactedFile,
             ...impactedFile,
           },
         },
@@ -235,6 +234,20 @@ describe('CommitFileDiff', () => {
       render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const criticalFile = await screen.findByText(/Critical File/i)
+      expect(criticalFile).toBeInTheDocument()
+    })
+  })
+
+  describe('when there is no data', () => {
+    beforeEach(() => {
+      setup({ impactedFile: null })
+    })
+    it('renders a error display message', async () => {
+      render(<CommitFileDiff path={'random/path'} />, { wrapper })
+
+      const criticalFile = await screen.findByText(
+        /There was a problem getting the source code from your provider. Unable to show line by line coverage/i
+      )
       expect(criticalFile).toBeInTheDocument()
     })
   })
