@@ -7,11 +7,8 @@ import config from 'config'
 import { SentryRoute } from 'sentry'
 
 import BaseLayout from 'layouts/BaseLayout'
-import LimitedLayout from 'layouts/LimitedLayout'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
-// import { useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
@@ -27,20 +24,9 @@ const PlanPage = lazy(() => import('./pages/PlanPage'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage'))
-const TermsOfService = lazy(() => import('./pages/TermsOfService'))
-
-const LimitedRoutes = () => (
-  <Switch>
-    <SentryRoute path="*">
-      <LimitedLayout>
-        <TermsOfService />
-      </LimitedLayout>
-    </SentryRoute>
-  </Switch>
-)
 
 // eslint-disable-next-line complexity
-const FullRoutes = () => (
+const MainAppRoutes = () => (
   <Switch>
     <SentryRoute path="/login/:provider">
       <BaseLayout>
@@ -146,44 +132,13 @@ const FullRoutes = () => (
   </Switch>
 )
 
-const useUserAccessGate = () => {
-  const { termsOfServicePage } = useFlags({ termsOfServicePage: false })
-  /*
-    This isn't working because there's no provider at this point, need to redo this section
-    but I'm trying to stick to updating the test suite first.
-  */
-  // const { ...all } = useUser({ suspense: false })
-  // console.log('useUser', all)
-
-  /*
-    TODO - add logic to check if user has signed TOS when API is ready via the useUser hook.
-    This value will be null for existing users, return true for new users, and false for users who have signed TOS.
-
-    AKA old users and users who have signed TOS will see get full experience, guests will not be limited.
-  */
-  return {
-    // isFullExperience: !termsOfServicePage && data?.termsAgreement !== false,
-    isFullExperience: !termsOfServicePage || config.IS_SELF_HOSTED,
-  }
-}
-
-function GazeboRootRoutes() {
-  const { isFullExperience } = useUserAccessGate()
-
-  if (isFullExperience) {
-    return <FullRoutes />
-  }
-
-  return <LimitedRoutes />
-}
-
 function App() {
   useUTM()
 
   return (
     <ToastNotificationProvider>
       <ReactQueryDevtools initialIsOpen={false} />
-      <GazeboRootRoutes />
+      <MainAppRoutes />
     </ToastNotificationProvider>
   )
 }
