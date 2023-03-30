@@ -119,16 +119,15 @@ const Loader = () => (
   </div>
 )
 
-function CommitsTable({ branch, paramCIStatus }) {
+function CommitsTable({ branch, states }) {
   const { provider, owner, repo, pullId } = useParams()
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommits({
       provider,
       owner,
       repo,
       filters: {
-        hideFailedCI: paramCIStatus,
+        states,
         branchName: branch,
         pullId: +pullId,
       },
@@ -165,7 +164,7 @@ function CommitsTable({ branch, paramCIStatus }) {
 
 CommitsTable.propTypes = {
   branch: PropTypes.string,
-  paramCIStatus: PropTypes.bool,
+  states: PropTypes.arrayOf(PropTypes.string),
 }
 
 export default CommitsTable
