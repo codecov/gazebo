@@ -137,7 +137,7 @@ describe('SentryUpgradeForm', () => {
       expect(duration).toBeInTheDocument()
 
       const pricingInfo = await screen.findByText(
-        /then \$29.99 monthly includes 5 seats./
+        /then \$29 monthly includes 5 seats./
       )
       expect(pricingInfo).toBeInTheDocument()
     })
@@ -233,7 +233,7 @@ describe('SentryUpgradeForm', () => {
       expect(duration).toBeInTheDocument()
 
       const pricingInfo = await screen.findByText(
-        /then \$29.99 monthly includes 5 seats./
+        /then \$29 monthly includes 5 seats./
       )
       expect(pricingInfo).toBeInTheDocument()
     })
@@ -403,11 +403,11 @@ describe('SentryUpgradeForm', () => {
         { wrapper }
       )
 
-      const price = await screen.findByText(/\$79.99/)
+      const price = await screen.findByText(/\$79.00/)
       expect(price).toBeInTheDocument()
 
       const priceBreakdown = await screen.findByText(
-        /\/per month billed annually at \$959.88/
+        /\/per month billed annually at \$948.00/
       )
       expect(priceBreakdown).toBeInTheDocument()
     })
@@ -453,7 +453,7 @@ describe('SentryUpgradeForm', () => {
         const monthRadio = await screen.findByRole('radio', { name: /12/i })
         await user.click(monthRadio)
 
-        const price = screen.getByText(/\$89.99/)
+        const price = screen.getByText(/\$89.00/)
         expect(price).toBeInTheDocument()
       })
     })

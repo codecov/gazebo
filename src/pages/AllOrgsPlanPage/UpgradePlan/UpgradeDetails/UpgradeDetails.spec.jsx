@@ -242,7 +242,7 @@ describe('UpgradeDetails', () => {
       expect(marketingName).toBeInTheDocument()
     })
 
-    it('renders 29.99 monthly bundle', () => {
+    it('renders 29 monthly bundle', () => {
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -257,7 +257,7 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const price = screen.getByRole('heading', { name: /\$29.99/i })
+      const price = screen.getByRole('heading', { name: /\$29/i })
       expect(price).toBeInTheDocument()
     })
 

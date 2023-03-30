@@ -1,16 +1,22 @@
-import { Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 
+import Footer from 'layouts/Footer'
+import Header from 'layouts/Header'
+import ErrorBoundary from 'layouts/shared/ErrorBoundary'
+import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
+import ToastNotifications from 'layouts/ToastNotifications'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useTracking } from 'services/tracking'
 import GlobalBanners from 'shared/GlobalBanners'
 
-import Footer from '../Footer'
-import Header from '../Header'
-import ErrorBoundary from '../shared/ErrorBoundary'
-import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
-import ToastNotifications from '../ToastNotifications'
+import { useUserAccessGate } from './hooks/useUserAccessGate'
+
+const TermsOfService = lazy(() => import('pages/TermsOfService'))
+const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 
 function BaseLayout({ children }) {
+  const { isFullExperience, isLoading } = useUserAccessGate()
+
   useTracking()
 
   const fullPageLoader = (
@@ -19,21 +25,40 @@ function BaseLayout({ children }) {
     </div>
   )
 
+  // Pause rendering of a page till we know if the user is logged in or not
+  if (isLoading) return fullPageLoader
+
   return (
     <>
-      <Header />
+      {isFullExperience ? (
+        <Header />
+      ) : (
+        <Suspense fallback={null}>
+          <LimitedHeader />
+        </Suspense>
+      )}
       <Suspense fallback={fullPageLoader}>
         <ErrorBoundary sentryScopes={[['layout', 'base']]}>
           <NetworkErrorBoundary>
             <main className="container mt-2 mb-8 flex grow flex-col gap-2 md:p-0">
               <GlobalBanners />
-              {children}
+              {isFullExperience ? (
+                children
+              ) : (
+                <Suspense fallback={null}>
+                  <TermsOfService />
+                </Suspense>
+              )}
             </main>
           </NetworkErrorBoundary>
         </ErrorBoundary>
       </Suspense>
-      <Footer />
-      <ToastNotifications />
+      {isFullExperience && (
+        <>
+          <Footer />
+          <ToastNotifications />
+        </>
+      )}
     </>
   )
 }

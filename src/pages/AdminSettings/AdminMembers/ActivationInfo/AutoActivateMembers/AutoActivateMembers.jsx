@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
 
 import { useSelfHostedSettings } from 'services/selfHosted'
 import Api from 'shared/api'
@@ -12,11 +13,12 @@ const Loader = () => (
 )
 
 function AutoActivateMembers() {
+  const { provider } = useParams()
   const queryClient = useQueryClient()
   const { data, isLoading } = useSelfHostedSettings()
   const mutation = useMutation({
     mutationFn: (body) => {
-      return Api.patch({ path: '/settings', body })
+      return Api.patch({ path: '/settings', provider, body })
     },
     useErrorBoundary: true,
     onSuccess: () => {

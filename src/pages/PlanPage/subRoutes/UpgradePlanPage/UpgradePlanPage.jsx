@@ -26,13 +26,14 @@ import { useSetCrumbs } from '../../context'
 
 const FormDetails = ({
   accountDetails,
+  plan,
   plans,
   proPlanMonth,
   proPlanYear,
   sentryPlanMonth,
   sentryPlanYear,
 }) => {
-  if (canApplySentryUpgrade({ plans })) {
+  if (canApplySentryUpgrade({ plan, plans })) {
     return (
       <SentryUpgradeForm
         accountDetails={accountDetails}
@@ -53,6 +54,7 @@ const FormDetails = ({
 
 FormDetails.propTypes = {
   accountDetails: accountDetailsPropType,
+  plan: planPropType,
   plans: PropTypes.arrayOf(planPropType),
   proPlanMonth: planPropType,
   proPlanYear: planPropType,

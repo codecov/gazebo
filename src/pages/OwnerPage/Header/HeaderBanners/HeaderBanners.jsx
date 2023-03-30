@@ -9,6 +9,7 @@ import { useAccountDetails } from 'services/account'
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 import GithubConfigBanner from './GithubConfigBanner'
 import ReachingUploadLimit from './ReachingUploadLimit'
+import SentryIncentiveBanner from './SentryBundleBanner'
 
 const MAX_UPLOADS_NUMBER = 250
 const REACHING_UPLOAD_LIMIT = 225
@@ -49,6 +50,7 @@ AlertBanners.propTypes = {
   hasGhApp: PropTypes.bool.isRequired,
 }
 
+// eslint-disable-next-line complexity
 export default function HeaderBanners() {
   const { owner, provider } = useParams()
   // TODO: refactor this to add a gql field for the integration id used to determine if the org has a GH app
@@ -56,7 +58,6 @@ export default function HeaderBanners() {
     provider,
     owner,
   })
-
   const { isUploadsExceeded, isUploadsReachingLimit } = useUploadsInfo()
 
   const hasGhApp = !!accountDetails?.integrationId
@@ -66,10 +67,13 @@ export default function HeaderBanners() {
   }
 
   return (
-    <AlertBanners
-      isUploadsExceeded={isUploadsExceeded}
-      isUploadsReachingLimit={isUploadsReachingLimit}
-      hasGhApp={hasGhApp}
-    />
+    <>
+      <AlertBanners
+        isUploadsExceeded={isUploadsExceeded}
+        isUploadsReachingLimit={isUploadsReachingLimit}
+        hasGhApp={hasGhApp}
+      />
+      <SentryIncentiveBanner plan={accountDetails?.plan?.value} />
+    </>
   )
 }

@@ -191,8 +191,10 @@ describe('CommitsTable', () => {
     it('renders an empty table', async () => {
       render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
 
-      const table = await screen.findByTestId('body-row')
-      expect(table).toBeEmptyDOMElement()
+      const errorMessage = await screen.findByText(
+        'No commits detected on branch'
+      )
+      expect(errorMessage).toBeInTheDocument()
     })
   })
 
@@ -206,7 +208,7 @@ describe('CommitsTable', () => {
     it('renders on null message', async () => {
       render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
 
-      const text = await screen.findByText(/we can't find this commit/)
+      const text = await screen.findByText(/We can't find this commit/)
       expect(text).toBeInTheDocument()
     })
   })
