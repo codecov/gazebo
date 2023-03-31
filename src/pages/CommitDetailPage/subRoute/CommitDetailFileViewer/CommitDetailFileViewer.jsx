@@ -2,19 +2,11 @@ import { useParams } from 'react-router-dom'
 
 import RawFileviewer from 'shared/RawFileviewer'
 import { useCommitTreePaths } from 'shared/treePaths'
-import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import Breadcrumb from 'ui/Breadcrumb'
-import UnsupportedView from 'ui/FileViewer/UnsupportedView'
 
 function CommitDetailFileViewer() {
   const { treePaths } = useCommitTreePaths()
   const { commit } = useParams()
-
-  const isUnsupportedFileType = unsupportedExtensionsMapper(treePaths)
-
-  if (isUnsupportedFileType) {
-    return <UnsupportedView treePaths={treePaths} />
-  }
 
   return (
     <RawFileviewer

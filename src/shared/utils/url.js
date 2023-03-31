@@ -29,16 +29,16 @@ export function getFilePathParts(path) {
   return path?.split('/') ?? []
 }
 
-export function getFilenameFromTreePaths(treePaths) {
-  if (isEmpty(treePaths)) {
+export function getFilenameFromPath(path) {
+  if (isEmpty(path)) {
     return null
   }
-  return treePaths.at(-1).text
+  return path.split('/').at(-1)
 }
 
 export function getFileExtension(fileName) {
   if (!fileName?.includes('.')) {
     return null
   }
-  return fileName?.split('.')?.at(-1)
+  return fileName?.split('.')?.at(-1).toLowerCase()
 }

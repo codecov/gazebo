@@ -1,7 +1,7 @@
 import {
   forwardMarketingTag,
   getFileExtension,
-  getFilenameFromTreePaths,
+  getFilenameFromPath,
   getFilePathParts,
 } from './url'
 
@@ -51,24 +51,13 @@ describe('getFileExtension', () => {
   })
 })
 
-describe('getFilenameFromTreePaths', () => {
-  it('returns the last index of treepaths', () => {
-    const treePaths = [
-      {
-        pageName: 'treeView',
-        text: 'folder',
-        options: { ref: 'main' },
-      },
-      {
-        options: { tree: 'src', ref: 'main' },
-        pageName: 'treeView',
-        text: 'file.py',
-      },
-    ]
-    expect(getFilenameFromTreePaths(treePaths)).toStrictEqual('file.py')
+describe('getFilenameFromPath', () => {
+  it('returns the last part of the file', () => {
+    const path = 'folder/file.py'
+    expect(getFilenameFromPath(path)).toStrictEqual('file.py')
   })
 
   it('returns an null if filename doesnt have an extension', () => {
-    expect(getFilenameFromTreePaths()).toStrictEqual(null)
+    expect(getFilenameFromPath()).toStrictEqual(null)
   })
 })

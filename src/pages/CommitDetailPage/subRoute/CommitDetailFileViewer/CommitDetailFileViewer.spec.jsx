@@ -9,7 +9,6 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 import CommitDetailFileViewer from './CommitDetailFileViewer'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
-jest.mock('ui/FileViewer/UnsupportedView', () => () => 'UnsupportedView')
 
 const mockOwner = {
   username: 'cool-user',
@@ -145,19 +144,6 @@ describe('CommitDetailFileViewer', () => {
         })
         expect(copyLink).toBeInTheDocument()
         expect(copyLink).toHaveAttribute('href', '#directory/file.js')
-      })
-    })
-
-    describe('displaying unsupported file', () => {
-      it('shows the unsupported view component', async () => {
-        render(<CommitDetailFileViewer />, {
-          wrapper: wrapper([
-            '/gh/codecov/cool-repo/commit/sha256/blob/directory/file.png',
-          ]),
-        })
-
-        const unsupportedView = await screen.findByText('UnsupportedView')
-        expect(unsupportedView).toBeInTheDocument()
       })
     })
   })

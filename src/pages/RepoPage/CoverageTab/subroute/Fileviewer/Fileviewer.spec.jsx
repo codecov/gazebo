@@ -9,7 +9,6 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 import FileView from './Fileviewer'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
-jest.mock('ui/FileViewer/UnsupportedView', () => () => 'UnsupportedView')
 
 const mockOwner = {
   username: 'cool-user',
@@ -156,19 +155,6 @@ describe('FileView', () => {
         })
         expect(copyLink).toBeInTheDocument()
         expect(copyLink).toHaveAttribute('href', '#folder/file.js')
-      })
-    })
-
-    describe('displaying unsupported file', () => {
-      it('shows the unsupported view component', async () => {
-        render(<FileView />, {
-          wrapper: wrapper([
-            '/gh/criticalrole/mightynein/blob/branchName/folder/file.png',
-          ]),
-        })
-
-        const unsupportedView = await screen.findByText('UnsupportedView')
-        expect(unsupportedView).toBeInTheDocument()
       })
     })
   })

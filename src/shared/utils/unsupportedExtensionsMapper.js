@@ -1,7 +1,7 @@
 /*
  * Inspired from https://github.com/sindresorhus/is-image
  */
-import { getFileExtension, getFilenameFromTreePaths } from './url'
+import { getFileExtension, getFilenameFromPath } from './url'
 
 const binaryFileExtensions = new Set([
   '3dm',
@@ -380,10 +380,16 @@ const imageFileExtensions = new Set([
   'xpm',
 ])
 
-const unsupportedExtensions = [...binaryFileExtensions, ...imageFileExtensions]
-
-export function unsupportedExtensionsMapper(treePaths) {
-  const fileName = getFilenameFromTreePaths(treePaths)
+export function unsupportedExtensionsMapper({ path }) {
+  const fileName = getFilenameFromPath(path)
   const fileExtension = getFileExtension(fileName)
-  return unsupportedExtensions.includes(fileExtension?.toLowerCase())
+  if (binaryFileExtensions.has(fileExtension)) {
+    return true
+  }
+
+  if (imageFileExtensions.has(fileExtension)) {
+    return true
+  }
+
+  return false
 }

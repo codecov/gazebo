@@ -6,6 +6,7 @@ import NotFound from 'pages/NotFound'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
 import { useOwner } from 'services/user'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
+import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import { getFilenameFromFilePath } from 'shared/utils/url'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererProgressHeader from 'ui/CodeRenderer/CodeRendererProgressHeader'
@@ -65,6 +66,7 @@ function RawFileViewer({
   const { owner, repo, provider, path } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const [selectedFlags, setSelectedFlags] = useState([])
+  const isUnsupportedFileType = unsupportedExtensionsMapper({ path })
 
   // TODO: This hook needs revision/enhancement
   const {
@@ -80,6 +82,9 @@ function RawFileViewer({
     commit,
     path,
     selectedFlags,
+    opts: {
+      enabled: !isUnsupportedFileType,
+    },
   })
 
   if (!ownerData) {
@@ -98,7 +103,11 @@ function RawFileViewer({
       <div id={path} className="target:ring">
         <CodeRendererProgressHeader path={path} fileCoverage={fileCoverage} />
         {!!isCriticalFile && <CriticalFileLabel variant="borderTop" />}
-        {content ? (
+        {isUnsupportedFileType ? (
+          <div className="border border-solid border-ds-gray-tertiary p-2">
+            Unable to display binary file
+          </div>
+        ) : content ? (
           <CodeRenderer
             code={content}
             fileName={getFilenameFromFilePath(path)}
