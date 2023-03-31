@@ -9,6 +9,7 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 import CommitDetailFileViewer from './CommitDetailFileViewer'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+jest.mock('ui/FileViewer/UnsupportedView', () => () => 'UnsupportedView')
 
 const mockOwner = {
   username: 'cool-user',
@@ -55,19 +56,22 @@ const mockCoverage = {
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={[
-        '/gh/codecov/cool-repo/commit/sha256/blob/directory/file.js',
-      ]}
-    >
-      <Route path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (
+    initialEntries = [
+      '/gh/codecov/cool-repo/commit/sha256/blob/directory/file.js',
+    ]
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -103,7 +107,7 @@ describe('CommitDetailFileViewer', () => {
 
     describe('displaying the tree path', () => {
       it('displays repo link', async () => {
-        render(<CommitDetailFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'cool-repo' })
         expect(repoName).toBeInTheDocument()
@@ -114,7 +118,7 @@ describe('CommitDetailFileViewer', () => {
       })
 
       it('displays directory link', async () => {
-        render(<CommitDetailFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'directory' })
         expect(repoName).toBeInTheDocument()
@@ -125,7 +129,7 @@ describe('CommitDetailFileViewer', () => {
       })
 
       it('displays file name', async () => {
-        render(<CommitDetailFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const fileName = await screen.findByText('file.js')
         expect(fileName).toBeInTheDocument()
@@ -134,13 +138,26 @@ describe('CommitDetailFileViewer', () => {
 
     describe('displaying the file viewer', () => {
       it('sets the correct url link', async () => {
-        render(<CommitDetailFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const copyLink = await screen.findByRole('link', {
           name: 'directory/file.js',
         })
         expect(copyLink).toBeInTheDocument()
         expect(copyLink).toHaveAttribute('href', '#directory/file.js')
+      })
+    })
+
+    describe('displaying unsupported file', () => {
+      it('shows the unsupported view component', async () => {
+        render(<CommitDetailFileViewer />, {
+          wrapper: wrapper([
+            '/gh/codecov/cool-repo/commit/sha256/blob/directory/file.png',
+          ]),
+        })
+
+        const unsupportedView = await screen.findByText('UnsupportedView')
+        expect(unsupportedView).toBeInTheDocument()
       })
     })
   })

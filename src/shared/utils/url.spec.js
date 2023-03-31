@@ -1,4 +1,9 @@
-import { forwardMarketingTag, getFilePathParts } from './url'
+import {
+  forwardMarketingTag,
+  getFileExtension,
+  getFilenameFromTreePaths,
+  getFilePathParts,
+} from './url'
 
 describe('forwardMarketingTag', () => {
   it('returns an object containing the specified utm parameters only', () => {
@@ -32,5 +37,38 @@ describe('getFilesNamesFromFilePath', () => {
 
   it('returns an empty array if path is not present', () => {
     expect(getFilePathParts()).toStrictEqual([])
+  })
+})
+
+describe('getFileExtension', () => {
+  it('returns the last index of treepaths', () => {
+    const fileName = 'file.py'
+    expect(getFileExtension(fileName)).toStrictEqual('py')
+  })
+
+  it('returns an null if fileName is not present', () => {
+    expect(getFileExtension()).toStrictEqual(null)
+  })
+})
+
+describe('getFilenameFromTreePaths', () => {
+  it('returns the last index of treepaths', () => {
+    const treePaths = [
+      {
+        pageName: 'treeView',
+        text: 'folder',
+        options: { ref: 'main' },
+      },
+      {
+        options: { tree: 'src', ref: 'main' },
+        pageName: 'treeView',
+        text: 'file.py',
+      },
+    ]
+    expect(getFilenameFromTreePaths(treePaths)).toStrictEqual('file.py')
+  })
+
+  it('returns an null if filename doesnt have an extension', () => {
+    expect(getFilenameFromTreePaths()).toStrictEqual(null)
   })
 })
