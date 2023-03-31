@@ -1,3 +1,4 @@
+import isString from 'lodash/isString'
 import { useLocation, useParams } from 'react-router-dom'
 
 import config from 'config'
@@ -47,6 +48,30 @@ export function LoginPrompt() {
   )
 }
 
+const LogoButton = () => {
+  const { provider } = useParams()
+
+  if (isString(provider)) {
+    return (
+      <A
+        to={{ pageName: 'provider', options: { provider } }}
+        variant="header"
+        data-testid="homepage-link"
+      >
+        <span className="sr-only">Link to Homepage</span>
+        <CodecovIcon />
+      </A>
+    )
+  }
+
+  return (
+    <A to={{ pageName: 'root' }} variant="header" data-testid="homepage-link">
+      <span className="sr-only">Link to Homepage</span>
+      <CodecovIcon />
+    </A>
+  )
+}
+
 function DesktopMenu() {
   const { data: currentUser } = useUser({
     suspense: false,
@@ -56,10 +81,7 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
-        <A to={{ pageName: 'provider' }} variant="header">
-          <span className="sr-only">Link to Homepage</span>
-          <CodecovIcon />
-        </A>
+        <LogoButton />
         <A to={{ pageName: 'docs' }} variant="header" showExternalIcon={false}>
           Docs
         </A>
