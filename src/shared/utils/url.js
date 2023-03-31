@@ -1,3 +1,4 @@
+import isEmpty from 'lodash/isEmpty'
 import pick from 'lodash/pick'
 import qs from 'qs'
 
@@ -26,4 +27,18 @@ export function getFilenameFromFilePath(path) {
 
 export function getFilePathParts(path) {
   return path?.split('/') ?? []
+}
+
+export function getFilenameFromTreePaths(treePaths) {
+  if (isEmpty(treePaths)) {
+    return null
+  }
+  return treePaths.at(-1).text
+}
+
+export function getFileExtension(fileName) {
+  if (!fileName?.includes('.')) {
+    return null
+  }
+  return fileName?.split('.')?.at(-1)
 }
