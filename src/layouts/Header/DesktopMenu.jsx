@@ -51,21 +51,13 @@ export function LoginPrompt() {
 const LogoButton = () => {
   const { provider } = useParams()
 
+  let pageName = 'root'
   if (isString(provider)) {
-    return (
-      <A
-        to={{ pageName: 'provider', options: { provider } }}
-        variant="header"
-        data-testid="homepage-link"
-      >
-        <span className="sr-only">Link to Homepage</span>
-        <CodecovIcon />
-      </A>
-    )
+    pageName = 'provider'
   }
 
   return (
-    <A to={{ pageName: 'root' }} variant="header" data-testid="homepage-link">
+    <A to={{ pageName }} variant="header" data-testid="homepage-link">
       <span className="sr-only">Link to Homepage</span>
       <CodecovIcon />
     </A>
