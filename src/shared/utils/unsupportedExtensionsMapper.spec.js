@@ -12,6 +12,7 @@ describe('unsupportedExtensionsMapper', () => {
       expect(unsupportedExtensionsMapper({ path: 'file.jpgv' })).toBe(true)
       expect(unsupportedExtensionsMapper({ path: 'file.mov' })).toBe(true)
       expect(unsupportedExtensionsMapper({ path: 'file.mp4' })).toBe(true)
+      expect(unsupportedExtensionsMapper({ path: 'file.vtf' })).toBe(true)
     })
   })
 
