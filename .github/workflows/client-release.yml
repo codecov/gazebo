@@ -29,7 +29,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: node_modules
-          key: ${{ runner.os }}-js-${{ hashFiles('package-log.json') }}
+          key: ${{ runner.os }}-js-${{ hashFiles('package-lock.json') }}
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1.0.0'
