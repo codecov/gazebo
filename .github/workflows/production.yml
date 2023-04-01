@@ -78,7 +78,7 @@ jobs:
       
 
   release:
-    uses: ./.github/workflows/client-release.yaml
+    uses: ./.github/workflows/client-release.yml
     with:
       bucket: ${{ secrets.bucket_alpha }}
       client_name: ${{ secrets.client_alpha }}
