@@ -37,7 +37,10 @@ jobs:
           workload_identity_provider: ${{ secrets.gcp_idp }}
           service_account: ${{ secrets.gcp_sa }}
 
-      - run: make run_build
+      - run: |-
+          npm install
+          npm run build
+          rm -f build/mockServiceWorker.js
         env:
           REACT_APP_ENV: "enterprise"
           REACT_APP_API_URL: https://${{ inputs.api_url }}
