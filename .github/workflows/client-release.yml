@@ -36,7 +36,10 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.gcp_idp }}
           service_account: ${{ secrets.gcp_sa }}
-
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          skip_install: true
       - run: |-
           npm install
           npm run build
