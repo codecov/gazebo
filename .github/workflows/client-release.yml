@@ -2,20 +2,15 @@ name: Client Release
 
 on:
   workflow_call:
-    inputs:
+    secrets:
       bucket:
         required: true
-        type: string
       client_name:
         required: true
-        type: string
       api_url:
         required: true
-        type: string
       base_url:
         required: true
-        type: string
-    secrets:
       token:
         required: true
       gcp_sa:
