@@ -44,8 +44,8 @@ jobs:
           rm -f build/mockServiceWorker.js
         env:
           REACT_APP_ENV: "enterprise"
-          REACT_APP_API_URL: https://${{ inputs.api_url }}
-          REACT_APP_BASE_URL: https://${{ inputs.base_url }}
-          REACT_APP_CE_CLIENT: ${{ inputs.client_name }}
+          REACT_APP_API_URL: https://${{ secrets.api_url }}
+          REACT_APP_BASE_URL: https://${{ secrets.base_url }}
+          REACT_APP_CE_CLIENT: ${{ secrets.client_name }}
 
-      - run: gsutil -m rsync -d -c -r build gs://${{ inputs.bucket }}
+      - run: gsutil -m rsync -d -c -r build gs://${{ secrets.bucket }}
