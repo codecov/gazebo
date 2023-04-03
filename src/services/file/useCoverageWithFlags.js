@@ -81,6 +81,6 @@ export function useCoverageWithFlags({
         },
       }).then(extractCoverageFromResponse)
     },
-    ...opts,
+    ...(!!opts && opts),
   })
 }

@@ -40,5 +40,5 @@ export function getFileExtension(fileName) {
   if (!fileName?.includes('.')) {
     return null
   }
-  return fileName?.split('.')?.at(-1).toLowerCase()
+  return fileName?.split('.')?.at(-1)?.toLowerCase()
 }

@@ -40,6 +40,6 @@ export function useFileWithMainCoverage({
           path,
         },
       }).then(extractCoverageFromResponse),
-    ...opts,
+    ...(!!opts && opts),
   })
 }

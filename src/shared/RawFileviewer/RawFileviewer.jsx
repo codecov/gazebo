@@ -54,6 +54,53 @@ FileTitle.propTypes = {
   setSelectedFlags: PropTypes.func,
 }
 
+function CodeRendererContent({
+  isUnsupportedFileType,
+  content,
+  path,
+  coverageData,
+  stickyPadding,
+}) {
+  if (isUnsupportedFileType) {
+    return (
+      <div className="border border-solid border-ds-gray-tertiary p-2">
+        This is a binary file that contains now coverable lines.
+      </div>
+    )
+  }
+
+  if (content) {
+    return (
+      <CodeRenderer
+        code={content}
+        fileName={getFilenameFromFilePath(path)}
+        rendererType={CODE_RENDERER_TYPE.SINGLE_LINE}
+        LineComponent={({ i, line, getLineProps, getTokenProps }) => (
+          <SingleLine
+            key={i}
+            line={line}
+            number={i + 1}
+            getLineProps={getLineProps}
+            getTokenProps={getTokenProps}
+            coverage={coverageData && coverageData[i + 1]}
+            stickyPadding={stickyPadding}
+          />
+        )}
+      />
+    )
+  }
+
+  return <ErrorDisplayMessage />
+}
+
+CodeRendererContent.propTypes = {
+  isUnsupportedFileType: PropTypes.bool,
+  content: PropTypes.object,
+  path: PropTypes.string,
+  coverageData: PropTypes.object,
+  stickyPadding: PropTypes.bool,
+}
+
 // Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
 // component will affect both places
 function RawFileViewer({
@@ -103,30 +150,13 @@ function RawFileViewer({
       <div id={path} className="target:ring">
         <CodeRendererProgressHeader path={path} fileCoverage={fileCoverage} />
         {!!isCriticalFile && <CriticalFileLabel variant="borderTop" />}
-        {isUnsupportedFileType ? (
-          <div className="border border-solid border-ds-gray-tertiary p-2">
-            Unable to display binary file
-          </div>
-        ) : content ? (
-          <CodeRenderer
-            code={content}
-            fileName={getFilenameFromFilePath(path)}
-            rendererType={CODE_RENDERER_TYPE.SINGLE_LINE}
-            LineComponent={({ i, line, getLineProps, getTokenProps }) => (
-              <SingleLine
-                key={i}
-                line={line}
-                number={i + 1}
-                getLineProps={getLineProps}
-                getTokenProps={getTokenProps}
-                coverage={coverageData && coverageData[i + 1]}
-                stickyPadding={stickyPadding}
-              />
-            )}
-          />
-        ) : (
-          <ErrorDisplayMessage />
-        )}
+        <CodeRendererContent
+          isUnsupportedFileType={isUnsupportedFileType}
+          content={content}
+          path={path}
+          coverageData={coverageData}
+          stickyPadding={stickyPadding}
+        />
       </div>
     </div>
   )
