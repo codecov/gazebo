@@ -1,4 +1,4 @@
-import isEmpty from 'lodash/isEmpty'
+import isString from 'lodash/isString'
 import pick from 'lodash/pick'
 import qs from 'qs'
 
@@ -30,7 +30,7 @@ export function getFilePathParts(path) {
 }
 
 export function getFilenameFromPath(path) {
-  if (isEmpty(path)) {
+  if (!isString(path)) {
     return null
   }
   return path.split('/').at(-1)
