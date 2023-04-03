@@ -63,14 +63,20 @@ function _renderActivationStatus({
   handleActivate,
   maxSeatsReached,
   ownerid,
+  student,
 }) {
+  let disableToggle = maxSeatsReached
+  if (!!student) {
+    disableToggle = false
+  }
+
   return (
     <Toggle
       dataMarketing="handle-members-activation"
       label={activated ? 'Activated' : 'Non-Active'}
       value={activated}
       onClick={() => handleActivate({ ownerid, activated })}
-      disabled={maxSeatsReached && !activated}
+      disabled={disableToggle && !activated}
     />
   )
 }
@@ -83,7 +89,7 @@ const createTable = ({
 }) =>
   tableData?.length > 0
     ? tableData?.map(
-        ({ activated, email, isAdmin, name, ownerid, username }) => {
+        ({ activated, email, isAdmin, name, ownerid, username, student }) => {
           const user = {
             avatarUrl:
               getOwnerImg(provider, username) || DefaultAuthor.AVATAR_URL,
@@ -99,6 +105,7 @@ const createTable = ({
               handleActivate,
               maxSeatsReached,
               ownerid,
+              student,
             }),
           }
         }
