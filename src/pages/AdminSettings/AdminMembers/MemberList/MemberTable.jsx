@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -104,7 +105,10 @@ function MemberTable() {
     },
   })
 
-  const tableContent = createTable({ tableData: data, mutate, seatData })
+  const tableContent = useMemo(
+    () => createTable({ tableData: data, mutate, seatData }),
+    [data, mutate, seatData]
+  )
 
   return (
     <>
