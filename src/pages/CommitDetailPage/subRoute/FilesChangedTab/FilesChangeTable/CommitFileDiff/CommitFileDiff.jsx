@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useComparisonForCommitAndParent } from 'services/comparison/useComparisonForCommitAndParent'
+import { transformImpactedFileData } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import A from 'ui/A'
@@ -11,8 +13,6 @@ import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
 import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
 import Spinner from 'ui/Spinner'
-
-import { useCommitFileDiff } from './hooks'
 
 function ErrorDisplayMessage() {
   return (
@@ -32,12 +32,19 @@ const Loader = () => (
 function CommitFileDiff({ path }) {
   const { owner, repo, provider, commit } = useParams()
   const { commitFileDiff } = useNavLinks()
-  const { data: comparisonData, isLoading } = useCommitFileDiff({
+  const { data: comparisonData, isLoading } = useComparisonForCommitAndParent({
     provider,
     owner,
     repo,
     commitid: commit,
     path,
+    filters: { hasUnintendedChanges: false },
+    opts: {
+      select: (res) =>
+        transformImpactedFileData(
+          res?.data?.owner?.repository?.commit?.compareWithParent?.impactedFile
+        ),
+    },
   })
 
   if (isLoading) {
