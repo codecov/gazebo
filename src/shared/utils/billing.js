@@ -1,5 +1,6 @@
 import { format, fromUnixTime } from 'date-fns'
 import isArray from 'lodash/isArray'
+import isString from 'lodash/isString'
 
 import { useFlags } from 'shared/featureFlags'
 
@@ -22,46 +23,55 @@ export const EnterprisePlans = Object.freeze({
 })
 
 export function isEnterprisePlan(plan) {
-  if (typeof plan !== 'string') return false
-  return Object.values(EnterprisePlans).includes(plan)
+  if (isString(plan)) {
+    return Object.values(EnterprisePlans).includes(plan)
+  }
+  return false
 }
 
 export function isFreePlan(plan) {
-  if (typeof plan !== 'string') return false
-  if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
+  if (isString(plan)) {
+    if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
+  }
   return false
 }
 
 export function isPaidPlan(plan) {
-  if (typeof plan !== 'string') return false
-  return isAnnualPlan(plan) || isMonthlyPlan(plan)
+  if (isString(plan)) {
+    return isAnnualPlan(plan) || isMonthlyPlan(plan)
+  }
+  return false
 }
 
 export function isMonthlyPlan(plan) {
-  if (typeof plan !== 'string') return false
-
-  return (
-    plan === Plans.USERS_INAPP ||
-    plan === Plans.USERS_PR_INAPPM ||
-    plan === Plans.USERS_SENTRYM ||
-    plan === Plans.USERS_ENTERPRISEM
-  )
+  if (isString(plan)) {
+    return (
+      plan === Plans.USERS_INAPP ||
+      plan === Plans.USERS_PR_INAPPM ||
+      plan === Plans.USERS_SENTRYM ||
+      plan === Plans.USERS_ENTERPRISEM
+    )
+  }
+  return false
 }
 
 export function isAnnualPlan(plan) {
-  if (typeof plan !== 'string') return false
-
-  return (
-    plan === Plans.USERS_INAPPY ||
-    plan === Plans.USERS_PR_INAPPY ||
-    plan === Plans.USERS_SENTRYY ||
-    plan === Plans.USERS_ENTERPRISEY
-  )
+  if (isString(plan)) {
+    return (
+      plan === Plans.USERS_INAPPY ||
+      plan === Plans.USERS_PR_INAPPY ||
+      plan === Plans.USERS_SENTRYY ||
+      plan === Plans.USERS_ENTERPRISEY
+    )
+  }
+  return false
 }
 
 export function isSentryPlan(plan) {
-  if (typeof plan !== 'string') return false
-  return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
+  if (isString(plan)) {
+    return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
+  }
+  return false
 }
 
 export const CollectionMethods = Object.freeze({
