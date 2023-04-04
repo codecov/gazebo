@@ -1,6 +1,7 @@
 import isFinite from 'lodash/isFinite'
 import PropTypes from 'prop-types'
 
+import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 import Progress from 'ui/Progress'
@@ -13,6 +14,8 @@ function CodeRendererProgressHeader({ path, fileCoverage, change }) {
    * @param {Float} fileCoverage total coverage of current file
    * @param {Float} change difference between head and base coverage. Only used in commmit based file viewer
    */
+
+  const isUnsupportedFileType = unsupportedExtensionsMapper({ path })
 
   return (
     <div
@@ -32,7 +35,7 @@ function CodeRendererProgressHeader({ path, fileCoverage, change }) {
         )}
       </div>
       <div className="flex max-w-xs items-center justify-end gap-2 sm:flex-1">
-        <Progress amount={fileCoverage} label />
+        {!isUnsupportedFileType && <Progress amount={fileCoverage} label />}
         {isFinite(change) && <TotalsNumber value={change} showChange />}
       </div>
     </div>

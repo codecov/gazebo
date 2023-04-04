@@ -71,17 +71,20 @@ const mockPullData = {
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={['/gh/codecov/cool-repo/pull/123/blob/directory/file.js']}
-    >
-      <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (
+    initialEntries = ['/gh/codecov/cool-repo/pull/123/blob/directory/file.js']
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -120,7 +123,7 @@ describe('FileViewer', () => {
 
     describe('displaying the tree path', () => {
       it('displays repo link', async () => {
-        render(<FileViewer />, { wrapper })
+        render(<FileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'cool-repo' })
         expect(repoName).toBeInTheDocument()
@@ -131,7 +134,7 @@ describe('FileViewer', () => {
       })
 
       it('displays directory link', async () => {
-        render(<FileViewer />, { wrapper })
+        render(<FileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'directory' })
         expect(repoName).toBeInTheDocument()
@@ -142,7 +145,7 @@ describe('FileViewer', () => {
       })
 
       it('displays file name', async () => {
-        render(<FileViewer />, { wrapper })
+        render(<FileViewer />, { wrapper: wrapper() })
 
         const fileName = await screen.findByText('file.js')
         expect(fileName).toBeInTheDocument()
@@ -151,7 +154,7 @@ describe('FileViewer', () => {
 
     describe('displaying the file viewer', () => {
       it('sets the correct url link', async () => {
-        render(<FileViewer />, { wrapper })
+        render(<FileViewer />, { wrapper: wrapper() })
 
         const copyLink = await screen.findByRole('link', {
           name: 'directory/file.js',
