@@ -132,9 +132,7 @@ function CommitsTab() {
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <h2 className="flex flex-initial items-center gap-1 font-semibold">
-            CI status
-          </h2>
+          <h2 className="font-semibold">CI status</h2>
           <div className="min-w-[16rem]">
             <MultiSelect
               dataMarketing="commits-filter-by-status"
