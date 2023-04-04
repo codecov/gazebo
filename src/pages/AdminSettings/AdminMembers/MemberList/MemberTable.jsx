@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -46,25 +47,33 @@ const columns = [
   },
 ]
 
-const createTable = ({ tableData, mutate, disableToggle }) =>
+const createTable = ({ tableData, mutate, seatData }) =>
   tableData?.length > 0
     ? tableData?.map(
-        ({ activated, email, isAdmin, name, ownerid, username }) => ({
-          userName: <p>{name || username}</p>,
-          type: <p>{isAdmin ? 'Admin' : 'Developer'}</p>,
-          email: <p>{email}</p>,
-          activationStatus: (
-            <Toggle
-              dataMarketing="handle-members-activation"
-              label={activated ? 'Activated' : 'Non-Active'}
-              value={activated}
-              onClick={() => {
-                mutate({ ownerid, activated: !activated })
-              }}
-              disabled={!activated && disableToggle}
-            />
-          ),
-        })
+        ({ activated, email, isAdmin, name, ownerid, student, username }) => {
+          let maxSeats = seatData?.seatsUsed === seatData?.seatsLimit
+          if (!!student) {
+            maxSeats = false
+          }
+          const disableToggle = maxSeats && !activated
+
+          return {
+            userName: <p>{name || username}</p>,
+            type: <p>{isAdmin ? 'Admin' : 'Developer'}</p>,
+            email: <p>{email}</p>,
+            activationStatus: (
+              <Toggle
+                dataMarketing="handle-members-activation"
+                label={activated ? 'Activated' : 'Non-Active'}
+                value={activated}
+                onClick={() => {
+                  mutate({ ownerid, activated: !activated })
+                }}
+                disabled={disableToggle}
+              />
+            ),
+          }
+        }
       )
     : []
 
@@ -72,7 +81,6 @@ function MemberTable() {
   const { provider } = useParams()
   const queryClient = useQueryClient()
   const { data: seatData } = useSelfHostedSettings()
-  const disableToggle = seatData?.seatsUsed === seatData?.seatsLimit
 
   const { params } = useLocationParams({
     activated: undefined,
@@ -98,7 +106,10 @@ function MemberTable() {
     },
   })
 
-  const tableContent = createTable({ tableData: data, mutate, disableToggle })
+  const tableContent = useMemo(
+    () => createTable({ tableData: data, mutate, seatData }),
+    [data, mutate, seatData]
+  )
 
   return (
     <>

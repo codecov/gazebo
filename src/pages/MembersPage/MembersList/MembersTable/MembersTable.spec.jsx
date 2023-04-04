@@ -12,8 +12,8 @@ import MembersTable from './MembersTable'
 
 jest.mock('services/image')
 
-const mockBaseUserRequest = {
-  count: 1,
+const mockBaseUserRequest = ({ student = false } = { student: false }) => ({
+  count: 2,
   next: null,
   previous: null,
   results: [
@@ -23,13 +23,13 @@ const mockBaseUserRequest = {
       username: 'codecov-user',
       email: 'user@codecov.io',
       ownerid: 1,
-      student: false,
+      student,
       name: 'codecov',
       last_pull_timestamp: null,
     },
   ],
   total_pages: 1,
-}
+})
 
 const mockedFirstResponse = {
   count: 1,
@@ -42,6 +42,7 @@ const mockedFirstResponse = {
       email: 'user1@codecov.io',
       name: 'User 1',
       isAdmin: true,
+      student: false,
       activated: false,
     },
   ],
@@ -59,6 +60,7 @@ const mockSecondResponse = {
       email: 'user2@codecov.io',
       name: null,
       isAdmin: false,
+      student: false,
       activated: true,
     },
   ],
@@ -99,11 +101,11 @@ describe('MembersTable', () => {
   function setup(
     {
       accountDetails = {},
-      mockUserRequest = mockBaseUserRequest,
+      mockUserRequest = mockBaseUserRequest(false),
       usePaginatedRequest = false,
     } = {
       accountDetails: {},
-      mockUserRequest: mockBaseUserRequest,
+      mockUserRequest: mockBaseUserRequest(false),
       usePaginatedRequest: false,
     }
   ) {
@@ -173,7 +175,7 @@ describe('MembersTable', () => {
                 ...mockBaseUserRequest,
                 results: [
                   {
-                    ...mockBaseUserRequest.results[0],
+                    ...mockBaseUserRequest().results[0],
                     name: 'codecov-name',
                   },
                 ],
@@ -209,7 +211,7 @@ describe('MembersTable', () => {
                 ...mockBaseUserRequest,
                 results: [
                   {
-                    ...mockBaseUserRequest.results[0],
+                    ...mockBaseUserRequest().results[0],
                     is_admin: true,
                   },
                 ],
@@ -283,17 +285,37 @@ describe('MembersTable', () => {
   })
 
   describe('user interacts with toggle', () => {
-    it('calls handleActivate', async () => {
-      const { user } = setup()
-      const handleActivate = jest.fn()
-      render(<MembersTable handleActivate={handleActivate} />, {
-        wrapper: wrapper(),
+    describe('user is not a student', () => {
+      it('calls handleActivate', async () => {
+        const { user } = setup()
+        const handleActivate = jest.fn()
+        render(<MembersTable handleActivate={handleActivate} />, {
+          wrapper: wrapper(),
+        })
+
+        const toggle = await screen.findByRole('button')
+        await user.click(toggle)
+
+        expect(handleActivate).toBeCalledWith({ activated: false, ownerid: 1 })
       })
+    })
 
-      const toggle = await screen.findByRole('button')
-      await user.click(toggle)
+    describe('user is a student and limit has been reached', () => {
+      it('calls handleActivate', async () => {
+        const { user } = setup({
+          mockUserRequest: mockBaseUserRequest({ student: true }),
+          accountDetails: { activatedUserCount: 1, plan: { quantity: 0 } },
+        })
+        const handleActivate = jest.fn()
+        render(<MembersTable handleActivate={handleActivate} />, {
+          wrapper: wrapper(),
+        })
 
-      expect(handleActivate).toBeCalledWith({ activated: false, ownerid: 1 })
+        const toggle = await screen.findByRole('button')
+        await user.click(toggle)
+
+        expect(handleActivate).toBeCalledWith({ activated: false, ownerid: 1 })
+      })
     })
   })
 
@@ -526,7 +548,7 @@ describe('MembersTable', () => {
             ...mockBaseUserRequest,
             results: [
               {
-                ...mockBaseUserRequest.results[0],
+                ...mockBaseUserRequest().results[0],
                 username: null,
               },
             ],
