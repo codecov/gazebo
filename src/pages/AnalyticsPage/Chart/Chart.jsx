@@ -18,15 +18,13 @@ const makeDesc = ({ data, first, last, repos = [] }) => {
 }
 
 function Chart({ params }) {
-  const { data, isPreviousData, isSuccess } = useCoverage(
-    {
-      params,
-    },
-    {
+  const { data, isPreviousData, isSuccess } = useCoverage({
+    params,
+    opts: {
       suspense: false,
       keepPreviousData: true,
-    }
-  )
+    },
+  })
 
   const desc = makeDesc({
     data: data?.coverage,
