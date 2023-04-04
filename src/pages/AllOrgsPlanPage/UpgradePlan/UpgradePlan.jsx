@@ -10,7 +10,6 @@ import {
 } from 'services/account'
 import { useMyContexts } from 'services/user'
 import {
-  // canApplySentryUpgrade,
   findSentryPlans,
   isEnterprisePlan,
   useProPlans,
