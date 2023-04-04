@@ -20,6 +20,9 @@ import {
   calculatePrice,
   getInitialDataForm,
   getSchema,
+  MIN_NB_SEATS,
+  MIN_SENTRY_SEATS,
+  SENTRY_PRICE,
 } from 'shared/utils/upgradeForm'
 import RadioInput from 'ui/RadioInput/RadioInput'
 import TextInput from 'ui/TextInput'
@@ -27,10 +30,6 @@ import TextInput from 'ui/TextInput'
 import TotalBanner from './TotalBanner'
 import UpdateButton from './UpdateButton'
 import UserCount from './UserCount'
-
-const MIN_NB_SEATS = 2
-const MIN_SENTRY_SEATS = 5
-const SENTRY_PRICE = 29
 
 const useUpgradeForm = ({
   proPlanYear,

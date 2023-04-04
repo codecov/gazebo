@@ -3,6 +3,10 @@ import { z } from 'zod'
 
 import { isPaidPlan, isSentryPlan } from 'shared/utils/billing'
 
+export const MIN_NB_SEATS = 2
+export const MIN_SENTRY_SEATS = 5
+export const SENTRY_PRICE = 29
+
 export const getInitialDataForm = ({
   accountDetails,
   proPlanYear,
