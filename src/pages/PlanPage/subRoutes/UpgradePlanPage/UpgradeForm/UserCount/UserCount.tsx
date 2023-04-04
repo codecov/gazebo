@@ -23,13 +23,13 @@ function renderStudentText(activatedStudents: number) {
   )
 }
 
-interface StudentTextProps {
+interface UserCountProps {
   activatedUserCount?: number
   inactiveUserCount?: number
   activatedStudentCount?: number
 }
 
-const StudentText: React.FC<StudentTextProps> = ({
+const UserCount: React.FC<UserCountProps> = ({
   activatedUserCount,
   inactiveUserCount,
   activatedStudentCount,
@@ -50,10 +50,10 @@ const StudentText: React.FC<StudentTextProps> = ({
   )
 }
 
-StudentText.propTypes = {
+UserCount.propTypes = {
   activatedUserCount: PropTypes.number,
   inactiveUserCount: PropTypes.number,
   activatedStudentCount: PropTypes.number,
 }
 
-export default StudentText
+export default UserCount
