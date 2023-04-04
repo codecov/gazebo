@@ -187,7 +187,7 @@ describe('CommitsTab', () => {
       expect(head).toBeInTheDocument()
     })
 
-    it('renders the checkbox', () => {
+    it('renders branch context selector', async () => {
       repoPageRender({
         renderCommits: () => (
           <Wrapper>
@@ -197,11 +197,13 @@ describe('CommitsTab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      const label = screen.getByText('Hide commits with failed CI')
-      expect(label).toBeInTheDocument()
+      const selector = await screen.findByRole('button', {
+        name: 'Select branch',
+      })
+      expect(selector).toBeInTheDocument()
     })
 
-    it('has false as initial checked property value of the checkbox', () => {
+    it('renders ci status mutliselect', async () => {
       repoPageRender({
         renderCommits: () => (
           <Wrapper>
@@ -211,28 +213,10 @@ describe('CommitsTab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      const checkbox = screen.getByRole('checkbox')
-      expect(checkbox).not.toBeChecked()
-    })
-  })
-
-  describe('when user clicks on the checkbox', () => {
-    it('changes checked property value to true', async () => {
-      const { user } = setup({ hasNextPage: true })
-      repoPageRender({
-        renderCommits: () => (
-          <Wrapper>
-            <CommitsTab />
-          </Wrapper>
-        ),
-        initialEntries: ['/gh/codecov/gazebo/commits'],
+      const multiSelect = await screen.findByRole('button', {
+        name: 'Filter by CI states',
       })
-
-      const initialCheckBox = screen.getByRole('checkbox')
-      await user.click(initialCheckBox)
-
-      const checkbox = screen.getByRole('checkbox')
-      expect(checkbox).toBeChecked()
+      expect(multiSelect).toBeInTheDocument()
     })
   })
 
@@ -255,7 +239,9 @@ describe('CommitsTab', () => {
           initialEntries: ['/gh/codecov/gazebo/commits'],
         })
 
-        const select = await screen.findByRole('button')
+        const select = await screen.findByRole('button', {
+          name: 'Select branch',
+        })
         await user.click(select)
 
         await waitFor(() => expect(fetchNextPage).not.toHaveBeenCalled())
@@ -287,7 +273,7 @@ describe('CommitsTab', () => {
     })
   })
 
-  describe('user selects an item from the list', () => {
+  describe('user selects from the branch selector', () => {
     describe('user selects all commits', () => {
       it('updates the button with the selected branch', async () => {
         const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
@@ -300,7 +286,9 @@ describe('CommitsTab', () => {
           initialEntries: ['/gh/codecov/gazebo/commits'],
         })
 
-        const select = await screen.findByRole('button')
+        const select = await screen.findByRole('button', {
+          name: 'Select branch',
+        })
         await user.click(select)
 
         const branch = await screen.findByText('All commits')
@@ -328,7 +316,9 @@ describe('CommitsTab', () => {
           initialEntries: ['/gh/codecov/gazebo/commits'],
         })
 
-        const select = await screen.findByRole('button')
+        const select = await screen.findByRole('button', {
+          name: 'Select branch',
+        })
         await user.click(select)
 
         const branch = await screen.findByRole('option', { name: 'main' })
@@ -342,6 +332,32 @@ describe('CommitsTab', () => {
         const selectedBranch = within(allCommitsBtn).getByText(/main/)
         expect(selectedBranch).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('user selects from the CI states multiselect', () => {
+    it('selects the option', async () => {
+      const { user } = setup({})
+      repoPageRender({
+        renderCommits: () => (
+          <Wrapper>
+            <CommitsTab />
+          </Wrapper>
+        ),
+        initialEntries: ['/gh/codecov/gazebo/commits'],
+      })
+
+      const select = await screen.findByRole('button', {
+        name: 'Filter by CI states',
+      })
+      await user.click(select)
+
+      const completeOption = await screen.findByRole('option', {
+        name: 'Complete',
+      })
+      await user.click(completeOption)
+
+      await waitFor(() => expect(completeOption).toHaveClass('border-l-black'))
     })
   })
 
@@ -361,7 +377,7 @@ describe('CommitsTab', () => {
       const select = await screen.findByText('Select branch')
       await user.click(select)
 
-      const search = await screen.findByRole('textbox')
+      const search = await screen.findByPlaceholderText('Search for branches')
       await user.type(search, 'searching for a branch')
 
       await waitFor(() => expect(searches).toBeCalled())
@@ -382,10 +398,12 @@ describe('CommitsTab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      const select = await screen.findByText('Select branch')
+      const select = await screen.findByRole('button', {
+        name: 'Select branch',
+      })
       await user.click(select)
 
-      const search = await screen.findByRole('textbox')
+      const search = await screen.findByPlaceholderText('Search for branches')
       await user.type(search, 'searching for a branch')
 
       await waitFor(() => expect(searches).toBeCalled())
