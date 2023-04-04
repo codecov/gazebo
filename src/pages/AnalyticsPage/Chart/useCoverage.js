@@ -36,7 +36,7 @@ export const useCoverage = ({ params, options = {} }) => {
           data.measurements[0].max = 0
         }
 
-        // set set initial t
+        // set prevPercent so we can reuse value if next value is null
         let prevPercent = data?.measurements?.[0]
         const coverage = data?.measurements?.map((measurement) => {
           let coverage = measurement?.max ?? prevPercent
