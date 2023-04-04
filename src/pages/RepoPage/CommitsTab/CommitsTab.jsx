@@ -114,7 +114,7 @@ function CommitsTab() {
               </span>
               Branch Context
             </h2>
-            <div className="min-w-[16rem]">
+            <div className="min-w-[13rem] lg:min-w-[16rem]">
               <Select
                 {...branchSelectorProps}
                 dataMarketing="branch-selector-commits-page"
@@ -138,7 +138,7 @@ function CommitsTab() {
           </div>
           <div className="flex flex-col gap-1">
             <h2 className="font-semibold">CI status</h2>
-            <div className="min-w-[16rem]">
+            <div className="min-w-[13rem] lg:min-w-[16rem]">
               <MultiSelect
                 dataMarketing="commits-filter-by-status"
                 ariaName="Filter by CI states"
