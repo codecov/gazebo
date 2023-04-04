@@ -23,7 +23,7 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
 
   return (
     <Button
-      data-cy="update"
+      data-cy="all-orgs-plan-update"
       disabled={disabled}
       type="submit"
       variant="primary"
