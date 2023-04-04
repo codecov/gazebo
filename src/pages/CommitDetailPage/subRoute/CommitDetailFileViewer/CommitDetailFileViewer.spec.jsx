@@ -127,7 +127,7 @@ describe('CommitDetailFileViewer', () => {
         )
       })
 
-      it('displays file name', async () => {
+      it('displays file namee', async () => {
         render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const fileName = await screen.findByText('file.js')
