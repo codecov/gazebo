@@ -405,7 +405,7 @@ describe('RawFileviewer', () => {
       })
 
       const binaryFileText = await screen.findByText(
-        'This is a binary file that contains now coverable lines.'
+        'Unable to display contents of binary file included in coverage reports.'
       )
       expect(binaryFileText).toBeInTheDocument()
     })

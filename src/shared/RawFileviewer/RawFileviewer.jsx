@@ -64,7 +64,7 @@ function CodeRendererContent({
   if (isUnsupportedFileType) {
     return (
       <div className="border border-solid border-ds-gray-tertiary p-2">
-        This is a binary file that contains now coverable lines.
+        Unable to display contents of binary file included in coverage reports.
       </div>
     )
   }
