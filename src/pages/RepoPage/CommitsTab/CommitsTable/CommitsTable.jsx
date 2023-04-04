@@ -121,7 +121,8 @@ const Loader = () => (
   </div>
 )
 
-function CommitsTable({ branch, states }) {
+// eslint-disable-next-line complexity
+function CommitsTable({ branch, states, search }) {
   const { provider, owner, repo, pullId } = useParams()
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommits({
@@ -132,6 +133,7 @@ function CommitsTable({ branch, states }) {
         states,
         branchName: branch,
         pullId: +pullId,
+        search,
       },
       opts: { suspense: false },
     })
@@ -167,6 +169,7 @@ function CommitsTable({ branch, states }) {
 CommitsTable.propTypes = {
   branch: PropTypes.string,
   states: PropTypes.arrayOf(PropTypes.oneOf(Object.keys(statusNames))),
+  search: PropTypes.string.isRequired,
 }
 
 export default CommitsTable
